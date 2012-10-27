@@ -79,7 +79,8 @@ namespace ViewModels
 
         #region Constructors
         public LoginViewModel(IUnityContainer contain, IRegionManager regman, 
-                                IAccount acc, IEventAggregator events) : base(contain, regman, events)
+                                IAccount acc, IEventAggregator events, IChatModel cm)
+            : base(contain, regman, events, cm)
         {
             try
             {

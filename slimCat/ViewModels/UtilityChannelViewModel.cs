@@ -8,6 +8,7 @@ using System.Linq;
 using lib;
 using System.Windows.Input;
 using slimCat.Properties;
+using slimCat;
 
 namespace ViewModels
 {
@@ -16,27 +17,86 @@ namespace ViewModels
     /// </summary>
     public class UtilityChannelViewModel : ChannelViewModelBase, IDisposable
     {
-        private System.Timers.Timer UpdateTimer = new System.Timers.Timer(1000);
+        private System.Timers.Timer UpdateTimer = new System.Timers.Timer(1000); // every second
+        private int shortTickBuffer = 0;
+        private int longTickBuffer = 0;
+        private int shortTicksElapsed = 0; // every minute
+        private int longTicksElapsed = 0; // every 15 minutes
 
         #region Properties
         public string RoughServerUpTime { get { return HelperConverter.DateTimeToRough(CM.ServerUpTime, true, false); } }
         public string RoughClientUpTime { get { return HelperConverter.DateTimeToRough(CM.ClientUptime, true, false); } }
 
-        public int OnlineCount { get { return CM.OnlineCharacters.Count; } }
+        public int OnlineCount { get { return CM.OnlineCharacters.Count(); } }
         public int OnlineFriendsCount
         {
-            get { return (CM.OnlineFriends == null ? 0 : CM.OnlineFriends.Count); } 
+            get { return (CM.OnlineFriends == null ? 0 : CM.OnlineFriends.Count()); } 
         }
         public int OnlineBookmarksCount
         {
-            get { return (CM.OnlineBookmarks == null ? 0 : CM.OnlineBookmarks.Count); } 
+            get { return (CM.OnlineBookmarks == null ? 0 : CM.OnlineBookmarks.Count()); } 
+        }
+
+        public int TicksElapsed
+        {
+            get { return shortTicksElapsed; }
+            set
+            {
+                if (value == 60)
+                {
+                    shortTicksElapsed -= 60;
+                    OnPropertyChanged("ShortTickOnlineCountChange");
+                    shortTickBuffer = OnlineCount;
+                    LongTicksElapsed++;
+                }
+                else
+                    shortTicksElapsed = value;
+            }
+        }
+
+        public int LongTicksElapsed
+        {
+            get { return longTicksElapsed; }
+            set
+            {
+                if (value == 15)
+                {
+                    longTicksElapsed -= 15;
+                    OnPropertyChanged("LongTickOnlineCountChange");
+                    longTickBuffer = OnlineCount;
+                }
+                else
+                    longTicksElapsed = value;
+            }
+        }
+
+        public string ShortTickOnlineCountChange
+        {
+            get
+            {
+                var changed = System.Math.Abs(shortTickBuffer - OnlineCount);
+                if (changed == OnlineCount)
+                    return "";
+                return (shortTickBuffer > OnlineCount ? "-" : "+") + changed + " (1m)";
+            }
+        }
+
+        public string LongTickOnlineCountChange
+        {
+            get
+            {
+                var changed = System.Math.Abs(longTickBuffer - OnlineCount);
+                if (changed == OnlineCount)
+                    return "";
+                return (shortTickBuffer > OnlineCount ? "-" : "+") + changed + " (15m)";
+            }
         }
         #endregion
 
         #region Constructors
         public UtilityChannelViewModel(string name, IUnityContainer contain, IRegionManager regman,
-                                       IEventAggregator events)
-            : base(contain, regman, events)
+                                       IEventAggregator events, IChatModel cm)
+            : base(contain, regman, events, cm)
         {
             try
             {
@@ -49,10 +109,23 @@ namespace ViewModels
                 { 
                     OnPropertyChanged("RoughServerUpTime");
                     OnPropertyChanged("RoughClientUpTime");
-                    OnPropertyChanged("OnlineCount");
-                    OnPropertyChanged("OnlineFriendsCount");
-                    OnPropertyChanged("OnlineBookmarksCount");
+                    TicksElapsed++;
                 };
+
+                _events.GetEvent<NewUpdateEvent>().Subscribe(param =>
+                    {
+                        if (param is CharacterUpdateModel)
+                        {
+                            var temp = param as CharacterUpdateModel;
+                            if (temp.Arguments is Models.CharacterUpdateModel.LoginStateChangedEventArgs)
+                            {
+                                OnPropertyChanged("OnlineCount");
+                                OnPropertyChanged("OnlineFriendsCount");
+                                OnPropertyChanged("OnlineBookmarksCount");
+                            }
+                            
+                        }
+                    });
             }
 
             catch (Exception ex)

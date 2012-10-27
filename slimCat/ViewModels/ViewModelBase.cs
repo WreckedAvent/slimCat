@@ -1,25 +1,30 @@
-﻿using System;
-using System.Diagnostics;
-using System.Web;
-using System.Windows.Input;
-using lib;
+﻿using lib;
 using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.Modularity;
 using Microsoft.Practices.Prism.Regions;
 using Microsoft.Practices.Unity;
+using Models;
+using slimCat;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Web;
+using System.Windows.Input;
 
 namespace ViewModels
 {
-    public abstract class ViewModelBase : SysProp, IModule
+    public abstract class ViewModelBase : SysProp, IModule, IDisposable
     {
         #region Fields
-        protected readonly IUnityContainer _container;
-        protected readonly IRegionManager _region;
-        protected readonly IEventAggregator _events;
+        protected IUnityContainer _container;
+        protected IRegionManager _region;
+        protected IEventAggregator _events;
+        protected IChatModel _cm;
         #endregion
 
         #region Shared Constructors
-        public ViewModelBase(IUnityContainer contain, IRegionManager regman, IEventAggregator events)
+        public ViewModelBase(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
         {
             try
             {
@@ -31,6 +36,11 @@ namespace ViewModels
 
                 if (events == null) throw new ArgumentNullException("events");
                 _events = events;
+
+                if (cm == null) throw new ArgumentNullException("cm");
+                _cm = cm;
+
+                _cm.SelectedChannelChanged += (s, e) => UpdatePermissions();
             }
 
             catch (Exception ex)
@@ -42,7 +52,6 @@ namespace ViewModels
 
         public abstract void Initialize();
         #endregion
-
 
         #region Global Commands
         private RelayCommand _link;
@@ -65,6 +74,250 @@ namespace ViewModels
             if (!String.IsNullOrEmpty(interpret))
                 Process.Start(interpret);
         }
+
+        #region Join Channel
+        private RelayCommand _join;
+        public ICommand JoinChannelCommand
+        {
+            get
+            {
+                if (_join == null)
+                    _join = new RelayCommand(RequestChannelJoinEvent, CanJoinChannel);
+                return _join;
+            }
+        }
+
+        protected void RequestChannelJoinEvent(object args)
+        {
+            IDictionary<string, object> command = CommandDefinitions
+                .CreateCommand("join", new List<string> { args as string })
+                .toDictionary();
+
+            _events.GetEvent<UserCommandEvent>().Publish(command);
+        }
+
+        protected bool CanJoinChannel(object args)
+        {
+            return !_cm
+                .CurrentChannels
+                .Any(param => param.ID.Equals((string)args, StringComparison.OrdinalIgnoreCase));
+        }
         #endregion
+
+        #region Priv
+        private RelayCommand _priv;
+        public ICommand RequestPMCommand
+        {
+            get
+            {
+                if (_priv == null)
+                    _priv = new RelayCommand(RequestPMEvent, CanRequestPM);
+                return _priv;
+            }
+        }
+
+        protected void RequestPMEvent(object args)
+        {
+            string TabName = (string)args;
+            if (_cm
+                .CurrentPMs
+                .Any(param => param.ID.Equals(TabName, StringComparison.OrdinalIgnoreCase)))
+            {
+                _events.GetEvent<RequestChangeTabEvent>().Publish(TabName);
+                return;
+            }
+
+            IDictionary<string, object> command = CommandDefinitions
+                .CreateCommand("priv", new List<string>() { TabName })
+                .toDictionary();
+
+            _events.GetEvent<UserCommandEvent>().Publish(command);
+        }
+
+        protected bool CanRequestPM(object args)
+        {
+            return (_cm.SelectedCharacter.Name != args as string);
+        }
+        #endregion
+
+        #region Ignore
+        private RelayCommand _ign;
+        public ICommand IgnoreCommand
+        {
+            get
+            {
+                if (_ign == null)
+                    _ign = new RelayCommand(AddIgnoreEvent, CanIgnore);
+                return _ign;
+            }
+        }
+
+        private RelayCommand _uign;
+        public ICommand UnignoreCommand
+        {
+            get
+            {
+                if (_uign == null)
+                    _uign = new RelayCommand(RemoveIgnoreEvent, CanUnIgnore);
+                return _uign;
+            }
+        }
+
+        protected void AddIgnoreEvent(object args) { IgnoreEvent(args); }
+        protected void RemoveIgnoreEvent(object args) { IgnoreEvent(args, true); }
+
+        protected bool CanIgnore(object args)
+        {
+            return (!_cm.Ignored.Contains(args as string));
+        }
+
+        protected bool CanUnIgnore(object args)
+        {
+            return !CanIgnore(args);
+        }
+
+        protected void IgnoreEvent(object args, bool remove = false)
+        {
+            string name = args as string;
+
+            IDictionary<string, object> command = CommandDefinitions
+                .CreateCommand((remove ? "unignore" : "ignore"), new List<string> { name })
+                .toDictionary();
+
+            _events.GetEvent<UserCommandEvent>().Publish(command);
+        }
+        #endregion
+
+        #region Interested In / Not
+        protected RelayCommand _isInter;
+        public ICommand InterestedCommand
+        {
+            get
+            {
+                if (_isInter == null)
+                    _isInter = new RelayCommand(IsInterestedEvent, CanBeInterestedIn);
+                return _isInter;
+            }
+        }
+
+        protected RelayCommand _isNInter;
+        public ICommand NotInterestedCommand
+        {
+            get
+            {
+                if (_isNInter == null)
+                    _isNInter = new RelayCommand(IsUninterestedEvent, CanBeUninterestedIn);
+                return _isNInter;
+            }
+        }
+
+        public bool CanBeInterestedIn(object args)
+        {
+            return !CM.Interested.Contains(args as string);
+        }
+
+        public bool CanBeUninterestedIn(object args)
+        {
+            return !CM.NotInterested.Contains(args as string);
+        }
+
+        protected void IsInterestedEvent(object args) { InterestedEvent(args); }
+        protected void IsUninterestedEvent(object args) { InterestedEvent(args, false); }
+
+        protected void InterestedEvent(object args, bool interestedIn = true)
+        {
+            if (interestedIn)
+                CM.AddToInterestList(args as string);
+            else
+                CM.AddToUninterestList(args as string);
+        }
+        #endregion
+
+        #region Kick/Ban
+        protected RelayCommand _kick;
+        public ICommand KickCommand
+        {
+            get
+            {
+                if (_kick == null)
+                    _kick = new RelayCommand(KickEvent, param => HasPermissions);
+                return _kick;
+            }
+        }
+
+        protected RelayCommand _ban;
+        public ICommand BanCommand
+        {
+            get
+            {
+                if (_ban == null)
+                    _ban = new RelayCommand(BanEvent, param => HasPermissions);
+                return _ban;
+            }
+        }
+
+        protected void KickEvent(object args) { KickOrBanEvent(args, false); }
+        protected void BanEvent(object args) { KickOrBanEvent(args, true); }
+
+        protected void KickOrBanEvent(object args, bool isBan)
+        {
+            string name = args as string;
+
+            IDictionary<string, object> command = CommandDefinitions
+                .CreateCommand((isBan ? "ban" : "kick"), new[] { name }, CM.SelectedChannel.ID)
+                .toDictionary();
+
+            _events.GetEvent<UserCommandEvent>().Publish(command);
+        }
+        #endregion
+        #endregion
+
+        #region Methods
+        void UpdatePermissions()
+        {
+            OnPropertyChanged("HasPermissions");
+        }
+        #endregion
+
+        #region Properties
+        /// <summary>
+        /// CM is the general reference to the ChatModel, which is central to anything which needs to interact with session data
+        /// </summary>
+        public IChatModel CM
+        {
+            get { return _cm; }
+        }
+
+        /// <summary>
+        /// Returns true if the current user has moderator permissions
+        /// </summary>
+        public bool HasPermissions
+        {
+            get
+            {
+                bool isLocalMod = false;
+                if (_cm.SelectedChannel is GeneralChannelModel)
+                    isLocalMod = (_cm.SelectedChannel as GeneralChannelModel).Moderators.Contains(_cm.SelectedCharacter.Name);
+                return isLocalMod || _cm.Mods.Contains(_cm.SelectedCharacter.Name);
+            }
+        }
+        #endregion
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+        }
+
+        protected virtual void Dispose(bool IsManaged)
+        {
+            if (IsManaged)
+            {
+                _cm.SelectedChannelChanged -= (s, e) => UpdatePermissions();
+                _container = null;
+                _region = null;
+                _cm = null;
+                _events = null;
+            }
+        }
     }
 }

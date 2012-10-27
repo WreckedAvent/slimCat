@@ -4,6 +4,9 @@
     <!-- Resource Dictionary to hold all of the themes used in the application -->
     
     <!-- Themes and styles -->
+
+    <BooleanToVisibilityConverter x:Key="BoolConverter" />
+    
     <ControlTemplate x:Key="EntryBox">
         <Border x:Name="Border" BorderThickness="2" Padding="2"
                                  Background="{StaticResource ForegroundBrush}">
@@ -634,38 +637,59 @@
                                        Margin="10,5"
                                        Width="40"/>
                         </WrapPanel>
-                            <Button Command="{Binding Path=PlacementTarget.Tag.DataContext.RequestPMCommand,
-                                                    RelativeSource={RelativeSource Mode=FindAncestor,
+                        <Button Content="Message"
+                                Command="{Binding Path=PlacementTarget.Tag.DataContext.RequestPMCommand,
+                                                        RelativeSource={RelativeSource Mode=FindAncestor,
                                                         AncestorType=ContextMenu}}"
                                 CommandParameter="{Binding Path=Name}"
-                                BorderThickness = "0" 
-                                Content="PM User"/>
+                                BorderThickness = "0"/>
 
-                            <Button Content="Ignore User"
-                                  Command="{Binding Path=PlacementTarget.Tag.DataContext.IgnoreCommand,
+                        <Button Content="Ignore"
+                                Command="{Binding Path=PlacementTarget.Tag.DataContext.IgnoreCommand,
                                                     RelativeSource={RelativeSource Mode=FindAncestor,
-                                                        AncestorType=ContextMenu}}"
-                                
-                                BorderThickness = "0" 
-                                  CommandParameter="{Binding Path=Name}"/>
+                                                    AncestorType=ContextMenu}}"
+                                CommandParameter="{Binding Path=Name}"
+                                BorderThickness="0"/>
 
-                            <Button Content="Unignore User"
-                                  Command="{Binding Path=PlacementTarget.Tag.DataContext.UnignoreCommand,
+                        <Button Content="Unignore"
+                                Command="{Binding Path=PlacementTarget.Tag.DataContext.UnignoreCommand,
                                                     RelativeSource={RelativeSource Mode=FindAncestor,
-                                                        AncestorType=ContextMenu}}"
-                                
-                                BorderThickness = "0" 
-                                  CommandParameter="{Binding Path=Name}"/>
+                                                    AncestorType=ContextMenu}}"
+                                CommandParameter="{Binding Path=Name}"
+                                BorderThickness = "0"/>
 
-                            <Button Content="Mark User as Not Interested"
-                                
-                                BorderThickness = "0" 
-                                  IsEnabled="False" />
+                        <Button Content="Mark as Interesting"
+                                Command="{Binding Path=PlacementTarget.Tag.DataContext.InterestedCommand,
+                                                    RelativeSource={RelativeSource Mode=FindAncestor,
+                                                    AncestorType=ContextMenu}}"
+                                CommandParameter="{Binding Path=Name}"
+                                BorderThickness = "0" />
 
-                            <Button Content="Mark User as Interested"
-                                
-                                BorderThickness = "0" 
-                                  IsEnabled="False" />
+                        <Button Content="Mark as Uninteresting"
+                                Command="{Binding Path=PlacementTarget.Tag.DataContext.NotInterestedCommand,
+                                                    RelativeSource={RelativeSource Mode=FindAncestor,
+                                                    AncestorType=ContextMenu}}"
+                                CommandParameter="{Binding Path=Name}"
+                                BorderThickness = "0" />
+
+                        <Button Content="Kick"
+                                Command="{Binding Path=PlacementTarget.Tag.DataContext.KickCommand,
+                                                    RelativeSource={RelativeSource Mode=FindAncestor,
+                                                    AncestorType=ContextMenu}}"
+                                CommandParameter="{Binding Path=Name}"
+                                Visibility="{Binding Path=PlacementTarget.Tag.DataContext.HasPermissions,
+                                                    RelativeSource={RelativeSource Mode=FindAncestor,
+                                                    AncestorType=ContextMenu}, Converter={StaticResource BoolConverter}}"
+                                BorderThickness="0"/>
+                        <Button Content="Ban"
+                                Command="{Binding Path=PlacementTarget.Tag.DataContext.BanCommand,
+                                                    RelativeSource={RelativeSource Mode=FindAncestor,
+                                                    AncestorType=ContextMenu}}"
+                                CommandParameter="{Binding Path=Name}"
+                                Visibility="{Binding Path=PlacementTarget.Tag.DataContext.HasPermissions,
+                                                    RelativeSource={RelativeSource Mode=FindAncestor,
+                                                    AncestorType=ContextMenu}, Converter={StaticResource BoolConverter}}"
+                                BorderThickness="0"/>
                     </ContextMenu>
                 </Button.ContextMenu>
             </Button>
@@ -907,8 +931,6 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-
-    <BooleanToVisibilityConverter x:Key="BoolConverter" />
     
     <ControlTemplate x:Key="GenderCheckBoxes" TargetType="ContentControl">
         <StackPanel Orientation="Vertical">

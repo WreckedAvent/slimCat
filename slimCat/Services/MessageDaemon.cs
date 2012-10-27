@@ -340,8 +340,12 @@ namespace Services
                 var vm = _container.Resolve<GeneralChannelViewModel>(new ParameterOverride("name", temp.ID));
                 vm.Dispose();
 
-                _model.CurrentChannels.Remove(temp);
-                temp.Dispose();
+                Dispatcher.Invoke(
+                    (Action)delegate
+                    {
+                        _model.CurrentChannels.Remove(temp);
+                        temp.Dispose();
+                    });
 
                 object toSend = new { channel = name };
                 _connection.SendMessage(toSend, "LCH");
@@ -385,10 +389,13 @@ namespace Services
 
                     _logger.LogMessage(channel.Title, channel.ID, thisMessage);
 
-                    if (channel.IsSelected == false)
+                    if (poster != "_thisCharacter")
                     {
                         if (channel is GeneralChannelModel)
-                            _events.GetEvent<NewMessageEvent>().Publish(thisMessage);
+                        {
+                            if (!channel.IsSelected)
+                                _events.GetEvent<NewMessageEvent>().Publish(thisMessage);
+                        }
                         else
                             _events.GetEvent<NewPMEvent>().Publish(thisMessage);
                     }
@@ -470,6 +477,7 @@ namespace Services
             _lastSelected = ChannelModel;
         }
 
+        // this is a semi-ugly hack which forcefully removes the 'channel' view and forcefully replaces it with the one selected
         private void ClearViews()
         {
             Dispatcher.Invoke(
@@ -480,6 +488,7 @@ namespace Services
                 });
         }
 
+        // ensure that our logger has a proper instance
         private void InstanceLogger()
         {
             if (_logger == null)

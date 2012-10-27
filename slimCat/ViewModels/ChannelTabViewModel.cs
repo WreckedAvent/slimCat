@@ -40,9 +40,9 @@ namespace ViewModels
                 (channel => ContainsSearchString(channel) && MeetsTypeFilter(channel) && MeetsThreshold(channel));
 
                 if (SortByName)
-                    return Model.AllChannels.Where(MeetsFilter).OrderBy(channel => channel.Title);
+                    return CM.AllChannels.Where(MeetsFilter).OrderBy(channel => channel.Title);
                 else
-                    return Model.AllChannels.Where(MeetsFilter).OrderByDescending(channel => channel.UserCount);
+                    return CM.AllChannels.Where(MeetsFilter).OrderByDescending(channel => channel.UserCount);
             }
         }
 
@@ -104,8 +104,8 @@ namespace ViewModels
         #endregion
 
         #region Constructors
-        public ChannelsTabViewModel(IChatModel model, IUnityContainer contain, IRegionManager reggman, IEventAggregator events)
-            :base(model, contain, reggman, events)
+        public ChannelsTabViewModel(IChatModel cm, IUnityContainer contain, IRegionManager reggman, IEventAggregator events)
+            :base(contain, reggman, events, cm)
         {
             _container.RegisterType<object, ChannelTabView>(ChannelsTabView);
 

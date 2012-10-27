@@ -56,7 +56,8 @@ namespace ViewModels
 
         #region Constructors
         public CharacterSelectViewModel(IUnityContainer contain, IRegionManager regman, IEventAggregator events,
-                                        IAccount acc) : base(contain, regman, events)
+                                        IAccount acc, IChatModel cm) 
+            : base(contain, regman, events, cm)
         {
             try
             {

@@ -107,16 +107,32 @@ namespace Services
         private void HandleNewMessage(IMessage Message)
         {
             var poster = Message.Poster;
+            bool handled = false;
+
+            Dispatcher.Invoke(
+                (Action)delegate
+                {
+                    if (!Application.Current.MainWindow.IsFocused)
+                    {
+                        NotifyUser(true, true, poster.Name + '\n' + HttpUtility.UrlDecode(Message.Message));
+                        handled = true;
+                    }
+                });
+
+            if (handled) return;
 
             if (_cm.CurrentPMs.Any(pms => poster.Name.Equals(pms.ID)))
             {
                 var channel = _cm.CurrentPMs.First(pm => poster.Name.Equals(pm.ID));
                 if (channel.IsSelected)
+                {
                     NotifyUser(false, true, poster.Name + '\n' + HttpUtility.UrlDecode(Message.Message));
+                    handled = true;
+                }
             }
             
-            NotifyUser(true, true, poster.Name + '\n' + HttpUtility.UrlDecode(Message.Message));
-
+            if (!handled)
+                NotifyUser(true, true, poster.Name + '\n' + HttpUtility.UrlDecode(Message.Message));
         }
 
         private void HandleNotification(NotificationModel Notification)

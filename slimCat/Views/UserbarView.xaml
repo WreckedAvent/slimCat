@@ -9,7 +9,7 @@
     </UserControl.Resources>
     
     <DockPanel TextBlock.FontSize="14"
-               Visibility="{Binding Path=Model.IsAuthenticated, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+               Visibility="{Binding Path=CM.IsAuthenticated, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                TextBlock.Foreground="{StaticResource ForegroundBrush}"
                TextBlock.TextAlignment="Center">
 
@@ -33,7 +33,7 @@
                     x:Name="PopupAnchor"
                     Command="{Binding ToggleStatusWindowCommand}">
                 <StackPanel HorizontalAlignment="Center"
-                            DataContext="{Binding Path=Model.SelectedCharacter}">
+                            DataContext="{Binding Path=CM.SelectedCharacter}">
                     <Image Height="100" 
                            Width="100"
                            Source="{Binding Path=Avatar}"/>
@@ -56,12 +56,12 @@
                         
                         <ComboBox ItemsSource="{Binding Path=StatusTypes}"
                                   DisplayMemberPath="Key"
-                                  SelectedValue="{Binding Model.SelectedCharacter.Status}"
+                                  SelectedValue="{Binding CM.SelectedCharacter.Status}"
                                   SelectedValuePath="Value"
                                   Margin="10,5"
                                   FontSize="12"/>
                         
-                        <TextBox Text="{Binding Path=Model.SelectedCharacter.StatusMessage, UpdateSourceTrigger=PropertyChanged}"
+                        <TextBox Text="{Binding Path=CM.SelectedCharacter.StatusMessage, UpdateSourceTrigger=PropertyChanged}"
                                  FontSize="12"
                                  TextWrapping="Wrap"
                                  MaxWidth="200"
@@ -83,7 +83,7 @@
                               Visibility="{Binding Path=HasPMs, Converter={StaticResource BoolConverter}}"
                               BorderBrush="{Binding Path=HasNewPM, Converter={StaticResource BoolColorConverter}}"
                               Grid.Row="1">
-                        <ListBox ItemsSource="{Binding Path=Model.CurrentPMs, Mode=OneWay}"
+                        <ListBox ItemsSource="{Binding Path=CM.CurrentPMs, Mode=OneWay}"
                                  HorizontalContentAlignment="Stretch"
                                  SelectedIndex="{Binding Path=PM_Selected, Mode=TwoWay}">
                             <ListBox.ItemTemplate>
@@ -97,7 +97,7 @@
                               IsExpanded="True"
                               BorderBrush="{Binding Path=HasNewMessage, Converter={StaticResource BoolColorConverter}}"
                               Grid.Row="2">
-                        <ListBox ItemsSource="{Binding Path=Model.CurrentChannels, Mode=OneWay}"
+                        <ListBox ItemsSource="{Binding Path=CM.CurrentChannels, Mode=OneWay}"
                                  HorizontalContentAlignment="Stretch"
                                  SelectedIndex="{Binding Path=Chan_Selected, Mode=TwoWay}">
                             <ListBox.ItemTemplate>

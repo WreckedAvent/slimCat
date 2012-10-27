@@ -24,7 +24,6 @@ namespace Services
         #region Fields
         private readonly IChatConnection _connection;
         private readonly IChannelManager _manager;
-        private readonly IChatModel _cm;
         private List<string> applicableEvents = new List<string> { "ADL", "IGN", "LIS", "ORS", "STA",
                                                                    "RTB", "VAR", "NLN", "IDN", "CHA",
                                                                    "UPT", "MSG", "TPN", "PRI", "JCH",
@@ -39,9 +38,8 @@ namespace Services
         #region Constructors
         public CommandInterceptor(IChatModel cm, IChatConnection conn, IChannelManager manager,
                                   IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
-            : base(contain, regman, eventagg)
+            : base(contain, regman, eventagg, cm)
         {
-            _cm = cm;
             _connection = conn;
             _manager = manager;
 
@@ -69,7 +67,7 @@ namespace Services
                 case "UPT": return new CommandDelegate(UptimeCommand);
                 case "FRL": return new CommandDelegate(BookmarkCommand);
                 case "ADL": return new CommandDelegate(AdminsCommand);
-                case "IGN": return new CommandDelegate(IgnoreCommand);
+                case "IGN": return new CommandDelegate(IgnoreUserCommand);
                 case "LIS": return new CommandDelegate(InitialCharacterListCommand);
                 case "CHA": return new CommandDelegate(PublicChannelListCommand);
                 case "ORS": return new CommandDelegate(PrivateChannelListCommand);
@@ -193,7 +191,7 @@ namespace Services
             AddToSomeListCommand(command, "ops", _cm.Mods);
         }
 
-        private void IgnoreCommand(IDictionary<string, object> command)
+        private void IgnoreUserCommand(IDictionary<string, object> command)
         {
             if (command.ContainsKey("character"))
                 AddToSomeListCommand(command, "character", _cm.Ignored);
@@ -358,7 +356,7 @@ namespace Services
             }
         }
 
-        private void JoinChannelCommand(IDictionary<string, object> command)
+        new private void JoinChannelCommand(IDictionary<string, object> command)
         {
             var title = (string)command["title"];
             var channelName = (string)command["channel"];
@@ -483,13 +481,11 @@ namespace Services
             var channelID = command["name"] as string;
             var channelName = command["title"] as string;
 
-            _manager.AddChannel(ChannelType.priv, channelID, channelName);
-
             var args = new Models.ChannelUpdateModel.ChannelInviteEventArgs() { Inviter = sender };
             _events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(channelID, args, channelName));
         }
 
-        private void KickCommand(IDictionary<string, object> command)
+        new private void KickCommand(IDictionary<string, object> command)
         {
             var kicker = (string)command["operator"];
             var channelId = (string)command["channel"];

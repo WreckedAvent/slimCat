@@ -53,9 +53,9 @@ namespace ViewModels
         #endregion
 
         #region Constructors
-        public ChannelbarViewModel(IChatModel mod, IUnityContainer contain, IRegionManager regman,
+        public ChannelbarViewModel(IChatModel cm, IUnityContainer contain, IRegionManager regman,
                                 IEventAggregator events)
-            : base(mod, contain, regman, events)
+            : base(contain, regman, events, cm)
         {
             try
             {
@@ -68,7 +68,7 @@ namespace ViewModels
                         if (args is CharacterUpdateModel)
                         {
                             string name = ((CharacterUpdateModel)args).TargetCharacter.Name;
-                            if (Model.IsOfInterest(name))
+                            if (CM.IsOfInterest(name))
                                 HasUpdate = HasUpdate || !IsExpanded;
                         }
 
@@ -76,7 +76,7 @@ namespace ViewModels
                         {
                             var update = ((ChannelUpdateModel)args);
 
-                            if (Model.SelectedChannel.ID.Equals(update.ChannelID))
+                            if (CM.SelectedChannel.ID.Equals(update.ChannelID))
                                 HasUpdate = HasUpdate || !IsExpanded;
 
                             else if (update.Arguments is Models.ChannelUpdateModel.ChannelInviteEventArgs)

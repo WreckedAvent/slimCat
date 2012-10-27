@@ -17,20 +17,16 @@ namespace ViewModels
     public class ChatWrapperViewModel : ViewModelBase
     {
         #region Fields
-        private ChatModel _model;
-
         public const string ChatWrapperView = "ChatWrapperView";
         #endregion
 
         #region Constructors
         public ChatWrapperViewModel(IUnityContainer contain, IRegionManager regman, IEventAggregator events,
-                                        ChatModel mod) : base(contain, regman, events)
+                                        IChatModel cm)
+            : base(contain, regman, events, cm)
         {
             try
             {
-                if (mod == null) throw new ArgumentNullException("mod");
-                _model = mod;
-
                 this._events.GetEvent<slimCat.CharacterSelectedLoginEvent>().Subscribe(handleSelectedCharacter, ThreadOption.UIThread, true);
             }
 

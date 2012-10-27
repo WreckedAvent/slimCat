@@ -50,12 +50,16 @@ namespace Models
 
         public IDictionary<string, ICharacter> OnlineCharactersDictionary { get { return _onlineCharacters; } }
 
-        public ICollection<ICharacter> OnlineCharacters
+        public IEnumerable<ICharacter> OnlineCharacters
         {
-            get { return OnlineCharactersDictionary.Values; }
+            get
+            {
+                foreach (ICharacter character in OnlineCharactersDictionary.Values)
+                    yield return character;
+            }
         }
 
-        public IList<ICharacter> OnlineFriends
+        public IEnumerable<ICharacter> OnlineFriends
         {
             get
             {
@@ -72,7 +76,7 @@ namespace Models
             }
         }
 
-        public IList<ICharacter> OnlineBookmarks
+        public IEnumerable<ICharacter> OnlineBookmarks
         {
             get
             {
@@ -89,7 +93,7 @@ namespace Models
             }
         }
 
-        public IList<ICharacter> OnlineGlobalMods
+        public IEnumerable<ICharacter> OnlineGlobalMods
         {
             get
             {
@@ -133,6 +137,8 @@ namespace Models
         public IList<string> Bookmarks { get { return _bookmarks; } }
         public IList<string> Mods { get { return _globalMods; } }
         public IList<string> Ignored { get { return _ignored; } }
+        public IList<string> Interested { get { return _interestedIn; } }
+        public IList<string> NotInterested { get { return _notInterested; } }
 
         public ChannelModel SelectedChannel
         {
@@ -241,6 +247,22 @@ namespace Models
                 OnPropertyChanged("OnlineGlobalMods");
             }
         }
+
+        public void AddToInterestList(string character)
+        {
+            if (!_interestedIn.Contains(character))
+                _interestedIn.Add(character);
+            if (_notInterested.Contains(character))
+                _notInterested.Remove(character);
+        }
+
+        public void AddToUninterestList(string character)
+        {
+            if (!_notInterested.Contains(character))
+                _notInterested.Add(character);
+            if (_interestedIn.Contains(character))
+                _interestedIn.Remove(character);
+        }
         #endregion
     }
 
@@ -254,22 +276,26 @@ namespace Models
         /// <summary>
         /// A list of all online characters
         /// </summary>
-        ICollection<ICharacter> OnlineCharacters { get; }
+        IEnumerable<ICharacter> OnlineCharacters { get; }
 
         /// <summary>
         /// A list of all online characters who are friends
         /// </summary>
-        IList<ICharacter> OnlineFriends { get; }
+        IEnumerable<ICharacter> OnlineFriends { get; }
 
         /// <summary>
         /// A list of all online characters who are bookmarked
         /// </summary>
-        IList<ICharacter> OnlineBookmarks { get; }
+        IEnumerable<ICharacter> OnlineBookmarks { get; }
 
         /// <summary>
         /// A list of all online global moderators
         /// </summary>
-        IList<ICharacter> OnlineGlobalMods { get; }
+        IEnumerable<ICharacter> OnlineGlobalMods { get; }
+
+        IList<string> Interested { get; }
+
+        IList<string> NotInterested { get; }
 
         IList<string> Friends { get; }
 
@@ -336,6 +362,16 @@ namespace Models
         /// Returns the ICharacter value of a given string, if online
         /// </summary>
         ICharacter FindCharacter(string name);
+
+        /// <summary>
+        /// Add a given character to our persistent interest list
+        /// </summary>
+        void AddToInterestList(string name);
+
+        /// <summary>
+        /// Add a given character to our persistent uninterest list
+        /// </summary>
+        void AddToUninterestList(string name);
 
         event EventHandler SelectedChannelChanged;
     }

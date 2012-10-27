@@ -21,7 +21,7 @@ namespace System
 
     public static class StaticFunctions
     {
-        #region ICharacter
+        #region ICharacter extensions
         public static bool CharacterIsInList(this ICollection<ICharacter> collection, ICharacter toFind)
         {
             return (collection.Any(character => character.Name.Equals(toFind.Name, StringComparison.OrdinalIgnoreCase)));
@@ -34,7 +34,6 @@ namespace System
         #endregion
 
         #region Settings Functions
-
         public static bool MeetsFilters(this ICharacter character, GenderSettingsModel genders, GenericSearchSettingsModel search, IChatModel cm, GeneralChannelModel channel)
         {
             if (!character.NameContains(search.SearchString))
@@ -47,12 +46,13 @@ namespace System
 
         public static bool MeetsChatModelLists(this ICharacter character, GenericSearchSettingsModel search, IChatModel cm, GeneralChannelModel channel)
         {
-            if (search.ShowIgnored && cm.Ignored.Contains(character.Name)) return true;
-            if (search.ShowMods && cm.Mods.Contains(character.Name)) return true;
+            // notice the toListing, this is an attempt to fix EnumerationChanged errors
+            if (search.ShowIgnored && cm.Ignored.ToList().Contains(character.Name)) return true;
+            if (search.ShowMods && cm.Mods.ToList().Contains(character.Name)) return true;
             if (channel != null)
-                if (search.ShowMods && channel.Moderators.Contains(character.Name)) return true;
-            if (search.ShowFriends && cm.Friends.Contains(character.Name)) return true;
-            if (search.ShowBookmarks && cm.Bookmarks.Contains(character.Name)) return true;
+                if (search.ShowMods && channel.Moderators.ToList().Contains(character.Name)) return true;
+            if (search.ShowFriends && cm.Friends.ToList().Contains(character.Name)) return true;
+            if (search.ShowBookmarks && cm.Bookmarks.ToList().Contains(character.Name)) return true;
             
             if (search.MeetsStatusFilter(character)) return true;
             return false;

@@ -36,7 +36,7 @@ namespace ViewModels
         {
             get 
             {
-                if (_search == "") return Model.Notifications;
+                if (_search == "") return CM.Notifications;
 
                 Func<NotificationModel, bool> MeetsString = args =>
                     {
@@ -50,14 +50,14 @@ namespace ViewModels
                         return arguments.Contains(SearchString);
                     };
 
-                return Model.Notifications.Where(MeetsString); 
+                return CM.Notifications.Where(MeetsString); 
             }
         }
         #endregion
 
         #region Constructors
         public NotificationsTabViewModel(IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
-            :base(cm, contain, regman, eventagg)
+            :base(contain, regman, eventagg, cm)
         {
             _container.RegisterType<object, NotificationsTabView>(NotificationsTabView);
         }

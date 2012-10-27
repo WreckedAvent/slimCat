@@ -26,8 +26,9 @@
                            TextWrapping="Wrap">
                     <Run Text="Online Users: " />
                     <Run Text="{Binding Path=OnlineCount, Mode=OneWay}"/>
+                    <Run Text="{Binding Path=ShortTickOnlineCountChange, Mode=OneWay}"/>
+                    <Run Text="{Binding Path=LongTickOnlineCountChange, Mode=OneWay}"/>
                     <LineBreak />
-            
                     <Run Text="Online Friends: " />
                     <Run Text="{Binding Path=OnlineFriendsCount, Mode=OneWay}" />
                     <LineBreak />

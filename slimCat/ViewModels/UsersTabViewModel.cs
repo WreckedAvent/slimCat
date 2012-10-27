@@ -22,16 +22,16 @@ namespace ViewModels
 
         #region Properties
         public GenderSettingsModel GenderSettings { get { return _genderSettings; } }
-        public GeneralChannelModel SelectedChan { get { return Model.SelectedChannel as GeneralChannelModel; } }
+        public GeneralChannelModel SelectedChan { get { return CM.SelectedChannel as GeneralChannelModel; } }
 
         public bool HasUsers
         {
             get
             {
-                if (Model.SelectedChannel == null) return false;
+                if (CM.SelectedChannel == null) return false;
 
-                return ((Model.SelectedChannel.Type != ChannelType.pm)
-                && (Model.SelectedChannel.DisplayNumber > 0));
+                return ((CM.SelectedChannel.Type != ChannelType.pm)
+                && (CM.SelectedChannel.DisplayNumber > 0));
             }
         }
 
@@ -45,7 +45,7 @@ namespace ViewModels
                         .OrderBy(RelationshipToUser)
                         .ThenBy(x => x.Name);
                 else
-                    return Model.OnlineCharacters
+                    return CM.OnlineCharacters
                         .Where(MeetsFilter)
                         .OrderBy(RelationshipToUser)
                         .ThenBy(x => x.Name);
@@ -66,18 +66,18 @@ namespace ViewModels
         #region filter functions
         private bool MeetsFilter(ICharacter character)
         {
-            return character.MeetsFilters(GenderSettings, SearchSettings, Model, Model.SelectedChannel as GeneralChannelModel);
+            return character.MeetsFilters(GenderSettings, SearchSettings, CM, CM.SelectedChannel as GeneralChannelModel);
         }
 
         private string RelationshipToUser(ICharacter character)
         {
-            return character.RelationshipToUser(Model, Model.SelectedChannel as GeneralChannelModel);
+            return character.RelationshipToUser(CM, CM.SelectedChannel as GeneralChannelModel);
         }
         #endregion
 
         #region Constructors
         public UsersTabViewModel(IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
-            :base(cm, contain, regman, eventagg)
+            :base(contain, regman, eventagg, cm)
         {
             _container.RegisterType<object, UsersTabView>(UsersTabView);
             _genderSettings = new GenderSettingsModel();
@@ -94,7 +94,7 @@ namespace ViewModels
                     OnPropertyChanged("SortedUsers");
                 };
 
-            Model.SelectedChannelChanged += (s, e) =>
+            CM.SelectedChannelChanged += (s, e) =>
                 {
                     OnPropertyChanged("SortContentString");
                     OnPropertyChanged("SortedUsers");

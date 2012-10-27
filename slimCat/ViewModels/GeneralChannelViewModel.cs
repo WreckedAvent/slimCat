@@ -241,8 +241,8 @@ namespace ViewModels
 
         #region Constructors
         public GeneralChannelViewModel(string name, IUnityContainer contain, IRegionManager regman,
-                                       IEventAggregator events)
-            : base(contain, regman, events)
+                                       IEventAggregator events, IChatModel cm)
+            : base(contain, regman, events, cm)
         {
             try
             {
@@ -390,15 +390,6 @@ namespace ViewModels
             OnPropertyChanged("CannotPost");
         }
 
-        protected override bool HasPermissions()
-        {
-            var temp = Model as GeneralChannelModel;
-            var thisUser = CM.SelectedCharacter.Name;
-
-            return (temp.Moderators.Any(mod => mod.Equals(thisUser))
-                || CM.OnlineGlobalMods.Any(mod => mod.Equals(thisUser)));
-        }
-
         #region Commands
         RelayCommand _switch;
         public ICommand SwitchCommand
@@ -478,6 +469,12 @@ namespace ViewModels
 
                 Model.Messages.CollectionChanged -= OnMessagesChanged;
                 Model.Ads.CollectionChanged -= OnAdsChanged;
+
+                (Model as GeneralChannelModel).MOTD = null;
+                (Model as GeneralChannelModel).Moderators.Clear();
+
+                NewMessageArrived = null;
+                NewAdArrived = null;
             }
 
             base.Dispose(IsManaged);

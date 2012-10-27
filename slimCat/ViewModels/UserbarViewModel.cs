@@ -1,25 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Input;
-using lib;
+﻿using lib;
 using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.Regions;
 using Microsoft.Practices.Unity;
 using Models;
 using slimCat;
+using System;
+using System.Collections.Generic;
+using System.Windows.Input;
 using Views;
 
 namespace ViewModels
 {
     /// <summary>
-    /// The UserbarViewModel allows the user to navigate the current conversations they have open. 
+    /// The UserbarViewCM allows the user to navigate the current conversations they have open. 
     /// It responds to the ChatOnDisplayEvent to paritally create the chat wrapper.
     /// </summary>
     public class UserbarViewModel : ViewModelBase
     {
         #region Fields
-        private IChatModel _model;
-
         private int _selPMIndex = -1;
         private int _selChanIndex = 0;
         private bool _isExpanded = true;
@@ -41,8 +39,6 @@ namespace ViewModels
         #endregion
 
         #region Properties
-        public IChatModel Model { get { return _model; } }
-
         public bool IsExpanded
         {
             get { return _isExpanded; }
@@ -98,12 +94,12 @@ namespace ViewModels
                     OnPropertyChanged("IsChangingStatus");
 
                     if (value == false
-                        && (_status_cache != Model.SelectedCharacter.StatusMessage
-                            || _status_type_cache != Model.SelectedCharacter.Status))
+                        && (_status_cache != CM.SelectedCharacter.StatusMessage
+                            || _status_type_cache != CM.SelectedCharacter.Status))
                     {
                         sendStatusChangedCommand();
-                        _status_cache = Model.SelectedCharacter.StatusMessage;
-                        _status_type_cache = Model.SelectedCharacter.Status;
+                        _status_cache = CM.SelectedCharacter.StatusMessage;
+                        _status_type_cache = CM.SelectedCharacter.Status;
                     }
 
                 }
@@ -114,7 +110,7 @@ namespace ViewModels
         {
             get
             {
-                return _model.CurrentPMs.Count > 0;
+                return CM.CurrentPMs.Count > 0;
             }
         }
 
@@ -132,8 +128,8 @@ namespace ViewModels
                     _selPMIndex = value;
                     OnPropertyChanged("PM_Selected");
 
-                    if (value != -1 && _model.SelectedChannel != _model.CurrentPMs[value])
-                        _events.GetEvent<RequestChangeTabEvent>().Publish(_model.CurrentPMs[value].ID);
+                    if (value != -1 && CM.SelectedChannel != CM.CurrentPMs[value])
+                        _events.GetEvent<RequestChangeTabEvent>().Publish(CM.CurrentPMs[value].ID);
 
                     if (PM_Selected != -1)
                     {
@@ -154,8 +150,8 @@ namespace ViewModels
                     _selChanIndex = value;
                     OnPropertyChanged("Chan_Selected");
 
-                    if (value != -1 &&_model.SelectedChannel != _model.CurrentChannels[value])
-                        _events.GetEvent<RequestChangeTabEvent>().Publish(_model.CurrentChannels[value].ID);
+                    if (value != -1 &&CM.SelectedChannel != CM.CurrentChannels[value])
+                        _events.GetEvent<RequestChangeTabEvent>().Publish(CM.CurrentChannels[value].ID);
 
                     if (Chan_Selected != -1)
                     {
@@ -169,65 +165,35 @@ namespace ViewModels
         #endregion
 
         #region Constructors
-        public UserbarViewModel(IChatModel mod, IUnityContainer contain, IRegionManager regman,
-                                IEventAggregator events) : base(contain, regman, events)
+        public UserbarViewModel(IUnityContainer contain, IRegionManager regman,
+                                IEventAggregator events, IChatModel cm)
+            : base(contain, regman, events, cm)
         {
             try
             {
-                if (mod == null) throw new ArgumentNullException("mod");
-                _model = mod;
-
-                _model.CurrentPMs.CollectionChanged += (s, e) =>
-                    {
-                        OnPropertyChanged("HasPMs");
-                    };
+                CM.CurrentPMs.CollectionChanged += (s, e) => OnPropertyChanged("HasPMs"); // this checks if we need to hide/show the PM tab
 
                 _events.GetEvent<ChatOnDisplayEvent>().Subscribe(requestNavigate, ThreadOption.UIThread, true);
 
                 _events.GetEvent<NewPMEvent>().Subscribe(
                     param =>
                     {
-                        HasNewPM = true;
+                        updateFlashingTabs();
                     }, ThreadOption.UIThread, true);
 
                 _events.GetEvent<NewMessageEvent>().Subscribe(
                     param =>
                     {
-                        HasNewMessage = true;
+                        updateFlashingTabs(); 
                     }, ThreadOption.UIThread, true);
 
-                _model.SelectedChannelChanged += (s, e) => 
-                    {
-                        if (_model.SelectedChannel is PMChannelModel)
-                            PM_Selected = _model.CurrentPMs.IndexOf(_model.SelectedChannel as PMChannelModel);
-                        else
-                            Chan_Selected = _model.CurrentChannels.IndexOf(_model.SelectedChannel as GeneralChannelModel);
-
-                        bool stillHasPMs = false;
-                        foreach (ChannelModel cm in _model.CurrentChannels)
-                        {
-                            if (cm.NeedsAttention == true) stillHasPMs = true;
-                            break;
-                        }
-
-                        HasNewPM = stillHasPMs;
-
-                        bool stillHasMessages = false;
-                        foreach (ChannelModel cm in _model.CurrentPMs)
-                        {
-                            if (cm.NeedsAttention == true) stillHasMessages = true;
-                            break;
-                        }
-
-                        HasNewMessage = stillHasMessages;
-                    };
-
+                CM.SelectedChannelChanged += (s, e) => updateFlashingTabs();
 
             }
 
             catch (Exception ex)
             {
-                ex.Source = "Userbar ViewModel, init";
+                ex.Source = "Userbar ViewCM, init";
                 Exceptions.HandleException(ex);
             }
         }
@@ -240,7 +206,7 @@ namespace ViewModels
             }
             catch (Exception ex)
             {
-                ex.Source = "Userbar ViewModel, init";
+                ex.Source = "Userbar ViewCM, init";
                 Exceptions.HandleException(ex);
             }
         }
@@ -256,10 +222,38 @@ namespace ViewModels
         private void sendStatusChangedCommand()
         {
             var torSend = CommandDefinitions
-                .CreateCommand("status", new List<string>() { this.Model.SelectedCharacter.Status.ToString(), this.Model.SelectedCharacter.StatusMessage })
+                .CreateCommand("status", new List<string>() 
+                    { CM.SelectedCharacter.Status.ToString(), CM.SelectedCharacter.StatusMessage })
                 .toDictionary();
 
             _events.GetEvent<UserCommandEvent>().Publish(torSend);
+        }
+
+        // this will update which tabs need to be 'flashing' and which do not
+        private void updateFlashingTabs()
+        {
+            if (CM.SelectedChannel is PMChannelModel)
+                PM_Selected = CM.CurrentPMs.IndexOf(CM.SelectedChannel as PMChannelModel);
+            else
+                Chan_Selected = CM.CurrentChannels.IndexOf(CM.SelectedChannel as GeneralChannelModel);
+
+            bool stillHasPMs = false;
+            foreach (ChannelModel cm in CM.CurrentChannels)
+            {
+                if (cm.NeedsAttention == true) stillHasPMs = true;
+                break;
+            }
+
+            HasNewPM = stillHasPMs;
+
+            bool stillHasMessages = false;
+            foreach (ChannelModel cm in CM.CurrentPMs)
+            {
+                if (cm.NeedsAttention == true) stillHasMessages = true;
+                break;
+            }
+
+            HasNewMessage = stillHasMessages;
         }
         #endregion
 

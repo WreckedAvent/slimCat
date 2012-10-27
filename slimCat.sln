@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "slimCat", "slimCat\slimCat.csproj", "{ACDCB02C-1404-4F4B-9ADF-BFA89883F0A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "slimCatTesting", "slimCatTesting\slimCatTesting.csproj", "{23771238-E888-4370-B664-DDAE71AE7D25}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,10 +13,6 @@ Global
 		{ACDCB02C-1404-4F4B-9ADF-BFA89883F0A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACDCB02C-1404-4F4B-9ADF-BFA89883F0A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ACDCB02C-1404-4F4B-9ADF-BFA89883F0A9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{23771238-E888-4370-B664-DDAE71AE7D25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{23771238-E888-4370-B664-DDAE71AE7D25}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{23771238-E888-4370-B664-DDAE71AE7D25}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{23771238-E888-4370-B664-DDAE71AE7D25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

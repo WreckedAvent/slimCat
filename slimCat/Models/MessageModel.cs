@@ -122,12 +122,12 @@ namespace Models
                     if (IsStatusTypeChanged && NewStatusMessage.Length > 0)
                         toReturn.Append(": " + NewStatusMessage);
                     else if (NewStatusMessage.Length > 0)
-                        toReturn.Append("has updated their status: " + NewStatusMessage + ".");
+                        toReturn.Append("has updated their status: " + NewStatusMessage);
                     else
-                        toReturn.Append("has blanked their status.");
+                        toReturn.Append("has blanked their status");
                 }
-                else
-                    toReturn.Append('.');
+
+                toReturn.Append('.');
 
                 return toReturn.ToString();
             }

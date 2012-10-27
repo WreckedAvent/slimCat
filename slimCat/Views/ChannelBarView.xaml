@@ -8,7 +8,7 @@
     </UserControl.Resources>
 
     <DockPanel TextBlock.FontSize="14"
-               Visibility="{Binding Path=Model.IsAuthenticated, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+               Visibility="{Binding Path=CM.IsAuthenticated, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                TextBlock.Foreground="{StaticResource ForegroundBrush}"
                TextBlock.TextAlignment="Center">
 

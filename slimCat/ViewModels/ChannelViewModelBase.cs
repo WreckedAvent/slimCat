@@ -18,12 +18,11 @@ namespace ViewModels
     /// <summary>
     /// This holds most of the logic for channel view models. Changing behaviors between channels should be done by overriding methods.
     /// </summary>
-    public abstract class ChannelViewModelBase : ViewModelBase, IDisposable
+    public abstract class ChannelViewModelBase : ViewModelBase
     {
         #region Fields
         private string _message = "";
         private static string _error;
-        private IChatModel _cm;
         private ChannelModel _model;
         public EventHandler OnLineBreakEvent;
         private static System.Timers.Timer _errorRemoveTimer;
@@ -55,20 +54,14 @@ namespace ViewModels
             set { _model = value; OnPropertyChanged("Model"); }
         }
 
-        public IChatModel CM
-        {
-            get { return _cm; }
-        }
-
         public bool HasError { get { return !string.IsNullOrWhiteSpace(Error); } }
         #endregion
 
         #region Constructors
         public ChannelViewModelBase(IUnityContainer contain, IRegionManager regman,
-                                IEventAggregator events)
-            : base(contain, regman, events)
+                                IEventAggregator events, IChatModel cm)
+            : base(contain, regman, events, cm)
         {
-            _cm = _container.Resolve<IChatModel>();
             _events.GetEvent<ErrorEvent>().Subscribe(UpdateError);
 
             PropertyChanged += OnThisPropertyChanged;
@@ -113,68 +106,6 @@ namespace ViewModels
             }
         }
 
-        private RelayCommand _priv;
-        public ICommand RequestPMCommand
-        {
-            get
-            {
-                if (_priv == null)
-                    _priv = new RelayCommand(RequestPMEvent, CanRequestPM);
-
-                return _priv;
-            }
-        }
-
-        private void RequestPMEvent(object args)
-        {
-            string name = args as string;
-
-            if (_cm.CurrentPMs.Any(
-                param => param.ID.Equals((string)args, StringComparison.OrdinalIgnoreCase)))
-            {
-                _events.GetEvent<RequestChangeTabEvent>().Publish(name);
-                return;
-            }
-
-            IDictionary<string, object> command = CommandDefinitions
-                .CreateCommand("priv", new [] { name })
-                .toDictionary();
-
-            _events.GetEvent<UserCommandEvent>().Publish(command);
-        }
-
-        private bool CanRequestPM(object args)
-        {
-            string characterName = args as string;
-            if (characterName == null) return false;
-
-            return (_cm.SelectedCharacter.Name != characterName && _cm.SelectedChannel.ID != characterName);
-        }
-
-        private RelayCommand _ign;
-        public ICommand IgnoreCommand
-        {
-            get
-            {
-                if (_ign == null)
-                    _ign = new RelayCommand(AddIgnoreEvent,
-                        args => { return !CM.Ignored.Contains(args as string) 
-                            && CM.SelectedCharacter.Name != args as string; });
-                return _ign;
-            }
-        }
-
-        private RelayCommand _uign;
-        public ICommand UnignoreCommand
-        {
-            get
-            {
-                if (_uign == null)
-                    _uign = new RelayCommand(RemoveIgnoreEvent, args => { return CM.Ignored.Contains(args as string); });
-                return _uign;
-            }
-        }
-
         private RelayCommand _linebreak;
         public ICommand InsertLineBreakCommand
         {
@@ -184,47 +115,6 @@ namespace ViewModels
                     _linebreak = new RelayCommand(args => Message = Message + '\n');
                 return _linebreak;
             }
-        }
-
-        private RelayCommand _join;
-        public ICommand JoinChannelCommand
-        {
-            get
-            {
-                if (_join == null)
-                    _join = new RelayCommand(RequestChannelJoinEvent, CanJoinChannel);
-                return _join;
-            }
-        }
-
-        protected void RequestChannelJoinEvent(object args)
-        {
-            IDictionary<string, object> command = CommandDefinitions
-                .CreateCommand("join", new List<string> { args as string })
-                .toDictionary();
-
-            _events.GetEvent<UserCommandEvent>().Publish(command);
-        }
-
-        protected bool CanJoinChannel(object args)
-        {
-            return !CM
-                .CurrentChannels
-                .Any(param => param.ID.Equals((string)args, StringComparison.OrdinalIgnoreCase));
-        }
-
-        private void AddIgnoreEvent(object args) { IgnoreEvent(args); }
-        private void RemoveIgnoreEvent(object args) { IgnoreEvent(args, true); }
-
-        private void IgnoreEvent(object args, bool remove = false)
-        {
-            string name = args as string;
-
-            IDictionary<string, object> command = CommandDefinitions
-                .CreateCommand((remove ? "unignore" : "ignore"), new List<string>() { name })
-                .toDictionary();
-
-            _events.GetEvent<UserCommandEvent>().Publish(command);
         }
         #endregion
 
@@ -249,7 +139,7 @@ namespace ViewModels
                     if (!messageToCommand.HasCommand)
                         SendMessage();
 
-                    else if (messageToCommand.RequiresMod && !HasPermissions())
+                    else if (messageToCommand.RequiresMod && !HasPermissions)
                         UpdateError(string.Format("I'm sorry Dave, I can't let you do the {0} command.", messageToCommand.Type));
 
                     else if (messageToCommand.IsValid)
@@ -272,14 +162,6 @@ namespace ViewModels
         protected abstract void SendMessage();
 
         /// <summary>
-        /// Checks if the person can send moderator commands
-        /// </summary>
-        protected virtual bool HasPermissions()
-        {
-            return (_cm.OnlineGlobalMods.Any(mod => mod.Name == _cm.SelectedCharacter.Name));
-        }
-
-        /// <summary>
         /// Command sending behavior
         /// </summary>
         protected virtual void SendCommand(IDictionary<string, object> command)
@@ -295,7 +177,8 @@ namespace ViewModels
         /// </summary>
         protected virtual void UpdateError(string error)
         {
-            _errorRemoveTimer.Stop();
+            if (_errorRemoveTimer != null)
+                _errorRemoveTimer.Stop();
             this.Error = error;
             _errorRemoveTimer.Start();
         }
@@ -311,18 +194,17 @@ namespace ViewModels
         protected virtual void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e) { }
         #endregion
 
-        public void Dispose()
-        {
-            this.Dispose(true);
-        }
-
-        protected virtual void Dispose(bool IsManaged)
+        override protected void Dispose(bool IsManaged)
         {
             if (IsManaged)
             {
                 PropertyChanged -= OnThisPropertyChanged;
                 Model.PropertyChanged -= OnModelPropertyChanged;
+                _model = null;
+                OnLineBreakEvent = null;
             }
+
+            base.Dispose(IsManaged);
         }
     }
 }

@@ -122,8 +122,8 @@ namespace ViewModels
 
         #region Constructors
         public PMChannelViewModel(string name, IUnityContainer contain, IRegionManager regman,
-                                  IEventAggregator events)
-            : base(contain, regman, events)
+                                  IEventAggregator events, IChatModel cm)
+            : base(contain, regman, events, cm)
         {
             try
             {
@@ -136,6 +136,7 @@ namespace ViewModels
                 _events.GetEvent<NewUpdateEvent>().Subscribe(OnNewUpdateEvent, ThreadOption.PublisherThread, true, UpdateIsOurCharacter);
 
                 Model.Messages.CollectionChanged += OnMessagesChanged;
+
                 #region disposable events
                 _cooldownTimer.Elapsed += (s, e) =>
                 {
@@ -275,6 +276,11 @@ namespace ViewModels
             {
                 _checkTick.Dispose();
                 _cooldownTimer.Dispose();
+                _checkTick = null;
+                _cooldownTimer = null;
+
+                StatusChanged = null;
+                NewMessageArrived = null;
 
                 Model.Messages.CollectionChanged -= OnMessagesChanged;
                 _events.GetEvent<NewUpdateEvent>().Unsubscribe(OnNewUpdateEvent);
