@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="Views.SearchBoxView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        
+        <TextBox Text="{Binding Path=SearchString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 TextWrapping="Wrap"
+                 FontSize="12"
+                 ScrollViewer.CanContentScroll="True" 
+                 AcceptsReturn="False"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto" /> 
+        
+        <Button Content="Filter Settings ..."
+                Command="{Binding OpenSearchSettingsCommand}"
+                Grid.Column="1"
+                Margin="5"
+                FontSize="12" />
+    </Grid>
+</UserControl>

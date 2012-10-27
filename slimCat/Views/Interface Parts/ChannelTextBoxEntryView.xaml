@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="Views.ChannelTextBoxEntryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <TextBox Text="{Binding Path=Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 Margin="0,0,0,10"
+                 TextWrapping="Wrap"
+                 FontSize="13"
+                 AcceptsReturn="False"
+                 KeyDown="OnKeyDown"
+                 ScrollViewer.CanContentScroll="True"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                 SpellCheck.IsEnabled="True"
+                 x:Name="Entry">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}" />
+                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ClearErrorCommand}" />
+            </TextBox.InputBindings>
+            <TextBox.Style>
+                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                    <Style.Triggers>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter Property="MinLines" Value="2" />
+                            <Setter Property="MaxLines" Value="8" />
+                        </Trigger>
+                        
+                        <Trigger Property="IsFocused" Value="False">
+                            <Setter Property="MinLines" Value="1" />
+                            <Setter Property="MaxLines" Value="1" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+
+        <Popup PlacementTarget="{Binding ElementName=Entry}"
+               IsOpen="{Binding HasError, Mode=OneWay}"
+               AllowsTransparency="True">
+            <Border BorderBrush="{StaticResource HighlightBrush}"
+                    BorderThickness="1"
+                    Padding="5"
+                    Background="{StaticResource ForegroundBrush}">
+                <TextBlock Foreground="{StaticResource DepressedBrush}"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Text="{Binding Error}" />
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>

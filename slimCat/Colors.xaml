@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Resource Dictionary for colors 
+    
+    !! Do not modify above this line !!-->
+
+    
+    
+    <!-- Foreground Color is used as the primary color for text. -->
+    <Color x:Key="ForegroundColor">#fff</Color>
+    
+    <!-- Highlight color is used to draw attention to controls, such as when a control is focused. -->
+    <Color x:Key="HighlightColor">#95b</Color>
+
+    <!-- Background is used as the basis for every UI element. -->
+    <Color x:Key="BackgroundColor">#314</Color>
+
+    <!-- Depressed color is used primarily used for borders and UI controls which cannot be interacted with. -->
+    <Color x:Key="DepressedColor">#202</Color>
+    
+    <!-- !! Do not modify below this line !!-->
+    
+    <SolidColorBrush x:Key="ForegroundBrush"  Color="{StaticResource ForegroundColor}" />
+    <SolidColorBrush x:Key="HighlightBrush" Color="{StaticResource HighlightColor}" />
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
+    <SolidColorBrush x:Key="DepressedBrush" Color="{StaticResource DepressedColor}" />
+</ResourceDictionary>

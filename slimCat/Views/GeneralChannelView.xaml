@@ -1,0 +1,157 @@
+﻿<UserControl x:Class="Views.GeneralChannelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:v="clr-namespace:Views"
+             xmlns:lib="clr-namespace:lib"
+             xmlns:sys="clr-namespace:System">
+    <UserControl.Resources>
+        <DataTemplate x:Key="MessageView">
+            <v:MessageView />
+        </DataTemplate>
+        <sys:BBCodeConverter x:Key="BBConv" />
+    </UserControl.Resources>
+
+    <Grid Margin="10"
+          TextBlock.FontSize="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition />
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <Border BorderBrush="{StaticResource DepressedBrush}"
+                BorderThickness="0,0,0,1">
+            <Expander>
+                <Expander.Header>
+                    <TextBlock Margin="0"
+                               Foreground="{StaticResource ForegroundBrush}"
+                               TextWrapping="Wrap">
+                        <Run Text="{Binding Path=ChannelTypeString, Mode=OneWay}" />
+                        <Run Text="{Binding Path=Model.Title, Mode=OneWay}" Foreground="{StaticResource HighlightBrush}"/>
+                        <Run Text="{Binding Path=ChatContentString, Mode=OneWay}" />
+                    </TextBlock>
+                </Expander.Header>
+                <ScrollViewer MaxHeight="100">
+
+                    <TextBlock Margin="0"
+                               TextBlock.FontSize="12"
+                               Foreground="{StaticResource ForegroundBrush}"
+                               TextWrapping="Wrap">
+                        <lib:TextBlockHelper.InlineList>
+                            <Binding Converter="{StaticResource BBConv}"
+                                     Path="MOTD" />
+                        </lib:TextBlockHelper.InlineList>
+                    </TextBlock>
+                </ScrollViewer>
+            </Expander>
+        </Border>
+
+        <Grid Grid.Row="1"
+              x:Name="PopupAnchor">
+            <ItemsControl ItemsSource="{Binding Path=FilteredMessages, Mode=OneWay}"
+                          x:Name="filtered"
+                          ItemTemplate="{StaticResource MessageView}"
+                          Margin="0,5"
+                          Loaded="OnFilterLoaded"
+                          Visibility="{Binding Path=IsSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}"/>
+
+            <ItemsControl ItemsSource="{Binding Path=CurrentChat, Mode=OneWay}"
+                          x:Name="messages"
+                          ItemTemplate="{StaticResource MessageView}"
+                          Margin="0,5"
+                          Loaded="OnMessagesLoaded"
+                          Visibility="{Binding Path=IsChatting, Mode=OneWay, Converter={StaticResource BoolConverter}}"/>
+        </Grid>
+        
+        <Popup PlacementTarget="{Binding ElementName=PopupAnchor}"
+               Placement="Center"
+               StaysOpen="False"
+               IsOpen="{Binding Path=SearchSettings.IsChangingSettings}">
+            
+            <Border BorderBrush="{StaticResource HighlightBrush}"
+                    BorderThickness="2"
+                    Background="{StaticResource BackgroundBrush}">
+                <WrapPanel Orientation="Vertical"
+                           Margin="10">
+                    <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                               FontSize="20"
+                               HorizontalAlignment="Center"
+                               Margin="10,5">
+                        <Run Text="{Binding Path=Model.Title}"/>
+                        <Run Text="Filter Settings"/>
+                    </TextBlock>
+                    <ContentControl Template="{StaticResource GenderCheckBoxes}"
+                                    DataContext="{Binding Path=GenderSettings}"/>
+                    
+                    <ContentControl Template="{StaticResource GeneralFilterCheckBoxes}"
+                                    DataContext="{Binding Path=SearchSettings}" />
+                    
+                    <Button Content="Close Settings"
+                            Margin="10,5"
+                            DataContext="{Binding Path=SearchSettings}"
+                            Foreground="{StaticResource ForegroundBrush}"
+                            Command="{Binding OpenSearchSettingsCommand}"/>
+                </WrapPanel>
+            </Border>
+        </Popup>
+        
+        <StackPanel Grid.Row="2">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"
+                            Margin="0">
+                    <TextBlock Foreground="{StaticResource HighlightBrush}"
+                               Visibility="{Binding Path=ShouldShowPostLength, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                               VerticalAlignment="Center"
+                               Margin="2,0,4,0">
+                        <Run Text="{Binding Path=Message.Length, Mode=OneWay}" />
+                        <Run Text="/" />
+                        <Run Text="{Binding Path=MessageMax, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock Foreground="{StaticResource HighlightBrush}"
+                               Text="{Binding Path=TimeLeft, Mode=OneWay}"
+                               VerticalAlignment="Center"
+                               Margin="2,0,0,0"
+                               Visibility="{Binding Path=CannotPost, Mode=OneWay, Converter={StaticResource BoolConverter}}"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Margin="0"
+                            Grid.Column="1">
+                    
+                    <ToggleButton IsChecked="{Binding Path=AutoPost, Mode=TwoWay}" 
+                                  Visibility="{Binding Path=ShouldShowAutoPost, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                                  Content="Auto Post Ads"
+                                  FontSize="12"
+                                  Margin="5"
+                                  VerticalAlignment="Center"/>
+                    
+                    <Button Content="{Binding Path=SearchSwitchMessageString, Mode=OneWay}"
+                        Command="{Binding SwitchSearchCommand}"
+                        FontSize="12"
+                        Margin="5"
+                        />
+
+                    <Button Content="{Binding Path=SwitchChannelTypeString, Mode=OneWay}"
+                        Command="{Binding SwitchCommand}"
+                        Visibility="{Binding Path=CanSwitch, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                        FontSize="12"
+                        Margin="5"/>
+                </StackPanel>
+            </Grid>
+
+            <v:ChannelTextBoxEntryView Visibility="{Binding Path=IsChatting, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                                       IsEnabled="{Binding Path=CanPost, Mode=OneWay}"/>
+            
+            <Grid Visibility="{Binding Path=IsSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}">
+                <v:SearchBoxView DataContext="{Binding SearchSettings}" />
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,3 @@
+auto-poster may not work
+sometimes crash on clicking on a tab. Can't confirm
+channel description bbcode parsing still off

@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="Views.UtilityChannelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:v="clr-namespace:Views">
+    <UserControl.Resources>
+        <DataTemplate x:Key="MessageView">
+            <v:MessageView />
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid Margin="10"
+          Visibility="{Binding Path=CM.IsAuthenticated, Converter={StaticResource BoolConverter}}"
+          TextBlock.FontSize="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition />
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        
+        <Border BorderBrush="{StaticResource DepressedBrush}"
+                BorderThickness="0,0,0,1">
+            <Expander Header="{Binding Path=Model.ID, Mode=OneWay}"
+                      Margin="0"
+                      Padding="0">
+                <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                           TextWrapping="Wrap">
+                    <Run Text="Online Users: " />
+                    <Run Text="{Binding Path=OnlineCount, Mode=OneWay}"/>
+                    <LineBreak />
+            
+                    <Run Text="Online Friends: " />
+                    <Run Text="{Binding Path=OnlineFriendsCount, Mode=OneWay}" />
+                    <LineBreak />
+                    
+                    <Run Text="Online Bookmarks: " />
+                    <Run Text="{Binding Path=OnlineBookmarksCount, Mode=OneWay}" />
+                    <LineBreak />
+            
+                    <Run Text="Server uptime: " />
+                    <Run Text="{Binding Path=RoughServerUpTime, Mode=OneWay}" Foreground="{StaticResource HighlightBrush}" />
+                    <LineBreak />
+            
+                    <Run Text="Client uptime: " />
+                    <Run Text="{Binding Path=RoughClientUpTime, Mode=OneWay}" Foreground="{StaticResource HighlightBrush}" />
+                </TextBlock>
+            </Expander>
+        </Border>
+        
+        <StackPanel Grid.Row="1">
+            <Button Content="Save Channels ..."
+                    Command="{Binding SaveChannelsCommand}"/>
+        </StackPanel>
+        
+        <v:ChannelTextBoxEntryView Grid.Row="2"/>
+    </Grid>
+</UserControl>

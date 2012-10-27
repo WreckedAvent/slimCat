@@ -1,0 +1,86 @@
+Critical points:
+
+Pre-Alpha, Prototyping phase:
+ - Consistent, simple interface design
+ - Consistent, simple way of navigating
+ - Logging should be automatic and natural
+ - Interface should be minimal as possible
+ - Theme should not be sacrificed for functions
+
+Critical Point: a1.x
+ - Can get a ticket
+ - Theme is hard-coded, but interchangable
+DONE: 4/13/12
+
+Critical Point: a2.x
+ - Can select a character
+ - Establishes a connection with F-chat
+ - Complete error-handling framework
+DONE: 4/18/12
+
+Critical Point: a3.x
+ - Can send and receive messages through F-chat
+ - Plumping for basic interface is done
+DONE: 5/18/12
+
+Critical Point: a4.x
+ - Theme is loaded on start-up
+ - All basic interface is done
+ - Can send/recieve messages, no BBCode parsing
+ - Homepage acts like a tutorial and settings page
+ - Can access private channels
+DONE: 6/12/12
+
+Critical Point: b1.x
+ - First Beta build, client is useable by end-user
+ - All workflow is possible (closing character conversations, channels)
+ - Should be stable and report errors verbosely
+ - Can set and change status & message
+ - Can access public channels
+ - /commands?
+DONE: 6/19/12
+
+BREAK UNTIL 8/1/12
+
+Critical Point: b2.x
+ - Automatically post to LfRP channels
+ - Show RP Ads
+ - BBCode parsing (ahhhhhh)
+ - Can access user-created closed channels (and create)
+ - /commands
+ - Logging
+ DONE: 8/12/12
+
+Critical Point: b3.x -> "Serval"
+ - Some Persistent Settings (main ones) 
+ - Some Sound Notifications (main ones, such as getting a PM) 
+ - Some Toast Notifications (again, for things such as getting a PM) 
+ - Mark profiles as always interested
+ - Mark profiles as not interested
+ - Full command support 
+ - Channel Management window
+ - Most BBCode suported 
+ - More Shortcuts
+BREAK AT 8/28/12 due to being banned and all
+
+Critical Point: b4.x -> "Caracal"
+ - Accept/Deny/Send Friend Requests
+ - Add/Remove Bookmarks
+ - Right-click view profile feature
+ - Specific Channel settings
+ - Automatic profile downloading (storing?)
+ - More Toast/Sound notifications and some configurations for them
+ - Settings persistent on character instead of account
+ - Support for broadcasts, roll, dice, etc.
+
+Critical Point: First Public Full Release, rc1.x -> "Ocelot"
+ - Rest of right-click menu (and making it context sensitive)
+ - Plaintext mark-up support (such as bold being **sometext**)
+ - Fully-featured Partner searching with anything one can find on a profile
+ - Fully-featured and simple filtering (sorting too)
+ - Allows and stores an arbitrary amount of searching predicates.
+ - Auto Updater or some way to painlessly update
+ - Log Viewer
+ - An assload of settings
+ 
+ mini profile in right-hand side, user selects what information to show

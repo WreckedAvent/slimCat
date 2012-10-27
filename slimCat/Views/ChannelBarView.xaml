@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="Views.ChannelbarView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://www.codeplex.com/prism"
+             xmlns:sys="clr-namespace:System">
+    <UserControl.Resources>
+        <sys:BoolColorConverter x:Key="BoolColorConverter" />
+    </UserControl.Resources>
+
+    <DockPanel TextBlock.FontSize="14"
+               Visibility="{Binding Path=Model.IsAuthenticated, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+               TextBlock.Foreground="{StaticResource ForegroundBrush}"
+               TextBlock.TextAlignment="Center">
+
+        <Button Width="15"
+                DockPanel.Dock="Left"
+                Content="{Binding Path=ExpandString, Mode=OneWay}"
+                BorderThickness="0"
+                Padding="0"
+                Background="{Binding Path=HasUpdate, Mode=OneWay, Converter={StaticResource BoolColorConverter}}"
+                Command="{Binding Path=ToggleBarCommand}"/>
+
+        <Grid Margin="15,20"
+              Visibility="{Binding Path=IsExpanded, Converter={StaticResource BoolConverter}}">
+            
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            
+            <!-- Note, I decided to not use a tab control as it would look odd. -->
+            <Grid VerticalAlignment="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition  />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                
+                <Grid.Resources>
+                    <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                        <Setter Property="Command" Value="{Binding Path=ChangeTabCommand}" />
+                        <Setter Property="Margin" Value="4,0" />
+                    </Style>
+                </Grid.Resources>
+
+                <RadioButton CommandParameter="Channels"
+                             Content="Channels"/>
+
+                <RadioButton CommandParameter="Users"
+                             Content="Users"
+                             Grid.Column="1"/>
+
+                <RadioButton CommandParameter="Notifications"
+                             Content="Notifications"
+                             Grid.Column="2"/>
+            </Grid>
+            
+            <ContentControl prism:RegionManager.RegionName="TabViewRegion"
+                            Margin="0,20,0,0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            KeyboardNavigation.IsTabStop="False"
+                            ScrollViewer.CanContentScroll="True"
+                            Grid.Row="1"/>
+        </Grid>
+    </DockPanel>
+</UserControl>

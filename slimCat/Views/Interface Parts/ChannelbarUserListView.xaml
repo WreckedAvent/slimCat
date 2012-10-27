@@ -1,0 +1,84 @@
+﻿<UserControl x:Class="Views.UsersTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:m="clr-namespace:Models"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:v="clr-namespace:Views">
+    
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type m:CharacterModel}">
+            <ContentControl Margin="2"
+                            Content="{Binding}"
+                            ContentTemplate="{StaticResource UsernamesTemplate}">
+                <ContentControl.Triggers>
+                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                             Duration="0:0:0.3"
+                                             From="0"
+                                             To="1">
+
+                                    <DoubleAnimation.EasingFunction>
+                                        <CircleEase EasingMode="EaseIn" />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </ContentControl.Triggers>
+            </ContentControl>
+
+        </DataTemplate>
+    </UserControl.Resources>
+    
+    <Grid TextBlock.Foreground="{StaticResource ForegroundBrush}"
+          TextBlock.FontSize="14">
+        
+        <DockPanel Grid.Row="1"
+                   LastChildFill="True">
+            <Popup PlacementTarget="{Binding ElementName=PopupAnchor}"
+                   Placement="Center"
+                   IsOpen="{Binding Path=SearchSettings.IsChangingSettings}"
+                   StaysOpen="False">
+
+                <Border BorderBrush="{StaticResource HighlightBrush}"
+                        BorderThickness="2"
+                        Background="{StaticResource BackgroundBrush}">
+                    <WrapPanel Orientation="Vertical"
+                               Margin="10">
+                        <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                                   FontSize="20"
+                                   HorizontalAlignment="Center"
+                                   Margin="10,5"
+                                   >
+                            <Run Text="{Binding Path=SortContentString, Mode=OneWay}"/>
+                            <Run Text="User list Filter Settings" />
+                        </TextBlock>
+
+                        <ContentControl Template="{StaticResource GenderCheckBoxes}"
+                                    DataContext="{Binding Path=GenderSettings}"/>
+                        
+                        <ContentControl Template="{StaticResource GeneralFilterCheckBoxes}"
+                                        DataContext="{Binding Path=SearchSettings}" />
+                        
+                        <CheckBox IsChecked="{Binding Path=SearchSettings.ShowIgnored}">Ignored</CheckBox>
+
+                        <Button Content="Close Settings"
+                            Margin="10,5"
+                            DataContext="{Binding Path=SearchSettings}"
+                            Foreground="{StaticResource ForegroundBrush}"
+                            Command="{Binding OpenSearchSettingsCommand}"/>
+                    </WrapPanel>
+                </Border>
+            </Popup>
+
+            <v:SearchBoxView DockPanel.Dock="Bottom"
+                             DataContext="{Binding SearchSettings}"/>
+            
+            <ItemsControl ItemsSource="{Binding Path=SortedUsers, Mode=OneWay}"
+                          BorderBrush="Transparent"
+                          x:Name="PopupAnchor"
+                          Margin="0"/>
+        </DockPanel>
+    </Grid>
+</UserControl>

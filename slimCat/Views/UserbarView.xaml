@@ -1,0 +1,114 @@
+﻿<UserControl x:Class="Views.UserbarView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:lib="clr-namespace:lib"
+             xmlns:v="clr-namespace:Views"
+             xmlns:sys="clr-namespace:System">
+    <UserControl.Resources>
+        <sys:BoolColorConverter x:Key="BoolColorConverter" />
+    </UserControl.Resources>
+    
+    <DockPanel TextBlock.FontSize="14"
+               Visibility="{Binding Path=Model.IsAuthenticated, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+               TextBlock.Foreground="{StaticResource ForegroundBrush}"
+               TextBlock.TextAlignment="Center">
+
+        <Button Width="15"
+                DockPanel.Dock="Right"
+                Content="{Binding Path=ExpandString, Mode=OneWay}"
+                BorderThickness="0"
+                Padding="0"
+                HorizontalAlignment="Center"
+                Background="{Binding Path=HasUpdate, Mode=OneWay, Converter={StaticResource BoolColorConverter}}"
+                Command="{Binding Path=ToggleBarCommand}"/>
+        <Grid Margin="15,20"
+              Visibility="{Binding Path=IsExpanded, Converter={StaticResource BoolConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Button BorderThickness="1.5"
+                    Margin="0,0,0,10"
+                    x:Name="PopupAnchor"
+                    Command="{Binding ToggleStatusWindowCommand}">
+                <StackPanel HorizontalAlignment="Center"
+                            DataContext="{Binding Path=Model.SelectedCharacter}">
+                    <Image Height="100" 
+                           Width="100"
+                           Source="{Binding Path=Avatar}"/>
+                    <TextBlock Text="{Binding Path=Name, Mode=OneTime}"/>
+                </StackPanel>
+            </Button>
+            
+            <Popup IsOpen="{Binding Path=IsChangingStatus, Mode=OneWay}"
+                   PlacementTarget="{Binding ElementName=PopupAnchor}"
+                   Placement="Center">
+                <Border BorderBrush="{StaticResource HighlightBrush}"
+                        BorderThickness="1">
+                    <StackPanel Orientation="Vertical"
+                                Margin="5"
+                                Background="{StaticResource BackgroundBrush}">
+                        <TextBlock Text="Status Management"
+                                   Foreground="{StaticResource ForegroundBrush}"
+                                   FontSize="20"
+                                   Margin="10,5"/>
+                        
+                        <ComboBox ItemsSource="{Binding Path=StatusTypes}"
+                                  DisplayMemberPath="Key"
+                                  SelectedValue="{Binding Model.SelectedCharacter.Status}"
+                                  SelectedValuePath="Value"
+                                  Margin="10,5"
+                                  FontSize="12"/>
+                        
+                        <TextBox Text="{Binding Path=Model.SelectedCharacter.StatusMessage, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="12"
+                                 TextWrapping="Wrap"
+                                 MaxWidth="200"
+                                 Margin="10,5"/>
+                        
+                        <Button Content="Save Changes"
+                                Margin="10,5"
+                                Command="{Binding ToggleStatusWindowCommand}"/>
+                    </StackPanel>
+
+                </Border>
+            </Popup>
+            
+            <ScrollViewer Grid.Row="1"
+                          CanContentScroll="False">
+                <StackPanel>
+                    <Expander Header="Conversations"
+                              IsExpanded="True"
+                              Visibility="{Binding Path=HasPMs, Converter={StaticResource BoolConverter}}"
+                              BorderBrush="{Binding Path=HasNewPM, Converter={StaticResource BoolColorConverter}}"
+                              Grid.Row="1">
+                        <ListBox ItemsSource="{Binding Path=Model.CurrentPMs, Mode=OneWay}"
+                                 HorizontalContentAlignment="Stretch"
+                                 SelectedIndex="{Binding Path=PM_Selected, Mode=TwoWay}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <v:PMSelectView/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Expander>
+                    <Expander Header="Channels"
+                              IsExpanded="True"
+                              BorderBrush="{Binding Path=HasNewMessage, Converter={StaticResource BoolColorConverter}}"
+                              Grid.Row="2">
+                        <ListBox ItemsSource="{Binding Path=Model.CurrentChannels, Mode=OneWay}"
+                                 HorizontalContentAlignment="Stretch"
+                                 SelectedIndex="{Binding Path=Chan_Selected, Mode=TwoWay}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <v:ChannelSelectView />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Expander>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
+</UserControl>
