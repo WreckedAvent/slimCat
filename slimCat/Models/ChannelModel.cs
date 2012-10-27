@@ -20,7 +20,10 @@ namespace Models
         private ChannelMode _mode;
         private ObservableCollection<IMessage> _messages = new ObservableCollection<IMessage>();
         private ObservableCollection<IMessage> _ads = new ObservableCollection<IMessage>();
+        private ChannelSettingsModel _settings;
         private string _title;
+        private int _lastRead;
+        private bool _isSelected = false;
         private readonly string _identity; // an ID never changes
         #endregion
 
@@ -61,14 +64,65 @@ namespace Models
         /// <summary>
         /// Used to determine if the channel should make itself more visible on the UI
         /// </summary>
-        public abstract bool NeedsAttention { get; }
+        public virtual bool NeedsAttention
+        {
+            get { return (Unread > Settings.FlashInterval && Settings.ShouldFlash); }
+        }
 
         /// <summary>
         /// A number displayed on the UI along with the rest of the channel data
         /// </summary>
         public abstract int DisplayNumber { get; }
 
-        public virtual bool IsSelected { get; set; }
+        /// <summary>
+        /// Number of messages we haven't read
+        /// </summary>
+        public int Unread
+        {
+            get
+            {
+                if (!IsSelected)
+                    return Messages.Count - LastReadCount;
+                else
+                    return 0;
+            }
+        }
+
+        /// <summary>
+        /// The number of messages we've read up to
+        /// </summary>
+        public virtual int LastReadCount
+        {
+            get { return _lastRead; }
+            set
+            {
+                _lastRead = value;
+                UpdateBindings();
+            }
+        }
+
+        public virtual ChannelSettingsModel Settings { get { return _settings; } }
+
+        /// <summary>
+        /// If the channel is selected or not
+        /// </summary>
+        public virtual bool IsSelected
+        {
+            get { return _isSelected; }
+
+            set
+            {
+                if (_isSelected != value)
+                {
+                    _isSelected = value;
+                    if (value)
+                        LastReadCount = Messages.Count;
+                    UpdateBindings();
+                    OnPropertyChanged("IsSelected");
+                }
+            }
+        }
+
         public virtual bool CanClose { get { return IsSelected; } }
         #endregion
 
@@ -88,6 +142,8 @@ namespace Models
                 _identity = identity;
                 Type = kind;
                 Mode = mode;
+                _settings = new ChannelSettingsModel();
+                LastReadCount = 0;
             }
 
             catch (Exception ex)
@@ -115,6 +171,9 @@ namespace Models
                 _messages.RemoveAt(0);
 
             _messages.Add(message);
+            if (_isSelected)
+                _lastRead = _messages.Count;
+            UpdateBindings();
         }
         #endregion
 
@@ -130,6 +189,7 @@ namespace Models
             {
                 _messages.Clear();
                 _ads.Clear();
+                _settings = null;
             }
         }
         #endregion

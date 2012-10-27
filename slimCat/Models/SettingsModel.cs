@@ -382,4 +382,107 @@ namespace Models
             return character.NameContains(SearchString);
         }
     }
+
+    /// <summary>
+    /// Channel settings specific to each channel
+    /// </summary>
+    public class ChannelSettingsModel
+    {
+        public event EventHandler Updated;
+
+        #region Fields
+        private bool _shouldFlash = true;
+        private int _shouldFlashInterval = 1;
+        private bool _notifyWhenThisCharacterIsMentioned = true;
+        private string _notifyOnTheseTerms = "";
+        private bool _isChangingSettings = false;
+        #endregion
+
+        #region Properties
+        public bool ShouldFlash
+        {
+            get { return _shouldFlash; }
+            set
+            {
+                if (_shouldFlash != value)
+                {
+                    _shouldFlash = value;
+                    CallUpdate();
+                }
+            }
+        }
+
+        public bool NotifyCharacterMention
+        {
+            get { return _notifyWhenThisCharacterIsMentioned; }
+            set
+            {
+                if (_notifyWhenThisCharacterIsMentioned != value)
+                {
+                    _notifyWhenThisCharacterIsMentioned = value;
+                    CallUpdate();
+                }
+            }
+        }
+
+        public int FlashInterval
+        {
+            get { return _shouldFlashInterval; }
+            set
+            {
+                if (_shouldFlashInterval != value)
+                {
+                    _shouldFlashInterval = value;
+                    CallUpdate();
+                }
+            }
+        }
+
+        public string NotifyTerms
+        {
+            get { return _notifyOnTheseTerms.ToLower(); }
+            set
+            {
+                if (_notifyOnTheseTerms != value)
+                {
+                    _notifyOnTheseTerms = value;
+                    CallUpdate();
+                }
+            }
+        }
+
+        public bool IsChangingSettings
+        {
+            get { return _isChangingSettings; }
+            set
+            {
+                if (_isChangingSettings != value)
+                {
+                    _isChangingSettings = value;
+                    CallUpdate();
+                }
+            }
+        }
+        #endregion
+
+        #region Commands
+        RelayCommand _expandSettings;
+        public ICommand OpenChannelSettingsCommand
+        {
+            get
+            {
+                if (_expandSettings == null)
+                    _expandSettings = new RelayCommand(param => IsChangingSettings = !IsChangingSettings);
+
+                return _expandSettings;
+            }
+        }
+        #endregion
+
+        private void CallUpdate()
+        {
+            if (Updated != null)
+                Updated(this, new EventArgs());
+        }
+    }
 }

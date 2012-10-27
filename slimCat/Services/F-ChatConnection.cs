@@ -15,7 +15,7 @@ namespace Services
     {
         #region Constants
         public const string host = "ws://chat.f-list.net:9722/";
-        public const string version = "b3.xx prototype";
+        public const string version = "Serval";
         public const string client_n = "SlimCat";
         #endregion
 
@@ -25,6 +25,7 @@ namespace Services
         private string _selectedCharacter;
         private WebSocket _ws;
         private StreamWriter _logger;
+        private System.Timers.Timer _stagger;
         #endregion
 
         #region Properties
@@ -148,7 +149,8 @@ namespace Services
         /// </summary>
         private void ConnectionError(object sender, SuperSocket.ClientEngine.ErrorEventArgs e)
         {
-            Exceptions.HandleException(e.Exception);
+            _events.GetEvent<LoginFailedEvent>().Publish(e.Exception.Message);
+            AttemptReconnect();
         }
 
         /// <summary>
@@ -161,6 +163,26 @@ namespace Services
                                     character = _selectedCharacter, cname = client_n, cversion = version };
 
             this.SendMessage(idn, "IDN");
+        }
+
+        /// <summary>
+        /// If our connection failed, try to reconnect
+        /// </summary>
+        private void AttemptReconnect()
+        {
+            if (_stagger != null)
+            {
+                _stagger.Dispose();
+                _stagger = null;
+            }
+
+            _stagger = new System.Timers.Timer((new System.Random().Next(10)+5) * 1000); // between 5 and 15 seconds
+            _stagger.Elapsed += (s, e) =>
+                {
+                    ConnectToChat(_selectedCharacter);
+                    _events.GetEvent<ReconnectingEvent>().Publish(string.Empty);
+                };
+            _stagger.Enabled = true;
         }
         #endregion
 

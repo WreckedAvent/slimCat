@@ -31,9 +31,10 @@
                         <Run Text="{Binding Path=ChatContentString, Mode=OneWay}" />
                     </TextBlock>
                 </Expander.Header>
-                <ScrollViewer MaxHeight="100">
+                <StackPanel>
+                    <ScrollViewer MaxHeight="100">
 
-                    <TextBlock Margin="0"
+                        <TextBlock Margin="0"
                                TextBlock.FontSize="12"
                                Foreground="{StaticResource ForegroundBrush}"
                                TextWrapping="Wrap">
@@ -41,8 +42,14 @@
                             <Binding Converter="{StaticResource BBConv}"
                                      Path="MOTD" />
                         </lib:TextBlockHelper.InlineList>
-                    </TextBlock>
-                </ScrollViewer>
+                        </TextBlock>
+                    </ScrollViewer>
+                    <Button Content="Open Settings"
+                            Command="{Binding Path=OpenChannelSettingsCommand}"
+                            DataContext="{Binding Path=ChannelSettings}"
+                            HorizontalAlignment="Center"
+                            Margin="10,5" />
+                </StackPanel>
             </Expander>
         </Border>
 
@@ -94,7 +101,36 @@
                 </WrapPanel>
             </Border>
         </Popup>
-        
+
+        <Popup PlacementTarget="{Binding ElementName=PopupAnchor}"
+               Placement="Center"
+               StaysOpen="False"
+               IsOpen="{Binding Path=ChannelSettings.IsChangingSettings}">
+
+            <Border BorderBrush="{StaticResource HighlightBrush}"
+                    BorderThickness="2"
+                    Background="{StaticResource BackgroundBrush}">
+                <WrapPanel Orientation="Vertical"
+                           Margin="10">
+                    <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                               FontSize="20"
+                               HorizontalAlignment="Center"
+                               Margin="10,5">
+                        <Run Text="{Binding Path=Model.Title}"/>
+                        <Run Text="Channel Settings" />
+                    </TextBlock>
+                    <ContentControl Template="{StaticResource ChannelSettingBoxes}"
+                                    DataContext="{Binding Path=ChannelSettings}"/>
+
+                    <Button Content="Close Settings"
+                            Margin="10,5"
+                            DataContext="{Binding Path=ChannelSettings}"
+                            Foreground="{StaticResource ForegroundBrush}"
+                            Command="{Binding OpenChannelSettingsCommand}"/>
+                </WrapPanel>
+            </Border>
+        </Popup>
+
         <StackPanel Grid.Row="2">
             <Grid>
                 <Grid.ColumnDefinitions>

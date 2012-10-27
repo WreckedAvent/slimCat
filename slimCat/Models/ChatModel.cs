@@ -54,8 +54,7 @@ namespace Models
         {
             get
             {
-                foreach (ICharacter character in OnlineCharactersDictionary.Values)
-                    yield return character;
+                return OnlineCharactersDictionary.Values.ToList();
             }
         }
 

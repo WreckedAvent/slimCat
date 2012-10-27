@@ -67,4 +67,19 @@ namespace slimCat
     ///  This event is used when the server has sent us an error or a module needs to display an error
     /// </summary>
     public class ErrorEvent : CompositePresentationEvent<string> { }
+
+    /// <summary>
+    /// This event is used when our intial connection fails
+    /// </summary>
+    public class LoginFailedEvent : CompositePresentationEvent<string> { }
+
+    /// <summary>
+    /// this event is used when the service layer is attempting a reconnect
+    /// </summary>
+    public class ReconnectingEvent : CompositePresentationEvent<string> { }
+
+    /// <summary>
+    /// this event is fired when our established connection fails
+    /// </summary>
+    public class ConnectionClosedEvent : CompositePresentationEvent<string> { }
 }

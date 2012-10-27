@@ -18,7 +18,6 @@ namespace Models
     public sealed class PMChannelModel : ChannelModel, IDisposable
     {
         #region Fields
-        private int _lastCount;
         private ICharacter _PMCharacter;
         private Typing_Status _typing;
         private System.Timers.Timer _tick;
@@ -26,27 +25,6 @@ namespace Models
         #endregion
 
         #region Properties
-        public int Unread
-        {
-            get 
-            {
-                if (!IsSelected)
-                    return Messages.Count - LastUnreadCount;
-                else
-                    return 0;
-            }
-        }
-
-        public int LastUnreadCount
-        {
-            get { return _lastCount; }
-            set
-            { 
-                _lastCount = value;
-                UpdateBindings();
-            }
-        }
-
         public ICharacter PMCharacter
         {
             get { return _PMCharacter; }
@@ -86,30 +64,9 @@ namespace Models
             }
         }
 
-        public override bool NeedsAttention
-        {
-            get { return (Unread > 0); }
-        }
-
         public override int DisplayNumber
         {
             get { return Unread; }
-        }
-
-        public override bool IsSelected
-        {
-            get
-            {
-                return base.IsSelected;
-            }
-            set
-            {
-                if (base.IsSelected != value)
-                {
-                    base.IsSelected = value;
-                    UpdateBindings();
-                }
-            }
         }
         #endregion
 
@@ -124,12 +81,9 @@ namespace Models
         {
             PMCharacter = character;
             PMCharacter.GetAvatar();
-            LastUnreadCount = 0;
 
             _tick = new System.Timers.Timer(1000);
             _isTypingString = new StringBuilder();
-
-            Messages.CollectionChanged += OnCollectionChanged;
 
             #region Disposable
             _tick.Elapsed += (s, e) =>
@@ -148,20 +102,10 @@ namespace Models
         }
         #endregion
 
-        #region Event Methods
-        private void OnCollectionChanged(object s, NotifyCollectionChangedEventArgs e)
-        {
-            UpdateBindings();
-            if (IsSelected)
-                LastUnreadCount = Messages.Count;
-        }
-        #endregion
-
         protected override void Dispose(bool IsManaged)
         {
             if (IsManaged)
             {
-                Messages.CollectionChanged -= OnCollectionChanged;
                 _tick.Dispose();
                 _tick = null;
                 _isTypingString = null;

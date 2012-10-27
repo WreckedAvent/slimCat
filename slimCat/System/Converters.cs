@@ -102,8 +102,6 @@ namespace System
                         return inlines;
                     }
 
-                    // list of valid BBCode strings
-
                     inlines.Add(new Run(": "));
                     inlines.Add(HelperConverter.ParseBBCode(text));
                     return inlines;
@@ -148,12 +146,10 @@ namespace System
 
             text = HttpUtility.UrlDecode(text);
 
-            /*
             IList<Inline> toReturn = new List<Inline>();
             toReturn.Add(HelperConverter.ParseBBCode(text));
-            */
 
-            return new List<Inline>() { new Run(text) };
+            return toReturn;
         }
 
         object IValueConverter.ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

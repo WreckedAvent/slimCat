@@ -93,6 +93,7 @@ namespace ViewModels
 
         public GenderSettingsModel GenderSettings { get { return _genderSettings; } }
         public GenericSearchSettingsModel SearchSettings { get { return _searchSettings; } }
+        public ChannelSettingsModel ChannelSettings { get { return Model.Settings; } }
 
         #region Interface-binding Properties
         // Used for ad-displaying tool chain
@@ -270,6 +271,11 @@ namespace ViewModels
                     {
                         OnPropertyChanged("SearchSettings");
                         OnPropertyChanged("FilteredMessages");
+                    };
+
+                ChannelSettings.Updated += (s, e) =>
+                    {
+                        OnPropertyChanged("ChannelSettings");
                     };
 
                 _messageFlood.Elapsed += (s, e) =>

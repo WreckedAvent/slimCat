@@ -8,26 +8,37 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <Grid Margin="10"
-          Visibility="{Binding Path=CM.IsAuthenticated, Converter={StaticResource BoolConverter}}"
-          TextBlock.FontSize="16">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition />
-            <RowDefinition Height="auto"/>
-        </Grid.RowDefinitions>
+    <Grid TextBlock.FontSize="16">
+        <Border HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Visibility="{Binding Path=IsConnecting, Converter={StaticResource BoolConverter}}">
+            <StackPanel>
+                <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                           FontSize="24"
+                           TextWrapping="Wrap">
+                    <Run Text="{Binding ConnectFlavorText, Mode=OneWay}"/>
+                </TextBlock>
+            </StackPanel>
+        </Border>
         
-        <Border BorderBrush="{StaticResource DepressedBrush}"
+        <Grid Margin="10"
+          Visibility="{Binding Path=CM.IsAuthenticated, Converter={StaticResource BoolConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition />
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <Border BorderBrush="{StaticResource DepressedBrush}"
                 BorderThickness="0,0,0,1">
-            <Expander Header="{Binding Path=Model.ID, Mode=OneWay}"
+                <Expander Header="{Binding Path=Model.ID, Mode=OneWay}"
                       Margin="0"
                       Padding="0">
-                <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                    <TextBlock Foreground="{StaticResource ForegroundBrush}"
                            TextWrapping="Wrap">
                     <Run Text="Online Users: " />
                     <Run Text="{Binding Path=OnlineCount, Mode=OneWay}"/>
-                    <Run Text="{Binding Path=ShortTickOnlineCountChange, Mode=OneWay}"/>
-                    <Run Text="{Binding Path=LongTickOnlineCountChange, Mode=OneWay}"/>
+                    <Run Text="{Binding Path=OnlineCountChange, Mode=OneWay}"/>
                     <LineBreak />
                     <Run Text="Online Friends: " />
                     <Run Text="{Binding Path=OnlineFriendsCount, Mode=OneWay}" />
@@ -43,15 +54,16 @@
             
                     <Run Text="Client uptime: " />
                     <Run Text="{Binding Path=RoughClientUpTime, Mode=OneWay}" Foreground="{StaticResource HighlightBrush}" />
-                </TextBlock>
-            </Expander>
-        </Border>
-        
-        <StackPanel Grid.Row="1">
-            <Button Content="Save Channels ..."
+                    </TextBlock>
+                </Expander>
+            </Border>
+
+            <StackPanel Grid.Row="1">
+                <Button Content="Save Channels ..."
                     Command="{Binding SaveChannelsCommand}"/>
-        </StackPanel>
-        
-        <v:ChannelTextBoxEntryView Grid.Row="2"/>
+            </StackPanel>
+
+            <v:ChannelTextBoxEntryView Grid.Row="2"/>
+        </Grid>
     </Grid>
 </UserControl>

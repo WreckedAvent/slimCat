@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Windows;
-using Microsoft.Practices.Prism.Events;
+﻿using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.Regions;
 using Microsoft.Practices.Unity;
 using Models;
 using SimpleJson;
 using slimCat;
 using slimCat.Properties;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Windows;
 using ViewModels;
 
 namespace Services
@@ -333,9 +333,6 @@ namespace Services
                 if (temp == null) return;
 
                 temp.TypingStatus = Typing_Status.clear; // webclient assumption
-
-                if (!temp.NeedsAttention)
-                    temp.LastUnreadCount = temp.Messages.Count();
             }
 
             else
@@ -528,7 +525,7 @@ namespace Services
             Dispatcher.Invoke(
                 (Action)delegate
                 {
-                    Application.Current.MainWindow.Title = String.Format("slimCat b3 ({0})", character);
+                    Application.Current.MainWindow.Title = String.Format("slimCat Serval ({0})", character);
                 });
         }
 

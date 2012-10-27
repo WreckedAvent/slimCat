@@ -136,4 +136,147 @@ namespace System
         }
         #endregion
     }
+
+    /// <summary>
+    /// Caches some int and fetches a new one every so often, displaying how this int has changed
+    /// </summary>
+    public class CacheCount : IDisposable
+    {
+        #region fields
+        private int _oldCount;
+        private int _newCount;
+        private Func<int> _getNewCount;
+        private Timers.Timer _updateTick;
+        private IList<int> _oldCounts;
+        private bool _intialized = false;
+        private int _updateRes;
+        #endregion
+
+        #region constructors
+        /// <summary>
+        /// creates a new cached count of something
+        /// </summary>
+        /// <param name="label">label to display with the output</param>
+        /// <param name="getNewCount">function used to get the new count</param>
+        /// <param name="updateResolution">how often, in seconds, it is updated</param>
+        public CacheCount(Func<int> getNewCount, int updateResolution)
+        {
+            _oldCounts = new List<int>();
+            _getNewCount = getNewCount;
+            _updateRes = updateResolution;
+
+            _updateTick = new Timers.Timer(updateResolution * 1000);
+            _updateTick.Elapsed += (s, e) => Update();
+            _updateTick.Start();
+        }
+        #endregion
+
+        #region methods
+        public void Update()
+        {
+            if (_intialized)
+            {
+                _oldCount = _newCount;
+
+                //60/updateres*60 returns how many update resolutions fit in an hour
+                if (_oldCounts.Count > ((60/_updateRes)*60))
+                    _oldCounts.Remove(0);
+                _oldCounts.Add(_oldCount);
+
+                _newCount = _getNewCount();
+            }
+
+            else
+            {
+                _oldCount = _newCount = _getNewCount();
+
+                if (!(_oldCount == 0 || _newCount == 0))
+                    _intialized = true;
+            }
+        }
+
+        /// <summary>
+        /// returns the average of the cached values
+        /// </summary>
+        public double Average()
+        {
+            return _oldCounts.Average();
+        }
+
+        /// <summary>
+        /// returns the adjusted standard deviation for the cached values
+        /// </summary>
+        public double StdDev()
+        {
+            var squares = _oldCounts.Select(x => Math.Pow((x - Average()), 2)); // this is the squared distance from average
+            return Math.Sqrt(squares.Sum() / (squares.Count() > 1 ? squares.Count()-1 : squares.Count())); // calculates population std dev from our sample
+        }
+
+        /// <summary>
+        /// returns a measure of how stable the values are
+        /// </summary>
+        public double StabilityIndex()
+        { 
+            var threshold = Average()/10; // standard deviations above this are considered unstable
+            // in this case, an average distance of 20% from our average is considered high
+
+            return Math.Max(Math.Min((Math.Log10(threshold/StdDev())*100), 100), 0);
+            // this scary looking thing just ensures that this value is in between 0 and 100
+            // and becomes exponentially closer to 0 as the standard deviation approaches the threshold
+        }
+
+        public virtual string GetDisplayString()
+        {
+            if (!_intialized)
+                return "";
+
+            var change = _newCount - _oldCount;
+
+            StringBuilder toReturn = new StringBuilder();
+            if (change != 0)
+            {
+                toReturn.Append("Δ=");
+                toReturn.Append(change);
+            }
+
+            if (_oldCounts.Count > 0)
+            {
+                if (Average() != 0)
+                {
+                    toReturn.Append(" μ=");
+                    toReturn.Append(String.Format("{0:0}", Average()));
+                }
+
+                if (StdDev() != 0)
+                {
+                    toReturn.Append(" σ=");
+                    toReturn.Append(String.Format("{0:0.##}", StdDev()));
+                }
+
+                toReturn.Append(String.Format(" Stability: {0:0.##}%", StabilityIndex()));
+            }
+
+            return toReturn.ToString().Trim();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool IsManaged)
+        {
+            if (IsManaged)
+            {
+                _updateTick.Stop();
+                _updateTick.Dispose();
+                _updateTick = null;
+
+                _getNewCount = null;
+                _oldCounts.Clear();
+                _oldCounts = null;
+            }
+        }
+        #endregion
+    }
 }

@@ -13,7 +13,6 @@ namespace Models
         private string _motd;
         private ICharacter _owner;
         private int _userCount;
-        private bool _newMessage;
         private IList<string> _mods;
         // used as an abstraction away from the user collection (so we know how many are in without it being set)
         #endregion
@@ -52,35 +51,9 @@ namespace Models
             }
         }
 
-        public override bool NeedsAttention
-        {
-            get { return _newMessage; }
-        }
-
         public override int DisplayNumber
         {
             get { return UserCount; }
-        }
-
-        public override bool IsSelected
-        {
-            get
-            {
-                return base.IsSelected;
-            }
-            set
-            {
-                if (base.IsSelected != value)
-                {
-                    base.IsSelected = value;
-                    if (value == true)
-                    {
-                        _newMessage = false;
-                    }
-                    UpdateBindings();
-                    OnPropertyChanged("IsSelected");
-                }
-            }
         }
 
         public override bool CanClose { get { return ((ID != "Home") && IsSelected); } }
@@ -96,20 +69,7 @@ namespace Models
                 UserCount = users;
 
                 _users = new ObservableCollection<ICharacter>();
-                _newMessage = false;
                 _mods = new List<string>();
-
-                Messages.CollectionChanged += (s, e) =>
-                    {
-                        if (e.Action != System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
-                        {
-                            if (!IsSelected)
-                            {
-                                _newMessage = true;
-                                UpdateBindings();
-                            }
-                        }
-                    };
 
                 Ads.CollectionChanged += (s, e) =>
                     {
@@ -117,7 +77,6 @@ namespace Models
                         {
                             if (!IsSelected)
                             {
-                                _newMessage = true;
                                 UpdateBindings();
                             }
                         }

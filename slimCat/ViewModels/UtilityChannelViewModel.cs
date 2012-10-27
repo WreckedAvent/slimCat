@@ -9,6 +9,7 @@ using lib;
 using System.Windows.Input;
 using slimCat.Properties;
 using slimCat;
+using System.Text;
 
 namespace ViewModels
 {
@@ -17,13 +18,16 @@ namespace ViewModels
     /// </summary>
     public class UtilityChannelViewModel : ChannelViewModelBase, IDisposable
     {
+        #region fields
         private System.Timers.Timer UpdateTimer = new System.Timers.Timer(1000); // every second
-        private int shortTickBuffer = 0;
-        private int longTickBuffer = 0;
-        private int shortTicksElapsed = 0; // every minute
-        private int longTicksElapsed = 0; // every 15 minutes
+        private StringBuilder _flavorText;
+        private StringBuilder _connectDotDot;
+        private CacheCount _minuteOnlineCount;
+        private bool _inStagger = false;
+        #endregion
 
         #region Properties
+        // things the UI binds to
         public string RoughServerUpTime { get { return HelperConverter.DateTimeToRough(CM.ServerUpTime, true, false); } }
         public string RoughClientUpTime { get { return HelperConverter.DateTimeToRough(CM.ClientUptime, true, false); } }
 
@@ -37,59 +41,36 @@ namespace ViewModels
             get { return (CM.OnlineBookmarks == null ? 0 : CM.OnlineBookmarks.Count()); } 
         }
 
-        public int TicksElapsed
-        {
-            get { return shortTicksElapsed; }
-            set
-            {
-                if (value == 60)
-                {
-                    shortTicksElapsed -= 60;
-                    OnPropertyChanged("ShortTickOnlineCountChange");
-                    shortTickBuffer = OnlineCount;
-                    LongTicksElapsed++;
-                }
-                else
-                    shortTicksElapsed = value;
-            }
-        }
-
-        public int LongTicksElapsed
-        {
-            get { return longTicksElapsed; }
-            set
-            {
-                if (value == 15)
-                {
-                    longTicksElapsed -= 15;
-                    OnPropertyChanged("LongTickOnlineCountChange");
-                    longTickBuffer = OnlineCount;
-                }
-                else
-                    longTicksElapsed = value;
-            }
-        }
-
-        public string ShortTickOnlineCountChange
+        public string OnlineCountChange
         {
             get
             {
-                var changed = System.Math.Abs(shortTickBuffer - OnlineCount);
-                if (changed == OnlineCount)
-                    return "";
-                return (shortTickBuffer > OnlineCount ? "-" : "+") + changed + " (1m)";
+                return _minuteOnlineCount.GetDisplayString();
             }
         }
 
-        public string LongTickOnlineCountChange
+        public bool IsConnecting
         {
             get
             {
-                var changed = System.Math.Abs(longTickBuffer - OnlineCount);
-                if (changed == OnlineCount)
-                    return "";
-                return (shortTickBuffer > OnlineCount ? "-" : "+") + changed + " (15m)";
+                return !CM.IsAuthenticated;
             }
+        }
+
+        public int ConnectTime { get; set; }
+
+        public string ConnectFlavorText
+        {
+            get
+            {
+                return _flavorText.ToString() + _connectDotDot.ToString() + (!_inStagger ? "\nRequest sent " + ConnectTime + " seconds ago" : "");
+            }
+        }
+
+        // things used elsewhere
+        public int OnlineCountPrime()
+        {
+            return CM.OnlineCharacters.Count();
         }
         #endregion
 
@@ -101,16 +82,22 @@ namespace ViewModels
             try
             {
                 Model = _container.Resolve<GeneralChannelModel>(name);
+                ConnectTime = 0;
+                _flavorText = new StringBuilder("Connecting");
+                _connectDotDot = new StringBuilder();
 
                 _container.RegisterType<object, UtilityChannelView>(Model.ID, new InjectionConstructor(this));
+                _minuteOnlineCount = new CacheCount(OnlineCountPrime, 15);
 
                 UpdateTimer.Enabled = true;
                 UpdateTimer.Elapsed += (s, e) => 
                 { 
                     OnPropertyChanged("RoughServerUpTime");
                     OnPropertyChanged("RoughClientUpTime");
-                    TicksElapsed++;
+                    OnPropertyChanged("IsConnecting");
                 };
+
+                UpdateTimer.Elapsed += UpdateConnectText;
 
                 _events.GetEvent<NewUpdateEvent>().Subscribe(param =>
                     {
@@ -122,10 +109,14 @@ namespace ViewModels
                                 OnPropertyChanged("OnlineCount");
                                 OnPropertyChanged("OnlineFriendsCount");
                                 OnPropertyChanged("OnlineBookmarksCount");
+                                OnPropertyChanged("OnlineCountChange");
                             }
-                            
                         }
                     });
+
+                _events.GetEvent<LoginAuthenticatedEvent>().Subscribe(LoggedInEvent);
+                _events.GetEvent<LoginFailedEvent>().Subscribe(LoginFailedEvent);
+                _events.GetEvent<ReconnectingEvent>().Subscribe(LoginReconnectingEvent);
             }
 
             catch (Exception ex)
@@ -140,6 +131,57 @@ namespace ViewModels
         protected override void SendMessage()
         {
             UpdateError("Cannot send messages to this channel!");
+        }
+
+        public void LoggedInEvent(bool? payload)
+        {
+            UpdateTimer.Elapsed -= UpdateConnectText;
+            OnPropertyChanged("IsConnecting");
+        }
+
+        public void LoginFailedEvent(string error)
+        {
+            if (CM.IsAuthenticated)
+            {
+                UpdateTimer.Elapsed += UpdateConnectText;
+                CM.IsAuthenticated = false;
+            }
+
+            _inStagger = true;
+            _flavorText = new StringBuilder(error);
+
+            _flavorText.Append("\nStaggering connection");
+            ConnectTime = 0;
+
+            OnPropertyChanged("IsConnecting");
+        }
+
+        public void UpdateConnectText(object sender, EventArgs e)
+        {
+            if (!CM.IsAuthenticated)
+            {
+                ConnectTime++;
+
+                if (_connectDotDot.Length >= 3)
+                    _connectDotDot.Clear();
+                _connectDotDot.Append('.');
+
+                OnPropertyChanged("ConnectFlavorText");
+            }
+        }
+
+        public void LoginReconnectingEvent(string payload)
+        {
+            _inStagger = false;
+            if (CM.IsAuthenticated)
+            {
+                UpdateTimer.Elapsed += UpdateConnectText;
+                CM.IsAuthenticated = false;
+            }
+
+            _flavorText = new StringBuilder("Attempting reconnect");
+            ConnectTime = 0;
+            OnPropertyChanged("IsConnecting");
         }
         #endregion
 
@@ -176,6 +218,7 @@ namespace ViewModels
             if (IsManagedDispose)
             {
                 UpdateTimer.Dispose();
+                _minuteOnlineCount.Dispose();
                 Model = null;
             }
         }

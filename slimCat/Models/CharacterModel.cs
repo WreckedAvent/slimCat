@@ -15,7 +15,7 @@ namespace Models
     /// <summary>
     /// A character model which stores data related to characters
     /// </summary>
-    public class CharacterModel : SysProp, ICharacter
+    public class CharacterModel : SysProp, ICharacter, IDisposable
     {
         #region Fields
         private string _name = "";
@@ -130,6 +130,18 @@ namespace Models
                 "http://static.f-list.net/images/avatar/" + Name.ToLower() + ".png");
         }
         #endregion
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool IsManaged)
+        {
+            Name = null;
+            StatusMessage = null;
+            // TODO: Release avatar from memory
+        }
     }
 
     /// <summary>

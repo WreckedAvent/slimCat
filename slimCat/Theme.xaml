@@ -962,4 +962,21 @@
             <CheckBox IsChecked="{Binding ShowDND}">DND</CheckBox>
         </StackPanel>
     </ControlTemplate>
+
+    <ControlTemplate x:Key="ChannelSettingBoxes" TargetType="ContentControl">
+        <StackPanel>
+            <CheckBox IsChecked="{Binding ShouldFlash}">Channel flashes on a new message</CheckBox>
+            <WrapPanel Visibility="{Binding ShouldFlash, Converter={StaticResource BoolConverter}}"
+                       TextBlock.Foreground="{StaticResource ForegroundBrush}">
+                <TextBlock Text="Flash every "
+                           Margin="5"/>
+                <TextBox Text="{Binding FlashInterval}"
+                         VerticalAlignment="Center"
+                         FontSize="12"/>
+                <TextBlock Text="New unread Messages"
+                           Margin="5"/>
+            </WrapPanel>
+            <!--<CheckBox IsChecked="{Binding NotifyCharacterMention}">Notify me when this channel mentions this character</CheckBox>-->
+        </StackPanel>
+    </ControlTemplate>
 </ResourceDictionary>
