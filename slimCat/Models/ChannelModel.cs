@@ -18,9 +18,9 @@ namespace Models
         #region Fields
         private ChannelType _type;
         private ChannelMode _mode;
-        private ObservableCollection<IMessage> _messages = new ObservableCollection<IMessage>();
-        private ObservableCollection<IMessage> _ads = new ObservableCollection<IMessage>();
-        private ChannelSettingsModel _settings;
+        protected ObservableCollection<IMessage> _messages = new ObservableCollection<IMessage>();
+        protected ObservableCollection<IMessage> _ads = new ObservableCollection<IMessage>();
+        protected ChannelSettingsModel _settings;
         private string _title;
         private int _lastRead;
         private bool _isSelected = false;
@@ -66,7 +66,7 @@ namespace Models
         /// </summary>
         public virtual bool NeedsAttention
         {
-            get { return (Unread > Settings.FlashInterval && Settings.ShouldFlash); }
+            get { return (Unread >= Settings.FlashInterval && Settings.ShouldFlash); }
         }
 
         /// <summary>
@@ -96,8 +96,11 @@ namespace Models
             get { return _lastRead; }
             set
             {
-                _lastRead = value;
-                UpdateBindings();
+                if (_lastRead != value)
+                {
+                    _lastRead = value;
+                    UpdateBindings();
+                }
             }
         }
 
@@ -142,7 +145,6 @@ namespace Models
                 _identity = identity;
                 Type = kind;
                 Mode = mode;
-                _settings = new ChannelSettingsModel();
                 LastReadCount = 0;
             }
 
@@ -171,8 +173,10 @@ namespace Models
                 _messages.RemoveAt(0);
 
             _messages.Add(message);
+
             if (_isSelected)
                 _lastRead = _messages.Count;
+
             UpdateBindings();
         }
         #endregion
@@ -189,7 +193,6 @@ namespace Models
             {
                 _messages.Clear();
                 _ads.Clear();
-                _settings = null;
             }
         }
         #endregion

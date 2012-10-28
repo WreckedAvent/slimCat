@@ -21,8 +21,7 @@
 
         <Border BorderBrush="{StaticResource DepressedBrush}"
                 BorderThickness="0,0,0,1">
-            <Expander HorizontalAlignment="Left"
-                      x:Name="CharacterStatusDisplayer">
+            <Expander x:Name="CharacterStatusDisplayer">
                 <Expander.Header>
                     <TextBlock TextWrapping="Wrap"
                                TextAlignment="Left"
@@ -46,6 +45,17 @@
                                      Path="ConversationWith.StatusMessage" />
                         </lib:TextBlockHelper.InlineList>
                     </TextBlock>
+
+                    <WrapPanel TextBlock.FontSize="12"
+                               HorizontalAlignment="Center">
+                        <Button Content="Open Log"
+                                Command="{Binding Path=OpenLogCommand}"
+                                Margin="10,5"/>
+                        <Button Content="Open Settings"
+                                Command="{Binding Path=OpenChannelSettingsCommand}"
+                                DataContext="{Binding Path=ChannelSettings}"
+                                Margin="10,5" />
+                    </WrapPanel>
                 </StackPanel>
             </Expander>
         </Border>
@@ -56,6 +66,35 @@
                       Grid.Row="1"
                       Loaded="OnMessagesLoaded"
                       x:Name="messages"/>
+
+        <Popup PlacementTarget="{Binding ElementName=messages}"
+               Placement="Center"
+               StaysOpen="False"
+               IsOpen="{Binding Path=ChannelSettings.IsChangingSettings}">
+
+            <Border BorderBrush="{StaticResource HighlightBrush}"
+                    BorderThickness="2"
+                    Background="{StaticResource BackgroundBrush}">
+                <WrapPanel Orientation="Vertical"
+                           Margin="10">
+                    <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                               FontSize="20"
+                               HorizontalAlignment="Center"
+                               Margin="10,5">
+                        <Run Text="Settings for"/>
+                        <Run Text="{Binding Path=Model.Title}"/>
+                    </TextBlock>
+                    <ContentControl Template="{StaticResource ChannelSettingBoxes}"
+                                    DataContext="{Binding Path=ChannelSettings}"/>
+
+                    <Button Content="Close Settings"
+                            Margin="10,5"
+                            DataContext="{Binding Path=ChannelSettings}"
+                            Foreground="{StaticResource ForegroundBrush}"
+                            Command="{Binding OpenChannelSettingsCommand}"/>
+                </WrapPanel>
+            </Border>
+        </Popup>
 
         <StackPanel Grid.Row="2"
                     Orientation="Vertical">

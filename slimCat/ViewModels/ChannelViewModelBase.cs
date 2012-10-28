@@ -55,6 +55,8 @@ namespace ViewModels
         }
 
         public bool HasError { get { return !string.IsNullOrWhiteSpace(Error); } }
+
+        public ChannelSettingsModel ChannelSettings { get { return _model.Settings; } }
         #endregion
 
         #region Constructors
@@ -115,6 +117,24 @@ namespace ViewModels
                     _linebreak = new RelayCommand(args => Message = Message + '\n');
                 return _linebreak;
             }
+        }
+
+        private RelayCommand _openLog;
+        public ICommand OpenLogCommand
+        {
+            get
+            {
+                if (_openLog == null)
+                    _openLog = new RelayCommand(OpenLogEvent);
+                return _openLog;
+            }
+        }
+
+        public void OpenLogEvent(object args)
+        {
+            IDictionary<string, object> toSend = CommandDefinitions.CreateCommand("openlog").toDictionary();
+
+            _events.GetEvent<UserCommandEvent>().Publish(toSend);
         }
         #endregion
 

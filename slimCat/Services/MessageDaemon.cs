@@ -231,6 +231,14 @@ namespace Services
                             _events.GetEvent<ErrorEvent>().Publish("Logged a section of \'" + command["title"] as string + "\'");
                             return;
                         }
+
+                    case "_logger_open_log":
+                        {
+                            InstanceLogger();
+
+                            _logger.OpenLog(_model.SelectedChannel.Title, _model.SelectedChannel.ID);
+                            return;
+                        }
                     #endregion
 
                     #region Code Command
@@ -392,10 +400,7 @@ namespace Services
                     if (poster != "_thisCharacter")
                     {
                         if (channel is GeneralChannelModel)
-                        {
-                            if (!channel.IsSelected)
-                                _events.GetEvent<NewMessageEvent>().Publish(thisMessage);
-                        }
+                            _events.GetEvent<NewMessageEvent>().Publish(new Dictionary<string, object>() {{"message", thisMessage}, {"channel", channel}});
                         else
                             _events.GetEvent<NewPMEvent>().Publish(thisMessage);
                     }

@@ -21,8 +21,6 @@
                 <TextBlock TextWrapping="Wrap"
                            Margin="5"
                            Foreground="{StaticResource ForegroundBrush}">
-                <Run Text="{Binding Title}"
-                     FontWeight="Bold"/>
                 <Run Text="{Binding Content}"/>
                 </TextBlock>
             </StackPanel>

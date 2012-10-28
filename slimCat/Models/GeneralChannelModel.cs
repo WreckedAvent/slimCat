@@ -13,6 +13,7 @@ namespace Models
         private string _motd;
         private ICharacter _owner;
         private int _userCount;
+        private int _lastAdCount;
         private IList<string> _mods;
         // used as an abstraction away from the user collection (so we know how many are in without it being set)
         #endregion
@@ -57,6 +58,43 @@ namespace Models
         }
 
         public override bool CanClose { get { return ((ID != "Home") && IsSelected); } }
+
+        public override bool NeedsAttention // this includes ads
+        {
+            get
+            {
+                return base.NeedsAttention || (UnreadAds >= Settings.FlashInterval && Settings.ShouldFlash);
+            }
+        }
+
+        public int UnreadAds { get { return Ads.Count - _lastAdCount; } }
+
+        public int LastReadAdCount
+        {
+            get { return _lastAdCount; }
+            set
+            {
+                if (_lastAdCount != value)
+                {
+                    _lastAdCount = value;
+                    UpdateBindings();
+                }
+            }
+        }
+
+        public override bool IsSelected
+        {
+            get
+            {
+                return base.IsSelected;
+            }
+            set
+            {
+                base.IsSelected = value;
+                if (value)
+                    LastReadAdCount = Ads.Count;
+            }
+        }
         #endregion
 
         #region Constructors
@@ -71,17 +109,7 @@ namespace Models
                 _users = new ObservableCollection<ICharacter>();
                 _mods = new List<string>();
 
-                Ads.CollectionChanged += (s, e) =>
-                    {
-                        if (e.Action != System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
-                        {
-                            if (!IsSelected)
-                            {
-                                UpdateBindings();
-                            }
-                        }
-                    };
-
+                _settings = new ChannelSettingsModel();
                 Users.CollectionChanged += (s, e) => { if (e.Action != System.Collections.Specialized.NotifyCollectionChangedAction.Reset) UpdateBindings(); };
             }
 
@@ -102,6 +130,23 @@ namespace Models
                 messageCollection.RemoveAt(0);
 
             messageCollection.Add(message);
+
+            if (IsSelected)
+            {
+                if (message.Type == MessageType.normal)
+                    LastReadCount = messageCollection.Count;
+                else
+                    LastReadAdCount = messageCollection.Count;
+            }
+
+            UpdateBindings();
+        }
+
+        protected override void Dispose(bool IsManaged)
+        {
+            if (IsManaged)
+                _settings = new ChannelSettingsModel();
+            base.Dispose(IsManaged);
         }
         #endregion
     }

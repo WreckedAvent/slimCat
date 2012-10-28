@@ -10,6 +10,7 @@ using Microsoft.Practices.Unity;
 using Models;
 using slimCat;
 using ViewModels;
+using System.Collections.Generic;
 
 namespace Services
 {
@@ -37,7 +38,7 @@ namespace Services
             _events = eventagg;
             _cm = cm;
 
-            _events.GetEvent<NewMessageEvent>().Subscribe(param => { }, true);
+            _events.GetEvent<NewMessageEvent>().Subscribe(HandleNewChannelMessage, true);
             _events.GetEvent<NewPMEvent>().Subscribe(HandleNewMessage, true);
             _events.GetEvent<NewUpdateEvent>().Subscribe(HandleNotification, true);
             _events.GetEvent<LoginEvent>().Subscribe(
@@ -59,6 +60,8 @@ namespace Services
                     {
                         _events.GetEvent<ErrorEvent>().Publish(null);
                     };
+
+                    icon.Visible = true;
                     #endregion
                 });
 
@@ -107,32 +110,45 @@ namespace Services
         private void HandleNewMessage(IMessage Message)
         {
             var poster = Message.Poster;
-            bool handled = false;
+            var channel = _cm.CurrentPMs.FirstByIdOrDefault(Message.Poster.Name);
+
+            if (channel != null)
+            {
+                if (!channel.IsSelected && channel.Settings.ShouldDing)
+                {
+                    NotifyUser(true, true, poster.Name + '\n' + HttpUtility.UrlDecode(Message.Message));
+                    return;
+                }
+            }
 
             Dispatcher.Invoke(
                 (Action)delegate
                 {
-                    if (!Application.Current.MainWindow.IsFocused)
-                    {
+                    if (!Application.Current.MainWindow.IsActive && channel.Settings.ShouldDing)
                         NotifyUser(true, true, poster.Name + '\n' + HttpUtility.UrlDecode(Message.Message));
-                        handled = true;
-                    }
                 });
+        }
 
-            if (handled) return;
+        private void HandleNewChannelMessage(IDictionary<string, object> update)
+        {
+            var channel = update["channel"] as GeneralChannelModel;
+            var message = update["message"] as IMessage;
 
-            if (_cm.CurrentPMs.Any(pms => poster.Name.Equals(pms.ID)))
+            if (channel != null)
             {
-                var channel = _cm.CurrentPMs.First(pm => poster.Name.Equals(pm.ID));
-                if (channel.IsSelected)
+                if (!channel.IsSelected && channel.Settings.ShouldDing)
                 {
-                    NotifyUser(false, true, poster.Name + '\n' + HttpUtility.UrlDecode(Message.Message));
-                    handled = true;
+                    NotifyUser(true, true, message.Poster.Name + '\n' + HttpUtility.UrlDecode(message.Message));
+                    return;
                 }
             }
-            
-            if (!handled)
-                NotifyUser(true, true, poster.Name + '\n' + HttpUtility.UrlDecode(Message.Message));
+
+            Dispatcher.Invoke(
+                (Action)delegate
+                {
+                    if (!Application.Current.MainWindow.IsActive && channel.Settings.ShouldDing)
+                        NotifyUser(true, true, message.Poster.Name + '\n' + HttpUtility.UrlDecode(message.Message));
+                });
         }
 
         private void HandleNotification(NotificationModel Notification)

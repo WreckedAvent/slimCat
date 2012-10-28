@@ -44,11 +44,16 @@
                         </lib:TextBlockHelper.InlineList>
                         </TextBlock>
                     </ScrollViewer>
-                    <Button Content="Open Settings"
-                            Command="{Binding Path=OpenChannelSettingsCommand}"
-                            DataContext="{Binding Path=ChannelSettings}"
-                            HorizontalAlignment="Center"
-                            Margin="10,5" />
+                    <WrapPanel TextBlock.FontSize="12"
+                               HorizontalAlignment="Center">
+                        <Button Content="Open Log"
+                                Command="{Binding Path=OpenLogCommand}"
+                                Margin="10,5"/>
+                        <Button Content="Open Settings"
+                                Command="{Binding Path=OpenChannelSettingsCommand}"
+                                DataContext="{Binding Path=ChannelSettings}"
+                                Margin="10,5" />
+                    </WrapPanel>
                 </StackPanel>
             </Expander>
         </Border>

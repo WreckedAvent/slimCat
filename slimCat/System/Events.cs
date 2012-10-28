@@ -56,7 +56,7 @@ namespace slimCat
     /// <summary>
     /// This event is fired when we have a new message in a non-focused channel
     /// </summary>
-    public class NewMessageEvent : CompositePresentationEvent<IMessage> { }
+    public class NewMessageEvent : CompositePresentationEvent<IDictionary<string, object>> { }
 
     /// <summary>
     /// This event is fired when we need to alert the UI about an update, such as a user's status change

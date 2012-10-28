@@ -392,11 +392,21 @@ namespace Models
 
         #region Fields
         private bool _shouldFlash = true;
+        private bool _shouldDing = false;
         private int _shouldFlashInterval = 1;
         private bool _notifyWhenThisCharacterIsMentioned = true;
         private string _notifyOnTheseTerms = "";
         private bool _isChangingSettings = false;
         #endregion
+
+        public ChannelSettingsModel(bool isPM = false)
+        {
+            if (isPM)
+            {
+                _shouldDing = true;
+                _notifyWhenThisCharacterIsMentioned = false;
+            }
+        }
 
         #region Properties
         public bool ShouldFlash
@@ -407,6 +417,19 @@ namespace Models
                 if (_shouldFlash != value)
                 {
                     _shouldFlash = value;
+                    CallUpdate();
+                }
+            }
+        }
+
+        public bool ShouldDing
+        {
+            get { return _shouldDing; }
+            set
+            {
+                if (_shouldDing != value)
+                {
+                    _shouldDing = value;
                     CallUpdate();
                 }
             }
@@ -430,7 +453,7 @@ namespace Models
             get { return _shouldFlashInterval; }
             set
             {
-                if (_shouldFlashInterval != value)
+                if (_shouldFlashInterval != value || value < 1)
                 {
                     _shouldFlashInterval = value;
                     CallUpdate();

@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows.Input;
-using lib;
+﻿using lib;
 using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.Regions;
 using Microsoft.Practices.Unity;
 using Models;
 using slimCat;
-using Views;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
+using System.Windows.Input;
+using Views;
 
 namespace ViewModels
 {
@@ -93,7 +93,6 @@ namespace ViewModels
 
         public GenderSettingsModel GenderSettings { get { return _genderSettings; } }
         public GenericSearchSettingsModel SearchSettings { get { return _searchSettings; } }
-        public ChannelSettingsModel ChannelSettings { get { return Model.Settings; } }
 
         #region Interface-binding Properties
         // Used for ad-displaying tool chain
@@ -273,11 +272,6 @@ namespace ViewModels
                         OnPropertyChanged("FilteredMessages");
                     };
 
-                ChannelSettings.Updated += (s, e) =>
-                    {
-                        OnPropertyChanged("ChannelSettings");
-                    };
-
                 _messageFlood.Elapsed += (s, e) =>
                 {
                     _isInCoolDownMessage = false;
@@ -310,6 +304,12 @@ namespace ViewModels
                             temp = ShouldShowPostLength;
                         }
                     }
+                };
+
+
+                ChannelSettings.Updated += (s, e) =>
+                {
+                    OnPropertyChanged("ChannelSettings");
                 };
                 #endregion
 
@@ -392,6 +392,7 @@ namespace ViewModels
             _timeLeftAd = DateTimeOffset.Now.AddMinutes(10).AddSeconds(2);
 
             _isInCoolDownAd = true;
+            _adFlood.Start();
             OnPropertyChanged("CanPost");
             OnPropertyChanged("CannotPost");
         }

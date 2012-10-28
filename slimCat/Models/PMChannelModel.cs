@@ -84,6 +84,7 @@ namespace Models
 
             _tick = new System.Timers.Timer(1000);
             _isTypingString = new StringBuilder();
+            _settings = new ChannelSettingsModel(true);
 
             #region Disposable
             _tick.Elapsed += (s, e) =>
@@ -109,6 +110,7 @@ namespace Models
                 _tick.Dispose();
                 _tick = null;
                 _isTypingString = null;
+                _settings = new ChannelSettingsModel(true);
             }
 
             base.Dispose(IsManaged);

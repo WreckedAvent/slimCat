@@ -976,6 +976,7 @@
                 <TextBlock Text="New unread Messages"
                            Margin="5"/>
             </WrapPanel>
+            <CheckBox IsChecked="{Binding ShouldDing}">Play a sound and notify on new message</CheckBox>
             <!--<CheckBox IsChecked="{Binding NotifyCharacterMention}">Notify me when this channel mentions this character</CheckBox>-->
         </StackPanel>
     </ControlTemplate>

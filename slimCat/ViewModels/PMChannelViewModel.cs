@@ -160,6 +160,12 @@ namespace ViewModels
                         if (IsTyping)
                             _typingLengthCache = (Message != null ? Message.Length : 0);
                     };
+
+
+                ChannelSettings.Updated += (s, e) =>
+                {
+                    OnPropertyChanged("ChannelSettings");
+                };
                 #endregion
             }
 

@@ -152,6 +152,7 @@ namespace Models
             {"logheader", new CommandModel("logheader", "_logger_new_header", new [] {"title"})},
             {"logsection", new CommandModel("logsection", "_logger_new_section", new [] {"title"})},
             {"lognewline", new CommandModel("lognewline", "_logger_new_line", null, CommandModel.CommandTypes.NoArgs)},
+            {"openlog", new CommandModel("openlog", "_logger_open_log", null, CommandModel.CommandTypes.NoArgs)},
             {"makeroom", new CommandModel("makeroom", "CCR", new [] {"channel"})},
             {"priv", new CommandModel("priv", "priv", new [] {"character"})},
              //{"report", new CommandModel("report", "SFC", new [] {"character"})},
@@ -169,7 +170,6 @@ namespace Models
             {"promote", new CommandModel("promote", "COA", new [] {"character"}, CommandModel.CommandTypes.SingleArgsAndChannel, CommandModel.PermissionLevel.Moderator)},    
             {"setdescription", new CommandModel("setdescription", "CDS", new [] {"description"}, CommandModel.CommandTypes.SingleArgsAndChannel, CommandModel.PermissionLevel.Moderator)},
             {"unban", new CommandModel("unban", "CUB", new [] {"character"}, CommandModel.CommandTypes.SingleArgsAndChannel, CommandModel.PermissionLevel.Moderator)},
-
             
             // global op commands
             {"chatban", new CommandModel("chatban", "ACB", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},

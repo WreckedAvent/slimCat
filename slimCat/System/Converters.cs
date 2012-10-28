@@ -158,7 +158,6 @@ namespace System
         }
     }
 
-
     /// <summary>
     /// Various conversion methods
     /// </summary>
@@ -279,7 +278,7 @@ namespace System
                 return new Italic(x);
             else if (y == "s")
                 return new Span(x) { TextDecorations = TextDecorations.Strikethrough };
-            else if (y.StartsWith("channel"))
+            else if (y.StartsWith("channel") || y.StartsWith("session"))
             {
                 var channel = stripBeforeType(y);
 
@@ -322,16 +321,31 @@ namespace System
                 if (startIndex > 0)
                     toReturn.Inlines.Add(new Run(x.Substring(0, startIndex)));
 
+                if (startType.StartsWith("session")) // hack-in for session to work
+                {
+                    var rough = x.Substring(startIndex);
+                    var firstBrace = rough.IndexOf(']');
+                    var endInd = rough.IndexOf("[/session]");
+
+                    if (firstBrace != -1 || endInd != -1)
+                    {
+                        var channel = rough.Substring(firstBrace+1, (endInd-firstBrace-1));
+                        var title = rough.Substring("[session=".Length, (firstBrace-"[session=".Length));
+                        x = x.Replace(channel, title);
+                        x = x.Replace("[session="+title+"]", "[session="+channel+"]");
+                    }
+                }
+
                 string roughString = x.Substring(startIndex);
                 roughString = roughString.Remove(0, roughString.IndexOf(']') + 1);
 
                 var endType = findEndType(roughString);
                 var endIndex = roughString.IndexOf("[/" + endType + "]");
 
-
+                // for BBCode with arguments, we must do this
                 if (SpecialBBCases.Any(bbcase => startType.Equals(bbcase)))
                 {
-                    startType += "=";;
+                    startType += "=";
 
                     var content = roughString.Substring(0, endIndex);
 
@@ -356,6 +370,7 @@ namespace System
                     var properEnd = "[/" + stripAfterType(startType) + "]";
                     if (roughString.Contains(properEnd))
                     {
+
                         var properIndex = roughString.IndexOf(properEnd);
                         var toMarkUp = roughString.Substring(0, properIndex);
                         var restOfString = roughString.Substring(properIndex + properEnd.Length);
