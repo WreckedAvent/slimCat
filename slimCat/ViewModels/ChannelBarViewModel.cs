@@ -20,10 +20,10 @@ namespace ViewModels
         private bool _isExpanded = true;
         private bool _hasUpdate = false;
         private string _currentSelected;
-        NotificationsTabViewModel _notificationsVM; // yes this is tight coupling, so sue me
 
         public const string ChannelbarView = "ChannelbarView";
         private const string TabViewRegion = "TabViewRegion";
+        public event EventHandler OnJumpToNotifications;
         #endregion
 
         #region Properties
@@ -51,24 +51,6 @@ namespace ViewModels
                 OnPropertyChanged("HasUpdate");
             }
         }
-
-        public string SelectedTab
-        {
-            get { return _currentSelected; }
-            set
-            {
-                if (_currentSelected != value)
-                {
-                    _currentSelected = value;
-                    OnPropertyChanged("SelectedTab");
-                }
-            }
-        }
-
-        public bool ShouldFlashNotificationTab
-        {
-            get { return _notificationsVM.NeedsAttention; }
-        }
         #endregion
 
         #region Constructors
@@ -83,8 +65,7 @@ namespace ViewModels
                 // create the tabs
                 _container.Resolve<ChannelsTabViewModel>();
                 _container.Resolve<UsersTabViewModel>();
-                _notificationsVM = _container.Resolve<NotificationsTabViewModel>();
-                _notificationsVM.PropertyChanged += (s, e) => OnPropertyChanged("ShouldFlashNotificationTab");
+                _container.Resolve<NotificationsTabViewModel>();
 
                 _events.GetEvent<NewUpdateEvent>().Subscribe(args => 
                     {
@@ -160,6 +141,14 @@ namespace ViewModels
                         delegate
                         {
                             IsExpanded = !IsExpanded;
+                            _hasUpdate = false;
+                            if (_currentSelected != "Notifications")
+                                NavigateToTabEvent("Notifications");
+
+                            if (OnJumpToNotifications != null)
+                                OnJumpToNotifications(this, new EventArgs());
+
+                            OnPropertyChanged("HasUpdate");
                         });
                 }
 
@@ -169,29 +158,26 @@ namespace ViewModels
 
         private void NavigateToTabEvent(object args)
         {
-            if (SelectedTab != args as string)
+            if (_currentSelected != args as string)
             {
-                SelectedTab = args as string;
+                _currentSelected = args as string;
                 switch (args as string)
                 {
                     case "Channels":
                         {
                             _region.Regions[TabViewRegion].RequestNavigate(ChannelsTabViewModel.ChannelsTabView);
-                            _notificationsVM.IsSelected = false;
                             break;
                         }
 
                     case "Users":
                         {
                             _region.Regions[TabViewRegion].RequestNavigate(UsersTabViewModel.UsersTabView);
-                            _notificationsVM.IsSelected = false;
                             break;
                         }
 
                     case "Notifications":
                         {
                             _region.Regions[TabViewRegion].RequestNavigate(NotificationsTabViewModel.NotificationsTabView);
-                            _notificationsVM.IsSelected = true;
                             break;
                         }
 
