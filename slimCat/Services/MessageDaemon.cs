@@ -258,6 +258,14 @@ namespace Services
                         {
                             string target = null;
 
+                            Action showMyDamnWindow = () => 
+                            {
+                                Application.Current.MainWindow.Show();
+                                if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
+                                    Application.Current.MainWindow.WindowState = WindowState.Normal;
+                                Application.Current.MainWindow.Focus();
+                            };
+
                             if (command.ContainsKey("target"))
                                 target = command["target"] as string;
 
@@ -267,11 +275,7 @@ namespace Services
                                 if (guess != null)
                                 {
                                     RequestNavigate(target);
-                                    Dispatcher.Invoke(
-                                    (Action)delegate
-                                    {
-                                        Application.Current.MainWindow.Show();
-                                    });
+                                    Dispatcher.Invoke(showMyDamnWindow);
                                 }
                                 else
                                 {
@@ -280,11 +284,7 @@ namespace Services
                                     if (secondGuess != null)
                                     {
                                         RequestNavigate(target);
-                                        Dispatcher.Invoke(
-                                        (Action)delegate
-                                        {
-                                            Application.Current.MainWindow.Show();
-                                        });
+                                        Dispatcher.Invoke(showMyDamnWindow);
                                     }
                                 }
                             }
@@ -296,11 +296,8 @@ namespace Services
                                 {
                                     var doStuffWith = (CharacterUpdateModel)latest;
                                     JoinChannel(ChannelType.pm, doStuffWith.TargetCharacter.Name);
-                                    Dispatcher.Invoke(
-                                    (Action)delegate
-                                    {
-                                        Application.Current.MainWindow.Show();
-                                    });
+
+                                    Dispatcher.Invoke(showMyDamnWindow);
                                 }
 
                                 if (latest is ChannelUpdateModel)
@@ -310,18 +307,15 @@ namespace Services
 
                                     if (channel == null)
                                     {
-                                        _events.GetEvent<ErrorEvent>().Publish("The notification applies to a channel that no longer exists.");
+                                        _events.GetEvent<ErrorEvent>().Publish("Not enough information to switch to tab");
+
+                                        Dispatcher.Invoke(showMyDamnWindow);
                                         return;
                                     }
 
                                     var chanType = channel.Type;
-
                                     JoinChannel(chanType, doStuffWith.ChannelID);
-                                    Dispatcher.Invoke(
-                                    (Action)delegate
-                                    {
-                                        Application.Current.MainWindow.Show();
-                                    });
+                                    Dispatcher.Invoke(showMyDamnWindow);
                                 }
                             }
                             return;

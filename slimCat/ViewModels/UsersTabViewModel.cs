@@ -43,17 +43,15 @@ namespace ViewModels
             get
             {
                 if (HasUsers)
-                    foreach (var character in SelectedChan.Users
-                                            .Where(MeetsFilter)
-                                            .OrderBy(RelationshipToUser)
-                                            .ThenBy(x => x.Name))
-                        yield return character;
+                    return SelectedChan.Users
+                                .Where(MeetsFilter)
+                                .OrderBy(RelationshipToUser)
+                                .ThenBy(x => x.Name);
                 else
-                    foreach (var character in CM.OnlineCharacters
-                                            .Where(MeetsFilter)
-                                            .OrderBy(RelationshipToUser)
-                                            .ThenBy(x => x.Name))
-                        yield return character;
+                    return CM.OnlineCharacters
+                                .Where(MeetsFilter)
+                                .OrderBy(RelationshipToUser)
+                                .ThenBy(x => x.Name);
             }
         }
 
