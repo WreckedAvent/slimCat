@@ -24,8 +24,11 @@ namespace Services
         private readonly IEventAggregator _events;
         private string _selectedCharacter;
         private WebSocket _ws;
+        #if (DEBUG)
         private StreamWriter _logger;
+        #endif
         private System.Timers.Timer _stagger;
+        private bool _isAuth = false;
         #endregion
 
         #region Properties
@@ -43,10 +46,13 @@ namespace Services
             _events = eventagg;
 
             _events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(ConnectToChat, ThreadOption.BackgroundThread, true);
+            
+            #if (DEBUG)
             if (!System.IO.Directory.Exists(@"Debug"))
                 System.IO.Directory.CreateDirectory("Debug");
 
             _logger = new StreamWriter(@"Debug\Rawchat "+System.DateTime.Now.Ticks+".log", true);
+            #endif
         }
         #endregion
 
@@ -89,10 +95,18 @@ namespace Services
         /// </summary>
         private void ConnectionClosed(object s, EventArgs e)
         {
+            if (!_isAuth)
+            {
+                _events.GetEvent<LoginFailedEvent>().Publish("Server closed the connection");
+                AttemptReconnect();
+                return;
+            }
+
             Exceptions.HandleException(new Exception("Connection to the server was closed"),
                 "The connection to the server was closed.\n\nApplication will now exit.");
-
+            #if (DEBUG)
             _logger.Close();
+            #endif
         }
 
         /// <summary>
@@ -100,6 +114,7 @@ namespace Services
         /// </summary>
         void ConnectionMessageReceived(object sender, MessageReceivedEventArgs e)
         {
+            if (!_isAuth) _isAuth = true;
             string command_type = e.Message.Substring(0, 3); // type of command sent
 
             string message = e.Message; // actual arguments sent
@@ -114,6 +129,7 @@ namespace Services
                 json.Add("command", command_type);
                 // add back in the command type so our models can listen for them
 
+                #if (DEBUG)
                 // for debug, write the command received to file
                 _logger.WriteLine("<<- Command: {0}", json["command"]);
 
@@ -126,7 +142,13 @@ namespace Services
                 _logger.WriteLine();
                 _logger.Flush();
                 //
+                #endif
 
+                if ((json["command"] as string) == "ERR" && json.ContainsKey("number"))
+                {
+                    if (json["number"] as string == "2") // no login slots error
+                        _isAuth = false;
+                }
                 _events.GetEvent<ChatCommandEvent>().Publish(json);
             }
 
@@ -134,7 +156,8 @@ namespace Services
                 this.SendMessage("PIN");
 
             else if (e.Message == "LRP") { }
-
+            
+            #if (DEBUG)
             else
             {
                 // some other, odd, no argument command not specified
@@ -142,6 +165,7 @@ namespace Services
                 _logger.WriteLine();
                 _logger.Flush();
             }
+            #endif
         }
 
         /// <summary>
@@ -200,12 +224,14 @@ namespace Services
 
                 string ser = SimpleJson.SimpleJson.SerializeObject(command);
 
+                #if (DEBUG)
                 // debug information
                 _logger.WriteLine("->> Command: " + command_type);
                 _logger.WriteLine("Data: " + ser);
                 _logger.WriteLine();
                 _logger.Flush();
                 //
+                #endif
 
                 _ws.Send(command_type + " " + ser);
             }
@@ -227,10 +253,12 @@ namespace Services
 
                 string ser = SimpleJson.SimpleJson.SerializeObject(command);
 
+                #if (DEBUG)
                 _logger.WriteLine("->> Command: " + type);
                 _logger.WriteLine("Data: " + ser);
                 _logger.WriteLine();
                 _logger.Flush();
+                #endif
 
                 _ws.Send(type + " " + ser);
             }
@@ -253,9 +281,11 @@ namespace Services
                 if (commandType.Length > 3 || commandType.Length < 3)
                     throw new ArgumentOutOfRangeException("commandType", "Command type must be 3 characters long");
 
+                #if (DEBUG)
                 _logger.WriteLine("->> Command: " + commandType);
                 _logger.WriteLine();
                 _logger.Flush();
+                #endif
 
                 _ws.Send(commandType);
             }
@@ -276,8 +306,10 @@ namespace Services
 
         protected virtual void Dispose(bool isManagedDispose)
         {
+            #if (DEBUG)
             if (isManagedDispose)
                 _logger.Dispose();
+            #endif
             _ws.Close();
         }
     }

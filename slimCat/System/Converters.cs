@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 
 namespace System
 {
@@ -59,13 +60,21 @@ namespace System
             object parameter, CultureInfo culture)
         {
             var inlines = new List<Inline>();
-            if (values.GetLength(0) == 2) // avoids null reference
+            if (values.GetLength(0) == 3) // avoids null reference
             {
                 #region Init
                 inlines.Clear(); // simple insurance that there's no junk
 
                 string text = (string)values[0]; // this is the beef of the message
                 text = HttpUtility.HtmlDecode(text); // translate the HTML characters
+
+                Models.MessageType type = (Models.MessageType)values[2]; // what kind of type our message is
+
+                if (type == Models.MessageType.roll)
+                {
+                    inlines.Add(HelperConverter.ParseBBCode(text, true));
+                    return inlines;
+                }
 
                 // This creates the click-able name 'button'
                 InlineUIContainer nameButton =
@@ -82,28 +91,41 @@ namespace System
                 #endregion
 
                 #region BBCode Parsing
-                if (text.Length > 3)
+                if (text.Length > "/me".Length)
                 {
                     if (text.StartsWith("/me")) // if the post is a /me "command"
                     {
-                        text = text.Substring(3);
+                        text = text.Substring("/me".Length);
                         inlines.Insert(0, new Run("*")); // push the name button to the second slot
-                        inlines.Add(new Italic(HelperConverter.ParseBBCode(text)));
+                        inlines.Add(new Italic(HelperConverter.ParseBBCode(text, true)));
                         inlines.Add(new Run("*"));
                         return inlines;
                     }
 
-                    else if (text.StartsWith("/post"))
+                    else if (text.StartsWith("/post")) // or a post "command"
                     {
-                        text = text.Substring(5);
+                        text = text.Substring("/post ".Length);
 
-                        inlines.Insert(0, HelperConverter.ParseBBCode(text));
+                        inlines.Insert(0, HelperConverter.ParseBBCode(text, true));
                         inlines.Insert(1, new Run(" ~"));
                         return inlines;
                     }
 
+                    else if (text.StartsWith("/warn")) // or a warn "command"
+                    {
+                        text = text.Substring("/warn ".Length);
+                        inlines.Add(new Run(" warns, "));
+                        var toAdd = (HelperConverter.ParseBBCode(text, true));
+
+                        toAdd.Foreground = (Brush)Application.Current.FindResource("HighlightBrush");
+                        toAdd.FontWeight = FontWeights.ExtraBold;
+                        inlines.Add(toAdd);
+
+                        return inlines;
+                    }
+
                     inlines.Add(new Run(": "));
-                    inlines.Add(HelperConverter.ParseBBCode(text));
+                    inlines.Add(HelperConverter.ParseBBCode(text, true));
                     return inlines;
                 }
                 #endregion
@@ -121,7 +143,7 @@ namespace System
                 string text = (string)values[0];
                 text = HttpUtility.HtmlDecode(text);
 
-                inlines.Add(HelperConverter.ParseBBCode(text));
+                inlines.Add(HelperConverter.ParseBBCode(text, true));
 
                 return inlines;
             }
@@ -147,7 +169,7 @@ namespace System
             text = HttpUtility.UrlDecode(text);
 
             IList<Inline> toReturn = new List<Inline>();
-            toReturn.Add(HelperConverter.ParseBBCode(text));
+            toReturn.Add(HelperConverter.ParseBBCode(text, false));
 
             return toReturn;
         }
@@ -164,10 +186,11 @@ namespace System
     public static class HelperConverter
     {
         #region BBFunctions
-        static IList<string> BBType = new List<string> { "b", "s", "u", "i", "url", "color", "channel", "session", "user", "noparse", "icon" };
-        static IList<string> SpecialBBCases = new List<string> { "url", "channel", "user", "session"  };
+        static IList<string> BBType = new List<string> { "b", "s", "u", "i", "url", "color", "channel", "session", "user", "noparse", "icon", "sub", "sup" };
+        static IList<string> SpecialBBCases = new List<string> { "url", "channel", "user", "icon",  };
+        
         // determines if a string has a (valid) opening BBCode tag
-        static Func<string, bool> hasOpenTag = x =>
+        static bool hasOpenTag (string x)
         {
             int root = x.IndexOf('[');
             if (root == -1 || x.Length < 3) return false;
@@ -184,10 +207,10 @@ namespace System
             else
                 return true;
 
-        };
+        }
 
         // determines if a string has a (valid) closing BBCode tag
-        static Func<string, bool> hasCloseTag = x =>
+        static bool hasCloseTag(string x)
         {
             int root = x.IndexOf("[/");
             if (root == -1 || x.Length < 4 || x[root + 1] != '/') return false;
@@ -201,10 +224,10 @@ namespace System
                 return hasCloseTag(x.Substring(end + 1));
             else
                 return true;
-        };
+        }
 
         // returns the type of a BBCode mark-up
-        static Func<string, string> findStartType = x =>
+        static string findStartType(string x)
         {
             var root = x.IndexOf('[');
             if (root == -1 || x.Length < 3) return "n";
@@ -217,9 +240,9 @@ namespace System
             if (BBType.Any(bbtype => type.StartsWith(bbtype)))
                 return type;
             else return findStartType(x.Substring(end + 1));
-        };
+        }
 
-        static Func<string, string> findEndType = x =>
+        static string findEndType(string x)
         {
             var root = x.IndexOf('[');
             if (root == -1 || x.Length < 4) return "n";
@@ -234,9 +257,9 @@ namespace System
             if (BBType.Any(bbtype => type.Equals(bbtype)))
                 return type;
             else return findEndType(x.Substring(end + 1));
-        };
+        }
 
-        static Func<string, string, string> removeFirstEndType = (x, type) =>
+        static string removeFirstEndType(string x, string type)
         {
             var endtype = "[/" + type + "]";
             int firstOccur = x.IndexOf(endtype);
@@ -245,9 +268,9 @@ namespace System
             string rest = x.Substring(firstOccur + endtype.Length);
 
             return interestedin + rest;
-        };
+        }
 
-        static Func<string, string> stripBeforeType = z =>
+        static string stripBeforeType(string z)
         {
             if (z.Contains('='))
             {
@@ -256,9 +279,9 @@ namespace System
             }
             else
                 return z;
-        };
+        }
 
-        static Func<string, string> stripAfterType = z =>
+        static string stripAfterType(string z)
         {
             if (z.Contains('='))
             {
@@ -266,9 +289,12 @@ namespace System
             }
             else
                 return z;
-        };
+        }
 
-        static Func<Inline, string, Inline> typeToInline = (x, y) =>
+        /// <summary>
+        /// Turns wraps x with an flowdocument inline matching y
+        /// </summary>
+        static Inline typeToInline(Inline x, string y, bool useTunnelingStyles)
         {
             if (y == "b")
                 return new Bold(x);
@@ -286,27 +312,40 @@ namespace System
                     new Button()
                     {
                         Content = x,
-                        Style = (Style)Application.Current.FindResource("ChannelMarkupButton"),
+                        Style = (Style)Application.Current.FindResource((useTunnelingStyles ? "TunnelingChannelMarkupButton" : "ChannelMarkupButton")),
                         CommandParameter = channel
                     })
                     { BaselineAlignment = BaselineAlignment.TextBottom };
             }
-            else if (y.StartsWith("url") && !y.Equals("url"))
+            else if (y.StartsWith("url") || y.StartsWith("user") || y.StartsWith("icon"))
             {
                 var url = stripBeforeType(y);
 
-                return new Hyperlink(x)
+                var toReturn = new Hyperlink(x)
                 {
                     CommandParameter = url,
-                    Style = (Style)Application.Current.FindResource("TunnelingHyperlink"),
                     ToolTip = url
                 };
+
+                if (useTunnelingStyles) toReturn.Style = (Style)Application.Current.FindResource("TunnelingHyperlink");
+
+                return toReturn;
             }
+            else if (y == "sub")
+                return new Span(x) { BaselineAlignment = BaselineAlignment.Subscript };
+            else if (y == "sup")
+                return new Span(x) { BaselineAlignment = BaselineAlignment.Superscript };
             else
                 return new Span(x);
-        };
+        }
 
-        static Func<string, Inline> bbcodeToInline = x =>
+        /// <summary>
+        /// Converts a marked-up BBCode string to a flowdocument inline
+        /// </summary>
+        /// <param name="x">string to convert</param>
+        /// <param name="useTunnelingStyles">if the styles used need to tunnel up the visual tree</param>
+        /// <returns></returns>
+        static Inline bbcodeToInline(string x, bool useTunnelingStyles)
         {
             if (!hasOpenTag(x))
                 return new Run(x);
@@ -330,9 +369,14 @@ namespace System
                     if (firstBrace != -1 || endInd != -1)
                     {
                         var channel = rough.Substring(firstBrace+1, (endInd-firstBrace-1));
-                        var title = rough.Substring("[session=".Length, (firstBrace-"[session=".Length));
-                        x = x.Replace(channel, title);
-                        x = x.Replace("[session="+title+"]", "[session="+channel+"]");
+                        var title = rough.Substring("[session=".Length, (firstBrace - "[session=".Length));
+
+                        if (!title.Contains("ADH-"))
+                        {
+                            x = x.Replace(channel, title);
+                            x = x.Replace("[session=" + title + "]", "[session=" + channel + "]");
+                            startType = findStartType(x);
+                        }
                     }
                 }
 
@@ -341,13 +385,18 @@ namespace System
 
                 var endType = findEndType(roughString);
                 var endIndex = roughString.IndexOf("[/" + endType + "]");
+                var endLength = ("[/" + endType + "]").Length;
 
                 // for BBCode with arguments, we must do this
                 if (SpecialBBCases.Any(bbcase => startType.Equals(bbcase)))
                 {
                     startType += "=";
 
-                    var content = roughString.Substring(0, endIndex);
+                    string content;
+                    if (endIndex != -1)
+                        content = roughString.Substring(0, endIndex);
+                    else
+                        content = roughString;
 
                     startType += content;
                 }
@@ -359,11 +408,11 @@ namespace System
                     var skipthis = roughString.Substring(0, endIndex);
 
                     toReturn.Inlines.Add(new Run(skipthis));
-                    toReturn.Inlines.Add(bbcodeToInline(restofString));
+                    toReturn.Inlines.Add(bbcodeToInline(restofString, useTunnelingStyles));
                 }
 
                 else if (endType == "n" || endIndex == -1)
-                    toReturn.Inlines.Add(typeToInline(new Run(roughString), startType));
+                    toReturn.Inlines.Add(typeToInline(new Run(roughString), startType, useTunnelingStyles));
 
                 else if (endType != startType)
                 {
@@ -376,36 +425,36 @@ namespace System
                         var restOfString = roughString.Substring(properIndex + properEnd.Length);
 
                         toReturn.Inlines
-                            .Add(typeToInline(bbcodeToInline(toMarkUp), startType));
+                            .Add(typeToInline(bbcodeToInline(toMarkUp, useTunnelingStyles), startType, useTunnelingStyles));
 
                         toReturn.Inlines
-                            .Add(bbcodeToInline(restOfString));
+                            .Add(bbcodeToInline(restOfString, useTunnelingStyles));
                     }
                     else
                         toReturn.Inlines
-                            .Add(typeToInline(bbcodeToInline(roughString), startType));
+                            .Add(typeToInline(bbcodeToInline(roughString, useTunnelingStyles), startType, useTunnelingStyles));
                 }
 
-                else if (endIndex + 4 == roughString.Length)
+                else if (endIndex + endLength  == roughString.Length)
                 {
-                    roughString = roughString.Remove(endIndex, 4);
-                    toReturn.Inlines.Add(typeToInline(new Run(roughString), startType));
+                    roughString = roughString.Remove(endIndex, endLength);
+                    toReturn.Inlines.Add(typeToInline(new Run(roughString), startType, useTunnelingStyles));
                 }
 
                 else
                 {
-                    var restOfString = roughString.Substring(endIndex + 4);
+                    var restOfString = roughString.Substring(endIndex + endLength);
 
                     roughString = roughString.Substring(0, endIndex);
 
-                    toReturn.Inlines.Add(typeToInline(new Run(roughString), startType));
+                    toReturn.Inlines.Add(typeToInline(new Run(roughString), startType, useTunnelingStyles));
 
-                    toReturn.Inlines.Add(bbcodeToInline(restOfString));
+                    toReturn.Inlines.Add(bbcodeToInline(restOfString, useTunnelingStyles));
                 }
 
                 return toReturn;
             }
-        };
+        }
         #endregion
 
         #region url functions
@@ -510,9 +559,9 @@ namespace System
             return "[" + time.Hour + ":" + minuteFix + "]";
         }
 
-        public static Inline ParseBBCode(string text)
+        public static Inline ParseBBCode(string text, bool useTunnelingStyles)
         {
-            return bbcodeToInline(PreProcessBBCode(text));
+            return bbcodeToInline(PreProcessBBCode(text), useTunnelingStyles);
         }
 
         /// <summary>

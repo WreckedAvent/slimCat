@@ -36,6 +36,10 @@ namespace ViewModels
 
         public event EventHandler NewAdArrived;
         public event EventHandler NewMessageArrived;
+
+        // these two are completely different from the channel model's counts, as they work while the tab is selected
+        private bool _hasNewAds;
+        private bool _hasNewMessages;
         #endregion
 
         #region Properties
@@ -118,6 +122,13 @@ namespace ViewModels
                     OnPropertyChanged("CannotPost");
                     OnPropertyChanged("ShouldShowAutoPost");
                     OnPropertyChanged("SwitchChannelTypeString");
+
+                    if (value)
+                        _hasNewMessages = false;
+                    else
+                        _hasNewAds = false;
+
+                    OnPropertyChanged("OtherTabHasMessages");
                 }
             }
         }
@@ -234,6 +245,20 @@ namespace ViewModels
             get
             {
                 return ((GeneralChannelModel)Model).MOTD;
+            }
+        }
+
+        /// <summary>
+        /// if we're displaying the channel's messages, if there's a new ad (or vice-versa)
+        /// </summary>
+        public bool OtherTabHasMessages
+        {
+            get
+            {
+                if (IsDisplayingChat)
+                    return _hasNewAds;
+                else
+                    return _hasNewMessages;
             }
         }
         #endregion
@@ -436,6 +461,11 @@ namespace ViewModels
                 if (NewAdArrived != null)
                     NewAdArrived(this, new EventArgs());
             }
+            else if (IsDisplayingChat)
+            {
+                _hasNewAds = true;
+                OnPropertyChanged("OtherTabHasMessages");
+            }
         }
 
         private void OnMessagesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -446,6 +476,12 @@ namespace ViewModels
                 OnPropertyChanged("FilteredMessages");
                 if (NewMessageArrived != null)
                     NewMessageArrived(this, new EventArgs());
+            }
+
+            else if (IsDisplayingAds)
+            {
+                _hasNewMessages = true;
+                OnPropertyChanged("OtherTabHasMessages");
             }
         }
 

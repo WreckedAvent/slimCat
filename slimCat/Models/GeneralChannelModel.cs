@@ -15,10 +15,10 @@ namespace Models
         private int _userCount;
         private int _lastAdCount;
         private IList<string> _mods;
-        // used as an abstraction away from the user collection (so we know how many are in without it being set)
         #endregion
 
         #region Properties
+        // used as an abstraction away from the user collection (so we know how many are in without it being set)
         public ObservableCollection<ICharacter> Users  { get { return _users; } }
         
         public IList<string> Moderators { get { return _mods; } }
@@ -124,7 +124,7 @@ namespace Models
         #region Methods
         public override void AddMessage(IMessage message)
         {
-            var messageCollection = (message.Type == MessageType.normal ? Messages : Ads);
+            var messageCollection = (message.Type == MessageType.ad ? Ads : Messages);
 
             if (messageCollection.Count > 300)
                 messageCollection.RemoveAt(0);

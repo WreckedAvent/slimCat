@@ -9,6 +9,7 @@
             <v:MessageView />
         </DataTemplate>
         <sys:BBCodeConverter x:Key="BBConv" />
+        <sys:BoolColorConverter x:Key="ColorConv" />
     </UserControl.Resources>
 
     <Grid Margin="10"
@@ -174,16 +175,16 @@
                                   VerticalAlignment="Center"/>
                     
                     <Button Content="{Binding Path=SearchSwitchMessageString, Mode=OneWay}"
-                        Command="{Binding SwitchSearchCommand}"
-                        FontSize="12"
-                        Margin="5"
-                        />
+                            Command="{Binding SwitchSearchCommand}"
+                            FontSize="12"
+                            Margin="5"/>
 
                     <Button Content="{Binding Path=SwitchChannelTypeString, Mode=OneWay}"
-                        Command="{Binding SwitchCommand}"
-                        Visibility="{Binding Path=CanSwitch, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                        FontSize="12"
-                        Margin="5"/>
+                            Command="{Binding SwitchCommand}"
+                            Visibility="{Binding Path=CanSwitch, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                            FontSize="12"
+                            BorderBrush="{Binding Path=OtherTabHasMessages, Mode=OneWay, Converter={StaticResource ColorConv}}"
+                            Margin="5"/>
                 </StackPanel>
             </Grid>
 

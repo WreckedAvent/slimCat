@@ -49,7 +49,8 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -378,8 +379,16 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(ProjectDir)Theme.xaml" "$(TargetDir)Theme"  /i /d /y
-xcopy "$(ProjectDir)Colors.xaml" "$(TargetDir)Theme"  /i /d /y</PostBuildEvent>
+    <PostBuildEvent>cmd /x /c mkdir "$(TargetDir)Theme"
+cmd /x /c mkdir "$(TargetDir)lib"
+cmd /x /c mkdir "$(TargetDir)sounds"
+cmd /x /c mkdir "$(TargetDir)icons"
+xcopy "$(ProjectDir)Theme.xaml" "$(TargetDir)Theme" /c /i /d /y
+xcopy "$(ProjectDir)Colors.xaml" "$(TargetDir)Theme"  /c /i /d /y
+xcopy "$(ProjectDir)lib\*.dll" "$(TargetDir)lib" /c /i /d /y
+xcopy "$(ProjectDir)Logs.lnk" "$(TargetDir)" /c /i /d /y
+xcopy "$(ProjectDir)catIcon.ico" "$(TargetDir)icons" /c /i /d /y
+xcopy "$(ProjectDir)sounds\*.*" "$(TargetDir)sounds" /c /i /d /y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

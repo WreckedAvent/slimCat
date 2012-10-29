@@ -2,26 +2,29 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!-- Resource Dictionary for colors 
     
-    !! Do not modify above this line !!-->
+    Do not modify above this line, period.-->
 
-    
-    
     <!-- Foreground Color is used as the primary color for text. -->
     <Color x:Key="ForegroundColor">#fff</Color>
     
     <!-- Highlight color is used to draw attention to controls, such as when a control is focused. -->
-    <Color x:Key="HighlightColor">#95b</Color>
+    <Color x:Key="HighlightColor">#06c</Color>
 
     <!-- Background is used as the basis for every UI element. -->
-    <Color x:Key="BackgroundColor">#314</Color>
+    <Color x:Key="BackgroundColor">#002</Color>
 
     <!-- Depressed color is used primarily used for borders and UI controls which cannot be interacted with. -->
-    <Color x:Key="DepressedColor">#202</Color>
+    <Color x:Key="DepressedColor">#048</Color>
+
+    <!-- Bright background is used for some odds and ends, most notably the 'expand' bars on either side of the screen. -->
+    <Color x:Key="BrightBackgroundColor">#00133b</Color>
     
-    <!-- !! Do not modify below this line !!-->
+    
+    <!-- Do not modify below this line unless you know what you are doing. -->
     
     <SolidColorBrush x:Key="ForegroundBrush"  Color="{StaticResource ForegroundColor}" />
     <SolidColorBrush x:Key="HighlightBrush" Color="{StaticResource HighlightColor}" />
     <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
     <SolidColorBrush x:Key="DepressedBrush" Color="{StaticResource DepressedColor}" />
+	<SolidColorBrush x:Key="BrightBackgroundBrush" Color="{StaticResource BrightBackgroundColor}" />
 </ResourceDictionary>

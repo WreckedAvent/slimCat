@@ -208,7 +208,6 @@ namespace ViewModels
                 return _saveChannels;
             }
         }
-
         #endregion
 
         protected override void Dispose(bool IsManagedDispose)

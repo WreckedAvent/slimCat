@@ -146,9 +146,12 @@ namespace Models
             {"clear", new CommandModel("clear", "clear", null, CommandModel.CommandTypes.NoArgs)},
             {"clearall", new CommandModel("clearall", "clearall", null, CommandModel.CommandTypes.NoArgs)},
             {"close", new CommandModel("close", "close", new [] {"channel"}, CommandModel.CommandTypes.OnlyChannel)},
+            {"roll", new CommandModel("roll", "RLL", new [] {"dice"}, CommandModel.CommandTypes.SingleArgsAndChannel)},
+            {"bottle", new CommandModel("bottle", "RLL", new [] {"dice"}, CommandModel.CommandTypes.SingleArgsAndChannel)},
             {"ignore", new CommandModel("ignore", "IGN", new [] {"character", "action"}, CommandModel.CommandTypes.TwoArgs)},
             {"invite", new CommandModel("invite", "CIU", new [] {"character"}, CommandModel.CommandTypes.SingleArgsAndChannel)},
             {"join", new CommandModel("join", "join", new [] {"channel"})},
+            {"lastupdate", new CommandModel("lastupdate", "_snap_to_last_update", null, CommandModel.CommandTypes.NoArgs)},
             {"logheader", new CommandModel("logheader", "_logger_new_header", new [] {"title"})},
             {"logsection", new CommandModel("logsection", "_logger_new_section", new [] {"title"})},
             {"lognewline", new CommandModel("lognewline", "_logger_new_line", null, CommandModel.CommandTypes.NoArgs)},
@@ -176,15 +179,13 @@ namespace Models
             {"chatkick", new CommandModel("chatkick", "KIK", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
             {"chatunban", new CommandModel("chatunban", "UBN", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
             {"reward", new CommandModel("reward", "RWD", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
-            {"spy", new CommandModel("spy", "AWC", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
             {"timeout", new CommandModel("timeout", "TMO", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
 
             // admin commands
             {"broadcast", new CommandModel("broadcast", "BRO", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
             {"chatdemote", new CommandModel("chatdemote", "DOP", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
             {"chatpromote", new CommandModel("chatpromote", "AOP", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
-            {"makechannel", new CommandModel("makechannel", "CRC", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
-            {"ipban", new CommandModel("ipban", "IPB", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
+            {"makechannel", new CommandModel("makechannel", "CRC", new [] {"channel"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
 
             // client-only commands
             {ClientSendTypingStatus, new CommandModel(ClientSendTypingStatus, "TPN", new [] {"status", "character"}, CommandModel.CommandTypes.TwoArgs)},
@@ -219,6 +220,8 @@ namespace Models
 
         public static IDictionary<string, CommandOverride> CommandOverrides = new Dictionary<string, CommandOverride>()
         {
+            // format ->
+            // commmand to override, command parameter to override, value to override with
             {"online", new CommandOverride("status", "online")},
             {"busy", new CommandOverride("status", "busy")},
             {"looking", new CommandOverride("status", "looking")},
@@ -228,10 +231,12 @@ namespace Models
             {"unignore", new CommandOverride("action", "delete")},
             {"openroom", new CommandOverride("status", "public")},
             {"closeroom", new CommandOverride("status", "private")},
+            {"bottle", new CommandOverride("dice", "bottle")},
         };
 
         public static string[] NonCommandCommands = new []
         {
+            // prevents long ugly checking in our viewmodels for these
             "/me",
             "/warn",
             "/post",

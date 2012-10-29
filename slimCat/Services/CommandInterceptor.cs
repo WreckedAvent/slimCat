@@ -24,12 +24,6 @@ namespace Services
         #region Fields
         private readonly IChatConnection _connection;
         private readonly IChannelManager _manager;
-        private List<string> applicableEvents = new List<string> { "ADL", "IGN", "LIS", "ORS", "STA",
-                                                                   "RTB", "VAR", "NLN", "IDN", "CHA",
-                                                                   "UPT", "MSG", "TPN", "PRI", "JCH",
-                                                                   "LCH", "FLN", "COL", "ICH", "CDS",
-                                                                   "LRP", "FRL", "ERR", "CIU", "CKU",
-                                                                   "CBU", "SYS"};
         private IList<IDictionary<string, object>> _que = new List<IDictionary<String, object>>();
         
         public delegate void CommandDelegate(IDictionary<string, object> command);
@@ -44,11 +38,7 @@ namespace Services
             _manager = manager;
 
             _events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(getCharacter, ThreadOption.BackgroundThread, true);
-            _events.GetEvent<ChatCommandEvent>()
-                .Subscribe(EnqueAction,
-                           ThreadOption.BackgroundThread, true,
-                           args => applicableEvents.Exists(appEvent => appEvent.Equals((string)args["command"]))
-                           );
+            _events.GetEvent<ChatCommandEvent>().Subscribe(EnqueAction, ThreadOption.BackgroundThread, true);
 
             _cm.OurAccount = _connection.Account;
         }
@@ -88,6 +78,7 @@ namespace Services
                 case "CBU": return new CommandDelegate(KickCommand);
                 case "NLN": return new CommandDelegate(UserLoggedInCommand);
                 case "FLN": return new CommandDelegate(CharacterDisconnectCommand);
+                case "RLL": return new CommandDelegate(RollCommand);
                 default: return null;
             }
         }
@@ -509,6 +500,17 @@ namespace Services
 
             if (kicked == "you")
                 _manager.RemoveChannel(channelId);
+        }
+
+        private void RollCommand(IDictionary<string, object> command)
+        {
+            string channel = command["channel"] as string;
+            string type = command["type"] as string;
+            string message = command["message"] as string;
+            string poster = command["character"] as string;
+
+            if (!_cm.Ignored.Contains(poster))
+                _manager.AddMessage(message, channel, poster, MessageType.roll);
         }
         #endregion
 

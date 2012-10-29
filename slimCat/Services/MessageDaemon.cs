@@ -27,18 +27,6 @@ namespace Services
         private readonly IChatModel _model;
         private readonly IChatConnection _connection;
 
-        private readonly List<string> applicableCommands = new List<string>
-        { "priv", "pm", "_send_private_message", "_send_channel_ad",
-            "status", "report", "ignore", "unignore","_send_channel_message", 
-            "close", "join", "_logger_new_line", "_logger_new_header", "_logger_new_section",
-          "clear", "clearall", "code"};
-
-        private readonly IDictionary<string, string> genericCommands = new Dictionary<string, string>
-        { {"makeroom", "CCR"}, {"setdescription", "CDS"}, {"invite", "CIU"},
-        {"setmode", "RST" }, {"kick", "CKU"}, {"openroom", "RAN"},
-        {"roll", "RLL"}, {"_typing_changed", "TPN"},
-        {"ban", "CBU"}, {"promote", "COA"}, {"demote", "COR"}};
-
         private ChannelModel _lastSelected;
         private ILogger _logger;
         #endregion
@@ -91,7 +79,14 @@ namespace Services
                             if (args.Equals(_model.SelectedCharacter.Name, StringComparison.OrdinalIgnoreCase))
                                 _events.GetEvent<ErrorEvent>().Publish("Hmmm... talking to yourself?");
                             else
-                                JoinChannel(ChannelType.pm, args);
+                            {
+                                var guess = _model.OnlineCharacters.FirstOrDefault(character => character.Name.ToLower().StartsWith(args.ToLower()));
+
+                                if (guess == null)
+                                    JoinChannel(ChannelType.pm, args);
+                                else
+                                    JoinChannel(ChannelType.pm, guess.Name);
+                            }
                             return;
                         }
                     #endregion
@@ -145,22 +140,16 @@ namespace Services
                     case "join":
                         {
                             var args = (string)command["channel"];
-                            string interpretedChannel;
 
-                            if (_model.AllChannels.Any(param => param.ID.Equals(args, StringComparison.OrdinalIgnoreCase)))
+                            var guess = _model.AllChannels.FirstOrDefault(channel => channel.Title.ToLower().StartsWith(args));
+                            if (guess != null)
                             {
-                                interpretedChannel =
-                                    _model
-                                    .AllChannels
-                                    .First(param => param.ID.Equals(args, StringComparison.OrdinalIgnoreCase))
-                                    .ID;
-
-                                object toSend = new { channel = interpretedChannel };
+                                var toSend = new { channel = guess.ID };
                                 _connection.SendMessage(toSend, "JCH");
                             }
                             else
                             {
-                                object toSend = new { channel = args };
+                                var toSend = new { channel = args };
                                 _connection.SendMessage(toSend, "JCH");
                             }
                             return;
@@ -247,16 +236,91 @@ namespace Services
                             if (_model.SelectedChannel.ID.Equals("Home", StringComparison.OrdinalIgnoreCase))
                             {
                                 _events.GetEvent<ErrorEvent>().Publish("Home channel does not have a code.");
-                                break;
+                                return;
                             }
-
-                            System.Windows.Forms.Clipboard.SetData(System.Windows.Forms.DataFormats.Text, _model.SelectedChannel.ID);
+                            var toCopy = String.Format("[session={0}]{1}[/session]", _model.SelectedChannel.Title, _model.SelectedChannel.ID);
+                            System.Windows.Forms.Clipboard.SetData(System.Windows.Forms.DataFormats.Text, toCopy);
                             _events.GetEvent<ErrorEvent>().Publish("Channel's code copied to clipboard.");
                             return;
                         }
                     #endregion
 
-                    default: break;
+                    #region Notification Snap To
+                    case "_snap_to_last_update":
+                        {
+                            string target = null;
+
+                            if (command.ContainsKey("target"))
+                                target = command["target"] as string;
+
+                            if (target != null)
+                            {
+                                var guess = _model.CurrentPMs.FirstByIdOrDefault(target);
+                                if (guess != null)
+                                {
+                                    RequestNavigate(target);
+                                    Dispatcher.Invoke(
+                                    (Action)delegate
+                                    {
+                                        Application.Current.MainWindow.Show();
+                                    });
+                                }
+                                else
+                                {
+                                    var secondGuess = _model.CurrentChannels.FirstByIdOrDefault(target);
+
+                                    if (secondGuess != null)
+                                    {
+                                        RequestNavigate(target);
+                                        Dispatcher.Invoke(
+                                        (Action)delegate
+                                        {
+                                            Application.Current.MainWindow.Show();
+                                        });
+                                    }
+                                }
+                            }
+
+                            var latest = _model.Notifications.LastOrDefault();
+                            if (latest != null)
+                            {
+                                if (latest is CharacterUpdateModel)
+                                {
+                                    var doStuffWith = (CharacterUpdateModel)latest;
+                                    JoinChannel(ChannelType.pm, doStuffWith.TargetCharacter.Name);
+                                    Dispatcher.Invoke(
+                                    (Action)delegate
+                                    {
+                                        Application.Current.MainWindow.Show();
+                                    });
+                                }
+
+                                if (latest is ChannelUpdateModel)
+                                {
+                                    var doStuffWith = (ChannelUpdateModel)latest;
+                                    var channel = _model.AllChannels.FirstByIdOrDefault(doStuffWith.ChannelID);
+
+                                    if (channel == null)
+                                    {
+                                        _events.GetEvent<ErrorEvent>().Publish("The notification applies to a channel that no longer exists.");
+                                        return;
+                                    }
+
+                                    var chanType = channel.Type;
+
+                                    JoinChannel(chanType, doStuffWith.ChannelID);
+                                    Dispatcher.Invoke(
+                                    (Action)delegate
+                                    {
+                                        Application.Current.MainWindow.Show();
+                                    });
+                                }
+                            }
+                            return;
+                        }
+                    #endregion
+
+                    default: return;
                 }
 
                 _connection.SendMessage(command);
@@ -274,9 +338,13 @@ namespace Services
         #region Methods
         public void JoinChannel(ChannelType type, string ID, string name = "")
         {
-            if (!_model.CurrentChannels.Any(param => param.ID == ID)
-                && !_model.CurrentPMs.Any(param => param.ID == ID))
-                AddChannel(type, ID, name);
+            var pm = _model.CurrentPMs.FirstByIdOrDefault(ID);
+            if (pm == null)
+            {
+                var channel = _model.CurrentChannels.FirstByIdOrDefault(ID);
+                if (channel == null)
+                    AddChannel(type, ID, name);
+            }
             RequestNavigate(ID);
         }
 

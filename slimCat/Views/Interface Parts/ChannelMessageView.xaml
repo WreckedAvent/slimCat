@@ -24,6 +24,7 @@
                             <MultiBinding Converter="{StaticResource BBConv}">
                                 <Binding Path="Message" />
                                 <Binding Path="Poster" />
+                                <Binding Path="Type" />
                             </MultiBinding>
                         </lib:TextBlockHelper.InlineList>
                     </TextBlock>

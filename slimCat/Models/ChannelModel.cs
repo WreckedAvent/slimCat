@@ -66,7 +66,7 @@ namespace Models
         /// </summary>
         public virtual bool NeedsAttention
         {
-            get { return (Unread >= Settings.FlashInterval && Settings.ShouldFlash); }
+            get { return (!IsSelected) && (Unread >= Settings.FlashInterval && Settings.ShouldFlash); }
         }
 
         /// <summary>
@@ -79,13 +79,7 @@ namespace Models
         /// </summary>
         public int Unread
         {
-            get
-            {
-                if (!IsSelected)
-                    return Messages.Count - LastReadCount;
-                else
-                    return 0;
-            }
+            get { return Messages.Count - LastReadCount; }
         }
 
         /// <summary>

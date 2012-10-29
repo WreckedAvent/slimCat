@@ -1,3 +1,0 @@
-auto-poster may not work - 3rd auto post goes down to 0 without working
-sometimes joining a room will crash --- confirmed crash if 
-sometimes crash on clicking on a tab. Can't confirm

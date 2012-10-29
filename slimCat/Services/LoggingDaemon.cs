@@ -40,6 +40,10 @@ namespace Services
                     else
                         writer.WriteLine(timestamp + ' ' + message.Poster.Name + message.Message.Substring(3));
                 }
+
+                else if (message.Type == MessageType.roll)
+                    writer.WriteLine(timestamp + ' ' + message);
+
                 else
                 {
                     if (!message.Message.StartsWith("/me"))

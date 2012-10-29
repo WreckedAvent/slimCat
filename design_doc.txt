@@ -61,17 +61,18 @@ Critical Point: b3.x -> "Serval"
  - Channel Management window
  - Most BBCode suported 
  - More Shortcuts
+ - Support for broadcasts, roll, dice, etc.
 BREAK AT 8/28/12 due to being banned and all
 
 Critical Point: b4.x -> "Caracal"
  - Accept/Deny/Send Friend Requests
  - Add/Remove Bookmarks
  - Right-click view profile feature
- - Specific Channel settings
+ - All Specific Channel settings
  - Automatic profile downloading (storing?)
  - More Toast/Sound notifications and some configurations for them
  - Settings persistent on character instead of account
- - Support for broadcasts, roll, dice, etc.
+ - Channel management window
 
 Critical Point: First Public Full Release, rc1.x -> "Ocelot"
  - Rest of right-click menu (and making it context sensitive)
@@ -84,3 +85,4 @@ Critical Point: First Public Full Release, rc1.x -> "Ocelot"
  - An assload of settings
  
  mini profile in right-hand side, user selects what information to show
+ report format: "Current Tab/Channel: <channel> | Reporting User: <this user> | <reported user> | <report body>

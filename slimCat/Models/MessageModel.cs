@@ -61,6 +61,7 @@ namespace Models
     {
         ad,
         normal,
+        roll,
     }
 
     public interface IMessage
@@ -123,11 +124,14 @@ namespace Models
                         toReturn.Append(": " + NewStatusMessage);
                     else if (NewStatusMessage.Length > 0)
                         toReturn.Append("has updated their status: " + NewStatusMessage);
+                    else if (toReturn.Length > 0)
+                        toReturn.Append(" and has blanked their status");
                     else
                         toReturn.Append("has blanked their status");
                 }
 
-                toReturn.Append('.');
+                if (toReturn[toReturn.Length-1] != '.')
+                    toReturn.Append('.');
 
                 return toReturn.ToString();
             }
@@ -206,8 +210,7 @@ namespace Models
 
             public override string ToString()
             {
-                return (IsBan ? ("no longer welcomes " + Kicked + " in their room by order of " + Kicker)
-                    : ("kicked out " + Kicked + " as ordered by " + Kicker + "."));
+                return ": " + Kicker + " has " + (IsBan ? "banned" : "kicked") + Kicked + '.';
             }
         }
 
@@ -217,7 +220,7 @@ namespace Models
 
             public override string ToString()
             {
-                return ("welcomes you with an inventation from " + Inviter + ".");
+                return (": " + Inviter + " has invited you to join their room.");
             }
         }
         #endregion

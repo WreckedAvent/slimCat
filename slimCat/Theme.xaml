@@ -265,7 +265,13 @@
         <Setter Property="Padding" Value="0" />
         <Setter Property="Command" Value="{Binding Path=JoinChannelCommand}"/>
     </Style>
-    
+
+    <Style TargetType="{x:Type Button}" x:Key="TunnelingChannelMarkupButton" BasedOn="{StaticResource ChannelMarkupButton}">
+        <Setter Property="Command" Value="{Binding Path=DataContext.JoinChannelCommand,
+                                  RelativeSource={RelativeSource Mode=FindAncestor,
+                                  AncestorType={x:Type ItemsControl}} }" />
+    </Style>
+
     <Style TargetType="{x:Type Button}" x:Key="ChannelInterfaceButton" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Padding" Value="2,0"/>
         <Setter Property="Command" Value="{Binding Path=DataContext.JoinChannelCommand,
@@ -596,7 +602,6 @@
 
     <!-- This is used for displaying how [user] looks in chat -->
     <DataTemplate x:Key="UsernamesTemplate">
-        <Grid>
             <Button Command="{Binding Path=DataContext.NavigateTo,
                                   RelativeSource={RelativeSource Mode=FindAncestor,
                                   AncestorType={x:Type ItemsControl}} }"
@@ -606,16 +611,15 @@
                     Margin="0"
                     Padding="0"
                     HorizontalAlignment="Left"
-                    
                     Tag="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                                   AncestorType={x:Type ItemsControl}}}">
-                
-                <Button.Effect>
-                    <DropShadowEffect Color="{StaticResource HighlightColor}"
-                                      BlurRadius="1" 
-                                      ShadowDepth="2"/>
+
+            <Button.Effect>
+                <DropShadowEffect BlurRadius="2"
+                                  Color="{StaticResource HighlightColor}"
+                                  ShadowDepth="2"/>
                 </Button.Effect>
-                
+
                 <!-- This context menu is a bit of a hack, only way to work afaik -->
                 <Button.ContextMenu>
                     <ContextMenu HorizontalContentAlignment="Center">
@@ -693,9 +697,8 @@
                     </ContextMenu>
                 </Button.ContextMenu>
             </Button>
-        </Grid>
     </DataTemplate>
-    
+
     <DataTemplate x:Key="CharacterUpdateTemplate">
         <WrapPanel>
             <TextBlock TextWrapping="Wrap"

@@ -27,8 +27,9 @@ namespace Services
         IEventAggregator _events;
         IChatModel _cm;
         SoundPlayer DingLing = new SoundPlayer(Environment.CurrentDirectory + @"\sounds\" + "newmessage.wav");
+        DateTime _lastDingLinged;
         System.Windows.Forms.NotifyIcon icon = new System.Windows.Forms.NotifyIcon();
-        ToastNotificationsViewModel toast = new ToastNotificationsViewModel();
+        ToastNotificationsViewModel toast;
         #endregion
 
         #region constructors
@@ -37,6 +38,7 @@ namespace Services
             _contain = contain;
             _events = eventagg;
             _cm = cm;
+            toast = new ToastNotificationsViewModel(_events);
 
             _events.GetEvent<NewMessageEvent>().Subscribe(HandleNewChannelMessage, true);
             _events.GetEvent<NewPMEvent>().Subscribe(HandleNewMessage, true);
@@ -89,7 +91,7 @@ namespace Services
         #endregion
 
         #region Methods
-        private void NotifyUser(bool bingLing = false, bool flashWindow = false, string message = null)
+        private void NotifyUser(bool bingLing = false, bool flashWindow = false, string message = null, string target = null)
         {
             Dispatcher.Invoke(
                 (Action)delegate
@@ -99,11 +101,12 @@ namespace Services
                         if (flashWindow)
                             Application.Current.MainWindow.FlashWindow();
                         if (bingLing)
-                            DingLing.Play();
+                            DingTheCrapOutOfTheUser();
                     }
 
                     if (message != null)
                         toast.UpdateNotification(message);
+                    toast.Target = target;
                 });
         }
 
@@ -116,7 +119,7 @@ namespace Services
             {
                 if (!channel.IsSelected && channel.Settings.ShouldDing)
                 {
-                    NotifyUser(true, true, poster.Name + '\n' + HttpUtility.UrlDecode(Message.Message));
+                    NotifyUser(true, true, poster.Name + '\n' + HttpUtility.UrlDecode(Message.Message), poster.Name);
                     return;
                 }
             }
@@ -125,7 +128,7 @@ namespace Services
                 (Action)delegate
                 {
                     if (!Application.Current.MainWindow.IsActive && channel.Settings.ShouldDing)
-                        NotifyUser(true, true, poster.Name + '\n' + HttpUtility.UrlDecode(Message.Message));
+                        NotifyUser(true, true, poster.Name + '\n' + HttpUtility.UrlDecode(Message.Message), poster.Name);
                 });
         }
 
@@ -138,7 +141,7 @@ namespace Services
             {
                 if (!channel.IsSelected && channel.Settings.ShouldDing)
                 {
-                    NotifyUser(true, true, message.Poster.Name + '\n' + HttpUtility.UrlDecode(message.Message));
+                    NotifyUser(true, true, message.Poster.Name + '\n' + HttpUtility.UrlDecode(message.Message), channel.ID);
                     return;
                 }
             }
@@ -147,7 +150,7 @@ namespace Services
                 (Action)delegate
                 {
                     if (!Application.Current.MainWindow.IsActive && channel.Settings.ShouldDing)
-                        NotifyUser(true, true, message.Poster.Name + '\n' + HttpUtility.UrlDecode(message.Message));
+                        NotifyUser(true, true, message.Poster.Name + '\n' + HttpUtility.UrlDecode(message.Message), channel.ID);
                 });
         }
 
@@ -160,19 +163,16 @@ namespace Services
                 if (_cm.IsOfInterest(targetCharacter))
                 {
                     AddNotification(Notification);
-                    NotifyUser(false, false, Notification.ToString());
+                    NotifyUser(false, false, Notification.ToString(), targetCharacter);
                 }
-
-                if (_cm.SelectedChannel.ID.Equals(targetCharacter))
-                    NotifyUser(false);
             }
 
             else
             {
-                var args = ((ChannelUpdateModel)Notification).Arguments;
-
+                var channel = (ChannelUpdateModel)Notification;
+                var args = channel.Arguments;
                 if (args is Models.ChannelUpdateModel.ChannelInviteEventArgs)
-                    NotifyUser(false, false, Notification.ToString());
+                    NotifyUser(false, false, Notification.ToString(), channel.ChannelID);
 
                 AddNotification(Notification);
             }
@@ -218,6 +218,16 @@ namespace Services
         {
             icon.Dispose();
             Dispatcher.InvokeShutdown();
+        }
+
+        private void DingTheCrapOutOfTheUser()
+        {
+            if ((DateTime.Now - _lastDingLinged) > TimeSpan.FromSeconds(1))
+            {
+                DingLing.Play();
+                _lastDingLinged = DateTime.Now;
+            }
+            
         }
         #endregion
 

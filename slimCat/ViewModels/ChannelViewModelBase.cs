@@ -159,7 +159,7 @@ namespace ViewModels
                     if (!messageToCommand.HasCommand)
                         SendMessage();
 
-                    else if (messageToCommand.RequiresMod && !HasPermissions)
+                    else if ((messageToCommand.RequiresMod && !HasPermissions) || (messageToCommand.Type.Equals("warn") && !HasPermissions))
                         UpdateError(string.Format("I'm sorry Dave, I can't let you do the {0} command.", messageToCommand.Type));
 
                     else if (messageToCommand.IsValid)

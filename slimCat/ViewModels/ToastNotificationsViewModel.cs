@@ -5,6 +5,9 @@ using System.Text;
 using System.Windows.Input;
 using lib;
 using Views;
+using Models;
+using Microsoft.Practices.Prism.Events;
+using slimCat;
 
 namespace ViewModels
 {
@@ -17,25 +20,41 @@ namespace ViewModels
         private string _content = "";
         System.Timers.Timer _hideDelay = new System.Timers.Timer(5000);
         NotificationsView _view;
+        IEventAggregator _events;
         #endregion
 
         #region Properties
-        public ToastNotificationsViewModel()
+        public ToastNotificationsViewModel(IEventAggregator _eventAgg)
         {
             _hideDelay.Elapsed += (s, e) =>
                 {
                     HideNotifications();
                 };
+            _events = _eventAgg;
         }
         public string Content
         {
             get { return _content; }
             set
             {
-                _content = value;
+                if (value.Length < 300)
+                    _content = value;
+
+                else
+                {
+                    var brevity = value.Substring(0, 300);
+                    brevity += " ...";
+                    _content = brevity;
+                }
+
                 OnPropertyChanged("Content");
             }
         }
+
+        /// <summary>
+        /// Who we will try and snap to when the user clicks on it if this event doesn't generate an actual notification
+        /// </summary>
+        public string Target { get; set; }
         #endregion
 
         #region Methods
@@ -80,6 +99,30 @@ namespace ViewModels
             }
         }
         #endregion
+        #endregion
+
+        #region Commands
+        private RelayCommand _snap;
+        public ICommand SnapToLatestCommand
+        {
+            get
+            {
+                if (_snap == null)
+                    _snap = new RelayCommand(OnSnapToLatestEvent);
+                return _snap;
+            }
+        }
+
+        public void OnSnapToLatestEvent(object args)
+        {
+            IDictionary<string, object> toSend = CommandDefinitions.CreateCommand("lastupdate").toDictionary();
+
+            if (Target != null)
+                toSend.Add("target", Target);
+
+            HideNotifications();
+            _events.GetEvent<UserCommandEvent>().Publish(toSend);
+        }
         #endregion
 
         public void Dispose()

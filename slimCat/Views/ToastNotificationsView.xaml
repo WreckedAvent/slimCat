@@ -10,21 +10,19 @@
         ShowActivated="False"
         Background="Transparent">
     <Grid TextBlock.FontSize="14">
-        <Border BorderThickness="1"
-            Background="{StaticResource BackgroundBrush}"
-            BorderBrush="{StaticResource HighlightBrush}">
+        <Button Command="{Binding SnapToLatestCommand}"
+                HorizontalContentAlignment="Left"
+                Background="{StaticResource BackgroundBrush}">
             <StackPanel Margin="10">
                 <TextBlock Text="slimCat Notification"
-                           Margin="5"
                            FontSize="16"
                            Foreground="{StaticResource HighlightBrush}"/>
                 <TextBlock TextWrapping="Wrap"
-                           Margin="5"
                            Foreground="{StaticResource ForegroundBrush}">
                 <Run Text="{Binding Content}"/>
                 </TextBlock>
             </StackPanel>
-        </Border>
+        </Button>
 
         <Grid.Triggers>
             <EventTrigger RoutedEvent="FrameworkElement.Loaded">

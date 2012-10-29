@@ -178,9 +178,9 @@ namespace System
             {
                 _oldCount = _newCount;
 
-                //60/updateres*60 returns how many update resolutions fit in an hour
-                if (_oldCounts.Count > ((60/_updateRes)*60))
-                    _oldCounts.Remove(0);
+                //60/updateres*30 returns how many update resolutions fit in 30 minutes
+                if (_oldCounts.Count > ((60/_updateRes)*30))
+                    _oldCounts.RemoveAt(0);
                 _oldCounts.Add(_oldCount);
 
                 _newCount = _getNewCount();
