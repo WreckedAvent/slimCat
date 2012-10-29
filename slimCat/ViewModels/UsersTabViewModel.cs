@@ -18,6 +18,9 @@ namespace ViewModels
         #region Fields
         private GenderSettingsModel _genderSettings;
         public const string UsersTabView = "UsersTabView";
+        private int _listCacheCount = -1;
+        private const int _updateUsersTabResolution = 5 * 1000; // in ms, how often we check for a change in the users list
+        private System.Timers.Timer _updateTick; // this fixes various issues with the users list not updating
         #endregion
 
         #region Properties
@@ -40,15 +43,17 @@ namespace ViewModels
             get
             {
                 if (HasUsers)
-                    return SelectedChan.Users
-                        .Where(MeetsFilter)
-                        .OrderBy(RelationshipToUser)
-                        .ThenBy(x => x.Name);
+                    foreach (var character in SelectedChan.Users
+                                            .Where(MeetsFilter)
+                                            .OrderBy(RelationshipToUser)
+                                            .ThenBy(x => x.Name))
+                        yield return character;
                 else
-                    return CM.OnlineCharacters
-                        .Where(MeetsFilter)
-                        .OrderBy(RelationshipToUser)
-                        .ThenBy(x => x.Name);
+                    foreach (var character in CM.OnlineCharacters
+                                            .Where(MeetsFilter)
+                                            .OrderBy(RelationshipToUser)
+                                            .ThenBy(x => x.Name))
+                        yield return character;
             }
         }
 
@@ -99,6 +104,27 @@ namespace ViewModels
                     OnPropertyChanged("SortContentString");
                     OnPropertyChanged("SortedUsers");
                 };
+
+            _updateTick = new System.Timers.Timer(_updateUsersTabResolution);
+            _updateTick.Elapsed += TickUpdateEvent;
+            _updateTick.Start();
+            _updateTick.AutoReset = true;
+        }
+        #endregion
+
+        #region Methods
+        private void TickUpdateEvent(object sender = null, EventArgs e = null)
+        {
+            if (_listCacheCount != -1)
+            {
+                if (SortedUsers.Count() != _listCacheCount)
+                {
+                    OnPropertyChanged("SortedUsers");
+                    _listCacheCount = SortedUsers.Count();
+                }
+            }
+            else
+                _listCacheCount = SortedUsers.Count();
         }
         #endregion
     }

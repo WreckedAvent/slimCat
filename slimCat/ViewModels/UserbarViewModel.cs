@@ -240,8 +240,11 @@ namespace ViewModels
             bool stillHasPMs = false;
             foreach (ChannelModel cm in CM.CurrentChannels)
             {
-                if (cm.NeedsAttention == true) stillHasPMs = true;
-                break;
+                if (cm.NeedsAttention == true)
+                {
+                    stillHasPMs = true;
+                    break;
+                }
             }
 
             HasNewPM = stillHasPMs;
@@ -249,8 +252,11 @@ namespace ViewModels
             bool stillHasMessages = false;
             foreach (ChannelModel cm in CM.CurrentPMs)
             {
-                if (cm.NeedsAttention == true) stillHasMessages = true;
-                break;
+                if (cm.NeedsAttention == true)
+                {
+                    stillHasMessages = true;
+                    break;
+                }
             }
 
             HasNewMessage = stillHasMessages;

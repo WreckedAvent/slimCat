@@ -141,14 +141,21 @@ namespace ViewModels
                         delegate
                         {
                             IsExpanded = !IsExpanded;
-                            _hasUpdate = false;
-                            if (_currentSelected != "Notifications")
-                                NavigateToTabEvent("Notifications");
+                            // this shoots us to the notifications tab if we have something to see there
+                            if (_hasUpdate)
+                            {
+                                if (_currentSelected != "Notifications")
+                                    NavigateToTabEvent("Notifications");
 
-                            if (OnJumpToNotifications != null)
-                                OnJumpToNotifications(this, new EventArgs());
+                                if (OnJumpToNotifications != null)
+                                    OnJumpToNotifications(this, new EventArgs()); // this lets the view sync our jump
 
-                            OnPropertyChanged("HasUpdate");
+                                _hasUpdate = false;
+                                OnPropertyChanged("HasUpdate");
+                            }
+                            else if (!String.IsNullOrWhiteSpace(_currentSelected)) 
+                                // this fixes a very subtle bug where a list won't load or won't load properly after switching tabs
+                                NavigateToTabEvent(_currentSelected);
                         });
                 }
 
