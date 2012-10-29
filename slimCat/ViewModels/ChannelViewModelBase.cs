@@ -125,14 +125,28 @@ namespace ViewModels
             get
             {
                 if (_openLog == null)
-                    _openLog = new RelayCommand(OpenLogEvent);
+                    _openLog = new RelayCommand(OnOpenLogEvent);
                 return _openLog;
             }
         }
 
-        public void OpenLogEvent(object args)
+        private RelayCommand _openLogFolder;
+        public ICommand OpenLogFolderCommand
         {
-            IDictionary<string, object> toSend = CommandDefinitions.CreateCommand("openlog").toDictionary();
+            get
+            {
+                if (_openLogFolder == null)
+                    _openLogFolder = new RelayCommand(OnOpenLogFolderEvent);
+                return _openLogFolder;
+            }
+        }
+
+        public void OnOpenLogEvent(object args) { OpenLogEvent(args, false); }
+        public void OnOpenLogFolderEvent(object args) { OpenLogEvent(args, true); }
+
+        public void OpenLogEvent(object args, bool isFolder)
+        {
+            IDictionary<string, object> toSend = CommandDefinitions.CreateCommand((isFolder ? "openlogfolder" : "openlog")).toDictionary();
 
             _events.GetEvent<UserCommandEvent>().Publish(toSend);
         }

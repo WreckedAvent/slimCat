@@ -7,6 +7,8 @@ using Microsoft.Practices.Prism.Regions;
 using Microsoft.Practices.Unity;
 using Models;
 using Views;
+using lib;
+using System.Windows.Input;
 
 namespace ViewModels
 {
@@ -18,6 +20,9 @@ namespace ViewModels
         #region Fields
         private string _search = "";
         public const string NotificationsTabView = "NotificationsTabView";
+        private bool _isSelected;
+        private bool _needsAttention;
+        private int _lastReadCount;
         #endregion
 
         #region Properties
@@ -53,6 +58,51 @@ namespace ViewModels
                 return CM.Notifications.Where(MeetsString); 
             }
         }
+
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set
+            {
+                if (_isSelected != value)
+                {
+                    _isSelected = value;
+
+                    _lastReadCount = CM.Notifications.Count;
+                    OnPropertyChanged("NeedsAttention");
+                }
+            }
+        }
+
+        public int Unread { get { return CM.Notifications.Count - _lastReadCount; } }
+
+        public bool NeedsAttention
+        {
+            get { return Unread >= 1 && !_isSelected; }
+        }
+        #endregion
+
+        #region Commands
+        private RelayCommand _killNoti;
+        public ICommand RemoveNotificationCommand
+        {
+            get
+            {
+                if (_killNoti == null)
+                    _killNoti = new RelayCommand(RemoveNotification);
+                return _killNoti;
+            }
+        }
+
+        public void RemoveNotification(object args)
+        {
+            if (args is NotificationModel)
+            {
+                var toRemove = args as NotificationModel;
+                CM.Notifications.Remove(toRemove);
+                OnPropertyChanged("SortedNotifications");
+            }
+        }
         #endregion
 
         #region Constructors
@@ -60,6 +110,8 @@ namespace ViewModels
             :base(contain, regman, eventagg, cm)
         {
             _container.RegisterType<object, NotificationsTabView>(NotificationsTabView);
+
+            CM.Notifications.CollectionChanged += (s, e) => OnPropertyChanged("NeedsAttention");
         }
         #endregion
     }

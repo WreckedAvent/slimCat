@@ -51,6 +51,7 @@
                              Grid.Column="1"/>
 
                 <RadioButton CommandParameter="Notifications"
+                             Background="{Binding Path=ShouldFlashNotificationTab, Mode=OneWay, Converter={StaticResource BoolColorConverter}}"
                              Content="Notifications"
                              Grid.Column="2"/>
             </Grid>

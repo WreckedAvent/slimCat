@@ -284,19 +284,23 @@ namespace Services
                     temp.StatusMessage = statusMessage;
                 }
 
-                var args = new Models.CharacterUpdateModel.StatusChangedEventArgs()
+                // fixes a bug wherein webclients could send a do-nothing update
+                if (statusChanged || statusMessageChanged)
                 {
-                    NewStatusType = (statusChanged ? status : StatusType.None),
-                    NewStatusMessage = (statusMessageChanged ? statusMessage : null)
-                };
+                    var args = new Models.CharacterUpdateModel.StatusChangedEventArgs()
+                    {
+                        NewStatusType = (statusChanged ? status : StatusType.None),
+                        NewStatusMessage = (statusMessageChanged ? statusMessage : null)
+                    };
 
-                _events.GetEvent<NewUpdateEvent>().Publish(
-                    new CharacterUpdateModel
-                    (
-                        temp,
-                        args
-                    )
-                );
+                    _events.GetEvent<NewUpdateEvent>().Publish(
+                        new CharacterUpdateModel
+                        (
+                            temp,
+                            args
+                        )
+                    );
+                }
             }
         }
 

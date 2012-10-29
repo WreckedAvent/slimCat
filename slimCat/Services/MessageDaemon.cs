@@ -141,7 +141,7 @@ namespace Services
                         {
                             var args = (string)command["channel"];
 
-                            var guess = _model.AllChannels.FirstOrDefault(channel => channel.Title.ToLower().StartsWith(args));
+                            var guess = _model.AllChannels.FirstOrDefault(channel => channel.Title.ToLower().StartsWith(args.ToLower()));
                             if (guess != null)
                             {
                                 var toSend = new { channel = guess.ID };
@@ -225,7 +225,15 @@ namespace Services
                         {
                             InstanceLogger();
 
-                            _logger.OpenLog(_model.SelectedChannel.Title, _model.SelectedChannel.ID);
+                            _logger.OpenLog(false, _model.SelectedChannel.Title, _model.SelectedChannel.ID);
+                            return;
+                        }
+
+                    case "_logger_open_folder":
+                        {
+                            InstanceLogger();
+
+                            _logger.OpenLog(true, _model.SelectedChannel.Title, _model.SelectedChannel.ID);
                             return;
                         }
                     #endregion
@@ -320,7 +328,7 @@ namespace Services
                         }
                     #endregion
 
-                    default: return;
+                    default: break;
                 }
 
                 _connection.SendMessage(command);

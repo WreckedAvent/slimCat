@@ -146,7 +146,9 @@ namespace Services
 
                 if ((json["command"] as string) == "ERR" && json.ContainsKey("number"))
                 {
-                    if (json["number"] as string == "2") // no login slots error
+                    if (json["number"] as string == "2") // no login spaces error
+                        _isAuth = false;
+                    if (json["number"] as string == "62") // no login slots error
                         _isAuth = false;
                 }
                 _events.GetEvent<ChatCommandEvent>().Publish(json);

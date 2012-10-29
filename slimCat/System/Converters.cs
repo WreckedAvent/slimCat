@@ -186,7 +186,7 @@ namespace System
     public static class HelperConverter
     {
         #region BBFunctions
-        static IList<string> BBType = new List<string> { "b", "s", "u", "i", "url", "color", "channel", "session", "user", "noparse", "icon", "sub", "sup" };
+        static IList<string> BBType = new List<string> { "b", "s", "u", "i", "url", "color", "channel", "session", "user", "noparse", "icon", "sub", "sup", "small", "big" };
         static IList<string> SpecialBBCases = new List<string> { "url", "channel", "user", "icon",  };
         
         // determines if a string has a (valid) opening BBCode tag
@@ -314,8 +314,7 @@ namespace System
                         Content = x,
                         Style = (Style)Application.Current.FindResource((useTunnelingStyles ? "TunnelingChannelMarkupButton" : "ChannelMarkupButton")),
                         CommandParameter = channel
-                    })
-                    { BaselineAlignment = BaselineAlignment.TextBottom };
+                    }) { BaselineAlignment = BaselineAlignment.TextBottom };
             }
             else if (y.StartsWith("url") || y.StartsWith("user") || y.StartsWith("icon"))
             {
@@ -332,9 +331,13 @@ namespace System
                 return toReturn;
             }
             else if (y == "sub")
-                return new Span(x) { BaselineAlignment = BaselineAlignment.Subscript };
+                return new Span(x) { BaselineAlignment = BaselineAlignment.Subscript, FontSize = 10 };
             else if (y == "sup")
-                return new Span(x) { BaselineAlignment = BaselineAlignment.Superscript };
+                return new Span(x) { BaselineAlignment = BaselineAlignment.Top, FontSize = 10 };
+            else if (y == "small")
+                return new Span(x) { FontSize = 9 };
+            else if (y == "big")
+                return new Span(x) { FontSize = 16 };
             else
                 return new Span(x);
         }

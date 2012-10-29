@@ -136,7 +136,7 @@ namespace ViewModels
 
         protected bool CanRequestPM(object args)
         {
-            return (_cm.SelectedCharacter.Name != args as string);
+            return (_cm.SelectedCharacter.Name.Equals(args as string, StringComparison.OrdinalIgnoreCase));
         }
         #endregion
 

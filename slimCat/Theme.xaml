@@ -699,8 +699,13 @@
             </Button>
     </DataTemplate>
 
+    
     <DataTemplate x:Key="CharacterUpdateTemplate">
-        <WrapPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
             <TextBlock TextWrapping="Wrap"
                        TextAlignment="Left">
                 <InlineUIContainer BaselineAlignment="TextBottom">
@@ -712,11 +717,25 @@
                 </InlineUIContainer>
                 <Run Text="{Binding Path=Arguments, Mode=OneWay}"/>
             </TextBlock>
-        </WrapPanel>
+
+            <Button Content="X"
+                    Grid.Column="1"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Padding="2,0"
+                    Command="{Binding Path=DataContext.RemoveNotificationCommand,
+                    RelativeSource={RelativeSource Mode=FindAncestor,
+                    AncestorType={x:Type ItemsControl}} }"
+                    CommandParameter="{Binding}"/>
+        </Grid>
     </DataTemplate>
     
     <DataTemplate x:Key="ChannelUpdateTemplate">
-        <WrapPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
             <TextBlock TextWrapping="Wrap"
                        TextAlignment="Left">
                 <InlineUIContainer BaselineAlignment="TextBottom">
@@ -726,7 +745,17 @@
                 </InlineUIContainer>
                 <Run Text="{Binding Path=Arguments, Mode=OneWay}"/>
             </TextBlock>
-        </WrapPanel>
+            
+            <Button Content="X"
+                    Grid.Column="1"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Padding="2,0"
+                    Command="{Binding Path=DataContext.RemoveNotificationCommand,
+                    RelativeSource={RelativeSource Mode=FindAncestor,
+                    AncestorType={x:Type ItemsControl}} }"
+                    CommandParameter="{Binding}"/>
+        </Grid>
     </DataTemplate>
     
     <Storyboard x:Key="FadeInAnimation" >
@@ -759,7 +788,8 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel IsItemsHost="True" />
+                    <VirtualizingStackPanel IsItemsHost="True"
+                                            VirtualizationMode="Recycling"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>

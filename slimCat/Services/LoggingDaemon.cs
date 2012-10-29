@@ -94,7 +94,7 @@ namespace Services
             }
         }
 
-        public void OpenLog(string Title = null, string ID = null)
+        public void OpenLog(bool isFolder = false, string Title = null, string ID = null)
         {
             if (ID == null)
                 Process.Start(_fullPath);
@@ -110,13 +110,12 @@ namespace Services
 
                 var latest = dateToFileName();
 
-                if (File.Exists(workingPath + latest))
+                if (!isFolder && File.Exists(workingPath + latest))
                     Process.Start(workingPath + latest);
                 else
                     Process.Start(workingPath);
             }
         }
-
         /// <summary>
         /// Provides a streamwriter, given certain paramters
         /// </summary>
@@ -184,7 +183,7 @@ namespace Services
         /// <summary>
         /// Opens the log in the default text editor
         /// </summary>
-        void OpenLog(string Title = null, string ID = null);
+        void OpenLog(bool isFolder, string Title = null, string ID = null);
 
         /// <summary>
         /// Returns the last few messages from a given channel

@@ -156,6 +156,7 @@ namespace Models
             {"logsection", new CommandModel("logsection", "_logger_new_section", new [] {"title"})},
             {"lognewline", new CommandModel("lognewline", "_logger_new_line", null, CommandModel.CommandTypes.NoArgs)},
             {"openlog", new CommandModel("openlog", "_logger_open_log", null, CommandModel.CommandTypes.NoArgs)},
+            {"openlogfolder", new CommandModel("openlogfolder", "_logger_open_folder", null, CommandModel.CommandTypes.NoArgs)},
             {"makeroom", new CommandModel("makeroom", "CCR", new [] {"channel"})},
             {"priv", new CommandModel("priv", "priv", new [] {"character"})},
              //{"report", new CommandModel("report", "SFC", new [] {"character"})},

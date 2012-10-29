@@ -48,10 +48,13 @@
 
                     <WrapPanel TextBlock.FontSize="12"
                                HorizontalAlignment="Center">
-                        <Button Content="Open Log"
+                        <Button Content="Log Folder"
+                                Command="{Binding Path=OpenLogFolderCommand}"
+                                Margin="10,5"/>
+                        <Button Content="Today's Log"
                                 Command="{Binding Path=OpenLogCommand}"
                                 Margin="10,5"/>
-                        <Button Content="Open Settings"
+                        <Button Content="Settings"
                                 Command="{Binding Path=OpenChannelSettingsCommand}"
                                 DataContext="{Binding Path=ChannelSettings}"
                                 Margin="10,5" />
