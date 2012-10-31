@@ -210,7 +210,7 @@ namespace Models
 
             public override string ToString()
             {
-                return ": " + Kicker + " has " + (IsBan ? "banned" : "kicked") + Kicked + '.';
+                return ": " + Kicker + " has " + (IsBan ? "banned " : "kicked ") + Kicked + '.';
             }
         }
 

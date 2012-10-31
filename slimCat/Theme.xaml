@@ -42,14 +42,29 @@
     
     <Style TargetType="Hyperlink">
         <Setter Property="Command" Value="{Binding NavigateTo}" />
+        <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
+        
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource HighlightBrush}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
     
     <Style TargetType="Hyperlink" x:Key="TunnelingHyperlink">
         <Setter Property="Command" Value="{Binding Path=DataContext.NavigateTo,
                                   RelativeSource={RelativeSource Mode=FindAncestor,
                                   AncestorType={x:Type ItemsControl}} }" />
+        
+        <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
+
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource HighlightBrush}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
-    
+
     <Style TargetType="{x:Type CheckBox}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />

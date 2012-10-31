@@ -131,11 +131,20 @@ namespace Services
         }
         private void AddToSomeListCommand(IDictionary<string, object> command, string paramaterToPullFrom, IList<string> listToAddTo)
         {
-            JsonArray arr = (JsonArray)command[paramaterToPullFrom];
-            foreach (string character in arr)
+            if (!(command[paramaterToPullFrom] is string)) // ensure that our arguments are actually an array
             {
-                if (!listToAddTo.Contains(character))
-                    listToAddTo.Add(character);
+                JsonArray arr = (JsonArray)command[paramaterToPullFrom];
+                foreach (string character in arr)
+                {
+                    if (!listToAddTo.Contains(character))
+                        listToAddTo.Add(character);
+                }
+            }
+            else
+            {
+                var toAdd = (command[paramaterToPullFrom] as string);
+                if (!listToAddTo.Contains(toAdd)) // IGN crash fix
+                    listToAddTo.Add(toAdd);
             }
         }
         private void MessageRecieved(IDictionary<string, object> command, bool isAd)
@@ -144,7 +153,7 @@ namespace Services
             string message = (string)command["message"];
             string channel = (string)command["channel"];
 
-            if (!_cm.Ignored.Contains(character))
+            if (!_cm.Ignored.Any(ignoree => ignoree.Equals(character, StringComparison.OrdinalIgnoreCase))) 
                 _manager.AddMessage(message, channel, character, (isAd ? MessageType.ad : MessageType.normal));
         }
         #endregion
@@ -184,11 +193,22 @@ namespace Services
 
         private void IgnoreUserCommand(IDictionary<string, object> command)
         {
-            if (command.ContainsKey("character"))
-                AddToSomeListCommand(command, "character", _cm.Ignored);
-            else if (command.ContainsKey("characters"))
+            if ((command["action"] as string) != "delete")
             {
-                AddToSomeListCommand(command, "characters", _cm.Ignored);
+                if (command.ContainsKey("character"))
+                    AddToSomeListCommand(command, "character", _cm.Ignored);
+                else // implicit, no need for if else check here
+                    AddToSomeListCommand(command, "characters", _cm.Ignored);
+
+                // todo: add notification for this
+            }
+            else // this makes unignore actually work
+            {
+                var toRemove = (_cm.Ignored.FirstOrDefault(ignore => ignore.Equals(command["character"] as string, StringComparison.OrdinalIgnoreCase)));
+                if (toRemove != null)
+                    _cm.Ignored.Remove(toRemove);
+
+                // todo: add notification for this
             }
         }
 
