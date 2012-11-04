@@ -627,5 +627,13 @@ namespace System
             else
                 return text; // if there's no url in it, we don't have a link to mark up
         }
+
+        /// <summary>
+        /// Used for shitty shit channel names with spaces
+        /// </summary>
+        public static string EscapeSpaces(string text)
+        {
+            return text.Replace(" ", "");
+        }
     }
 }

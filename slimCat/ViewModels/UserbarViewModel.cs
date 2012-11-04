@@ -238,7 +238,7 @@ namespace ViewModels
                 Chan_Selected = CM.CurrentChannels.IndexOf(CM.SelectedChannel as GeneralChannelModel);
 
             bool stillHasPMs = false;
-            foreach (ChannelModel cm in CM.CurrentChannels)
+            foreach (ChannelModel cm in CM.CurrentPMs)
             {
                 if (cm.NeedsAttention == true)
                 {
@@ -250,7 +250,7 @@ namespace ViewModels
             HasNewPM = stillHasPMs;
 
             bool stillHasMessages = false;
-            foreach (ChannelModel cm in CM.CurrentPMs)
+            foreach (ChannelModel cm in CM.CurrentChannels)
             {
                 if (cm.NeedsAttention == true)
                 {

@@ -1,15 +1,15 @@
-﻿<UserControl x:Class="Views.PMChannelView"
+﻿<v:DisposableView x:Class="Views.PMChannelView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:v="clr-namespace:Views"
              xmlns:lib="clr-namespace:lib"
              xmlns:sys="clr-namespace:System">
-    <UserControl.Resources>
+    <v:DisposableView.Resources>
         <DataTemplate x:Key="MessageView">
             <v:MessageView />
         </DataTemplate>
         <sys:BBCodeConverter x:Key="BBConv" />
-    </UserControl.Resources>
+    </v:DisposableView.Resources>
 
     <Grid Margin="10"
           TextBlock.FontSize="16">
@@ -63,9 +63,9 @@
             </Expander>
         </Border>
 
-        <ItemsControl ItemsSource="{Binding Path=Model.Messages, Mode=OneWay}"
+        <ListBox ItemsSource="{Binding Path=Model.Messages, Mode=OneWay}"
                       ItemTemplate="{StaticResource MessageView}"
-                      Margin="5"
+                 Style="{StaticResource ContentListBox}"
                       Grid.Row="1"
                       Loaded="OnMessagesLoaded"
                       x:Name="messages"/>
@@ -119,4 +119,4 @@
                                        IsEnabled="{Binding CanPost}"/>
         </StackPanel>
     </Grid>
-</UserControl>
+</v:DisposableView>

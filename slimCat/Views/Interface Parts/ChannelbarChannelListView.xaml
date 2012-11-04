@@ -19,11 +19,6 @@
                     <Run Text="{Binding Path=DisplayNumber, Mode=OneWay}" />
                     <Run Text=")" />
                 </TextBlock>
-                <Button.Triggers>
-                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                        <BeginStoryboard Storyboard="{StaticResource FadeInAnimation}"/>
-                    </EventTrigger>
-                </Button.Triggers>
             </Button>
             
         </DataTemplate>
@@ -69,9 +64,8 @@
         <v:SearchBoxView DockPanel.Dock="Bottom" Margin="0,5,0,0"
                          DataContext="{Binding SearchSettings}"/>
 
-        <ItemsControl ItemsSource="{Binding Path=SortedChannels, Mode=OneWay}"
+        <ListBox ItemsSource="{Binding Path=SortedChannels, Mode=OneWay}"
                       x:Name="PopupAnchor"
-                      BorderBrush="Transparent"
-                      BorderThickness="0" />
+                  Style="{StaticResource ContentListBox}"/>
     </DockPanel>
 </UserControl>

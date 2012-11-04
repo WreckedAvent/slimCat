@@ -9,25 +9,7 @@
             <ContentControl Margin="2"
                             Content="{Binding}"
                             ContentTemplate="{StaticResource UsernamesTemplate}">
-                <ContentControl.Triggers>
-                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
-                                             Duration="0:0:0.3"
-                                             From="0"
-                                             To="1">
-
-                                    <DoubleAnimation.EasingFunction>
-                                        <CircleEase EasingMode="EaseIn" />
-                                    </DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </ContentControl.Triggers>
             </ContentControl>
-
         </DataTemplate>
     </UserControl.Resources>
     
@@ -75,10 +57,9 @@
             <v:SearchBoxView DockPanel.Dock="Bottom"
                              DataContext="{Binding SearchSettings}"/>
             
-            <ItemsControl ItemsSource="{Binding Path=SortedUsers, Mode=OneWay}"
-                          BorderBrush="Transparent"
-                          x:Name="PopupAnchor"
-                          Margin="0"/>
+            <ListBox ItemsSource="{Binding Path=SortedUsers, Mode=OneWay}"
+                     Style="{StaticResource ContentListBox}"
+                     x:Name="PopupAnchor"/>
         </DockPanel>
     </Grid>
 </UserControl>

@@ -11,6 +11,7 @@ using Models;
 using slimCat;
 using ViewModels;
 using System.Collections.Generic;
+using System.Windows.Media;
 
 namespace Services
 {
@@ -26,7 +27,7 @@ namespace Services
         IUnityContainer _contain;
         IEventAggregator _events;
         IChatModel _cm;
-        SoundPlayer DingLing = new SoundPlayer(Environment.CurrentDirectory + @"\sounds\" + "newmessage.wav");
+        MediaPlayer DingLing = new MediaPlayer();
         DateTime _lastDingLinged;
         System.Windows.Forms.NotifyIcon icon = new System.Windows.Forms.NotifyIcon();
         ToastNotificationsViewModel toast;
@@ -96,7 +97,7 @@ namespace Services
             Dispatcher.Invoke(
                 (Action)delegate
                 {
-                    if (!Application.Current.MainWindow.IsFocused)
+                    if (!Application.Current.MainWindow.IsActive)
                     {
                         if (flashWindow)
                             Application.Current.MainWindow.FlashWindow();
@@ -104,9 +105,12 @@ namespace Services
                             DingTheCrapOutOfTheUser();
                     }
 
-                    if (message != null)
-                        toast.UpdateNotification(message);
-                    toast.Target = target;
+                    if (ApplicationSettings.ShowNotificationsGlobal)
+                    {
+                        if (message != null)
+                            toast.UpdateNotification(message);
+                        toast.Target = target;
+                    }
                 });
         }
 
@@ -139,19 +143,82 @@ namespace Services
 
             if (channel != null)
             {
-                if (!channel.IsSelected && channel.Settings.ShouldDing)
-                {
-                    NotifyUser(true, true, message.Poster.Name + '\n' + HttpUtility.UrlDecode(message.Message), channel.ID);
-                    return;
-                }
-            }
+                Dispatcher.Invoke(
+                    (Action)delegate
+                    {
+                        var notFocused = !channel.IsSelected || !Application.Current.MainWindow.IsActive; // if our tab isn't selected or if the window isn't
 
-            Dispatcher.Invoke(
-                (Action)delegate
-                {
-                    if (!Application.Current.MainWindow.IsActive && channel.Settings.ShouldDing)
-                        NotifyUser(true, true, message.Poster.Name + '\n' + HttpUtility.UrlDecode(message.Message), channel.ID);
-                });
+                        if (notFocused) // don't notify if we have proper focus
+                        {
+                            if (channel.Settings.ShouldDing) // if we told to ding on new message
+                            {
+                                NotifyUser(true, true, message.Poster.Name + '\n' + HttpUtility.UrlDecode(message.Message), channel.ID);
+                                return;
+                            }
+                            else // now we check for if the message itself should ding us
+                            {
+                                if (channel.Settings.EnumerableTerms.Count() > 0 || channel.Settings.NotifyCharacterMention) // if we have anything to even check for
+                                {
+                                    var splitwords = message.Message.Split(' ').Select(words => words.ToLower().Trim()); // tokenizes our words
+
+                                    Func<string, bool> isMatchingString = word => // uses our settings to see how we should go through it
+                                    {
+                                        if (String.IsNullOrWhiteSpace(channel.Settings.NotifyTerms))
+                                            return false;
+
+                                        if (channel.Settings.NotifyOnWholeWordsOnly)
+                                            return channel.Settings.EnumerableTerms.Any(dingWords => dingWords.Equals(word, StringComparison.Ordinal));
+                                        else
+                                            return channel.Settings.EnumerableTerms.Any(dingWords => word.Contains(dingWords));
+                                    };
+
+                                    // check if we need to look in the message itself
+                                    if (channel.Settings.NotifyIncludesMessages)
+                                    {
+                                        var match = splitwords.FirstOrDefault(isMatchingString);
+                                        if (match != null) // if one of our words is a dingling word
+                                        {
+                                            var sentenceContext = HttpUtility.UrlDecode(StaticFunctions.GetStringContext(message.Message.ToLower(), match));
+                                            var notifyMessage = message.Poster.Name + " mentioned:" + '\n' + sentenceContext;
+
+                                            NotifyUser(true, true, notifyMessage, channel.ID);
+                                            return;
+                                        }
+                                    }
+
+                                    // check if the message's poster meets any check terms
+                                    if (channel.Settings.NotifyIncludesCharacterNames)
+                                    {
+                                        var names = channel.Settings.EnumerableTerms;
+
+                                        var match = names.FirstOrDefault(name => name.ToLower().Contains(message.Poster.Name.ToLower()));
+                                        if (match != null)
+                                        {
+                                            NotifyUser(true, true, message.Poster.Name + ":" + '\n' + HttpUtility.UrlDecode(message.Message), channel.ID);
+                                        }
+                                    }
+
+                                    // check if message contains our character's name
+                                    if (channel.Settings.NotifyCharacterMention)
+                                    {
+                                        var ourCharacter = _cm.SelectedCharacter.Name.ToLower();
+
+                                        if (splitwords.Any(testword => testword.Equals(ourCharacter, StringComparison.Ordinal)))
+                                        { // if one of the words is our character's name
+                                            var sentenceContext = HttpUtility.UrlDecode(StaticFunctions.GetStringContext(message.Message.ToLower(), ourCharacter));
+                                            var notifyMessage = message.Poster.Name + " mentioned your character:" + '\n' + sentenceContext;
+
+                                            NotifyUser(true, true, notifyMessage, channel.ID);
+                                            return;
+                                        }
+                                    }
+
+
+                                }
+                            }
+                        }
+                    });
+            }
         }
 
         private void HandleNotification(NotificationModel Notification)
@@ -224,10 +291,22 @@ namespace Services
         {
             if ((DateTime.Now - _lastDingLinged) > TimeSpan.FromSeconds(1))
             {
-                DingLing.Play();
-                _lastDingLinged = DateTime.Now;
+                ResetDingLing();
+                DingLing.Volume = ApplicationSettings.Volume;
+
+                if (DingLing.Volume != 0.0)
+                {
+                    DingLing.Play();
+                    _lastDingLinged = DateTime.Now;
+                }
             }
             
+        }
+
+        private void ResetDingLing()
+        {
+            DingLing.Close();
+            DingLing.Open(new Uri(Environment.CurrentDirectory + @"\sounds\" + "newmessage.wav"));
         }
         #endregion
 
@@ -242,7 +321,8 @@ namespace Services
             if (IsManagedDispose)
             {
                 icon.Dispose();
-                DingLing.Dispose();
+                DingLing.Close();
+                DingLing = null;
                 toast.Dispose();
             }
         }

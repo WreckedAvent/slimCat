@@ -18,6 +18,7 @@ namespace ViewModels
     {
         #region Fields
         private string _content = "";
+        private const int cutoffLength = 300;
         System.Timers.Timer _hideDelay = new System.Timers.Timer(5000);
         NotificationsView _view;
         IEventAggregator _events;
@@ -37,12 +38,12 @@ namespace ViewModels
             get { return _content; }
             set
             {
-                if (value.Length < 300)
+                if (value.Length < cutoffLength)
                     _content = value;
 
                 else
                 {
-                    var brevity = value.Substring(0, 300);
+                    var brevity = value.Substring(0, cutoffLength);
                     brevity += " ...";
                     _content = brevity;
                 }

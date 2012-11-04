@@ -115,10 +115,18 @@ namespace ViewModels
         {
             if (_listCacheCount != -1)
             {
-                if (SortedUsers.Count() != _listCacheCount)
+                try
+                {
+                    if (SortedUsers.Count() != _listCacheCount)
+                    {
+                        OnPropertyChanged("SortedUsers");
+                        _listCacheCount = SortedUsers.Count();
+                    }
+                }
+
+                catch (InvalidOperationException) // if our collection changes while we're going through it, then it's obviously changed
                 {
                     OnPropertyChanged("SortedUsers");
-                    _listCacheCount = SortedUsers.Count();
                 }
             }
             else

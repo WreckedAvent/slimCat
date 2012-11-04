@@ -18,11 +18,14 @@ namespace Views
     /// <summary>
     /// Interaction logic for PMChannelView.xaml
     /// </summary>
-    public partial class PMChannelView : UserControl
+    public partial class PMChannelView : DisposableView
     {
+        #region Fields
         private PMChannelViewModel _vm;
         private SnapToBottomManager _manager;
+        #endregion
 
+        #region Constructors
         public PMChannelView(PMChannelViewModel vm)
         {
             try
@@ -35,21 +38,8 @@ namespace Views
 
                 _manager = new SnapToBottomManager(messages);
 
-                _vm.NewMessageArrived += (s, e) =>
-                {
-                    bool keepAtCurrent = _vm.Model.Messages.Count >= 300;
-                    _manager.AutoDownScroll(keepAtCurrent);
-                };
-
-                _vm.StatusChanged += (s, e) =>
-                {
-                    Dispatcher.Invoke(
-                        (Action)delegate
-                        {
-                            if (!CharacterStatusDisplayer.IsExpanded)
-                                CharacterStatusDisplayer.IsExpanded = true;
-                        });
-                };
+                _vm.NewMessageArrived += OnNewMessageArrived;
+                _vm.StatusChanged += OnStatusChanged;
             }
 
             catch (Exception ex)
@@ -58,10 +48,46 @@ namespace Views
                 Exceptions.HandleException(ex);
             }
         }
+        #endregion
 
+        #region Methods
         private void OnMessagesLoaded(object sender, EventArgs e)
         {
             _manager.AutoDownScroll(false, true);
         }
+
+        private void OnNewMessageArrived(object sender, EventArgs e)
+        {
+            bool keepAtCurrent = _vm.Model.Messages.Count >= Models.ApplicationSettings.BackLogMax;
+            _manager.AutoDownScroll(keepAtCurrent);
+        }
+
+        private void OnStatusChanged(object sender, EventArgs e)
+        {
+            Dispatcher.Invoke(
+                (Action)delegate
+                {
+                    if (!CharacterStatusDisplayer.IsExpanded)
+                        CharacterStatusDisplayer.IsExpanded = true;
+                });
+        }
+
+        public override void Dispose()
+        {
+            Dispose(true);
+        }
+
+        internal override void Dispose(bool IsManaged)
+        {
+            if (IsManaged)
+            {
+                _vm.StatusChanged -= OnStatusChanged;
+                _vm.NewMessageArrived -= OnNewMessageArrived;
+                _manager = null;
+                this.DataContext = null;
+                _vm = null;
+            }
+        }
+        #endregion
     }
 }

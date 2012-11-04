@@ -551,7 +551,7 @@ namespace Services
             Dispatcher.Invoke(
                 (Action)delegate
                 {
-                    Application.Current.MainWindow.Title = String.Format("slimCat Serval ({0})", character);
+                    Application.Current.MainWindow.Title = String.Format("slimCat Caracal ({0})", character);
                 });
         }
 

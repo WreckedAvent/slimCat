@@ -85,6 +85,75 @@ namespace System
                 return "e"; // just normal joe user.
         }
         #endregion
+
+        #region misc.
+        /// <summary>
+        /// returns the sentence around a word
+        /// </summary>
+        public static string GetStringContext(string fullContent, string specificWord)
+        {
+            const int contextLength = 150;
+            var trippedItIndex = fullContent.IndexOf(specificWord);
+
+            if (trippedItIndex == -1)
+                return string.Empty; // derp
+
+            var startIndex = trippedItIndex;
+
+            while ((!char.IsPunctuation(fullContent[startIndex]) || fullContent[startIndex] == '\'') && startIndex != 0 && (trippedItIndex-startIndex < contextLength))
+                startIndex--; // pack-peddle until we find us our start, but we only want to go back so many words
+
+
+            if (startIndex != 0)
+            {
+                if (!char.IsPunctuation(fullContent[startIndex]))
+                {
+                    while (!char.IsWhiteSpace(fullContent[startIndex]))
+                        startIndex++;
+                }
+                    startIndex++; // offset the punctuation
+                    while (char.IsWhiteSpace(fullContent[startIndex]))
+                        startIndex++; // get the nex character
+            }
+
+            // now we have the start of our sentence, let's find a suitable end
+
+            var workingString = fullContent.Substring(startIndex);
+
+            if (workingString.Length < 50)
+                return (startIndex == 0 ? "" : "... ") + workingString + " ...";
+
+            var endIndex = workingString.IndexOf(','); // try to get a comma first
+
+            if (endIndex == -1)
+            {
+                endIndex = workingString.IndexOf('.'); // then go for a period
+                if (endIndex == -1)
+                {
+                    if (startIndex == 0)
+                    {
+                        endIndex = Math.Min(contextLength, workingString.Length);
+                        while (!char.IsWhiteSpace(workingString[endIndex]) && endIndex < workingString.Length)
+                            endIndex++;
+                    }
+                    else
+                        endIndex = workingString.Length; // just show the whole thing
+                }
+            }
+
+            if (endIndex != workingString.Length)
+                endIndex++; // include that punctuation we grabbed
+
+            if (startIndex == 0)
+                return workingString.Substring(0, endIndex).Trim() + " ...";
+
+            else
+            {
+                var startOffset = (Math.Max(0, endIndex - contextLength)); // only show the 50 characters around it
+                return "... " + workingString.Substring(startOffset, endIndex - startOffset).Trim() + " ...";
+            }
+        }
+        #endregion
     }
 
     /// <summary>

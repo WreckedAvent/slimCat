@@ -394,8 +394,15 @@ namespace Models
         private bool _shouldFlash = true;
         private bool _shouldDing = false;
         private int _shouldFlashInterval = 1;
+
         private bool _notifyWhenThisCharacterIsMentioned = true;
+        private bool _notifyIncludesMessages = true;
+        private bool _notifyIncludesCharacterNames = false;
+        private bool _notifyOnWholeOnly = true;
         private string _notifyOnTheseTerms = "";
+        private IEnumerable<string> _notifyEnumerate;
+        private bool _notifyTermsChanged = false;
+
         private bool _isChangingSettings = false;
         #endregion
 
@@ -409,6 +416,9 @@ namespace Models
         }
 
         #region Properties
+        /// <summary>
+        /// If this tab should flash on a new message
+        /// </summary>
         public bool ShouldFlash
         {
             get { return _shouldFlash; }
@@ -422,6 +432,9 @@ namespace Models
             }
         }
 
+        /// <summary>
+        /// If this tab should ding the user on a new message
+        /// </summary>
         public bool ShouldDing
         {
             get { return _shouldDing; }
@@ -435,6 +448,9 @@ namespace Models
             }
         }
 
+        /// <summary>
+        /// If a notification will be arised whenever this character is mentioned
+        /// </summary>
         public bool NotifyCharacterMention
         {
             get { return _notifyWhenThisCharacterIsMentioned; }
@@ -448,6 +464,9 @@ namespace Models
             }
         }
 
+        /// <summary>
+        /// How many unread messages must be accumulated before the channel tab flashes
+        /// </summary>
         public int FlashInterval
         {
             get { return _shouldFlashInterval; }
@@ -461,9 +480,12 @@ namespace Models
             }
         }
 
+        /// <summary>
+        /// Raw terms which will ding the user when mentioned
+        /// </summary>
         public string NotifyTerms
         {
-            get { return _notifyOnTheseTerms.ToLower(); }
+            get { return _notifyOnTheseTerms.Trim().ToLower(); }
             set
             {
                 if (_notifyOnTheseTerms != value)
@@ -471,6 +493,64 @@ namespace Models
                     _notifyOnTheseTerms = value;
                     CallUpdate();
                 }
+            }
+        }
+
+        /// <summary>
+        /// NotifyTerms processed into an array
+        /// </summary>
+        public IEnumerable<string> EnumerableTerms
+        {
+            get
+            {
+                if (!_notifyTermsChanged || _notifyEnumerate != null)
+                {
+                    _notifyTermsChanged = false;
+
+                    _notifyEnumerate = _notifyOnTheseTerms.Split(',').Select(word => word.Trim()).Where(word => !string.IsNullOrWhiteSpace(word));
+                    // tokenizes our terms
+                }
+
+                return _notifyEnumerate;
+            }
+        }
+
+        /// <summary>
+        /// If a term notification dings when the term appears in a character's name
+        /// </summary>
+        public bool NotifyIncludesCharacterNames
+        {
+            get { return _notifyIncludesCharacterNames; }
+            set
+            {
+                _notifyIncludesCharacterNames = value;
+                CallUpdate();
+            }
+        }
+
+        /// <summary>
+        /// If a term notification dings when the term appears as a whole word only
+        /// </summary>
+        public bool NotifyOnWholeWordsOnly
+        {
+            get { return _notifyOnWholeOnly; }
+            set
+            {
+                _notifyOnWholeOnly = value;
+                CallUpdate();
+            }
+        }
+
+        /// <summary>
+        /// If a term notification dings when the term appears in a character's post
+        /// </summary>
+        public bool NotifyIncludesMessages
+        {
+            get { return _notifyIncludesMessages; }
+            set
+            {
+                _notifyIncludesMessages = value;
+                CallUpdate();
             }
         }
 
@@ -507,5 +587,22 @@ namespace Models
             if (Updated != null)
                 Updated(this, new EventArgs());
         }
+    }
+
+    /// <summary>
+    /// Settings for the entire application
+    /// </summary>
+    public static class ApplicationSettings
+    {
+        static ApplicationSettings()
+        {
+            Volume = 0.5;
+            ShowNotificationsGlobal = true;
+            BackLogMax = 300;
+        }
+
+        public static double Volume { get; set; }
+        public static bool ShowNotificationsGlobal { get; set; }
+        public static int BackLogMax { get; set; }
     }
 }

@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows;
-using System.Windows.Threading;
-using Microsoft.Practices.Prism.Events;
+﻿using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.Regions;
 using Microsoft.Practices.Unity;
 using Models;
 using slimCat;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Threading;
 using ViewModels;
 using Views;
-using lib;
 
 namespace Services
 {
@@ -80,7 +78,8 @@ namespace Services
                                 _events.GetEvent<ErrorEvent>().Publish("Hmmm... talking to yourself?");
                             else
                             {
-                                var guess = _model.OnlineCharacters.FirstOrDefault(character => character.Name.ToLower().StartsWith(args.ToLower()));
+                                // orderby ensures that our search string won't produce a premature
+                                var guess = _model.OnlineCharacters.OrderBy(character => character.Name).FirstOrDefault(character => character.Name.ToLower().StartsWith(args.ToLower()));
 
                                 if (guess == null)
                                     JoinChannel(ChannelType.pm, args);
@@ -141,7 +140,8 @@ namespace Services
                         {
                             var args = (string)command["channel"];
 
-                            var guess = _model.AllChannels.FirstOrDefault(channel => channel.Title.ToLower().StartsWith(args.ToLower()));
+                            // orderby ensures that our search string won't produce a premature
+                            var guess = _model.AllChannels.OrderBy(channel => channel.Title).FirstOrDefault(channel => channel.Title.ToLower().StartsWith(args.ToLower()));
                             if (guess != null)
                             {
                                 var toSend = new { channel = guess.ID };
@@ -508,7 +508,6 @@ namespace Services
                     });
             }
 
-            ClearViews();
             ChannelModel ChannelModel;
             // get the reference to our channel model
             if (_model.CurrentChannels.Any(param => param.ID == ChannelID))
@@ -528,39 +527,23 @@ namespace Services
             Dispatcher.Invoke(
                 (Action)delegate
                 {
-                    #region Resolve View
-                    if (ChannelModel is PMChannelModel)
+                    foreach (var region in _region.Regions[ChatWrapperView.ConversationRegion].Views)
                     {
-                        _region.Regions[ChatWrapperView.ConversationRegion]
-                            .Add(_container.Resolve<PMChannelView>(ChannelModel.ID));
-                    }
+                        DisposableView toDispose;
 
-                    else if (ChannelModel.Type == ChannelType.utility)
-                    {
-                        _region.Regions[ChatWrapperView.ConversationRegion]
-                            .Add(_container.Resolve<UtilityChannelView>(ChannelModel.ID));
+                        if (region is DisposableView)
+                        {
+                            toDispose = (DisposableView)region;
+                            toDispose.Dispose();
+                            _region.Regions[ChatWrapperView.ConversationRegion].Remove(toDispose);
+                        }
+                        else
+                            _region.Regions[ChatWrapperView.ConversationRegion].Remove(region);
                     }
-
-                    else if (ChannelModel is GeneralChannelModel)
-                    {
-                        _region.Regions[ChatWrapperView.ConversationRegion]
-                            .Add(_container.Resolve<GeneralChannelView>(ChannelModel.ID));
-                    }
-                    #endregion
+                    _region.Regions[ChatWrapperView.ConversationRegion].RequestNavigate(HelperConverter.EscapeSpaces(ChannelModel.ID));
                 });
 
             _lastSelected = ChannelModel;
-        }
-
-        // this is a semi-ugly hack which forcefully removes the 'channel' view and forcefully replaces it with the one selected
-        private void ClearViews()
-        {
-            Dispatcher.Invoke(
-                (Action)delegate
-                {
-                    foreach (object view in _region.Regions[ChatWrapperView.ConversationRegion].Views)
-                        _region.Regions[ChatWrapperView.ConversationRegion].Remove(view);
-                });
         }
 
         // ensure that our logger has a proper instance

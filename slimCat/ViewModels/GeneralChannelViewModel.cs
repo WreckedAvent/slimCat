@@ -276,7 +276,9 @@ namespace ViewModels
                 else
                     Model = CM.AllChannels.First(chan => chan.ID == name);
 
-                _container.RegisterType<object, GeneralChannelView>(name, new InjectionConstructor(this));
+                var safeName = HelperConverter.EscapeSpaces(name);
+
+                _container.RegisterType<object, GeneralChannelView>(safeName, new InjectionConstructor(this));
 
                 _isDisplayingChat = ShouldDisplayChat;
 

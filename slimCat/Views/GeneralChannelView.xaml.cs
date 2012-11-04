@@ -10,7 +10,7 @@ namespace Views
     /// <summary>
     /// Interaction logic for GeneralChannelView.xaml
     /// </summary>
-    public partial class GeneralChannelView : UserControl
+    public partial class GeneralChannelView : DisposableView
     {
         #region Fields
         private GeneralChannelViewModel _vm;
@@ -32,21 +32,8 @@ namespace Views
                 _manager = new SnapToBottomManager(messages);
                 _filter = new SnapToBottomManager(filtered);
 
-                _vm.NewAdArrived += (s, e) =>
-                    {
-                        bool keepAtCurrent = _vm.Model.Messages.Count >= 300;
-
-                        var scroller = _vm.IsSearching ? _filter : _manager;
-                        scroller.AutoDownScroll(keepAtCurrent);
-                    };
-
-                _vm.NewMessageArrived += (s, e) =>
-                    {
-                        bool keepAtCurrent = _vm.Model.Messages.Count >= 300;
-
-                        var scroller = _vm.IsSearching ? _filter : _manager;
-                        scroller.AutoDownScroll(keepAtCurrent);
-                    };
+                _vm.NewAdArrived += OnNewAdArrived;
+                _vm.NewMessageArrived += OnNewMessageArrived;
             }
 
             catch (Exception ex)
@@ -67,6 +54,42 @@ namespace Views
         {
             _filter.AutoDownScroll(false, true);
         }
+
+        private void OnNewAdArrived(object sender, EventArgs e)
+        {
+            bool keepAtCurrent = _vm.Model.Messages.Count >= Models.ApplicationSettings.BackLogMax;
+
+            var scroller = _vm.IsSearching ? _filter : _manager;
+            scroller.AutoDownScroll(keepAtCurrent);
+        }
+
+        private void OnNewMessageArrived(object sender, EventArgs e)
+        {
+            bool keepAtCurrent = _vm.Model.Messages.Count >= Models.ApplicationSettings.BackLogMax;
+
+            var scroller = _vm.IsSearching ? _filter : _manager;
+            scroller.AutoDownScroll(keepAtCurrent);
+        }
         #endregion
+
+        public override void Dispose()
+        {
+            Dispose(true);
+        }
+
+        internal override void Dispose(bool isManaged)
+        {
+            if (isManaged)
+            {
+                _vm.NewAdArrived -= OnNewAdArrived;
+                _vm.NewMessageArrived -= OnNewMessageArrived;
+                _vm = null;
+                _filter = null;
+                _manager = null;
+                messages.ItemsSource = null;
+                filtered.ItemsSource = null;
+                this.DataContext = null;
+            }
+        }
     }
 }

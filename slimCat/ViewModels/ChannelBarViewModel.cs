@@ -141,21 +141,27 @@ namespace ViewModels
                         delegate
                         {
                             IsExpanded = !IsExpanded;
-                            // this shoots us to the notifications tab if we have something to see there
-                            if (_hasUpdate)
+
+                            if (IsExpanded)
                             {
-                                if (_currentSelected != "Notifications")
-                                    NavigateToTabEvent("Notifications");
+                                // this shoots us to the notifications tab if we have something to see there
+                                if (_hasUpdate)
+                                {
+                                    if (_currentSelected != "Notifications")
+                                        NavigateToTabEvent("Notifications");
 
-                                if (OnJumpToNotifications != null)
-                                    OnJumpToNotifications(this, new EventArgs()); // this lets the view sync our jump
+                                    if (OnJumpToNotifications != null)
+                                        OnJumpToNotifications(this, new EventArgs()); // this lets the view sync our jump
 
-                                _hasUpdate = false;
-                                OnPropertyChanged("HasUpdate");
+                                    _hasUpdate = false;
+                                    OnPropertyChanged("HasUpdate");
+                                }
+                                else if (!String.IsNullOrWhiteSpace(_currentSelected))
+                                    // this fixes a very subtle bug where a list won't load or won't load properly after switching tabs
+                                    NavigateToTabEvent(_currentSelected);
                             }
-                            else if (!String.IsNullOrWhiteSpace(_currentSelected)) 
-                                // this fixes a very subtle bug where a list won't load or won't load properly after switching tabs
-                                NavigateToTabEvent(_currentSelected);
+                            else // when we close it, unload the tab, but _currentSelected remains what it was so we remember user input
+                                NavigateToTabEvent("NoTab");
                         });
                 }
 
@@ -165,31 +171,39 @@ namespace ViewModels
 
         private void NavigateToTabEvent(object args)
         {
-            if (_currentSelected != args as string)
+            var newSelected = args as string;
+
+            if (newSelected as string != "NoTab") // this isn't really a selected state
+                _currentSelected = newSelected;
+
+            switch (args as string)
             {
-                _currentSelected = args as string;
-                switch (args as string)
-                {
-                    case "Channels":
-                        {
-                            _region.Regions[TabViewRegion].RequestNavigate(ChannelsTabViewModel.ChannelsTabView);
-                            break;
-                        }
+                case "Channels":
+                    {
+                        _region.Regions[TabViewRegion].RequestNavigate(ChannelsTabViewModel.ChannelsTabView);
+                        break;
+                    }
 
-                    case "Users":
-                        {
-                            _region.Regions[TabViewRegion].RequestNavigate(UsersTabViewModel.UsersTabView);
-                            break;
-                        }
+                case "Users":
+                    {
+                        _region.Regions[TabViewRegion].RequestNavigate(UsersTabViewModel.UsersTabView);
+                        break;
+                    }
 
-                    case "Notifications":
-                        {
-                            _region.Regions[TabViewRegion].RequestNavigate(NotificationsTabViewModel.NotificationsTabView);
-                            break;
-                        }
+                case "Notifications":
+                    {
+                        _region.Regions[TabViewRegion].RequestNavigate(NotificationsTabViewModel.NotificationsTabView);
+                        break;
+                    }
 
-                    default: break;
-                }
+                case "NoTab":
+                    {
+                        foreach (var view in _region.Regions[TabViewRegion].Views)
+                            _region.Regions[TabViewRegion].Remove(view);
+                        break;
+                    }
+
+                default: break;
             }
         }
         #endregion

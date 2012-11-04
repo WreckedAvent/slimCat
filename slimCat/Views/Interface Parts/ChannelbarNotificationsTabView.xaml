@@ -8,11 +8,6 @@
             <ContentControl Margin="2"
                             Content="{Binding}"
                             ContentTemplate="{StaticResource CharacterUpdateTemplate}">
-                <ContentControl.Triggers>
-                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                        <BeginStoryboard Storyboard="{StaticResource FadeInAnimation}"/>
-                    </EventTrigger>
-                </ContentControl.Triggers>
             </ContentControl>
         </DataTemplate>
         
@@ -20,11 +15,6 @@
             <ContentControl Margin="2"
                             Content="{Binding}"
                             ContentTemplate="{StaticResource ChannelUpdateTemplate}">
-                <ContentControl.Triggers>
-                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                        <BeginStoryboard Storyboard="{StaticResource FadeInAnimation}"/>
-                    </EventTrigger>
-                </ContentControl.Triggers>
             </ContentControl>
         </DataTemplate>
     </UserControl.Resources>
@@ -32,10 +22,9 @@
     <DockPanel>
         
         <v:SearchBoxView DockPanel.Dock="Bottom"/>
-        <ItemsControl ItemsSource="{Binding Path=SortedNotifications}"
+        <ListBox ItemsSource="{Binding Path=SortedNotifications}"
+                 Style="{StaticResource ContentListBox}"
                       MaxWidth="200"
-                      BorderThickness="0"
-                      BorderBrush="Transparent"
                       x:Name="PopupAnchor"/>
     </DockPanel>
 </UserControl>

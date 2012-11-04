@@ -59,8 +59,30 @@
             </Border>
 
             <StackPanel Grid.Row="1">
-                <Button Content="Save Channels ..."
+                <Expander Header="Application Commands">
+                    <Button Content="Save Channels ..."
                     Command="{Binding SaveChannelsCommand}"/>
+                </Expander>
+                <Expander Header="Application Settings">
+                    <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
+                        <StackPanel  Margin="0,5">
+                            <TextBlock Text="Notifications Volume" Margin="5,0,0,0" />
+                            <Slider Value="{Binding Volume}" Minimum="0" Maximum="1" Width="200" HorizontalAlignment="Left" Margin="5,0,0,0" />
+                        </StackPanel>
+
+                        <CheckBox IsChecked="{Binding ShowNotifications}"
+                                  VerticalAlignment="Center"
+                                  Margin="0,5">Allow Toast Notifications</CheckBox>
+
+                        <WrapPanel Margin="0,5">
+                            <TextBlock Margin="0,0,5,0">Keep</TextBlock>
+                            <TextBox Text="{Binding Path=BackLogMax, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     VerticalAlignment="Center"
+                                     FontSize="12"/>
+                            <TextBlock Margin="5,0,0,0">Messages in channel backlogs</TextBlock>
+                        </WrapPanel>
+                    </StackPanel>
+                </Expander>
             </StackPanel>
 
             <v:ChannelTextBoxEntryView Grid.Row="2"/>

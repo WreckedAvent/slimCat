@@ -72,6 +72,34 @@ namespace ViewModels
         {
             return CM.OnlineCharacters.Count();
         }
+
+        public bool ShowNotifications 
+        { 
+            get { return ApplicationSettings.ShowNotificationsGlobal; }
+            set
+            {
+                ApplicationSettings.ShowNotificationsGlobal = value;
+            }
+        }
+
+        public double Volume
+        {
+            get { return ApplicationSettings.Volume; }
+            set
+            {
+                ApplicationSettings.Volume = value;
+            }
+        }
+
+        public int BackLogMax
+        {
+            get { return ApplicationSettings.BackLogMax; }
+            set
+            {
+                if (value < 25000 || value > 10)
+                    ApplicationSettings.BackLogMax = value;
+            }
+        }
         #endregion
 
         #region Constructors

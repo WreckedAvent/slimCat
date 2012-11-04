@@ -15,7 +15,7 @@ namespace Services
     {
         #region Constants
         public const string host = "ws://chat.f-list.net:9722/";
-        public const string version = "Serval";
+        public const string version = "Caracal";
         public const string client_n = "SlimCat";
         #endregion
 

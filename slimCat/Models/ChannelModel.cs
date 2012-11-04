@@ -163,7 +163,7 @@ namespace Models
 
         public virtual void AddMessage(IMessage message)
         {
-            if (_messages.Count >= 300)
+            if (_messages.Count >= ApplicationSettings.BackLogMax)
                 _messages.RemoveAt(0);
 
             _messages.Add(message);

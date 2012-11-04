@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="slimCat Client Notifications"
         WindowStyle="None"
+        ShowInTaskbar="False"
         Width="300"
         SizeToContent="Height"
         Topmost="true"

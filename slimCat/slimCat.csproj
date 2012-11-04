@@ -190,6 +190,7 @@
     <Compile Include="Views\Interface Parts\ChannelbarUserListView.xaml.cs">
       <DependentUpon>ChannelbarUserListView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Interface Parts\DisposableView.cs" />
     <Compile Include="Views\Interface Parts\SearchBoxView.xaml.cs">
       <DependentUpon>SearchBoxView.xaml</DependentUpon>
     </Compile>

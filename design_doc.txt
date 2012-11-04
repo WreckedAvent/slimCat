@@ -49,7 +49,7 @@ Critical Point: b2.x
  - Can access user-created closed channels (and create)
  - /commands
  - Logging
- DONE: 8/12/12
+DONE: 8/12/12
 
 Critical Point: b3.x -> "Serval"
  - Some Persistent Settings (main ones) 
@@ -62,7 +62,7 @@ Critical Point: b3.x -> "Serval"
  - Most BBCode suported 
  - More Shortcuts
  - Support for broadcasts, roll, dice, etc.
-BREAK AT 8/28/12 due to being banned and all
+DONE: 10/28/12
 
 Critical Point: b4.x -> "Caracal"
  - Accept/Deny/Send Friend Requests

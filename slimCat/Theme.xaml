@@ -609,7 +609,37 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
+    <Style TargetType="ListBox" x:Key="ContentListBox">
+        <Style.Resources>
+            <!-- System color over-ride -->
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
+                             Color="Transparent" />
+            <!-- System color over-ride -->
+            <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"
+                             Color="Transparent" />
+            <!-- System color over-ride -->
+            <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}"
+                             Color="Transparent" />
+        </Style.Resources>
+        
+        <Setter Property="VirtualizingStackPanel.VirtualizationMode" Value="Recycling"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="True"/>
+        <Setter Property="Margin" Value="0,5" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                </Style>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="ScrollViewer">
         <Setter Property="CanContentScroll" Value="True" />
         <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
@@ -1012,7 +1042,7 @@
     </ControlTemplate>
 
     <ControlTemplate x:Key="ChannelSettingBoxes" TargetType="ContentControl">
-        <StackPanel>
+        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
             <CheckBox IsChecked="{Binding ShouldFlash}">Channel flashes on a new message</CheckBox>
             <WrapPanel Visibility="{Binding ShouldFlash, Converter={StaticResource BoolConverter}}"
                        TextBlock.Foreground="{StaticResource ForegroundBrush}">
@@ -1025,7 +1055,16 @@
                            Margin="5"/>
             </WrapPanel>
             <CheckBox IsChecked="{Binding ShouldDing}">Play a sound and notify on new message</CheckBox>
-            <!--<CheckBox IsChecked="{Binding NotifyCharacterMention}">Notify me when this channel mentions this character</CheckBox>-->
+            <CheckBox IsChecked="{Binding NotifyCharacterMention}">Notify me when this channel mentions this character</CheckBox>
+            
+            <TextBlock Margin="0,10">Notify me when these terms are mentioned (seperate with commas):</TextBlock>
+            <TextBox Text="{Binding Path=NotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     FontSize="12"/>
+            <CheckBox IsChecked="{Binding NotifyOnWholeWordsOnly}"
+                      IsEnabled="False">Only notify on whole words</CheckBox>
+            <CheckBox IsChecked="{Binding NotifyIncludesCharacterNames}">Notify when the terms are in character names</CheckBox>
+            <CheckBox IsChecked="{Binding NotifyIncludesMessages}">Notify when the terms are in messages</CheckBox>
+            
         </StackPanel>
     </ControlTemplate>
 </ResourceDictionary>

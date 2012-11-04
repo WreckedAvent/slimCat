@@ -132,7 +132,7 @@ namespace ViewModels
 
                 Model.PropertyChanged += OnModelPropertyChanged;
 
-                _container.RegisterType<Object, PMChannelView>(Model.ID, new InjectionConstructor(this));
+                _container.RegisterType<Object, PMChannelView>(HelperConverter.EscapeSpaces(Model.ID), new InjectionConstructor(this));
                 _events.GetEvent<NewUpdateEvent>().Subscribe(OnNewUpdateEvent, ThreadOption.PublisherThread, true, UpdateIsOurCharacter);
 
                 Model.Messages.CollectionChanged += OnMessagesChanged;
