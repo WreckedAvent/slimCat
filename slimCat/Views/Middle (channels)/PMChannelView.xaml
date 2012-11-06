@@ -4,13 +4,6 @@
              xmlns:v="clr-namespace:Views"
              xmlns:lib="clr-namespace:lib"
              xmlns:sys="clr-namespace:System">
-    <v:DisposableView.Resources>
-        <DataTemplate x:Key="MessageView">
-            <v:MessageView />
-        </DataTemplate>
-        <sys:BBCodeConverter x:Key="BBConv" />
-    </v:DisposableView.Resources>
-
     <Grid Margin="10"
           TextBlock.FontSize="16">
         <Grid.RowDefinitions>
@@ -41,7 +34,7 @@
                                TextWrapping="Wrap"
                                Visibility="{Binding Path=HasStatus, Converter={StaticResource BoolConverter}}">
                         <lib:TextBlockHelper.InlineList>
-                            <Binding Converter="{StaticResource BBConv}"
+                            <Binding Converter="{StaticResource BBCodeConverter}"
                                      Path="ConversationWith.StatusMessage" />
                         </lib:TextBlockHelper.InlineList>
                     </TextBlock>

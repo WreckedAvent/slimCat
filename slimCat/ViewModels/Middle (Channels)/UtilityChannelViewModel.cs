@@ -10,6 +10,7 @@ using System.Windows.Input;
 using slimCat.Properties;
 using slimCat;
 using System.Text;
+using System.Collections.Generic;
 
 namespace ViewModels
 {
@@ -79,6 +80,7 @@ namespace ViewModels
             set
             {
                 ApplicationSettings.ShowNotificationsGlobal = value;
+                Services.SettingsDaemon.SaveApplicationSettingsToXML(CM.SelectedCharacter.Name);
             }
         }
 
@@ -88,6 +90,7 @@ namespace ViewModels
             set
             {
                 ApplicationSettings.Volume = value;
+                Services.SettingsDaemon.SaveApplicationSettingsToXML(CM.SelectedCharacter.Name);
             }
         }
 
@@ -98,6 +101,7 @@ namespace ViewModels
             {
                 if (value < 25000 || value > 10)
                     ApplicationSettings.BackLogMax = value;
+                Services.SettingsDaemon.SaveApplicationSettingsToXML(CM.SelectedCharacter.Name);
             }
         }
         #endregion
@@ -145,6 +149,8 @@ namespace ViewModels
                 _events.GetEvent<LoginAuthenticatedEvent>().Subscribe(LoggedInEvent);
                 _events.GetEvent<LoginFailedEvent>().Subscribe(LoginFailedEvent);
                 _events.GetEvent<ReconnectingEvent>().Subscribe(LoginReconnectingEvent);
+
+                Services.SettingsDaemon.ReadApplicationSettingsFromXML(cm.SelectedCharacter.Name);
             }
 
             catch (Exception ex)
@@ -222,15 +228,15 @@ namespace ViewModels
                 if (_saveChannels == null)
                     _saveChannels = new RelayCommand(args =>
                         {
-                            Settings.Default.SavedChannels = new System.Collections.Specialized.StringCollection();
+                            ApplicationSettings.SavedChannels.Clear();
 
                             foreach (var channel in CM.CurrentChannels)
                             {
                                 if (!(channel.ID.Equals("Home", StringComparison.OrdinalIgnoreCase)))
-                                    Settings.Default.SavedChannels.Add(channel.ID);
+                                    ApplicationSettings.SavedChannels.Add(channel.ID);
                             }
 
-                            Settings.Default.Save();
+                            Services.SettingsDaemon.SaveApplicationSettingsToXML(CM.SelectedCharacter.Name);
                             UpdateError("Channels saved.");
                         });
                 return _saveChannels;

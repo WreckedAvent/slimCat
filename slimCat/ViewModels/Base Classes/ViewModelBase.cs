@@ -186,6 +186,7 @@ namespace ViewModels
                 .toDictionary();
 
             _events.GetEvent<UserCommandEvent>().Publish(command);
+            updateRightClickMenu(_rcmvm.Target); // updates the ignore/unignore text
         }
         #endregion
 
@@ -196,7 +197,7 @@ namespace ViewModels
             get
             {
                 if (_isInter == null)
-                    _isInter = new RelayCommand(IsInterestedEvent, CanBeInterestedIn);
+                    _isInter = new RelayCommand(IsInterestedEvent);
                 return _isInter;
             }
         }
@@ -207,19 +208,9 @@ namespace ViewModels
             get
             {
                 if (_isNInter == null)
-                    _isNInter = new RelayCommand(IsUninterestedEvent, CanBeUninterestedIn);
+                    _isNInter = new RelayCommand(IsUninterestedEvent);
                 return _isNInter;
             }
-        }
-
-        public bool CanBeInterestedIn(object args)
-        {
-            return !CM.Interested.Contains(args as string);
-        }
-
-        public bool CanBeUninterestedIn(object args)
-        {
-            return !CM.NotInterested.Contains(args as string);
         }
 
         protected void IsInterestedEvent(object args) { InterestedEvent(args); }
@@ -228,9 +219,11 @@ namespace ViewModels
         protected void InterestedEvent(object args, bool interestedIn = true)
         {
             if (interestedIn)
-                CM.AddToInterestList(args as string);
+                CM.ToggleInterestedMark(args as string);
             else
-                CM.AddToUninterestList(args as string);
+                CM.ToggleNotInterestedMark(args as string);
+
+            OnPropertyChanged("RightClickMenuViewModel");
         }
         #endregion
 
@@ -297,9 +290,7 @@ namespace ViewModels
             string name = NewTarget.Name;
             _rcmvm.SetNewTarget(NewTarget,
                                 CanIgnore(name),
-                                CanUnIgnore(name),
-                                CanBeInterestedIn(name),
-                                CanBeUninterestedIn(name));
+                                CanUnIgnore(name));
             _rcmvm.IsOpen = true;
             OnPropertyChanged("RightClickMenuViewModel");
         }

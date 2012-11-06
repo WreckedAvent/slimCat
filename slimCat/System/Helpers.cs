@@ -65,16 +65,20 @@ namespace System
                 return "a"; // Really important people!
             else if (cm.OnlineBookmarks.Contains(character))
                 return "b"; // Important people!
+            else if (cm.Interested.Contains(character.Name))
+                return "c"; // interesting people!
             else if (cm.OnlineGlobalMods.Contains(character))
-                return "c"; // Useful people!
+                return "d"; // Useful people!
             else if (channel != null && channel.Moderators.Contains(character.Name))
-                return "c";
+                return "d";
             else if (cm.Ignored.Contains(character.Name))
                 return "z"; // "I don't want to see this person"
+            else if (cm.NotInterested.Contains(character.Name))
+                return "z"; // I also do not wish to see this person
 
             // then sort then by status
             else if (character.Status == StatusType.looking)
-                return "d"; // People we want to bone!
+                return "e"; // People we want to bone!
             else if (character.Status == StatusType.busy)
                 return "f"; // Not the most available, but still possible to play with
             else if (character.Status == StatusType.away || character.Status == StatusType.idle)

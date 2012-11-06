@@ -3,10 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:lib="clr-namespace:lib"
              xmlns:sys="clr-namespace:System">
-    <UserControl.Resources>
-        <sys:BBCodePostConverter x:Key="BBConv" />
-    </UserControl.Resources>
-
     <Grid HorizontalAlignment="Stretch"
           TextBlock.FontSize="13">
         <DockPanel>
@@ -15,11 +11,10 @@
                         DockPanel.Dock="Right"
                         VerticalAlignment="Center"
                         FontSize="12"/>
-
             <TextBlock TextWrapping="Wrap"
                         TextBlock.Foreground="{StaticResource ForegroundBrush}">
                 <lib:TextBlockHelper.InlineList>
-                    <MultiBinding Converter="{StaticResource BBConv}">
+                    <MultiBinding Converter="{StaticResource BBPostConverter}">
                         <Binding Path="Message" />
                         <Binding Path="Poster" />
                         <Binding Path="Type" />

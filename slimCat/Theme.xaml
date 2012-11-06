@@ -914,8 +914,7 @@
                            Margin="5"/>
             </WrapPanel>
             <CheckBox IsChecked="{Binding ShouldDing}">Play a sound and notify on new message</CheckBox>
-            <CheckBox IsChecked="{Binding NotifyCharacterMention}">Notify me when this channel mentions this character</CheckBox>
-            
+            <CheckBox IsChecked="{Binding NotifyCharacterMention}">Notify me when this this character is mentioned</CheckBox>
             <TextBlock Margin="0,10">Notify me when these terms are mentioned (seperate with commas):</TextBlock>
             <TextBox Text="{Binding Path=NotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      FontSize="12"/>

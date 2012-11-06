@@ -396,6 +396,9 @@ namespace Models
         private int _shouldFlashInterval = 1;
 
         private bool _notifyWhenThisCharacterIsMentioned = true;
+        private bool _notifyWhenFriendsTalk = false;
+        private bool _notifyWhenInterestedTalk = false;
+
         private bool _notifyIncludesMessages = true;
         private bool _notifyIncludesCharacterNames = false;
         private bool _notifyOnWholeOnly = true;
@@ -595,15 +598,32 @@ namespace Models
     /// </summary>
     public static class ApplicationSettings
     {
+        #region Fields
+        private static IList<string> _savedChannels;
+        private static IList<string> _interested;
+        private static IList<string> _uninterested;
+        #endregion
+
+        #region Constructor
         static ApplicationSettings()
         {
             Volume = 0.5;
             ShowNotificationsGlobal = true;
             BackLogMax = 300;
+            _savedChannels = new List<string>();
+            _interested = new List<string>();
+            _uninterested = new List<string>();
         }
+        #endregion
 
+        #region Properties
         public static double Volume { get; set; }
         public static bool ShowNotificationsGlobal { get; set; }
         public static int BackLogMax { get; set; }
+
+        public static IList<string> SavedChannels { get { return _savedChannels; } }
+        public static IList<string> Interested { get { return _interested; } }
+        public static IList<string> NotInterested { get { return _uninterested; } }
+        #endregion
     }
 }

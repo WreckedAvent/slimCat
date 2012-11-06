@@ -113,24 +113,25 @@ namespace ViewModels
         #region Methods
         private void TickUpdateEvent(object sender = null, EventArgs e = null)
         {
-            if (_listCacheCount != -1)
+            try
             {
-                try
+                if (_listCacheCount != -1)
                 {
                     if (SortedUsers.Count() != _listCacheCount)
                     {
                         OnPropertyChanged("SortedUsers");
                         _listCacheCount = SortedUsers.Count();
                     }
-                }
 
-                catch (InvalidOperationException) // if our collection changes while we're going through it, then it's obviously changed
-                {
-                    OnPropertyChanged("SortedUsers");
                 }
+                else
+                    _listCacheCount = SortedUsers.Count();
             }
-            else
-                _listCacheCount = SortedUsers.Count();
+
+            catch (InvalidOperationException) // if our collection changes while we're going through it, then it's obviously changed
+            {
+                OnPropertyChanged("SortedUsers");
+            }
         }
         #endregion
     }

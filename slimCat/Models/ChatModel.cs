@@ -25,7 +25,6 @@ namespace Models
         private bool _isAuth = false;
 
         private IDictionary<string, ICharacter> _onlineCharacters = new Dictionary<string, ICharacter>();
-        private IList<string> _removeTemp = new List<string>();
 
         // things that we should keep a track of, yet not needed frequently
         private IList<string> _globalMods = new List<string>();
@@ -36,8 +35,6 @@ namespace Models
         private IList<ICharacter> _onlineFriendCache = null;
         private IList<ICharacter> _onlineModsCache = null;
 
-        private IList<string> _notInterested = new List<string>();
-        private IList<string> _interestedIn = new List<string>();
         private IList<string> _ignored = new List<string>();
         #endregion
 
@@ -136,8 +133,8 @@ namespace Models
         public IList<string> Bookmarks { get { return _bookmarks; } }
         public IList<string> Mods { get { return _globalMods; } }
         public IList<string> Ignored { get { return _ignored; } }
-        public IList<string> Interested { get { return _interestedIn; } }
-        public IList<string> NotInterested { get { return _notInterested; } }
+        public IList<string> Interested { get { return ApplicationSettings.Interested; } }
+        public IList<string> NotInterested { get { return ApplicationSettings.NotInterested; } }
 
         public ChannelModel SelectedChannel
         {
@@ -190,7 +187,7 @@ namespace Models
         {
             return (Bookmarks.Any(bookmark => bookmark.Equals(character, StringComparison.OrdinalIgnoreCase))
                 || Friends.Any(friend => friend.Equals(character, StringComparison.OrdinalIgnoreCase))
-                || _interestedIn.Any(interest => interest.Equals(character, StringComparison.OrdinalIgnoreCase)))
+                || Interested.Any(interest => interest.Equals(character, StringComparison.OrdinalIgnoreCase)))
                 || CurrentPMs.Any(pm => pm.ID.Equals(character, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -247,20 +244,32 @@ namespace Models
             }
         }
 
-        public void AddToInterestList(string character)
+        public void ToggleInterestedMark(string character)
         {
-            if (!_interestedIn.Contains(character))
-                _interestedIn.Add(character);
-            if (_notInterested.Contains(character))
-                _notInterested.Remove(character);
+            if (!Interested.Contains(character))
+            {
+                Interested.Add(character);
+                if (NotInterested.Contains(character))
+                    NotInterested.Remove(character);
+            }
+            else
+                Interested.Remove(character);
+
+            Services.SettingsDaemon.SaveApplicationSettingsToXML(SelectedCharacter.Name);
         }
 
-        public void AddToUninterestList(string character)
+        public void ToggleNotInterestedMark(string character)
         {
-            if (!_notInterested.Contains(character))
-                _notInterested.Add(character);
-            if (_interestedIn.Contains(character))
-                _interestedIn.Remove(character);
+            if (!NotInterested.Contains(character))
+            {
+                NotInterested.Add(character);
+                if (Interested.Contains(character))
+                    Interested.Remove(character);
+            }
+            else
+                NotInterested.Remove(character);
+
+            Services.SettingsDaemon.SaveApplicationSettingsToXML(SelectedCharacter.Name);
         }
         #endregion
     }
@@ -363,14 +372,14 @@ namespace Models
         ICharacter FindCharacter(string name);
 
         /// <summary>
-        /// Add a given character to our persistent interest list
+        /// Toggle our interest in a character
         /// </summary>
-        void AddToInterestList(string name);
+        void ToggleInterestedMark(string name);
 
         /// <summary>
-        /// Add a given character to our persistent uninterest list
+        /// Toggle our disinterested in a character
         /// </summary>
-        void AddToUninterestList(string name);
+        void ToggleNotInterestedMark(string name);
 
         event EventHandler SelectedChannelChanged;
     }

@@ -36,8 +36,32 @@ namespace Models
 
         public bool CanIgnore { get { return _canIgnore; } }
         public bool CanUnignore { get { return _canUnignore; } }
-        public bool CanMark { get { return _canMark; } }
-        public bool CanUnmark { get { return _canUnMark; } }
+        public string MarkInterested
+        {
+            get
+            {
+                if (Target != null)
+                {
+                    if (ApplicationSettings.Interested.Contains(Target.Name))
+                        return "Remove interested mark";
+                    else return "Add interested mark";
+                }
+                else return string.Empty;
+            }
+        }
+        public string MarkUninterested
+        {
+            get
+            {
+                if (Target != null)
+                {
+                    if (ApplicationSettings.NotInterested.Contains(Target.Name))
+                        return "Remove not interested mark";
+                    else return "Add not interested mark";
+                }
+                else return string.Empty;
+            }
+        }
 
         public string TargetStatus
         {
@@ -73,6 +97,8 @@ namespace Models
                 return "None";
             }
         }
+
+        public bool HasStatusMessage { get { if (_target != null) return _target.StatusMessage.Length > 0; else return false; } }
         #endregion
 
         #region Methods
@@ -86,23 +112,20 @@ namespace Models
             _target = null;
         }
 
-        public void SetNewTarget(ICharacter target, bool canIgnore, bool canUnignore, bool canMarkAsInterested, bool canMarkAsNotInterested)
+        public void SetNewTarget(ICharacter target, bool canIgnore, bool canUnignore)
         {
             _target = target;
             _target.GetAvatar();
 
             _canIgnore = canIgnore;
             _canUnignore = canUnignore;
-            _canMark = canMarkAsInterested;
-            _canUnMark = canMarkAsNotInterested;
 
             OnPropertyChanged("Target");
             OnPropertyChanged("CanIgnore");
             OnPropertyChanged("CanUnignore");
-            OnPropertyChanged("CanMark");
-            OnPropertyChanged("CanUnmark");
             OnPropertyChanged("TargetGender");
             OnPropertyChanged("TargetStatus");
+            OnPropertyChanged("HasStatus");
         }
         #endregion
     }

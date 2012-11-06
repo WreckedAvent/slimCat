@@ -344,7 +344,7 @@ namespace ViewModels
                 {
                     OnPropertyChanged("ChannelSettings");
                     if (!ChannelSettings.IsChangingSettings)
-                        Services.SettingsDaemon.UpdateSettingsFile(ChannelSettings, cm.SelectedCharacter.Name, Model.Title, Model.ID, Model.Type);
+                        Services.SettingsDaemon.UpdateSettingsFile(ChannelSettings, cm.SelectedCharacter.Name, Model.Title, Model.ID);
                 };
                 #endregion
             }

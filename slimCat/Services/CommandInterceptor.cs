@@ -264,9 +264,9 @@ namespace Services
         {
             ChannelListCommand(command, true);
             #region Default Channel Join
-            if (!(Settings.Default.SavedChannels == null))
+            foreach (var savedChannel in Models.ApplicationSettings.SavedChannels)
             {
-                foreach (var savedChannel in Settings.Default.SavedChannels)
+                if (!string.IsNullOrWhiteSpace(savedChannel))
                 {
                     object toSend = new { channel = savedChannel };
                     _connection.SendMessage(toSend, "JCH");

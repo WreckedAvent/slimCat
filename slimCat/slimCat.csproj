@@ -135,7 +135,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="lib\AttachInputBindings.cs" />
     <Compile Include="lib\FlashWindowHelper.cs" />
     <Compile Include="lib\ListboxSelected.cs" />
     <Compile Include="lib\TextBlockHelper.cs" />

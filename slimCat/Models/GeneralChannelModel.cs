@@ -128,8 +128,8 @@ namespace Models
 
             while (messageCollection.Count > ApplicationSettings.BackLogMax)
             {
-                _messages[0].Dispose();
-                _messages.RemoveAt(0);
+                messageCollection[0].Dispose();
+                messageCollection.RemoveAt(0);
             }
 
             messageCollection.Add(message);

@@ -4,7 +4,8 @@
        Placement="MousePoint"
        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-       xmlns:v="clr-namespace:Views">
+       xmlns:v="clr-namespace:Views"
+       xmlns:lib="clr-namespace:lib">
     <Border BorderBrush="{StaticResource HighlightBrush}"
             BorderThickness="1"
             Background="{StaticResource BackgroundBrush}"
@@ -15,19 +16,36 @@
                     DataContext="{Binding Path=RightClickMenuViewModel}"
                     Padding="10">
                 <WrapPanel>
-                    <StackPanel>
                         <Image Source="{Binding Path=Target.Avatar}"
-                               Height="50"
-                               Width="50"/>
+                               Height="75"
+                               Width="75"/>
+                    <StackPanel HorizontalAlignment="Right"
+                                TextBlock.TextAlignment="Right"
+                                Margin="10,0,0,0">
                         <TextBlock Text="{Binding Path=Target.Name}"
-                                   HorizontalAlignment="Center"
                                    FontSize="20"/>
-                    </StackPanel>
-                    <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="{Binding Path=TargetGender}"/>
                         <TextBlock Text="{Binding Path=TargetStatus}"/>
                     </StackPanel>
                 </WrapPanel>
+            </Border>
+            <Border BorderBrush="{StaticResource HighlightBrush}"
+                    BorderThickness="0,0,0,1"
+                    Padding="5"
+                    Visibility="{Binding Path=RightClickMenuViewModel.HasStatusMessage, Converter={StaticResource BoolConverter}}">
+                <Expander Header="Status Message"
+                          HorizontalContentAlignment="Left">
+                    <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                               TextAlignment="Left"
+                               TextWrapping="Wrap"
+                               MaxWidth="200"
+                               Margin="5,0">                            
+                        <lib:TextBlockHelper.InlineList>
+                            <Binding Converter="{StaticResource BBCodeConverter}"
+                                        Path="RightClickMenuViewModel.Target.StatusMessage" />
+                        </lib:TextBlockHelper.InlineList>
+                    </TextBlock>
+                </Expander>
             </Border>
             <StackPanel>
                 <StackPanel.Resources>
@@ -58,11 +76,9 @@
                         Visibility="{Binding Path=RightClickMenuViewModel.CanUnignore, Converter={StaticResource BoolConverter}}"/>
                 
                 <Button Command="{Binding InterestedCommand}"
-                        Content="Mark as Interesting"
-                        Visibility="{Binding Path=RightClickMenuViewModel.CanMark, Converter={StaticResource BoolConverter}}"/>
+                        Content="{Binding Path=RightClickMenuViewModel.MarkInterested}"/>
                 <Button Command="{Binding NotInterestedCommand}"
-                        Content="Mark as not interesting"
-                        Visibility="{Binding Path=RightClickMenuViewModel.CanUnmark, Converter={StaticResource BoolConverter}}"/>
+                        Content="{Binding Path=RightClickMenuViewModel.MarkUninterested}"/>
                 
                 <!-- Mod Commands -->
                 <Button Command="{Binding KickCommand}"

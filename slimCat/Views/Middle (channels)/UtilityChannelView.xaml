@@ -2,11 +2,6 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:v="clr-namespace:Views">
-    <v:DisposableView.Resources>
-        <DataTemplate x:Key="MessageView">
-            <v:MessageView />
-        </DataTemplate>
-    </v:DisposableView.Resources>
 
     <Grid TextBlock.FontSize="16">
         <Border HorizontalAlignment="Center"

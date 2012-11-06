@@ -3,7 +3,14 @@
                     xmlns:lib="clr-namespace:lib"
                     xmlns:sys="clr-namespace:System"
                     xmlns:v="clr-namespace:Views">
+    
     <sys:BoolColorConverter x:Key="ColorConverter"/>
+    <sys:BBCodePostConverter x:Key="BBPostConverter" />
+    <sys:BBCodeConverter x:Key="BBCodeConverter" />
+    <DataTemplate x:Key="MessageView">
+        
+        <v:MessageView />
+    </DataTemplate>
 
     <MouseBinding x:Key="TunnelingRightClickOpenMenu"
                       MouseAction="RightClick"
@@ -66,7 +73,7 @@
             <TextBlock TextWrapping="Wrap"
                        TextAlignment="Left">
                 <InlineUIContainer BaselineAlignment="TextBottom">
-                    <ContentControl ContentTemplate="{StaticResource UsernameTemplate}"
+                    <ContentControl ContentTemplate="{StaticResource TunnelingUsernameTemplate}"
                             Content="{Binding Path=TargetCharacter.Name, Mode=OneWay}"/>
                 </InlineUIContainer>
                 <Run Text="{Binding Path=Arguments, Mode=OneWay}"

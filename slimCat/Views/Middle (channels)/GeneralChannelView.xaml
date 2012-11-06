@@ -4,12 +4,6 @@
              xmlns:v="clr-namespace:Views"
              xmlns:lib="clr-namespace:lib"
              xmlns:sys="clr-namespace:System">
-    <v:DisposableView.Resources>
-        <DataTemplate x:Key="MessageView">
-            <v:MessageView />
-        </DataTemplate>
-        <sys:BBCodeConverter x:Key="BBConv" />
-    </v:DisposableView.Resources>
 
     <Grid Margin="10"
           TextBlock.FontSize="16">
@@ -38,10 +32,10 @@
                                TextBlock.FontSize="12"
                                Foreground="{StaticResource ForegroundBrush}"
                                TextWrapping="Wrap">
-                        <lib:TextBlockHelper.InlineList>
-                            <Binding Converter="{StaticResource BBConv}"
-                                     Path="MOTD" />
-                        </lib:TextBlockHelper.InlineList>
+                            <lib:TextBlockHelper.InlineList>
+                                <Binding Converter="{StaticResource BBCodeConverter}"
+                                         Path="MOTD" />
+                            </lib:TextBlockHelper.InlineList>
                         </TextBlock>
                     </ScrollViewer>
                     <WrapPanel TextBlock.FontSize="12"
