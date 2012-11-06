@@ -100,7 +100,11 @@ namespace System
 
             var startIndex = trippedItIndex;
 
-            while ((!char.IsPunctuation(fullContent[startIndex]) || fullContent[startIndex] == '\'') && startIndex != 0 && (trippedItIndex-startIndex < contextLength))
+            while (
+                (!char.IsPunctuation(fullContent[startIndex]) || fullContent[startIndex] == '\'') 
+                && startIndex != 0 
+                && (trippedItIndex-startIndex < contextLength)
+            )
                 startIndex--; // pack-peddle until we find us our start, but we only want to go back so many words
 
 
@@ -133,7 +137,7 @@ namespace System
                     if (startIndex == 0)
                     {
                         endIndex = Math.Min(contextLength, workingString.Length);
-                        while (!char.IsWhiteSpace(workingString[endIndex]) && endIndex < workingString.Length)
+                        while (endIndex < workingString.Length && !char.IsWhiteSpace(workingString[endIndex]))
                             endIndex++;
                     }
                     else
@@ -145,7 +149,7 @@ namespace System
                 endIndex++; // include that punctuation we grabbed
 
             if (startIndex == 0)
-                return workingString.Substring(0, endIndex).Trim() + " ...";
+                return workingString.Substring(0, endIndex).Trim() + (endIndex != workingString.Length ? " ..." : "");
 
             else
             {

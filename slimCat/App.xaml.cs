@@ -44,6 +44,15 @@ namespace slimCat
                     Application.Current.Resources.MergedDictionaries.Add(resourceDictionary);
                 }
 
+                {// load internal theme
+
+                    ResourceDictionary resources = new ResourceDictionary();
+                    resources.Source = new Uri("/slimCat;component/EmbeddedTheme.xaml", UriKind.RelativeOrAbsolute);
+
+                    Application.Current.Resources.MergedDictionaries.Add(resources);
+
+                }
+
                 base.OnStartup(e);
 
                 bootstrapper bstrap = new bootstrapper();

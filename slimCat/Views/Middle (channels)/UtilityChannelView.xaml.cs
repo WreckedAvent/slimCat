@@ -18,7 +18,7 @@ namespace Views
     /// <summary>
     /// Interaction logic for UtilityChannelView.xaml
     /// </summary>
-    public partial class UtilityChannelView : UserControl, IDisposable
+    public partial class UtilityChannelView : DisposableView
     {
         private ViewModelBase _vm;
 
@@ -30,12 +30,7 @@ namespace Views
             this.DataContext = _vm;
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        private void Dispose(bool isManaged)
+        internal override void Dispose(bool isManaged)
         {
             if (isManaged)
             {

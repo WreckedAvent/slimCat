@@ -160,11 +160,16 @@ namespace ViewModels
                         if (IsTyping)
                             _typingLengthCache = (Message != null ? Message.Length : 0);
                     };
+                #endregion
 
+                #region load settings
+                Model.Settings = Services.SettingsDaemon.GetChannelSettings(cm.SelectedCharacter.Name, Model.Title, Model.ID, Model.Type);
 
                 ChannelSettings.Updated += (s, e) =>
                 {
                     OnPropertyChanged("ChannelSettings");
+                    if (!ChannelSettings.IsChangingSettings)
+                        Services.SettingsDaemon.UpdateSettingsFile(ChannelSettings, cm.SelectedCharacter.Name, Model.Title, Model.ID, Model.Type);
                 };
                 #endregion
             }

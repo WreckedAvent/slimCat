@@ -7,8 +7,8 @@
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type m:CharacterModel}">
             <ContentControl Margin="2"
-                            Content="{Binding}"
-                            ContentTemplate="{StaticResource UsernamesTemplate}">
+                            Content="{Binding Name}"
+                            ContentTemplate="{StaticResource TunnelingUsernameTemplate}">
             </ContentControl>
         </DataTemplate>
     </UserControl.Resources>
@@ -54,6 +54,7 @@
                 </Border>
             </Popup>
 
+            <v:RightClickMenu />
             <v:SearchBoxView DockPanel.Dock="Bottom"
                              DataContext="{Binding SearchSettings}"/>
             

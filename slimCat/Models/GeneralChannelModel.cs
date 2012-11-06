@@ -126,8 +126,11 @@ namespace Models
         {
             var messageCollection = (message.Type == MessageType.ad ? Ads : Messages);
 
-            if (messageCollection.Count > ApplicationSettings.BackLogMax)
-                messageCollection.RemoveAt(0);
+            while (messageCollection.Count > ApplicationSettings.BackLogMax)
+            {
+                _messages[0].Dispose();
+                _messages.RemoveAt(0);
+            }
 
             messageCollection.Add(message);
 

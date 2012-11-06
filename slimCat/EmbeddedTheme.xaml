@@ -1,0 +1,87 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:lib="clr-namespace:lib"
+                    xmlns:sys="clr-namespace:System"
+                    xmlns:v="clr-namespace:Views">
+    <sys:BoolColorConverter x:Key="ColorConverter"/>
+
+    <MouseBinding x:Key="TunnelingRightClickOpenMenu"
+                      MouseAction="RightClick"
+                      Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
+                      RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+    
+    <MouseBinding x:Key="RightClickOpenMenu"
+                      MouseAction="RightClick"
+                      Command="{Binding OpenRightClickMenuCommand}"/>
+
+    <Style TargetType="Hyperlink" x:Key="TunnelingUsernameStyle">
+        <Setter Property="Command" Value="{Binding Path=DataContext.NavigateTo,
+                                            RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+        <Setter Property="TextDecorations" Value="{x:Null}"/>
+        <Setter Property="TextBlock.FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{StaticResource HighlightBrush}"/>
+    </Style>
+
+    <Style TargetType="Hyperlink" x:Key="UsernameStyle" BasedOn="{StaticResource TunnelingUsernameStyle}">
+        <Setter Property="Command" Value="{Binding Path=DataContext.NavigateTo,
+                                            RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"/>
+    </Style>
+
+    <DataTemplate x:Key="TunnelingUsernameTemplate">
+        <TextBlock>
+            <Hyperlink CommandParameter="{Binding Path=., Mode=OneTime}"
+                       Style="{StaticResource TunnelingUsernameStyle}">
+                <Run Text="{Binding Path=., Mode=OneTime}"/>
+                <Hyperlink.InputBindings>
+                    <MouseBinding MouseAction="RightClick"
+                                  Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
+                                  RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                  CommandParameter="{Binding Path=., Mode=OneTime}"/>
+                </Hyperlink.InputBindings>
+            </Hyperlink>
+        </TextBlock>
+    </DataTemplate>
+
+    <DataTemplate x:Key="UsernameTemplate">
+        <TextBlock>
+            <Hyperlink CommandParameter="{Binding Path=., Mode=OneTime}"
+                       Style="{StaticResource UsernameStyle}">
+                <Run Text="{Binding Path=., Mode=OneTime}"/>
+                                <Hyperlink.InputBindings>
+                    <MouseBinding MouseAction="RightClick"
+                                  Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
+                                  RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
+                                  CommandParameter="{Binding Path=., Mode=OneTime}"/>
+                </Hyperlink.InputBindings>
+            </Hyperlink>
+        </TextBlock>
+    </DataTemplate>
+
+    <DataTemplate x:Key="CharacterUpdateTemplate">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock TextWrapping="Wrap"
+                       TextAlignment="Left">
+                <InlineUIContainer BaselineAlignment="TextBottom">
+                    <ContentControl ContentTemplate="{StaticResource UsernameTemplate}"
+                            Content="{Binding Path=TargetCharacter.Name, Mode=OneWay}"/>
+                </InlineUIContainer>
+                <Run Text="{Binding Path=Arguments, Mode=OneWay}"
+                     Foreground="{StaticResource ForegroundBrush}"/>
+            </TextBlock>
+
+            <Button Content="X"
+                    Grid.Column="1"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Padding="2,0"
+                    Command="{Binding Path=DataContext.RemoveNotificationCommand,
+                    RelativeSource={RelativeSource Mode=FindAncestor,
+                    AncestorType={x:Type ItemsControl}} }"
+                    CommandParameter="{Binding}"/>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

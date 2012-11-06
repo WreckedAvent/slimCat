@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="Views.MessageView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:lib="clr-namespace:lib"
+             xmlns:sys="clr-namespace:System">
+    <UserControl.Resources>
+        <sys:BBCodePostConverter x:Key="BBConv" />
+    </UserControl.Resources>
+
+    <Grid HorizontalAlignment="Stretch"
+          TextBlock.FontSize="13">
+        <DockPanel>
+            <TextBlock Text="{Binding Path=TimeStamp, Mode=OneWay}"
+                        Foreground="{StaticResource HighlightBrush}"
+                        DockPanel.Dock="Right"
+                        VerticalAlignment="Center"
+                        FontSize="12"/>
+
+            <TextBlock TextWrapping="Wrap"
+                        TextBlock.Foreground="{StaticResource ForegroundBrush}">
+                <lib:TextBlockHelper.InlineList>
+                    <MultiBinding Converter="{StaticResource BBConv}">
+                        <Binding Path="Message" />
+                        <Binding Path="Poster" />
+                        <Binding Path="Type" />
+                    </MultiBinding>
+                </lib:TextBlockHelper.InlineList>
+            </TextBlock>
+        </DockPanel>
+    </Grid>
+</UserControl>

@@ -9,7 +9,6 @@
             <v:MessageView />
         </DataTemplate>
         <sys:BBCodeConverter x:Key="BBConv" />
-        <sys:BoolColorConverter x:Key="ColorConv" />
     </v:DisposableView.Resources>
 
     <Grid Margin="10"
@@ -186,11 +185,12 @@
                             Command="{Binding SwitchCommand}"
                             Visibility="{Binding Path=CanSwitch, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                             FontSize="12"
-                            BorderBrush="{Binding Path=OtherTabHasMessages, Mode=OneWay, Converter={StaticResource ColorConv}}"
+                            BorderBrush="{Binding Path=OtherTabHasMessages, Mode=OneWay, Converter={StaticResource ColorConverter}}"
                             Margin="5"/>
                 </StackPanel>
             </Grid>
-
+            
+            <v:RightClickMenu />
             <v:ChannelTextBoxEntryView Visibility="{Binding Path=IsChatting, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                                        IsEnabled="{Binding Path=CanPost, Mode=OneWay}"/>
             

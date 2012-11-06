@@ -10,7 +10,7 @@ namespace Services
 {
     public class LoggingDaemon : ILogger
     {
-        private string _basePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\slimCat\logs";
+        private string _basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "slimCat");
         private string _fullPath;
         private string _thisCharacter;
 
@@ -131,7 +131,7 @@ namespace Services
             return new StreamWriter(loggingPath + fileName, true);
         }
 
-        private string getLoggingPath(string title, string ID)
+        public string getLoggingPath(string title, string ID)
         {
             string loggingPath;
 

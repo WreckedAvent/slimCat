@@ -1,12 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:lib="clr-namespace:lib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!-- Resource Dictionary to hold all of the themes used in the application -->
-    
-    <!-- Themes and styles -->
 
     <BooleanToVisibilityConverter x:Key="BoolConverter" />
-    
     <ControlTemplate x:Key="EntryBox">
         <Border x:Name="Border" BorderThickness="2" Padding="2"
                                  Background="{StaticResource ForegroundBrush}">
@@ -167,15 +163,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
-
-    <Style BasedOn="{StaticResource {x:Type TextBlock}}"
-           TargetType="TextBlock" x:Key="ClickMeText">
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="true">
-                <Setter Property="Cursor" Value="Hand" />
-            </Trigger>
-        </Style.Triggers>
     </Style>
 
     <Style TargetType="PasswordBox">
@@ -645,135 +632,6 @@
         <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
     </Style>
 
-    <!-- This is used for displaying how [user] looks in chat -->
-    <DataTemplate x:Key="UsernamesTemplate">
-            <Button Command="{Binding Path=DataContext.NavigateTo,
-                                  RelativeSource={RelativeSource Mode=FindAncestor,
-                                  AncestorType={x:Type ItemsControl}} }"
-                    Content="{Binding Path=Name, Mode=OneWay}"
-                    CommandParameter="{Binding Path=Name, Mode=OneWay}"
-                    BorderThickness="0"
-                    Margin="0"
-                    Padding="0"
-                    HorizontalAlignment="Left"
-                    Tag="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                                  AncestorType={x:Type ItemsControl}}}">
-
-            <Button.Effect>
-                <DropShadowEffect BlurRadius="2"
-                                  Color="{StaticResource HighlightColor}"
-                                  ShadowDepth="2"/>
-                </Button.Effect>
-
-                <!-- This context menu is a bit of a hack, only way to work afaik -->
-                <Button.ContextMenu>
-                    <ContextMenu HorizontalContentAlignment="Center">
-                        <WrapPanel>
-                            <StackPanel>
-                                <TextBlock Text="{Binding Path=Name}"
-                                           HorizontalAlignment="Center"
-                                           FontSize="16"
-                                           Foreground="{StaticResource ForegroundBrush}"
-                                           TextWrapping="Wrap" />
-                                <TextBlock>
-                                    <Run Text="{Binding Gender}"/>
-                                    <Run Text ="|" />
-                                    <Run Text="{Binding Status}"/>
-                                </TextBlock>
-                            </StackPanel>
-                                <Image Source="{Binding Avatar}"
-                                       Height="40"
-                                       Margin="10,5"
-                                       Width="40"/>
-                        </WrapPanel>
-                        <Button Content="Message"
-                                Command="{Binding Path=PlacementTarget.Tag.DataContext.RequestPMCommand,
-                                                        RelativeSource={RelativeSource Mode=FindAncestor,
-                                                        AncestorType=ContextMenu}}"
-                                CommandParameter="{Binding Path=Name}"
-                                BorderThickness = "0"/>
-
-                        <Button Content="Ignore"
-                                Command="{Binding Path=PlacementTarget.Tag.DataContext.IgnoreCommand,
-                                                    RelativeSource={RelativeSource Mode=FindAncestor,
-                                                    AncestorType=ContextMenu}}"
-                                CommandParameter="{Binding Path=Name}"
-                                BorderThickness="0"/>
-
-                        <Button Content="Unignore"
-                                Command="{Binding Path=PlacementTarget.Tag.DataContext.UnignoreCommand,
-                                                    RelativeSource={RelativeSource Mode=FindAncestor,
-                                                    AncestorType=ContextMenu}}"
-                                CommandParameter="{Binding Path=Name}"
-                                BorderThickness = "0"/>
-
-                        <Button Content="Mark as Interesting"
-                                Command="{Binding Path=PlacementTarget.Tag.DataContext.InterestedCommand,
-                                                    RelativeSource={RelativeSource Mode=FindAncestor,
-                                                    AncestorType=ContextMenu}}"
-                                CommandParameter="{Binding Path=Name}"
-                                BorderThickness = "0" />
-
-                        <Button Content="Mark as Uninteresting"
-                                Command="{Binding Path=PlacementTarget.Tag.DataContext.NotInterestedCommand,
-                                                    RelativeSource={RelativeSource Mode=FindAncestor,
-                                                    AncestorType=ContextMenu}}"
-                                CommandParameter="{Binding Path=Name}"
-                                BorderThickness = "0" />
-
-                        <Button Content="Kick"
-                                Command="{Binding Path=PlacementTarget.Tag.DataContext.KickCommand,
-                                                    RelativeSource={RelativeSource Mode=FindAncestor,
-                                                    AncestorType=ContextMenu}}"
-                                CommandParameter="{Binding Path=Name}"
-                                Visibility="{Binding Path=PlacementTarget.Tag.DataContext.HasPermissions,
-                                                    RelativeSource={RelativeSource Mode=FindAncestor,
-                                                    AncestorType=ContextMenu}, Converter={StaticResource BoolConverter}}"
-                                BorderThickness="0"/>
-                        <Button Content="Ban"
-                                Command="{Binding Path=PlacementTarget.Tag.DataContext.BanCommand,
-                                                    RelativeSource={RelativeSource Mode=FindAncestor,
-                                                    AncestorType=ContextMenu}}"
-                                CommandParameter="{Binding Path=Name}"
-                                Visibility="{Binding Path=PlacementTarget.Tag.DataContext.HasPermissions,
-                                                    RelativeSource={RelativeSource Mode=FindAncestor,
-                                                    AncestorType=ContextMenu}, Converter={StaticResource BoolConverter}}"
-                                BorderThickness="0"/>
-                    </ContextMenu>
-                </Button.ContextMenu>
-            </Button>
-    </DataTemplate>
-
-    
-    <DataTemplate x:Key="CharacterUpdateTemplate">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock TextWrapping="Wrap"
-                       TextAlignment="Left">
-                <InlineUIContainer BaselineAlignment="TextBottom">
-                    <Button ContentTemplate="{StaticResource UsernamesTemplate}"
-                            Content="{Binding Path=TargetCharacter, Mode=OneWay}"
-                            BorderThickness="0"
-                            Padding="0"
-                            Margin="0" />
-                </InlineUIContainer>
-                <Run Text="{Binding Path=Arguments, Mode=OneWay}"/>
-            </TextBlock>
-
-            <Button Content="X"
-                    Grid.Column="1"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Padding="2,0"
-                    Command="{Binding Path=DataContext.RemoveNotificationCommand,
-                    RelativeSource={RelativeSource Mode=FindAncestor,
-                    AncestorType={x:Type ItemsControl}} }"
-                    CommandParameter="{Binding}"/>
-        </Grid>
-    </DataTemplate>
     
     <DataTemplate x:Key="ChannelUpdateTemplate">
         <Grid>
@@ -788,7 +646,8 @@
                             Style="{StaticResource ChannelInterfaceButton}"
                             CommandParameter="{Binding Path=ChannelID, Mode=OneWay}" />
                 </InlineUIContainer>
-                <Run Text="{Binding Path=Arguments, Mode=OneWay}"/>
+                <Run Text="{Binding Path=Arguments, Mode=OneWay}"
+                     Foreground="{StaticResource ForegroundBrush}"/>
             </TextBlock>
             
             <Button Content="X"

@@ -2,11 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://www.codeplex.com/prism"
+             xmlns:v="clr-namespace:Views"
              xmlns:sys="clr-namespace:System">
-    <UserControl.Resources>
-        <sys:BoolColorConverter x:Key="BoolColorConverter" />
-    </UserControl.Resources>
-
+    
     <DockPanel TextBlock.FontSize="14"
                Visibility="{Binding Path=CM.IsAuthenticated, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                TextBlock.Foreground="{StaticResource ForegroundBrush}"
@@ -17,7 +15,7 @@
                 Content="{Binding Path=ExpandString, Mode=OneWay}"
                 BorderThickness="0"
                 Padding="0"
-                Background="{Binding Path=HasUpdate, Mode=OneWay, Converter={StaticResource BoolColorConverter}}"
+                Background="{Binding Path=HasUpdate, Mode=OneWay, Converter={StaticResource ColorConverter}}"
                 Command="{Binding Path=ToggleBarCommand}"/>
 
         <Grid Margin="15,20"

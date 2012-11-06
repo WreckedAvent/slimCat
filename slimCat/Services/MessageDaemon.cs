@@ -170,6 +170,11 @@ namespace Services
                     #region Clear Commands
                     case "clear":
                         {
+                            foreach (var item in _model.SelectedChannel.Messages)
+                                item.Dispose();
+                            foreach (var item in _model.SelectedChannel.Ads)
+                                item.Dispose();
+
                             _model.SelectedChannel.Messages.Clear();
                             _model.SelectedChannel.Ads.Clear();
                             return;
@@ -179,12 +184,22 @@ namespace Services
                         {
                             foreach (var channel in _model.CurrentChannels)
                             {
+                                foreach (var item in channel.Messages)
+                                    item.Dispose();
+                                foreach (var item in channel.Ads)
+                                    item.Dispose();
+
                                 channel.Messages.Clear();
                                 channel.Ads.Clear();
                             }
 
                             foreach (var pm in _model.CurrentPMs)
+                            {
+                                foreach (var item in pm.Messages)
+                                    item.Dispose();
+
                                 pm.Messages.Clear();
+                            }
 
                             return;
                         }

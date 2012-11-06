@@ -1,14 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Text;
-using slimCat;
-using Microsoft.Practices.Prism.Events;
-using Microsoft.Practices.ServiceLocation;
-using SimpleJson;
-using ViewModels;
-using System.Collections.Specialized;
 
 namespace Models
 {

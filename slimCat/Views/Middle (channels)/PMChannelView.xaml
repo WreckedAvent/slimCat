@@ -115,6 +115,7 @@
                            Text="{Binding Path=TypingString}" />
                            
             </WrapPanel>
+            <v:RightClickMenu />
             <v:ChannelTextBoxEntryView Margin="0,5,0,0"
                                        IsEnabled="{Binding CanPost}"/>
         </StackPanel>

@@ -98,7 +98,7 @@ namespace Models
             }
         }
 
-        public virtual ChannelSettingsModel Settings { get { return _settings; } }
+        public virtual ChannelSettingsModel Settings { get { return _settings; } set { _settings = value; UpdateBindings(); } }
 
         /// <summary>
         /// If the channel is selected or not
@@ -159,12 +159,17 @@ namespace Models
             OnPropertyChanged("NeedsAttention");
             OnPropertyChanged("DisplayNumber");
             OnPropertyChanged("CanClose");
+            OnPropertyChanged("Settings");
         }
 
         public virtual void AddMessage(IMessage message)
         {
-            if (_messages.Count >= ApplicationSettings.BackLogMax)
+            while (_messages.Count >= ApplicationSettings.BackLogMax)
+            {
+                _messages[0].Dispose();
+                _messages[0] = null;
                 _messages.RemoveAt(0);
+            }
 
             _messages.Add(message);
 

@@ -11,7 +11,12 @@ namespace Views
     /// </summary>
     public abstract class DisposableView : UserControl, IDisposable
     {
-        public abstract void Dispose();
+        public virtual void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         internal abstract void Dispose(bool IsManaged);
     }
 }

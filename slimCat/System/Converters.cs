@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 
@@ -60,14 +61,17 @@ namespace System
             object parameter, CultureInfo culture)
         {
             var inlines = new List<Inline>();
-            if (values.GetLength(0) == 3) // avoids null reference
+            if (values.GetLength(0) == 3 
+                && values[0] is string 
+                && values[1] is Models.ICharacter 
+                && values[2] is Models.MessageType) // avoids null reference
             {
                 #region Init
                 inlines.Clear(); // simple insurance that there's no junk
 
                 string text = (string)values[0]; // this is the beef of the message
                 text = HttpUtility.HtmlDecode(text); // translate the HTML characters
-
+                var userName = ((Models.ICharacter)values[1]).Name; // this is our poster's name
                 Models.MessageType type = (Models.MessageType)values[2]; // what kind of type our message is
 
                 if (type == Models.MessageType.roll)
@@ -76,18 +80,10 @@ namespace System
                     return inlines;
                 }
 
-                // This creates the click-able name 'button'
-                InlineUIContainer nameButton =
-                    new InlineUIContainer(
-                        new ContentControl
-                        {
-                            Margin = new Thickness(0), // no like-y margin
-                            ContentTemplate = (DataTemplate)Application.Current.FindResource("UsernamesTemplate"),
-                            Content = values[1],
-                        })
-                        { BaselineAlignment = BaselineAlignment.TextBottom, };
+                // this creates the name link
+                var nameLink = HelperConverter.MakeUsernameLink(userName, true);
 
-                inlines.Add(nameButton); // name first
+                inlines.Add(nameLink); // name first
                 #endregion
 
                 #region BBCode Parsing
@@ -137,16 +133,7 @@ namespace System
             }
 
             else
-            {
                 inlines.Clear();
-
-                string text = (string)values[0];
-                text = HttpUtility.HtmlDecode(text);
-
-                inlines.Add(HelperConverter.ParseBBCode(text, true));
-
-                return inlines;
-            }
             return inlines;
         }
 
@@ -316,7 +303,7 @@ namespace System
                         CommandParameter = channel
                     }) { BaselineAlignment = BaselineAlignment.TextBottom };
             }
-            else if (y.StartsWith("url") || y.StartsWith("user") || y.StartsWith("icon"))
+            else if (y.StartsWith("url"))
             {
                 var url = stripBeforeType(y);
 
@@ -329,6 +316,12 @@ namespace System
                 if (useTunnelingStyles) toReturn.Style = (Style)Application.Current.FindResource("TunnelingHyperlink");
 
                 return toReturn;
+            }
+            else if (y.StartsWith("user") || y.StartsWith("icon"))
+            {
+                var target = stripBeforeType(y);
+
+                return MakeUsernameLink(target, useTunnelingStyles);
             }
             else if (y == "sub")
                 return new Span(x) { BaselineAlignment = BaselineAlignment.Subscript, FontSize = 10 };
@@ -633,7 +626,23 @@ namespace System
         /// </summary>
         public static string EscapeSpaces(string text)
         {
-            return text.Replace(" ", "");
+            return text.Replace(" ", "___");
+        }
+
+        /// <summary>
+        /// Used to make a username 'button'
+        /// </summary>
+        public static Inline MakeUsernameLink(string target, bool useTunnelingStyles)
+        {
+            var toReturn = new InlineUIContainer(
+            new ContentControl() 
+                {
+                    ContentTemplate = (DataTemplate)Application.Current.FindResource((useTunnelingStyles ? "TunnelingUsernameTemplate" : "UsernameTemplate")),
+                    Content = target 
+                })
+            { BaselineAlignment = BaselineAlignment.TextBottom };
+
+            return toReturn;
         }
     }
 }

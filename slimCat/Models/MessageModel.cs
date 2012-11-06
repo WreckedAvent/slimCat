@@ -7,15 +7,23 @@ using System.Windows;
 namespace Models
 {
     #region Message Models
-    public class MessageBase
+    public abstract class MessageBase : IDisposable
     {
-        private readonly DateTimeOffset _posted;
+        internal readonly DateTimeOffset _posted;
         public DateTimeOffset PostedTime { get { return _posted; } }
         public string TimeStamp { get { return _posted.ToTimeStamp(); } }
+
         public MessageBase()
         {
             _posted = DateTimeOffset.Now;
         }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        internal abstract void Dispose(bool IsManaged);
     }
 
     /// <summary>
@@ -25,9 +33,9 @@ namespace Models
     {
         // Messages cannot be modified whence sent, safe to make these readonly
         #region Fields
-        private readonly ICharacter _poster;
-        private readonly string _message;
-        private readonly MessageType _type;
+        private ICharacter _poster;
+        private string _message;
+        private MessageType _type;
         #endregion
 
         #region Properties
@@ -52,6 +60,15 @@ namespace Models
             _type = type;
         }
         #endregion
+
+        internal override void Dispose(bool isManaged)
+        {
+            if (isManaged)
+            {
+                _poster = null;
+                _message = null;
+            }
+        }
     }
 
     /// <summary>
@@ -64,13 +81,14 @@ namespace Models
         roll,
     }
 
-    public interface IMessage
+    public interface IMessage : IDisposable
     {
         ICharacter Poster { get; }
         string Message { get; }
         string TimeStamp { get; }
         DateTimeOffset PostedTime { get; }
         MessageType Type { get; }
+        void Dispose();
     }
     #endregion
 
@@ -152,8 +170,8 @@ namespace Models
         #endregion
 
         #region Class Implentation
-        private readonly ICharacter _target;
-        private readonly CharacterUpdateEventArgs _args;
+        private ICharacter _target;
+        private CharacterUpdateEventArgs _args;
 
         public CharacterUpdateModel(ICharacter target, CharacterUpdateEventArgs e)
             :base()
@@ -168,6 +186,15 @@ namespace Models
         public override string ToString()
         {
             return TargetCharacter.Name + " " + Arguments.ToString();
+        }
+
+        internal override void Dispose(bool IsManaged)
+        {
+            if (IsManaged)
+            {
+                _target = null;
+                _args = null;
+            }
         }
         #endregion
     }
@@ -226,9 +253,9 @@ namespace Models
         #endregion
 
         #region Class Implementation
-        private readonly string _channelID;
-        private readonly string _channelTitle;
-        private readonly ChannelUpdateEventArgs _args;
+        private string _channelID;
+        private string _channelTitle;
+        private ChannelUpdateEventArgs _args;
 
         public ChannelUpdateModel(string channelID, ChannelUpdateEventArgs e, string channelTitle = null)
             :base()
@@ -249,6 +276,16 @@ namespace Models
         public override string ToString()
         {
             return ChannelTitle + " " + Arguments.ToString();
+        }
+
+        internal override void Dispose(bool IsManaged)
+        {
+            if (IsManaged)
+            {
+                _channelID = null;
+                _channelTitle = null;
+                _args = null;
+            }
         }
         #endregion
     }

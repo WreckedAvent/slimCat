@@ -4,9 +4,6 @@
              xmlns:lib="clr-namespace:lib"
              xmlns:v="clr-namespace:Views"
              xmlns:sys="clr-namespace:System">
-    <UserControl.Resources>
-        <sys:BoolColorConverter x:Key="BoolColorConverter" />
-    </UserControl.Resources>
     
     <DockPanel TextBlock.FontSize="14"
                Visibility="{Binding Path=CM.IsAuthenticated, Mode=OneWay, Converter={StaticResource BoolConverter}}"
@@ -19,7 +16,7 @@
                 BorderThickness="0"
                 Padding="0"
                 HorizontalAlignment="Center"
-                Background="{Binding Path=HasUpdate, Mode=OneWay, Converter={StaticResource BoolColorConverter}}"
+                Background="{Binding Path=HasUpdate, Mode=OneWay, Converter={StaticResource ColorConverter}}"
                 Command="{Binding Path=ToggleBarCommand}"/>
         <Grid Margin="15,20"
               Visibility="{Binding Path=IsExpanded, Converter={StaticResource BoolConverter}}">
@@ -81,7 +78,7 @@
                     <Expander Header="Conversations"
                               IsExpanded="True"
                               Visibility="{Binding Path=HasPMs, Converter={StaticResource BoolConverter}}"
-                              BorderBrush="{Binding Path=HasNewPM, Converter={StaticResource BoolColorConverter}}"
+                              BorderBrush="{Binding Path=HasNewPM, Converter={StaticResource ColorConverter}}"
                               Grid.Row="1">
                         <ListBox ItemsSource="{Binding Path=CM.CurrentPMs, Mode=OneWay}"
                                  HorizontalContentAlignment="Stretch"
@@ -95,7 +92,7 @@
                     </Expander>
                     <Expander Header="Channels"
                               IsExpanded="True"
-                              BorderBrush="{Binding Path=HasNewMessage, Converter={StaticResource BoolColorConverter}}"
+                              BorderBrush="{Binding Path=HasNewMessage, Converter={StaticResource ColorConverter}}"
                               Grid.Row="2">
                         <ListBox ItemsSource="{Binding Path=CM.CurrentChannels, Mode=OneWay}"
                                  HorizontalContentAlignment="Stretch"

@@ -406,6 +406,7 @@ namespace Models
         private bool _isChangingSettings = false;
         #endregion
 
+        public ChannelSettingsModel() : this(false) { }
         public ChannelSettingsModel(bool isPM = false)
         {
             if (isPM)

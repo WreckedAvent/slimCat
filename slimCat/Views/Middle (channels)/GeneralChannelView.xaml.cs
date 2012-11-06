@@ -72,11 +72,6 @@ namespace Views
         }
         #endregion
 
-        public override void Dispose()
-        {
-            Dispose(true);
-        }
-
         internal override void Dispose(bool isManaged)
         {
             if (isManaged)

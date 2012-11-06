@@ -135,6 +135,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="lib\AttachInputBindings.cs" />
     <Compile Include="lib\FlashWindowHelper.cs" />
     <Compile Include="lib\ListboxSelected.cs" />
     <Compile Include="lib\TextBlockHelper.cs" />
@@ -143,6 +144,8 @@
     <Compile Include="Models\ChatModel.cs" />
     <Compile Include="Models\CommandModel.cs" />
     <Compile Include="Models\GeneralChannelModel.cs" />
+    <Compile Include="Services\SettingsDaemon.cs" />
+    <Compile Include="ViewModels\UI Parts\RightClickViewModel.cs" />
     <Compile Include="Models\MessageModel.cs" />
     <Compile Include="Models\PMChannelModel.cs" />
     <Compile Include="Models\SettingsModel.cs" />
@@ -162,98 +165,116 @@
     <Compile Include="System\Exceptions.cs" />
     <Compile Include="System\Helpers.cs" />
     <Compile Include="System\SnapToBottomManager.cs" />
-    <Compile Include="System\SysProp.cs" />
-    <Compile Include="ViewModels\ChannelBarViewModel.cs" />
-    <Compile Include="ViewModels\ChannelBarViewModelCommon.cs" />
-    <Compile Include="ViewModels\ChannelTabViewModel.cs" />
-    <Compile Include="ViewModels\ChannelViewModelBase.cs" />
-    <Compile Include="ViewModels\GeneralChannelViewModel.cs" />
-    <Compile Include="ViewModels\NotificationsTabViewModel.cs" />
-    <Compile Include="ViewModels\PMChannelViewModel.cs" />
-    <Compile Include="ViewModels\ToastNotificationsViewModel.cs" />
-    <Compile Include="ViewModels\UsersTabViewModel.cs" />
-    <Compile Include="ViewModels\UtilityChannelViewModel.cs" />
-    <Compile Include="ViewModels\CharacterSelectViewModel.cs" />
-    <Compile Include="ViewModels\ChatWrapperViewModel.cs" />
-    <Compile Include="ViewModels\LoginViewModel.cs" />
-    <Compile Include="ViewModels\UserbarViewModel.cs" />
-    <Compile Include="ViewModels\ViewModelBase.cs" />
-    <Compile Include="Views\ChannelBarView.xaml.cs">
+    <Compile Include="ViewModels\Base Classes\SysProp.cs" />
+    <Compile Include="ViewModels\Right-Hand side %28channelBar%29\ChannelBarViewModel.cs" />
+    <Compile Include="ViewModels\Right-Hand side %28channelBar%29\ChannelBarViewModelCommon.cs" />
+    <Compile Include="ViewModels\Right-Hand side %28channelBar%29\ChannelTabViewModel.cs" />
+    <Compile Include="ViewModels\Middle %28Channels%29\ChannelViewModelBase.cs" />
+    <Compile Include="ViewModels\Middle %28Channels%29\GeneralChannelViewModel.cs" />
+    <Compile Include="ViewModels\Right-Hand side %28channelBar%29\NotificationsTabViewModel.cs" />
+    <Compile Include="ViewModels\Middle %28Channels%29\PMChannelViewModel.cs" />
+    <Compile Include="ViewModels\UI Parts\ToastNotificationsViewModel.cs" />
+    <Compile Include="ViewModels\Right-Hand side %28channelBar%29\UsersTabViewModel.cs" />
+    <Compile Include="ViewModels\Middle %28Channels%29\UtilityChannelViewModel.cs" />
+    <Compile Include="ViewModels\Full Screen\CharacterSelectViewModel.cs" />
+    <Compile Include="ViewModels\Full Screen\ChatWrapperViewModel.cs" />
+    <Compile Include="ViewModels\Full Screen\LoginViewModel.cs" />
+    <Compile Include="ViewModels\Left-Hand Side %28userbar%29\UserbarViewModel.cs" />
+    <Compile Include="ViewModels\Base Classes\ViewModelBase.cs" />
+    <Compile Include="Views\Right-Hand Side %28channelbar%29\ChannelBarView.xaml.cs">
       <DependentUpon>ChannelBarView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Interface Parts\ChannelbarChannelListView.xaml.cs">
+    <Compile Include="Views\Right-Hand Side %28channelbar%29\ChannelbarChannelListView.xaml.cs">
       <DependentUpon>ChannelbarChannelListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Interface Parts\ChannelbarNotificationsTabView.xaml.cs">
+    <Compile Include="Views\Right-Hand Side %28channelbar%29\ChannelbarNotificationsTabView.xaml.cs">
       <DependentUpon>ChannelbarNotificationsTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Interface Parts\ChannelbarUserListView.xaml.cs">
+    <Compile Include="Views\Right-Hand Side %28channelbar%29\ChannelbarUserListView.xaml.cs">
       <DependentUpon>ChannelbarUserListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Interface Parts\DisposableView.cs" />
-    <Compile Include="Views\Interface Parts\SearchBoxView.xaml.cs">
+    <Compile Include="Views\UI Parts\DisposableView.cs" />
+    <Compile Include="Views\UI Parts\ExpandoStringControl.xaml.cs">
+      <DependentUpon>ExpandoStringControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UI Parts\RightClickMenu.xaml.cs">
+      <DependentUpon>RightClickMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UI Parts\SearchBoxView.xaml.cs">
       <DependentUpon>SearchBoxView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Interface Parts\UserbarChannelView.xaml.cs">
+    <Compile Include="Views\Left-Hand Side %28userbar%29\UserbarChannelView.xaml.cs">
       <DependentUpon>UserbarChannelView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Interface Parts\ChannelTextBoxEntryView.xaml.cs">
+    <Compile Include="Views\UI Parts\ChannelTextBoxEntryView.xaml.cs">
       <DependentUpon>ChannelTextBoxEntryView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\CharacterSelectView.xaml.cs">
+    <Compile Include="Views\Full Screen\CharacterSelectView.xaml.cs">
       <DependentUpon>CharacterSelectView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ChatWrapperView.xaml.cs">
+    <Compile Include="Views\Full Screen\ChatWrapperView.xaml.cs">
       <DependentUpon>ChatWrapperView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Interface Parts\ChannelCloseButton.xaml.cs">
+    <Compile Include="Views\UI Parts\ChannelCloseButton.xaml.cs">
       <DependentUpon>ChannelCloseButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\GeneralChannelView.xaml.cs">
+    <Compile Include="Views\Middle %28channels%29\GeneralChannelView.xaml.cs">
       <DependentUpon>GeneralChannelView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\LoginView.xaml.cs">
+    <Compile Include="Views\Full Screen\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Interface Parts\ChannelMessageView.xaml.cs">
+    <Compile Include="Views\UI Parts\ChannelMessageView.xaml.cs">
       <DependentUpon>ChannelMessageView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ToastNotificationsView.xaml.cs">
+    <Compile Include="Views\UI Parts\ToastNotificationsView.xaml.cs">
       <DependentUpon>ToastNotificationsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\PMChannelView.xaml.cs">
+    <Compile Include="Views\Middle %28channels%29\PMChannelView.xaml.cs">
       <DependentUpon>PMChannelView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Interface Parts\UserbarPMView.xaml.cs">
+    <Compile Include="Views\Left-Hand Side %28userbar%29\UserbarPMView.xaml.cs">
       <DependentUpon>UserbarPMView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\UserbarView.xaml.cs">
+    <Compile Include="Views\Left-Hand Side %28userbar%29\UserbarView.xaml.cs">
       <DependentUpon>UserbarView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\UtilityChannelView.xaml.cs">
+    <Compile Include="Views\Middle %28channels%29\UtilityChannelView.xaml.cs">
       <DependentUpon>UtilityChannelView.xaml</DependentUpon>
     </Compile>
     <Page Include="Colors.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Interface Parts\ChannelbarNotificationsTabView.xaml">
+    <Page Include="EmbeddedTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Interface Parts\ChannelbarUserListView.xaml">
+    <Page Include="Views\Right-Hand Side %28channelbar%29\ChannelbarNotificationsTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Interface Parts\SearchBoxView.xaml">
+    <Page Include="Views\Right-Hand Side %28channelbar%29\ChannelbarUserListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ToastNotificationsView.xaml">
+    <Page Include="Views\UI Parts\ExpandoStringControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Shell.xaml">
+    <Page Include="Views\UI Parts\RightClickMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\SearchBoxView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\ToastNotificationsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Full Screen\Shell.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -261,47 +282,47 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Views\Shell.xaml.cs">
+    <Compile Include="Views\Full Screen\Shell.xaml.cs">
       <DependentUpon>Shell.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\ChannelBarView.xaml">
+    <Page Include="Views\Right-Hand Side %28channelbar%29\ChannelBarView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Interface Parts\ChannelbarChannelListView.xaml">
+    <Page Include="Views\Right-Hand Side %28channelbar%29\ChannelbarChannelListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Interface Parts\UserbarChannelView.xaml">
+    <Page Include="Views\Left-Hand Side %28userbar%29\UserbarChannelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Interface Parts\ChannelTextBoxEntryView.xaml">
+    <Page Include="Views\UI Parts\ChannelTextBoxEntryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Interface Parts\ChannelCloseButton.xaml">
+    <Page Include="Views\UI Parts\ChannelCloseButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\GeneralChannelView.xaml">
+    <Page Include="Views\Middle %28channels%29\GeneralChannelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Interface Parts\ChannelMessageView.xaml">
+    <Page Include="Views\UI Parts\ChannelMessageView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\PMChannelView.xaml">
+    <Page Include="Views\Middle %28channels%29\PMChannelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Interface Parts\UserbarPMView.xaml">
+    <Page Include="Views\Left-Hand Side %28userbar%29\UserbarPMView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\UtilityChannelView.xaml">
+    <Page Include="Views\Middle %28channels%29\UtilityChannelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -309,19 +330,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Page Include="Views\CharacterSelectView.xaml">
+    <Page Include="Views\Full Screen\CharacterSelectView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ChatWrapperView.xaml">
+    <Page Include="Views\Full Screen\ChatWrapperView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\LoginView.xaml">
+    <Page Include="Views\Full Screen\LoginView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\UserbarView.xaml">
+    <Page Include="Views\Left-Hand Side %28userbar%29\UserbarView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -374,6 +395,7 @@
   <ItemGroup>
     <Resource Include="catIcon.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

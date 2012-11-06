@@ -332,15 +332,21 @@ namespace ViewModels
                         }
                     }
                 };
+                #endregion
 
+                _update.Enabled = true;
+
+                #region Load Settings
+                var newSettings = Services.SettingsDaemon.GetChannelSettings(cm.SelectedCharacter.Name, Model.Title, Model.ID, Model.Type);
+                Model.Settings = newSettings;
 
                 ChannelSettings.Updated += (s, e) =>
                 {
                     OnPropertyChanged("ChannelSettings");
+                    if (!ChannelSettings.IsChangingSettings)
+                        Services.SettingsDaemon.UpdateSettingsFile(ChannelSettings, cm.SelectedCharacter.Name, Model.Title, Model.ID, Model.Type);
                 };
                 #endregion
-
-                _update.Enabled = true;
             }
 
             catch (Exception ex)

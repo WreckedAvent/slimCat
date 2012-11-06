@@ -21,6 +21,7 @@ namespace ViewModels
         protected IRegionManager _region;
         protected IEventAggregator _events;
         protected IChatModel _cm;
+        private RightClickMenuViewModel _rcmvm = new RightClickMenuViewModel();
         #endregion
 
         #region Shared Constructors
@@ -40,7 +41,7 @@ namespace ViewModels
                 if (cm == null) throw new ArgumentNullException("cm");
                 _cm = cm;
 
-                _cm.SelectedChannelChanged += (s, e) => UpdatePermissions();
+                _cm.SelectedChannelChanged += OnSelectedChannelChanged;
             }
 
             catch (Exception ex)
@@ -270,12 +271,46 @@ namespace ViewModels
             _events.GetEvent<UserCommandEvent>().Publish(command);
         }
         #endregion
+
+        #region RightClick Menu
+        private RelayCommand _openMenu;
+        public ICommand OpenRightClickMenuCommand
+        {
+            get
+            {
+                if (_openMenu == null)
+                    _openMenu = new RelayCommand(
+                        args =>
+                        {
+                            if (CM.IsOnline(args as string))
+                            {
+                                var newTarget = CM.FindCharacter(args as string);
+                                updateRightClickMenu(newTarget);
+                            }
+                        });
+                return _openMenu;
+            }
+        }
+
+        internal void updateRightClickMenu(ICharacter NewTarget)
+        {
+            string name = NewTarget.Name;
+            _rcmvm.SetNewTarget(NewTarget,
+                                CanIgnore(name),
+                                CanUnIgnore(name),
+                                CanBeInterestedIn(name),
+                                CanBeUninterestedIn(name));
+            _rcmvm.IsOpen = true;
+            OnPropertyChanged("RightClickMenuViewModel");
+        }
+        #endregion
         #endregion
 
         #region Methods
-        void UpdatePermissions()
+        protected virtual void OnSelectedChannelChanged(object sender, EventArgs e)
         {
             OnPropertyChanged("HasPermissions");
+            _rcmvm.IsOpen = false;
         }
         #endregion
 
@@ -301,6 +336,8 @@ namespace ViewModels
                 return isLocalMod || _cm.Mods.Contains(_cm.SelectedCharacter.Name);
             }
         }
+
+        public RightClickMenuViewModel RightClickMenuViewModel { get { return _rcmvm; } }
         #endregion
 
         public void Dispose()
@@ -312,11 +349,13 @@ namespace ViewModels
         {
             if (IsManaged)
             {
-                _cm.SelectedChannelChanged -= (s, e) => UpdatePermissions();
+                _cm.SelectedChannelChanged -= OnSelectedChannelChanged;
                 _container = null;
                 _region = null;
                 _cm = null;
                 _events = null;
+                _rcmvm.Dispose();
+                _rcmvm = null;
             }
         }
     }
