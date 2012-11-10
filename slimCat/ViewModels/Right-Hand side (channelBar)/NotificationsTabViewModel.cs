@@ -21,8 +21,7 @@ namespace ViewModels
         private string _search = "";
         public const string NotificationsTabView = "NotificationsTabView";
         private bool _isSelected;
-        private bool _needsAttention;
-        private int _lastReadCount;
+        // removed useless code which kept unread count of notifications
         #endregion
 
         #region Properties
@@ -67,18 +66,9 @@ namespace ViewModels
                 if (_isSelected != value)
                 {
                     _isSelected = value;
-
-                    _lastReadCount = CM.Notifications.Count;
                     OnPropertyChanged("NeedsAttention");
                 }
             }
-        }
-
-        public int Unread { get { return CM.Notifications.Count - _lastReadCount; } }
-
-        public bool NeedsAttention
-        {
-            get { return Unread >= 1 && !_isSelected; }
         }
         #endregion
 

@@ -49,6 +49,7 @@ namespace ViewModels
             {
                 _hasUpdate = value;
                 OnPropertyChanged("HasUpdate");
+                OnPropertyChanged("ExpandString"); // bug fix where the exclaimation point would never show
             }
         }
         #endregion
@@ -147,14 +148,12 @@ namespace ViewModels
                                 // this shoots us to the notifications tab if we have something to see there
                                 if (_hasUpdate)
                                 {
-                                    if (_currentSelected != "Notifications")
-                                        NavigateToTabEvent("Notifications");
+                                    NavigateToTabEvent("Notifications"); // used to check if we weren't already here; now that isn't possible
 
                                     if (OnJumpToNotifications != null)
                                         OnJumpToNotifications(this, new EventArgs()); // this lets the view sync our jump
 
-                                    _hasUpdate = false;
-                                    OnPropertyChanged("HasUpdate");
+                                    HasUpdate = false;
                                 }
                                 else if (!String.IsNullOrWhiteSpace(_currentSelected))
                                     // this fixes a very subtle bug where a list won't load or won't load properly after switching tabs

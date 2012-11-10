@@ -5,7 +5,7 @@
              xmlns:sys="clr-namespace:System">
     <Grid HorizontalAlignment="Stretch"
           TextBlock.FontSize="13">
-        <DockPanel>
+        <DockPanel HorizontalAlignment="Stretch">
             <TextBlock Text="{Binding Path=TimeStamp, Mode=OneWay}"
                         Foreground="{StaticResource HighlightBrush}"
                         DockPanel.Dock="Right"

@@ -72,58 +72,58 @@ namespace Services
                 {
                     #region Create PM command
                     case "priv":
+                    {
+                        var args = command["character"] as string;
+                        if (args.Equals(_model.SelectedCharacter.Name, StringComparison.OrdinalIgnoreCase))
+                            _events.GetEvent<ErrorEvent>().Publish("Hmmm... talking to yourself?");
+                        else
                         {
-                            var args = command["character"] as string;
-                            if (args.Equals(_model.SelectedCharacter.Name, StringComparison.OrdinalIgnoreCase))
-                                _events.GetEvent<ErrorEvent>().Publish("Hmmm... talking to yourself?");
-                            else
-                            {
-                                // orderby ensures that our search string won't produce a premature
-                                var guess = _model.OnlineCharacters.OrderBy(character => character.Name).FirstOrDefault(character => character.Name.ToLower().StartsWith(args.ToLower()));
+                            // orderby ensures that our search string won't produce a premature
+                            var guess = _model.OnlineCharacters.OrderBy(character => character.Name).FirstOrDefault(character => character.Name.ToLower().StartsWith(args.ToLower()));
 
-                                if (guess == null)
-                                    JoinChannel(ChannelType.pm, args);
-                                else
-                                    JoinChannel(ChannelType.pm, guess.Name);
-                            }
-                            return;
+                            if (guess == null)
+                                JoinChannel(ChannelType.pm, args);
+                            else
+                                JoinChannel(ChannelType.pm, guess.Name);
                         }
+                        return;
+                    }
                     #endregion
 
                     #region Send Private Message command
                     case "PRI":
-                        {
-                            AddMessage(command["message"] as string, command["recipient"] as string, "_thisCharacter");
-                            break;
-                        }
+                    {
+                        AddMessage(command["message"] as string, command["recipient"] as string, "_thisCharacter");
+                        break;
+                    }
                     #endregion
 
                     #region Send Channel Message command
                     case "MSG":
-                        {
-                            AddMessage(command["message"] as string, command["channel"] as string, "_thisCharacter");
-                            break;
-                        }
+                    {
+                        AddMessage(command["message"] as string, command["channel"] as string, "_thisCharacter");
+                        break;
+                    }
                     #endregion
 
                     #region Send Channel Ad command
                     case "LRP":    
-                        {
-                            AddMessage(command["message"] as string, command["channel"] as string, "_thisCharacter", MessageType.ad);
-                            break;
-                        }
+                    {
+                        AddMessage(command["message"] as string, command["channel"] as string, "_thisCharacter", MessageType.ad);
+                        break;
+                    }
                     #endregion
 
                     #region Status Command
                     case "STA":
-                        {
-                            string statusmsg = command["statusmsg"] as string;
-                            StatusType status = (StatusType)Enum.Parse(typeof(StatusType), command["status"] as string);
+                    {
+                        string statusmsg = command["statusmsg"] as string;
+                        StatusType status = (StatusType)Enum.Parse(typeof(StatusType), command["status"] as string);
 
-                            _model.SelectedCharacter.Status = status;
-                            _model.SelectedCharacter.StatusMessage = statusmsg;
-                            break;
-                        }
+                        _model.SelectedCharacter.Status = status;
+                        _model.SelectedCharacter.StatusMessage = statusmsg;
+                        break;
+                    }
                     #endregion
 
                     #region Close Channel command
@@ -270,71 +270,93 @@ namespace Services
 
                     #region Notification Snap To
                     case "_snap_to_last_update":
+                    {
+                        string target = null;
+
+                        Action showMyDamnWindow = () => 
                         {
-                            string target = null;
+                            Application.Current.MainWindow.Show();
+                            if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
+                                Application.Current.MainWindow.WindowState = WindowState.Normal;
+                            Application.Current.MainWindow.Focus();
+                        };
 
-                            Action showMyDamnWindow = () => 
+                        if (command.ContainsKey("target"))
+                            target = command["target"] as string;
+
+                        // first off, see if we have a target defined. If we do, then let's see if it's one of our current channels
+                        if (target != null)
+                        {
+                            var guess = _model.CurrentPMs.FirstByIdOrDefault(target);
+                            if (guess != null)
                             {
-                                Application.Current.MainWindow.Show();
-                                if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
-                                    Application.Current.MainWindow.WindowState = WindowState.Normal;
-                                Application.Current.MainWindow.Focus();
-                            };
-
-                            if (command.ContainsKey("target"))
-                                target = command["target"] as string;
-
-                            if (target != null)
+                                RequestNavigate(target); // join the PM tab
+                                Dispatcher.Invoke(showMyDamnWindow);
+                                return;
+                            }
+                            else
                             {
-                                var guess = _model.CurrentPMs.FirstByIdOrDefault(target);
-                                if (guess != null)
+                                var secondGuess = _model.CurrentChannels.FirstByIdOrDefault(target);
+
+                                if (secondGuess != null)
                                 {
-                                    RequestNavigate(target);
+                                    RequestNavigate(target); // if our second guess is accurate, join the channel
                                     Dispatcher.Invoke(showMyDamnWindow);
-                                }
-                                else
-                                {
-                                    var secondGuess = _model.CurrentChannels.FirstByIdOrDefault(target);
-
-                                    if (secondGuess != null)
-                                    {
-                                        RequestNavigate(target);
-                                        Dispatcher.Invoke(showMyDamnWindow);
-                                    }
+                                    return;
                                 }
                             }
+                        }
 
-                            var latest = _model.Notifications.LastOrDefault();
-                            if (latest != null)
+                        var latest = _model.Notifications.LastOrDefault();
+
+                        // if we got to this point our notification is doesn't involve an active tab
+                        if (latest != null)
+                        {
+                            if (latest is CharacterUpdateModel) // so tell our system to join the PM Tab
                             {
-                                if (latest is CharacterUpdateModel)
-                                {
-                                    var doStuffWith = (CharacterUpdateModel)latest;
-                                    JoinChannel(ChannelType.pm, doStuffWith.TargetCharacter.Name);
+                                var doStuffWith = (CharacterUpdateModel)latest;
+                                JoinChannel(ChannelType.pm, doStuffWith.TargetCharacter.Name);
 
-                                    Dispatcher.Invoke(showMyDamnWindow);
-                                }
-
-                                if (latest is ChannelUpdateModel)
-                                {
-                                    var doStuffWith = (ChannelUpdateModel)latest;
-                                    var channel = _model.AllChannels.FirstByIdOrDefault(doStuffWith.ChannelID);
-
-                                    if (channel == null)
-                                    {
-                                        _events.GetEvent<ErrorEvent>().Publish("Not enough information to switch to tab");
-
-                                        Dispatcher.Invoke(showMyDamnWindow);
-                                        return;
-                                    }
-
-                                    var chanType = channel.Type;
-                                    JoinChannel(chanType, doStuffWith.ChannelID);
-                                    Dispatcher.Invoke(showMyDamnWindow);
-                                }
+                                Dispatcher.Invoke(showMyDamnWindow);
+                                return;
                             }
+
+                            if (latest is ChannelUpdateModel) // or the channel tab
+                            {
+                                // I'm not really sure how we can get a notification on a channel we're not in,
+                                // but there's no reason to crash if that is the case
+                                var doStuffWith = (ChannelUpdateModel)latest;
+                                var channel = _model.AllChannels.FirstByIdOrDefault(doStuffWith.ChannelID);
+
+                                if (channel == null)
+                                { // assume it's an invite
+                                    var toSend = new { channel = doStuffWith.ChannelID };
+                                    _connection.SendMessage(toSend, "JCH"); // tell the server to jump on that shit
+
+                                    Dispatcher.Invoke(showMyDamnWindow);
+                                    return;
+                                }
+
+                                var chanType = channel.Type; 
+                                JoinChannel(chanType, doStuffWith.ChannelID);
+                                Dispatcher.Invoke(showMyDamnWindow);
+                                return;
+                            }
+                        }
+                        return;
+                    }
+                    #endregion
+
+                    #region Comic invite error message
+                    case "CIU":
+                    {
+                        if (command.ContainsKey("character") && (command["character"] as string).Equals(_model.SelectedCharacter.Name, StringComparison.OrdinalIgnoreCase))
+                        {
+                            _events.GetEvent<ErrorEvent>().Publish("For the record, no, inviting yourself does not a party make.");
                             return;
                         }
+                        break;
+                    }
                     #endregion
 
                     default: break;

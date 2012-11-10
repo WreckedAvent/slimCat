@@ -12,8 +12,6 @@ namespace Models
 
         private bool _canIgnore;
         private bool _canUnignore;
-        private bool _canMark;
-        private bool _canUnMark;
 
         private ICharacter _target;
         #endregion

@@ -20,11 +20,12 @@
     </UserControl.Resources>
 
     <DockPanel>
-        
-        <v:SearchBoxView DockPanel.Dock="Bottom"/>
-        <ListBox ItemsSource="{Binding Path=SortedNotifications}"
-                 Style="{StaticResource ContentListBox}"
-                      MaxWidth="200"
-                      x:Name="PopupAnchor"/>
+
+    <v:RightClickMenu />
+    <v:SearchBoxView DockPanel.Dock="Bottom"/>
+    <ListBox ItemsSource="{Binding Path=SortedNotifications}"
+                Style="{StaticResource ContentListBox}"
+                    MaxWidth="200"
+                    x:Name="PopupAnchor"/>
     </DockPanel>
 </UserControl>

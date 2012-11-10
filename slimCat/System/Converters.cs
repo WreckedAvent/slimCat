@@ -454,44 +454,47 @@ namespace System
         #endregion
 
         #region url functions
-        static Func<string, bool> containsUrl = args => args.Contains("http://") || args.Contains("https://");
-        static Func<string, string> getUrlDispay = args =>
+        static string[] validStartTerms = new[] { "http://", "https://", "ftp://" };
+
+        static bool containsUrl(string args)
         {
-            if (containsUrl(args))
-            {
-                string urlDisplay;
-                if (args.Contains("http://"))
-                    urlDisplay = args.Substring("http://".Length); // start past the http://
-                else
-                    urlDisplay = args.Substring("https://".Length); // start past the https://
+            var match = args.Split(' ').FirstOrDefault(word => startsWithValidTerm(word));
+            // see if it starts with something useful
 
-                int firstPeriod = urlDisplay.IndexOf('.'); // find our first period (again)
-                if (urlDisplay.LastIndexOf('.') == firstPeriod)
-                    // our url is in the form something.domain (such as imgur)
-                    if (urlDisplay.Contains('/'))
-                        urlDisplay = urlDisplay.Substring(0, urlDisplay.IndexOf('/'));
-                    else
-                        return urlDisplay;
-
-                else if (urlDisplay.Substring(firstPeriod).Contains('/'))
-                // if there is a slash after our first period AND we have more than one period before the slash,
-                // then our url is in the form www.something.domain/something
-                // and we will show something.domain
-                {
-                    int ending = urlDisplay.Substring(firstPeriod).IndexOf('/');
-                    urlDisplay = urlDisplay.Substring((firstPeriod + 1), ending - 1);
-                }
-                else
-                    // if there is more than one period and we do not have a slash in our url, it must be in the form
-                    // www.something.domain and there might be a sub domain or an extension domain after it.
-                    // we will show something.domain and whatever is after the domain
-                    urlDisplay = urlDisplay.Substring(firstPeriod + 1);
-
-                return urlDisplay;
-            }
+            if (match == null)
+                return false;
             else
-                return args;
-        };
+            {
+                var starter = validStartTerms.First(term => match.StartsWith(term));
+                return args.Trim().Length > starter.Length;
+            }
+        }
+
+        static string getUrlDisplay(string args)
+        { // forgot about the wonderful principle of KISS. This works better and is way more simple
+            string stripped;
+            var match = validStartTerms.FirstOrDefault(term => args.StartsWith(term));
+            stripped = args.Substring(match.Length); // remove the starting term
+
+            if (stripped.Contains('/')) // remove anything after the slash
+                stripped = stripped.Substring(0, stripped.IndexOf('/'));
+
+            if (stripped.StartsWith("www.")) // remove the www.
+                stripped = stripped.Substring("www.".Length);
+
+            return stripped;
+        }
+
+        static string markUpUrlWithBBCode(string args)
+        {
+            string toShow = getUrlDisplay(args);
+            return "[url=" + args + "]" + toShow + "[/url]"; // mark the bitch up
+        }
+
+        static bool startsWithValidTerm(string text)
+        {
+            return validStartTerms.Any(term => text.StartsWith(term));
+        }
         #endregion
 
         public static string DateTimeToRough(DateTimeOffset original, bool returnSeconds = false, bool appendAgo = true)
@@ -567,11 +570,28 @@ namespace System
         {
             if (containsUrl(text))
             {
-                #region Find start and end of url
-                int start = text.IndexOf("http://");
-                if (start == -1) start = text.IndexOf("https://");
+                //#region Find start and end of url
+                //int start;
 
-                int end = text.IndexOf(text.Skip(start).FirstOrDefault(Char.IsWhiteSpace), start);
+                var matches = from word in text.Split(' ') // explode them into an array
+                              where startsWithValidTerm(word)
+                              select new Tuple<string, string>(word, markUpUrlWithBBCode(word)); // put the match terms into a useful tuple
+
+                var toReturn = text;
+                foreach (var toReplace in matches)
+                    toReturn = toReturn.Replace(toReplace.Item1, toReplace.Item2); // replace each match
+
+                return toReturn; // return the replacements
+
+                /*
+                var match = text.Split(' ').FirstOrDefault(word => validStartTerms.Any(term => word.StartsWith(term)));
+
+                if (match == null)
+                    return text;
+                else
+                    start = text.IndexOf(match);
+
+                int end = text.IndexOf(text.Skip(start).FirstOrDefault(Char.IsWhiteSpace), start); // find the first space
 
                 if (end == -1) // if the string doesn't contain a space, assume the entire thing is part of the url
                     end = text.Length;
@@ -581,11 +601,10 @@ namespace System
                 string final = null;
                 #endregion
 
-
                 #region mark it up
                 if (start == 0 || Char.IsWhiteSpace(text[start - 1]))
                 {
-                    string toShow = getUrlDispay(fullurl);
+                    string toShow = getUrlDisplay(fullurl);
                     string markedupurl = "[url=" + fullurl + "]" + toShow + "[/url]"; // mark the bitch up
 
                     final = text.Replace(fullurl, markedupurl); // then replace it in our string
@@ -615,7 +634,7 @@ namespace System
                 #endregion
 
                 return sub; // otherwise we have our pre-processed url
-
+                */
             }
             else
                 return text; // if there's no url in it, we don't have a link to mark up

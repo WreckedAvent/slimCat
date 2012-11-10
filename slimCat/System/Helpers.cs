@@ -96,8 +96,34 @@ namespace System
         /// </summary>
         public static string GetStringContext(string fullContent, string specificWord)
         {
+            const int maxDistance = 150;
+            var needle = fullContent.ToLower().IndexOf(specificWord.ToLower());
+
+            var start = Math.Max(0, needle - maxDistance);
+            var end = Math.Min(fullContent.Length, needle + maxDistance);
+
+            Func<int, int> findStartOfWord = (suspectIndex) =>
+                {
+                    while (suspectIndex != 0 && !Char.IsWhiteSpace(fullContent[suspectIndex]))
+                        suspectIndex--; // find space before word
+                    if (suspectIndex != 0)
+                        suspectIndex++; // skip past space
+
+                    return suspectIndex;
+                };
+
+            start = findStartOfWord(start);
+
+            if (end != fullContent.Length)
+                end = findStartOfWord(end);
+
+            return (start > 0 ? "... " : "") + fullContent.Substring(start, (end - start)) + (end != fullContent.Length ? " ..." : "");
+        }
+
+        public static string GetStringContextOld(string fullContent, string specificWord)
+        {
             const int contextLength = 150;
-            var trippedItIndex = fullContent.IndexOf(specificWord);
+            var trippedItIndex = fullContent.ToLower().IndexOf(specificWord);
 
             if (trippedItIndex == -1)
                 return string.Empty; // derp

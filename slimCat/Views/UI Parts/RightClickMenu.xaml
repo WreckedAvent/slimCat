@@ -2,6 +2,7 @@
        StaysOpen="False"
        IsOpen="{Binding Path=RightClickMenuViewModel.IsOpen}"
        Placement="MousePoint"
+       UseLayoutRounding="True"
        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
        xmlns:v="clr-namespace:Views"

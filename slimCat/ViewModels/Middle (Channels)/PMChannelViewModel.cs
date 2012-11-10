@@ -83,7 +83,7 @@ namespace ViewModels
         {
             get
             {
-                return (CM.IsOnline(Model.ID) && !_isInCoolDown);
+                return !_isInCoolDown;
             }
         }
 
@@ -92,6 +92,10 @@ namespace ViewModels
             get
             {
                 var PM = (PMChannelModel)Model;
+
+                if (!CM.IsOnline(Model.ID)) // visual indicator to help the user know when the other has gone offline
+                    return string.Format("{0} is not online!", PM.ID);
+
                 switch (PM.TypingStatus)
                 {
                     case Typing_Status.typing: return string.Format("{0} is typing " + PM.TypingString, PM.ID);
@@ -211,7 +215,7 @@ namespace ViewModels
                 _checkTick.Enabled = false;
             }
 
-            else UpdateError(Model.ID + " is not online!");
+            else UpdateError(string.Format("No, no... {0} no es online...", Model.ID));
         }
 
         private void SendTypingNotification(Typing_Status type)
@@ -267,15 +271,24 @@ namespace ViewModels
             OnPropertyChanged("StatusString");
             OnPropertyChanged("HasStatus");
             OnPropertyChanged("CanPost");
+            OnPropertyChanged("TypingString");
 
             var arguments = ((CharacterUpdateModel)param).Arguments;
             if (!(arguments is Models.CharacterUpdateModel.ListOperationEventArgs))
                 OnStatusChanged();
         }
 
+        /// <summary>
+        /// If the update is applicable to our PM tab
+        /// </summary>
         private bool UpdateIsOurCharacter(NotificationModel param)
         {
-            return (param is CharacterUpdateModel && ((CharacterUpdateModel)param).TargetCharacter == ConversationWith);
+            if (param is CharacterUpdateModel)
+            {
+                var args = ((CharacterUpdateModel)param).TargetCharacter;
+                return (args.Name.Equals(ConversationWith.Name, StringComparison.OrdinalIgnoreCase));
+            }
+            return false;
         }
         #endregion
         #endregion
