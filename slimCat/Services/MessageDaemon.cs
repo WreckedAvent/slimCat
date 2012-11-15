@@ -140,6 +140,12 @@ namespace Services
                         {
                             var args = (string)command["channel"];
 
+                            if (_model.CurrentChannels.FirstByIdOrDefault(args) != null)
+                            {
+                                RequestNavigate(args);
+                                return;
+                            }
+
                             // orderby ensures that our search string won't produce a premature
                             var guess = _model.AllChannels.OrderBy(channel => channel.Title).FirstOrDefault(channel => channel.Title.ToLower().StartsWith(args.ToLower()));
                             if (guess != null)
@@ -502,9 +508,10 @@ namespace Services
                     var thisMessage = new MessageModel(sender, message, messageType);
                     channel.AddMessage(thisMessage);
 
-                    _logger.LogMessage(channel.Title, channel.ID, thisMessage);
+                    if (channel.Settings.LoggingEnabled && ApplicationSettings.AllowLogging) // check if the user wants logging for this channel
+                        _logger.LogMessage(channel.Title, channel.ID, thisMessage);
 
-                    if (poster != "_thisCharacter")
+                    if (poster != "_thisCharacter") // don't push events for our own messages
                     {
                         if (channel is GeneralChannelModel)
                             _events.GetEvent<NewMessageEvent>().Publish(new Dictionary<string, object>() {{"message", thisMessage}, {"channel", channel}});

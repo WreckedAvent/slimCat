@@ -56,41 +56,16 @@
             </Expander>
         </Border>
 
-        <ListBox ItemsSource="{Binding Path=Model.Messages, Mode=OneWay}"
-                      ItemTemplate="{StaticResource MessageView}"
-                 Style="{StaticResource ContentListBox}"
-                      Grid.Row="1"
-                      Loaded="OnMessagesLoaded"
-                      x:Name="messages"/>
+        <Grid x:Name="PopupAnchor"
+              Grid.Row="1">
+            <ListBox ItemsSource="{Binding Path=Model.Messages, Mode=OneWay}"
+                     ItemTemplate="{StaticResource MessageView}"
+                     Style="{StaticResource ContentListBox}"
+                     Loaded="OnMessagesLoaded"
+                     x:Name="messages"/>
+        </Grid>
 
-        <Popup PlacementTarget="{Binding ElementName=messages}"
-               Placement="Center"
-               StaysOpen="False"
-               IsOpen="{Binding Path=ChannelSettings.IsChangingSettings}">
-
-            <Border BorderBrush="{StaticResource HighlightBrush}"
-                    BorderThickness="2"
-                    Background="{StaticResource BackgroundBrush}">
-                <WrapPanel Orientation="Vertical"
-                           Margin="10">
-                    <TextBlock Foreground="{StaticResource ForegroundBrush}"
-                               FontSize="20"
-                               HorizontalAlignment="Center"
-                               Margin="10,5">
-                        <Run Text="Settings for"/>
-                        <Run Text="{Binding Path=Model.Title}"/>
-                    </TextBlock>
-                    <ContentControl Template="{StaticResource ChannelSettingBoxes}"
-                                    DataContext="{Binding Path=ChannelSettings}"/>
-
-                    <Button Content="Close Settings"
-                            Margin="10,5"
-                            DataContext="{Binding Path=ChannelSettings}"
-                            Foreground="{StaticResource ForegroundBrush}"
-                            Command="{Binding OpenChannelSettingsCommand}"/>
-                </WrapPanel>
-            </Border>
-        </Popup>
+        <v:ChannelSettingsView />
 
         <StackPanel Grid.Row="2"
                     Orientation="Vertical">

@@ -155,16 +155,28 @@ namespace Models
             }
         }
 
-        public class ListOperationEventArgs : CharacterUpdateEventArgs
+        public class PromoteDemoteEventArgs : CharacterUpdateEventArgs
         {
-            public bool IsAddition { get; set; }
-            public string ListType { get; set; }
+            public bool IsPromote { get; set; }
+            public string TargetChannel { get; set; }
 
             public override string ToString()
             {
-                return 
-                    ("has been " + (IsAddition ? "added" : "removed") + " from " 
-                    + "the " + ListType + " list");
+                if (TargetChannel == null)
+                    return "has been " + (IsPromote ? "promoted to" : "demoted from") + " global moderator.";
+                else
+                    return "has been " + (IsPromote ? "promoted to" : "demoted from") + " channel moderator in " + TargetChannel + ".";
+            }
+        }
+
+        public class JoinLeaveEventArgs : CharacterUpdateEventArgs
+        {
+            public string TargetChannel { get; set; }
+            public bool Joined { get; set; }
+
+            public override string ToString()
+            {
+                return "has " + (Joined ? "joined" : "left") + string.Format(" {0}.", TargetChannel);
             }
         }
         #endregion

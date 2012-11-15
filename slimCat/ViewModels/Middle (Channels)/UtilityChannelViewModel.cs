@@ -104,6 +104,29 @@ namespace ViewModels
                 Services.SettingsDaemon.SaveApplicationSettingsToXML(CM.SelectedCharacter.Name);
             }
         }
+
+        public bool AllowLogging
+        {
+            get { return ApplicationSettings.AllowLogging; }
+            set
+            {
+                ApplicationSettings.AllowLogging = value;
+                Services.SettingsDaemon.SaveApplicationSettingsToXML(CM.SelectedCharacter.Name);
+            }
+        }
+
+        public string GlobalNotifyTerms
+        {
+            get 
+            {
+                return ApplicationSettings.GlobalNotifyTerms;
+            }
+            set
+            {
+                ApplicationSettings.GlobalNotifyTerms = value;
+                Services.SettingsDaemon.SaveApplicationSettingsToXML(CM.SelectedCharacter.Name);
+            }
+        }
         #endregion
 
         #region Constructors

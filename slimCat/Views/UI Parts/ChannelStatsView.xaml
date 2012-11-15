@@ -1,0 +1,12 @@
+﻿<Popup x:Class="Views.ChannelStatsView"
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       
+       PlacementTarget="{Binding ElementName=PopupAnchor}"
+       Placement="Center"
+       StaysOpen="False"
+       IsOpen="{Binding Path=ChannelStats.IsViewingStats}">
+    <Grid>
+            
+    </Grid>
+</Popup>

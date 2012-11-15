@@ -122,6 +122,16 @@ namespace ViewModels
                 OnPropertyChanged("ShouldShowPostLength");
             }
         }
+
+        /// <summary>
+        /// This is used for the channel settings, if it should show settings like 'notify when this character is mentioned'
+        /// </summary>
+        public bool ShowAllSettings { get { return false; } }
+
+        /// <summary>
+        /// Used for channel settings to display settings related to notify terms
+        /// </summary>
+        public bool HasNotifyTerms { get { return ChannelSettings.NotifyTerms != null && ChannelSettings.NotifyTerms.Length > 0; } }
         #endregion
 
         #region Constructors
@@ -274,7 +284,7 @@ namespace ViewModels
             OnPropertyChanged("TypingString");
 
             var arguments = ((CharacterUpdateModel)param).Arguments;
-            if (!(arguments is Models.CharacterUpdateModel.ListOperationEventArgs))
+            if (!(arguments is Models.CharacterUpdateModel.PromoteDemoteEventArgs))
                 OnStatusChanged();
         }
 

@@ -142,6 +142,9 @@ namespace Services
                         {
                             if (string.Equals(property.Name, element.Name.ToString(), StringComparison.Ordinal))
                             {
+                                if (string.IsNullOrWhiteSpace(element.Value))
+                                    continue; // fix a bad issue with the parser
+
                                 if (!element.HasElements)
                                 {
                                     var setter = Convert.ChangeType(element.Value, property.PropertyType);
@@ -180,23 +183,26 @@ namespace Services
 
             foreach (var property in typeof(Models.ApplicationSettings).GetProperties())
             {
-                if (property.PropertyType != typeof(IList<string>))
+                if (property.PropertyType != typeof(IList<string>) && property.PropertyType != typeof(IEnumerable<string>))
                     root.Add(
                         new XElement(property.Name, property.GetValue(null, null))
                         );
                 else
                 {
-                    var toAdd = new XElement(property.Name);
-                    foreach (var item in property.GetValue(null, null) as IEnumerable<string>)
+                    if (!property.Name.ToLower().Contains("list"))
                     {
-                        var label = "item";
-                        if (property.Name.ToLower().Contains("channel"))
-                            label = "channel";
-                        else if (property.Name.ToLower().Contains("interested"))
-                            label = "character";
-                        toAdd.Add(new XElement(label, item));
+                        var toAdd = new XElement(property.Name);
+                        foreach (var item in property.GetValue(null, null) as IEnumerable<string>)
+                        {
+                            var label = "item";
+                            if (property.Name.ToLower().Contains("channel"))
+                                label = "channel";
+                            else if (property.Name.ToLower().Contains("interested"))
+                                label = "character";
+                            toAdd.Add(new XElement(label, item));
+                        }
+                        root.Add(toAdd);
                     }
-                    root.Add(toAdd);
                 }
             }
 

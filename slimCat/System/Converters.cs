@@ -153,7 +153,7 @@ namespace System
             if (text == null)
                 return null;
 
-            text = HttpUtility.UrlDecode(text);
+            text = HttpUtility.HtmlDecode(text);
 
             IList<Inline> toReturn = new List<Inline>();
             toReturn.Add(HelperConverter.ParseBBCode(text, false));

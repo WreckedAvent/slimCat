@@ -4,7 +4,6 @@ using Microsoft.Practices.Unity;
 using Models;
 using SimpleJson;
 using slimCat;
-using slimCat.Properties;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -79,6 +78,10 @@ namespace Services
                 case "NLN": return new CommandDelegate(UserLoggedInCommand);
                 case "FLN": return new CommandDelegate(CharacterDisconnectCommand);
                 case "RLL": return new CommandDelegate(RollCommand);
+                case "DOP": return new CommandDelegate(OperatorDemoteCommand);
+                case "COP": return new CommandDelegate(OperatorPromoteCommand);
+                case "COR": return new CommandDelegate(OperatorDemoteCommand);
+                case "COA": return new CommandDelegate(OperatorPromoteCommand);
                 default: return null;
             }
         }
@@ -155,6 +158,32 @@ namespace Services
 
             if (!_cm.Ignored.Any(ignoree => ignoree.Equals(character, StringComparison.OrdinalIgnoreCase))) 
                 _manager.AddMessage(message, channel, character, (isAd ? MessageType.ad : MessageType.normal));
+        }
+        private void PromoteOrDemote(string character, bool isPromote, string channelID = null)
+        {
+            string title = null;
+            if (channelID != null)
+            {
+                var channel = _cm.CurrentChannels.FirstByIdOrDefault(channelID);
+                if (channel != null)
+                    title = channel.Title;
+            }
+
+            var target = _cm.FindCharacter(character);
+
+            if (target != null) // avoids nasty null reference
+            {
+                _events.GetEvent<NewUpdateEvent>().Publish(
+                    new CharacterUpdateModel(
+                        target,
+                        new Models.CharacterUpdateModel.PromoteDemoteEventArgs()
+                        {
+                            TargetChannel = title,
+                            IsPromote = isPromote,
+                        })
+                    );
+
+            }
         }
         #endregion
 
@@ -391,8 +420,19 @@ namespace Services
             // if it isn't, then it must be when someone else is.
             else
             {
-                if (!channel.Users.Contains(_cm.FindCharacter(identity)))
+                if (!channel.Users.Any(user => user.Name.Equals(identity, StringComparison.OrdinalIgnoreCase))) // checking by name is safer
+                {
                     channel.Users.Add(_cm.FindCharacter(identity));
+
+                    _events.GetEvent<NewUpdateEvent>().Publish // send the join/leave notification
+                        (
+                            new CharacterUpdateModel
+                            (
+                                _cm.FindCharacter(identity),
+                                new CharacterUpdateModel.JoinLeaveEventArgs() { Joined = true, TargetChannel = channel.Title }
+                            )
+                        );
+                }
             }
         }
 
@@ -408,7 +448,18 @@ namespace Services
             {
                 var toRemove = channel.Users.FirstOrDefault(character => character.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase));
                 if (toRemove != null)
+                {
+                    _events.GetEvent<NewUpdateEvent>().Publish // send the join/leave notification
+                        (
+                            new CharacterUpdateModel
+                            (
+                                toRemove,
+                                new CharacterUpdateModel.JoinLeaveEventArgs() { Joined = false, TargetChannel = channel.Title }
+                            )
+                        );
+
                     channel.Users.Remove(toRemove);
+                }
                 else
                     Debug.WriteLine("Cannot do LCH with character " + characterName);
             }
@@ -484,7 +535,9 @@ namespace Services
 
         private void ErrorCommand(IDictionary<string, object> command)
         {
-            _events.GetEvent<ErrorEvent>().Publish(command["message"] as string);
+            // checks to ensure it's not a mod promote message
+            if ((command["message"] as string).IndexOf("has been", StringComparison.OrdinalIgnoreCase) == -1)
+                _events.GetEvent<ErrorEvent>().Publish(command["message"] as string);
         }
 
         private void InviteCommand(IDictionary<string, object> command)
@@ -535,6 +588,28 @@ namespace Services
 
             if (!_cm.Ignored.Contains(poster))
                 _manager.AddMessage(message, channel, poster, MessageType.roll);
+        }
+
+        private void OperatorPromoteCommand(IDictionary<string, object> command)
+        {
+            var target = command["character"] as string;
+            string channelID = null;
+
+            if (command.ContainsKey("channel"))
+                channelID = command["channel"] as string;
+
+            PromoteOrDemote(target, true, channelID);
+        }
+
+        private void OperatorDemoteCommand(IDictionary<string, object> command)
+        {
+            var target = command["character"] as string;
+            string channelID = null;
+
+            if (command.ContainsKey("channel"))
+                channelID = command["channel"] as string;
+
+            PromoteOrDemote(target, false, channelID);
         }
         #endregion
 

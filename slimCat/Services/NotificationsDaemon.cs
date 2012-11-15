@@ -123,7 +123,7 @@ namespace Services
             {
                 if (!channel.IsSelected && channel.Settings.ShouldDing)
                 {
-                    NotifyUser(true, true, poster.Name + '\n' + HttpUtility.UrlDecode(Message.Message), poster.Name);
+                    NotifyUser(true, true, poster.Name + '\n' + HttpUtility.HtmlDecode(Message.Message), poster.Name);
                     return;
                 }
             }
@@ -132,7 +132,7 @@ namespace Services
                 (Action)delegate
                 {
                     if (!Application.Current.MainWindow.IsActive && channel.Settings.ShouldDing)
-                        NotifyUser(true, true, poster.Name + '\n' + HttpUtility.UrlDecode(Message.Message), poster.Name);
+                        NotifyUser(true, true, poster.Name + '\n' + HttpUtility.HtmlDecode(Message.Message), poster.Name);
                 });
         }
 
@@ -150,16 +150,27 @@ namespace Services
 
                         if (notFocused) // don't notify if we have proper focus
                         {
+                            if (channel.Settings.IgnoreNotInterested && ApplicationSettings.NotInterested.Contains(message.Poster.Name))
+                                return; // skip over people who we've marked as uninterested 
+
                             if (channel.Settings.ShouldDing) // if we told to ding on new message
                             {
-                                NotifyUser(true, true, message.Poster.Name + '\n' + HttpUtility.UrlDecode(message.Message), channel.ID);
+                                NotifyUser(true, true, message.Poster.Name + '\n' + HttpUtility.HtmlDecode(message.Message), channel.ID);
                                 return;
                             }
                             else // now we check for if the message itself should ding us
                             {
-                                if (channel.Settings.EnumerableTerms.Count() > 0 || channel.Settings.NotifyCharacterMention) // if we have anything to even check for
+                                if (channel.Settings.EnumerableTerms.Count() > 0
+                                    || channel.Settings.NotifyCharacterMention
+                                    || ApplicationSettings.GlobalNotifyTermsList.Count() > 0) // if we have anything to even check for
                                 {
                                     var splitwords = message.Message.Split(' ').Select(words => words.ToLower().Trim()); // tokenizes our words
+
+                                    var temp = new List<string>(channel.Settings.EnumerableTerms);
+                                    foreach (var term in ApplicationSettings.GlobalNotifyTermsList)
+                                        temp.Add(term); // get our combined list of terms
+
+                                    var checkagainst = temp.Distinct(StringComparer.OrdinalIgnoreCase);
 
                                     Func<string, bool> isMatchingString = word => // uses our settings to see how we should go through it
                                     {
@@ -167,9 +178,9 @@ namespace Services
                                             return false;
 
                                         if (channel.Settings.NotifyOnWholeWordsOnly)
-                                            return channel.Settings.EnumerableTerms.Any(dingWords => dingWords.Equals(word, StringComparison.Ordinal));
+                                            return checkagainst.Any(dingWords => dingWords.Equals(word, StringComparison.OrdinalIgnoreCase));
                                         else
-                                            return channel.Settings.EnumerableTerms.Any(dingWords => word.Contains(dingWords));
+                                            return checkagainst.Any(dingWords => word.Contains(dingWords));
                                     };
 
                                     // check if we need to look in the message itself
@@ -178,7 +189,7 @@ namespace Services
                                         var match = splitwords.FirstOrDefault(isMatchingString);
                                         if (match != null) // if one of our words is a dingling word
                                         {
-                                            var sentenceContext = HttpUtility.UrlDecode(StaticFunctions.GetStringContext(message.Message.ToLower(), match));
+                                            var sentenceContext = HttpUtility.HtmlDecode(StaticFunctions.GetStringContext(message.Message, match));
                                             var notifyMessage = message.Poster.Name + " mentioned:" + '\n' + sentenceContext;
 
                                             NotifyUser(true, true, notifyMessage, channel.ID);
@@ -191,10 +202,9 @@ namespace Services
                                     {
                                         var names = channel.Settings.EnumerableTerms;
 
-                                        var match = names.FirstOrDefault(name => name.ToLower().Contains(message.Poster.Name.ToLower()));
-                                        if (match != null)
+                                        if (names.Any(name => message.Poster.Name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0))
                                         {
-                                            NotifyUser(true, true, message.Poster.Name + ":" + '\n' + HttpUtility.UrlDecode(message.Message), channel.ID);
+                                            NotifyUser(true, true, message.Poster.Name + ":" + '\n' + HttpUtility.HtmlDecode(message.Message), channel.ID);
                                         }
                                     }
 
@@ -205,7 +215,7 @@ namespace Services
 
                                         if (splitwords.Any(testword => testword.Equals(ourCharacter, StringComparison.Ordinal)))
                                         { // if one of the words is our character's name
-                                            var sentenceContext = HttpUtility.UrlDecode(StaticFunctions.GetStringContext(message.Message.ToLower(), ourCharacter));
+                                            var sentenceContext = HttpUtility.HtmlDecode(StaticFunctions.GetStringContext(message.Message, ourCharacter));
                                             var notifyMessage = message.Poster.Name + " mentioned your character:" + '\n' + sentenceContext;
 
                                             NotifyUser(true, true, notifyMessage, channel.ID);
@@ -226,11 +236,46 @@ namespace Services
             if (Notification is CharacterUpdateModel)
             {
                 var targetCharacter = ((CharacterUpdateModel)Notification).TargetCharacter.Name;
+                var args = ((CharacterUpdateModel)Notification).Arguments;
 
-                if (_cm.IsOfInterest(targetCharacter))
+                if (args is Models.CharacterUpdateModel.PromoteDemoteEventArgs)
+                {
+                    var channelID = (args as Models.CharacterUpdateModel.PromoteDemoteEventArgs).TargetChannel;
+                    var channel = _cm.CurrentChannels.FirstByIdOrDefault(channelID);
+
+                    if (channel != null)
+                    {
+                        if (channel.Settings.NotifyModPromoteDemote)
+                            AddNotification(Notification);
+                    }
+                }
+
+                if (args is Models.CharacterUpdateModel.JoinLeaveEventArgs) // special check for this as it has settings per channel
+                {
+                    var target = (args as Models.CharacterUpdateModel.JoinLeaveEventArgs).TargetChannel;
+                    var chan = _cm.CurrentChannels.FirstByIdOrDefault(target);
+
+                    if (chan != null) // avoid null references
+                    {
+                        if (!chan.Settings.NotifyOnJoinLeave) // if we don't want any join/leave notifications, just return
+                            return;
+                        if (!_cm.IsOfInterest(targetCharacter) && !chan.Settings.NotifyOnNormalJoinLeave) // if we want them and they don't apply, return
+                            return;
+                        // otherwise, fall through and add the notification as normal
+                    }
+                    else
+                        return; // adding a notification to a null channel would be bad
+
+                    AddNotification(Notification);
+                }
+
+                else if (_cm.IsOfInterest(targetCharacter))
                 {
                     AddNotification(Notification);
-                    NotifyUser(false, false, Notification.ToString(), targetCharacter);
+                    if (_cm.SelectedChannel is PMChannelModel
+                        && !(_cm.SelectedChannel as PMChannelModel).ID.Equals(targetCharacter, StringComparison.OrdinalIgnoreCase))
+                        NotifyUser(false, false, Notification.ToString(), targetCharacter);
+                    // only bug user if we're not looking at that character's pm tab right now (the notification and top part expanding will be enough)
                 }
             }
 
@@ -238,10 +283,11 @@ namespace Services
             {
                 var channel = (ChannelUpdateModel)Notification;
                 var args = channel.Arguments;
-                if (args is Models.ChannelUpdateModel.ChannelInviteEventArgs)
+
+                if (args is Models.ChannelUpdateModel.ChannelInviteEventArgs) // we always want to know about invites
                     NotifyUser(false, false, Notification.ToString(), channel.ChannelID);
 
-                AddNotification(Notification);
+                AddNotification(Notification); // if we got this far, it must be OK to add it to our collection
             }
         }
 
@@ -278,7 +324,11 @@ namespace Services
 
         public void ShowWindow()
         {
-            App.Current.MainWindow.Show();
+            // this will ensure the window is showed no matter of its state.
+            Application.Current.MainWindow.Show();
+            if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
+                Application.Current.MainWindow.WindowState = WindowState.Normal;
+            Application.Current.MainWindow.Focus();
         }
 
         public void ShutDown()

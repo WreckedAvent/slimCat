@@ -68,26 +68,11 @@ namespace ViewModels
                 _container.Resolve<UsersTabViewModel>();
                 _container.Resolve<NotificationsTabViewModel>();
 
-                _events.GetEvent<NewUpdateEvent>().Subscribe(args => 
+                _cm.Notifications.CollectionChanged += (s, e) =>
                     {
-                        if (args is CharacterUpdateModel)
-                        {
-                            string name = ((CharacterUpdateModel)args).TargetCharacter.Name;
-                            if (CM.IsOfInterest(name))
-                                HasUpdate = HasUpdate || !IsExpanded;
-                        }
-
-                        if (args is ChannelUpdateModel)
-                        {
-                            var update = ((ChannelUpdateModel)args);
-
-                            if (CM.SelectedChannel.ID.Equals(update.ChannelID))
-                                HasUpdate = HasUpdate || !IsExpanded;
-
-                            else if (update.Arguments is Models.ChannelUpdateModel.ChannelInviteEventArgs)
-                                HasUpdate = HasUpdate || !IsExpanded;
-                        }
-                    });
+                        if (!IsExpanded) // removed checking logic, allow the notifications daemon to worry about that
+                            HasUpdate = HasUpdate || true;
+                    };
             }
 
             catch (Exception ex)

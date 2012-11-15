@@ -103,40 +103,13 @@
                 </WrapPanel>
             </Border>
         </Popup>
-
-        <Popup PlacementTarget="{Binding ElementName=PopupAnchor}"
-               Placement="Center"
-               StaysOpen="False"
-               IsOpen="{Binding Path=ChannelSettings.IsChangingSettings}">
-
-            <Border BorderBrush="{StaticResource HighlightBrush}"
-                    BorderThickness="2"
-                    Background="{StaticResource BackgroundBrush}">
-                <WrapPanel Orientation="Vertical"
-                           Margin="10">
-                    <TextBlock Foreground="{StaticResource ForegroundBrush}"
-                               FontSize="20"
-                               HorizontalAlignment="Center"
-                               Margin="10,5">
-                        <Run Text="{Binding Path=Model.Title}"/>
-                        <Run Text="Channel Settings" />
-                    </TextBlock>
-                    <ContentControl Template="{StaticResource ChannelSettingBoxes}"
-                                    DataContext="{Binding Path=ChannelSettings}"/>
-
-                    <Button Content="Close Settings"
-                            Margin="10,5"
-                            DataContext="{Binding Path=ChannelSettings}"
-                            Foreground="{StaticResource ForegroundBrush}"
-                            Command="{Binding OpenChannelSettingsCommand}"/>
-                </WrapPanel>
-            </Border>
-        </Popup>
-
+        
+        <v:ChannelSettingsView />
+        
         <StackPanel Grid.Row="2">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal"
@@ -144,13 +117,9 @@
                             HorizontalAlignment="Left"
                             Margin="0">
                     <TextBlock Foreground="{StaticResource HighlightBrush}"
-                               Visibility="{Binding Path=ShouldShowPostLength, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                                VerticalAlignment="Center"
-                               Margin="2,0,4,0">
-                        <Run Text="{Binding Path=Message.Length, Mode=OneWay}" />
-                        <Run Text="/" />
-                        <Run Text="{Binding Path=MessageMax, Mode=OneWay}" />
-                    </TextBlock>
+                               Margin="2,0,4,0"
+                               Text="{Binding Path=StatusString, Mode=OneWay}"/>
                     <TextBlock Foreground="{StaticResource HighlightBrush}"
                                Text="{Binding Path=TimeLeft, Mode=OneWay}"
                                VerticalAlignment="Center"
@@ -184,6 +153,7 @@
                 </StackPanel>
             </Grid>
             
+
             <v:RightClickMenu />
             <v:ChannelTextBoxEntryView Visibility="{Binding Path=IsChatting, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                                        IsEnabled="{Binding Path=CanPost, Mode=OneWay}"/>

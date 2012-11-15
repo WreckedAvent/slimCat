@@ -150,6 +150,97 @@ namespace ViewModels
 
             _events.GetEvent<UserCommandEvent>().Publish(toSend);
         }
+
+        #region Navigate Shortcuts
+        private RelayCommand _navUp;
+        private RelayCommand _navDown;
+
+        public ICommand NavigateUpCommand
+        {
+            get
+            {
+                if (_navUp == null)
+                    _navUp = new RelayCommand(args => RequestNavigateDirectionalEvent(true));
+                return _navUp;
+            }
+        }
+
+        public ICommand NavigateDownCommand
+        {
+            get
+            {
+                if (_navDown == null)
+                    _navDown = new RelayCommand(args => RequestNavigateDirectionalEvent(false));
+                return _navDown;
+            }
+        }
+
+        private void RequestNavigateDirectionalEvent(bool isUp)
+        {
+            if (_cm.SelectedChannel is PMChannelModel)
+            {
+                var index = _cm.CurrentPMs.IndexOf(_cm.SelectedChannel as PMChannelModel);
+                if (index == 0 && isUp)
+                {
+                    _navigateStub(false, false);
+                    return;
+                }
+                else if (index == _cm.CurrentPMs.Count() && !isUp)
+                {
+                    _navigateStub(true, false);
+                    return;
+                }
+                else
+                {
+                    index += isUp ? -1 : 1;
+                    RequestPMEvent(_cm.CurrentPMs[index].ID);
+                    return;
+                }
+            }
+            else
+            {
+                var index = _cm.CurrentChannels.IndexOf(_cm.SelectedChannel as GeneralChannelModel);
+                if (index == 0 && isUp)
+                {
+                    _navigateStub(false, true);
+                    return;
+                }
+                else if (index == _cm.CurrentChannels.Count() && !isUp)
+                {
+                    _navigateStub(true, true);
+                    return;
+                }
+                else
+                {
+                    index += isUp ? -1 : 1;
+                    RequestChannelJoinEvent(_cm.CurrentChannels[index].ID);
+                    return;
+                }
+            }
+        }
+
+        private void _navigateStub(bool getTop, bool fromPMs)
+        {
+            if (fromPMs)
+            {
+                var collection = _cm.CurrentPMs;
+                if (collection.Count() == 0)
+                {
+                    _navigateStub(false, false);
+                    return;
+                }
+
+                var target = (getTop ? collection.First() : collection.Last()).ID;
+                RequestPMEvent(target);
+            }
+            else
+            {
+                var collection = _cm.CurrentChannels;
+                var target = (getTop ? collection.First() : collection.Last()).ID;
+                RequestChannelJoinEvent(target);
+            }
+        }
+        #endregion
         #endregion
 
         #region Methods

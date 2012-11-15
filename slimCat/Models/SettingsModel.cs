@@ -391,13 +391,11 @@ namespace Models
         public event EventHandler Updated;
 
         #region Fields
+        private bool _enableLogging = true;
         private bool _shouldFlash = true;
         private bool _shouldDing = false;
         private int _shouldFlashInterval = 1;
-
         private bool _notifyWhenThisCharacterIsMentioned = true;
-        private bool _notifyWhenFriendsTalk = false;
-        private bool _notifyWhenInterestedTalk = false;
 
         private bool _notifyIncludesMessages = true;
         private bool _notifyIncludesCharacterNames = false;
@@ -405,6 +403,11 @@ namespace Models
         private string _notifyOnTheseTerms = "";
         private IEnumerable<string> _notifyEnumerate;
         private bool _notifyTermsChanged = false;
+        private bool _ignoreNotInterested = true;
+
+        private bool _notifyOnJoinLeave = true;
+        private bool _notifyOnNormalJoinLeave = false;
+        private bool _notifyModPromoteDemote = true;
 
         private bool _isChangingSettings = false;
         #endregion
@@ -558,6 +561,71 @@ namespace Models
             }
         }
 
+        /// <summary>
+        /// If a user entering or leaving the channel spawns a notification
+        /// </summary>
+        public bool NotifyOnJoinLeave
+        {
+            get { return _notifyOnJoinLeave; }
+            set
+            {
+                _notifyOnJoinLeave = value;
+                CallUpdate();
+            }
+        }
+
+        /// <summary>
+        /// If a normal user with no relationship to user entering or leaving the channel spawns a notification
+        /// </summary>
+        public bool NotifyOnNormalJoinLeave
+        {
+            get { return _notifyOnNormalJoinLeave; }
+            set
+            {
+                _notifyOnNormalJoinLeave = value;
+                CallUpdate();
+            }
+        }
+
+        /// <summary>
+        /// If we log each message 
+        /// </summary>
+        public bool LoggingEnabled
+        {
+            get { return _enableLogging; }
+            set
+            {
+                _enableLogging = value;
+                CallUpdate();
+            }
+        }
+
+        /// <summary>
+        /// If characters marked as 'not interested' are skipped when we spawn notifications
+        /// </summary>
+        public bool IgnoreNotInterested
+        {
+            get { return _ignoreNotInterested; }
+            set
+            {
+                _ignoreNotInterested = value;
+                CallUpdate();
+            }
+        }
+
+        /// <summary>
+        /// If we get notifications about mod promotions / demotions in channels
+        /// </summary>
+        public bool NotifyModPromoteDemote
+        {
+            get { return _notifyModPromoteDemote; }
+            set
+            {
+                _notifyModPromoteDemote = value;
+                CallUpdate();
+            }
+        }
+
         public bool IsChangingSettings
         {
             get { return _isChangingSettings; }
@@ -609,7 +677,10 @@ namespace Models
         {
             Volume = 0.5;
             ShowNotificationsGlobal = true;
+            AllowLogging = true;
+
             BackLogMax = 300;
+            GlobalNotifyTerms = "";
             _savedChannels = new List<string>();
             _interested = new List<string>();
             _uninterested = new List<string>();
@@ -620,10 +691,20 @@ namespace Models
         public static double Volume { get; set; }
         public static bool ShowNotificationsGlobal { get; set; }
         public static int BackLogMax { get; set; }
+        public static bool AllowLogging { get; set; }
 
         public static IList<string> SavedChannels { get { return _savedChannels; } }
         public static IList<string> Interested { get { return _interested; } }
         public static IList<string> NotInterested { get { return _uninterested; } }
+
+        public static string GlobalNotifyTerms { get; set; }
+        public static IEnumerable<string> GlobalNotifyTermsList
+        {
+            get
+            {
+                    return GlobalNotifyTerms.Split(',').Select(word => word.ToLower());
+            }
+        }
         #endregion
     }
 }

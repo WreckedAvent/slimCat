@@ -169,6 +169,7 @@ namespace ViewModels
             get { return !IsSearching; }
         }
 
+        // Near the top, used for the label on the left side of title
         public string ChannelTypeString 
         {
             get
@@ -184,14 +185,37 @@ namespace ViewModels
             }
         }
 
+        // Near the bottom above text entry, for switching between chat and ads
         public string SwitchChannelTypeString { get { if (IsDisplayingChat) return "View Ads..."; else return "View Chat..."; } }
-        // Used for the button that switches between ads and chat
 
+        // Near the top, used for the label on the right side of title
         public string ChatContentString { get { if (IsDisplayingChat) return "Chat"; else return "Ads"; } }
-        // Used for 
+
+        // Near the bottom above text entry, for switching between searching and chatting
         public string SearchSwitchMessageString { get { if (IsSearching) return "Chat in this ..."; else return "Search in this ..."; } }
 
-        public string MessageMax { get { if (IsDisplayingChat) return "4,096 characters"; else return "50,000 characters"; } }
+        // Near the bottom above the text entry, to the far left
+        public string StatusString
+        {
+            get
+            {
+                if (IsDisplayingAds && AutoPost && _isInCoolDownAd)
+                    return "Auto post ads enabled";
+
+                if (Message == null || Message.Length == 0)
+                {
+                    if (_hasNewAds && IsDisplayingChat)
+                        return "This channel has new ad(s).";
+                    else if (_hasNewMessages && IsDisplayingAds)
+                        return "This channel has new message(s).";
+                    else
+                        return "";
+                }
+
+                else 
+                    return string.Format("{0} / {1} characters", Message.Length, (IsDisplayingChat ? "4,096" : "50,000"));
+            }
+        }
 
         public string TimeLeft
         {
@@ -212,11 +236,6 @@ namespace ViewModels
         public bool CannotPost
         {
             get { return !CanPost; }
-        }
-
-        public bool ShouldShowPostLength
-        {
-            get { return (Message != null && Message.Length > 0) && (IsDisplayingChat || (IsDisplayingAds && !AutoPost)); } 
         }
 
         public bool ShouldShowAutoPost
@@ -261,6 +280,16 @@ namespace ViewModels
                     return _hasNewMessages;
             }
         }
+
+        /// <summary>
+        /// This is used for the channel settings, if it should show settings like 'notify when this character is mentioned'
+        /// </summary>
+        public bool ShowAllSettings { get { return true; } }
+
+        /// <summary>
+        /// Used for channel settings to display settings related to notify terms
+        /// </summary>
+        public bool HasNotifyTerms { get { return ChannelSettings.NotifyTerms != null && ChannelSettings.NotifyTerms.Length > 0; } }
         #endregion
         #endregion
 
@@ -316,8 +345,6 @@ namespace ViewModels
                     if (_autoPostAds) SendAutoAd();
                 };
 
-                bool temp = ShouldShowPostLength;
-
                 _update.Elapsed += (s, e) =>
                 {
                     if (Model.IsSelected)
@@ -325,11 +352,7 @@ namespace ViewModels
                         if (CannotPost)
                             OnPropertyChanged("TimeLeft");
 
-                        if (ShouldShowPostLength != temp)
-                        {
-                            OnPropertyChanged("ShouldShowPostLength");
-                            temp = ShouldShowPostLength;
-                        }
+                        OnPropertyChanged("StatusString");
                     }
                 };
                 #endregion
@@ -343,10 +366,13 @@ namespace ViewModels
                 ChannelSettings.Updated += (s, e) =>
                 {
                     OnPropertyChanged("ChannelSettings");
+                    OnPropertyChanged("HasNotifyTerms");
                     if (!ChannelSettings.IsChangingSettings)
                         Services.SettingsDaemon.UpdateSettingsFile(ChannelSettings, cm.SelectedCharacter.Name, Model.Title, Model.ID);
                 };
                 #endregion
+
+                PropertyChanged += OnPropertyChanged;
             }
 
             catch (Exception ex)
@@ -474,6 +500,8 @@ namespace ViewModels
                 _hasNewAds = true;
                 OnPropertyChanged("OtherTabHasMessages");
             }
+
+            OnPropertyChanged("StatusString");
         }
 
         private void OnMessagesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -491,12 +519,20 @@ namespace ViewModels
                 _hasNewMessages = true;
                 OnPropertyChanged("OtherTabHasMessages");
             }
+
+            OnPropertyChanged("StatusString");
         }
 
         protected override void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "MOTD")
                 OnPropertyChanged("MOTD");
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Message")
+                OnPropertyChanged("StatusString"); // keep the counter updated
         }
         #endregion
         #endregion
@@ -520,6 +556,7 @@ namespace ViewModels
 
                 Model.Messages.CollectionChanged -= OnMessagesChanged;
                 Model.Ads.CollectionChanged -= OnAdsChanged;
+                PropertyChanged -= OnPropertyChanged;
 
                 (Model as GeneralChannelModel).MOTD = null;
                 (Model as GeneralChannelModel).Moderators.Clear();

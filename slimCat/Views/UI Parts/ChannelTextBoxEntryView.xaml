@@ -6,14 +6,16 @@
                  Margin="0,0,0,10"
                  TextWrapping="Wrap"
                  FontSize="13"
-                 AcceptsReturn="False"
-                 KeyDown="OnKeyDown"
+                 AcceptsReturn="True"
+                 KeyUp="OnKeyUp"
                  ScrollViewer.CanContentScroll="True"
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
                  SpellCheck.IsEnabled="True"
                  x:Name="Entry">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}" />
+                <KeyBinding Key="Up" Modifiers="Shift" Command="{Binding NavigateUpCommand}" />
+                <KeyBinding Key="Down" Modifiers="Shift" Command="{Binding NavigateDownCommand}" />
                 <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ClearErrorCommand}" />
             </TextBox.InputBindings>
             <TextBox.Style>

@@ -4,11 +4,12 @@
                     xmlns:sys="clr-namespace:System"
                     xmlns:v="clr-namespace:Views">
     
+    <BooleanToVisibilityConverter x:Key="BoolConverter" />
     <sys:BoolColorConverter x:Key="ColorConverter"/>
     <sys:BBCodePostConverter x:Key="BBPostConverter" />
     <sys:BBCodeConverter x:Key="BBCodeConverter" />
+    
     <DataTemplate x:Key="MessageView">
-        
         <v:MessageView />
     </DataTemplate>
 
@@ -32,6 +33,11 @@
     <Style TargetType="Hyperlink" x:Key="UsernameStyle" BasedOn="{StaticResource TunnelingUsernameStyle}">
         <Setter Property="Command" Value="{Binding Path=DataContext.NavigateTo,
                                             RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"/>
+    </Style>
+
+    <Style TargetType="ListBox">
+        <Setter Property="VirtualizingPanel.VirtualizationMode"
+                Value="Normal"/>
     </Style>
 
     <DataTemplate x:Key="TunnelingUsernameTemplate">

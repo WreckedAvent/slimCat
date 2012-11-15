@@ -68,6 +68,9 @@
                         <CheckBox IsChecked="{Binding ShowNotifications}"
                                   VerticalAlignment="Center"
                                   Margin="0,5">Allow Toast Notifications</CheckBox>
+                        <CheckBox IsChecked="{Binding AllowLogging}"
+                                  VerticalAlignment="Center"
+                                  Margin="0,5">Allow Logging</CheckBox>
 
                         <WrapPanel Margin="0,5">
                             <TextBlock Margin="0,0,5,0">Keep</TextBlock>
@@ -76,6 +79,10 @@
                                      FontSize="12"/>
                             <TextBlock Margin="5,0,0,0">Messages in channel backlogs</TextBlock>
                         </WrapPanel>
+                        
+                        <TextBlock Text="Global Notify Words (seperate with commas)"/>
+                        <TextBox Text="{Binding Path=GlobalNotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="12"/>
                     </StackPanel>
                 </Expander>
             </StackPanel>

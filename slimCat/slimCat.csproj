@@ -192,6 +192,12 @@
     <Compile Include="Views\Right-Hand Side %28channelbar%29\ChannelbarUserListView.xaml.cs">
       <DependentUpon>ChannelbarUserListView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UI Parts\ChannelSettingsView.xaml.cs">
+      <DependentUpon>ChannelSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UI Parts\ChannelStatsView.xaml.cs">
+      <DependentUpon>ChannelStatsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UI Parts\DisposableView.cs" />
     <Compile Include="Views\UI Parts\ExpandoStringControl.xaml.cs">
       <DependentUpon>ExpandoStringControl.xaml</DependentUpon>
@@ -254,6 +260,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Right-Hand Side %28channelbar%29\ChannelbarUserListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\ChannelSettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\ChannelStatsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
