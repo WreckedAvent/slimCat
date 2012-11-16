@@ -1,0 +1,17 @@
+﻿<Button x:Class="Views.SearchButtonView"
+        x:Name="searchButton"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"                    
+        Style="{StaticResource ImageContentButton}"
+        ToolTip="Switch to searching mode"
+        Margin="2,10,2,0">
+    <Button.Content>
+        <Rectangle Fill="{Binding ElementName=searchButton, Path=Foreground}"
+                   Height="15"
+                   Width="15">
+            <Rectangle.OpacityMask>
+                <ImageBrush ImageSource="pack://application:,,,/icons/search.png"/>
+            </Rectangle.OpacityMask>
+        </Rectangle>
+    </Button.Content>
+</Button>

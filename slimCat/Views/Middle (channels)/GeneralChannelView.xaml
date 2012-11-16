@@ -129,24 +129,23 @@
                             Margin="0"
                             Grid.Column="1">
                     
-                    <ToggleButton IsChecked="{Binding Path=AutoPost, Mode=TwoWay}" 
-                                  Visibility="{Binding Path=ShouldShowAutoPost, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                                  Content="Auto Post Ads"
-                                  FontSize="12"
-                                  Margin="5"
-                                  VerticalAlignment="Center"/>
+                    <v:AutoButtonView IsChecked="{Binding Path=AutoPost, Mode=TwoWay}" 
+                                      Visibility="{Binding Path=ShouldShowAutoPost, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                                      Margin="4"
+                                      VerticalAlignment="Center"/>
                     
-                    <Button Content="{Binding Path=SearchSwitchMessageString, Mode=OneWay}"
-                            Command="{Binding SwitchSearchCommand}"
-                            FontSize="12"
-                            Margin="5"/>
+                    <v:SearchButtonView Visibility="{Binding Path=IsNotSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                                        Command="{Binding SwitchSearchCommand}"
+                                        Margin="4"/>
+                    
+                    <v:ChatButtonView Visibility="{Binding Path=IsSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                                      Command="{Binding SwitchSearchCommand}"
+                                      Margin="4,6,4,4"/>
 
-                    <Button Content="{Binding Path=SwitchChannelTypeString, Mode=OneWay}"
-                            Command="{Binding SwitchCommand}"
-                            Visibility="{Binding Path=CanSwitch, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                            FontSize="12"
-                            BorderBrush="{Binding Path=OtherTabHasMessages, Mode=OneWay, Converter={StaticResource ColorConverter}}"
-                            Margin="5"/>
+                    <v:MoreButtonView Command="{Binding SwitchCommand}"
+                                      Visibility="{Binding Path=CanSwitch, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                                      BorderBrush="{Binding Path=OtherTabHasMessages, Mode=OneWay, Converter={StaticResource ColorConverter}}"
+                                      Margin="4"/>
                 </StackPanel>
             </Grid>
             
@@ -159,7 +158,7 @@
             
             <Grid Visibility="{Binding Path=IsSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}">
                 <v:SearchBoxView DataContext="{Binding SearchSettings}"
-                                 Margin="0,0,0,5"/>
+                                 Margin="0,0,0,10"/>
             </Grid>
         </StackPanel>
     </Grid>

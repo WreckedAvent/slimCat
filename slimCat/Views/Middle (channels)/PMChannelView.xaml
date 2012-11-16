@@ -80,7 +80,7 @@
                            
             </WrapPanel>
             <v:RightClickMenu />
-            <v:ChannelTextBoxEntryView Margin="0,5,0,10"
+            <v:ChannelTextBoxEntryView Margin="0,0,0,10"
                                        IsEnabled="{Binding CanPost}"/>
         </StackPanel>
     </Grid>

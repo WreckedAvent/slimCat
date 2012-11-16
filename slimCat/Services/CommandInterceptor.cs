@@ -535,6 +535,8 @@ namespace Services
                 channel.MOTD = description as string;
             else if (description.ToString().StartsWith("Welcome to your private room!")) // shhh go away lame init description
                 channel.MOTD = "Man this description is lame. You should change it and make it amaaaaaazing. Click that pencil, man.";
+            else
+                channel.MOTD = description as string; // derpherp no channel description bug fix
 
             if (!isInitializer)
             {

@@ -1,0 +1,17 @@
+﻿<Button x:Class="Views.StatsButtonView"
+        x:Name="statsButton"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"                    
+        Style="{StaticResource ImageContentButton}"
+        ToolTip="View channel statistics"
+        Margin="2,10,2,0">
+    <Button.Content>
+        <Rectangle Fill="{Binding ElementName=statsButton, Path=Foreground}"
+                   Height="15"
+                   Width="15">
+            <Rectangle.OpacityMask>
+                <ImageBrush ImageSource="pack://application:,,,/icons/stats.png"/>
+            </Rectangle.OpacityMask>
+        </Rectangle>
+    </Button.Content>
+</Button>

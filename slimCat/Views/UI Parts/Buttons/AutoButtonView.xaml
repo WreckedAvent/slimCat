@@ -1,0 +1,17 @@
+﻿<ToggleButton x:Class="Views.AutoButtonView"
+        x:Name="autoButton"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"                    
+        Style="{StaticResource ImageContentToggleButton}"
+        ToolTip="Automatically repost ads every 10 minutes"
+        Margin="2,10,2,0">
+    <ToggleButton.Content>
+        <Rectangle Fill="{Binding ElementName=autoButton, Path=Foreground}"
+                   Height="15"
+                   Width="15">
+            <Rectangle.OpacityMask>
+                <ImageBrush ImageSource="pack://application:,,,/icons/auto.png"/>
+            </Rectangle.OpacityMask>
+        </Rectangle>
+    </ToggleButton.Content>
+</ToggleButton>

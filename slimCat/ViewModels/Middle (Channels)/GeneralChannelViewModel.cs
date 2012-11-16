@@ -161,9 +161,11 @@ namespace ViewModels
                     OnPropertyChanged("IsSearching");
                     OnPropertyChanged("SearchSwitchMessageString");
                     OnPropertyChanged("IsChatting");
+                    OnPropertyChanged("IsNotSearching");
                 }
             }
         }
+        public bool IsNotSearching { get { return !IsSearching; } }
 
         public bool IsChatting
         {
@@ -186,14 +188,8 @@ namespace ViewModels
             }
         }
 
-        // Near the bottom above text entry, for switching between chat and ads
-        public string SwitchChannelTypeString { get { if (IsDisplayingChat) return "View Ads..."; else return "View Chat..."; } }
-
         // Near the top, used for the label on the right side of title
         public string ChatContentString { get { if (IsDisplayingChat) return "Chat"; else return "Ads"; } }
-
-        // Near the bottom above text entry, for switching between searching and chatting
-        public string SearchSwitchMessageString { get { if (IsSearching) return "Chat in this ..."; else return "Search in this ..."; } }
 
         // Near the bottom above the text entry, to the far left
         public string StatusString

@@ -137,7 +137,7 @@ namespace Services
         }
 
         /// <summary>
-        /// Notificatin logic for new channel ads and messages
+        /// Notification logic for new channel ads and messages
         /// </summary>
         private void HandleNewChannelMessage(IDictionary<string, object> update)
         {
@@ -186,13 +186,27 @@ namespace Services
             // Check against is a combined set of terms that the user has identified as ding words
             // Is Matching String uses Check against to see if any terms are a match
 
+            // TODO: refactor this bit to keep to DRY
             // check if the message's poster meets any check terms
             if (channel.Settings.NotifyIncludesCharacterNames)
             {
                 // if the poster's name contains a ding word
-                if (checkAgainst.Any(dingWord => message.Poster.Name.IndexOf(dingWord, StringComparison.OrdinalIgnoreCase) >= 0))
+                Tuple<string, string> match = null;
+                foreach (var dingword in checkAgainst)
                 {
-                    NotifyUser(true, true, message.Poster.Name + ":" + '\n' + cleanMessageText, channel.ID);
+                    var attemptedMatch = message.Poster.Name.FirstMatch(dingword);
+                    if (!string.IsNullOrWhiteSpace(attemptedMatch.Item1))
+                    {
+                        match = attemptedMatch;
+                        break;
+                    }
+                }
+
+                if (match != null) 
+                {
+                    var notifyMessage = string.Format("{0}'s name matches {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
+
+                    NotifyUser(true, true, notifyMessage, channel.ID);
                     return;
                 }
             }

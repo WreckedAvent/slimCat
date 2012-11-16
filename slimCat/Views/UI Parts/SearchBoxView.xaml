@@ -19,6 +19,7 @@
                 HorizontalAlignment="Center"
                 Grid.Column="1"
                 x:Name="filterButton"
+                ToolTip="Open filter settings"
                 Style="{StaticResource ImageContentButton}">
             <Button.Content>
                 <Rectangle Fill="{Binding ElementName=filterButton, Path=Foreground}"

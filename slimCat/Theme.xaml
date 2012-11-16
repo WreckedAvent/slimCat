@@ -45,20 +45,6 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-    
-    <Style TargetType="Hyperlink" x:Key="TunnelingHyperlink">
-        <Setter Property="Command" Value="{Binding Path=DataContext.NavigateTo,
-                                  RelativeSource={RelativeSource Mode=FindAncestor,
-                                  AncestorType={x:Type ItemsControl}} }" />
-        
-        <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
-
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource HighlightBrush}"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
 
     <Style TargetType="{x:Type CheckBox}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
@@ -397,7 +383,25 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
+    <Style x:Key="ImageContentToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Margin" Value="2,0"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <ControlTemplate x:Key="SimpleExpanderButton"
                      TargetType="{x:Type ToggleButton}">
         <Border x:Name="ExpanderButtonBorder" 
@@ -803,35 +807,4 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-    
-    <ControlTemplate x:Key="GenderCheckBoxes" TargetType="ContentControl">
-        <StackPanel Orientation="Vertical">
-            <TextBlock Foreground="{StaticResource ForegroundBrush}"
-                       Text="I want to see ..."
-                       Margin="2,0"/>
-            <CheckBox IsChecked="{Binding ShowMales}">Males</CheckBox>
-            <CheckBox IsChecked="{Binding ShowFemales}">Females</CheckBox>
-            <CheckBox IsChecked="{Binding ShowMaleHerms}">Masculine Herms</CheckBox>
-            <CheckBox IsChecked="{Binding ShowFemaleHerms}">Feminine Herms</CheckBox>
-            <CheckBox IsChecked="{Binding ShowCuntboys}">Cuntboys</CheckBox>
-            <CheckBox IsChecked="{Binding ShowTransgenders}">Transgenders</CheckBox>
-            <CheckBox IsChecked="{Binding ShowShemales}">Shemales</CheckBox>
-            <CheckBox IsChecked="{Binding ShowNoGenders}">Genderless</CheckBox>
-        </StackPanel>
-    </ControlTemplate>
-    
-    <ControlTemplate x:Key="GeneralFilterCheckBoxes" TargetType="ContentControl">
-        <StackPanel Orientation="Vertical">
-            <TextBlock Foreground="{StaticResource ForegroundBrush}"
-                       Text="Who are ..."
-                       Margin="2,0"/>
-            <CheckBox IsChecked="{Binding ShowFriends}">Friends</CheckBox>
-            <CheckBox IsChecked="{Binding ShowBookmarks}">Bookmarked</CheckBox>
-            <CheckBox IsChecked="{Binding ShowMods}">Moderators</CheckBox>
-            <CheckBox IsChecked="{Binding ShowLooking}">Looking For Play</CheckBox>
-            <CheckBox IsChecked="{Binding ShowNormal}">Just Online</CheckBox>
-            <CheckBox IsChecked="{Binding ShowBusyAway}">Busy or Away</CheckBox>
-            <CheckBox IsChecked="{Binding ShowDND}">DND</CheckBox>
-        </StackPanel>
-    </ControlTemplate>
 </ResourceDictionary>
