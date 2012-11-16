@@ -47,9 +47,16 @@ namespace ViewModels
                         string arguments = args.ToString().ToLower();
                         if (args is CharacterUpdateModel)
                         {
-                            string characterName = ((CharacterUpdateModel)args).TargetCharacter.Name.ToLower();
-                            return (arguments.Contains(SearchString) ||
-                                (characterName.Contains(SearchString)));
+                            string characterName = ((CharacterUpdateModel)args).TargetCharacter.Name;
+                            return (arguments.ContainsOrd(SearchString,true)
+                                || characterName.ContainsOrd(SearchString,true));
+                        }
+
+                        if (args is ChannelUpdateModel)
+                        {
+                            string channelName = ((ChannelUpdateModel)args).ChannelTitle;
+                            return (arguments.ContainsOrd(SearchString, true)
+                                || channelName.ContainsOrd(SearchString, true));
                         }
                         return arguments.Contains(SearchString);
                     };
@@ -91,6 +98,22 @@ namespace ViewModels
                 var toRemove = args as NotificationModel;
                 CM.Notifications.Remove(toRemove);
                 OnPropertyChanged("SortedNotifications");
+            }
+        }
+
+        RelayCommand _clearNoti;
+        public ICommand ClearNotificationsCommand
+        {
+            get
+            {
+                if (_clearNoti == null)
+                    _clearNoti = new RelayCommand(
+                        args =>
+                        {
+                            CM.Notifications.Clear();
+                            OnPropertyChanged("SortedNotifications");
+                        });
+                return _clearNoti;
             }
         }
         #endregion

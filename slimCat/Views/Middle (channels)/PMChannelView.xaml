@@ -14,46 +14,42 @@
 
         <Border BorderBrush="{StaticResource DepressedBrush}"
                 BorderThickness="0,0,0,1">
-            <Expander x:Name="CharacterStatusDisplayer">
-                <Expander.Header>
-                    <TextBlock TextWrapping="Wrap"
+            <Grid>
+                <Expander x:Name="CharacterStatusDisplayer">
+                    <Expander.Header>
+                        <TextBlock TextWrapping="Wrap"
                                TextAlignment="Left"
                                HorizontalAlignment="Left">
                             <Run Text="(Converation) "
                                  Foreground="{StaticResource ForegroundBrush}" />
                             <Run Text="{Binding Path=Model.ID, Mode=OneWay}"
                                  Foreground="{StaticResource HighlightBrush}"/>
-                    </TextBlock>
-                </Expander.Header>
-                <StackPanel TextBlock.FontSize="14">
-                    <TextBlock Text="{Binding Path=StatusString}"
+                        </TextBlock>
+                    </Expander.Header>
+                    <StackPanel TextBlock.FontSize="14">
+                        <TextBlock Text="{Binding Path=StatusString}"
                                Foreground="{StaticResource HighlightBrush}"
                                TextWrapping="Wrap"/>
 
-                    <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                        <TextBlock Foreground="{StaticResource ForegroundBrush}"
                                TextWrapping="Wrap"
                                Visibility="{Binding Path=HasStatus, Converter={StaticResource BoolConverter}}">
                         <lib:TextBlockHelper.InlineList>
                             <Binding Converter="{StaticResource BBCodeConverter}"
                                      Path="ConversationWith.StatusMessage" />
                         </lib:TextBlockHelper.InlineList>
-                    </TextBlock>
-
-                    <WrapPanel TextBlock.FontSize="12"
-                               HorizontalAlignment="Center">
-                        <Button Content="Log Folder"
-                                Command="{Binding Path=OpenLogFolderCommand}"
-                                Margin="10,5"/>
-                        <Button Content="Today's Log"
-                                Command="{Binding Path=OpenLogCommand}"
-                                Margin="10,5"/>
-                        <Button Content="Settings"
-                                Command="{Binding Path=OpenChannelSettingsCommand}"
-                                DataContext="{Binding Path=ChannelSettings}"
-                                Margin="10,5" />
-                    </WrapPanel>
-                </StackPanel>
-            </Expander>
+                        </TextBlock>
+                    </StackPanel>
+                </Expander>
+                <WrapPanel HorizontalAlignment="Right"
+                           VerticalAlignment="Top">
+                    <v:RestartButtonView Command="{Binding Path=ClearLogCommand}"/>
+                    <v:FolderButtonView Command="{Binding Path=OpenLogFolderCommand}"/>
+                    <v:FileButtonView Command="{Binding Path=OpenLogCommand}"/>
+                    <v:SettingsButtonView Command="{Binding Path=OpenChannelSettingsCommand}"
+                                          DataContext="{Binding Path=ChannelSettings}"/>
+                </WrapPanel>
+            </Grid>
         </Border>
 
         <Grid x:Name="PopupAnchor"
@@ -84,7 +80,7 @@
                            
             </WrapPanel>
             <v:RightClickMenu />
-            <v:ChannelTextBoxEntryView Margin="0,5,0,0"
+            <v:ChannelTextBoxEntryView Margin="0,5,0,10"
                                        IsEnabled="{Binding CanPost}"/>
         </StackPanel>
     </Grid>

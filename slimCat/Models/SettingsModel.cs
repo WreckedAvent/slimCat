@@ -399,7 +399,6 @@ namespace Models
 
         private bool _notifyIncludesMessages = true;
         private bool _notifyIncludesCharacterNames = false;
-        private bool _notifyOnWholeOnly = true;
         private string _notifyOnTheseTerms = "";
         private IEnumerable<string> _notifyEnumerate;
         private bool _notifyTermsChanged = false;
@@ -531,19 +530,6 @@ namespace Models
             set
             {
                 _notifyIncludesCharacterNames = value;
-                CallUpdate();
-            }
-        }
-
-        /// <summary>
-        /// If a term notification dings when the term appears as a whole word only
-        /// </summary>
-        public bool NotifyOnWholeWordsOnly
-        {
-            get { return _notifyOnWholeOnly; }
-            set
-            {
-                _notifyOnWholeOnly = value;
                 CallUpdate();
             }
         }

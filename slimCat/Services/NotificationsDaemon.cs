@@ -31,6 +31,7 @@ namespace Services
         DateTime _lastDingLinged;
         System.Windows.Forms.NotifyIcon icon = new System.Windows.Forms.NotifyIcon();
         ToastNotificationsViewModel toast;
+        bool _windowHasFocus;
         #endregion
 
         #region constructors
@@ -114,6 +115,9 @@ namespace Services
                 });
         }
 
+        /// <summary>
+        /// Notification logic for new PM messages
+        /// </summary>
         private void HandleNewMessage(IMessage Message)
         {
             var poster = Message.Poster;
@@ -128,107 +132,95 @@ namespace Services
                 }
             }
 
-            Dispatcher.Invoke(
-                (Action)delegate
-                {
-                    if (!Application.Current.MainWindow.IsActive && channel.Settings.ShouldDing)
-                        NotifyUser(true, true, poster.Name + '\n' + HttpUtility.HtmlDecode(Message.Message), poster.Name);
-                });
+            if (!WindowIsFocused && channel.Settings.ShouldDing)
+                NotifyUser(true, true, poster.Name + '\n' + HttpUtility.HtmlDecode(Message.Message), poster.Name);
         }
 
+        /// <summary>
+        /// Notificatin logic for new channel ads and messages
+        /// </summary>
         private void HandleNewChannelMessage(IDictionary<string, object> update)
         {
+            #region init
             var channel = update["channel"] as GeneralChannelModel;
             var message = update["message"] as IMessage;
+            var cleanMessageText = HttpUtility.HtmlDecode(message.Message);
 
-            if (channel != null)
+            var temp = new List<string>(channel.Settings.EnumerableTerms);
+            foreach (var term in ApplicationSettings.GlobalNotifyTermsList)
+                temp.Add(term); // get our combined list of terms
+
+            if (channel.Settings.NotifyCharacterMention)
+                temp.Add(_cm.SelectedCharacter.Name.ToLower()); // if we need to check for our name too
+
+            var checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase);
+            #endregion
+
+            #region Early terminate logic
+            // if any of these conditions hold true we have no reason to evaluate further
+            if (channel == null)
+                return;
+
+            if (channel.IsSelected && WindowIsFocused)
+                return;
+
+            if (channel.Settings.IgnoreNotInterested && ApplicationSettings.NotInterested.Contains(message.Poster.Name))
+                return; 
+            #endregion
+
+            if (channel.Settings.ShouldDing) // if we told to ding on new message, no need to evaluate further
             {
-                Dispatcher.Invoke(
-                    (Action)delegate
-                    {
-                        var notFocused = !channel.IsSelected || !Application.Current.MainWindow.IsActive; // if our tab isn't selected or if the window isn't
-
-                        if (notFocused) // don't notify if we have proper focus
-                        {
-                            if (channel.Settings.IgnoreNotInterested && ApplicationSettings.NotInterested.Contains(message.Poster.Name))
-                                return; // skip over people who we've marked as uninterested 
-
-                            if (channel.Settings.ShouldDing) // if we told to ding on new message
-                            {
-                                NotifyUser(true, true, message.Poster.Name + '\n' + HttpUtility.HtmlDecode(message.Message), channel.ID);
-                                return;
-                            }
-                            else // now we check for if the message itself should ding us
-                            {
-                                if (channel.Settings.EnumerableTerms.Count() > 0
-                                    || channel.Settings.NotifyCharacterMention
-                                    || ApplicationSettings.GlobalNotifyTermsList.Count() > 0) // if we have anything to even check for
-                                {
-                                    var splitwords = message.Message.Split(' ').Select(words => words.ToLower().Trim()); // tokenizes our words
-
-                                    var temp = new List<string>(channel.Settings.EnumerableTerms);
-                                    foreach (var term in ApplicationSettings.GlobalNotifyTermsList)
-                                        temp.Add(term); // get our combined list of terms
-
-                                    var checkagainst = temp.Distinct(StringComparer.OrdinalIgnoreCase);
-
-                                    Func<string, bool> isMatchingString = word => // uses our settings to see how we should go through it
-                                    {
-                                        if (String.IsNullOrWhiteSpace(channel.Settings.NotifyTerms))
-                                            return false;
-
-                                        if (channel.Settings.NotifyOnWholeWordsOnly)
-                                            return checkagainst.Any(dingWords => dingWords.Equals(word, StringComparison.OrdinalIgnoreCase));
-                                        else
-                                            return checkagainst.Any(dingWords => word.Contains(dingWords));
-                                    };
-
-                                    // check if we need to look in the message itself
-                                    if (channel.Settings.NotifyIncludesMessages)
-                                    {
-                                        var match = splitwords.FirstOrDefault(isMatchingString);
-                                        if (match != null) // if one of our words is a dingling word
-                                        {
-                                            var sentenceContext = HttpUtility.HtmlDecode(StaticFunctions.GetStringContext(message.Message, match));
-                                            var notifyMessage = message.Poster.Name + " mentioned:" + '\n' + sentenceContext;
-
-                                            NotifyUser(true, true, notifyMessage, channel.ID);
-                                            return;
-                                        }
-                                    }
-
-                                    // check if the message's poster meets any check terms
-                                    if (channel.Settings.NotifyIncludesCharacterNames)
-                                    {
-                                        var names = channel.Settings.EnumerableTerms;
-
-                                        if (names.Any(name => message.Poster.Name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0))
-                                        {
-                                            NotifyUser(true, true, message.Poster.Name + ":" + '\n' + HttpUtility.HtmlDecode(message.Message), channel.ID);
-                                        }
-                                    }
-
-                                    // check if message contains our character's name
-                                    if (channel.Settings.NotifyCharacterMention)
-                                    {
-                                        var ourCharacter = _cm.SelectedCharacter.Name.ToLower();
-
-                                        if (splitwords.Any(testword => testword.Equals(ourCharacter, StringComparison.Ordinal)))
-                                        { // if one of the words is our character's name
-                                            var sentenceContext = HttpUtility.HtmlDecode(StaticFunctions.GetStringContext(message.Message, ourCharacter));
-                                            var notifyMessage = message.Poster.Name + " mentioned your character:" + '\n' + sentenceContext;
-
-                                            NotifyUser(true, true, notifyMessage, channel.ID);
-                                            return;
-                                        }
-                                    }
-
-
-                                }
-                            }
-                        }
-                    });
+                NotifyUser(true, true, message.Poster.Name + '\n' + cleanMessageText, channel.ID);
+                return; // return simplifies application logic down below
             }
+
+            if (channel.Settings.EnumerableTerms.Count() == 0
+                    && channel.Settings.NotifyCharacterMention
+                    && ApplicationSettings.GlobalNotifyTermsList.Count() == 0)
+                return; // if we don't have anything to check for, no need to evaluate further
+
+            #region Ding Word evaluation
+            // We have something to check for
+
+            // Tokenized List is the list of terms the message has
+            // Check against is a combined set of terms that the user has identified as ding words
+            // Is Matching String uses Check against to see if any terms are a match
+
+            // check if the message's poster meets any check terms
+            if (channel.Settings.NotifyIncludesCharacterNames)
+            {
+                // if the poster's name contains a ding word
+                if (checkAgainst.Any(dingWord => message.Poster.Name.IndexOf(dingWord, StringComparison.OrdinalIgnoreCase) >= 0))
+                {
+                    NotifyUser(true, true, message.Poster.Name + ":" + '\n' + cleanMessageText, channel.ID);
+                    return;
+                }
+            }
+
+            // check if we need to look in the message itself
+            if (channel.Settings.NotifyIncludesMessages)
+            {
+                Tuple<string, string> match = null;
+
+                foreach (var dingWord in checkAgainst)
+                {
+                    var attemptedMatch = cleanMessageText.FirstMatch(dingWord);
+                    if (!string.IsNullOrWhiteSpace(attemptedMatch.Item1)) // if it didn't return empty it found a match
+                    {
+                        match = attemptedMatch;
+                        break;
+                    }
+                }
+
+                if (match != null) // if one of our words is a dingling word
+                {
+                    var notifyMessage = string.Format("{0} mentioned {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
+
+                    NotifyUser(true, true, notifyMessage, channel.ID);
+                    return;
+                }
+            }
+            #endregion
         }
 
         private void HandleNotification(NotificationModel Notification)
@@ -357,6 +349,20 @@ namespace Services
         {
             DingLing.Close();
             DingLing.Open(new Uri(Environment.CurrentDirectory + @"\sounds\" + "newmessage.wav"));
+        }
+
+        private bool WindowIsFocused
+        {
+            get
+            {
+                Dispatcher.Invoke(
+                    (Action)delegate
+                    {
+                        _windowHasFocus = Application.Current.MainWindow.IsActive;
+                    });
+
+                return _windowHasFocus;
+            }
         }
         #endregion
 

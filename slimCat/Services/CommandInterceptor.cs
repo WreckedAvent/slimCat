@@ -423,6 +423,7 @@ namespace Services
                 if (!channel.Users.Any(user => user.Name.Equals(identity, StringComparison.OrdinalIgnoreCase))) // checking by name is safer
                 {
                     channel.Users.Add(_cm.FindCharacter(identity));
+                    channel.CallListChanged();
 
                     _events.GetEvent<NewUpdateEvent>().Publish // send the join/leave notification
                         (
@@ -459,6 +460,7 @@ namespace Services
                         );
 
                     channel.Users.Remove(toRemove);
+                    channel.CallListChanged();
                 }
                 else
                     Debug.WriteLine("Cannot do LCH with character " + characterName);
@@ -474,7 +476,10 @@ namespace Services
                 var character = _cm.FindCharacter(characterName);
 
                 foreach (GeneralChannelModel chan in _cm.CurrentChannels.Where(param => param.Users.Contains(character)))
+                {
                     chan.Users.Remove(character);
+                    chan.CallListChanged();
+                }
 
                 _cm.RemoveCharacter(characterName);
                 _events.GetEvent<NewUpdateEvent>().Publish
@@ -493,8 +498,10 @@ namespace Services
             var channelName = (string)command["channel"];
             var channel = _cm.CurrentChannels.FirstByIdOrDefault(channelName);
 
-            if (channel != null)
-                AddToSomeListCommand(command, "oplist", channel.Moderators);
+            if (channel == null) return;
+
+            AddToSomeListCommand(command, "oplist", channel.Moderators);
+            channel.CallListChanged();
         }
 
         private void ChannelInitializedCommand(IDictionary<string, object> command)
@@ -524,7 +531,10 @@ namespace Services
 
             bool isInitializer = String.IsNullOrWhiteSpace(channel.MOTD);
 
-            channel.MOTD = description as string;
+            if (!isInitializer)
+                channel.MOTD = description as string;
+            else if (description.ToString().StartsWith("Welcome to your private room!")) // shhh go away lame init description
+                channel.MOTD = "Man this description is lame. You should change it and make it amaaaaaazing. Click that pencil, man.";
 
             if (!isInitializer)
             {
@@ -535,6 +545,13 @@ namespace Services
 
         private void ErrorCommand(IDictionary<string, object> command)
         {
+            // for some fucktarded reason room status changes are only done through SYS
+            if ((command["message"] as string).IndexOf("this channel", StringComparison.OrdinalIgnoreCase) != -1)
+            {
+                RoomTypeChangedCommand(command);
+                return;
+            }
+
             // checks to ensure it's not a mod promote message
             if ((command["message"] as string).IndexOf("has been", StringComparison.OrdinalIgnoreCase) == -1)
                 _events.GetEvent<ErrorEvent>().Publish(command["message"] as string);
@@ -610,6 +627,40 @@ namespace Services
                 channelID = command["channel"] as string;
 
             PromoteOrDemote(target, false, channelID);
+        }
+
+        private void RoomTypeChangedCommand(IDictionary<string, object> command)
+        {
+            var channelID = command["channel"] as string;
+            var isPublic = (command["message"] as string).IndexOf("public", StringComparison.OrdinalIgnoreCase) != -1;
+
+            var channel = _cm.CurrentChannels.FirstByIdOrDefault(channelID);
+
+            if (channel == null)
+                return; // can't change the settings of a room we don't know
+
+            if (isPublic) // room is now open
+            {
+                channel.Type = ChannelType.priv;
+
+                _events.GetEvent<NewUpdateEvent>().Publish(
+                    new ChannelUpdateModel(
+                        channelID,
+                        new ChannelUpdateModel.ChannelTypeChangedEventArgs() { IsOpen = true },
+                        channel.Title)
+                        );
+            }
+            else // room is closed
+            {
+                channel.Type = ChannelType.closed;
+
+                _events.GetEvent<NewUpdateEvent>().Publish(
+                    new ChannelUpdateModel(
+                        channelID,
+                        new ChannelUpdateModel.ChannelTypeChangedEventArgs() { IsOpen = false },
+                        channel.Title)
+                        );
+            }
         }
         #endregion
 

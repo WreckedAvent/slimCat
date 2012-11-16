@@ -15,44 +15,41 @@
 
         <Border BorderBrush="{StaticResource DepressedBrush}"
                 BorderThickness="0,0,0,1">
-            <Expander>
-                <Expander.Header>
-                    <TextBlock Margin="0"
+            <Grid>
+                <Expander>
+                    <Expander.Header>
+                        <TextBlock Margin="0"
                                Foreground="{StaticResource ForegroundBrush}"
-                               TextWrapping="Wrap">
+                               TextWrapping="Wrap"
+                                   ToolTip="Expand or retract the channel header">
                         <Run Text="{Binding Path=ChannelTypeString, Mode=OneWay}" />
                         <Run Text="{Binding Path=Model.Title, Mode=OneWay}" Foreground="{StaticResource HighlightBrush}"/>
                         <Run Text="{Binding Path=ChatContentString, Mode=OneWay}" />
-                    </TextBlock>
-                </Expander.Header>
-                <StackPanel>
+                        </TextBlock>
+                    </Expander.Header>
                     <ScrollViewer MaxHeight="100">
-
                         <TextBlock Margin="0"
-                               TextBlock.FontSize="12"
-                               Foreground="{StaticResource ForegroundBrush}"
-                               TextWrapping="Wrap">
-                            <lib:TextBlockHelper.InlineList>
-                                <Binding Converter="{StaticResource BBCodeConverter}"
-                                         Path="MOTD" />
-                            </lib:TextBlockHelper.InlineList>
+                            TextBlock.FontSize="12"
+                            Foreground="{StaticResource ForegroundBrush}"
+                            TextWrapping="Wrap">
+                        <lib:TextBlockHelper.InlineList>
+                            <Binding Converter="{StaticResource BBCodeConverter}"
+                                        Path="MOTD" />
+                        </lib:TextBlockHelper.InlineList>
                         </TextBlock>
                     </ScrollViewer>
-                    <WrapPanel TextBlock.FontSize="12"
-                               HorizontalAlignment="Center">
-                        <Button Content="Log Folder"
-                                Command="{Binding Path=OpenLogFolderCommand}"
-                                Margin="10,5"/>
-                        <Button Content="Today's Log"
-                                Command="{Binding Path=OpenLogCommand}"
-                                Margin="10,5"/>
-                        <Button Content="Settings"
-                                Command="{Binding Path=OpenChannelSettingsCommand}"
-                                DataContext="{Binding Path=ChannelSettings}"
-                                Margin="10,5" />
-                    </WrapPanel>
-                </StackPanel>
-            </Expander>
+                </Expander>
+                <WrapPanel HorizontalAlignment="Right"
+                           VerticalAlignment="Top">
+                    <v:EditButtonView Command="{Binding Path=ChannelManagementViewModel.OpenChannelManagementCommand}"
+                                      Visibility="{Binding Path=HasPermissions, Converter={StaticResource BoolConverter}}"/>
+                    <v:RestartButtonView Command="{Binding Path=ClearLogCommand}"/>
+                    <v:FolderButtonView Command="{Binding Path=OpenLogFolderCommand}"/>
+                    <v:FileButtonView Command="{Binding Path=OpenLogCommand}"/>
+                    <v:SettingsButtonView Command="{Binding Path=OpenChannelSettingsCommand}"
+                                          DataContext="{Binding Path=ChannelSettings}"/>
+                </WrapPanel>
+            </Grid>
         </Border>
 
         <Grid Grid.Row="1"
@@ -155,11 +152,14 @@
             
 
             <v:RightClickMenu />
+            <v:ChannelManagementView />
             <v:ChannelTextBoxEntryView Visibility="{Binding Path=IsChatting, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                                       IsEnabled="{Binding Path=CanPost, Mode=OneWay}"/>
+                                       IsEnabled="{Binding Path=CanPost, Mode=OneWay}"
+                                       Margin="0,0,0,10"/>
             
             <Grid Visibility="{Binding Path=IsSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}">
-                <v:SearchBoxView DataContext="{Binding SearchSettings}" />
+                <v:SearchBoxView DataContext="{Binding SearchSettings}"
+                                 Margin="0,0,0,5"/>
             </Grid>
         </StackPanel>
     </Grid>

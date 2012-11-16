@@ -315,6 +315,9 @@ namespace Models
                     string overrideArg = overide.ArgumentName;
                     int position = model.ArgumentNames.IndexOf(overrideArg);
 
+                    if (args == null)
+                        args = new List<string>();
+
                     if (position != -1 && !(position > args.Count))
                         args.Insert(position, overide.ArgumentValue);
                     else

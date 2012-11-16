@@ -24,6 +24,7 @@ namespace ViewModels
         private bool _autoPostAds = false;
         private GenderSettingsModel _genderSettings = new GenderSettingsModel();
         private GenericSearchSettingsModel _searchSettings = new GenericSearchSettingsModel();
+        private ChannelManagementViewModel _channManVM;
         private string _adMessage = "";
 
         private System.Timers.Timer _messageFlood = new System.Timers.Timer(500);
@@ -290,6 +291,8 @@ namespace ViewModels
         /// Used for channel settings to display settings related to notify terms
         /// </summary>
         public bool HasNotifyTerms { get { return ChannelSettings.NotifyTerms != null && ChannelSettings.NotifyTerms.Length > 0; } }
+
+        public ChannelManagementViewModel ChannelManagementViewModel { get { return _channManVM; } }
         #endregion
         #endregion
 
@@ -310,6 +313,8 @@ namespace ViewModels
                 _container.RegisterType<object, GeneralChannelView>(safeName, new InjectionConstructor(this));
 
                 _isDisplayingChat = ShouldDisplayChat;
+
+                _channManVM = new ChannelManagementViewModel(_events, Model as GeneralChannelModel); // instance our management vm
 
                 Model.Messages.CollectionChanged += OnMessagesChanged;
                 Model.Ads.CollectionChanged += OnAdsChanged;
@@ -354,6 +359,11 @@ namespace ViewModels
 
                         OnPropertyChanged("StatusString");
                     }
+                };
+
+                _channManVM.PropertyChanged += (s, e) =>
+                {
+                    OnPropertyChanged("ChannelManagementViewModel");
                 };
                 #endregion
 
@@ -497,7 +507,7 @@ namespace ViewModels
             }
             else if (IsDisplayingChat)
             {
-                _hasNewAds = true;
+                _hasNewAds = Model.Ads.Count > 0;
                 OnPropertyChanged("OtherTabHasMessages");
             }
 
@@ -516,7 +526,7 @@ namespace ViewModels
 
             else if (IsDisplayingAds)
             {
-                _hasNewMessages = true;
+                _hasNewMessages = Model.Messages.Count > 0;
                 OnPropertyChanged("OtherTabHasMessages");
             }
 
@@ -527,6 +537,12 @@ namespace ViewModels
         {
             if (e.PropertyName == "MOTD")
                 OnPropertyChanged("MOTD");
+
+            else if (e.PropertyName == "Type")
+                OnPropertyChanged("ChannelTypeString"); // fixes laggy room type change
+
+            else if (e.PropertyName == "Moderators")
+                OnPropertyChanged("HasPermissions"); // fixes laggy permissions
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)

@@ -151,6 +151,22 @@ namespace ViewModels
             _events.GetEvent<UserCommandEvent>().Publish(toSend);
         }
 
+        RelayCommand _clearLog;
+        public ICommand ClearLogCommand
+        {
+            get
+            {
+                if (_clearLog == null)
+                    _clearLog = new RelayCommand(args =>
+                        {
+                            _events.GetEvent<UserCommandEvent>().Publish(
+                                CommandDefinitions.CreateCommand("clear").toDictionary()
+                            );
+                        });
+                return _clearLog;
+            }
+        }
+
         #region Navigate Shortcuts
         private RelayCommand _navUp;
         private RelayCommand _navDown;
@@ -185,7 +201,7 @@ namespace ViewModels
                     _navigateStub(false, false);
                     return;
                 }
-                else if (index == _cm.CurrentPMs.Count() && !isUp)
+                else if (index+1 == _cm.CurrentPMs.Count() && !isUp)
                 {
                     _navigateStub(true, false);
                     return;
@@ -205,7 +221,7 @@ namespace ViewModels
                     _navigateStub(false, true);
                     return;
                 }
-                else if (index == _cm.CurrentChannels.Count() && !isUp)
+                else if (index+1 == _cm.CurrentChannels.Count() && !isUp)
                 {
                     _navigateStub(true, true);
                     return;

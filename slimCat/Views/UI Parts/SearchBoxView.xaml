@@ -12,12 +12,24 @@
                  FontSize="12"
                  ScrollViewer.CanContentScroll="True" 
                  AcceptsReturn="False"
-                 ScrollViewer.VerticalScrollBarVisibility="Auto" /> 
-        
-        <Button Content="Filter Settings ..."
-                Command="{Binding OpenSearchSettingsCommand}"
+                 ToolTip="Search the above content for these terms. Seperate search terms with a comma as neccesary."
+                 ScrollViewer.VerticalScrollBarVisibility="Auto" />
+
+        <Button Command="{Binding OpenSearchSettingsCommand}"
+                HorizontalAlignment="Center"
                 Grid.Column="1"
-                Margin="5"
-                FontSize="12" />
+                x:Name="filterButton"
+                Style="{StaticResource ImageContentButton}">
+            <Button.Content>
+                <Rectangle Fill="{Binding ElementName=filterButton, Path=Foreground}"
+                           Height="20"
+                           Width="14"
+                           Margin="4,0">
+                    <Rectangle.OpacityMask>
+                        <ImageBrush ImageSource="pack://application:,,,/icons/filter.png"/>
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button.Content>
+        </Button>
     </Grid>
 </UserControl>

@@ -18,56 +18,61 @@
                     <Run Text="{Binding Path=Model.Title}"/>
                     <Run Text="Channel Settings" />
             </TextBlock>
-                
+
             <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
                         Margin="10">
                 <CheckBox IsChecked="{Binding Path=ChannelSettings.LoggingEnabled}">Automatically log each message</CheckBox>
                 <CheckBox IsChecked="{Binding Path=ChannelSettings.ShouldFlash}">Channel flashes on a new message</CheckBox>
-                
-                <WrapPanel Visibility="{Binding Path=ChannelSettings.ShouldFlash, Converter={StaticResource BoolConverter}}"
-                            TextBlock.Foreground="{StaticResource ForegroundBrush}">
-                    <TextBlock Text="Flash every "
-                                Margin="5"/>
-                    <TextBox Text="{Binding Path=ChannelSettings.FlashInterval}"
-                                VerticalAlignment="Center"
-                                FontSize="12"/>
-                    <TextBlock Text="New unread Messages"
-                                Margin="5"/>
-                </WrapPanel>
-                
-                <CheckBox IsChecked="{Binding Path=ChannelSettings.ShouldDing}">Play a sound and notify on new message</CheckBox>
-                
-                <StackPanel Visibility="{Binding Path=ShowAllSettings, Mode=OneWay, Converter={StaticResource BoolConverter}}">
-                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyCharacterMention}">Notify me when this this character is mentioned</CheckBox>
-                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyModPromoteDemote}">Create a notification when a moderator is promoted or demoted</CheckBox>
-                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyOnJoinLeave}">Create a notification when a character joins or leaves</CheckBox>
-                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyOnNormalJoinLeave}"
-                              Margin="20,0"
-                              Visibility="{Binding Path=ChannelSettings.NotifyOnJoinLeave, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                              Content="Include users with no relationship to this character"/>
-                </StackPanel>
-                
-                <TextBlock Margin="0,10">Notify me when these terms are mentioned (seperate with commas):</TextBlock>
-                
-                <TextBox Text="{Binding Path=ChannelSettings.NotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            FontSize="12"/>
-                
-                <StackPanel Margin="20,0"
-                            Visibility="{Binding Path=HasNotifyTerms, Mode=OneWay, Converter={StaticResource BoolConverter}}">
-                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyOnWholeWordsOnly}"
-                                IsEnabled="False"
-                                >Only notify on whole words</CheckBox>
-                
-                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyIncludesCharacterNames}"
-                                >Notify when the terms are in character names</CheckBox>
-                
-                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyIncludesMessages}"
-                                >Notify when the terms are in messages</CheckBox>
-                    <CheckBox IsChecked="{Binding Path=ChannelSettings.IgnoreNotInterested}"
-                              >Do not notify for characters marked as not interested</CheckBox>
-                </StackPanel>    
-            </StackPanel>
 
+                <WrapPanel Visibility="{Binding Path=ChannelSettings.ShouldFlash, Converter={StaticResource BoolConverter}}"
+                           TextBlock.Foreground="{StaticResource ForegroundBrush}"
+                           ToolTip="If flashing on new messages is allowed, how many messages must be new before the tab flashes?">
+                    <TextBlock Text="Flash every "
+                               Margin="5"/>
+                    <TextBox Text="{Binding Path=ChannelSettings.FlashInterval}"
+                             VerticalAlignment="Center"
+                             FontSize="12"/>
+                    <TextBlock Text="New unread Messages"
+                               Margin="5"/>
+                </WrapPanel>
+
+                <CheckBox IsChecked="{Binding Path=ChannelSettings.ShouldDing}">Play a sound and notify on new message</CheckBox>
+                <StackPanel Visibility="{Binding Path=ShowAllSettings, Mode=OneWay, Converter={StaticResource BoolConverter}}">
+                    <TextBlock Text="Create a notification when ..."
+                           FontSize="18"
+                           Margin="5"/>
+                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyCharacterMention}">... this this character is mentioned</CheckBox>
+                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyModPromoteDemote}">... a moderator is promoted or demoted</CheckBox>
+                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyOnJoinLeave}">... a character joins or leaves</CheckBox>
+                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyOnNormalJoinLeave}"
+                                Visibility="{Binding Path=ChannelSettings.NotifyOnJoinLeave, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                                Margin="20,0"
+                                Content="Include users with no relationship to this character"
+                                ToolTip="Notify even if the character is not a friend, bookmark, is not being talked to, or is not marked as 'interested'."/>
+
+                    <TextBlock Margin="20,5">... these terms are mentioned (seperate with commas):</TextBlock>
+
+                    <TextBox Text="{Binding Path=ChannelSettings.NotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        TextWrapping="Wrap"
+                        MaxWidth="500"
+                        FontSize="12"/>
+
+                    <StackPanel Margin="20,0"
+                        Visibility="{Binding Path=HasNotifyTerms, Mode=OneWay, Converter={StaticResource BoolConverter}}">
+
+                        <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyIncludesCharacterNames}"
+                            ToolTip="Search in each poster's name for these terms"
+                            >Include character names</CheckBox>
+
+                        <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyIncludesMessages}"
+                            ToolTip="Search in each posted message for these terms"
+                            >Include message content</CheckBox>
+                        <CheckBox IsChecked="{Binding Path=ChannelSettings.IgnoreNotInterested}"
+                            ToolTip="Ignore messages from characters who are marked as not interested"
+                            >Exclude characters marked as 'not interested'</CheckBox>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
             <Button Content="Close Settings"
                     Margin="10,5"
                     Foreground="{StaticResource ForegroundBrush}"

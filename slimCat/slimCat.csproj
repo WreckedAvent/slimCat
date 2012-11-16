@@ -144,6 +144,7 @@
     <Compile Include="Models\CommandModel.cs" />
     <Compile Include="Models\GeneralChannelModel.cs" />
     <Compile Include="Services\SettingsDaemon.cs" />
+    <Compile Include="ViewModels\UI Parts\ChannelManagementViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\RightClickViewModel.cs" />
     <Compile Include="Models\MessageModel.cs" />
     <Compile Include="Models\PMChannelModel.cs" />
@@ -192,6 +193,9 @@
     <Compile Include="Views\Right-Hand Side %28channelbar%29\ChannelbarUserListView.xaml.cs">
       <DependentUpon>ChannelbarUserListView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UI Parts\ChannelManagementView.xaml.cs">
+      <DependentUpon>ChannelManagementView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UI Parts\ChannelSettingsView.xaml.cs">
       <DependentUpon>ChannelSettingsView.xaml</DependentUpon>
     </Compile>
@@ -199,8 +203,20 @@
       <DependentUpon>ChannelStatsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UI Parts\DisposableView.cs" />
+    <Compile Include="Views\UI Parts\EditButtonView.xaml.cs">
+      <DependentUpon>EditButtonView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UI Parts\ExpandoStringControl.xaml.cs">
       <DependentUpon>ExpandoStringControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UI Parts\FileButtonView.xaml.cs">
+      <DependentUpon>FileButtonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UI Parts\FolderButtonView.xaml.cs">
+      <DependentUpon>FolderButtonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UI Parts\RestartButtonView.xaml.cs">
+      <DependentUpon>RestartButtonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UI Parts\RightClickMenu.xaml.cs">
       <DependentUpon>RightClickMenu.xaml</DependentUpon>
@@ -231,6 +247,9 @@
     </Compile>
     <Compile Include="Views\UI Parts\ChannelMessageView.xaml.cs">
       <DependentUpon>ChannelMessageView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UI Parts\SettingsButtonView.xaml.cs">
+      <DependentUpon>SettingsButtonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UI Parts\ToastNotificationsView.xaml.cs">
       <DependentUpon>ToastNotificationsView.xaml</DependentUpon>
@@ -263,6 +282,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\UI Parts\ChannelManagementView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\UI Parts\ChannelSettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -271,7 +294,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\UI Parts\EditButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\UI Parts\ExpandoStringControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\FileButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\FolderButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\RestartButtonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -280,6 +319,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UI Parts\SearchBoxView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\SettingsButtonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -409,6 +452,26 @@
     <Resource Include="catIcon.ico" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Content Include="icons\document.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\edit.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\filter.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\folder.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\restart.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\settings.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

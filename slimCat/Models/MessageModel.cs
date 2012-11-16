@@ -262,6 +262,16 @@ namespace Models
                 return (": " + Inviter + " has invited you to join their room.");
             }
         }
+
+        public class ChannelTypeChangedEventArgs : ChannelUpdateEventArgs
+        {
+            public bool IsOpen { get; set; }
+
+            public override string ToString()
+            {
+                return ": is now " + (IsOpen ? "open" : "closed") + '.';
+            }
+        }
         #endregion
 
         #region Class Implementation

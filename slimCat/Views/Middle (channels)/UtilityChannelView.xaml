@@ -82,12 +82,14 @@
                         
                         <TextBlock Text="Global Notify Words (seperate with commas)"/>
                         <TextBox Text="{Binding Path=GlobalNotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 TextWrapping="Wrap"
                                  FontSize="12"/>
                     </StackPanel>
                 </Expander>
             </StackPanel>
             <v:RightClickMenu />
-            <v:ChannelTextBoxEntryView Grid.Row="2"/>
+            <v:ChannelTextBoxEntryView Grid.Row="2"
+                                       Margin="0,0,0,10"/>
         </Grid>
     </Grid>
 </v:DisposableView>

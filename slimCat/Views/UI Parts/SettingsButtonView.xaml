@@ -1,0 +1,17 @@
+﻿<Button x:Class="Views.SettingsButtonView"
+        x:Name="settingsButton"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"                    
+        Style="{StaticResource ImageContentButton}"
+        ToolTip="Open Settings Configuration"
+        Margin="2,10,2,0">
+    <Button.Content>
+        <Rectangle Fill="{Binding ElementName=settingsButton, Path=Foreground}"
+                   Height="15"
+                   Width="15">
+            <Rectangle.OpacityMask>
+                <ImageBrush ImageSource="pack://application:,,,/icons/settings.png"/>
+            </Rectangle.OpacityMask>
+        </Rectangle>
+    </Button.Content>
+</Button>

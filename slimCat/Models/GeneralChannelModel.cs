@@ -145,6 +145,13 @@ namespace Models
             UpdateBindings();
         }
 
+        public void CallListChanged()
+        {
+            OnPropertyChanged("Moderators");
+            OnPropertyChanged("Users");
+            OnPropertyChanged("UsersCount");
+        }
+
         protected override void Dispose(bool IsManaged)
         {
             if (IsManaged)

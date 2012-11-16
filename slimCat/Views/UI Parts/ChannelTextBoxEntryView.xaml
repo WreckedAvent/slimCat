@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
         <TextBox Text="{Binding Path=Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 Margin="0,0,0,10"
                  TextWrapping="Wrap"
                  FontSize="13"
                  AcceptsReturn="True"
@@ -14,8 +13,8 @@
                  x:Name="Entry">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}" />
-                <KeyBinding Key="Up" Modifiers="Shift" Command="{Binding NavigateUpCommand}" />
-                <KeyBinding Key="Down" Modifiers="Shift" Command="{Binding NavigateDownCommand}" />
+                <KeyBinding Key="Up" Modifiers="Alt" Command="{Binding NavigateUpCommand}" />
+                <KeyBinding Key="Down" Modifiers="Alt" Command="{Binding NavigateDownCommand}" />
                 <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ClearErrorCommand}" />
             </TextBox.InputBindings>
             <TextBox.Style>

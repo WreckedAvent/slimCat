@@ -1,0 +1,17 @@
+﻿<Button x:Class="Views.EditButtonView"
+        x:Name="editButton"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"                    
+        Style="{StaticResource ImageContentButton}"
+        Margin="2,10,2,0"
+        ToolTip="Manage and edit this channel">
+    <Button.Content>
+        <Rectangle Fill="{Binding ElementName=editButton, Path=Foreground}"
+                   Height="15"
+                   Width="15">
+            <Rectangle.OpacityMask>
+                <ImageBrush ImageSource="pack://application:,,,/icons/edit.png"/>
+            </Rectangle.OpacityMask>
+        </Rectangle>
+    </Button.Content>
+</Button>

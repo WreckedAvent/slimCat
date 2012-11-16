@@ -90,7 +90,7 @@ namespace System
         }
         #endregion
 
-        #region misc.
+        #region String cuntions
         /// <summary>
         /// returns the sentence around a word
         /// </summary>
@@ -186,6 +186,80 @@ namespace System
                 var startOffset = (Math.Max(0, endIndex - contextLength)); // only show the 50 characters around it
                 return "... " + workingString.Substring(startOffset, endIndex - startOffset).Trim() + " ...";
             }
+        }
+
+        /// <summary>
+        /// Strips the punctuation in a given string so long as it's at the end.
+        /// Words like it's will not be affected.
+        /// </summary>
+        public static string StripPunctationAtEnd(this string fullString)
+        {
+            if (String.IsNullOrWhiteSpace(fullString) || fullString.Length <= 1)
+                return fullString;
+
+            var index = fullString.Length-1;
+
+            while (char.IsPunctuation(fullString[index]) && index != 0)
+                index--;
+
+            if (index == 0)
+                return string.Empty;
+            else
+                return fullString.Substring(0, index);
+        }
+
+        /// <summary>
+        /// Checks if a string contains a term using ordinal string comparison
+        /// </summary>
+        public static bool ContainsOrd(this string fullString, string checkterm, bool ignoreCase)
+        {
+            StringComparison comparer = (ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+            return fullString.IndexOf(checkterm, comparer) >= 0;
+        }
+
+        /// <summary>
+        /// Checks if a given collection has a matching word or phrase. Returns the word and its context in a tuple.
+        /// Empty if no match.
+        /// </summary>
+        public static Tuple<string, string> FirstMatch(this string fullString, string checkAgainst)
+        {
+            var startIndex = fullString.IndexOf(checkAgainst, StringComparison.OrdinalIgnoreCase);
+
+            bool hasMatch = false;
+
+            if (startIndex != -1)
+            {
+                // this checks for if the match is a whole word
+                if (startIndex != 0)
+                {
+                    // this weeds out matches such as 'big man' from matching 'i'
+                    char prevChar = fullString[startIndex - 1];
+                    hasMatch = char.IsWhiteSpace(prevChar) || char.IsPunctuation(prevChar) && !prevChar.Equals('\'');
+
+                    if (!hasMatch)
+                        return new Tuple<string, string>(string.Empty, string.Empty); // don't need to evaluate further if this failed
+                }
+
+                if (startIndex + checkAgainst.Length < fullString.Length)
+                {
+                    // this weeds out matches such as 'its' from matching 'i'
+                    var nextIndex = startIndex + checkAgainst.Length;
+                    var nextChar = fullString[nextIndex];
+                    hasMatch = char.IsWhiteSpace(nextChar) || char.IsPunctuation(nextChar);
+
+                    // we only want the ' to match sometimes, such as <match word>'s
+                    if (nextChar == '\'' && fullString.Length >= nextIndex++)
+                    {
+                        nextChar = fullString[nextIndex];
+                        hasMatch = char.ToLower(nextChar) == 's';
+                    }
+                }
+            }
+
+            if (hasMatch)
+                return new Tuple<string, string>(checkAgainst, GetStringContext(fullString, checkAgainst));
+            else
+                return new Tuple<string, string>(string.Empty, string.Empty);
         }
         #endregion
     }

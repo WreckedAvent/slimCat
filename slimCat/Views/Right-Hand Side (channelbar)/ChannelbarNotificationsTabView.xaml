@@ -20,12 +20,16 @@
     </UserControl.Resources>
 
     <DockPanel>
-
-    <v:RightClickMenu />
-    <v:SearchBoxView DockPanel.Dock="Bottom"/>
-    <ListBox ItemsSource="{Binding Path=SortedNotifications}"
-                Style="{StaticResource ContentListBox}"
-                    MaxWidth="200"
-                    x:Name="PopupAnchor"/>
+        <v:RightClickMenu />
+        <v:RestartButtonView Command="{Binding Path=ClearNotificationsCommand}"
+                             ToolTip="Clear all notifications"
+                             DockPanel.Dock="Top"/>
+        <v:SearchBoxView DockPanel.Dock="Bottom"/>
+        <ListBox ItemsSource="{Binding Path=SortedNotifications}"
+                 Style="{StaticResource ContentListBox}"
+                 MaxWidth="200"
+                 Margin="0"
+                 HorizontalAlignment="Center"
+                 x:Name="PopupAnchor"/>
     </DockPanel>
 </UserControl>

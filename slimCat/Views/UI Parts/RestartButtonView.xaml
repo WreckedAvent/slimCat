@@ -1,0 +1,17 @@
+﻿<Button x:Class="Views.RestartButtonView"
+        x:Name="restartButton"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"                    
+        Style="{StaticResource ImageContentButton}"
+        Margin="2,10,2,0"
+        ToolTip="Clear Backlog">
+    <Button.Content>
+        <Rectangle Fill="{Binding ElementName=restartButton, Path=Foreground}"
+                   Height="15"
+                   Width="15">
+            <Rectangle.OpacityMask>
+                <ImageBrush ImageSource="pack://application:,,,/icons/restart.png"/>
+            </Rectangle.OpacityMask>
+        </Rectangle>
+    </Button.Content>
+</Button>
