@@ -82,6 +82,7 @@ namespace Services
                 case "COP": return new CommandDelegate(OperatorPromoteCommand);
                 case "COR": return new CommandDelegate(OperatorDemoteCommand);
                 case "COA": return new CommandDelegate(OperatorPromoteCommand);
+                case "RMO": return new CommandDelegate(RoomModeChangedCommand);
                 default: return null;
             }
         }
@@ -178,6 +179,7 @@ namespace Services
                         target,
                         new Models.CharacterUpdateModel.PromoteDemoteEventArgs()
                         {
+                            TargetChannelID = channelID,
                             TargetChannel = title,
                             IsPromote = isPromote,
                         })
@@ -430,7 +432,7 @@ namespace Services
                             new CharacterUpdateModel
                             (
                                 _cm.FindCharacter(identity),
-                                new CharacterUpdateModel.JoinLeaveEventArgs() { Joined = true, TargetChannel = channel.Title }
+                                new CharacterUpdateModel.JoinLeaveEventArgs() { Joined = true, TargetChannel = channel.Title, TargetChannelID = channel.ID }
                             )
                         );
                 }
@@ -455,7 +457,7 @@ namespace Services
                             new CharacterUpdateModel
                             (
                                 toRemove,
-                                new CharacterUpdateModel.JoinLeaveEventArgs() { Joined = false, TargetChannel = channel.Title }
+                                new CharacterUpdateModel.JoinLeaveEventArgs() { Joined = false, TargetChannel = channel.Title, TargetChannelID = channel.ID }
                             )
                         );
 
@@ -474,11 +476,17 @@ namespace Services
             if (_cm.IsOnline(characterName))
             {
                 var character = _cm.FindCharacter(characterName);
+                bool ofInterest = _cm.IsOfInterest(characterName);
 
                 foreach (GeneralChannelModel chan in _cm.CurrentChannels.Where(param => param.Users.Contains(character)))
                 {
-                    chan.Users.Remove(character);
-                    chan.CallListChanged();
+                    if (!ofInterest) // show join/leave notifications for LCH if we won't get a 'x has logged out' notification
+                        LeaveChannelCommand(new Dictionary<string, object>() { { "character", character.Name }, { "channel", chan.ID } });
+                    else
+                    {
+                        chan.Users.Remove(character);
+                        chan.CallListChanged();
+                    }
                 }
 
                 _cm.RemoveCharacter(characterName);
@@ -548,7 +556,7 @@ namespace Services
         private void ErrorCommand(IDictionary<string, object> command)
         {
             // for some fucktarded reason room status changes are only done through SYS
-            if ((command["message"] as string).IndexOf("this channel", StringComparison.OrdinalIgnoreCase) != -1)
+            if ((command["message"] as string).IndexOf("this channel is now", StringComparison.OrdinalIgnoreCase) != -1)
             {
                 RoomTypeChangedCommand(command);
                 return;
@@ -662,6 +670,26 @@ namespace Services
                         new ChannelUpdateModel.ChannelTypeChangedEventArgs() { IsOpen = false },
                         channel.Title)
                         );
+            }
+        }
+
+        private void RoomModeChangedCommand(IDictionary<string, object> command)
+        {
+            var channelID = command["channel"] as string;
+            var mode = command["mode"] as string;
+
+            var newMode = (ChannelMode)Enum.Parse(typeof(Models.ChannelMode), mode);
+            var channel = _cm.CurrentChannels.FirstByIdOrDefault(channelID);
+
+            if (channel != null)
+            {
+                channel.Mode = newMode;
+                _events.GetEvent<NewUpdateEvent>().Publish(
+                    new ChannelUpdateModel(
+                        channel.ID,
+                        new ChannelUpdateModel.ChannelModeUpdateEventArgs(){ NewMode = newMode, },
+                        channel.Title
+                    ));
             }
         }
         #endregion

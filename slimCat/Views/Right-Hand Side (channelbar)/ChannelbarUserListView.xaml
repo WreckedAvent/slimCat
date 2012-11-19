@@ -33,8 +33,12 @@
                                    HorizontalAlignment="Center"
                                    Margin="10,5"
                                    >
-                            <Run Text="{Binding Path=SortContentString, Mode=OneWay}"/>
                             <Run Text="User list Filter Settings" />
+                            <LineBreak />
+                            <Run Text="Current list:"
+                                 FontSize="16"/>
+                            <Run Text="{Binding Path=SortContentString, Mode=OneWay}"
+                                 FontSize="16"/>
                         </TextBlock>
 
                         <ContentControl Template="{StaticResource GenderCheckBoxes}"

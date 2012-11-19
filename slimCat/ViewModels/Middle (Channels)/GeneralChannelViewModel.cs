@@ -539,6 +539,15 @@ namespace ViewModels
 
             else if (e.PropertyName == "Moderators")
                 OnPropertyChanged("HasPermissions"); // fixes laggy permissions
+
+            else if (e.PropertyName == "Mode")
+            {
+                if (Model.Mode == ChannelMode.ads && IsDisplayingChat)
+                    IsDisplayingChat = false;
+                if (Model.Mode == ChannelMode.chat && IsDisplayingAds)
+                    IsDisplayingChat = true;
+                OnPropertyChanged("CanSwitch");
+            }
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)

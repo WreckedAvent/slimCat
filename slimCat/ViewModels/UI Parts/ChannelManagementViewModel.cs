@@ -18,6 +18,7 @@ namespace ViewModels
         IEventAggregator _events;
         string _motd = "";
         bool _isOpen = false;
+        public string[] modeTypes;
         #endregion
 
         #region Constructors
@@ -27,6 +28,8 @@ namespace ViewModels
             _motd = _model.MOTD;
             _events = eventagg;
             _model.PropertyChanged += UpdateDescription;
+
+            modeTypes = new string[] { "ads", "chat", "both" };
         }
         #endregion
 
@@ -92,6 +95,33 @@ namespace ViewModels
                     return "The room is currently a public room and cannot be closed.";
             }
         }
+
+        public string RoomModeString
+        {
+            get
+            {
+                if (_model.Mode == ChannelMode.ads)
+                    return "allows only ads.";
+                if (_model.Mode == ChannelMode.chat)
+                    return "allows only chatting.";
+                return "allows ads and chatting.";
+            }
+        }
+
+        public ChannelMode RoomModeType
+        {
+            get { return _model.Mode; }
+            set
+            {
+                if (_model.Mode != value)
+                {
+                    _model.Mode = value;
+                    OnRoomModeChanged(null);
+                }
+            }
+        }
+
+        public string[] ModeTypes { get { return modeTypes; } }
         #endregion
 
         #region Commands
@@ -135,6 +165,11 @@ namespace ViewModels
                     OnPropertyChanged("ToggleRoomTypeString");
                     OnPropertyChanged("RoomTypeString");
                 }
+
+                else if (e.PropertyName == "Mode")
+                {
+                    OnPropertyChanged("RoomModeString");
+                }
             }
             else // if its us updating it
             {
@@ -142,6 +177,12 @@ namespace ViewModels
                     CommandDefinitions.CreateCommand("setdescription", new [] {_motd}, _model.ID).toDictionary()
                     );
             }
+        }
+        private void OnRoomModeChanged(object args)
+        {
+            _events.GetEvent<UserCommandEvent>().Publish(
+                CommandDefinitions.CreateCommand("setmode", new[] { _model.Mode.ToString() }, _model.ID)
+                .toDictionary());
         }
         private void OnToggleRoomType(object args)
         {

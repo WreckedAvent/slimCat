@@ -162,6 +162,8 @@ namespace Models
              //{"report", new CommandModel("report", "SFC", new [] {"character"})},
             {"status", new CommandModel("status", "STA", new [] {"status", "statusmsg"}, CommandModel.CommandTypes.TwoArgs)},
             {"unignore", new CommandModel("unignore", "IGN", new [] {"character", "action"}, CommandModel.CommandTypes.TwoArgs)},
+            {"who", new CommandModel("who", "who", null, CommandModel.CommandTypes.NoArgs)},
+
 
 
             // channel moderator commands
@@ -169,12 +171,14 @@ namespace Models
             {"banlist", new CommandModel("banlist", "CBL", null, CommandModel.CommandTypes.OnlyChannel, CommandModel.PermissionLevel.Moderator)},
             {"closeroom", new CommandModel("closeroom", "RST", new [] { "status" }, CommandModel.CommandTypes.OnlyChannel, CommandModel.PermissionLevel.Moderator)},
             {"demote", new CommandModel("demote", "COR", new [] {"character"}, CommandModel.CommandTypes.SingleArgsAndChannel, CommandModel.PermissionLevel.Moderator)},
+            {"getdescription", new CommandModel("getdescription", "getdescription", null, CommandModel.CommandTypes.NoArgs, CommandModel.PermissionLevel.Moderator)},
             {"kick", new CommandModel("kick", "CKU", new [] {"character"}, CommandModel.CommandTypes.SingleArgsAndChannel, CommandModel.PermissionLevel.Moderator)},
             {"openroom", new CommandModel("openroom", "RST", new [] {"status"}, CommandModel.CommandTypes.OnlyChannel, CommandModel.PermissionLevel.Moderator)},
             {"promote", new CommandModel("promote", "COA", new [] {"character"}, CommandModel.CommandTypes.SingleArgsAndChannel, CommandModel.PermissionLevel.Moderator)},    
             {"setdescription", new CommandModel("setdescription", "CDS", new [] {"description"}, CommandModel.CommandTypes.SingleArgsAndChannel, CommandModel.PermissionLevel.Moderator)},
             {"unban", new CommandModel("unban", "CUB", new [] {"character"}, CommandModel.CommandTypes.SingleArgsAndChannel, CommandModel.PermissionLevel.Moderator)},
-            
+            {"setmode", new CommandModel("setmode", "RMO", new [] {"mode"}, CommandModel.CommandTypes.SingleArgsAndChannel, CommandModel.PermissionLevel.Moderator)},
+
             // global op commands
             {"chatban", new CommandModel("chatban", "ACB", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
             {"chatkick", new CommandModel("chatkick", "KIK", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},

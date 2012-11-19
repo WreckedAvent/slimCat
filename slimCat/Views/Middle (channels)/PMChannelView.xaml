@@ -54,11 +54,10 @@
 
         <Grid x:Name="PopupAnchor"
               Grid.Row="1">
-            <ListBox ItemsSource="{Binding Path=Model.Messages, Mode=OneWay}"
-                     ItemTemplate="{StaticResource MessageView}"
-                     Style="{StaticResource ContentListBox}"
-                     Loaded="OnMessagesLoaded"
-                     x:Name="messages"/>
+            <ItemsControl ItemsSource="{Binding Path=Model.Messages, Mode=OneWay}"
+                          ItemTemplate="{StaticResource MessageView}"
+                          Loaded="OnMessagesLoaded"
+                          x:Name="messages"/>
         </Grid>
 
         <v:ChannelSettingsView />

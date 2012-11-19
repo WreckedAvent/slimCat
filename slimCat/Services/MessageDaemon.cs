@@ -261,17 +261,17 @@ namespace Services
 
                     #region Code Command
                     case "code":
+                    {
+                        if (_model.SelectedChannel.ID.Equals("Home", StringComparison.OrdinalIgnoreCase))
                         {
-                            if (_model.SelectedChannel.ID.Equals("Home", StringComparison.OrdinalIgnoreCase))
-                            {
-                                _events.GetEvent<ErrorEvent>().Publish("Home channel does not have a code.");
-                                return;
-                            }
-                            var toCopy = String.Format("[session={0}]{1}[/session]", _model.SelectedChannel.Title, _model.SelectedChannel.ID);
-                            System.Windows.Forms.Clipboard.SetData(System.Windows.Forms.DataFormats.Text, toCopy);
-                            _events.GetEvent<ErrorEvent>().Publish("Channel's code copied to clipboard.");
+                            _events.GetEvent<ErrorEvent>().Publish("Home channel does not have a code.");
                             return;
                         }
+                        var toCopy = String.Format("[session={0}]{1}[/session]", _model.SelectedChannel.Title, _model.SelectedChannel.ID);
+                        System.Windows.Forms.Clipboard.SetData(System.Windows.Forms.DataFormats.Text, toCopy);
+                        _events.GetEvent<ErrorEvent>().Publish("Channel's code copied to clipboard.");
+                        return;
+                    }
                     #endregion
 
                     #region Notification Snap To
@@ -362,6 +362,35 @@ namespace Services
                             return;
                         }
                         break;
+                    }
+                    #endregion
+
+                    #region Comic who message
+                    case "who":
+                    {
+                        _events.GetEvent<ErrorEvent>().Publish(
+                            "Server, server, across the sea,\nWho is connected, most to thee?\nWhy, " + _model.SelectedCharacter.Name + " is!");
+                        return;
+                    }
+                    #endregion
+
+                    #region GetDescription command
+                    case "getdescription":
+                    {
+                        if (_model.SelectedChannel.ID.Equals("Home", StringComparison.OrdinalIgnoreCase))
+                        {
+                            _events.GetEvent<ErrorEvent>().Publish("Poor home channel, with no description to speak of...");
+                            return;
+                        }
+
+                        if (_model.SelectedChannel is GeneralChannelModel)
+                        {
+                            System.Windows.Forms.Clipboard.SetData(System.Windows.Forms.DataFormats.Text, (_model.SelectedChannel as GeneralChannelModel).MOTD);
+                            _events.GetEvent<ErrorEvent>().Publish("Channel's description copied to clipboard.");
+                        }
+                        else
+                            _events.GetEvent<ErrorEvent>().Publish("Hey! That's not a channel.");
+                        return;
                     }
                     #endregion
 

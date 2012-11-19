@@ -148,8 +148,8 @@ namespace Models
                         toReturn.Append("has blanked their status");
                 }
 
-                if (toReturn[toReturn.Length-1] != '.')
-                    toReturn.Append('.');
+                if (!char.IsPunctuation(toReturn.ToString().Trim().Last()))
+                    toReturn.Append('.'); // if the last non-whitespace character is not punctuation, add a period
 
                 return toReturn.ToString();
             }
@@ -159,6 +159,7 @@ namespace Models
         {
             public bool IsPromote { get; set; }
             public string TargetChannel { get; set; }
+            public string TargetChannelID { get; set; } // used for other parts of the code to understand what channel
 
             public override string ToString()
             {
@@ -172,6 +173,7 @@ namespace Models
         public class JoinLeaveEventArgs : CharacterUpdateEventArgs
         {
             public string TargetChannel { get; set; }
+            public string TargetChannelID { get; set; } // used for other parts of the code to understand what channel
             public bool Joined { get; set; }
 
             public override string ToString()
@@ -237,7 +239,9 @@ namespace Models
 
             public override string ToString()
             {
-                return "is now " + NewMode.ToString();
+                if (NewMode != ChannelMode.both)
+                    return "now only allows " + NewMode.ToString() + '.';
+                return "now allows ads and chatting.";
             }
         }
 

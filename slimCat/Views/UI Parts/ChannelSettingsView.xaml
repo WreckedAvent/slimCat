@@ -36,9 +36,10 @@
                                Margin="5"/>
                 </WrapPanel>
 
-                <CheckBox IsChecked="{Binding Path=ChannelSettings.ShouldDing}">Play a sound and notify on new message</CheckBox>
+                <CheckBox IsChecked="{Binding Path=ChannelSettings.ShouldDing}"
+                          ToolTip="If checked, every new message will create a sound and toast notification.">Play a sound and notify on new message</CheckBox>
                 <StackPanel Visibility="{Binding Path=ShowAllSettings, Mode=OneWay, Converter={StaticResource BoolConverter}}">
-                    <TextBlock Text="Create a notification when ..."
+                    <TextBlock Text="Create a toast notification when ..."
                            FontSize="18"
                            Margin="5"/>
                     <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyCharacterMention}">... this this character is mentioned</CheckBox>
@@ -48,7 +49,7 @@
                                 Visibility="{Binding Path=ChannelSettings.NotifyOnJoinLeave, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                                 Margin="20,0"
                                 Content="Include users with no relationship to this character"
-                                ToolTip="Notify even if the character is not a friend, bookmark, is not being talked to, or is not marked as 'interested'."/>
+                                ToolTip="If not checked, only friends, bookmarks, characters being talked to, and characters marked as 'interested' will spawn join/leave notifications. If checked, all characters will."/>
 
                     <TextBlock Margin="20,5">... these terms are mentioned (seperate with commas):</TextBlock>
 
@@ -61,14 +62,14 @@
                         Visibility="{Binding Path=HasNotifyTerms, Mode=OneWay, Converter={StaticResource BoolConverter}}">
 
                         <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyIncludesCharacterNames}"
-                            ToolTip="Search in each poster's name for these terms"
+                            ToolTip="If checked, the terms above will try to be matched in each poster's name for the channel. Upon a whole word match, a notification is spawned."
                             >Include character names</CheckBox>
 
                         <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyIncludesMessages}"
-                            ToolTip="Search in each posted message for these terms"
+                            ToolTip="If checked, the terms above will try to be matched in each channel's messages. Upon a whole word match, a notification is spawned."
                             >Include message content</CheckBox>
                         <CheckBox IsChecked="{Binding Path=ChannelSettings.IgnoreNotInterested}"
-                            ToolTip="Ignore messages from characters who are marked as not interested"
+                            ToolTip="If checked, notifications will not be spawned if the character is marked as 'not interested', even if they match the above criteria."
                             >Exclude characters marked as 'not interested'</CheckBox>
                     </StackPanel>
                 </StackPanel>

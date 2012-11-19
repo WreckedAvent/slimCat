@@ -54,15 +54,13 @@
 
         <Grid Grid.Row="1"
               x:Name="PopupAnchor">
-            <ListBox ItemsSource="{Binding Path=FilteredMessages, Mode=OneWay}"
-                          Style="{StaticResource ContentListBox}"
+            <ItemsControl ItemsSource="{Binding Path=FilteredMessages, Mode=OneWay}"
                           x:Name="filtered"
                           ItemTemplate="{StaticResource MessageView}"
                           Loaded="OnFilterLoaded"
                           Visibility="{Binding Path=IsSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}"/>
 
-            <ListBox      ItemsSource="{Binding Path=CurrentChat, Mode=OneWay}"
-                          Style="{StaticResource ContentListBox}"
+            <ItemsControl ItemsSource="{Binding Path=CurrentChat, Mode=OneWay}"
                           x:Name="messages"
                           ItemTemplate="{StaticResource MessageView}"
                           Loaded="OnMessagesLoaded"

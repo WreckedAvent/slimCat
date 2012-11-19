@@ -1,17 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Media;
-using System.Web;
-using System.Windows;
-using System.Windows.Threading;
-using lib;
+﻿using lib;
 using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Unity;
 using Models;
 using slimCat;
-using ViewModels;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Windows;
 using System.Windows.Media;
+using System.Windows.Threading;
+using ViewModels;
 
 namespace Services
 {
@@ -246,7 +245,7 @@ namespace Services
 
                 if (args is Models.CharacterUpdateModel.PromoteDemoteEventArgs)
                 {
-                    var channelID = (args as Models.CharacterUpdateModel.PromoteDemoteEventArgs).TargetChannel;
+                    var channelID = (args as Models.CharacterUpdateModel.PromoteDemoteEventArgs).TargetChannelID; // find by ID, not name
                     var channel = _cm.CurrentChannels.FirstByIdOrDefault(channelID);
 
                     if (channel != null)
@@ -258,7 +257,7 @@ namespace Services
 
                 if (args is Models.CharacterUpdateModel.JoinLeaveEventArgs) // special check for this as it has settings per channel
                 {
-                    var target = (args as Models.CharacterUpdateModel.JoinLeaveEventArgs).TargetChannel;
+                    var target = (args as Models.CharacterUpdateModel.JoinLeaveEventArgs).TargetChannelID; // find by ID, not name
                     var chan = _cm.CurrentChannels.FirstByIdOrDefault(target);
 
                     if (chan != null) // avoid null references
