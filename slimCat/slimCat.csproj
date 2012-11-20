@@ -199,6 +199,9 @@
     <Compile Include="Views\UI Parts\Buttons\ChatButtonView.xaml.cs">
       <DependentUpon>ChatButtonView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UI Parts\Buttons\CloseButtonView.xaml.cs">
+      <DependentUpon>CloseButtonView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UI Parts\Buttons\MoreButtonView.xaml.cs">
       <DependentUpon>MoreButtonView.xaml</DependentUpon>
     </Compile>
@@ -302,6 +305,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UI Parts\Buttons\ChatButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\Buttons\CloseButtonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -492,6 +499,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="icons\chat.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\close.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="icons\document.png">

@@ -23,6 +23,8 @@ namespace ViewModels
         private bool _isExpanded = true;
         private bool _hasNewPM = false;
         private bool _hasNewChanMessage = false;
+        private bool _pmsExpanded = true;
+        private bool _channelsExpanded = true;
         private bool _isChangingStatus = false;
 
         public const string UserbarView = "UserbarView";
@@ -39,6 +41,17 @@ namespace ViewModels
         #endregion
 
         #region Properties
+        public bool PMsAreExpanded
+        {
+            get { return _pmsExpanded; }
+            set { _pmsExpanded = value; OnPropertyChanged("PMsAreExpanded"); }
+        }
+        public bool ChannelsAreExpanded
+        {
+            get { return _channelsExpanded; }
+            set { _channelsExpanded = value; OnPropertyChanged("ChannelsAreExpanded"); }
+        }
+
         public bool IsExpanded
         {
             get { return _isExpanded; }
@@ -229,6 +242,13 @@ namespace ViewModels
             _events.GetEvent<UserCommandEvent>().Publish(torSend);
         }
 
+        private void onExpanded(object args = null)
+        {
+            PMsAreExpanded = PMsAreExpanded || HasNewPM;
+            ChannelsAreExpanded = ChannelsAreExpanded || HasNewMessage;
+            IsExpanded = !IsExpanded;
+        }
+
         // this will update which tabs need to be 'flashing' and which do not
         private void updateFlashingTabs()
         {
@@ -281,7 +301,7 @@ namespace ViewModels
             get
             {
                 if (_toggle == null)
-                    _toggle = new RelayCommand(args => IsExpanded = !IsExpanded);
+                    _toggle = new RelayCommand(onExpanded);
                 return _toggle;
             }
         }

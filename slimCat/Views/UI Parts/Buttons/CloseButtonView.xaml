@@ -1,0 +1,19 @@
+﻿<Button x:Class="Views.CloseButtonView"
+        x:Name="closeButton"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"                    
+        Style="{StaticResource ImageContentButton}"
+        Background="Transparent"
+        Visibility="{Binding Path=CanClose, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+        ToolTip="Close this tab"
+        Margin="0">
+    <Button.Content>
+        <Rectangle Fill="{Binding ElementName=closeButton, Path=Foreground}"
+                   Height="15"
+                   Width="15">
+            <Rectangle.OpacityMask>
+                <ImageBrush ImageSource="pack://application:,,,/icons/close.png"/>
+            </Rectangle.OpacityMask>
+        </Rectangle>
+    </Button.Content>
+</Button>

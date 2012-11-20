@@ -25,19 +25,30 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <Button BorderThickness="1.5"
-                    Margin="0,0,0,10"
-                    x:Name="PopupAnchor"
-                    Command="{Binding ToggleStatusWindowCommand}">
-                <StackPanel HorizontalAlignment="Center"
-                            DataContext="{Binding Path=CM.SelectedCharacter}">
-                    <Image Height="100" 
-                           Width="100"
-                           Source="{Binding Path=Avatar}"/>
-                    <TextBlock Text="{Binding Path=Name, Mode=OneTime}"/>
-                </StackPanel>
-            </Button>
-            
+            <Border BorderBrush="{StaticResource HighlightBrush}"
+                    BorderThickness="0,0,0,1"
+                    x:Name="PopupAnchor">
+                <WrapPanel>
+                    <Image Source="{Binding Path=CM.SelectedCharacter.Avatar}"
+                            Height="75"
+                            Width="75"/>
+                    <StackPanel Margin="5,0,0,0">
+                        <TextBlock Text="{Binding Path=CM.SelectedCharacter.Name}"
+                                   HorizontalAlignment="Right"
+                                   TextAlignment="Right"
+                                   MaxWidth="100"
+                                   TextWrapping="Wrap"
+                                   FontSize="20"/>
+                        <Button Content="{Binding Path=CM.SelectedCharacter.Status}"
+                                HorizontalAlignment="Right"
+                                Style="{StaticResource ImageContentButton}"
+                                Command="{Binding ToggleStatusWindowCommand}"
+                                Padding="0"
+                                FontSize="16"/>
+                    </StackPanel>
+                </WrapPanel>
+            </Border>
+
             <Popup IsOpen="{Binding Path=IsChangingStatus, Mode=OneWay}"
                    PlacementTarget="{Binding ElementName=PopupAnchor}"
                    Placement="Center">
@@ -76,9 +87,8 @@
                           CanContentScroll="False">
                 <StackPanel>
                     <Expander Header="Conversations"
-                              IsExpanded="True"
+                              IsExpanded="{Binding Path=PMsAreExpanded}"
                               Visibility="{Binding Path=HasPMs, Converter={StaticResource BoolConverter}}"
-                              BorderBrush="{Binding Path=HasNewPM, Converter={StaticResource ColorConverter}}"
                               Grid.Row="1">
                         <ListBox ItemsSource="{Binding Path=CM.CurrentPMs, Mode=OneWay}"
                                  HorizontalContentAlignment="Stretch"
@@ -91,8 +101,7 @@
                         </ListBox>
                     </Expander>
                     <Expander Header="Channels"
-                              IsExpanded="True"
-                              BorderBrush="{Binding Path=HasNewMessage, Converter={StaticResource ColorConverter}}"
+                              IsExpanded="{Binding Path=ChannelsAreExpanded}"
                               Grid.Row="2">
                         <ListBox ItemsSource="{Binding Path=CM.CurrentChannels, Mode=OneWay}"
                                  HorizontalContentAlignment="Stretch"

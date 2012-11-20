@@ -489,6 +489,10 @@ namespace Services
                     }
                 }
 
+                var characterChannel = _cm.CurrentPMs.FirstByIdOrDefault(characterName);
+                if (characterChannel != null)
+                    characterChannel.TypingStatus = Typing_Status.clear; // fixes bug where character will still appear typing afte rlog out
+
                 _cm.RemoveCharacter(characterName);
                 _events.GetEvent<NewUpdateEvent>().Publish
                     (

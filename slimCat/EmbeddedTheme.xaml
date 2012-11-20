@@ -93,6 +93,35 @@
         </Grid>
     </DataTemplate>
 
+    <DataTemplate x:Key="ChannelUpdateTemplate">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock TextWrapping="Wrap"
+                       TextAlignment="Left">
+                <InlineUIContainer BaselineAlignment="TextBottom">
+                    <Button Content="{Binding Path=ChannelTitle, Mode=OneWay}"
+                            Style="{StaticResource ChannelInterfaceButton}"
+                            CommandParameter="{Binding Path=ChannelID, Mode=OneWay}" />
+                </InlineUIContainer>
+                <Run Text="{Binding Path=Arguments, Mode=OneWay}"
+                     Foreground="{StaticResource ForegroundBrush}"/>
+            </TextBlock>
+
+            <Button Content="X"
+                    Grid.Column="1"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Padding="2,0"
+                    Command="{Binding Path=DataContext.RemoveNotificationCommand,
+                    RelativeSource={RelativeSource Mode=FindAncestor,
+                    AncestorType={x:Type ItemsControl}} }"
+                    CommandParameter="{Binding}"/>
+        </Grid>
+    </DataTemplate>
+
     <Style TargetType="Hyperlink" x:Key="TunnelingHyperlink">
         <Setter Property="Command" Value="{Binding Path=DataContext.NavigateTo,
                                   RelativeSource={RelativeSource Mode=FindAncestor,
