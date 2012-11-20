@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Views.UsersTabView"
+﻿<UserControl x:Class="Views.GlobalTabView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:m="clr-namespace:Models"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

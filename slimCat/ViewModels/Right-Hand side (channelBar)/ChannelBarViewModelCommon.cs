@@ -27,9 +27,24 @@ namespace ViewModels
                                           IEventAggregator events, IChatModel cm)
             : base(contain, regman, events, cm)
         {
+            cm.SelectedChannelChanged += (s, e) =>
+                {
+                    OnPropertyChanged("HasUsers");
+                };
         }
 
         public override void Initialize() { }
+
+        public bool HasUsers
+        {
+            get
+            {
+                if (CM.SelectedChannel == null) return false;
+
+                return ((CM.SelectedChannel.Type != ChannelType.pm)
+                && (CM.SelectedChannel.DisplayNumber > 0));
+            }
+        }
         #endregion
     }
 }

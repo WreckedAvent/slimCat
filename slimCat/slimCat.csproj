@@ -144,6 +144,7 @@
     <Compile Include="Models\CommandModel.cs" />
     <Compile Include="Models\GeneralChannelModel.cs" />
     <Compile Include="Services\SettingsDaemon.cs" />
+    <Compile Include="ViewModels\Right-Hand side %28channelBar%29\GlobalTabViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\ChannelManagementViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\RightClickViewModel.cs" />
     <Compile Include="Models\MessageModel.cs" />
@@ -193,8 +194,14 @@
     <Compile Include="Views\Right-Hand Side %28channelbar%29\ChannelbarUserListView.xaml.cs">
       <DependentUpon>ChannelbarUserListView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Right-Hand Side %28channelbar%29\ChannelbarGlobalListView.xaml.cs">
+      <DependentUpon>ChannelbarGlobalListView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UI Parts\Buttons\AutoButtonView.xaml.cs">
       <DependentUpon>AutoButtonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UI Parts\Buttons\ChannelsButtonView.xaml.cs">
+      <DependentUpon>ChannelsButtonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UI Parts\Buttons\ChatButtonView.xaml.cs">
       <DependentUpon>ChatButtonView.xaml</DependentUpon>
@@ -202,14 +209,23 @@
     <Compile Include="Views\UI Parts\Buttons\CloseButtonView.xaml.cs">
       <DependentUpon>CloseButtonView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UI Parts\Buttons\GlobalButtonView.xaml.cs">
+      <DependentUpon>GlobalButtonView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UI Parts\Buttons\MoreButtonView.xaml.cs">
       <DependentUpon>MoreButtonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UI Parts\Buttons\NotificationsButtonView.xaml.cs">
+      <DependentUpon>NotificationsButtonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UI Parts\Buttons\SearchButtonView.xaml.cs">
       <DependentUpon>SearchButtonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UI Parts\Buttons\StatsButtonView.xaml.cs">
       <DependentUpon>StatsButtonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UI Parts\Buttons\UserListButtonView.xaml.cs">
+      <DependentUpon>UserListButtonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UI Parts\ChannelManagementView.xaml.cs">
       <DependentUpon>ChannelManagementView.xaml</DependentUpon>
@@ -254,9 +270,6 @@
     <Compile Include="Views\Full Screen\ChatWrapperView.xaml.cs">
       <DependentUpon>ChatWrapperView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\UI Parts\Buttons\ChannelCloseButton.xaml.cs">
-      <DependentUpon>ChannelCloseButton.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Middle %28channels%29\GeneralChannelView.xaml.cs">
       <DependentUpon>GeneralChannelView.xaml</DependentUpon>
     </Compile>
@@ -300,7 +313,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Right-Hand Side %28channelbar%29\ChannelbarGlobalListView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\UI Parts\Buttons\AutoButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\Buttons\ChannelsButtonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -312,7 +333,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\UI Parts\Buttons\GlobalButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\UI Parts\Buttons\MoreButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\Buttons\NotificationsButtonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -321,6 +350,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UI Parts\Buttons\StatsButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\Buttons\UserListButtonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -397,10 +430,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UI Parts\ChannelTextBoxEntryView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\UI Parts\Buttons\ChannelCloseButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -498,6 +527,9 @@
     <Content Include="icons\auto.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="icons\channels.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="icons\chat.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -516,7 +548,25 @@
     <Content Include="icons\folder.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="icons\global.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="icons\more.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\notifications.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\pin.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\private_closed.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\private_open.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\public.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="icons\restart.png">
@@ -526,6 +576,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="icons\settings.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\userlist.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

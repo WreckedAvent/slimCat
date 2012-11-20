@@ -8,7 +8,7 @@
              HorizontalAlignment="Stretch"
              Margin="0"
              Padding="4,2">
-    <Grid MaxWidth="200">
+    <Grid MaxWidth="175">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition Width="auto"/>
@@ -36,8 +36,7 @@
         
         <v:CloseButtonView Margin="5,0,0,0"
                            Grid.Column="1"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Right"
+                           Visibility="{Binding Path=CanClose, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                            Command="{Binding DataContext.CloseCommand,
                            RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                            CommandParameter="{Binding Path=ID}">

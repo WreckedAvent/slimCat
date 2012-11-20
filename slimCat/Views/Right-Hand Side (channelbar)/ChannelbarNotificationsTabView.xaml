@@ -5,14 +5,14 @@
              xmlns:m="clr-namespace:Models">
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type m:CharacterUpdateModel}">
-            <ContentControl Margin="2"
+            <ContentControl Margin="0"
                             Content="{Binding}"
                             ContentTemplate="{StaticResource CharacterUpdateTemplate}">
             </ContentControl>
         </DataTemplate>
         
         <DataTemplate DataType="{x:Type m:ChannelUpdateModel}">
-            <ContentControl Margin="2"
+            <ContentControl Margin="0"
                             Content="{Binding}"
                             ContentTemplate="{StaticResource ChannelUpdateTemplate}">
             </ContentControl>
@@ -25,9 +25,11 @@
                              ToolTip="Clear all notifications"
                              DockPanel.Dock="Top"/>
         <v:SearchBoxView DockPanel.Dock="Bottom"/>
+        <TextBlock Text="No notifications ..."
+                   TextWrapping="Wrap"
+                   Visibility="{Binding Path=HasNoNotifications, Converter={StaticResource BoolConverter}}"/>
         <ListBox ItemsSource="{Binding Path=SortedNotifications}"
                  Style="{StaticResource ContentListBox}"
-                 MaxWidth="200"
                  Margin="0"
                  HorizontalAlignment="Center"
                  x:Name="PopupAnchor"/>

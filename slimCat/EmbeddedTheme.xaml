@@ -36,7 +36,7 @@
     </Style>
 
     <DataTemplate x:Key="TunnelingUsernameTemplate">
-        <TextBlock>
+        <TextBlock TextWrapping="Wrap">
             <Hyperlink CommandParameter="{Binding Path=., Mode=OneTime}"
                        Style="{StaticResource TunnelingUsernameStyle}">
                 <Run Text="{Binding Path=., Mode=OneTime}"/>
@@ -51,7 +51,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="UsernameTemplate">
-        <TextBlock>
+        <TextBlock TextWrapping="Wrap">
             <Hyperlink CommandParameter="{Binding Path=., Mode=OneTime}"
                        Style="{StaticResource UsernameStyle}">
                 <Run Text="{Binding Path=., Mode=OneTime}"/>
@@ -81,15 +81,11 @@
                      Foreground="{StaticResource ForegroundBrush}"/>
             </TextBlock>
 
-            <Button Content="X"
-                    Grid.Column="1"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Padding="2,0"
-                    Command="{Binding Path=DataContext.RemoveNotificationCommand,
-                    RelativeSource={RelativeSource Mode=FindAncestor,
-                    AncestorType={x:Type ItemsControl}} }"
-                    CommandParameter="{Binding}"/>
+            <v:CloseButtonView Grid.Column="1"
+                               Command="{Binding Path=DataContext.RemoveNotificationCommand,
+                               RelativeSource={RelativeSource Mode=FindAncestor,
+                               AncestorType={x:Type ItemsControl}} }"
+                               CommandParameter="{Binding}"/>
         </Grid>
     </DataTemplate>
 
@@ -110,15 +106,11 @@
                      Foreground="{StaticResource ForegroundBrush}"/>
             </TextBlock>
 
-            <Button Content="X"
-                    Grid.Column="1"
-                    VerticalAlignment="Top"
-                    HorizontalAlignment="Right"
-                    Padding="2,0"
-                    Command="{Binding Path=DataContext.RemoveNotificationCommand,
-                    RelativeSource={RelativeSource Mode=FindAncestor,
-                    AncestorType={x:Type ItemsControl}} }"
-                    CommandParameter="{Binding}"/>
+            <v:CloseButtonView Grid.Column="1"
+                               Command="{Binding Path=DataContext.RemoveNotificationCommand,
+                               RelativeSource={RelativeSource Mode=FindAncestor,
+                               AncestorType={x:Type ItemsControl}} }"
+                               CommandParameter="{Binding}"/>
         </Grid>
     </DataTemplate>
 

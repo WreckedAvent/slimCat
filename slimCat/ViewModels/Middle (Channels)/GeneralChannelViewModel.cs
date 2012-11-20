@@ -41,6 +41,7 @@ namespace ViewModels
         // these two are completely different from the channel model's counts, as they work while the tab is selected
         private bool _hasNewAds;
         private bool _hasNewMessages;
+        private bool _hasNewContentOverride; // allows other things to signify if we have a new message
         #endregion
 
         #region Properties

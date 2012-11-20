@@ -12,7 +12,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="40"/>
-            <ColumnDefinition MaxWidth="160"/>
+            <ColumnDefinition MaxWidth="135"/>
         </Grid.ColumnDefinitions>
         <Border Grid.RowSpan="2"
                 BorderBrush="{StaticResource BrightBackgroundBrush}"
@@ -56,8 +56,7 @@
             </TextBlock>
             <v:CloseButtonView Margin="0"
                                DockPanel.Dock="Bottom"
-                               VerticalAlignment="Bottom"
-                               HorizontalAlignment="Right"
+                               Visibility="{Binding Path=CanClose, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                                Command="{Binding DataContext.CloseCommand,
                                RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                                CommandParameter="{Binding Path=ID}">

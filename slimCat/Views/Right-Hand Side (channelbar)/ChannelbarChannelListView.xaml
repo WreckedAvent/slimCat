@@ -5,20 +5,34 @@
              xmlns:v="clr-namespace:Views">
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type m:GeneralChannelModel}">
-            <Button Margin="2"
-                    BorderBrush="Transparent"                    
-                    Command="{Binding Path=DataContext.JoinChannelCommand,
+            <Button Command="{Binding Path=DataContext.JoinChannelCommand,
                     RelativeSource={RelativeSource Mode=FindAncestor,
                     AncestorType={x:Type ItemsControl}} }"
-                    HorizontalAlignment="Left"
-                    CommandParameter="{Binding Path=ID, Mode=OneWay}">
-                <TextBlock TextWrapping="Wrap"
-                           MaxWidth="200">
-                    <Run Text="{Binding Path=Title, Mode=OneWay}" />
-                    <Run Text=" (" />
-                    <Run Text="{Binding Path=DisplayNumber, Mode=OneWay}" />
-                    <Run Text=")" />
-                </TextBlock>
+                    CommandParameter="{Binding Path=ID, Mode=OneWay}"
+                    
+                    BorderThickness="1,0,0,1"
+                    BorderBrush="{StaticResource DepressedBrush}"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,4"
+                    Padding="4,2">
+                <Grid HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                  
+                    <TextBlock Text="{Binding Path=Title, Mode=OneWay}"
+                               TextAlignment="Left"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding Path=DisplayNumber, Mode=OneWay}"
+                               Grid.Column="1"
+                               TextAlignment="Right"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+                               Margin="5,0,0,0"/>
+                </Grid>
             </Button>
             
         </DataTemplate>

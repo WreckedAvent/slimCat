@@ -67,6 +67,7 @@ namespace ViewModels
                 _container.Resolve<ChannelsTabViewModel>();
                 _container.Resolve<UsersTabViewModel>();
                 _container.Resolve<NotificationsTabViewModel>();
+                _container.Resolve<GlobalTabViewModel>();
 
                 _cm.Notifications.CollectionChanged += (s, e) =>
                     {
@@ -177,6 +178,12 @@ namespace ViewModels
                 case "Notifications":
                     {
                         _region.Regions[TabViewRegion].RequestNavigate(NotificationsTabViewModel.NotificationsTabView);
+                        break;
+                    }
+
+                case "Global":
+                    {
+                        _region.Regions[TabViewRegion].RequestNavigate(GlobalTabViewModel.GlobalTabView);
                         break;
                     }
 

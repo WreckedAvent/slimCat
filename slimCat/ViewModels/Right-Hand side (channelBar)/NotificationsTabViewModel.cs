@@ -36,6 +36,11 @@ namespace ViewModels
             }
         }
 
+        public bool HasNoNotifications
+        {
+            get { return CM.Notifications.Count == 0; }
+        }
+
         public IEnumerable<NotificationModel> SortedNotifications
         {
             get 
@@ -97,7 +102,6 @@ namespace ViewModels
             {
                 var toRemove = args as NotificationModel;
                 CM.Notifications.Remove(toRemove);
-                OnPropertyChanged("SortedNotifications");
             }
         }
 
@@ -108,11 +112,7 @@ namespace ViewModels
             {
                 if (_clearNoti == null)
                     _clearNoti = new RelayCommand(
-                        args =>
-                        {
-                            CM.Notifications.Clear();
-                            OnPropertyChanged("SortedNotifications");
-                        });
+                        args => CM.Notifications.Clear());
                 return _clearNoti;
             }
         }
@@ -124,7 +124,12 @@ namespace ViewModels
         {
             _container.RegisterType<object, NotificationsTabView>(NotificationsTabView);
 
-            CM.Notifications.CollectionChanged += (s, e) => OnPropertyChanged("NeedsAttention");
+            CM.Notifications.CollectionChanged += (s, e) =>
+            {
+                OnPropertyChanged("NeedsAttention");
+                OnPropertyChanged("SortedNotifications");
+                OnPropertyChanged("HasNoNotifications");
+            };
         }
         #endregion
     }

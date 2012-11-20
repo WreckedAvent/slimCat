@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://www.codeplex.com/prism"
              xmlns:v="clr-namespace:Views"
-             xmlns:sys="clr-namespace:System">
+             xmlns:sys="clr-namespace:System"
+             MaxWidth="225">
     
     <DockPanel TextBlock.FontSize="14"
                Visibility="{Binding Path=CM.IsAuthenticated, Mode=OneWay, Converter={StaticResource BoolConverter}}"
@@ -27,35 +28,23 @@
             </Grid.RowDefinitions>
             
             <!-- Note, I decided to not use a tab control as it would look odd. -->
-            <Grid VerticalAlignment="Top">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition  />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+            <WrapPanel>
+                <v:ChannelsButtonView CommandParameter="Channels"
+                                      Command="{Binding Path=ChangeTabCommand}"/>
+
+                <v:GlobalButtonView CommandParameter="Global"
+                                    Command="{Binding Path=ChangeTabCommand}"/>
                 
-                <Grid.Resources>
-                    <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
-                        <Setter Property="Command" Value="{Binding Path=ChangeTabCommand}" />
-                        <Setter Property="Margin" Value="4,0" />
-                    </Style>
-                </Grid.Resources>
+                <v:UserlistButtonView CommandParameter="Users"
+                                      Command="{Binding Path=ChangeTabCommand}"
+                                      Visibility="{Binding Path=HasUsers, Converter={StaticResource BoolConverter}}"/>
 
-                <RadioButton CommandParameter="Channels"
-                             Content="Channels"/>
-
-                <RadioButton CommandParameter="Users"
-                             Content="Users"
-                             Grid.Column="1"/>
-
-                <RadioButton CommandParameter="Notifications"
-                             x:Name="NotificationButton"
-                             Content="Notifications"
-                             Grid.Column="2"/>
-            </Grid>
+                <v:NotificationsButtonView CommandParameter="Notifications"
+                                           x:Name="NotificationButton"
+                                           Command="{Binding Path=ChangeTabCommand}"/>
+            </WrapPanel>
             
             <ContentControl prism:RegionManager.RegionName="TabViewRegion"
-                            Margin="0,20,0,0"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             KeyboardNavigation.IsTabStop="False"
