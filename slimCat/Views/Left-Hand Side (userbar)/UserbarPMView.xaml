@@ -73,10 +73,11 @@
             </v:CloseButtonView>
 
             <TextBlock Text="{Binding Path=ID, Mode=OneTime}"
-                            TextWrapping="Wrap"
-                            Margin="0"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Top" />
+                       TextAlignment="Right"
+                       TextWrapping="Wrap"
+                       Margin="0"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Top" />
         </DockPanel>
     </Grid>
     <UserControl.Style>

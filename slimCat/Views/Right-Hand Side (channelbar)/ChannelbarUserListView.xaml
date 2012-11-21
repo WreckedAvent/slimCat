@@ -8,7 +8,9 @@
         <DataTemplate DataType="{x:Type m:CharacterModel}">
             <ContentControl Margin="0"
                             Content="{Binding Name}"
-                            ContentTemplate="{StaticResource TunnelingUsernameTemplate}">
+                            ContentTemplate="{StaticResource TunnelingUsernameTemplate}"                            
+                            HorizontalAlignment="Left"
+                            TextBlock.TextAlignment="Left">
             </ContentControl>
         </DataTemplate>
     </UserControl.Resources>
@@ -33,7 +35,7 @@
                                    HorizontalAlignment="Center"
                                    Margin="10,5"
                                    >
-                            <Run Text="User list Filter Settings" />
+                            <Run Text="User List Filter Settings" />
                             <LineBreak />
                             <Run Text="Current list:"
                                  FontSize="16"/>

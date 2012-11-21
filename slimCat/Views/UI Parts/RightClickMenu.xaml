@@ -16,13 +16,14 @@
                     BorderThickness="0,0,0,1"
                     DataContext="{Binding Path=RightClickMenuViewModel}"
                     Padding="10">
-                <WrapPanel>
+                <DockPanel>
                     <Image Source="{Binding Path=Target.Avatar}"
                             Height="75"
                             Width="75"/>
-                    <StackPanel HorizontalAlignment="Right"
+                    <StackPanel DockPanel.Dock="Right"
+                                HorizontalAlignment="Right"
                                 TextBlock.TextAlignment="Right"
-                                Margin="10,0,0,0">
+                                Margin="10,-6,0,0">
                         <TextBlock Text="{Binding Path=Target.Name}"
                                    MaxWidth="125"
                                    TextWrapping="Wrap"
@@ -30,7 +31,7 @@
                         <TextBlock Text="{Binding Path=TargetGender}"/>
                         <TextBlock Text="{Binding Path=TargetStatus}"/>
                     </StackPanel>
-                </WrapPanel>
+                </DockPanel>
             </Border>
             <Border BorderBrush="{StaticResource HighlightBrush}"
                     BorderThickness="0,0,0,1"

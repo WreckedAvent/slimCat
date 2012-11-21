@@ -15,6 +15,7 @@
         </Grid.ColumnDefinitions>
         <TextBlock Text="{Binding Path=Title, Mode=OneWay}"
                    HorizontalAlignment="Left"
+                   TextAlignment="Left"
                    VerticalAlignment="Center"
                    TextWrapping="Wrap"/>
         <TextBlock Text="{Binding Path=DisplayNumber, Mode=OneWay}"

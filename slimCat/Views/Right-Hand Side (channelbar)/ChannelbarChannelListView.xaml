@@ -10,6 +10,7 @@
                     AncestorType={x:Type ItemsControl}} }"
                     CommandParameter="{Binding Path=ID, Mode=OneWay}"
                     
+                    HorizontalContentAlignment="Stretch"
                     BorderThickness="1,0,0,1"
                     BorderBrush="{StaticResource DepressedBrush}"
                     HorizontalAlignment="Stretch"
@@ -79,7 +80,7 @@
                          DataContext="{Binding SearchSettings}"/>
 
         <ListBox ItemsSource="{Binding Path=SortedChannels, Mode=OneWay}"
-                      x:Name="PopupAnchor"
-                  Style="{StaticResource ContentListBox}"/>
+                 x:Name="PopupAnchor"
+                 Style="{StaticResource ContentListBox}"/>
     </DockPanel>
 </UserControl>

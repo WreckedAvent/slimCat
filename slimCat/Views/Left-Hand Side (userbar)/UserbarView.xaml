@@ -27,12 +27,15 @@
 
             <Border BorderBrush="{StaticResource HighlightBrush}"
                     BorderThickness="0,0,0,1"
-                    x:Name="PopupAnchor">
-                <WrapPanel>
+                    x:Name="PopupAnchor"
+                    HorizontalAlignment="Stretch">
+                <DockPanel>
                     <Image Source="{Binding Path=CM.SelectedCharacter.Avatar}"
                             Height="75"
                             Width="75"/>
-                    <StackPanel Margin="5,0,0,0">
+                    <StackPanel Margin="5,-5,0,0"
+                                DockPanel.Dock="Right"
+                                HorizontalAlignment="Right">
                         <TextBlock Text="{Binding Path=CM.SelectedCharacter.Name}"
                                    HorizontalAlignment="Right"
                                    TextAlignment="Right"
@@ -46,7 +49,7 @@
                                 Padding="0"
                                 FontSize="16"/>
                     </StackPanel>
-                </WrapPanel>
+                </DockPanel>
             </Border>
 
             <Popup IsOpen="{Binding Path=IsChangingStatus, Mode=OneWay}"

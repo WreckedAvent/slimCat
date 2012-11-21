@@ -24,8 +24,8 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
-            <Border BorderBrush="{StaticResource DepressedBrush}"
-                BorderThickness="0,0,0,1">
+            <Border BorderBrush="{StaticResource HighlightBrush}"
+                    BorderThickness="0,0,0,1">
                 <Expander Header="{Binding Path=Model.ID, Mode=OneWay}"
                       Margin="0"
                       Padding="0">
