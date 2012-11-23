@@ -85,4 +85,3 @@ Critical Point: First Public Full Release, rc1.x -> "Ocelot"
  - An assload of settings
  
  mini profile in right-hand side, user selects what information to show
- report format: "Current Tab/Channel: <channel> | Reporting User: <this user> | <reported user> | <report body>

@@ -394,6 +394,32 @@ namespace Services
                     }
                     #endregion
 
+                    #region Interesting/Uninteresting command
+                    case "interesting":
+                    {
+                        var args = command["character"] as string;
+                        _model.ToggleInterestedMark(args);
+                        return;
+                    }
+
+                    case "notinteresting":
+                    {
+                        var args = command["character"] as string;
+                        _model.ToggleNotInterestedMark(args);
+                        return;
+                    }
+                    #endregion
+
+                    #region Report command
+                    /*
+                    case "SFC":
+                    {
+                        //  report format: "Current Tab/Channel: <channel> | Reporting User: <this user> | <reported user> | <report body>
+                        return;
+                    }
+                    */
+                    #endregion
+
                     default: break;
                 }
 

@@ -8,6 +8,7 @@ using System.Web;
 using Microsoft.Practices.Prism.Events;
 using Models;
 using SimpleJson;
+using slimCat;
 
 namespace Services
 {
@@ -18,10 +19,10 @@ namespace Services
     class ListConnection : IListConnection
     {
         #region Fields
-        private const string _flistHost = "http://www.f-list.net";
-        private const string _fchatHost = "";
+        private const string FLIST_HOST = "http://www.f-list.net";
         private IAccount _model;
         private IEventAggregator _event;
+        private string _selectedCharacter;
         #endregion
 
         #region Constructors
@@ -35,7 +36,9 @@ namespace Services
                 if (eventagg == null) throw new ArgumentNullException("eventagg");
                 _event = eventagg;
 
-                this._event.GetEvent<slimCat.LoginEvent>().Subscribe(getTicket, ThreadOption.BackgroundThread);
+                _event.GetEvent<LoginEvent>().Subscribe(getTicket, ThreadOption.BackgroundThread);
+                _event.GetEvent<UserCommandEvent>().Subscribe(handleCommand, ThreadOption.BackgroundThread);
+                _event.GetEvent<CharacterSelectedLoginEvent>().Subscribe(args => _selectedCharacter = args);
             }
 
             catch (Exception ex)
@@ -46,68 +49,57 @@ namespace Services
         #endregion
 
         #region Methods
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         public void getTicket( bool sendUpdate )
         {
             try
             {
                 _model.Error = "";
                 string ticketUrl = "/json/getApiTicket.php";
-                string request = _flistHost + ticketUrl;
+                string host = FLIST_HOST + ticketUrl;
 
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(request);
-                // POST data
-                byte[] toPost = Encoding.ASCII.GetBytes("account=" + HttpUtility.UrlEncode(_model.AccountName.ToLower())
-                    + "&password=" + HttpUtility.UrlEncode(_model.Password));
+                string buffer = getResponse(host,
+                    new Dictionary<string, object>()
+                    {
+                        {"account", _model.AccountName.ToLower()},
+                        {"password", _model.Password},
+                    });
 
-                req.Method = "POST";
-                req.ContentType = "application/x-www-form-urlencoded";
-                req.ContentLength = toPost.Length;
-                
-                string buffer;
+                // assign the data to our account model
+                dynamic result = (JsonObject)SimpleJson.SimpleJson.DeserializeObject(buffer);
+                buffer = null;
 
-                using (var postStream = req.GetRequestStream())
-                    postStream.Write(toPost, 0, toPost.Length);
+                bool hasError = (!string.IsNullOrWhiteSpace((string)result.error));
 
-                using (HttpWebResponse rep = (HttpWebResponse)req.GetResponse())
-                    using (var answerStream = rep.GetResponseStream())
-                        using (var answerReader = new StreamReader(answerStream))
-                            buffer = answerReader.ReadToEnd();
+                _model.Ticket = (string)result.ticket;
 
-                { // assign the data to our account model
-                    dynamic result = (JsonObject)SimpleJson.SimpleJson.DeserializeObject(buffer);
-                    buffer = null;
+                if (hasError)
+                {
+                    _model.Error = (string)result.error;
 
-                    bool hasError = (!string.IsNullOrWhiteSpace(result.error as string));
+                    this._event.GetEvent<slimCat.LoginCompleteEvent>().Publish(!hasError);
+                    return;
+                }
 
-                    _model.Ticket = (string)result.ticket;
+                foreach (var item in result.characters)
+                    _model.Characters.Add((string)item);
 
-                    if (hasError)
-                        _model.Error = (string)result.error;
+                foreach (var item in result.friends)
+                {
+
+                    if (_model.AllFriends.ContainsKey(item["source_name"]))
+                        _model.AllFriends[item["source_name"]].Add((string)item["dest_name"]);
 
                     else
                     {
-                        foreach (var item in result.characters)
-                            _model.Characters.Add((string)item);
+                        var list = new List<string>();
+                        list.Add((string)item["dest_name"]);
 
-                        foreach (var item in result.friends)
-                        {
-
-                            if (_model.AllFriends.ContainsKey(item["source_name"]))
-                                _model.AllFriends[item["source_name"]].Add((string)item["dest_name"]);
-
-                            else
-                            {
-                                var list = new List<string>();
-                                    list.Add((string)item["dest_name"]);
-
-                                _model.AllFriends.Add(item["source_name"], list);
-                            }
-                        }
+                        _model.AllFriends.Add(item["source_name"], list);
                     }
-
-                    this._event.GetEvent<slimCat.LoginCompleteEvent>().Publish(!hasError);
                 }
+
+                this._event.GetEvent<slimCat.LoginCompleteEvent>().Publish(!hasError);
+               
             }
 
             catch (Exception ex)
@@ -115,6 +107,91 @@ namespace Services
                 _model.Error = "Can't connect to F-List! \nError: " + ex.Message;
                 this._event.GetEvent<slimCat.LoginCompleteEvent>().Publish(false);
             }
+        }
+
+        private void handleCommand(IDictionary<string, object> command)
+        {
+            if (_model == null || _model.Ticket == null) return;
+            if (!command.ContainsKey("type")) return;
+
+            var commandType = command["type"] as string;
+            command.Remove("type");
+
+            switch (commandType)
+            {
+                case "bookmark-add":
+                case "bookmark-remove":
+                {
+                    doAPIAction(commandType, command);
+                    break;
+                }
+                case "request-send":
+                case "friend-remove":
+                {
+                    command.Add("source_name", _selectedCharacter);
+                    doAPIAction(commandType, command);
+                    break;
+                }
+
+                default: return;
+            }
+        }
+
+        private void doAPIAction(string apiName, IDictionary<string, object> command)
+        {
+            const string API_STUB = "json/api/";
+            string host = FLIST_HOST + API_STUB + apiName + ".php";
+
+            command.Add("account", _model.AccountName.ToLower());
+            command.Add("ticket", _model.Ticket);
+
+            var buffer = getResponse(host, command);
+            
+            dynamic result = (JsonObject)SimpleJson.SimpleJson.DeserializeObject(buffer);
+            buffer = null;
+
+            bool hasError = (!string.IsNullOrWhiteSpace((string)result.error));
+
+            if (hasError)
+                _event.GetEvent<ErrorEvent>().Publish((string)result.error);
+        }
+        
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
+        private string getResponse(string host, IDictionary<string, object> arguments)
+        {
+            const string CONTENT_TYPE = "application/x-www-form-urlencoded";
+            const string REQUEST_TYPE = "POST";
+
+            byte[] toPost;
+            var isFirst = true;
+
+            StringBuilder totalRequest = new StringBuilder();
+            foreach (var arg in arguments)
+            {
+                if (!isFirst)
+                    totalRequest.Append('&');
+                else
+                    isFirst = false;
+
+                totalRequest.Append(arg.Key);
+                totalRequest.Append('=');
+                totalRequest.Append(HttpUtility.UrlEncode((string)arg.Value));
+            }
+
+            toPost = Encoding.ASCII.GetBytes(totalRequest.ToString()); // translate our request string into a byte array
+
+            var req = (HttpWebRequest)WebRequest.Create(host);
+            req.Method = REQUEST_TYPE;
+            req.ContentType = CONTENT_TYPE;
+            req.ContentLength = toPost.Length;
+
+            using (var postStream = req.GetRequestStream())
+                postStream.Write(toPost, 0, toPost.Length); // send the request
+
+            using (HttpWebResponse rep = (HttpWebResponse)req.GetResponse()) // get our request
+                using (var answerStream = rep.GetResponseStream()) // turn it into a stream
+                    using (var answerReader = new StreamReader(answerStream)) // put the stream into a reader
+                        return answerReader.ReadToEnd(); // read our response
         }
         #endregion
     }

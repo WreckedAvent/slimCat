@@ -54,7 +54,7 @@
 
         <Grid x:Name="PopupAnchor"
               Grid.Row="1"
-              Margin="0,10">
+              Margin="0,10,0,5">
             <ItemsControl ItemsSource="{Binding Path=Model.Messages, Mode=OneWay}"
                           ItemTemplate="{StaticResource MessageView}"
                           Loaded="OnMessagesLoaded"

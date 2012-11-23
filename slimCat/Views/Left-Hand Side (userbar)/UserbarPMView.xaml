@@ -73,7 +73,8 @@
             </v:CloseButtonView>
 
             <TextBlock Text="{Binding Path=ID, Mode=OneTime}"
-                       TextAlignment="Right"
+                       MaxWidth="135"
+                       TextAlignment="Left"
                        TextWrapping="Wrap"
                        Margin="0"
                        HorizontalAlignment="Right"

@@ -24,6 +24,7 @@ namespace Models
         private string _title;
         private int _lastRead;
         private bool _isSelected = false;
+        private bool _needsAttentionOverride = false;
         private readonly string _identity; // an ID never changes
         #endregion
 
@@ -66,7 +67,7 @@ namespace Models
         /// </summary>
         public virtual bool NeedsAttention
         {
-            get { return (!IsSelected) && (Unread >= Settings.FlashInterval && Settings.ShouldFlash); }
+            get { return (!IsSelected) && (_needsAttentionOverride || (Unread >= Settings.FlashInterval && Settings.ShouldFlash)); }
         }
 
         /// <summary>
@@ -112,8 +113,12 @@ namespace Models
                 if (_isSelected != value)
                 {
                     _isSelected = value;
+
                     if (value)
                         LastReadCount = Messages.Count;
+
+                    _needsAttentionOverride = false;
+
                     UpdateBindings();
                     OnPropertyChanged("IsSelected");
                 }
@@ -176,6 +181,12 @@ namespace Models
             if (_isSelected)
                 _lastRead = _messages.Count;
 
+            UpdateBindings();
+        }
+
+        public virtual void FlashTab()
+        {
+            _needsAttentionOverride = _needsAttentionOverride || true;
             UpdateBindings();
         }
         #endregion

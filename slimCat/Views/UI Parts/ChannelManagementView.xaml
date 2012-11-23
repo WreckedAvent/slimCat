@@ -26,6 +26,7 @@
                         DataContext="{Binding Path=ChannelManagementViewModel}">
                 <TextBlock>Description</TextBlock>
                 <TextBox Text="{Binding Path=MOTD, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         MaxHeight="100"
                          MaxWidth="500"
                          FontSize="12"
                          AcceptsReturn="True"

@@ -41,45 +41,42 @@ namespace ViewModels
         // these two are completely different from the channel model's counts, as they work while the tab is selected
         private bool _hasNewAds;
         private bool _hasNewMessages;
-        private bool _hasNewContentOverride; // allows other things to signify if we have a new message
+
+        private IList<string> _thisDingTerms = new List<string>(); // this is a combination of all relevant ding terms 
         #endregion
 
         #region Properties
         public bool ShouldDisplayAds { get { return ((Model.Mode == ChannelMode.both) || (Model.Mode == ChannelMode.ads)); } }
         public bool ShouldDisplayChat { get { return ((Model.Mode == ChannelMode.both) || (Model.Mode == ChannelMode.chat)); } }
 
+        private IEnumerable<string> thisDingTerms
+        {
+            get
+            {
+                var count = _thisDingTerms.Count;
+                var shouldBe = ApplicationSettings.GlobalNotifyTermsList.Count() 
+                                + Model.Settings.EnumerableTerms.Count() 
+                                + (Model.Settings.NotifyCharacterMention ? 1 : 0);
+
+                if (count != shouldBe)
+                {
+                    _thisDingTerms.Clear();
+                    foreach (var term in ApplicationSettings.GlobalNotifyTermsList)
+                        _thisDingTerms.Add(term);
+                    foreach (var term in Model.Settings.EnumerableTerms)
+                        _thisDingTerms.Add(term);
+                    if (Model.Settings.NotifyCharacterMention)
+                        _thisDingTerms.Add(_cm.SelectedCharacter.Name);
+                }
+
+                return _thisDingTerms.Distinct().Where(term => !string.IsNullOrWhiteSpace(term));
+            }
+        }
+
         public IEnumerable<IMessage> FilteredMessages
         {
             get
             {
-                #region Filter Functions
-                Func<IMessage, bool> ContainsSearchString = (message => message.Message.ToLower().Contains(_searchSettings.SearchString)
-                    || message.Poster.Name.ToLower().Contains(_searchSettings.SearchString));
-
-                Func<IMessage, bool> MeetsGenderFilter = 
-                    (message => !GenderSettings.FilteredGenders.Any(genders => message.Poster.Gender == genders));
-
-                Func<IMessage, bool> MeetsFriendFilter =
-                    (message => SearchSettings.ShowFriends && CM.OnlineFriends.Contains(message.Poster));
-
-                Func<IMessage, bool> MeetsBookmarkFilter =
-                    (message => SearchSettings.ShowBookmarks && CM.OnlineBookmarks.Contains(message.Poster));
-
-                Func<IMessage, bool> MeetsModFilter =
-                    (message => SearchSettings.ShowMods && CM.OnlineGlobalMods.Contains(message.Poster));
-
-                Func<IMessage, bool> MeetsFilter =
-                    (message =>
-                        (ContainsSearchString(message)
-                        && MeetsGenderFilter(message))
-                    &&
-                        (SearchSettings.MeetsStatusFilter(message.Poster)
-                        || MeetsFriendFilter(message)
-                        || MeetsBookmarkFilter(message)
-                        || MeetsModFilter(message))
-                    );
-                #endregion
-
                 if (IsDisplayingChat)
                     return Model.Messages.Where(MeetsFilter);
 
@@ -391,6 +388,11 @@ namespace ViewModels
         #endregion
 
         #region Methods
+        private bool MeetsFilter(IMessage message)
+        {
+            return message.MeetsFilters(GenderSettings, SearchSettings, CM, CM.SelectedChannel as GeneralChannelModel);
+        }
+
         protected override void SendMessage()
         {
             if (!IsSearching) // if we're not searching, treat this input normal

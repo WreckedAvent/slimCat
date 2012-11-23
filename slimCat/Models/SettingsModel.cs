@@ -191,7 +191,8 @@ namespace Models
         private bool _showNormal = true;
         private bool _showBusyAway = true;
         private bool _showDND = true;
-        private bool _showIgnore = false;
+        private bool _showIgnored = false;
+        private bool _showNotInterested = false;
         #endregion
 
         #region Properties
@@ -294,12 +295,25 @@ namespace Models
 
         public bool ShowIgnored
         {
-            get { return _showIgnore; }
+            get { return _showIgnored; }
             set
             {
-                if (_showIgnore != value)
+                if (_showIgnored != value)
                 {
-                    _showIgnore = value;
+                    _showIgnored = value;
+                    CallUpdate();
+                }
+            }
+        }
+
+        public bool ShowNotInterested
+        {
+            get { return _showNotInterested; }
+            set
+            {
+                if (_showNotInterested != value)
+                {
+                    _showNotInterested = value;
                     CallUpdate();
                 }
             }

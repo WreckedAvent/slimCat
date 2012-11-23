@@ -82,6 +82,7 @@
             </TextBlock>
 
             <v:CloseButtonView Grid.Column="1"
+                               VerticalAlignment="Top"
                                Command="{Binding Path=DataContext.RemoveNotificationCommand,
                                RelativeSource={RelativeSource Mode=FindAncestor,
                                AncestorType={x:Type ItemsControl}} }"
@@ -107,6 +108,7 @@
             </TextBlock>
 
             <v:CloseButtonView Grid.Column="1"
+                               VerticalAlignment="Top"
                                Command="{Binding Path=DataContext.RemoveNotificationCommand,
                                RelativeSource={RelativeSource Mode=FindAncestor,
                                AncestorType={x:Type ItemsControl}} }"
@@ -152,6 +154,8 @@
             <CheckBox IsChecked="{Binding ShowFriends}">Friends</CheckBox>
             <CheckBox IsChecked="{Binding ShowBookmarks}">Bookmarked</CheckBox>
             <CheckBox IsChecked="{Binding ShowMods}">Moderators</CheckBox>
+            <CheckBox IsChecked="{Binding ShowNotInterested}">Not Interesting</CheckBox>
+            <CheckBox IsChecked="{Binding ShowIgnored}">Ignored</CheckBox>
             <CheckBox IsChecked="{Binding ShowLooking}">Looking For Play</CheckBox>
             <CheckBox IsChecked="{Binding ShowNormal}">Just Online</CheckBox>
             <CheckBox IsChecked="{Binding ShowBusyAway}">Busy or Away</CheckBox>

@@ -50,6 +50,8 @@ namespace Views
             #region BBCode shortcuts
             else if (_acceptedKeys.ContainsKey(e.Key) && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
+                e.Handled = true;
+
                 var tupleData = _acceptedKeys[e.Key];
 
                 var bbtag = tupleData.Item1;

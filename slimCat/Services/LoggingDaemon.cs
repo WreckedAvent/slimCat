@@ -31,14 +31,15 @@ namespace Services
         {
             using (var writer = accessLog(Title, ID))
             {
+                var thisMessage = System.Web.HttpUtility.HtmlDecode(message.Message);
                 var timestamp = message.TimeStamp;
 
                 if (message.Type == MessageType.normal)
                 {
                     if (!message.Message.StartsWith("/me"))
-                        writer.WriteLine(timestamp + ' ' + message.Poster.Name + ": " + message.Message);
+                        writer.WriteLine(timestamp + ' ' + message.Poster.Name + ": " + thisMessage);
                     else
-                        writer.WriteLine(timestamp + ' ' + message.Poster.Name + message.Message.Substring(3));
+                        writer.WriteLine(timestamp + ' ' + message.Poster.Name + thisMessage.Substring(3));
                 }
 
                 else if (message.Type == MessageType.roll)
@@ -47,9 +48,9 @@ namespace Services
                 else
                 {
                     if (!message.Message.StartsWith("/me"))
-                        writer.WriteLine("Ad at " + timestamp + ": " + message.Message + " ~By " + message.Poster.Name);
+                        writer.WriteLine("Ad at " + timestamp + ": " + thisMessage + " ~By " + message.Poster.Name);
                     else
-                        writer.WriteLine("Ad at " + timestamp + ": " + message.Poster.Name + " " + message.Message.Substring(3));
+                        writer.WriteLine("Ad at " + timestamp + ": " + message.Poster.Name + " " + thisMessage.Substring(3));
                 }
             }
         }

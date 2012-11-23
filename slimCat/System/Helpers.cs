@@ -44,18 +44,40 @@ namespace System
             return character.MeetsChatModelLists(search, cm, channel);
         }
 
+        public static bool MeetsFilters(this IMessage message, GenderSettingsModel genders, GenericSearchSettingsModel search, IChatModel cm, GeneralChannelModel channel)
+        {
+            if (!message.Poster.NameContains(search.SearchString) && !message.Message.ContainsOrd(search.SearchString, true))
+                return false;
+            if (!genders.MeetsGenderFilter(message.Poster))
+                return false;
+
+            return message.Poster.MeetsChatModelLists(search, cm, channel);
+        }
+
         public static bool MeetsChatModelLists(this ICharacter character, GenericSearchSettingsModel search, IChatModel cm, GeneralChannelModel channel)
         {
             // notice the toListing, this is an attempt to fix EnumerationChanged errors
-            if (search.ShowIgnored && cm.Ignored.ToList().Contains(character.Name)) return true;
-            if (search.ShowMods && cm.Mods.ToList().Contains(character.Name)) return true;
+
+            if (cm.Ignored.ToList().Contains(character.Name))
+                return search.ShowIgnored;
+
+            if (cm.NotInterested.ToList().Contains(character.Name))
+                return search.ShowNotInterested;
+
+            if (cm.Mods.ToList().Contains(character.Name))
+                return search.ShowMods;
+
             if (channel != null)
-                if (search.ShowMods && channel.Moderators.ToList().Contains(character.Name)) return true;
-            if (search.ShowFriends && cm.Friends.ToList().Contains(character.Name)) return true;
-            if (search.ShowBookmarks && cm.Bookmarks.ToList().Contains(character.Name)) return true;
-            
-            if (search.MeetsStatusFilter(character)) return true;
-            return false;
+                if (channel.Moderators.ToList().Contains(character.Name))
+                    return search.ShowMods;
+
+            if (cm.Friends.ToList().Contains(character.Name))
+                return search.ShowFriends;
+
+            if (cm.Bookmarks.ToList().Contains(character.Name))
+                return search.ShowBookmarks;
+
+            return search.MeetsStatusFilter(character);
         }
 
         public static string RelationshipToUser(this ICharacter character, IChatModel cm, GeneralChannelModel channel)
@@ -90,9 +112,9 @@ namespace System
         }
         #endregion
 
-        #region String cuntions
+        #region String functions
         /// <summary>
-        /// returns the sentence around a word
+        /// returns the sentence (ish) around a word
         /// </summary>
         public static string GetStringContext(string fullContent, string specificWord)
         {
@@ -118,74 +140,6 @@ namespace System
                 end = findStartOfWord(end);
 
             return (start > 0 ? "... " : "") + fullContent.Substring(start, (end - start)) + (end != fullContent.Length ? " ..." : "");
-        }
-
-        public static string GetStringContextOld(string fullContent, string specificWord)
-        {
-            const int contextLength = 150;
-            var trippedItIndex = fullContent.ToLower().IndexOf(specificWord);
-
-            if (trippedItIndex == -1)
-                return string.Empty; // derp
-
-            var startIndex = trippedItIndex;
-
-            while (
-                (!char.IsPunctuation(fullContent[startIndex]) || fullContent[startIndex] == '\'') 
-                && startIndex != 0 
-                && (trippedItIndex-startIndex < contextLength)
-            )
-                startIndex--; // pack-peddle until we find us our start, but we only want to go back so many words
-
-
-            if (startIndex != 0)
-            {
-                if (!char.IsPunctuation(fullContent[startIndex]))
-                {
-                    while (!char.IsWhiteSpace(fullContent[startIndex]))
-                        startIndex++;
-                }
-                    startIndex++; // offset the punctuation
-                    while (char.IsWhiteSpace(fullContent[startIndex]))
-                        startIndex++; // get the nex character
-            }
-
-            // now we have the start of our sentence, let's find a suitable end
-
-            var workingString = fullContent.Substring(startIndex);
-
-            if (workingString.Length < 50)
-                return (startIndex == 0 ? "" : "... ") + workingString + " ...";
-
-            var endIndex = workingString.IndexOf(','); // try to get a comma first
-
-            if (endIndex == -1)
-            {
-                endIndex = workingString.IndexOf('.'); // then go for a period
-                if (endIndex == -1)
-                {
-                    if (startIndex == 0)
-                    {
-                        endIndex = Math.Min(contextLength, workingString.Length);
-                        while (endIndex < workingString.Length && !char.IsWhiteSpace(workingString[endIndex]))
-                            endIndex++;
-                    }
-                    else
-                        endIndex = workingString.Length; // just show the whole thing
-                }
-            }
-
-            if (endIndex != workingString.Length)
-                endIndex++; // include that punctuation we grabbed
-
-            if (startIndex == 0)
-                return workingString.Substring(0, endIndex).Trim() + (endIndex != workingString.Length ? " ..." : "");
-
-            else
-            {
-                var startOffset = (Math.Max(0, endIndex - contextLength)); // only show the 50 characters around it
-                return "... " + workingString.Substring(startOffset, endIndex - startOffset).Trim() + " ...";
-            }
         }
 
         /// <summary>
@@ -260,6 +214,32 @@ namespace System
                 return new Tuple<string, string>(checkAgainst, GetStringContext(fullString, checkAgainst));
             else
                 return new Tuple<string, string>(string.Empty, string.Empty);
+        }
+
+        /// <summary>
+        /// Checks if an IMessage is a message which trips our ding terms
+        /// </summary>
+        public static bool IsDingMessage(this IMessage message, ChannelSettingsModel settings, IEnumerable<string> dingTerms)
+        {
+            var safeMessage = System.Web.HttpUtility.HtmlDecode(message.Message);
+
+            if (settings.NotifyIncludesCharacterNames)
+                if (message.Poster.Name.HasDingTermMatch(dingTerms)) return true;
+            if (settings.NotifyIncludesMessages)
+                if (safeMessage.HasDingTermMatch(dingTerms)) return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if checkAgainst contains any term in dingTerms
+        /// </summary>
+        public static bool HasDingTermMatch(this string checkAgainst, IEnumerable<string> dingTerms)
+        {
+            foreach (var term in dingTerms)
+                if (FirstMatch(checkAgainst, term).Item1 != string.Empty)
+                    return true;
+            return false;
         }
         #endregion
     }

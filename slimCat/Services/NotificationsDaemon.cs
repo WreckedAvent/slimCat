@@ -67,6 +67,8 @@ namespace Services
                     icon.Visible = true;
                     #endregion
                 });
+            _events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(
+                args => icon.Text = "slimCat - " + args);
 
             #region Icon Init
             icon.Icon = new System.Drawing.Icon(Environment.CurrentDirectory + @"\icons\catIcon.ico");
@@ -149,9 +151,6 @@ namespace Services
             foreach (var term in ApplicationSettings.GlobalNotifyTermsList)
                 temp.Add(term); // get our combined list of terms
 
-            if (channel.Settings.NotifyCharacterMention)
-                temp.Add(_cm.SelectedCharacter.Name.ToLower()); // if we need to check for our name too
-
             var checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase);
             #endregion
 
@@ -206,9 +205,15 @@ namespace Services
                     var notifyMessage = string.Format("{0}'s name matches {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
 
                     NotifyUser(true, true, notifyMessage, channel.ID);
+                    channel.FlashTab();
                     return;
                 }
             }
+
+            if (channel.Settings.NotifyCharacterMention)
+                temp.Add(_cm.SelectedCharacter.Name.ToLower()); // fixes an issue where a user's name would ding constantly
+
+            checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase);
 
             // check if we need to look in the message itself
             if (channel.Settings.NotifyIncludesMessages)
@@ -230,6 +235,7 @@ namespace Services
                     var notifyMessage = string.Format("{0} mentioned {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
 
                     NotifyUser(true, true, notifyMessage, channel.ID);
+                    channel.FlashTab();
                     return;
                 }
             }
