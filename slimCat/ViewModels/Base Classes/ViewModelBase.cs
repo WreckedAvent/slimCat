@@ -169,7 +169,7 @@ namespace ViewModels
 
         protected bool CanIgnore(object args)
         {
-            return (!_cm.Ignored.Contains(args as string));
+            return (!_cm.Ignored.Contains(args as string, StringComparer.OrdinalIgnoreCase));
         }
 
         protected bool CanUnIgnore(object args)

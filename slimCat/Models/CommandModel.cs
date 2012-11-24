@@ -144,11 +144,12 @@ namespace Models
             // user commands
             {"addbookmark", new CommandModel("addbookmark", "bookmark-add", new [] {"name"})},
             {"addfriend", new CommandModel("addfriend", "friend-add", new [] {"dest_name"})},
+            {"bottle", new CommandModel("bottle", "RLL", new [] {"dice"}, CommandModel.CommandTypes.SingleArgsAndChannel)},
             {"code", new CommandModel("code", "code", null, CommandModel.CommandTypes.NoArgs)},
             {"clear", new CommandModel("clear", "clear", null, CommandModel.CommandTypes.NoArgs)},
             {"clearall", new CommandModel("clearall", "clearall", null, CommandModel.CommandTypes.NoArgs)},
             {"close", new CommandModel("close", "close", new [] {"channel"}, CommandModel.CommandTypes.OnlyChannel)},
-            {"bottle", new CommandModel("bottle", "RLL", new [] {"dice"}, CommandModel.CommandTypes.SingleArgsAndChannel)},
+            {"handlereport", new CommandModel("handlereport", "SFC", new [] {"callid", "action"}, CommandModel.CommandTypes.TwoArgs)},
             {"ignore", new CommandModel("ignore", "IGN", new [] {"character", "action"}, CommandModel.CommandTypes.TwoArgs)},
             {"interesting", new CommandModel("interesting", "interesting", new [] {"character"})},
             {"invite", new CommandModel("invite", "CIU", new [] {"character"}, CommandModel.CommandTypes.SingleArgsAndChannel)},
@@ -165,12 +166,12 @@ namespace Models
             {"removebookmark", new CommandModel("removebookmark", "bookmark-remove", new [] {"name"})},
             {"removefriend", new CommandModel("removefriend", "friend-remove", new [] {"dest_name"})},
             {"roll", new CommandModel("roll", "RLL", new [] {"dice"}, CommandModel.CommandTypes.SingleArgsAndChannel)}, 
-            //{"report", new CommandModel("report", "SFC", new [] {"character"})},
+            {"report", new CommandModel("report", "SFC", new [] {"name", "action"}, CommandModel.CommandTypes.TwoArgs)},
             {"status", new CommandModel("status", "STA", new [] {"status", "statusmsg"}, CommandModel.CommandTypes.TwoArgs)},
+            {"tempignore", new CommandModel("tempignore", "tempignore", new [] {"character"})},
+            {"tempunignore", new CommandModel("tempunignore", "tempunignore", new [] {"character"})},
             {"unignore", new CommandModel("unignore", "IGN", new [] {"character", "action"}, CommandModel.CommandTypes.TwoArgs)},
             {"who", new CommandModel("who", "who", null, CommandModel.CommandTypes.NoArgs)},
-
-
 
             // channel moderator commands
             {"ban", new CommandModel("ban", "CBU", new [] {"character"}, CommandModel.CommandTypes.SingleArgsAndChannel, CommandModel.PermissionLevel.Moderator)},
@@ -243,6 +244,8 @@ namespace Models
             {"openroom", new CommandOverride("status", "public")},
             {"closeroom", new CommandOverride("status", "private")},
             {"bottle", new CommandOverride("dice", "bottle")},
+            {"report", new CommandOverride("action", "report")},
+            {"handlereport", new CommandOverride("action", "confirm")},
         };
 
         public static string[] NonCommandCommands = new []

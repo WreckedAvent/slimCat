@@ -283,10 +283,12 @@ namespace Services
                 else if (_cm.IsOfInterest(targetCharacter))
                 {
                     AddNotification(Notification);
-                    if (_cm.SelectedChannel is PMChannelModel
-                        && !(_cm.SelectedChannel as PMChannelModel).ID.Equals(targetCharacter, StringComparison.OrdinalIgnoreCase))
-                        NotifyUser(false, false, Notification.ToString(), targetCharacter);
-                    // only bug user if we're not looking at that character's pm tab right now (the notification and top part expanding will be enough)
+
+                    if (_cm.SelectedChannel is PMChannelModel)
+                        if ((_cm.SelectedChannel as PMChannelModel).ID.Equals(targetCharacter, StringComparison.OrdinalIgnoreCase))
+                            return; // don't make a toast if we have their tab focused as it is redundant
+
+                    NotifyUser(false, false, Notification.ToString(), targetCharacter);
                 }
             }
 

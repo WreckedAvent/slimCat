@@ -115,7 +115,6 @@ namespace Services
             if (!command.ContainsKey("type")) return;
 
             var commandType = command["type"] as string;
-            command.Remove("type");
 
             switch (commandType)
             {
@@ -168,6 +167,9 @@ namespace Services
             StringBuilder totalRequest = new StringBuilder();
             foreach (var arg in arguments)
             {
+                if (arg.Key == "type")
+                    continue;
+
                 if (!isFirst)
                     totalRequest.Append('&');
                 else

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using ViewModels;
 
@@ -83,6 +84,7 @@ namespace Services
                 case "COR": return new CommandDelegate(OperatorDemoteCommand);
                 case "COA": return new CommandDelegate(OperatorPromoteCommand);
                 case "RMO": return new CommandDelegate(RoomModeChangedCommand);
+                case "BRO": return new CommandDelegate(BroadcastCommand);
                 default: return null;
             }
         }
@@ -157,7 +159,7 @@ namespace Services
             string message = (string)command["message"];
             string channel = (string)command["channel"];
 
-            if (!_cm.Ignored.Any(ignoree => ignoree.Equals(character, StringComparison.OrdinalIgnoreCase))) 
+            if (!_cm.Ignored.Contains(character, StringComparer.OrdinalIgnoreCase)) 
                 _manager.AddMessage(message, channel, character, (isAd ? MessageType.ad : MessageType.normal));
         }
         private void PromoteOrDemote(string character, bool isPromote, string channelID = null)
@@ -368,7 +370,7 @@ namespace Services
         private void PrivateMessageCommand(IDictionary<string, object> command)
         {
             var sender = (string)command["character"];
-            if (!_cm.Ignored.Contains(sender))
+            if (!_cm.Ignored.Contains(sender, StringComparer.OrdinalIgnoreCase))
             {
                 if (_cm.CurrentPMs.FirstByIdOrDefault(sender) == null)
                     _manager.AddChannel(ChannelType.pm, sender);
@@ -521,6 +523,9 @@ namespace Services
             var channelName = (string)command["channel"];
             var mode = (ChannelMode)Enum.Parse(typeof(ChannelMode), command["mode"] as string);
             var channel = _cm.CurrentChannels.FirstByIdOrDefault(channelName);
+
+            if (channel == null)
+                Thread.Sleep(500);
 
             channel.Mode = mode;
             dynamic users = command["users"]; // dynamic lets us deal with odd syntax
@@ -695,6 +700,30 @@ namespace Services
                         channel.Title
                     ));
             }
+        }
+
+        private void NewReportCommand(IDictionary<string, object> command)
+        {
+            //{callid=lcallid, action="report", report=lreport, timestamp=ltimestamp, character=lname}
+            // TODO: Implement SFC for moderators
+            return;
+        }
+
+        private void BroadcastCommand(IDictionary<string, object> command)
+        {
+            var message = command["message"] as string;
+            var posterName = command["character"] as string;
+            var poster = _cm.FindCharacter(posterName);
+
+            _events.GetEvent<NewUpdateEvent>().Publish(
+                new CharacterUpdateModel(
+                    poster,
+                    new Models.CharacterUpdateModel.BroadcastEventArgs()
+                    {
+                        Message = message
+                    }
+                ));
+            return;
         }
         #endregion
 

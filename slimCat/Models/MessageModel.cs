@@ -181,6 +181,26 @@ namespace Models
                 return "has " + (Joined ? "joined" : "left") + string.Format(" {0}.", TargetChannel);
             }
         }
+
+        public class BroadcastEventArgs : CharacterUpdateEventArgs
+        {
+            public string Message { get; set; }
+
+            public override string ToString()
+            {
+                return "broadcasted " + Message + (Char.IsPunctuation(Message.Last()) ? "" : ".");
+            }
+        }
+
+        public class ReportEventArgs : CharacterUpdateEventArgs
+        {
+            public int EventID { get; set; }
+
+            public override string ToString()
+            {
+                return "requests moderator assistance.";
+            }
+        }
         #endregion
 
         #region Class Implentation

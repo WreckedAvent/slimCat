@@ -411,13 +411,36 @@ namespace Services
                     #endregion
 
                     #region Report command
-                    /*
                     case "SFC":
                     {
+                        if (!command.ContainsKey("report"))
+                            command.Add("report", string.Empty);
+
                         //  report format: "Current Tab/Channel: <channel> | Reporting User: <this user> | <reported user> | <report body>
+                        var reportText = string.Format("Current Tab/Channel: {0} | Reporting User: {1} | {2} | {3}",
+                                                 _model.SelectedChannel.ID,
+                                                 _model.SelectedCharacter.Name,
+                                                 command["character"] as string,
+                                                 command["report"] as string);
+                        command.Remove("character");
+                        command["report"] = reportText;
+                        break;
+                    }
+                    #endregion
+
+                    #region Temp ignore/unignore
+                    case "tempignore":
+                    case "tempunignore":
+                    {
+                        var character = (command["character"] as string).ToLower().Trim();
+                        bool add = type == "tempignore";
+
+                        if (add && !_model.Ignored.Contains(character, StringComparer.OrdinalIgnoreCase))
+                            _model.Ignored.Add(character);
+                        if (!add && _model.Ignored.Contains(character, StringComparer.OrdinalIgnoreCase))
+                            _model.Ignored.Remove(character);
                         return;
                     }
-                    */
                     #endregion
 
                     default: break;
@@ -548,14 +571,13 @@ namespace Services
             ICharacter sender = (poster != "_thisCharacter" ? _model.FindCharacter(poster) : _model.SelectedCharacter);
             InstanceLogger();
 
-            try
-            {
-                if (_model.CurrentChannels.Any(chan => chan.ID.Equals(channelName, StringComparison.OrdinalIgnoreCase)))
-                    channel = _model.CurrentChannels.First(chan => chan.ID.Equals(channelName, StringComparison.OrdinalIgnoreCase));
-                else
-                    channel = _model.CurrentPMs.First(chan => chan.ID.Equals(channelName, StringComparison.OrdinalIgnoreCase));
-            }
-            catch { throw new InvalidOperationException("Unknown Channel"); }
+            channel = _model.CurrentChannels.FirstByIdOrDefault(channelName);
+
+            if (channel == null)
+                channel = _model.CurrentPMs.FirstByIdOrDefault(channelName);
+
+            if (channel == null)
+                return; // exception circumstance, swallow message
 
             Dispatcher.Invoke(
                 (Action)delegate
