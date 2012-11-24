@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -61,20 +62,20 @@ namespace System
             object parameter, CultureInfo culture)
         {
             var inlines = new List<Inline>();
-            if (values.GetLength(0) == 3 
+            if (values.Length == 3 
                 && values[0] is string 
-                && values[1] is Models.ICharacter 
-                && values[2] is Models.MessageType) // avoids null reference
+                && values[1] is ICharacter 
+                && values[2] is MessageType) // avoids null reference
             {
                 #region Init
                 inlines.Clear(); // simple insurance that there's no junk
 
                 string text = (string)values[0]; // this is the beef of the message
                 text = HttpUtility.HtmlDecode(text); // translate the HTML characters
-                var userName = ((Models.ICharacter)values[1]).Name; // this is our poster's name
-                Models.MessageType type = (Models.MessageType)values[2]; // what kind of type our message is
+                var userName = ((ICharacter)values[1]).Name; // this is our poster's name
+                MessageType type = (MessageType)values[2]; // what kind of type our message is
 
-                if (type == Models.MessageType.roll)
+                if (type == MessageType.roll)
                 {
                     inlines.Add(HelperConverter.ParseBBCode(text, true));
                     return inlines;
@@ -132,6 +133,24 @@ namespace System
                 #endregion
             }
 
+            else if (values.Length == 1
+                && values[0] is NotificationModel)
+            {
+                inlines.Clear();
+
+                if (values[0] is CharacterUpdateModel)
+                {
+                    var notification = values[0] as CharacterUpdateModel;
+                    var userName = notification.TargetCharacter.Name;
+                    string text = HttpUtility.HtmlDecode(notification.Arguments.ToString());
+
+                    var nameLink = HelperConverter.MakeUsernameLink(userName, true);
+
+                    inlines.Add(nameLink);
+                    inlines.Add(new Run(" "));
+                    inlines.Add(HelperConverter.ParseBBCode(text, true));
+                }
+            }
             else
                 inlines.Clear();
             return inlines;
@@ -148,15 +167,27 @@ namespace System
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (value == null)
+                return null;
+
+            bool useTunneling = false;
+            if (parameter != null)
+            {
+                bool temp;
+                bool.TryParse(parameter as string, out temp);
+
+                useTunneling = temp;
+            }
+
             string text = value as string;
 
             if (text == null)
-                return null;
+                text = value.ToString();
 
             text = HttpUtility.HtmlDecode(text);
 
             IList<Inline> toReturn = new List<Inline>();
-            toReturn.Add(HelperConverter.ParseBBCode(text, false));
+            toReturn.Add(HelperConverter.ParseBBCode(text, useTunneling));
 
             return toReturn;
         }

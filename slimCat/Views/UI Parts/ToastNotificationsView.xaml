@@ -1,6 +1,9 @@
 ﻿<Window x:Class="Views.NotificationsView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lib="clr-namespace:lib"
+        xmlns:v="clr-namespace:Views"
+        
         Title="slimCat Client Notifications"
         WindowStyle="None"
         ShowInTaskbar="False"
@@ -15,12 +18,21 @@
                 HorizontalContentAlignment="Left"
                 Background="{StaticResource BackgroundBrush}">
             <StackPanel Margin="10">
-                <TextBlock Text="slimCat Notification"
+                <DockPanel>
+                    <v:CloseButtonView Command="{Binding HideCommand}"
+                                       HorizontalAlignment="Right"
+                                       DockPanel.Dock="Right"/>
+                    <TextBlock Text="slimCat Notification"
                            FontSize="16"
                            Foreground="{StaticResource HighlightBrush}"/>
+                </DockPanel>
                 <TextBlock TextWrapping="Wrap"
                            Foreground="{StaticResource ForegroundBrush}">
-                <Run Text="{Binding Content}"/>
+                    <lib:TextBlockHelper.InlineList>
+                        <Binding Path="Content"
+                                 Mode="OneWay"
+                                 Converter="{StaticResource BBCodeConverter}"/>
+                    </lib:TextBlockHelper.InlineList>
                 </TextBlock>
             </StackPanel>
         </Button>

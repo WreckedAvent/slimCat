@@ -104,6 +104,8 @@ namespace Models
     /// </summary>
     public class CharacterUpdateModel : NotificationModel
     {
+        private const string domain_base = @"http://www.f-list.net/";
+
         /// <summary>
         /// Represents updates which have a character as their direct object
         /// </summary>
@@ -199,6 +201,78 @@ namespace Models
             public override string ToString()
             {
                 return "requests moderator assistance.";
+            }
+        }
+
+        public class NoteEventArgs : CharacterUpdateEventArgs
+        {
+            public long NoteID { get; set; }
+            public string Subject { get; set; }
+            public string Link
+            {
+                get
+                {
+                    return domain_base + "view_note.php?note_id=" + NoteID;
+                }
+            }
+
+            public override string ToString()
+            {
+                return string.Format(@"has sent you a note: [url={0}]{1}[/url]", Link, Subject);
+            }
+        }
+
+        public class CommentEventArgs : CharacterUpdateEventArgs
+        {
+            public enum CommentTypes
+            {
+                comment,
+                newspost,
+                bugreport,
+                changelog,
+                feature
+            }
+
+            private string commentTypeToString(CommentTypes argument)
+            {
+                if (argument == CommentTypes.bugreport)
+                    return "bug report";
+                else if (argument == CommentTypes.feature)
+                    return "feature suggestion";
+                else return argument.ToString();
+            }
+
+            public long ParentID { get; set; } // the parent of whatever was replied to
+            public long TargetID { get; set; } // the id of the content, such as newspost ID
+            public long CommentID { get; set; } // the id of the comment that is new
+            public string Title { get; set; } // title of the newpost, suggestion, etc
+            public CommentTypes CommentType { get; set; }  // the type of comment we got
+            public string Link
+            {
+                get
+                {
+                    switch (CommentType)
+                    {
+                        case CommentTypes.newspost: return string.Format("{0}newspost/{1}/#Comment{2}", domain_base, TargetID, CommentID);
+                        case CommentTypes.bugreport: return string.Format("{0}view_bugreport.php?id={1}#{2}", domain_base, TargetID, CommentID);
+                        case CommentTypes.changelog: return string.Format("{0}log.php?id={1}#{2}", domain_base, TargetID, CommentID);
+                        case CommentTypes.feature: return string.Format("{0}vote.php?fid={1}#{2}", domain_base, TargetID, CommentID);
+                        default: return string.Empty;
+                    }
+                }
+            }
+
+            public override string ToString()
+            {
+                if (ParentID == 0) // not a comment, but a suggestion, newspost, etc.
+                {
+                    return "has replied to your " + commentTypeToString(CommentType) + ", " + string.Format("[url={0}]{1}[/url]", Link, Title);
+                }
+
+                else // our comment *on* a suggestion, newspost, comment, etc.
+                {
+                    return "has replied to your comment on the " + commentTypeToString(CommentType) + ' ' + string.Format("[url={0}]{1}[/url]", Link, Title);
+                }
             }
         }
         #endregion

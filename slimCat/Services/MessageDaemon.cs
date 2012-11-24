@@ -293,6 +293,12 @@ namespace Services
                         // first off, see if we have a target defined. If we do, then let's see if it's one of our current channels
                         if (target != null)
                         {
+                            if (target.StartsWith("http://")) // if our target is a command to get the latest link-able thing, let's grab that
+                            {
+                                System.Diagnostics.Process.Start(target);
+                                return;
+                            }
+
                             var guess = _model.CurrentPMs.FirstByIdOrDefault(target);
                             if (guess != null)
                             {
@@ -300,6 +306,7 @@ namespace Services
                                 Dispatcher.Invoke(showMyDamnWindow);
                                 return;
                             }
+
                             else
                             {
                                 var secondGuess = _model.CurrentChannels.FirstByIdOrDefault(target);

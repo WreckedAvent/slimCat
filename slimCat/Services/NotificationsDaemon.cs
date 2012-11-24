@@ -280,6 +280,15 @@ namespace Services
                     AddNotification(Notification);
                 }
 
+                if (args is Models.CharacterUpdateModel.NoteEventArgs || args is Models.CharacterUpdateModel.CommentEventArgs)
+                { // we always want a toast for these
+                    AddNotification(Notification);
+                    var link = (args is Models.CharacterUpdateModel.NoteEventArgs ? 
+                                    ((Models.CharacterUpdateModel.NoteEventArgs)args).Link 
+                                    : ((Models.CharacterUpdateModel.CommentEventArgs)args).Link);
+                    NotifyUser(false, false, Notification.ToString(), link);
+                }
+
                 else if (_cm.IsOfInterest(targetCharacter))
                 {
                     AddNotification(Notification);

@@ -15,9 +15,12 @@
                         TextBlock.Foreground="{StaticResource ForegroundBrush}">
                 <lib:TextBlockHelper.InlineList>
                     <MultiBinding Converter="{StaticResource BBPostConverter}">
-                        <Binding Path="Message" />
-                        <Binding Path="Poster" />
-                        <Binding Path="Type" />
+                        <Binding Path="Message"
+                                 Mode="OneTime"/>
+                        <Binding Path="Poster"
+                                 Mode="OneTime"/>
+                        <Binding Path="Type"
+                                 Mode="OneTime"/>
                     </MultiBinding>
                 </lib:TextBlockHelper.InlineList>
             </TextBlock>

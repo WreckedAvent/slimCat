@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Web;
 using System.Windows;
 using ViewModels;
 
@@ -85,6 +86,7 @@ namespace Services
                 case "COA": return new CommandDelegate(OperatorPromoteCommand);
                 case "RMO": return new CommandDelegate(RoomModeChangedCommand);
                 case "BRO": return new CommandDelegate(BroadcastCommand);
+                case "RTB": return new CommandDelegate(RealTimeBridgeCommand);
                 default: return null;
             }
         }
@@ -525,7 +527,7 @@ namespace Services
             var channel = _cm.CurrentChannels.FirstByIdOrDefault(channelName);
 
             if (channel == null)
-                Thread.Sleep(500);
+                Thread.Sleep(1000);
 
             channel.Mode = mode;
             dynamic users = command["users"]; // dynamic lets us deal with odd syntax
@@ -724,6 +726,61 @@ namespace Services
                     }
                 ));
             return;
+        }
+
+        private void RealTimeBridgeCommand(IDictionary<string, object> command)
+        {
+            var type = command["type"] as string;
+
+            if (type.Equals("note"))
+            {
+                var senderName = command["sender"] as string;
+                var subject = command["subject"] as string;
+                long id = (long)command["id"];
+
+                var sender = _cm.FindCharacter(senderName);
+
+                _events.GetEvent<NewUpdateEvent>().Publish(
+                    new CharacterUpdateModel(
+                        sender,
+                        new Models.CharacterUpdateModel.NoteEventArgs()
+                        {
+                            Subject = subject,
+                            NoteID = id
+                        })
+                    );
+            }
+
+            else if (type.Equals("comment"))
+            {
+                var name = command["name"] as string;
+                var character = _cm.FindCharacter(name);
+
+                //sometimes ID is sent as a string. Sometimes it is sent as a number.
+                // so even though it's THE SAME COMMAND we have to treat *each* number differently
+
+                long commentId = long.Parse(command["id"] as string);
+                long parentId = (long)command["parent_id"];
+                long targetId = long.Parse(command["target_id"] as string);
+
+                var title = HttpUtility.HtmlDecode(command["target"] as string);
+
+                var commentType = (Models.CharacterUpdateModel.CommentEventArgs.CommentTypes)
+                    Enum.Parse(typeof(Models.CharacterUpdateModel.CommentEventArgs.CommentTypes), command["target_type"] as string);
+
+                _events.GetEvent<NewUpdateEvent>().Publish(
+                    new CharacterUpdateModel(
+                        character,
+                        new Models.CharacterUpdateModel.CommentEventArgs()
+                        {
+                            CommentID = commentId,
+                            CommentType = commentType,
+                            ParentID = parentId,
+                            TargetID = targetId,
+                            Title = title
+                        })
+                    );
+            }
         }
         #endregion
 
