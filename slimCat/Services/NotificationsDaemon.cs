@@ -44,7 +44,8 @@ namespace Services
             _events.GetEvent<NewMessageEvent>().Subscribe(HandleNewChannelMessage, true);
             _events.GetEvent<NewPMEvent>().Subscribe(HandleNewMessage, true);
             _events.GetEvent<NewUpdateEvent>().Subscribe(HandleNotification, true);
-            _events.GetEvent<LoginEvent>().Subscribe(
+
+            _events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(
                 args =>
                 {
                     Application.Current.MainWindow.Closing += (s, e) =>
@@ -63,33 +64,31 @@ namespace Services
                     {
                         _events.GetEvent<ErrorEvent>().Publish(null);
                     };
+                    #endregion
 
+                    #region Icon Init
+                    icon.Icon = new System.Drawing.Icon(Environment.CurrentDirectory + @"\icons\catIcon.ico");
+                    icon.DoubleClick += (s, e) =>
+                    {
+                        ShowWindow();
+                    };
+
+                    icon.BalloonTipClicked += (s, e) =>
+                    {
+                        slimCat.Properties.Settings.Default.ShowStillRunning = false;
+                        slimCat.Properties.Settings.Default.Save();
+                    };
+
+                    var iconMenu = new System.Windows.Forms.ContextMenu();
+                    iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem(string.Format("slimCat Caracal ({0})", args)) { Enabled = false });
+                    iconMenu.MenuItems.Add("Show", (s, e) => ShowWindow());
+                    iconMenu.MenuItems.Add("Exit", (s, e) => ShutDown());
+
+                    icon.Text = "slimCat - " + args;
+                    icon.ContextMenu = iconMenu;
                     icon.Visible = true;
                     #endregion
                 });
-            _events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(
-                args => icon.Text = "slimCat - " + args);
-
-            #region Icon Init
-            icon.Icon = new System.Drawing.Icon(Environment.CurrentDirectory + @"\icons\catIcon.ico");
-            icon.DoubleClick += (s, e) =>
-                {
-                    ShowWindow();
-                };
-
-            icon.BalloonTipClicked += (s, e) =>
-                {
-                    slimCat.Properties.Settings.Default.ShowStillRunning = false;
-                    slimCat.Properties.Settings.Default.Save();
-                };
-
-            var iconMenu = new System.Windows.Forms.ContextMenu();
-            iconMenu.MenuItems.Add("Show", (s, e) => ShowWindow());
-            iconMenu.MenuItems.Add("Exit", (s, e) => ShutDown());
-
-            icon.Text = "slimCat";
-            icon.ContextMenu = iconMenu;
-            #endregion
         }
         #endregion
 
@@ -211,9 +210,17 @@ namespace Services
             }
 
             if (channel.Settings.NotifyCharacterMention)
-                temp.Add(_cm.SelectedCharacter.Name.ToLower()); // fixes an issue where a user's name would ding constantly
+            {
+                var name = _cm.SelectedCharacter.Name.ToLower();
 
-            checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase);
+                temp.Add(name); // fixes an issue where a user's name would ding constantly
+                if (name.Last() != 's' && name.Last() != 'z')
+                    temp.Add(name + @"'s"); // possessive fix
+                else
+                    temp.Add(name + @"'");
+
+                checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase);
+            }
 
             // check if we need to look in the message itself
             if (channel.Settings.NotifyIncludesMessages)

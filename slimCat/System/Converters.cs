@@ -170,24 +170,15 @@ namespace System
             if (value == null)
                 return null;
 
-            bool useTunneling = false;
-            if (parameter != null)
-            {
-                bool temp;
-                bool.TryParse(parameter as string, out temp);
-
-                useTunneling = temp;
-            }
-
             string text = value as string;
 
             if (text == null)
-                text = value.ToString();
+                return null;
 
             text = HttpUtility.HtmlDecode(text);
 
             IList<Inline> toReturn = new List<Inline>();
-            toReturn.Add(HelperConverter.ParseBBCode(text, useTunneling));
+            toReturn.Add(HelperConverter.ParseBBCode(text, false));
 
             return toReturn;
         }

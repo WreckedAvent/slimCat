@@ -66,7 +66,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="CharacterUpdateTemplate">
-        <Grid>
+        <Grid ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="auto"/>
@@ -93,7 +93,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="ChannelUpdateTemplate">
-        <Grid>
+        <Grid ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="auto"/>

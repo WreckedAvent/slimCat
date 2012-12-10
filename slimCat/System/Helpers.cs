@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -240,6 +241,37 @@ namespace System
                 if (FirstMatch(checkAgainst, term).Item1 != string.Empty)
                     return true;
             return false;
+        }
+
+        /// <summary>
+        /// Makes a safe folder path to our channel
+        /// </summary>
+        public static string MakeSafeFolderPath(string character, string title, string ID)
+        {
+            var basePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string folderName;
+
+            if (!title.Equals(ID))
+            {
+                string safeTitle = title;
+                foreach (var c in Path.GetInvalidPathChars().Union(new List<char>() { ':' }))
+                    safeTitle = safeTitle.Replace(c.ToString(), "");
+
+                if (safeTitle[0].Equals('.'))
+                    safeTitle = safeTitle.Remove(0, 1);
+
+                folderName = string.Format("{0} ({1})", safeTitle, ID);
+            }
+            else
+                folderName = ID;
+
+            if (folderName.ContainsOrd(@"/", true) || folderName.ContainsOrd(@"\", true))
+            {
+                folderName = folderName.Replace('/', '-');
+                folderName = folderName.Replace('\\', '-');
+            }
+
+            return Path.Combine(basePath, "slimCat", character, folderName);
         }
         #endregion
     }

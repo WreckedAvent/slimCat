@@ -14,7 +14,7 @@ namespace Services
 
         private static void makeSettingsFileIfNotExist(string CurrentCharacter, string Title, string ID, Models.ChannelType chanType)
         {
-            var path = buildPathString(CurrentCharacter, Title, ID);
+            var path = StaticFunctions.MakeSafeFolderPath(CurrentCharacter, Title, ID);
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -30,7 +30,7 @@ namespace Services
 
         private static void makeGlobalSettingsFileIfNotExist(string currentCharacter)
         {
-            var path = buildPathString(currentCharacter, "Global", "Global");
+            var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -47,7 +47,7 @@ namespace Services
         public static Models.ChannelSettingsModel GetChannelSettings(string CurrentCharacter, string Title, String ID, Models.ChannelType chanType)
         {
             makeSettingsFileIfNotExist(CurrentCharacter, Title, ID, chanType);
-            var workingPath = buildPathString(CurrentCharacter, Title, ID);
+            var workingPath = StaticFunctions.MakeSafeFolderPath(CurrentCharacter, Title, ID);
             workingPath = Path.Combine(workingPath, SETTINGS_FILE_NAME);
             try
             {
@@ -128,7 +128,7 @@ namespace Services
 
             Type type = typeof(Models.ApplicationSettings);
             var propertyList = type.GetProperties();
-            var path = buildPathString(currentCharacter, "Global", "Global");
+            var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
             path = Path.Combine(path, SETTINGS_FILE_NAME);
 
             try
@@ -179,7 +179,7 @@ namespace Services
         public static void SaveApplicationSettingsToXML(string currentCharacter)
         {
             XElement root = new XElement("settings");
-            var fileName = Path.Combine(buildPathString(currentCharacter, "Global", "Global"), SETTINGS_FILE_NAME);
+            var fileName = Path.Combine(StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global"), SETTINGS_FILE_NAME);
 
             foreach (var property in typeof(Models.ApplicationSettings).GetProperties())
             {
@@ -218,7 +218,7 @@ namespace Services
         /// </summary>
         public static void UpdateSettingsFile(object newSettingsModel, string CurrentCharacter, string Title, string ID)
         {
-            var workingPath = buildPathString(CurrentCharacter, Title, ID);
+            var workingPath = StaticFunctions.MakeSafeFolderPath(CurrentCharacter, Title, ID);
             workingPath = Path.Combine(workingPath, SETTINGS_FILE_NAME);
 
             SerializeObjectToXML(newSettingsModel, workingPath);
@@ -226,28 +226,9 @@ namespace Services
 
         public static bool HasChannelSettings(string CurrentCharacter, string Title, string ID)
         {
-            var path = buildPathString(CurrentCharacter, Title, ID);
+            var path = StaticFunctions.MakeSafeFolderPath(CurrentCharacter, Title, ID);
 
             return Directory.Exists(Path.Combine(path, SETTINGS_FILE_NAME));
-        }
-
-        private static string buildPathString(string CurrentCharacter, string Title, string ID)
-        {
-            var basePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string folderName;
-
-            if (!Title.Equals(ID))
-            {
-                string safeTitle = Title;
-                foreach (var c in Path.GetInvalidPathChars())
-                    safeTitle = safeTitle.Replace(c.ToString(), "");
-
-                folderName = safeTitle + ' ' + "(" + ID + ")";
-            }
-            else
-                folderName = Title;
-
-            return Path.Combine(basePath, "slimCat", CurrentCharacter, folderName);
         }
     }
 }

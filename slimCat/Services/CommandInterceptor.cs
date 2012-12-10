@@ -118,7 +118,7 @@ namespace Services
                 string name = channel["name"] as string;
                 string title = null;
                 if (!isPublic)
-                    title = channel["title"] as string;
+                    title = HttpUtility.HtmlDecode(channel["title"] as string);
 
                 ChannelMode mode = ChannelMode.both;
                 if (isPublic)

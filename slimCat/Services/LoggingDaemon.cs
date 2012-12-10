@@ -10,7 +10,6 @@ namespace Services
 {
     public class LoggingDaemon : ILogger
     {
-        private string _basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "slimCat");
         private string _fullPath;
         private string _thisCharacter;
 
@@ -21,7 +20,7 @@ namespace Services
         {
             _thisCharacter = characterName;
 
-            _fullPath = _basePath + "\\" + _thisCharacter;
+            _fullPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "slimCat", _thisCharacter);
 
             if (!Directory.Exists(_fullPath))
                 Directory.CreateDirectory(_fullPath);
@@ -101,7 +100,7 @@ namespace Services
                 Process.Start(_fullPath);
             else
             {
-                var workingPath = getLoggingPath(Title, ID);
+                var workingPath = StaticFunctions.MakeSafeFolderPath(_thisCharacter, Title, ID);
 
                 if (!Directory.Exists(workingPath))
                 {
@@ -122,7 +121,7 @@ namespace Services
         /// </summary>
         private StreamWriter accessLog(string Title, string ID)
         {
-            string loggingPath = getLoggingPath(Title, ID);
+            string loggingPath = StaticFunctions.MakeSafeFolderPath(_thisCharacter, Title, ID);
 
             var fileName = dateToFileName();
 
@@ -130,24 +129,6 @@ namespace Services
                 Directory.CreateDirectory(loggingPath);
 
             return new StreamWriter(loggingPath + fileName, true);
-        }
-
-        public string getLoggingPath(string title, string ID)
-        {
-            string loggingPath;
-
-            if (title.Equals(ID))
-                loggingPath = _fullPath + "\\" + ID + "\\";
-            else
-            {
-                string safeTitle = title;
-                foreach (var c in Path.GetInvalidPathChars())
-                    safeTitle = safeTitle.Replace(c.ToString(), "");
-
-                loggingPath = _fullPath + "\\" + safeTitle + " (" + ID + ")" + "\\";
-            }
-
-            return loggingPath;
         }
 
         private string dateToFileName()
