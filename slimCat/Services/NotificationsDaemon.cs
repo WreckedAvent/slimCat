@@ -268,7 +268,7 @@ namespace Services
                     }
                 }
 
-                if (args is Models.CharacterUpdateModel.JoinLeaveEventArgs) // special check for this as it has settings per channel
+                else if (args is Models.CharacterUpdateModel.JoinLeaveEventArgs) // special check for this as it has settings per channel
                 {
                     var target = (args as Models.CharacterUpdateModel.JoinLeaveEventArgs).TargetChannelID; // find by ID, not name
                     var chan = _cm.CurrentChannels.FirstByIdOrDefault(target);
@@ -287,7 +287,7 @@ namespace Services
                     AddNotification(Notification);
                 }
 
-                if (args is Models.CharacterUpdateModel.NoteEventArgs || args is Models.CharacterUpdateModel.CommentEventArgs)
+                else if (args is Models.CharacterUpdateModel.NoteEventArgs || args is Models.CharacterUpdateModel.CommentEventArgs)
                 { // we always want a toast for these
                     AddNotification(Notification);
                     var link = (args is Models.CharacterUpdateModel.NoteEventArgs ? 

@@ -180,6 +180,8 @@ namespace Models
 
             if (_isSelected)
                 _lastRead = _messages.Count;
+            else if (_messages.Count == ApplicationSettings.BackLogMax)
+                _lastRead--;
 
             UpdateBindings();
         }

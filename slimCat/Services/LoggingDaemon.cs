@@ -110,8 +110,8 @@ namespace Services
 
                 var latest = dateToFileName();
 
-                if (!isFolder && File.Exists(workingPath + latest))
-                    Process.Start(workingPath + latest);
+                if (!isFolder && File.Exists(Path.Combine(workingPath, latest)))
+                    Process.Start(Path.Combine(workingPath, latest));
                 else
                     Process.Start(workingPath);
             }
@@ -128,7 +128,7 @@ namespace Services
             if (!Directory.Exists(loggingPath))
                 Directory.CreateDirectory(loggingPath);
 
-            return new StreamWriter(loggingPath + fileName, true);
+            return new StreamWriter(Path.Combine(loggingPath, fileName), true);
         }
 
         private string dateToFileName()

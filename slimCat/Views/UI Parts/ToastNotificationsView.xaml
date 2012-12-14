@@ -15,16 +15,19 @@
         Background="Transparent">
     <Grid TextBlock.FontSize="14">
         <Button Command="{Binding SnapToLatestCommand}"
+                HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Left"
                 Background="{StaticResource BackgroundBrush}">
-            <StackPanel Margin="10">
-                <DockPanel>
+            <StackPanel Margin="5">
+                <DockPanel HorizontalAlignment="Stretch"
+                           Width="275">
                     <v:CloseButtonView Command="{Binding HideCommand}"
+                                       Margin="0,5,0,0"
                                        HorizontalAlignment="Right"
                                        DockPanel.Dock="Right"/>
                     <TextBlock Text="slimCat Notification"
-                           FontSize="16"
-                           Foreground="{StaticResource HighlightBrush}"/>
+                               FontSize="16"
+                               Foreground="{StaticResource HighlightBrush}"/>
                 </DockPanel>
                 <TextBlock TextWrapping="Wrap"
                            Foreground="{StaticResource ForegroundBrush}">

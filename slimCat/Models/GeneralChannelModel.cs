@@ -126,7 +126,7 @@ namespace Models
         {
             var messageCollection = (message.Type == MessageType.ad ? Ads : Messages);
 
-            while (messageCollection.Count > ApplicationSettings.BackLogMax)
+            while (messageCollection.Count >= ApplicationSettings.BackLogMax)
             {
                 messageCollection[0].Dispose();
                 messageCollection.RemoveAt(0);
@@ -140,6 +140,14 @@ namespace Models
                     LastReadCount = messageCollection.Count;
                 else
                     LastReadAdCount = messageCollection.Count;
+            }
+
+            else if (messageCollection.Count >= ApplicationSettings.BackLogMax)
+            {
+                if (message.Type == MessageType.normal)
+                    LastReadCount--;
+                else
+                    LastReadAdCount--;
             }
 
             UpdateBindings();
