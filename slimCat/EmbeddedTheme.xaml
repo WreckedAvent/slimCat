@@ -8,6 +8,8 @@
     <sys:BoolColorConverter x:Key="ColorConverter"/>
     <sys:BBCodePostConverter x:Key="BBPostConverter" />
     <sys:BBCodeConverter x:Key="BBCodeConverter" />
+    <sys:GenderColorConverter x:Key="GenderColorConverter" />
+    <sys:GenderImageConverter x:Key="GenderImageConverter" />
     
     <DataTemplate x:Key="MessageView">
         <v:MessageView />
@@ -36,33 +38,63 @@
     </Style>
 
     <DataTemplate x:Key="TunnelingUsernameTemplate">
-        <TextBlock TextWrapping="Wrap">
-            <Hyperlink CommandParameter="{Binding Path=., Mode=OneTime}"
-                       Style="{StaticResource TunnelingUsernameStyle}">
-                <Run Text="{Binding Path=., Mode=OneTime}"/>
-                <Hyperlink.InputBindings>
-                    <MouseBinding MouseAction="RightClick"
-                                  Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
-                                  RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                  CommandParameter="{Binding Path=., Mode=OneTime}"/>
-                </Hyperlink.InputBindings>
-            </Hyperlink>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="15"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Rectangle Fill="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderColorConverter}}"
+                       Height="15" Width="15">
+                <Rectangle.OpacityMask>
+                    <ImageBrush ImageSource="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}"/>
+                </Rectangle.OpacityMask>
+            </Rectangle>
+            
+            <TextBlock TextWrapping="Wrap"
+                       Grid.Column="1">
+                <Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
+                           Style="{StaticResource TunnelingUsernameStyle}">
+                    <Run Text="{Binding Path=Name, Mode=OneTime}"/>
+                    <Hyperlink.InputBindings>
+                        <MouseBinding MouseAction="RightClick"
+                                      Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
+                                      RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                      CommandParameter="{Binding Path=Name, Mode=OneTime}"/>
+                    </Hyperlink.InputBindings>
+                </Hyperlink>
         </TextBlock>
+
+        </Grid>
     </DataTemplate>
 
     <DataTemplate x:Key="UsernameTemplate">
-        <TextBlock TextWrapping="Wrap">
-            <Hyperlink CommandParameter="{Binding Path=., Mode=OneTime}"
-                       Style="{StaticResource UsernameStyle}">
-                <Run Text="{Binding Path=., Mode=OneTime}"/>
-                                <Hyperlink.InputBindings>
-                    <MouseBinding MouseAction="RightClick"
-                                  Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
-                                  RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
-                                  CommandParameter="{Binding Path=., Mode=OneTime}"/>
-                </Hyperlink.InputBindings>
-            </Hyperlink>
-        </TextBlock>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="15"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Rectangle Fill="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderColorConverter}}"
+                       Height="15" Width="15">
+                <Rectangle.OpacityMask>
+                    <ImageBrush ImageSource="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}"/>
+                </Rectangle.OpacityMask>
+            </Rectangle>
+            <TextBlock TextWrapping="Wrap"
+                       Grid.Column="1">
+                <Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
+                           Style="{StaticResource UsernameStyle}">
+                    <Run Text="{Binding Path=Name, Mode=OneTime}"/>
+                                    <Hyperlink.InputBindings>
+                        <MouseBinding MouseAction="RightClick"
+                                      Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
+                                      RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
+                                      CommandParameter="{Binding Path=Name, Mode=OneTime}"/>
+                    </Hyperlink.InputBindings>
+                </Hyperlink>
+            </TextBlock>
+        </Grid>
     </DataTemplate>
 
     <DataTemplate x:Key="CharacterUpdateTemplate">

@@ -72,7 +72,7 @@ namespace System
 
                 string text = (string)values[0]; // this is the beef of the message
                 text = HttpUtility.HtmlDecode(text); // translate the HTML characters
-                var userName = ((ICharacter)values[1]).Name; // this is our poster's name
+                var user = (ICharacter)values[1]; // this is our poster's name
                 MessageType type = (MessageType)values[2]; // what kind of type our message is
 
                 if (type == MessageType.roll)
@@ -82,7 +82,7 @@ namespace System
                 }
 
                 // this creates the name link
-                var nameLink = HelperConverter.MakeUsernameLink(userName, true);
+                var nameLink = HelperConverter.MakeUsernameLink(user, true);
 
                 inlines.Add(nameLink); // name first
                 #endregion
@@ -141,10 +141,10 @@ namespace System
                 if (values[0] is CharacterUpdateModel)
                 {
                     var notification = values[0] as CharacterUpdateModel;
-                    var userName = notification.TargetCharacter.Name;
+                    var user = notification.TargetCharacter;
                     string text = HttpUtility.HtmlDecode(notification.Arguments.ToString());
 
-                    var nameLink = HelperConverter.MakeUsernameLink(userName, true);
+                    var nameLink = HelperConverter.MakeUsernameLink(user, true);
 
                     inlines.Add(nameLink);
                     inlines.Add(new Run(" "));
@@ -189,6 +189,82 @@ namespace System
         }
     }
 
+    public sealed class GenderColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            try
+            {
+                var gender = (Models.Gender)value;
+
+                switch (gender)
+                {
+                    case Gender.Herm_F:
+                    case Gender.Herm_M:
+                        return new LinearGradientBrush(
+                            new GradientStopCollection(
+                                new List<GradientStop>()
+                                {
+                                    new GradientStop((Color)Application.Current.FindResource("ForegroundColor"), 0.0),
+                                    new GradientStop((Color)Application.Current.FindResource("ForegroundColor"), 0.5),
+                                    new GradientStop((Color)Application.Current.FindResource("HighlightColor"), 0.5),
+                                    new GradientStop((Color)Application.Current.FindResource("HighlightColor"), 1.0)
+                                }
+                                ));
+                    case Gender.Cuntboy:
+                    case Gender.Transgender:
+                    case Gender.Shemale:
+                        return (SolidColorBrush)Application.Current.FindResource("ForegroundBrush");
+                    default:
+                        return (SolidColorBrush)Application.Current.FindResource("HighlightBrush");
+                }
+            }
+
+            catch { return new SolidColorBrush(); } 
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public sealed class GenderImageConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            try
+            {
+                var gender = (Models.Gender)value;
+                Uri uri;
+
+                switch (gender)
+                {
+                    case Gender.Herm_M:
+                    case Gender.Cuntboy:
+                    case Gender.Male:
+                        uri = new Uri("pack://application:,,,/icons/male.png"); break;
+                    case Gender.Herm_F:
+                    case Gender.Female:
+                    case Gender.Shemale:
+                        uri = new Uri("pack://application:,,,/icons/female.png"); break;
+                    case Gender.Transgender:
+                        uri = new Uri("pack://application:,,,/icons/transgender.png"); break;
+                    default:
+                        uri = new Uri("pack://application:,,,/icons/none.png"); break;
+                }
+
+                return new System.Windows.Media.Imaging.BitmapImage(uri);
+            }
+            catch { return new System.Windows.Media.Imaging.BitmapImage(); } 
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+ 
     /// <summary>
     /// Various conversion methods
     /// </summary>
@@ -343,7 +419,7 @@ namespace System
             {
                 var target = stripBeforeType(y);
 
-                return MakeUsernameLink(target, useTunnelingStyles);
+                return MakeUsernameLink(new CharacterModel() { Name=target, Gender=Gender.None }, useTunnelingStyles);
             }
             else if (y == "sub")
                 return new Span(x) { BaselineAlignment = BaselineAlignment.Subscript, FontSize = 10 };
@@ -673,7 +749,7 @@ namespace System
         /// <summary>
         /// Used to make a username 'button'
         /// </summary>
-        public static Inline MakeUsernameLink(string target, bool useTunnelingStyles)
+        public static Inline MakeUsernameLink(ICharacter target, bool useTunnelingStyles)
         {
             var toReturn = new InlineUIContainer(
             new ContentControl() 

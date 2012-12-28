@@ -7,7 +7,7 @@
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type m:CharacterModel}">
             <ContentControl Margin="0"
-                            Content="{Binding Name}"
+                            Content="{Binding}"
                             ContentTemplate="{StaticResource TunnelingUsernameTemplate}"
                             HorizontalAlignment="Left"
                             TextBlock.TextAlignment="Left">

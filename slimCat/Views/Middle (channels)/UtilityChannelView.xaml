@@ -54,11 +54,11 @@
             </Border>
 
             <StackPanel Grid.Row="1">
-                <Expander Header="Application Commands">
+                <Expander Header="Commands">
                     <Button Content="Save Channels ..."
                     Command="{Binding SaveChannelsCommand}"/>
                 </Expander>
-                <Expander Header="Application Settings">
+                <Expander Header="Settings">
                     <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
                         <StackPanel  Margin="0,5">
                             <TextBlock Text="Notifications Volume" Margin="5,0,0,0" />
