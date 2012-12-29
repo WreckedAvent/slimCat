@@ -1,0 +1,17 @@
+﻿<Button x:Class="Views.PinButtonView"
+        x:Name="pinButton"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"                    
+        Style="{StaticResource ImageContentButton}"
+        ToolTip="Save current channels"
+        Margin="2">
+    <Button.Content>
+        <Rectangle Fill="{Binding ElementName=pinButton, Path=Foreground}"
+                   Height="15"
+                   Width="15">
+            <Rectangle.OpacityMask>
+                <ImageBrush ImageSource="pack://application:,,,/icons/pin.png"/>
+            </Rectangle.OpacityMask>
+        </Rectangle>
+    </Button.Content>
+</Button>

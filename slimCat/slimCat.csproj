@@ -222,6 +222,9 @@
     <Compile Include="Views\UI Parts\Buttons\CloseButtonView.xaml.cs">
       <DependentUpon>CloseButtonView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UI Parts\Buttons\PinButtonView.xaml.cs">
+      <DependentUpon>PinButtonView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UI Parts\Buttons\GlobalButtonView.xaml.cs">
       <DependentUpon>GlobalButtonView.xaml</DependentUpon>
     </Compile>
@@ -345,6 +348,10 @@
     <Page Include="Views\UI Parts\Buttons\CloseButtonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\Buttons\PinButtonView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\UI Parts\Buttons\GlobalButtonView.xaml">
       <SubType>Designer</SubType>

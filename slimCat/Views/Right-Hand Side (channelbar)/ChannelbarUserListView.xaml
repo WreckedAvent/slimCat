@@ -7,7 +7,7 @@
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type m:CharacterModel}">
             <ContentControl Margin="0"
-                            Content="{Binding Name}"
+                            Content="{Binding}"
                             ContentTemplate="{StaticResource TunnelingUsernameTemplate}"                            
                             HorizontalAlignment="Left"
                             TextBlock.TextAlignment="Left">
@@ -48,8 +48,6 @@
                         
                         <ContentControl Template="{StaticResource GeneralFilterCheckBoxes}"
                                         DataContext="{Binding Path=SearchSettings}" />
-                        
-                        <CheckBox IsChecked="{Binding Path=SearchSettings.ShowIgnored}">Ignored</CheckBox>
 
                         <Button Content="Close Settings"
                             Margin="10,5"

@@ -95,6 +95,8 @@ namespace Models
                     LastReadAdCount = Ads.Count;
             }
         }
+
+        public int CompositeUnreadCount { get { return Unread + UnreadAds; } }
         #endregion
 
         #region Constructors
@@ -151,6 +153,7 @@ namespace Models
             }
 
             UpdateBindings();
+            OnPropertyChanged("CompositeUnreadCount");
         }
 
         public void CallListChanged()

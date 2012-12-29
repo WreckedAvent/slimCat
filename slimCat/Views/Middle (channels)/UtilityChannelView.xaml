@@ -31,33 +31,33 @@
                       Padding="0">
                     <TextBlock Foreground="{StaticResource ForegroundBrush}"
                            TextWrapping="Wrap">
-                    <Run Text="Online Users: " />
-                    <Run Text="{Binding Path=OnlineCount, Mode=OneWay}"/>
-                    <Run Text="{Binding Path=OnlineCountChange, Mode=OneWay}"/>
-                    <LineBreak />
-                    <Run Text="Online Friends: " />
-                    <Run Text="{Binding Path=OnlineFriendsCount, Mode=OneWay}" />
-                    <LineBreak />
+                        
+                        <Run Text="slimCat Caracal (b4.10)"/>
+                        <LineBreak />
+                        
+                        <Run Text="Users: " />
+                        <Run Text="{Binding Path=OnlineCount, Mode=OneWay}"/>
+                        <Run Text="{Binding Path=OnlineCountChange, Mode=OneWay}"/>
+                        <LineBreak />
+                        <Run Text="Friends: " />
+                        <Run Text="{Binding Path=OnlineFriendsCount, Mode=OneWay}" />
+                        <LineBreak />
                     
-                    <Run Text="Online Bookmarks: " />
-                    <Run Text="{Binding Path=OnlineBookmarksCount, Mode=OneWay}" />
-                    <LineBreak />
+                        <Run Text="Bookmarks: " />
+                        <Run Text="{Binding Path=OnlineBookmarksCount, Mode=OneWay}" />
+                        <LineBreak />
             
-                    <Run Text="Server uptime: " />
-                    <Run Text="{Binding Path=RoughServerUpTime, Mode=OneWay}" Foreground="{StaticResource HighlightBrush}" />
-                    <LineBreak />
+                        <Run Text="Server uptime: " />
+                        <Run Text="{Binding Path=RoughServerUpTime, Mode=OneWay}" Foreground="{StaticResource HighlightBrush}" />
+                        <LineBreak />
             
-                    <Run Text="Client uptime: " />
-                    <Run Text="{Binding Path=RoughClientUpTime, Mode=OneWay}" Foreground="{StaticResource HighlightBrush}" />
+                        <Run Text="Client uptime: " />
+                        <Run Text="{Binding Path=RoughClientUpTime, Mode=OneWay}" Foreground="{StaticResource HighlightBrush}" />
                     </TextBlock>
                 </Expander>
             </Border>
 
             <StackPanel Grid.Row="1">
-                <Expander Header="Commands">
-                    <Button Content="Save Channels ..."
-                    Command="{Binding SaveChannelsCommand}"/>
-                </Expander>
                 <Expander Header="Settings">
                     <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
                         <StackPanel  Margin="0,5">

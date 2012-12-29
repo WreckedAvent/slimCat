@@ -48,8 +48,6 @@
                         
                         <ContentControl Template="{StaticResource GeneralFilterCheckBoxes}"
                                         DataContext="{Binding Path=SearchSettings}" />
-                        
-                        <CheckBox IsChecked="{Binding Path=SearchSettings.ShowIgnored}">Ignored</CheckBox>
 
                         <Button Content="Close Settings"
                             Margin="10,5"

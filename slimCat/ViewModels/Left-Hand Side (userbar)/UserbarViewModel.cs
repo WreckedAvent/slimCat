@@ -325,6 +325,29 @@ namespace ViewModels
 
             _events.GetEvent<UserCommandEvent>().Publish(toSend);
         }
+        private RelayCommand _saveChannels;
+
+        public ICommand SaveChannelsCommand
+        {
+            get
+            {
+                if (_saveChannels == null)
+                    _saveChannels = new RelayCommand(args =>
+                    {
+                        ApplicationSettings.SavedChannels.Clear();
+
+                        foreach (var channel in CM.CurrentChannels)
+                        {
+                            if (!(channel.ID.Equals("Home", StringComparison.OrdinalIgnoreCase)))
+                                ApplicationSettings.SavedChannels.Add(channel.ID);
+                        }
+
+                        Services.SettingsDaemon.SaveApplicationSettingsToXML(CM.SelectedCharacter.Name);
+                        _events.GetEvent<ErrorEvent>().Publish("Channels saved.");
+                    });
+                return _saveChannels;
+            }
+        }
         #endregion
     }
 }

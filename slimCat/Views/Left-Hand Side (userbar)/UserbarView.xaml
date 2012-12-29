@@ -33,22 +33,38 @@
                     <Image Source="{Binding Path=CM.SelectedCharacter.Avatar}"
                             Height="75"
                             Width="75"/>
-                    <StackPanel Margin="5,-5,0,0"
-                                DockPanel.Dock="Right"
-                                HorizontalAlignment="Right">
+                    <Grid Margin="5,-5,0,0"
+                          DockPanel.Dock="Right"
+                          HorizontalAlignment="Right">
+                        
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition />
+                            <RowDefinition Height="20"/>
+                        </Grid.RowDefinitions>
+                        
                         <TextBlock Text="{Binding Path=CM.SelectedCharacter.Name}"
                                    HorizontalAlignment="Right"
                                    TextAlignment="Right"
                                    MaxWidth="100"
                                    TextWrapping="Wrap"
                                    FontSize="20"/>
+                        
                         <Button Content="{Binding Path=CM.SelectedCharacter.Status}"
+                                Grid.Row="1"
+                                VerticalAlignment="Top"
                                 HorizontalAlignment="Right"
                                 Style="{StaticResource ImageContentButton}"
                                 Command="{Binding ToggleStatusWindowCommand}"
                                 Padding="0"
                                 FontSize="16"/>
-                    </StackPanel>
+                        
+                        <WrapPanel HorizontalAlignment="Right"
+                                   Grid.Row="2"
+                                   VerticalAlignment="Bottom">
+                            <v:PinButtonView Command="{Binding SaveChannelsCommand}"/>
+                        </WrapPanel>
+                    </Grid>
                 </DockPanel>
             </Border>
 

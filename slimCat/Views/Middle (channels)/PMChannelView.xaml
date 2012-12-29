@@ -18,8 +18,8 @@
                 <Expander x:Name="CharacterStatusDisplayer">
                     <Expander.Header>
                         <TextBlock TextWrapping="Wrap"
-                               TextAlignment="Left"
-                               HorizontalAlignment="Left">
+                                   TextAlignment="Left"
+                                   HorizontalAlignment="Left">
                             <Run Text="(Converation) "
                                  Foreground="{StaticResource ForegroundBrush}" />
                             <Run Text="{Binding Path=Model.ID, Mode=OneWay}"
@@ -28,12 +28,12 @@
                     </Expander.Header>
                     <StackPanel TextBlock.FontSize="14">
                         <TextBlock Text="{Binding Path=StatusString}"
-                               Foreground="{StaticResource HighlightBrush}"
-                               TextWrapping="Wrap"/>
+                                   Foreground="{StaticResource HighlightBrush}"
+                                   TextWrapping="Wrap"/>
 
                         <TextBlock Foreground="{StaticResource ForegroundBrush}"
-                               TextWrapping="Wrap"
-                               Visibility="{Binding Path=HasStatus, Converter={StaticResource BoolConverter}}">
+                                   TextWrapping="Wrap"
+                                   Visibility="{Binding Path=HasStatus, Converter={StaticResource BoolConverter}}">
                         <lib:TextBlockHelper.InlineList>
                             <Binding Converter="{StaticResource BBCodeConverter}"
                                      Path="ConversationWith.StatusMessage" />

@@ -242,31 +242,6 @@ namespace ViewModels
         }
         #endregion
 
-        #region Commands
-        private RelayCommand _saveChannels;
-        public ICommand SaveChannelsCommand
-        {
-            get
-            {
-                if (_saveChannels == null)
-                    _saveChannels = new RelayCommand(args =>
-                        {
-                            ApplicationSettings.SavedChannels.Clear();
-
-                            foreach (var channel in CM.CurrentChannels)
-                            {
-                                if (!(channel.ID.Equals("Home", StringComparison.OrdinalIgnoreCase)))
-                                    ApplicationSettings.SavedChannels.Add(channel.ID);
-                            }
-
-                            Services.SettingsDaemon.SaveApplicationSettingsToXML(CM.SelectedCharacter.Name);
-                            UpdateError("Channels saved.");
-                        });
-                return _saveChannels;
-            }
-        }
-        #endregion
-
         protected override void Dispose(bool IsManagedDispose)
         {
             base.Dispose();
