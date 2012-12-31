@@ -344,7 +344,7 @@ namespace Services
                 {
                     var args = new Models.CharacterUpdateModel.StatusChangedEventArgs()
                     {
-                        NewStatusType = (statusChanged ? status : StatusType.None),
+                        NewStatusType = (statusChanged ? status : StatusType.offline),
                         NewStatusMessage = (statusMessageChanged ? statusMessage : null)
                     };
 
@@ -526,8 +526,7 @@ namespace Services
             var mode = (ChannelMode)Enum.Parse(typeof(ChannelMode), command["mode"] as string);
             var channel = _cm.CurrentChannels.FirstByIdOrDefault(channelName);
 
-            if (channel == null)
-                Thread.Sleep(1000);
+            // TODO: delay channel initialization if 'channel' ends up null (i.e, no information)
 
             channel.Mode = mode;
             dynamic users = command["users"]; // dynamic lets us deal with odd syntax

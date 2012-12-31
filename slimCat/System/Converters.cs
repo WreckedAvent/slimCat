@@ -200,19 +200,30 @@ namespace System
                 switch (gender)
                 {
                     case Gender.Herm_F:
-                    case Gender.Herm_M:
                         return new LinearGradientBrush(
                             new GradientStopCollection(
                                 new List<GradientStop>()
-                                {
-                                    new GradientStop((Color)Application.Current.FindResource("ForegroundColor"), 0.0),
-                                    new GradientStop((Color)Application.Current.FindResource("ForegroundColor"), 0.5),
-                                    new GradientStop((Color)Application.Current.FindResource("HighlightColor"), 0.5),
-                                    new GradientStop((Color)Application.Current.FindResource("HighlightColor"), 1.0)
-                                }
-                                ));
+	                            {
+	                               new GradientStop((Color)Application.Current.FindResource("ForegroundColor"), 0.0),
+	                               new GradientStop((Color)Application.Current.FindResource("ForegroundColor"), 0.5),
+	                               new GradientStop((Color)Application.Current.FindResource("HighlightColor"), 0.5),
+	                               new GradientStop((Color)Application.Current.FindResource("HighlightColor"), 1.0)
+	                            }
+                           ),
+                                0);
+                    case Gender.Herm_M:
+                        return new LinearGradientBrush(
+                            new GradientStopCollection(
+	                            new List<GradientStop>()
+	                            {
+	                               new GradientStop((Color)Application.Current.FindResource("ForegroundColor"), 0.0),
+	                               new GradientStop((Color)Application.Current.FindResource("ForegroundColor"), 0.5),
+	                               new GradientStop((Color)Application.Current.FindResource("HighlightColor"), 0.5),
+	                               new GradientStop((Color)Application.Current.FindResource("HighlightColor"), 1.0)
+	                            }
+	                        ));
+
                     case Gender.Cuntboy:
-                    case Gender.Transgender:
                     case Gender.Shemale:
                         return (SolidColorBrush)Application.Current.FindResource("ForegroundBrush");
                     default:

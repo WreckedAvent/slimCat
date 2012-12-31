@@ -214,7 +214,7 @@ namespace Models
             else
             {
                 Console.WriteLine("Unknown character: " + name);
-                return new CharacterModel() { Name = name };
+                return new CharacterModel() { Name = name, Status = StatusType.offline };
             }
         }
 

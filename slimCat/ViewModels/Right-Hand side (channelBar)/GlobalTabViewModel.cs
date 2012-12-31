@@ -50,12 +50,12 @@ namespace ViewModels
         #region filter functions
         private bool MeetsFilter(ICharacter character)
         {
-            return character.MeetsFilters(GenderSettings, SearchSettings, CM, CM.SelectedChannel as GeneralChannelModel);
+            return character.MeetsFilters(GenderSettings, SearchSettings, CM, null);
         }
 
         private string RelationshipToUser(ICharacter character)
         {
-            return character.RelationshipToUser(CM, CM.SelectedChannel as GeneralChannelModel);
+            return character.RelationshipToUser(CM, null);
         }
         #endregion
 
@@ -78,11 +78,18 @@ namespace ViewModels
                 OnPropertyChanged("SortedUsers");
             };
 
-            CM.SelectedChannelChanged += (s, e) =>
-            {
-                OnPropertyChanged("SortContentString");
-                OnPropertyChanged("SortedUsers");
-            };
+            _events.GetEvent<slimCat.NewUpdateEvent>().Subscribe(
+                args =>
+                {
+                    var thisNotification = args as CharacterUpdateModel;
+                    if (thisNotification == null) return;
+
+                    var thisArgument = thisNotification.Arguments as CharacterUpdateModel.ListChangedEventArgs;
+                    if (thisArgument == null)
+                        return;
+                    else
+                        OnPropertyChanged("SortedUsers");
+                });
 
             _updateTick = new System.Timers.Timer(_updateUsersTabResolution);
             _updateTick.Elapsed += TickUpdateEvent;

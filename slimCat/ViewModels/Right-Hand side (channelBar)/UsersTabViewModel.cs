@@ -89,6 +89,19 @@ namespace ViewModels
                     OnPropertyChanged("SortedUsers");
                 };
 
+            _events.GetEvent<slimCat.NewUpdateEvent>().Subscribe(
+                args =>
+                {
+                    var thisNotification = args as CharacterUpdateModel;
+                    if (thisNotification == null) return;
+
+                    var thisArgument = thisNotification.Arguments as CharacterUpdateModel.ListChangedEventArgs;
+                    if (thisArgument == null)
+                        return;
+                    else
+                        OnPropertyChanged("SortedUsers");
+                });
+
             _updateTick = new System.Timers.Timer(_updateUsersTabResolution);
             _updateTick.Elapsed += TickUpdateEvent;
             _updateTick.Start();

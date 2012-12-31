@@ -158,6 +158,7 @@
     <Compile Include="Models\GeneralChannelModel.cs" />
     <Compile Include="Services\SettingsDaemon.cs" />
     <Compile Include="ViewModels\Right-Hand side %28channelBar%29\GlobalTabViewModel.cs" />
+    <Compile Include="ViewModels\Right-Hand side %28channelBar%29\ManageListsViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\ChannelManagementViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\RightClickViewModel.cs" />
     <Compile Include="Models\MessageModel.cs" />
@@ -210,6 +211,9 @@
     <Compile Include="Views\Right-Hand Side %28channelbar%29\ChannelbarGlobalListView.xaml.cs">
       <DependentUpon>ChannelbarGlobalListView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Right-Hand Side %28channelbar%29\ManageListsView.xaml.cs">
+      <DependentUpon>ManageListsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UI Parts\Buttons\AutoButtonView.xaml.cs">
       <DependentUpon>AutoButtonView.xaml</DependentUpon>
     </Compile>
@@ -221,6 +225,9 @@
     </Compile>
     <Compile Include="Views\UI Parts\Buttons\CloseButtonView.xaml.cs">
       <DependentUpon>CloseButtonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UI Parts\Buttons\ManageListsButtonView.xaml.cs">
+      <DependentUpon>ManageListsButtonView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UI Parts\Buttons\PinButtonView.xaml.cs">
       <DependentUpon>PinButtonView.xaml</DependentUpon>
@@ -333,6 +340,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Right-Hand Side %28channelbar%29\ManageListsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\UI Parts\Buttons\AutoButtonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -348,6 +359,10 @@
     <Page Include="Views\UI Parts\Buttons\CloseButtonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\Buttons\ManageListsButtonView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\UI Parts\Buttons\PinButtonView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -566,6 +581,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="icons\folder.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\friend.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="icons\global.png">

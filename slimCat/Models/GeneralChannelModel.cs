@@ -112,7 +112,31 @@ namespace Models
                 _mods = new List<string>();
 
                 _settings = new ChannelSettingsModel();
-                Users.CollectionChanged += (s, e) => { if (e.Action != System.Collections.Specialized.NotifyCollectionChangedAction.Reset) UpdateBindings(); };
+
+                Users.CollectionChanged += (s, e) => 
+                {
+                    if (e.Action != System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+                        UpdateBindings();
+                };
+
+                // the message count now faces the user, so when we reset it it now requires a UI update
+                Messages.CollectionChanged += (s, e) =>
+                {
+                    if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+                    {
+                        LastReadCount = Messages.Count;
+                        UpdateBindings();
+                    }
+                };
+
+                Ads.CollectionChanged += (s, e) =>
+                {
+                    if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+                    {
+                        LastReadAdCount = Ads.Count;
+                        UpdateBindings();
+                    }
+                };
             }
 
             catch (Exception ex)
@@ -153,7 +177,6 @@ namespace Models
             }
 
             UpdateBindings();
-            OnPropertyChanged("CompositeUnreadCount");
         }
 
         public void CallListChanged()
@@ -168,6 +191,12 @@ namespace Models
             if (IsManaged)
                 _settings = new ChannelSettingsModel();
             base.Dispose(IsManaged);
+        }
+
+        protected override void UpdateBindings()
+        {
+            base.UpdateBindings();
+            OnPropertyChanged("CompositeUnreadCount");
         }
         #endregion
     }

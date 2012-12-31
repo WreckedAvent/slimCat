@@ -125,7 +125,7 @@ namespace Models
 
         public class StatusChangedEventArgs : CharacterUpdateEventArgs
         {
-            public bool IsStatusTypeChanged { get { return NewStatusType != StatusType.None; } }
+            public bool IsStatusTypeChanged { get { return NewStatusType != StatusType.offline; } }
             public bool IsStatusMessageChanged { get { return NewStatusMessage != null; } }
 
             public StatusType NewStatusType { get; set; }
@@ -273,6 +273,31 @@ namespace Models
                 {
                     return "has replied to your comment on the " + commentTypeToString(CommentType) + ' ' + string.Format("[url={0}]{1}[/url]", Link, Title);
                 }
+            }
+        }
+
+        public class ListChangedEventArgs : CharacterUpdateEventArgs
+        {
+            public enum ListType
+            {
+                friends,
+                bookmarks,
+                ignored,
+                interested,
+                notinterested
+            }
+
+            public bool IsAdded { get; set; }
+            public bool IsTemporary { get; set; }
+            public ListType ListArgument { get; set; }
+
+            public override string ToString()
+            {
+                var listKind = (ListArgument != ListType.notinterested ? ListArgument.ToString() : "not interested");
+                bool isTemp = (IsTemporary == null ? false : IsTemporary);
+
+                return "has been " + (IsAdded ? "added to" : "removed from") + " your " + listKind + " list"
+                    + (IsTemporary ? " until this character logs out" : "") + '.';
             }
         }
         #endregion

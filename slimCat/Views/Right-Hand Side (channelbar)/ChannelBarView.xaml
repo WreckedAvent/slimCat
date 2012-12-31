@@ -40,7 +40,10 @@
                     <v:UserlistButtonView CommandParameter="Users"
                                           Command="{Binding Path=ChangeTabCommand}"
                                           Visibility="{Binding Path=HasUsers, Converter={StaticResource BoolConverter}}"/>
-
+                    
+                    <v:ManageButtonView CommandParameter="ManageLists"
+                                        Command="{Binding Path=ChangeTabCommand}"/>
+                    
                     <v:NotificationsButtonView CommandParameter="Notifications"
                                                x:Name="NotificationButton"
                                                Command="{Binding Path=ChangeTabCommand}"/>

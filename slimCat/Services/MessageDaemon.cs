@@ -165,10 +165,23 @@ namespace Services
                     #region Un/Ignore Command
                     case "IGN":
                         {
+                            var args = command["character"] as string;
+
                             if ((string)command["action"] == "add")
-                                _model.Ignored.Add(command["character"] as string);
-                            else if ((string)command["action"] == "remove")
-                                _model.Ignored.Remove(command["character"] as string);
+                                _model.Ignored.Add(args);
+                            else if ((string)command["action"] == "delete")
+                                _model.Ignored.Remove(args);
+                            else
+                                break;
+
+                            _events.GetEvent<NewUpdateEvent>().Publish(
+                                new CharacterUpdateModel(
+                                    _model.FindCharacter(args),
+                                    new CharacterUpdateModel.ListChangedEventArgs()
+                                    {
+                                        IsAdded = _model.Ignored.Contains(args),
+                                        ListArgument = CharacterUpdateModel.ListChangedEventArgs.ListType.ignored
+                                    }));
                             break;
                         }
                     #endregion
@@ -405,14 +418,43 @@ namespace Services
                     case "interesting":
                     {
                         var args = command["character"] as string;
+                        var isAdd = true;
+
+                        if (_model.Interested.Contains(args))
+                            isAdd = false;
+
                         _model.ToggleInterestedMark(args);
+
+                        _events.GetEvent<NewUpdateEvent>().Publish(
+                            new CharacterUpdateModel(
+                                _model.FindCharacter(args),
+                                new CharacterUpdateModel.ListChangedEventArgs()
+                                {
+                                    IsAdded = isAdd,
+                                    ListArgument = CharacterUpdateModel.ListChangedEventArgs.ListType.interested
+                                }));
                         return;
                     }
 
                     case "notinteresting":
                     {
                         var args = command["character"] as string;
+
+                        var isAdd = true;
+
+                        if (_model.NotInterested.Contains(args))
+                            isAdd = false;
+
                         _model.ToggleNotInterestedMark(args);
+
+                        _events.GetEvent<NewUpdateEvent>().Publish(
+                            new CharacterUpdateModel(
+                                _model.FindCharacter(args),
+                                new CharacterUpdateModel.ListChangedEventArgs()
+                                {
+                                    IsAdded = isAdd,
+                                    ListArgument = CharacterUpdateModel.ListChangedEventArgs.ListType.notinterested
+                                }));
                         return;
                     }
                     #endregion
@@ -575,7 +617,7 @@ namespace Services
         public void AddMessage(string message, string channelName, string poster, MessageType messageType = MessageType.normal)
         {
             ChannelModel channel;
-            ICharacter sender = (poster != "_thisCharacter" ? _model.FindCharacter(poster) : _model.SelectedCharacter);
+            ICharacter sender = (poster != "_thisCharacter" ? _model.FindCharacter(poster) : _model.FindCharacter(_model.SelectedCharacter.Name));
             InstanceLogger();
 
             channel = _model.CurrentChannels.FirstByIdOrDefault(channelName);

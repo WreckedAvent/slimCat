@@ -42,6 +42,9 @@ namespace ViewModels
                 _cm = cm;
 
                 _cm.SelectedChannelChanged += OnSelectedChannelChanged;
+
+                _events.GetEvent<NewUpdateEvent>().Subscribe(UpdateRightClickMenu);
+
             }
 
             catch (Exception ex)
@@ -219,11 +222,13 @@ namespace ViewModels
         protected void InterestedEvent(object args, bool interestedIn = true)
         {
             if (interestedIn)
-                CM.ToggleInterestedMark(args as string);
+                _events.GetEvent<UserCommandEvent>().Publish(
+                    CommandDefinitions.CreateCommand("interesting", new [] { args as string})
+                        .toDictionary());
             else
-                CM.ToggleNotInterestedMark(args as string);
-
-            OnPropertyChanged("RightClickMenuViewModel");
+                _events.GetEvent<UserCommandEvent>().Publish(
+                    CommandDefinitions.CreateCommand("notinteresting", new[] { args as string })
+                        .toDictionary());
         }
         #endregion
 
@@ -275,11 +280,8 @@ namespace ViewModels
                     _openMenu = new RelayCommand(
                         args =>
                         {
-                            if (CM.IsOnline(args as string))
-                            {
-                                var newTarget = CM.FindCharacter(args as string);
-                                updateRightClickMenu(newTarget);
-                            }
+                            var newTarget = CM.FindCharacter(args as string);
+                            updateRightClickMenu(newTarget);
                         });
                 return _openMenu;
             }
@@ -303,6 +305,19 @@ namespace ViewModels
             OnPropertyChanged("HasPermissions");
             _rcmvm.IsOpen = false;
         }
+
+        private void UpdateRightClickMenu(NotificationModel argument)
+        {
+            var updateKind = argument as CharacterUpdateModel;
+            if (updateKind == null) return;
+
+            if (_rcmvm.Target == null) return;
+
+            if (updateKind.TargetCharacter.Name == _rcmvm.Target.Name)
+                updateRightClickMenu(_rcmvm.Target);
+
+            OnPropertyChanged("RightClickMenuViewModel");
+        }
         #endregion
 
         #region Properties
@@ -321,6 +336,8 @@ namespace ViewModels
         {
             get
             {
+                if (_cm.SelectedCharacter == null) return false;
+
                 bool isLocalMod = false;
                 if (_cm.SelectedChannel is GeneralChannelModel)
                     isLocalMod = (_cm.SelectedChannel as GeneralChannelModel).Moderators.Contains(_cm.SelectedCharacter.Name);
@@ -341,6 +358,7 @@ namespace ViewModels
             if (IsManaged)
             {
                 _cm.SelectedChannelChanged -= OnSelectedChannelChanged;
+                _events.GetEvent<NewUpdateEvent>().Unsubscribe(UpdateRightClickMenu);
                 _container = null;
                 _region = null;
                 _cm = null;

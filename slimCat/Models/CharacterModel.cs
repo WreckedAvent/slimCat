@@ -174,7 +174,7 @@ namespace Models
     /// </summary>
     public enum StatusType
     {
-        None,
+        offline,
         online,
         away,
         busy,
