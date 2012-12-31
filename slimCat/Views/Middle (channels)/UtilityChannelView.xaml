@@ -32,7 +32,7 @@
                     <TextBlock Foreground="{StaticResource ForegroundBrush}"
                            TextWrapping="Wrap">
                         
-                        <Run Text="slimCat Caracal (b4.10)"/>
+                        <Run Text="slimCat Caracal (b4.11)"/>
                         <LineBreak />
                         
                         <Run Text="Users: " />
