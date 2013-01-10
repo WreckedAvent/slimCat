@@ -125,11 +125,11 @@ namespace Services
 
             if (channel != null)
             {
-                if (!channel.IsSelected && channel.Settings.ShouldDing)
-                {
-                    NotifyUser(true, true, poster.Name + '\n' + HttpUtility.HtmlDecode(Message.Message), poster.Name);
+                if (channel.IsSelected && WindowIsFocused)
                     return;
-                }
+                if (channel.Settings.ShouldDing)
+                    NotifyUser(true, true, poster.Name + '\n' + HttpUtility.HtmlDecode(Message.Message), poster.Name);
+                return;
             }
 
             if (!WindowIsFocused && channel.Settings.ShouldDing)

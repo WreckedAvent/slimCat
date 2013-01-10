@@ -308,6 +308,8 @@ namespace ViewModels
 
         private void UpdateRightClickMenu(NotificationModel argument)
         {
+            if (!_rcmvm.IsOpen) return;
+
             var updateKind = argument as CharacterUpdateModel;
             if (updateKind == null) return;
 
