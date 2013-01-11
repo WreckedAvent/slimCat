@@ -31,6 +31,7 @@ namespace ViewModels
         // things the UI binds to
         public string RoughServerUpTime { get { return HelperConverter.DateTimeToRough(CM.ServerUpTime, true, false); } }
         public string RoughClientUpTime { get { return HelperConverter.DateTimeToRough(CM.ClientUptime, true, false); } }
+        public string LastMessageReceived { get { return HelperConverter.DateTimeToRough(CM.LastMessageReceived, true, false); } }
 
         public int OnlineCount { get { return CM.OnlineCharacters.Count(); } }
         public int OnlineFriendsCount
@@ -149,6 +150,7 @@ namespace ViewModels
                 { 
                     OnPropertyChanged("RoughServerUpTime");
                     OnPropertyChanged("RoughClientUpTime");
+                    OnPropertyChanged("LastMessageReceived");
                     OnPropertyChanged("IsConnecting");
                 };
 

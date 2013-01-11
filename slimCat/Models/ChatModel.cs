@@ -28,7 +28,6 @@ namespace Models
 
         // things that we should keep a track of, yet not needed frequently
         private IList<string> _globalMods = new List<string>();
-        private IList<string> _bookmarks = new List<string>();
 
         // caches for speed improvements in filtering
         private IList<ICharacter> _onlineBookmarkCache = null;
@@ -80,7 +79,7 @@ namespace Models
                 {
                     if (_onlineBookmarkCache == null)
                         _onlineBookmarkCache = OnlineCharacters
-                            .Where(character => _bookmarks.Any(bookmark => (character != null ? character.Name.Equals(bookmark, StringComparison.OrdinalIgnoreCase) : false)))
+                            .Where(character => Bookmarks.Any(bookmark => (character != null ? character.Name.Equals(bookmark, StringComparison.OrdinalIgnoreCase) : false)))
                             .ToList();
                 }
                 catch { } // sometimes this will result with threading issues, simply wait until next time it's called
@@ -130,7 +129,8 @@ namespace Models
             }
         }
 
-        public IList<string> Bookmarks { get { return _bookmarks; } }
+        public IList<string> Bookmarks { get { return OurAccount.Bookmarks; } }
+
         public IList<string> Mods { get { return _globalMods; } }
         public IList<string> Ignored { get { return _ignored; } }
         public IList<string> Interested { get { return ApplicationSettings.Interested; } }
@@ -155,6 +155,7 @@ namespace Models
 
         public DateTimeOffset ClientUptime { get; set; }
         public DateTimeOffset ServerUpTime { get; set; }
+        public DateTimeOffset LastMessageReceived { get; set; }
 
         public bool IsAuthenticated
         {
@@ -220,6 +221,9 @@ namespace Models
 
         public bool IsOnline(string name)
         {
+            if (name == null)
+                return false;
+
             return OnlineCharactersDictionary.ContainsKey(name);
         }
 
@@ -356,6 +360,7 @@ namespace Models
 
         DateTimeOffset ClientUptime { get; set; }
         DateTimeOffset ServerUpTime { get; set; }
+        DateTimeOffset LastMessageReceived { get; set; }
 
         void AddCharacter(ICharacter character);
         void RemoveCharacter(string name);

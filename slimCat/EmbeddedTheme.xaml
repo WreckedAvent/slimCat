@@ -168,7 +168,7 @@
     <ControlTemplate x:Key="GenderCheckBoxes" TargetType="ContentControl">
         <StackPanel Orientation="Vertical">
             <TextBlock Foreground="{StaticResource ForegroundBrush}"
-                       Text="I want to see ..."
+                       Text="Show ..."
                        Margin="2,0"/>
             <CheckBox IsChecked="{Binding ShowMales}">Males</CheckBox>
             <CheckBox IsChecked="{Binding ShowFemales}">Females</CheckBox>

@@ -19,12 +19,12 @@
                 <Expander>
                     <Expander.Header>
                         <TextBlock Margin="0"
-                               Foreground="{StaticResource ForegroundBrush}"
-                               TextWrapping="Wrap"
+                                   Foreground="{StaticResource ForegroundBrush}"
+                                   TextWrapping="Wrap"
                                    ToolTip="Expand or retract the channel header">
-                        <Run Text="{Binding Path=ChannelTypeString, Mode=OneWay}" />
-                        <Run Text="{Binding Path=Model.Title, Mode=OneWay}" Foreground="{StaticResource HighlightBrush}"/>
-                        <Run Text="{Binding Path=ChatContentString, Mode=OneWay}" />
+                            <Run Text="{Binding Path=ChannelTypeString, Mode=OneWay}" />
+                            <Run Text="{Binding Path=Model.Title, Mode=OneWay}" Foreground="{StaticResource HighlightBrush}"/>
+                            <Run Text="{Binding Path=ChatContentString, Mode=OneWay}" />
                         </TextBlock>
                     </Expander.Header>
                     <ScrollViewer MaxHeight="100">

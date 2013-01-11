@@ -98,6 +98,10 @@ namespace Services
                     }
                 }
 
+                foreach (var item in result.bookmarks)
+                    if (!_model.Bookmarks.Contains(item["name"] as string))
+                        _model.Bookmarks.Add(item["name"] as string);
+
                 this._event.GetEvent<slimCat.LoginCompleteEvent>().Publish(!hasError);
                
             }

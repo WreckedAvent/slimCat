@@ -8,7 +8,7 @@
              HorizontalAlignment="Stretch"
              Margin="0"
              Padding="4,2">
-    <Grid MaxWidth="175">
+    <Grid MaxWidth="150">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition Width="auto"/>

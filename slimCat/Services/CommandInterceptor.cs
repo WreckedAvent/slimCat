@@ -52,11 +52,12 @@ namespace Services
             if (command == null || String.IsNullOrWhiteSpace(command["command"] as string))
                 return null;
 
+            _cm.LastMessageReceived = DateTimeOffset.Now;
+
             switch ((string)command["command"])
             {
                 case "IDN": return new CommandDelegate(LoginCommand);
                 case "UPT": return new CommandDelegate(UptimeCommand);
-                case "FRL": return new CommandDelegate(BookmarkCommand);
                 case "ADL": return new CommandDelegate(AdminsCommand);
                 case "IGN": return new CommandDelegate(IgnoreUserCommand);
                 case "LIS": return new CommandDelegate(InitialCharacterListCommand);
@@ -144,6 +145,9 @@ namespace Services
                 JsonArray arr = (JsonArray)command[paramaterToPullFrom];
                 foreach (string character in arr)
                 {
+                    if (String.IsNullOrWhiteSpace(character))
+                        continue;
+
                     if (!listToAddTo.Contains(character))
                         listToAddTo.Add(character);
                 }
@@ -214,11 +218,6 @@ namespace Services
             
             long time = (long)command["starttime"];
             _cm.ServerUpTime = HelperConverter.UnixTimeToDateTime(time);
-        }
-
-        private void BookmarkCommand(IDictionary<string, object> command)
-        {
-            AddToSomeListCommand(command, "characters", _cm.Bookmarks);
         }
 
         private void AdminsCommand(IDictionary<string, object> command)
@@ -533,6 +532,9 @@ namespace Services
             foreach (IDictionary<string, object> character in users)
             {
                 string name = character["identity"] as string;
+
+                if (String.IsNullOrWhiteSpace(name))
+                    continue;
 
                 if (!channel.Users.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)
                     && _cm.IsOnline(name))

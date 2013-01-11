@@ -18,36 +18,117 @@
     <Grid TextBlock.Foreground="{StaticResource ForegroundBrush}"
           Margin="0,7,0,0"
           TextBlock.FontSize="14">
-        <ScrollViewer>
-            <StackPanel Grid.Row="1">
+        <DockPanel>
+            <Popup PlacementTarget="{Binding ElementName=PopupAnchor}"
+                   Placement="Center"
+                   IsOpen="{Binding Path=SearchSettings.IsChangingSettings}"
+                   StaysOpen="False">
 
-                <v:RightClickMenu />
+                <Border BorderBrush="{StaticResource HighlightBrush}"
+                        BorderThickness="2"
+                        Background="{StaticResource BackgroundBrush}">
+                    <WrapPanel Orientation="Vertical"
+                               Margin="10">
+                        <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                                   FontSize="20"
+                                   HorizontalAlignment="Center"
+                                   Margin="10,5"
+                                   >
+                            <Run Text="Manage List Filter Settings" />
+                            <LineBreak />
+                        </TextBlock>
+                        
+                        <ContentControl Template="{StaticResource GenderCheckBoxes}"
+                                        DataContext="{Binding Path=GenderSettings}"/>
+                        <CheckBox Content="Offline"
+                                  IsChecked="{Binding ShowOffline}"/>
 
-                <Expander Header="Friends">
-                    <ListBox ItemsSource="{Binding Path=Friends, Mode=OneWay}"
-                         Style="{StaticResource ContentListBox}"/>
-                </Expander>
+                        <Button Content="Close"
+                                Margin="10,5"
+                                DataContext="{Binding Path=SearchSettings}"
+                                Foreground="{StaticResource ForegroundBrush}"
+                                Command="{Binding OpenSearchSettingsCommand}"/>
+                    </WrapPanel>
+                </Border>
+            </Popup>
+            
+            <v:SearchBoxView DockPanel.Dock="Bottom"
+                             Margin="0,7,0,0"
+                             DataContext="{Binding SearchSettings}"/>
+            
+            <ScrollViewer CanContentScroll="False">
+                <StackPanel Grid.Row="1"
+                            x:Name="PopupAnchor">
 
-                <Expander Header="Bookmarks">
-                    <ListBox ItemsSource="{Binding Path=Bookmarks, Mode=OneWay}"
-                         Style="{StaticResource ContentListBox}"/>
-                </Expander>
+                    <v:RightClickMenu />
 
-                <Expander Header="Interested">
-                    <ListBox ItemsSource="{Binding Path=Interested, Mode=OneWay}"
-                         Style="{StaticResource ContentListBox}"/>
-                </Expander>
+                    <Expander>
+                        <Expander.Header>
+                            <TextBlock Foreground="{StaticResource ForegroundBrush}">
+                                <Run Text="Friends -"/>
+                                <Run Text="{Binding Path=Friends.Count, Mode=OneWay}"/>
+                            </TextBlock>
+                        </Expander.Header>
+                        <ListBox ItemsSource="{Binding Path=Friends, Mode=OneWay}"
+                               Style="{StaticResource ContentListBox}"/>
+                    </Expander>
 
-                <Expander Header="Not Interested">
-                    <ListBox ItemsSource="{Binding Path=NotInterested, Mode=OneWay}"
-                         Style="{StaticResource ContentListBox}"/>
-                </Expander>
+                    <Expander>
+                        <Expander.Header>
+                            <TextBlock Foreground="{StaticResource ForegroundBrush}">
+                                <Run Text="Bookmarks -"/>
+                                <Run Text="{Binding Path=Bookmarks.Count, Mode=OneWay}"/>
+                            </TextBlock>
+                        </Expander.Header>
+                        <ListBox ItemsSource="{Binding Path=Bookmarks, Mode=OneWay}"
+                                 Style="{StaticResource ContentListBox}"/>
+                    </Expander>
 
-                <Expander Header="Ignored">
-                    <ListBox ItemsSource="{Binding Path=Ignored, Mode=OneWay}"
-                         Style="{StaticResource ContentListBox}"/>
-                </Expander>
-            </StackPanel>
-        </ScrollViewer>
+                    <Expander Visibility="{Binding Path=HasUsers, Mode=OneWay, Converter={StaticResource BoolConverter}}">
+                        <Expander.Header>
+                            <TextBlock Foreground="{StaticResource ForegroundBrush}">
+                                <Run Text="Mods -"/>
+                                <Run Text="{Binding Path=Moderators.Count, Mode=OneWay}"/>
+                            </TextBlock>
+                        </Expander.Header>
+                        <ListBox ItemsSource="{Binding Path=Moderators, Mode=OneWay}"
+                                 Style="{StaticResource ContentListBox}"/>
+                    </Expander>
+                    
+                    <Expander>
+                        <Expander.Header>
+                            <TextBlock Foreground="{StaticResource ForegroundBrush}">
+                                <Run Text="Interested -"/>
+                                <Run Text="{Binding Path=Interested.Count, Mode=OneWay}"/>
+                            </TextBlock>
+                        </Expander.Header>
+                        <ListBox ItemsSource="{Binding Path=Interested, Mode=OneWay}"
+                                 Style="{StaticResource ContentListBox}"/>
+                    </Expander>
+
+                    <Expander>
+                        <Expander.Header>
+                            <TextBlock Foreground="{StaticResource ForegroundBrush}">
+                                <Run Text="Not Interested -"/>
+                                <Run Text="{Binding Path=NotInterested.Count, Mode=OneWay}"/>
+                            </TextBlock>
+                        </Expander.Header>
+                        <ListBox ItemsSource="{Binding Path=NotInterested, Mode=OneWay}"
+                                 Style="{StaticResource ContentListBox}"/>
+                    </Expander>
+
+                    <Expander>
+                        <Expander.Header>
+                            <TextBlock Foreground="{StaticResource ForegroundBrush}">
+                                <Run Text="Ignored -"/>
+                                <Run Text="{Binding Path=Ignored.Count, Mode=OneWay}"/>
+                            </TextBlock>
+                        </Expander.Header>
+                        <ListBox ItemsSource="{Binding Path=Ignored, Mode=OneWay}"
+                                 Style="{StaticResource ContentListBox}"/>
+                    </Expander>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
     </Grid>
 </UserControl>

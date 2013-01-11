@@ -49,11 +49,11 @@
                         <ContentControl Template="{StaticResource GeneralFilterCheckBoxes}"
                                         DataContext="{Binding Path=SearchSettings}" />
 
-                        <Button Content="Close Settings"
-                            Margin="10,5"
-                            DataContext="{Binding Path=SearchSettings}"
-                            Foreground="{StaticResource ForegroundBrush}"
-                            Command="{Binding OpenSearchSettingsCommand}"/>
+                        <Button Content="Close"
+                                Margin="10,5"
+                                DataContext="{Binding Path=SearchSettings}"
+                                Foreground="{StaticResource ForegroundBrush}"
+                                Command="{Binding OpenSearchSettingsCommand}"/>
                     </WrapPanel>
                 </Border>
             </Popup>

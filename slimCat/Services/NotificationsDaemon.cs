@@ -31,6 +31,7 @@ namespace Services
         System.Windows.Forms.NotifyIcon icon = new System.Windows.Forms.NotifyIcon();
         ToastNotificationsViewModel toast;
         bool _windowHasFocus;
+        private double _soundSaveVolume = 0.0;
         #endregion
 
         #region constructors
@@ -80,7 +81,14 @@ namespace Services
                     };
 
                     var iconMenu = new System.Windows.Forms.ContextMenu();
+
                     iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem(string.Format("slimCat Caracal ({0})", args)) { Enabled = false });
+                    iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("-"));
+
+                    iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("Sounds Enabled", ToggleSound) { Checked = ApplicationSettings.Volume > 0.0, });
+                    iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("Toats Enabled", ToggleToast) { Checked = ApplicationSettings.ShowNotificationsGlobal });
+                    iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("-"));
+
                     iconMenu.MenuItems.Add("Show", (s, e) => ShowWindow());
                     iconMenu.MenuItems.Add("Exit", (s, e) => ShutDown());
 
@@ -406,6 +414,21 @@ namespace Services
 
                 return _windowHasFocus;
             }
+        }
+
+        private void ToggleToast(object sender, EventArgs e)
+        {
+            ApplicationSettings.ShowNotificationsGlobal = !ApplicationSettings.ShowNotificationsGlobal;
+            icon.ContextMenu.MenuItems[3].Checked = ApplicationSettings.ShowNotificationsGlobal;
+        }
+
+        private void ToggleSound(object sender, EventArgs e)
+        {
+            var temp = ApplicationSettings.Volume;
+            ApplicationSettings.Volume = _soundSaveVolume;
+            _soundSaveVolume = temp;
+
+            icon.ContextMenu.MenuItems[2].Checked = ApplicationSettings.Volume > 0.0;
         }
         #endregion
 

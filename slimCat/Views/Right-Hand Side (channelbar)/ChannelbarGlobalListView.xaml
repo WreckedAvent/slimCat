@@ -35,25 +35,21 @@
                                    HorizontalAlignment="Center"
                                    Margin="10,5"
                                    >
-                            <Run Text="User List Filter Settings" />
+                            <Run Text="Global User List Filter Settings" />
                             <LineBreak />
-                            <Run Text="Current list:"
-                                 FontSize="16"/>
-                            <Run Text="{Binding Path=SortContentString, Mode=OneWay}"
-                                 FontSize="16"/>
                         </TextBlock>
 
                         <ContentControl Template="{StaticResource GenderCheckBoxes}"
-                                    DataContext="{Binding Path=GenderSettings}"/>
+                                        DataContext="{Binding Path=GenderSettings}"/>
                         
                         <ContentControl Template="{StaticResource GeneralFilterCheckBoxes}"
                                         DataContext="{Binding Path=SearchSettings}" />
 
                         <Button Content="Close Settings"
-                            Margin="10,5"
-                            DataContext="{Binding Path=SearchSettings}"
-                            Foreground="{StaticResource ForegroundBrush}"
-                            Command="{Binding OpenSearchSettingsCommand}"/>
+                                Margin="10,5"
+                                DataContext="{Binding Path=SearchSettings}"
+                                Foreground="{StaticResource ForegroundBrush}"
+                                Command="{Binding OpenSearchSettingsCommand}"/>
                     </WrapPanel>
                 </Border>
             </Popup>

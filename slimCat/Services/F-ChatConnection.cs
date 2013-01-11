@@ -115,6 +115,7 @@ namespace Services
         void ConnectionMessageReceived(object sender, MessageReceivedEventArgs e)
         {
             if (!_isAuth) _isAuth = true;
+
             string command_type = e.Message.Substring(0, 3); // type of command sent
 
             string message = e.Message; // actual arguments sent

@@ -32,7 +32,7 @@
                     <TextBlock Foreground="{StaticResource ForegroundBrush}"
                            TextWrapping="Wrap">
                         
-                        <Run Text="slimCat Caracal (b4.11)"/>
+                        <Run Text="slimCat Caracal (b4.12)"/>
                         <LineBreak />
                         
                         <Run Text="Users: " />
@@ -53,6 +53,10 @@
             
                         <Run Text="Client uptime: " />
                         <Run Text="{Binding Path=RoughClientUpTime, Mode=OneWay}" Foreground="{StaticResource HighlightBrush}" />
+                        <LineBreak />
+                        
+                        <Run Text="Last server response: " />
+                        <Run Text="{Binding Path=LastMessageReceived, Mode=OneWay}" Foreground="{StaticResource HighlightBrush}" />
                     </TextBlock>
                 </Expander>
             </Border>
@@ -62,7 +66,14 @@
                     <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
                         <StackPanel  Margin="0,5">
                             <TextBlock Text="Notifications Volume" Margin="5,0,0,0" />
-                            <Slider Value="{Binding Volume}" Minimum="0" Maximum="1" Width="200" HorizontalAlignment="Left" Margin="5,0,0,0" />
+                            <Slider Value="{Binding Volume}" 
+                                    LargeChange=".25"
+                                    SmallChange=".05"
+                                    Minimum="0" 
+                                    Maximum="1"
+                                    Width="200" 
+                                    HorizontalAlignment="Left" 
+                                    Margin="5,0,0,0" />
                         </StackPanel>
 
                         <CheckBox IsChecked="{Binding ShowNotifications}"

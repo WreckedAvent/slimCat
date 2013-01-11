@@ -24,6 +24,7 @@ namespace Models
 
         private string _ticket;
         private ObservableCollection<string> _characters = new ObservableCollection<string>();
+        private IList<String> _bookmarks = new List<string>();
         private IDictionary<string, IList<string>> _friends = new Dictionary<string, IList<string>>();
         #endregion
 
@@ -55,6 +56,8 @@ namespace Models
         public ObservableCollection<string> Characters { get { return _characters; } }
 
         public IDictionary<string, IList<string>> AllFriends { get { return _friends; } }
+
+        public IList<string> Bookmarks { get { return _bookmarks; } }
         #endregion
 
         public AccountModel()
@@ -78,5 +81,6 @@ namespace Models
         string Ticket { get; set; }
         ObservableCollection<string> Characters { get; }
         IDictionary<string, IList<string>> AllFriends { get; }
+        IList<string> Bookmarks { get; }
     }
 }

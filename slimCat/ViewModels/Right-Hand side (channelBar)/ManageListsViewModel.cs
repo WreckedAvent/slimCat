@@ -15,6 +15,7 @@ namespace ViewModels
     public class ManageListsViewModel : ChannelbarViewModelCommon
     {
         #region Fields
+        private GenderSettingsModel _genderSettings;
         public const string ManageListsTabView = "ManageListsTabView";
         IList<ICharacter> _friends;
         IList<ICharacter> _bookmarks;
@@ -23,6 +24,8 @@ namespace ViewModels
         IList<ICharacter> _ignored;
 
         IList<ICharacter> _roomMods;
+
+        private bool _showOffline = true;
         #endregion
 
         #region Properties
@@ -34,20 +37,77 @@ namespace ViewModels
         public IList<ICharacter> NotInterested { get { _notInterested = update(ApplicationSettings.NotInterested, _notInterested); return _notInterested; } }
         public IList<ICharacter> Ignored { get { _ignored = update(CM.Ignored, _ignored); return _ignored; } }
 
-        public IList<ICharacter> Moderaters { get { return update(((GeneralChannelModel)CM.SelectedChannel).Moderators, _roomMods); } }
+        public IList<ICharacter> Moderators 
+        { 
+            get 
+            {
+                if (HasUsers)
+                    return update(((GeneralChannelModel)CM.SelectedChannel).Moderators, _roomMods);
+                else
+                    return null;
+            } 
+        }
+
+        public GenderSettingsModel GenderSettings { get { return _genderSettings; } }
+
+        public bool ShowOffline
+        {
+            get { return _showOffline; }
+            set
+            {
+                _showOffline = value;
+                updateBindings();
+            }
+        }
         #endregion
 
         #region Methods
         private IList<ICharacter> update(IList<string> CharacterNames, IList<ICharacter> CurrentList)
         {
+            if (CharacterNames == null)
+                return CurrentList;
+
             if (CurrentList == null || CurrentList.Count != CharacterNames.Count)
             {
                 CurrentList = new List<ICharacter>();
                 foreach (var characterName in CharacterNames)
-                    CurrentList.Add(CM.FindCharacter(characterName));
+                {
+                    var toAdd = CM.FindCharacter(characterName);
+
+                    if (toAdd.Status == StatusType.offline && !_showOffline)
+                        continue;
+                    if (MeetsFilter(toAdd))
+                        CurrentList.Add(toAdd);
+                }
             }
 
             return CurrentList;
+        }
+
+        private bool MeetsFilter(ICharacter character)
+        {
+            return character.MeetsFilters(GenderSettings, SearchSettings, CM, CM.SelectedChannel as GeneralChannelModel);
+        }
+
+        private void updateBindings()
+        {
+            _friends = new List<ICharacter>();
+            OnPropertyChanged("Friends");
+
+            _bookmarks = new List<ICharacter>();
+            OnPropertyChanged("Bookmarks");
+
+            _interested = new List<ICharacter>();
+            OnPropertyChanged("Interested");
+
+            _notInterested = new List<ICharacter>();
+            OnPropertyChanged("NotInterested");
+
+            _ignored = new List<ICharacter>();
+            OnPropertyChanged("Ignored");
+
+            _roomMods = new List<ICharacter>();
+            OnPropertyChanged("Moderators");
         }
         #endregion
 
@@ -56,6 +116,21 @@ namespace ViewModels
             : base(contain, regman, eventagg, cm)
         {
             _container.RegisterType<object, ManageListsTabView>(ManageListsTabView);
+
+            _genderSettings = new GenderSettingsModel();
+
+            SearchSettings.Updated += (s, e) =>
+            {
+                OnPropertyChanged("SearchSettings");
+                updateBindings();
+            };
+
+            GenderSettings.Updated += (s, e) =>
+            {
+                OnPropertyChanged("GenderSettings");
+                updateBindings();
+            };
+
             _events.GetEvent<NewUpdateEvent>().Subscribe(
                 args =>
                 {
@@ -80,6 +155,9 @@ namespace ViewModels
                     }
                 },
                 true);
+
+            cm.SelectedChannelChanged += (s, e) => { OnPropertyChanged("HasUsers"); OnPropertyChanged("Moderators"); };
+
         }
         #endregion
     }
