@@ -67,7 +67,7 @@ namespace Models
         /// </summary>
         public virtual bool NeedsAttention
         {
-            get { return (!IsSelected) && (_needsAttentionOverride || (Unread >= Settings.FlashInterval && Settings.ShouldFlash)); }
+            get { return (!IsSelected) && (_needsAttentionOverride || (Unread >= Settings.FlashInterval && Settings.MessageNotifyLevel > 0)); }
         }
 
         /// <summary>
@@ -218,7 +218,6 @@ namespace Models
         /* Official Channels */
         pub,
         // pub channels are official channels which are open to the public and abide by F-list's rules and moderation.
-
 
         /* Private Channels */
         priv,

@@ -296,6 +296,17 @@ namespace ViewModels
             _rcmvm.IsOpen = true;
             OnPropertyChanged("RightClickMenuViewModel");
         }
+
+        private RelayCommand _invertButton;
+        public ICommand InvertButtonCommand
+        {
+            get
+            {
+                if (_invertButton == null)
+                    _invertButton = new RelayCommand(InvertButton);
+                return _invertButton;
+            }
+        }
         #endregion
         #endregion
 
@@ -320,6 +331,8 @@ namespace ViewModels
 
             OnPropertyChanged("RightClickMenuViewModel");
         }
+
+        internal virtual void InvertButton(object arguments) { }
         #endregion
 
         #region Properties

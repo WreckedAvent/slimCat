@@ -275,6 +275,72 @@ namespace System
             throw new NotImplementedException();
         }
     }
+
+    public sealed class NotifyLevelConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            int toParse = (int)value;
+            string title = parameter as string;
+
+            switch ((Models.ChannelSettingsModel.NotifyLevel)toParse)
+            {
+                case ChannelSettingsModel.NotifyLevel.NotificationOnly: return "Just a notification";
+                case ChannelSettingsModel.NotifyLevel.NotificationAndToast: return "Notification and toast";
+                case ChannelSettingsModel.NotifyLevel.NotificationAndSound: return "Notification, toast, and sound";
+                default: return "No notifications";
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public sealed class InterestedOnlyBoolConverter : IValueConverter
+    {
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is bool)) return null;
+
+            bool v = (bool)value;
+
+            if (v) return "only for people of interest.";
+            else
+                return "for everyone.";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public sealed class ChannelTypeToImageConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var args = (ChannelType)value;
+            Uri uri = new Uri("pack://application:,,,/icons/chat.png");
+            switch (args)
+            {
+                case ChannelType.pm: uri = new Uri("pack://application:,,,/icons/chat.png"); break;
+                case ChannelType.closed: uri = new Uri("pack://application:,,,/icons/private_closed.png"); break;
+                case ChannelType.priv: uri = new Uri("pack://application:,,,/icons/private_open.png"); break;
+                case ChannelType.pub: uri = new Uri("pack://application:,,,/icons/public.png"); break;
+            }
+
+            return new System.Windows.Media.Imaging.BitmapImage(uri);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
  
     /// <summary>
     /// Various conversion methods

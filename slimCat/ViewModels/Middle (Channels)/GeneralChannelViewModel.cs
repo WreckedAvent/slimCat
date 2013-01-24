@@ -53,20 +53,24 @@ namespace ViewModels
         {
             get
             {
+                int characterNameOffset = 2; // how many ding terms we have to offset for the character's name
                 var count = _thisDingTerms.Count;
                 var shouldBe = ApplicationSettings.GlobalNotifyTermsList.Count() 
                                 + Model.Settings.EnumerableTerms.Count() 
-                                + (Model.Settings.NotifyCharacterMention ? 1 : 0);
+                                + characterNameOffset;
 
                 if (count != shouldBe)
                 {
                     _thisDingTerms.Clear();
+
                     foreach (var term in ApplicationSettings.GlobalNotifyTermsList)
                         _thisDingTerms.Add(term);
+
                     foreach (var term in Model.Settings.EnumerableTerms)
                         _thisDingTerms.Add(term);
-                    if (Model.Settings.NotifyCharacterMention)
-                        _thisDingTerms.Add(_cm.SelectedCharacter.Name);
+
+                    _thisDingTerms.Add(_cm.SelectedCharacter.Name);
+                    _thisDingTerms.Add(_cm.SelectedCharacter.Name + "'s");
                 }
 
                 return _thisDingTerms.Distinct().Where(term => !string.IsNullOrWhiteSpace(term));
@@ -168,22 +172,6 @@ namespace ViewModels
         public bool IsChatting
         {
             get { return !IsSearching; }
-        }
-
-        // Near the top, used for the label on the left side of title
-        public string ChannelTypeString 
-        {
-            get
-            {
-                switch (Model.Type)
-                {
-                    case ChannelType.pub: return "(Official) ";
-                    case ChannelType.priv: return "(Public) ";
-                    case ChannelType.closed: return "(Private) ";
-                }
-
-                return " ";
-            }
         }
 
         // Near the top, used for the label on the right side of title
@@ -463,6 +451,23 @@ namespace ViewModels
             _adFlood.Start();
             OnPropertyChanged("CanPost");
             OnPropertyChanged("CannotPost");
+        }
+
+        internal override void InvertButton(object arguments)
+        {
+            var args = arguments as string;
+            if (args == null) return;
+
+            if (args.Equals("Messages"))
+                ChannelSettings.MessageNotifyOnlyForInteresting = !ChannelSettings.MessageNotifyOnlyForInteresting;
+
+            if (args.Equals("PromoteDemote"))
+                ChannelSettings.PromoteDemoteNotifyOnlyForInteresting = !ChannelSettings.PromoteDemoteNotifyOnlyForInteresting;
+
+            if (args.Equals("JoinLeave"))
+                ChannelSettings.JoinLeaveNotifyOnlyForInteresting = !ChannelSettings.JoinLeaveNotifyOnlyForInteresting;
+
+            OnPropertyChanged("ChannelSettings");
         }
 
         #region Commands

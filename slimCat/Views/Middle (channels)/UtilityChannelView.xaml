@@ -67,11 +67,13 @@
                         <StackPanel  Margin="0,5">
                             <TextBlock Text="Notifications Volume" Margin="5,0,0,0" />
                             <Slider Value="{Binding Volume}" 
-                                    LargeChange=".25"
-                                    SmallChange=".05"
+                                    LargeChange=".20"
+                                    SmallChange=".10"
                                     Minimum="0" 
                                     Maximum="1"
                                     Width="200" 
+                                    TickFrequency=".10"
+                                    TickPlacement="BottomRight"
                                     HorizontalAlignment="Left" 
                                     Margin="5,0,0,0" />
                         </StackPanel>

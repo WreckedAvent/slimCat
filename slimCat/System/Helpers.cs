@@ -226,8 +226,7 @@ namespace System
 
             if (settings.NotifyIncludesCharacterNames)
                 if (message.Poster.Name.HasDingTermMatch(dingTerms)) return true;
-            if (settings.NotifyIncludesMessages)
-                if (safeMessage.HasDingTermMatch(dingTerms)) return true;
+            if (safeMessage.HasDingTermMatch(dingTerms)) return true;
 
             return false;
         }

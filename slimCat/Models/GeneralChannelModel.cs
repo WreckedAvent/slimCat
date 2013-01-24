@@ -10,29 +10,26 @@ namespace Models
     {
         #region Fields
         private ObservableCollection<ICharacter> _users;
+        private IList<string> _banned;
         private string _motd;
-        private ICharacter _owner;
         private int _userCount;
         private int _lastAdCount;
         private IList<string> _mods;
         #endregion
 
         #region Properties
-        // used as an abstraction away from the user collection (so we know how many are in without it being set)
         public ObservableCollection<ICharacter> Users  { get { return _users; } }
         
         public IList<string> Moderators { get { return _mods; } }
+
+        public IList<string> Banned { get { return _banned; } }
+
+        public string Owner { get { if (_mods != null) return _mods[0]; else return null; } }
 
         public string MOTD
         {
             get { return _motd; }
             set { _motd = value; OnPropertyChanged("MOTD"); }
-        }
-
-        public ICharacter Owner
-        {
-            get { return _owner; }
-            set { _owner = value; OnPropertyChanged("Owner"); }
         }
 
         public int UserCount
@@ -63,7 +60,7 @@ namespace Models
         {
             get
             {
-                return base.NeedsAttention || (UnreadAds >= Settings.FlashInterval && Settings.ShouldFlash);
+                return base.NeedsAttention || (UnreadAds >= Settings.FlashInterval && Settings.MessageNotifyLevel > 0);
             }
         }
 
@@ -110,6 +107,7 @@ namespace Models
 
                 _users = new ObservableCollection<ICharacter>();
                 _mods = new List<string>();
+                _banned = new List<string>();
 
                 _settings = new ChannelSettingsModel();
 
@@ -182,6 +180,8 @@ namespace Models
         public void CallListChanged()
         {
             OnPropertyChanged("Moderators");
+            OnPropertyChanged("Owner");
+            OnPropertyChanged("Banned");
             OnPropertyChanged("Users");
             OnPropertyChanged("UsersCount");
         }

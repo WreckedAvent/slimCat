@@ -226,6 +226,9 @@
     <Compile Include="Views\UI Parts\Buttons\CloseButtonView.xaml.cs">
       <DependentUpon>CloseButtonView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UI Parts\Buttons\ChannelTypeSwitchButton.xaml.cs">
+      <DependentUpon>ChannelTypeSwitchButton.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UI Parts\Buttons\ManageListsButtonView.xaml.cs">
       <DependentUpon>ManageListsButtonView.xaml</DependentUpon>
     </Compile>
@@ -359,6 +362,10 @@
     <Page Include="Views\UI Parts\Buttons\CloseButtonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\Buttons\ChannelTypeSwitchButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\UI Parts\Buttons\ManageListsButtonView.xaml">
       <Generator>MSBuild:Compile</Generator>

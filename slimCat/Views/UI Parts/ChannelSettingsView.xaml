@@ -1,11 +1,18 @@
 ﻿<Popup  x:Class="Views.ChannelSettingsView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-
+        xmlns:sys="clr-namespace:System"
+        
         PlacementTarget="{Binding ElementName=PopupAnchor}"
         Placement="Center"
         StaysOpen="False"
         IsOpen="{Binding Path=ChannelSettings.IsChangingSettings}">
+    
+    <Popup.Resources>
+        <sys:NotifyLevelConverter x:Key="NotifyLevelConverter"/>
+        <sys:InterestedOnlyBoolConverter x:Key="InterestedOnlyBoolConverter"/>
+    </Popup.Resources>
+    
     <Border BorderBrush="{StaticResource HighlightBrush}"
             BorderThickness="2"
             Background="{StaticResource BackgroundBrush}">
@@ -21,57 +28,79 @@
 
             <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
                         Margin="10">
-                <CheckBox IsChecked="{Binding Path=ChannelSettings.LoggingEnabled}">Automatically log each message</CheckBox>
-                <CheckBox IsChecked="{Binding Path=ChannelSettings.ShouldFlash}">Channel flashes on a new message</CheckBox>
+                <CheckBox IsChecked="{Binding Path=ChannelSettings.LoggingEnabled}">Allow logging</CheckBox>
 
-                <WrapPanel Visibility="{Binding Path=ChannelSettings.ShouldFlash, Converter={StaticResource BoolConverter}}"
-                           TextBlock.Foreground="{StaticResource ForegroundBrush}"
-                           ToolTip="If flashing on new messages is allowed, how many messages must be new before the tab flashes?">
-                    <TextBlock Text="Flash every "
-                               Margin="5"/>
-                    <TextBox Text="{Binding Path=ChannelSettings.FlashInterval}"
-                             VerticalAlignment="Center"
-                             FontSize="12"/>
-                    <TextBlock Text="New unread Messages"
-                               Margin="5"/>
+                <TextBlock Text="New Messages"
+                           Margin="0,15,0,0"/>
+                <Slider Maximum="3"
+                        Minimum="0"
+                        SmallChange="1"
+                        LargeChange="1"
+                        IsSnapToTickEnabled="True"
+                        TickFrequency="1"
+                        TickPlacement="BottomRight"
+                        Value="{Binding ChannelSettings.MessageNotifyLevel}"
+                        />
+                <WrapPanel>
+                    <TextBlock Text="{Binding ChannelSettings.MessageNotifyLevel, Converter={StaticResource NotifyLevelConverter}}"/>
+                    <Button Content="{Binding ChannelSettings.MessageNotifyOnlyForInteresting, Converter={StaticResource InterestedOnlyBoolConverter}}"
+                            Command="{Binding InvertButtonCommand}"
+                            CommandParameter="Messages"
+                            Style="{StaticResource ImageContentButton}"/>
                 </WrapPanel>
 
-                <CheckBox IsChecked="{Binding Path=ChannelSettings.ShouldDing}"
-                          ToolTip="If checked, every new message will create a sound and toast notification.">Play a sound and notify on new message</CheckBox>
-                <StackPanel Visibility="{Binding Path=ShowAllSettings, Mode=OneWay, Converter={StaticResource BoolConverter}}">
-                    <TextBlock Text="Create a toast notification when ..."
-                           FontSize="18"
-                           Margin="5"/>
-                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyCharacterMention}">... this this character is mentioned</CheckBox>
-                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyModPromoteDemote}">... a moderator is promoted or demoted</CheckBox>
-                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyOnJoinLeave}">... a character joins or leaves</CheckBox>
-                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyOnNormalJoinLeave}"
-                                Visibility="{Binding Path=ChannelSettings.NotifyOnJoinLeave, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                                Margin="20,0"
-                                Content="Include users with no relationship to this character"
-                                ToolTip="If not checked, only friends, bookmarks, characters being talked to, and characters marked as 'interested' will spawn join/leave notifications. If checked, all characters will."/>
+                <StackPanel Visibility="{Binding ShowAllSettings, Converter={StaticResource BoolConverter}}">
+                    <TextBlock Text="Users joining/leaving"
+                               Margin="0,20,0,0"/>
+                    <Slider Maximum="3"
+                            Minimum="0"
+                            SmallChange="1"
+                            LargeChange="1"
+                            IsSnapToTickEnabled="True"
+                            TickFrequency="1"
+                            TickPlacement="BottomRight"
+                            Value="{Binding ChannelSettings.JoinLeaveNotifyLevel}"
+                            />
+                    <WrapPanel>
+                        <TextBlock Text="{Binding ChannelSettings.JoinLeaveNotifyLevel, Converter={StaticResource NotifyLevelConverter}}"/>
+                        <Button Content="{Binding ChannelSettings.JoinLeaveNotifyOnlyForInteresting, Converter={StaticResource InterestedOnlyBoolConverter}}"
+                                Command="{Binding InvertButtonCommand}"
+                                CommandParameter="JoinLeave"
+                                Style="{StaticResource ImageContentButton}"/>
+                    </WrapPanel>
 
-                    <TextBlock Margin="20,5">... these terms are mentioned (seperate with commas):</TextBlock>
+                    <TextBlock Text="Mod promotion/demotion"
+                               Margin="0,20,0,0"/>
+                    <Slider Maximum="3"
+                            Minimum="0"
+                            SmallChange="1"
+                            LargeChange="1"
+                            IsSnapToTickEnabled="True"
+                            TickFrequency="1"
+                            TickPlacement="BottomRight"
+                            Value="{Binding ChannelSettings.PromoteDemoteNotifyLevel}"
+                            />
+                    <WrapPanel>
+                        <TextBlock Text="{Binding ChannelSettings.PromoteDemoteNotifyLevel, Converter={StaticResource NotifyLevelConverter}}"/>
+                        <Button Content="{Binding ChannelSettings.PromoteDemoteNotifyOnlyForInteresting, Converter={StaticResource InterestedOnlyBoolConverter}}"
+                                Command="{Binding InvertButtonCommand}"
+                                CommandParameter="PromoteDemote"
+                                Style="{StaticResource ImageContentButton}"/>
+                    </WrapPanel>
+                </StackPanel>
+                
+                <TextBlock Margin="0,20,0,0">Notify terms (seperate with commas):</TextBlock>
+                <TextBox Text="{Binding Path=ChannelSettings.NotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         TextWrapping="Wrap"
+                         MaxWidth="500"
+                         FontSize="12"/>
 
-                    <TextBox Text="{Binding Path=ChannelSettings.NotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        TextWrapping="Wrap"
-                        MaxWidth="500"
-                        FontSize="12"/>
+                <StackPanel Visibility="{Binding Path=HasNotifyTerms, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                            Margin="10,0,0,0">
 
-                    <StackPanel Margin="20,0"
-                        Visibility="{Binding Path=HasNotifyTerms, Mode=OneWay, Converter={StaticResource BoolConverter}}">
-
-                        <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyIncludesCharacterNames}"
-                            ToolTip="If checked, the terms above will try to be matched in each poster's name for the channel. Upon a whole word match, a notification is spawned."
-                            >Include character names</CheckBox>
-
-                        <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyIncludesMessages}"
-                            ToolTip="If checked, the terms above will try to be matched in each channel's messages. Upon a whole word match, a notification is spawned."
-                            >Include message content</CheckBox>
-                        <CheckBox IsChecked="{Binding Path=ChannelSettings.IgnoreNotInterested}"
-                            ToolTip="If checked, notifications will not be spawned if the character is marked as 'not interested', even if they match the above criteria."
-                            >Exclude characters marked as 'not interested'</CheckBox>
-                    </StackPanel>
+                    <CheckBox IsChecked="{Binding Path=ChannelSettings.NotifyIncludesCharacterNames}"
+                        ToolTip="If checked, the terms above will try to be matched in each poster's name for the channel. Upon a whole word match, a notification is spawned."
+                        >Include character names</CheckBox>
                 </StackPanel>
             </StackPanel>
             <Button Content="Close Settings"

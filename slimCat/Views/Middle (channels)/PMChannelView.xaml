@@ -20,8 +20,7 @@
                         <TextBlock TextWrapping="Wrap"
                                    TextAlignment="Left"
                                    HorizontalAlignment="Left">
-                            <Run Text="(Converation) "
-                                 Foreground="{StaticResource ForegroundBrush}" />
+                            <v:ChannelTypeButtonView IsEnabled="False"/>
                             <Run Text="{Binding Path=Model.ID, Mode=OneWay}"
                                  Foreground="{StaticResource HighlightBrush}"/>
                         </TextBlock>

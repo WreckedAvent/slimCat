@@ -10,6 +10,7 @@
     <sys:BBCodeConverter x:Key="BBCodeConverter" />
     <sys:GenderColorConverter x:Key="GenderColorConverter" />
     <sys:GenderImageConverter x:Key="GenderImageConverter" />
+    <sys:ChannelTypeToImageConverter x:Key="ChannelTypeToImageConverter"/>
     
     <DataTemplate x:Key="MessageView">
         <v:MessageView />

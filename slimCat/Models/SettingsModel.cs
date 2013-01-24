@@ -403,24 +403,31 @@ namespace Models
     public class ChannelSettingsModel
     {
         public event EventHandler Updated;
+        public enum NotifyLevel
+        {
+            NoNotification,
+            NotificationOnly,
+            NotificationAndToast,
+            NotificationAndSound
+        };
 
         #region Fields
         private bool _enableLogging = true;
-        private bool _shouldFlash = true;
-        private bool _shouldDing = false;
         private int _shouldFlashInterval = 1;
-        private bool _notifyWhenThisCharacterIsMentioned = true;
 
-        private bool _notifyIncludesMessages = true;
         private bool _notifyIncludesCharacterNames = false;
         private string _notifyOnTheseTerms = "";
         private IEnumerable<string> _notifyEnumerate;
         private bool _notifyTermsChanged = false;
-        private bool _ignoreNotInterested = true;
 
-        private bool _notifyOnJoinLeave = true;
-        private bool _notifyOnNormalJoinLeave = false;
-        private bool _notifyModPromoteDemote = true;
+        private int _messageLevel = (int)NotifyLevel.NotificationOnly;
+        private int _joinLeaveLevel = (int)NotifyLevel.NotificationOnly;
+        private int _promoteDemoteLevel = (int)NotifyLevel.NotificationAndToast;
+        private int _channelSettingsChangedLevel = (int)NotifyLevel.NotificationAndToast;
+
+        private bool _messageOnlyForInteresting;
+        private bool _joinLeaveNotifyOnlyForInteresting = true;
+        private bool _promoteDemoteNotifyOnlyForInteresting;
 
         private bool _isChangingSettings = false;
         #endregion
@@ -429,61 +436,10 @@ namespace Models
         public ChannelSettingsModel(bool isPM = false)
         {
             if (isPM)
-            {
-                _shouldDing = true;
-                _notifyWhenThisCharacterIsMentioned = false;
-            }
+                MessageNotifyLevel = (int)NotifyLevel.NotificationAndSound;
         }
 
         #region Properties
-        /// <summary>
-        /// If this tab should flash on a new message
-        /// </summary>
-        public bool ShouldFlash
-        {
-            get { return _shouldFlash; }
-            set
-            {
-                if (_shouldFlash != value)
-                {
-                    _shouldFlash = value;
-                    CallUpdate();
-                }
-            }
-        }
-
-        /// <summary>
-        /// If this tab should ding the user on a new message
-        /// </summary>
-        public bool ShouldDing
-        {
-            get { return _shouldDing; }
-            set
-            {
-                if (_shouldDing != value)
-                {
-                    _shouldDing = value;
-                    CallUpdate();
-                }
-            }
-        }
-
-        /// <summary>
-        /// If a notification will be arised whenever this character is mentioned
-        /// </summary>
-        public bool NotifyCharacterMention
-        {
-            get { return _notifyWhenThisCharacterIsMentioned; }
-            set
-            {
-                if (_notifyWhenThisCharacterIsMentioned != value)
-                {
-                    _notifyWhenThisCharacterIsMentioned = value;
-                    CallUpdate();
-                }
-            }
-        }
-
         /// <summary>
         /// How many unread messages must be accumulated before the channel tab flashes
         /// </summary>
@@ -536,58 +492,6 @@ namespace Models
         }
 
         /// <summary>
-        /// If a term notification dings when the term appears in a character's name
-        /// </summary>
-        public bool NotifyIncludesCharacterNames
-        {
-            get { return _notifyIncludesCharacterNames; }
-            set
-            {
-                _notifyIncludesCharacterNames = value;
-                CallUpdate();
-            }
-        }
-
-        /// <summary>
-        /// If a term notification dings when the term appears in a character's post
-        /// </summary>
-        public bool NotifyIncludesMessages
-        {
-            get { return _notifyIncludesMessages; }
-            set
-            {
-                _notifyIncludesMessages = value;
-                CallUpdate();
-            }
-        }
-
-        /// <summary>
-        /// If a user entering or leaving the channel spawns a notification
-        /// </summary>
-        public bool NotifyOnJoinLeave
-        {
-            get { return _notifyOnJoinLeave; }
-            set
-            {
-                _notifyOnJoinLeave = value;
-                CallUpdate();
-            }
-        }
-
-        /// <summary>
-        /// If a normal user with no relationship to user entering or leaving the channel spawns a notification
-        /// </summary>
-        public bool NotifyOnNormalJoinLeave
-        {
-            get { return _notifyOnNormalJoinLeave; }
-            set
-            {
-                _notifyOnNormalJoinLeave = value;
-                CallUpdate();
-            }
-        }
-
-        /// <summary>
         /// If we log each message 
         /// </summary>
         public bool LoggingEnabled
@@ -596,32 +500,6 @@ namespace Models
             set
             {
                 _enableLogging = value;
-                CallUpdate();
-            }
-        }
-
-        /// <summary>
-        /// If characters marked as 'not interested' are skipped when we spawn notifications
-        /// </summary>
-        public bool IgnoreNotInterested
-        {
-            get { return _ignoreNotInterested; }
-            set
-            {
-                _ignoreNotInterested = value;
-                CallUpdate();
-            }
-        }
-
-        /// <summary>
-        /// If we get notifications about mod promotions / demotions in channels
-        /// </summary>
-        public bool NotifyModPromoteDemote
-        {
-            get { return _notifyModPromoteDemote; }
-            set
-            {
-                _notifyModPromoteDemote = value;
                 CallUpdate();
             }
         }
@@ -637,6 +515,59 @@ namespace Models
                     CallUpdate();
                 }
             }
+        }
+
+        /// <summary>
+        /// All Notify levels perform fairly simply:
+        /// 0 for no notification ever
+        /// 1 for a simple notification
+        /// 2 for a simple notification and a toast
+        /// 3 for a simple notification, a toast, and a sound
+        /// </summary>
+        /// 
+        public int MessageNotifyLevel
+        {
+            get { return _messageLevel; }
+            set { _messageLevel = value; CallUpdate(); }
+        }
+
+        public bool MessageNotifyOnlyForInteresting
+        {
+            get { return _messageOnlyForInteresting; }
+            set { _messageOnlyForInteresting = value; CallUpdate(); }
+        }
+
+        /// <summary>
+        /// If a term notification dings when the term appears in a character's name
+        /// </summary>
+        public bool NotifyIncludesCharacterNames
+        {
+            get { return _notifyIncludesCharacterNames; }
+            set { _notifyIncludesCharacterNames = value; CallUpdate(); }
+        }
+        
+        public int JoinLeaveNotifyLevel
+        {
+            get { return _joinLeaveLevel; }
+            set { _joinLeaveLevel = value; CallUpdate(); }
+        }
+
+        public bool JoinLeaveNotifyOnlyForInteresting
+        {
+            get { return _joinLeaveNotifyOnlyForInteresting; }
+            set { _joinLeaveNotifyOnlyForInteresting = value; CallUpdate(); }
+        }
+        
+        public int PromoteDemoteNotifyLevel
+        {
+            get { return _promoteDemoteLevel; }
+            set { _promoteDemoteLevel = value; CallUpdate(); }
+        }
+
+        public bool PromoteDemoteNotifyOnlyForInteresting
+        {
+            get { return _promoteDemoteNotifyOnlyForInteresting; }
+            set { _promoteDemoteNotifyOnlyForInteresting = value; CallUpdate(); }
         }
         #endregion
 

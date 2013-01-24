@@ -118,6 +118,8 @@ namespace ViewModels
             _container.RegisterType<object, ManageListsTabView>(ManageListsTabView);
 
             _genderSettings = new GenderSettingsModel();
+            SearchSettings.ShowNotInterested = true;
+            SearchSettings.ShowIgnored = true;
 
             SearchSettings.Updated += (s, e) =>
             {
