@@ -26,6 +26,7 @@ namespace ViewModels
         private bool _pmsExpanded = true;
         private bool _channelsExpanded = true;
         private bool _isChangingStatus = false;
+        private System.Timers.Timer _updateTick = new System.Timers.Timer(2500);
 
         public const string UserbarView = "UserbarView";
 
@@ -129,6 +130,11 @@ namespace ViewModels
 
         public IDictionary<string, StatusType> StatusTypes { get { return _statuskinds; } }
 
+        public bool ConnectionIsPerfect { get; set; }
+        public bool ConnectionIsGood { get; set; }
+        public bool ConnectionIsModerate { get; set; }
+        public bool ConnectionIsConnected { get; set; }
+
         // this links the PM and Channel boxes so they act as one
         #region Selection Logic
         public int PM_Selected
@@ -202,6 +208,8 @@ namespace ViewModels
 
                 CM.SelectedChannelChanged += (s, e) => updateFlashingTabs();
 
+                _updateTick.Enabled = true;
+                _updateTick.Elapsed += updateConnectionBars;
             }
 
             catch (Exception ex)
@@ -280,6 +288,26 @@ namespace ViewModels
             }
 
             HasNewMessage = stillHasMessages;
+        }
+
+        // this will update the connection bars to show the user about how good our connection is to the server
+        private void updateConnectionBars(object sender, EventArgs e)
+        {
+            var difference = DateTime.Now - CM.LastMessageReceived;
+            ConnectionIsPerfect = true;
+            ConnectionIsGood = true;
+            ConnectionIsModerate = true;
+            ConnectionIsConnected = true;
+
+            if (difference.TotalSeconds > 5) ConnectionIsPerfect = false;
+            if (difference.TotalSeconds > 10) ConnectionIsGood = false;
+            if (difference.TotalSeconds > 15) ConnectionIsModerate = false;
+            if (difference.TotalSeconds > 30) ConnectionIsConnected = false;
+
+            OnPropertyChanged("ConnectionIsPerfect");
+            OnPropertyChanged("ConnectionIsGood");
+            OnPropertyChanged("ConnectionIsModerate");
+            OnPropertyChanged("ConnectionIsConnected");
         }
         #endregion
 

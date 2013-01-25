@@ -82,7 +82,7 @@ namespace Services
 
                     var iconMenu = new System.Windows.Forms.ContextMenu();
 
-                    iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem(string.Format("slimCat Caracal ({0})", args)) { Enabled = false });
+                    iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem(string.Format("{0} {1} ({2}) - {3}", Constants.CLIENT_ID, Constants.CLIENT_NAME, Constants.CLIENT_VER, args)) { Enabled = false });
                     iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("-"));
 
                     iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("Sounds Enabled", ToggleSound) { Checked = ApplicationSettings.Volume > 0.0, });
@@ -92,7 +92,7 @@ namespace Services
                     iconMenu.MenuItems.Add("Show", (s, e) => ShowWindow());
                     iconMenu.MenuItems.Add("Exit", (s, e) => ShutDown());
 
-                    icon.Text = "slimCat - " + args;
+                    icon.Text = string.Format("{0} - {1}", Constants.CLIENT_NAME, args);
                     icon.ContextMenu = iconMenu;
                     icon.Visible = true;
                     #endregion
@@ -330,15 +330,10 @@ namespace Services
             else
             {
                 var channelID = ((ChannelUpdateModel)Notification).ChannelID;
-                var channel = _cm.CurrentChannels.FirstByIdOrDefault(channelID);
                 var args = ((ChannelUpdateModel)Notification).Arguments;
 
-                if (channel == null) return; // avoid null reference
-
-                if (args is Models.ChannelUpdateModel.ChannelInviteEventArgs) // we always want to know about invites
-                    NotifyUser(false, false, Notification.ToString(), channelID);
-
                 AddNotification(Notification);
+                NotifyUser(false, false, Notification.ToString(), channelID);
             }
         }
 

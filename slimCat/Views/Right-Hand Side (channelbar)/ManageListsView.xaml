@@ -127,6 +127,17 @@
                         <ListBox ItemsSource="{Binding Path=Ignored, Mode=OneWay}"
                                  Style="{StaticResource ContentListBox}"/>
                     </Expander>
+
+                    <Expander Visibility="{Binding Path=HasBanned, Mode=OneWay, Converter={StaticResource BoolConverter}}">
+                        <Expander.Header>
+                            <TextBlock Foreground="{StaticResource ForegroundBrush}">
+                                <Run Text="Banned -"/>
+                                <Run Text="{Binding Path=Banned.Count, Mode=OneWay}"/>
+                            </TextBlock>
+                        </Expander.Header>
+                        <ListBox ItemsSource="{Binding Path=Banned, Mode=OneWay}"
+                                 Style="{StaticResource ContentListBox}"/>
+                    </Expander>
                 </StackPanel>
             </ScrollViewer>
         </DockPanel>

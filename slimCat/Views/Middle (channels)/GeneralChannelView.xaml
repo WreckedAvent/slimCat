@@ -22,7 +22,7 @@
                                    Foreground="{StaticResource ForegroundBrush}"
                                    TextWrapping="Wrap"
                                    ToolTip="Expand or retract the channel header">
-                            <v:ChannelTypeButtonView/>
+                            <v:ChannelTypeButtonView IsEnabled="False"/>
                             
                             <Run Text="{Binding Path=Model.Title, Mode=OneWay}" Foreground="{StaticResource HighlightBrush}"/>
                             <Run Text="{Binding Path=ChatContentString, Mode=OneWay}" />

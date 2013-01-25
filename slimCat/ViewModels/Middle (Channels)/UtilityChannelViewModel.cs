@@ -1,16 +1,14 @@
-﻿using System;
-using Microsoft.Practices.Prism.Events;
+﻿using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.Prism.Regions;
 using Microsoft.Practices.Unity;
 using Models;
-using Views;
-using System.Linq;
-using lib;
-using System.Windows.Input;
-using slimCat.Properties;
 using slimCat;
+using System;
+using System.IO;
+using System.Linq;
+using System.Net;
 using System.Text;
-using System.Collections.Generic;
+using Views;
 
 namespace ViewModels
 {
@@ -25,6 +23,7 @@ namespace ViewModels
         private StringBuilder _connectDotDot;
         private CacheCount _minuteOnlineCount;
         private bool _inStagger = false;
+        private const string new_version_link = "https://dl.dropbox.com/u/29984849/slimCat/latest.csv";
         #endregion
 
         #region Properties
@@ -128,6 +127,17 @@ namespace ViewModels
                 Services.SettingsDaemon.SaveApplicationSettingsToXML(CM.SelectedCharacter.Name);
             }
         }
+
+        public string ClientIDString
+        {
+            get { return string.Format("{0} {1} ({2})", Constants.CLIENT_ID, Constants.CLIENT_NAME, Constants.CLIENT_VER); }
+        }
+
+        public bool HasNewUpdate { get; set; }
+
+        public string UpdateName { get; set; }
+        public string UpdateLink { get; set; }
+        public string UpdateBuildTime { get; set; }
         #endregion
 
         #region Constructors
@@ -176,6 +186,32 @@ namespace ViewModels
                 _events.GetEvent<ReconnectingEvent>().Subscribe(LoginReconnectingEvent);
 
                 Services.SettingsDaemon.ReadApplicationSettingsFromXML(cm.SelectedCharacter.Name);
+
+                try
+                {
+                    string [] args;
+                    using (WebClient client = new WebClient())
+                    using (Stream stream = client.OpenRead("https://dl.dropbox.com/u/29984849/slimCat/latest.csv"))
+                    using (StreamReader reader = new StreamReader(stream))
+                        args = reader.ReadToEnd().Split(',');
+
+                    if (args[0] != Constants.FRIENDLY_NAME)
+                    {
+                        HasNewUpdate = true;
+
+                        UpdateName = args[0];
+                        UpdateLink = args[1];
+                        UpdateBuildTime = args[2];
+
+                        OnPropertyChanged("HasNewUpdate");
+                        OnPropertyChanged("UpdateName");
+                        OnPropertyChanged("UpdateLink");
+                        OnPropertyChanged("UpdateBuildTime");
+                    }
+                }
+
+                catch { }
+                            
             }
 
             catch (Exception ex)

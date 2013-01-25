@@ -88,7 +88,6 @@ namespace Models
         string TimeStamp { get; }
         DateTimeOffset PostedTime { get; }
         MessageType Type { get; }
-        void Dispose();
     }
     #endregion
 
@@ -393,6 +392,14 @@ namespace Models
             public override string ToString()
             {
                 return ": is now " + (IsOpen ? "open" : "closed") + '.';
+            }
+        }
+
+        public class ChannelTypeBannedListEventArgs : ChannelUpdateEventArgs
+        {
+            public override string ToString()
+            {
+                return "'s ban list has been updated";
             }
         }
         #endregion

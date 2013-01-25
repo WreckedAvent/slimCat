@@ -423,7 +423,6 @@ namespace Models
         private int _messageLevel = (int)NotifyLevel.NotificationOnly;
         private int _joinLeaveLevel = (int)NotifyLevel.NotificationOnly;
         private int _promoteDemoteLevel = (int)NotifyLevel.NotificationAndToast;
-        private int _channelSettingsChangedLevel = (int)NotifyLevel.NotificationAndToast;
 
         private bool _messageOnlyForInteresting;
         private bool _joinLeaveNotifyOnlyForInteresting = true;

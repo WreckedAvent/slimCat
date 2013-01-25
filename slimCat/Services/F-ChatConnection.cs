@@ -15,8 +15,6 @@ namespace Services
     {
         #region Constants
         public const string host = "ws://chat.f-list.net:9722/";
-        public const string version = "Caracal";
-        public const string client_n = "SlimCat";
         #endregion
 
         #region Fields
@@ -186,8 +184,12 @@ namespace Services
         private void ConnectionOpened(object sender, EventArgs e)
         {
             // Handshake completed, send login command
-            object idn = new { ticket = _account.Ticket, method = "ticket", account = _account.AccountName,
-                                    character = _selectedCharacter, cname = client_n, cversion = version };
+            object idn = new { ticket = _account.Ticket,
+                               method = "ticket",
+                               account = _account.AccountName,
+                               character = _selectedCharacter,
+                               cname = Constants.CLIENT_ID,
+                               cversion = string.Format("{0} {1}", Constants.CLIENT_NAME, Constants.CLIENT_VER) };
 
             this.SendMessage(idn, "IDN");
         }

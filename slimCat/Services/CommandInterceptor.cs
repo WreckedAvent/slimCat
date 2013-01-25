@@ -567,16 +567,24 @@ namespace Services
 
         private void ErrorCommand(IDictionary<string, object> command)
         {
+            var thisMessage = (string)command["message"];
             // for some fucktarded reason room status changes are only done through SYS
-            if ((command["message"] as string).IndexOf("this channel is now", StringComparison.OrdinalIgnoreCase) != -1)
+            if (thisMessage.IndexOf("this channel is now", StringComparison.OrdinalIgnoreCase) != -1)
             {
                 RoomTypeChangedCommand(command);
                 return;
             }
 
+            // checks to see if this is a channel ban message
+            if (thisMessage.IndexOf("Channel bans", StringComparison.OrdinalIgnoreCase) != -1)
+            {
+                ChannelBanListCommand(command);
+                return;
+            }
+
             // checks to ensure it's not a mod promote message
-            if ((command["message"] as string).IndexOf("has been", StringComparison.OrdinalIgnoreCase) == -1)
-                _events.GetEvent<ErrorEvent>().Publish(command["message"] as string);
+            if (thisMessage.IndexOf("has been", StringComparison.OrdinalIgnoreCase) == -1)
+                _events.GetEvent<ErrorEvent>().Publish(thisMessage);
         }
 
         private void InviteCommand(IDictionary<string, object> command)
@@ -783,6 +791,29 @@ namespace Services
                     );
             }
         }
+
+        private void ChannelBanListCommand(IDictionary<string, object> command)
+        {
+            var channelID = (string)command["channel"];
+            var channel = _cm.CurrentChannels.FirstByIdOrDefault(channelID);
+
+            if (channel == null) return;
+            channel.Banned.Clear();
+
+            var message = ((string)command["message"]).Split(':');
+            var banned = message[1].Trim();
+
+            if (banned.IndexOf(',') == -1)
+                channel.Banned.Add(banned);
+            else
+            {
+                var bannedList = banned.Split(',');
+                foreach (string ban in bannedList)
+                    channel.Banned.Add(ban.Trim());
+            }
+
+            _events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(channelID, new ChannelUpdateModel.ChannelTypeBannedListEventArgs(), channel.Title));
+        }
         #endregion
 
         #region Methods
@@ -798,7 +829,7 @@ namespace Services
             Dispatcher.Invoke(
                 (Action)delegate
                 {
-                    Application.Current.MainWindow.Title = String.Format("slimCat Caracal ({0})", character);
+                    Application.Current.MainWindow.Title = String.Format("{0} {1} ({2})", Constants.CLIENT_ID, Constants.CLIENT_NAME, character);
                 });
         }
 

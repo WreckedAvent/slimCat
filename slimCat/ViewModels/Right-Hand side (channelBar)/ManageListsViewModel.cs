@@ -24,6 +24,7 @@ namespace ViewModels
         IList<ICharacter> _ignored;
 
         IList<ICharacter> _roomMods;
+        IList<ICharacter> _roomBans;
 
         private bool _showOffline = true;
         #endregion
@@ -48,6 +49,17 @@ namespace ViewModels
             } 
         }
 
+        public IList<ICharacter> Banned
+        {
+            get
+            {
+                if (HasUsers)
+                    return update(((GeneralChannelModel)CM.SelectedChannel).Banned, _roomBans);
+                else
+                    return null;
+            }
+        }
+
         public GenderSettingsModel GenderSettings { get { return _genderSettings; } }
 
         public bool ShowOffline
@@ -58,6 +70,11 @@ namespace ViewModels
                 _showOffline = value;
                 updateBindings();
             }
+        }
+
+        public bool HasBanned
+        {
+            get { return HasUsers && (((GeneralChannelModel)CM.SelectedChannel).Banned.Count > 0); }
         }
         #endregion
 
@@ -108,6 +125,9 @@ namespace ViewModels
 
             _roomMods = new List<ICharacter>();
             OnPropertyChanged("Moderators");
+
+            _roomBans = new List<ICharacter>();
+            OnPropertyChanged("Banned");
         }
         #endregion
 
@@ -136,6 +156,14 @@ namespace ViewModels
             _events.GetEvent<NewUpdateEvent>().Subscribe(
                 args =>
                 {
+                    var thisChannelUpdate = args as ChannelUpdateModel;
+                    if (thisChannelUpdate != null
+                        && thisChannelUpdate.Arguments is ChannelUpdateModel.ChannelTypeBannedListEventArgs)
+                    {
+                        OnPropertyChanged("HasBanned");
+                        OnPropertyChanged("Banned");
+                    }
+
                     var thisUpdate = args as CharacterUpdateModel;
                     if (thisUpdate == null) return;
 
@@ -158,7 +186,13 @@ namespace ViewModels
                 },
                 true);
 
-            cm.SelectedChannelChanged += (s, e) => { OnPropertyChanged("HasUsers"); OnPropertyChanged("Moderators"); };
+            cm.SelectedChannelChanged += (s, e) => 
+            { 
+                OnPropertyChanged("HasUsers");
+                OnPropertyChanged("Moderators");
+                OnPropertyChanged("HasBanned");
+                OnPropertyChanged("Banned");
+            };
 
         }
         #endregion

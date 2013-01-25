@@ -6,7 +6,7 @@
         Background="Transparent"
         HorizontalAlignment="Right"
         VerticalAlignment="Center"
-        ToolTip="Close this tab"
+        ToolTip=""
         Margin="0">
     <Button.Content>
         <Rectangle Fill="{Binding ElementName=channelTypeSwitchButton, Path=Foreground}"

@@ -157,6 +157,7 @@
     <Compile Include="Models\CommandModel.cs" />
     <Compile Include="Models\GeneralChannelModel.cs" />
     <Compile Include="Services\SettingsDaemon.cs" />
+    <Compile Include="System\Constants.cs" />
     <Compile Include="ViewModels\Right-Hand side %28channelBar%29\GlobalTabViewModel.cs" />
     <Compile Include="ViewModels\Right-Hand side %28channelBar%29\ManageListsViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\ChannelManagementViewModel.cs" />

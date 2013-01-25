@@ -30,9 +30,9 @@
                       Margin="0"
                       Padding="0">
                     <TextBlock Foreground="{StaticResource ForegroundBrush}"
-                           TextWrapping="Wrap">
+                               TextWrapping="Wrap">
                         
-                        <Run Text="slimCat Caracal (b4.12)"/>
+                        <Run Text="{Binding Path=ClientIDString, Mode=OneWay}"/>
                         <LineBreak />
                         
                         <Run Text="Users: " />
@@ -99,7 +99,27 @@
                                  FontSize="12"/>
                     </StackPanel>
                 </Expander>
+                
+                <Expander Header="Update"
+                          Visibility="{Binding HasNewUpdate, Mode=OneWay, Converter={StaticResource BoolConverter}}">
+                    <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
+                        <TextBlock>
+                            <Run Text="There is a new update available!"/>
+                            <LineBreak/>
+                            <Run Text="{Binding Path=UpdateName, Mode=OneWay}"/>
+                            <Run Text="("/>
+                            <Run Text="{Binding Path=UpdateBuildTime, Mode=OneWay}"/>
+                            <Run Text=")"/>
+                            <LineBreak/>
+                            
+                            <Hyperlink CommandParameter="{Binding Path=UpdateLink, Mode=OneWay}"
+                                       >Download Now</Hyperlink>
+                        </TextBlock>                        
+                        
+                    </StackPanel>
+                </Expander>
             </StackPanel>
+            
             <v:RightClickMenu />
             <v:ChannelTextBoxEntryView Grid.Row="2"
                                        Margin="0,0,0,10"/>
