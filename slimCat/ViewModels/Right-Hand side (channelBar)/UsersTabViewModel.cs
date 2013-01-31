@@ -93,13 +93,25 @@ namespace ViewModels
                 args =>
                 {
                     var thisNotification = args as CharacterUpdateModel;
-                    if (thisNotification == null) return;
 
-                    var thisArgument = thisNotification.Arguments as CharacterUpdateModel.ListChangedEventArgs;
-                    if (thisArgument == null)
+                    if (thisNotification == null)
+                    {
+                        var thisChannelNoti = args as ChannelUpdateModel;
+
+                        if (thisChannelNoti != null)
+                            if (thisChannelNoti.Arguments is ChannelUpdateModel.ChannelDisciplineEventArgs)
+                                OnPropertyChanged("SortedUsers");
                         return;
-                    else
+                    }
+
+                    else if (thisNotification.Arguments is CharacterUpdateModel.ListChangedEventArgs 
+                        || thisNotification.Arguments is CharacterUpdateModel.PromoteDemoteEventArgs
+                        || thisNotification.Arguments is CharacterUpdateModel.JoinLeaveEventArgs
+                        || thisNotification.Arguments is CharacterUpdateModel.LoginStateChangedEventArgs)
                         OnPropertyChanged("SortedUsers");
+
+                    if (thisNotification.Arguments is CharacterUpdateModel.PromoteDemoteEventArgs)
+                        OnPropertyChanged("HasPermissions");
                 });
 
             _updateTick = new System.Timers.Timer(_updateUsersTabResolution);

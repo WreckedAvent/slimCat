@@ -1,19 +1,14 @@
 ﻿using Models;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Effects;
 
 namespace System
 {
@@ -163,6 +158,9 @@ namespace System
         }
     }
 
+    /// <summary>
+    /// This is a secondary converter for BBCode when there is no 'post', such as  room description
+    /// </summary>
     public sealed class BBCodeConverter : IValueConverter
     {
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -189,6 +187,9 @@ namespace System
         }
     }
 
+    /// <summary>
+    /// Colors the gender icons based
+    /// </summary>
     public sealed class GenderColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -240,6 +241,9 @@ namespace System
         }
     }
 
+    /// <summary>
+    /// Creates gender icons from gender data type
+    /// </summary>
     public sealed class GenderImageConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -276,19 +280,27 @@ namespace System
         }
     }
 
+    /// <summary>
+    /// Converts notify level into strings
+    /// </summary>
     public sealed class NotifyLevelConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             int toParse = (int)value;
-            string title = parameter as string;
+            string notificationType = parameter as string;
+            string verboseNotificationKind = "• A notification";
+
+            if (notificationType != null && notificationType.Equals("flash"))
+                verboseNotificationKind = "• A tab flash";
 
             switch ((Models.ChannelSettingsModel.NotifyLevel)toParse)
             {
-                case ChannelSettingsModel.NotifyLevel.NotificationOnly: return "Just a notification";
-                case ChannelSettingsModel.NotifyLevel.NotificationAndToast: return "Notification and toast";
-                case ChannelSettingsModel.NotifyLevel.NotificationAndSound: return "Notification, toast, and sound";
-                default: return "No notifications";
+                case ChannelSettingsModel.NotifyLevel.NotificationOnly: return verboseNotificationKind;
+                case ChannelSettingsModel.NotifyLevel.NotificationAndToast: return verboseNotificationKind + "\n• A toast";
+                case ChannelSettingsModel.NotifyLevel.NotificationAndSound: return verboseNotificationKind + "\n• A toast with sound\n• 5 Window Flashes";
+
+                default: return "Nothing!";
             }
         }
 
@@ -298,6 +310,9 @@ namespace System
         }
     }
 
+    /// <summary>
+    /// Converts Interested-only data into strings
+    /// </summary>
     public sealed class InterestedOnlyBoolConverter : IValueConverter
     {
 
@@ -318,6 +333,9 @@ namespace System
         }
     }
 
+    /// <summary>
+    /// Turns a channel type into an image source
+    /// </summary>
     public sealed class ChannelTypeToImageConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -341,7 +359,6 @@ namespace System
         }
     }
 
- 
     /// <summary>
     /// Various conversion methods
     /// </summary>
@@ -672,6 +689,9 @@ namespace System
         }
         #endregion
 
+        /// <summary>
+        /// Converts a datetimeoffset to a "x h x m x s ago" format
+        /// </summary>
         public static string DateTimeToRough(DateTimeOffset original, bool returnSeconds = false, bool appendAgo = true)
         {
             var temp = new StringBuilder();
@@ -699,6 +719,9 @@ namespace System
             return temp.ToString();
         }
 
+        /// <summary>
+        /// Like above, but works for dates in the time
+        /// </summary>
         public static string DateTimeInFutureToRough(DateTimeOffset futureTime)
         {
             var temp = new StringBuilder();
@@ -718,6 +741,9 @@ namespace System
             return temp.ToString();
         }
 
+        /// <summary>
+        /// Converts a POSIX/UNIX timecode to a datetime
+        /// </summary>
         public static DateTimeOffset UnixTimeToDateTime(long time)
         {
             System.DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0);
@@ -725,6 +751,9 @@ namespace System
             return new DateTimeOffset(epoch.AddSeconds(time));
         }
 
+        /// <summary>
+        /// Turns a datetime to a timestamp (hh:mm)
+        /// </summary>
         public static string ToTimeStamp(this DateTimeOffset time)
         {
             var minute = time.Minute;
@@ -733,6 +762,9 @@ namespace System
             return "[" + time.Hour + ":" + minuteFix + "]";
         }
 
+        /// <summary>
+        /// The heart of BBCode converstion, turns a string of text into an inline
+        /// </summary>
         public static Inline ParseBBCode(string text, bool useTunnelingStyles)
         {
             return bbcodeToInline(PreProcessBBCode(text), useTunnelingStyles);

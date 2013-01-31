@@ -77,24 +77,25 @@ namespace ViewModels
             }
         }
 
-        public IEnumerable<IMessage> FilteredMessages
+        public IEnumerable<IMessage> CurrentMessages
         {
             get
             {
-                if (IsDisplayingChat)
-                    return Model.Messages.Where(MeetsFilter);
+                if (IsSearching)
+                {
+                    if (IsDisplayingChat)
+                        return Model.Messages.Where(MeetsFilter);
+                    else
+                        return Model.Ads.Where(MeetsFilter);
+                }
 
                 else
-                    return Model.Ads.Where(MeetsFilter);
-            }
-        }
-
-        public ObservableCollection<IMessage> CurrentChat
-        {
-            get
-            {
-                if (IsDisplayingChat) return Model.Messages;
-                else return Model.Ads;
+                {
+                    if (IsDisplayingChat)
+                        return Model.Messages;
+                    else
+                        return Model.Ads.Where(IsNotNotInterested);
+                }
             }
         }
 
@@ -305,14 +306,14 @@ namespace ViewModels
                 #region disposable
                 _genderSettings.Updated += (s, e) =>
                     {
-                        OnPropertyChanged("FilteredMessages");
+                        OnPropertyChanged("CurrentMessages");
                         OnPropertyChanged("GenderSettings");
                     };
 
                 _searchSettings.Updated += (s, e) =>
                     {
                         OnPropertyChanged("SearchSettings");
-                        OnPropertyChanged("FilteredMessages");
+                        OnPropertyChanged("CurrentMessages");
                     };
 
                 _messageFlood.Elapsed += (s, e) =>
@@ -365,6 +366,8 @@ namespace ViewModels
                 #endregion
 
                 PropertyChanged += OnPropertyChanged;
+
+                _events.GetEvent<NewUpdateEvent>().Subscribe(UpdateChat);
             }
 
             catch (Exception ex)
@@ -470,6 +473,21 @@ namespace ViewModels
             OnPropertyChanged("ChannelSettings");
         }
 
+        private void UpdateChat(NotificationModel Update)
+        {
+            var update = Update as CharacterUpdateModel;
+            if (update == null) return;
+
+            if (update.Arguments is CharacterUpdateModel.ListChangedEventArgs)
+                OnPropertyChanged("CurrentMessages");
+        }
+
+        public static bool IsNotNotInterested(IMessage message)
+        {
+            var posted = message.Poster.Name;
+            return !ApplicationSettings.NotInterested.Contains(posted);
+        }
+
         #region Commands
         RelayCommand _switch;
         public ICommand SwitchCommand
@@ -491,7 +509,7 @@ namespace ViewModels
                 if (_switchSearch == null)
                     _switchSearch = new RelayCommand(param => 
                         {
-                            OnPropertyChanged("FilteredMessages");
+                            OnPropertyChanged("CurrentMessages");
                             IsSearching = !IsSearching;
                         });
 
@@ -583,6 +601,7 @@ namespace ViewModels
                 _searchSettings = null;
                 _genderSettings = null;
 
+                _events.GetEvent<NewUpdateEvent>().Unsubscribe(UpdateChat);
                 Model.Messages.CollectionChanged -= OnMessagesChanged;
                 Model.Ads.CollectionChanged -= OnAdsChanged;
                 PropertyChanged -= OnPropertyChanged;

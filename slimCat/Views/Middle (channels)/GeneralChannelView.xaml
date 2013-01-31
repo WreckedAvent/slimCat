@@ -56,17 +56,10 @@
         <Grid Grid.Row="1"
               x:Name="PopupAnchor"
               Margin="0,10,0,5">
-            <ItemsControl ItemsSource="{Binding Path=FilteredMessages, Mode=OneWay}"
-                          x:Name="filtered"
-                          ItemTemplate="{StaticResource MessageView}"
-                          Loaded="OnFilterLoaded"
-                          Visibility="{Binding Path=IsSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}"/>
-
-            <ItemsControl ItemsSource="{Binding Path=CurrentChat, Mode=OneWay}"
+            <ItemsControl ItemsSource="{Binding Path=CurrentMessages, Mode=OneWay}"
                           x:Name="messages"
                           ItemTemplate="{StaticResource MessageView}"
-                          Loaded="OnMessagesLoaded"
-                          Visibility="{Binding Path=IsChatting, Mode=OneWay, Converter={StaticResource BoolConverter}}"/>
+                          Loaded="OnMessagesLoaded"/>
         </Grid>
         
         <Popup PlacementTarget="{Binding ElementName=PopupAnchor}"

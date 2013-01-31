@@ -302,6 +302,7 @@ namespace Services
             {
                 if (!string.IsNullOrWhiteSpace(savedChannel))
                 {
+                    Thread.Sleep(750); // according to Kira, we can overload the server's join buffer
                     object toSend = new { channel = savedChannel };
                     _connection.SendMessage(toSend, "JCH");
                 }

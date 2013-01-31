@@ -56,11 +56,18 @@ namespace Models
 
         public override bool CanClose { get { return ((ID != "Home") && IsSelected); } }
 
-        public override bool NeedsAttention // this includes ads
+        public override bool NeedsAttention
         {
             get
             {
-                return base.NeedsAttention || (UnreadAds >= Settings.FlashInterval && Settings.MessageNotifyLevel > 0);
+                if (Settings.MessageNotifyOnlyForInteresting)
+                    return base.NeedsAttention;
+                else
+                    return  (base.NeedsAttention || (UnreadAds >= Settings.FlashInterval));
+
+                // this only returns true if we have more messages than the flash interval,
+                // if our notify message level is greater than one,
+                // and we've deteced we have someone of interest in our unread backlog
             }
         }
 
@@ -146,7 +153,7 @@ namespace Models
         #endregion
 
         #region Methods
-        public override void AddMessage(IMessage message)
+        public override void AddMessage(IMessage message, bool isOfInterest = false)
         {
             var messageCollection = (message.Type == MessageType.ad ? Ads : Messages);
 
@@ -173,6 +180,9 @@ namespace Models
                 else
                     LastReadAdCount--;
             }
+
+            else if (!IsSelected)
+                _unreadContainsInteresting = _unreadContainsInteresting || isOfInterest;
 
             UpdateBindings();
         }

@@ -49,10 +49,12 @@ namespace Services
             makeSettingsFileIfNotExist(CurrentCharacter, Title, ID, chanType);
             var workingPath = StaticFunctions.MakeSafeFolderPath(CurrentCharacter, Title, ID);
             workingPath = Path.Combine(workingPath, SETTINGS_FILE_NAME);
+
             try
             {
                 return ReadObjectFromXML<Models.ChannelSettingsModel>(workingPath); // try and parse the XML file
             }
+
             catch
             {
                 return new Models.ChannelSettingsModel(chanType == Models.ChannelType.pm ? true : false); // return a default if it's not legible

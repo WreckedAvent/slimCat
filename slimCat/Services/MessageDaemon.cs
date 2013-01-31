@@ -632,7 +632,8 @@ namespace Services
                 (Action)delegate
                 {
                     var thisMessage = new MessageModel(sender, message, messageType);
-                    channel.AddMessage(thisMessage);
+
+                    channel.AddMessage(thisMessage, _model.IsOfInterest(sender.Name));
 
                     if (channel.Settings.LoggingEnabled && ApplicationSettings.AllowLogging) // check if the user wants logging for this channel
                         _logger.LogMessage(channel.Title, channel.ID, thisMessage);

@@ -42,7 +42,7 @@ namespace ViewModels
                 if (CM.SelectedChannel == null) return false;
 
                 return ((CM.SelectedChannel.Type != ChannelType.pm)
-                && (CM.SelectedChannel.DisplayNumber > 0));
+                    && CM.SelectedChannel.Type != ChannelType.utility);
             }
         }
         #endregion

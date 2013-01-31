@@ -253,9 +253,9 @@ namespace Models
                     switch (CommentType)
                     {
                         case CommentTypes.newspost: return string.Format("{0}newspost/{1}/#Comment{2}", domain_base, TargetID, CommentID);
-                        case CommentTypes.bugreport: return string.Format("{0}view_bugreport.php?id={1}#{2}", domain_base, TargetID, CommentID);
-                        case CommentTypes.changelog: return string.Format("{0}log.php?id={1}#{2}", domain_base, TargetID, CommentID);
-                        case CommentTypes.feature: return string.Format("{0}vote.php?fid={1}#{2}", domain_base, TargetID, CommentID);
+                        case CommentTypes.bugreport: return string.Format("{0}view_bugreport.php?id={1}#Comment{2}", domain_base, TargetID, CommentID);
+                        case CommentTypes.changelog: return string.Format("{0}log.php?id={1}#Comment{2}", domain_base, TargetID, CommentID);
+                        case CommentTypes.feature: return string.Format("{0}vote.php?fid={1}#Comment{2}", domain_base, TargetID, CommentID);
                         default: return string.Empty;
                     }
                 }

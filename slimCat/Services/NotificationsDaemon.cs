@@ -86,7 +86,7 @@ namespace Services
                     iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("-"));
 
                     iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("Sounds Enabled", ToggleSound) { Checked = ApplicationSettings.Volume > 0.0, });
-                    iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("Toats Enabled", ToggleToast) { Checked = ApplicationSettings.ShowNotificationsGlobal });
+                    iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("Toasts Enabled", ToggleToast) { Checked = ApplicationSettings.ShowNotificationsGlobal });
                     iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("-"));
 
                     iconMenu.MenuItems.Add("Show", (s, e) => ShowWindow());
@@ -180,8 +180,13 @@ namespace Services
             if (channel.Settings.MessageNotifyLevel > (int)Models.ChannelSettingsModel.NotifyLevel.NotificationOnly)
             {
                 bool dingLing = channel.Settings.MessageNotifyLevel > (int)Models.ChannelSettingsModel.NotifyLevel.NotificationAndToast;
-                NotifyUser(dingLing, dingLing, message.Poster.Name + '\n' + cleanMessageText, channel.ID);
-                return; // and if we do, there is no need to evalutae further
+
+                if ((channel.Settings.MessageNotifyOnlyForInteresting && _cm.IsOfInterest(message.Poster.Name))
+                    || !channel.Settings.MessageNotifyOnlyForInteresting)
+                {
+                    NotifyUser(dingLing, dingLing, message.Poster.Name + '\n' + cleanMessageText, channel.ID);
+                    return; // and if we do, there is no need to evalutae further
+                }
             }
 
             if (channel.Settings.EnumerableTerms.Count() == 0 && ApplicationSettings.GlobalNotifyTermsList.Count() == 0)

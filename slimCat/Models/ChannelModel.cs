@@ -25,6 +25,7 @@ namespace Models
         private int _lastRead;
         private bool _isSelected = false;
         private bool _needsAttentionOverride = false;
+        internal bool _unreadContainsInteresting;
         private readonly string _identity; // an ID never changes
         #endregion
 
@@ -67,7 +68,16 @@ namespace Models
         /// </summary>
         public virtual bool NeedsAttention
         {
-            get { return (!IsSelected) && (_needsAttentionOverride || (Unread >= Settings.FlashInterval && Settings.MessageNotifyLevel > 0)); }
+            get
+            {
+                if (Settings.MessageNotifyLevel == 0)
+                    return false;
+
+                if (Settings.MessageNotifyOnlyForInteresting)
+                    return _unreadContainsInteresting;
+
+                return !IsSelected && (_needsAttentionOverride || (Unread >= Settings.FlashInterval)); 
+            }
         }
 
         /// <summary>
@@ -118,6 +128,7 @@ namespace Models
                         LastReadCount = Messages.Count;
 
                     _needsAttentionOverride = false;
+                    _unreadContainsInteresting = false;
 
                     UpdateBindings();
                     OnPropertyChanged("IsSelected");
@@ -167,7 +178,7 @@ namespace Models
             OnPropertyChanged("Settings");
         }
 
-        public virtual void AddMessage(IMessage message)
+        public virtual void AddMessage(IMessage message, bool isOfInterest = false)
         {
             while (_messages.Count >= ApplicationSettings.BackLogMax)
             {
@@ -181,7 +192,10 @@ namespace Models
             if (_isSelected)
                 _lastRead = _messages.Count;
             else if (_messages.Count == ApplicationSettings.BackLogMax)
+            {
+                _unreadContainsInteresting = _unreadContainsInteresting || isOfInterest;
                 _lastRead--;
+            }
 
             UpdateBindings();
         }

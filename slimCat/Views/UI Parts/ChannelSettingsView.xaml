@@ -42,10 +42,11 @@
                         Value="{Binding ChannelSettings.MessageNotifyLevel}"
                         />
                 <WrapPanel>
-                    <TextBlock Text="{Binding ChannelSettings.MessageNotifyLevel, Converter={StaticResource NotifyLevelConverter}}"/>
+                    <TextBlock Text="{Binding ChannelSettings.MessageNotifyLevel, Converter={StaticResource NotifyLevelConverter}, ConverterParameter=flash}"/>
                     <Button Content="{Binding ChannelSettings.MessageNotifyOnlyForInteresting, Converter={StaticResource InterestedOnlyBoolConverter}}"
                             Command="{Binding InvertButtonCommand}"
                             CommandParameter="Messages"
+                            Visibility="{Binding ShowAllSettings, Converter={StaticResource BoolConverter}}"
                             Style="{StaticResource ImageContentButton}"/>
                 </WrapPanel>
 
