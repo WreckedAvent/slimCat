@@ -52,7 +52,7 @@ namespace Services
 
             try
             {
-                return ReadObjectFromXML<Models.ChannelSettingsModel>(workingPath); // try and parse the XML file
+                return ReadObjectFromXML<Models.ChannelSettingsModel>(workingPath, new Models.ChannelSettingsModel(chanType == Models.ChannelType.pm? true : false)); // try and parse the XML file
             }
 
             catch
@@ -91,11 +91,10 @@ namespace Services
         /// <summary>
         /// Return type T from a specified XML file, using reflection
         /// </summary>
-        public static T ReadObjectFromXML<T>(string fileName, bool decrypt = false)
+        public static T ReadObjectFromXML<T>(string fileName, T baseObject, bool decrypt = false)
             where T : new()
         {
-            var toReturn = new T();
-            Type type = toReturn.GetType();
+            Type type = baseObject.GetType();
             var propertyList = type.GetProperties(); // reflect property names
 
             if (decrypt)
@@ -111,14 +110,14 @@ namespace Services
                         if (string.Equals(property.Name, element.Name.ToString(), StringComparison.Ordinal))
                         {
                             var setter = Convert.ChangeType(element.Value, property.PropertyType);
-                            property.SetValue(toReturn, setter, null);
+                            property.SetValue(baseObject, setter, null);
                             break;
                         }
                     }
                 }
             }
 
-            return toReturn; // return it
+            return baseObject; // return it
         }
 
         /// <summary>

@@ -92,7 +92,7 @@ namespace Services
                     iconMenu.MenuItems.Add("Show", (s, e) => ShowWindow());
                     iconMenu.MenuItems.Add("Exit", (s, e) => ShutDown());
 
-                    icon.Text = string.Format("{0} - {1}", Constants.CLIENT_NAME, args);
+                    icon.Text = string.Format("{0} - {1}", Constants.CLIENT_ID, args);
                     icon.ContextMenu = iconMenu;
                     icon.Visible = true;
                     #endregion

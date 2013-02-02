@@ -7,7 +7,6 @@ using slimCat;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -120,7 +119,7 @@ namespace ViewModels
                     OnPropertyChanged("IsDisplayingChat");
                     OnPropertyChanged("IsDisplayingAds");
                     OnPropertyChanged("ChatContentString");
-                    OnPropertyChanged("CurrentChat");
+                    OnPropertyChanged("CurrentMessages");
                     OnPropertyChanged("MessageMax");
                     OnPropertyChanged("CanPost");
                     OnPropertyChanged("CannotPost");
@@ -523,7 +522,7 @@ namespace ViewModels
         {
             if (IsDisplayingAds && Model.IsSelected)
             {
-                OnPropertyChanged("FilteredMessages");
+                OnPropertyChanged("CurrentMessages");
                 if (NewAdArrived != null)
                     NewAdArrived(this, new EventArgs());
             }
@@ -541,7 +540,7 @@ namespace ViewModels
 
             if (IsDisplayingChat && Model.IsSelected)
             {
-                OnPropertyChanged("FilteredMessages");
+                OnPropertyChanged("CurrentMessages");
                 if (NewMessageArrived != null)
                     NewMessageArrived(this, new EventArgs());
             }
