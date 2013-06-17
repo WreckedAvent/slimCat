@@ -24,7 +24,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-extensions:  .xml .config .xsd
+extensions:  .xml .config .xsd .xaml
 <!--
 Copyright (c) 2013, Justin Kadrovach
 All rights reserved.
