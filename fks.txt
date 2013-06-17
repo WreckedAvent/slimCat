@@ -1,0 +1,8 @@
+FKS
+arguments:
+kinks [int]
+genders [enum string]
+orientations [enum string]
+languages [enum string]
+furryprefs [enum string] 
+roles [enum string]
