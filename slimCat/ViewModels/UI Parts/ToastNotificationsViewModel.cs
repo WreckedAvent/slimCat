@@ -47,7 +47,7 @@ namespace ViewModels
         IEventAggregator _events;
         #endregion
 
-        #region Properties
+        #region constructors
         public ToastNotificationsViewModel(IEventAggregator _eventAgg)
         {
             _hideDelay.Elapsed += (s, e) =>
@@ -56,6 +56,9 @@ namespace ViewModels
                 };
             _events = _eventAgg;
         }
+        #endregion
+
+        #region Properties
         public string Content
         {
             get { return _content; }
@@ -79,6 +82,11 @@ namespace ViewModels
         /// Who we will try and snap to when the user clicks on it if this event doesn't generate an actual notification
         /// </summary>
         public string Target { get; set; }
+
+        /// <summary>
+        /// The kind of target specified
+        /// </summary>
+        public string Kind { get; set; }
         #endregion
 
         #region Methods
@@ -143,6 +151,8 @@ namespace ViewModels
 
             if (Target != null)
                 toSend.Add("target", Target);
+            if (Kind != null)
+                toSend.Add("kind", Kind);
 
             HideNotifications();
             _events.GetEvent<UserCommandEvent>().Publish(toSend);

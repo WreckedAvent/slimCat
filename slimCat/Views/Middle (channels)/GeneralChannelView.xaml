@@ -168,7 +168,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 </StackPanel>
             </Grid>
             
-
+            <v:CreateReportView />
             <v:RightClickMenu />
             <v:ChannelManagementView />
             <v:ChannelTextBoxEntryView Visibility="{Binding Path=IsChatting, Mode=OneWay, Converter={StaticResource BoolConverter}}"

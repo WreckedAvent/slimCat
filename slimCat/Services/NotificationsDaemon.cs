@@ -124,7 +124,7 @@ namespace Services
         #endregion
 
         #region Methods
-        private void NotifyUser(bool bingLing = false, bool flashWindow = false, string message = null, string target = null)
+        private void NotifyUser(bool bingLing = false, bool flashWindow = false, string message = null, string target = null, string kind = null)
         {
             if (!ApplicationSettings.ShowNotificationsGlobal) return;
 
@@ -141,6 +141,7 @@ namespace Services
                         toast.UpdateNotification(message);
 
                     toast.Target = target;
+                    toast.Kind = kind;
                 });
         }
 
@@ -339,6 +340,19 @@ namespace Services
                 {
                     AddNotification(Notification);
                     NotifyUser(false, false, Notification.ToString(), targetCharacter);
+                }
+
+                // handle moderator events
+                else if (args is Models.CharacterUpdateModel.ReportHandledEventArgs)
+                {
+                    AddNotification(Notification);
+                    NotifyUser(true, true, Notification.ToString(), targetCharacter);
+                }
+
+                else if (args is Models.CharacterUpdateModel.ReportFiledEventArgs)
+                {
+                    AddNotification(Notification);
+                    NotifyUser(true, true, Notification.ToString(),targetCharacter, "report");
                 }
 
                 // finally, if nothing else, add their update if we're interested in them in some way

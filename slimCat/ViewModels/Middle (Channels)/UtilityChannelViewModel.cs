@@ -176,7 +176,7 @@ namespace ViewModels
                 _connectDotDot = new StringBuilder();
 
                 _container.RegisterType<object, UtilityChannelView>(Model.ID, new InjectionConstructor(this));
-                _minuteOnlineCount = new CacheCount(OnlineCountPrime, 15);
+                _minuteOnlineCount = new CacheCount(OnlineCountPrime, 15, 1000 * 15);
 
                 UpdateTimer.Enabled = true;
                 UpdateTimer.Elapsed += (s, e) => 

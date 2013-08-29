@@ -156,11 +156,13 @@
     <Compile Include="Models\ChatModel.cs" />
     <Compile Include="Models\CommandModel.cs" />
     <Compile Include="Models\GeneralChannelModel.cs" />
+    <Compile Include="Models\NotificationModels.cs" />
     <Compile Include="Services\SettingsDaemon.cs" />
     <Compile Include="System\Constants.cs" />
     <Compile Include="ViewModels\Right-Hand side %28channelBar%29\GlobalTabViewModel.cs" />
     <Compile Include="ViewModels\Right-Hand side %28channelBar%29\ManageListsViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\ChannelManagementViewModel.cs" />
+    <Compile Include="ViewModels\UI Parts\CreateReportViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\RightClickViewModel.cs" />
     <Compile Include="Models\MessageModel.cs" />
     <Compile Include="Models\PMChannelModel.cs" />
@@ -262,6 +264,9 @@
     </Compile>
     <Compile Include="Views\UI Parts\ChannelStatsView.xaml.cs">
       <DependentUpon>ChannelStatsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UI Parts\CreateReportView.xaml.cs">
+      <DependentUpon>CreateReportView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UI Parts\DisposableView.cs" />
     <Compile Include="Views\UI Parts\Buttons\EditButtonView.xaml.cs">
@@ -413,6 +418,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UI Parts\Buttons\EditButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\CreateReportView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     xmlns:v="clr-namespace:Views">
     
     <BooleanToVisibilityConverter x:Key="BoolConverter" />
+    <sys:OppositeBoolConverter x:Key="OppositeBoolConverter" />
     <sys:BoolColorConverter x:Key="ColorConverter"/>
     <sys:BBCodePostConverter x:Key="BBPostConverter" />
     <sys:BBCodeConverter x:Key="BBCodeConverter" />

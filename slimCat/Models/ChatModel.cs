@@ -56,7 +56,8 @@ namespace Models
         private IList<ICharacter> _onlineBookmarkCache = null;
         private IList<ICharacter> _onlineFriendCache = null;
         private IList<ICharacter> _onlineModsCache = null;
-
+        private IEnumerable<ICharacter> _onlineCharactersCache = null;
+        private DateTime _lastCharacterListCache = DateTime.Now;
         private IList<string> _ignored = new List<string>();
         #endregion
 
@@ -73,7 +74,10 @@ namespace Models
         {
             get
             {
-                return OnlineCharactersDictionary.Values.ToList();
+                if (_onlineCharactersCache == null)
+                    _onlineCharactersCache = OnlineCharactersDictionary.Values.ToList(); // force pulling a non-changing cache
+
+                return _onlineCharactersCache;
             }
         }
 
@@ -185,6 +189,8 @@ namespace Models
             get { return _isAuth; }
             set { _isAuth = value; OnPropertyChanged("IsAuthenticated"); }
         }
+
+        public bool IsGlobalModerator { get; set; }
         #endregion
 
         #region Constructors
@@ -197,7 +203,7 @@ namespace Models
             try
             {
                 OnlineCharactersDictionary.Add(character.Name, character);
-                OnPropertyChanged("OnlineCharacters");
+                UpdateCharacterList(IsOfInterest(character.Name));
                 UpdateBindings(character.Name);
             }
 
@@ -220,13 +226,23 @@ namespace Models
             try
             {
                 OnlineCharactersDictionary.Remove(character);
-                OnPropertyChanged("OnlineCharacters");
+                UpdateCharacterList(IsOfInterest(character));
                 UpdateBindings(character);
             }
 
             catch
             {
                 Console.WriteLine("Error: Unable to remove character: " + character + " ( is he/she online? )");
+            }
+        }
+
+        private void UpdateCharacterList(bool force)
+        {
+            if (force || _lastCharacterListCache.AddSeconds(15) < DateTime.Now)
+            {
+                _onlineCharactersCache = _onlineCharacters.Values.ToList();
+                _lastCharacterListCache = DateTime.Now;
+                OnPropertyChanged("OnlineCharacters");
             }
         }
 
@@ -384,6 +400,11 @@ namespace Models
         DateTimeOffset ClientUptime { get; set; }
         DateTimeOffset ServerUpTime { get; set; }
         DateTimeOffset LastMessageReceived { get; set; }
+
+        /// <summary>
+        /// Whether or not the current user has permissions to act like a moderator
+        /// </summary>
+        bool IsGlobalModerator { get; set; }
 
         void AddCharacter(ICharacter character);
         void RemoveCharacter(string name);

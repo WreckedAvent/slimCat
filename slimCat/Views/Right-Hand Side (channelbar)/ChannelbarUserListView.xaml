@@ -85,6 +85,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </Popup>
 
             <v:RightClickMenu />
+            <v:CreateReportView />
             <v:SearchBoxView DockPanel.Dock="Bottom"
                              DataContext="{Binding SearchSettings}"/>
             

@@ -44,7 +44,8 @@ namespace ViewModels
         protected IRegionManager _region;
         protected IEventAggregator _events;
         protected IChatModel _cm;
-        private RightClickMenuViewModel _rcmvm = new RightClickMenuViewModel();
+        private RightClickMenuViewModel _rcmvm;
+        private CreateReportViewModel _crvm;
         #endregion
 
         #region Shared Constructors
@@ -64,6 +65,8 @@ namespace ViewModels
                 if (cm == null) throw new ArgumentNullException("cm");
                 _cm = cm;
 
+                _rcmvm = new ViewModels.RightClickMenuViewModel(_cm.IsGlobalModerator);
+                _crvm = new CreateReportViewModel(_events, _cm);
                 _cm.SelectedChannelChanged += OnSelectedChannelChanged;
 
                 _events.GetEvent<NewUpdateEvent>().Subscribe(UpdateRightClickMenu);
@@ -293,6 +296,80 @@ namespace ViewModels
         }
         #endregion
 
+        #region Handle Report For User
+        protected RelayCommand _handleReport;
+        public ICommand HandleReportCommand
+        {
+            get
+            {
+                if (_handleReport == null)
+                    _handleReport = new RelayCommand(HandleReportEvent);
+                return _handleReport;
+            }
+        }
+
+        protected void HandleReportEvent(object args)
+        {
+            string name = args as string;
+            var report = CM.FindCharacter(name).LastReport;
+
+            var command = CommandDefinitions
+                .CreateCommand("handlereport", new List<string> {name})
+                .toDictionary();
+
+            _events.GetEvent<UserCommandEvent>().Publish(command);
+        }
+
+        public bool CanHandleReport(object args)
+        {
+            return _cm.FindCharacter(args as string).HasReport;
+        }
+        #endregion
+
+        #region Report user
+        protected RelayCommand _report;
+        public ICommand ReportCommand
+        {
+            get
+            {
+                if (_report == null)
+                    _report = new RelayCommand(FileReportEvent);
+                return _report;
+            }
+        }
+
+        protected void FileReportEvent(object args)
+        {
+            _rcmvm.IsOpen = false;
+            OnPropertyChanged("RightClickMenuViewModel");
+
+            _crvm.IsOpen = true;
+            OnPropertyChanged("CreateReportViewModel");
+        }
+        #endregion
+
+        #region Find Logs
+        protected RelayCommand _getlogs;
+        public ICommand FindLogCommand
+        {
+            get
+            {
+                if (_getlogs == null)
+                    _getlogs = new RelayCommand(FindLogEvent);
+                return _getlogs;
+            }
+        }
+
+        protected void FindLogEvent(object args)
+        {
+            string name = args as string;
+
+            var command = CommandDefinitions.CreateCommand("openlogfolder", null, name).toDictionary();
+
+            _events.GetEvent<UserCommandEvent>().Publish(command);
+        }
+        #endregion
+
         #region RightClick Menu
         private RelayCommand _openMenu;
         public ICommand OpenRightClickMenuCommand
@@ -315,9 +392,13 @@ namespace ViewModels
             string name = NewTarget.Name;
             _rcmvm.SetNewTarget(NewTarget,
                                 CanIgnore(name),
-                                CanUnIgnore(name));
+                                CanUnIgnore(name),
+                                CanHandleReport(name)
+                                );
             _rcmvm.IsOpen = true;
+            _crvm.Target = name;
             OnPropertyChanged("RightClickMenuViewModel");
+            OnPropertyChanged("CreateReportViewModel");
         }
 
         private RelayCommand _invertButton;
@@ -338,6 +419,7 @@ namespace ViewModels
         {
             OnPropertyChanged("HasPermissions");
             _rcmvm.IsOpen = false;
+            _crvm.IsOpen = false;
         }
 
         private void UpdateRightClickMenu(NotificationModel argument)
@@ -379,11 +461,12 @@ namespace ViewModels
                 bool isLocalMod = false;
                 if (_cm.SelectedChannel is GeneralChannelModel)
                     isLocalMod = (_cm.SelectedChannel as GeneralChannelModel).Moderators.Contains(_cm.SelectedCharacter.Name);
-                return isLocalMod || _cm.Mods.Contains(_cm.SelectedCharacter.Name);
+                return _cm.IsGlobalModerator || isLocalMod;
             }
         }
 
         public RightClickMenuViewModel RightClickMenuViewModel { get { return _rcmvm; } }
+        public CreateReportViewModel CreateReportViewModel { get { return _crvm; } }
         #endregion
 
         public void Dispose()

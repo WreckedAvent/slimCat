@@ -87,7 +87,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                             x:Name="PopupAnchor">
 
                     <v:RightClickMenu />
-
+                    <v:CreateReportView />
+                    
                     <Expander>
                         <Expander.Header>
                             <TextBlock Foreground="{StaticResource ForegroundBrush}">

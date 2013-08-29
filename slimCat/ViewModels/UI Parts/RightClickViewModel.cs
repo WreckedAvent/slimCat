@@ -1,4 +1,5 @@
-﻿/*
+﻿using Models;
+/*
 Copyright (c) 2013, Justin Kadrovach
 All rights reserved.
 
@@ -26,17 +27,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Models
+namespace ViewModels
 {
-    public class RightClickMenuViewModel : SysProp, IDisposable
+    public sealed class RightClickMenuViewModel : SysProp, IDisposable
     {
         #region Fields
         private bool _isOpen = false;
 
         private bool _canIgnore;
         private bool _canUnignore;
-
+        private readonly bool _isModerator;
+        private bool _hasReports;
         private ICharacter _target;
+        #endregion
+
+        #region constructors
+        public RightClickMenuViewModel(bool isModerator)
+        {
+            _isModerator = isModerator;
+        }
         #endregion
 
         #region Properties
@@ -120,6 +129,8 @@ namespace Models
         }
 
         public bool HasStatusMessage { get { if (_target != null) return _target.StatusMessage.Length > 0; else return false; } }
+
+        public bool HasReport { get { return _isModerator && _hasReports; } }
         #endregion
 
         #region Methods
@@ -133,13 +144,14 @@ namespace Models
             _target = null;
         }
 
-        public void SetNewTarget(ICharacter target, bool canIgnore, bool canUnignore)
+        public void SetNewTarget(ICharacter target, bool canIgnore, bool canUnignore, bool hasReports)
         {
             _target = target;
             _target.GetAvatar();
 
             _canIgnore = canIgnore;
             _canUnignore = canUnignore;
+            _hasReports = hasReports;
 
             OnPropertyChanged("Target");
             OnPropertyChanged("CanIgnore");
@@ -147,6 +159,7 @@ namespace Models
             OnPropertyChanged("TargetGender");
             OnPropertyChanged("TargetStatus");
             OnPropertyChanged("HasStatus");
+            OnPropertyChanged("HasReport");
         }
         #endregion
     }

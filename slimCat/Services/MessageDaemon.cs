@@ -289,8 +289,14 @@ namespace Services
                     case "_logger_open_folder":
                         {
                             InstanceLogger();
-
-                            _logger.OpenLog(true, _model.SelectedChannel.Title, _model.SelectedChannel.ID);
+                            if (command.ContainsKey("channel"))
+                            {
+                                var toOpen = command["channel"] as string;
+                                if (!string.IsNullOrWhiteSpace(toOpen))
+                                    _logger.OpenLog(true, toOpen);
+                            }
+                            else
+                                _logger.OpenLog(true, _model.SelectedChannel.Title, _model.SelectedChannel.ID);
                             return;
                         }
                     #endregion
@@ -314,6 +320,7 @@ namespace Services
                     case "_snap_to_last_update":
                     {
                         string target = null;
+                        string kind = null;
 
                         Action showMyDamnWindow = () => 
                         {
@@ -326,6 +333,9 @@ namespace Services
                         if (command.ContainsKey("target"))
                             target = command["target"] as string;
 
+                        if (command.ContainsKey("kind"))
+                            kind = command["kind"] as string;
+
                         // first off, see if we have a target defined. If we do, then let's see if it's one of our current channels
                         if (target != null)
                         {
@@ -333,6 +343,12 @@ namespace Services
                             {
                                 System.Diagnostics.Process.Start(target);
                                 return;
+                            }
+
+                            if (kind != null && kind.Equals("report"))
+                            {
+                                command.Clear();
+                                command["name"] = target;
                             }
 
                             var guess = _model.CurrentPMs.FirstByIdOrDefault(target);
@@ -488,14 +504,16 @@ namespace Services
                         if (!command.ContainsKey("report"))
                             command.Add("report", string.Empty);
 
-                        //  report format: "Current Tab/Channel: <channel> | Reporting User: <this user> | <reported user> | <report body>
-                        var reportText = string.Format("Current Tab/Channel: {0} | Reporting User: {1} | {2} | {3}",
-                                                 _model.SelectedChannel.ID,
-                                                 _model.SelectedCharacter.Name,
-                                                 command["character"] as string,
+                        //  report format: "Current Tab/Channel: <channel> | Reporting User: <reported user> | <report body>
+                        var reportText = string.Format("Current Tab/Channel: {0} | Reporting User: {1} | {2}",
+                                                 command["channel"] as string,
+                                                 command["name"] as string,
                                                  command["report"] as string);
-                        command.Remove("character");
+                        command.Remove("name");
                         command["report"] = reportText;
+                        command["logid"] = -1; // no log
+                        //TODO: log uploads
+                        _events.GetEvent<ErrorEvent>().Publish("Your report has been sent. Staff will be with you shortly.");
                         break;
                     }
                     #endregion
@@ -512,6 +530,54 @@ namespace Services
                         if (!add && _model.Ignored.Contains(character, StringComparer.OrdinalIgnoreCase))
                             _model.Ignored.Remove(character);
                         return;
+                    }
+                    #endregion
+
+                    #region Latest report
+                    case "handlelatest": 
+                    {
+                        command.Clear();
+                        var latest = (from n in _model.Notifications
+                                     where n is CharacterUpdateModel
+                                     && (n as CharacterUpdateModel).Arguments is CharacterUpdateModel.ReportFiledEventArgs
+                                     select n as CharacterUpdateModel)
+                                     .FirstOrDefault();
+
+                        if (latest == null)
+                            return;
+
+                        var args = latest.Arguments as CharacterUpdateModel.ReportFiledEventArgs;
+
+                        command.Add("type", "SFC");
+                        command.Add("callid", args.CallId);
+                        command.Add("action", "confirm");
+                        break;
+                    }
+
+                    case "handlereport":
+                    {
+                        if (command.ContainsKey("name"))
+                        {
+                            var latest = (from n in _model.Notifications
+                                          where n is CharacterUpdateModel
+                                          && (n as CharacterUpdateModel).Arguments is CharacterUpdateModel.ReportFiledEventArgs
+                                          select n as CharacterUpdateModel)
+                                          .FirstOrDefault(n => n.TargetCharacter.NameContains(command["name"] as string));
+
+                            if (latest == null)
+                                return;
+
+                            var args = latest.Arguments as CharacterUpdateModel.ReportFiledEventArgs;
+
+                            command["type"] = "SFC";
+                            command.Add("callid", args.CallId);
+                            if (!command.ContainsKey("action"))
+                                command["action"] = "confirm";
+                        }
+                        else
+                            goto case "handlelatest";
+
+                        break;
                     }
                     #endregion
 

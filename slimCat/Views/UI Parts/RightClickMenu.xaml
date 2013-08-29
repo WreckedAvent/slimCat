@@ -32,7 +32,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
        xmlns:v="clr-namespace:Views"
-       xmlns:lib="clr-namespace:lib">
+       xmlns:lib="clr-namespace:lib"
+       MaxWidth="220">
     <Border BorderBrush="{StaticResource HighlightBrush}"
             BorderThickness="1"
             Background="{StaticResource BackgroundBrush}"
@@ -97,6 +98,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 </StackPanel.Resources>
                 <Button Command="{Binding RequestPMCommand}"
                         Content="Message"/>
+                <Button Command="{Binding FindLogCommand}"
+                        Content="View Logs" />
                 <Button Command="{Binding IgnoreCommand}"
                         Content="Ignore"
                         Visibility="{Binding Path=RightClickMenuViewModel.CanIgnore, Converter={StaticResource BoolConverter}}"/>
@@ -109,6 +112,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <Button Command="{Binding NotInterestedCommand}"
                         Content="{Binding Path=RightClickMenuViewModel.MarkUninterested}"/>
                 
+                <Button Command="{Binding ReportCommand}"
+                        Visibility="{Binding Path=RightClickMenuViewModel.HasReport, Converter={StaticResource OppositeBoolConverter}}"
+                        Content="Report User"/>
+                
                 <!-- Mod Commands -->
                 <Button Command="{Binding KickCommand}"
                         Content="Kick"
@@ -116,6 +123,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <Button Command="{Binding BanCommand}"
                         Content="Ban"
                         Visibility="{Binding HasPermissions, Converter={StaticResource BoolConverter}}"/>
+                <Button Command="{Binding HandleReportCommand}"
+                        Content="Accept Report"
+                        Visibility="{Binding Path=RightClickMenuViewModel.HasReport, Converter={StaticResource BoolConverter}}"/>
             </StackPanel>
         </StackPanel>
     </Border>

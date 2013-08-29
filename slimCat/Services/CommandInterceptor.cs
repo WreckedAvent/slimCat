@@ -246,6 +246,14 @@ namespace Services
         private void AdminsCommand(IDictionary<string, object> command)
         {
             AddToSomeListCommand(command, "ops", _cm.Mods);
+            if (_cm.Mods.Contains(_cm.SelectedCharacter.Name))
+            {
+                Dispatcher.Invoke(
+                    (Action)delegate
+                    {
+                        _cm.IsGlobalModerator = true;
+                    });
+            }
         }
 
         private void IgnoreUserCommand(IDictionary<string, object> command)
@@ -320,16 +328,28 @@ namespace Services
         private void PublicChannelListCommand(IDictionary<string, object> command)
         {
             ChannelListCommand(command, true);
+
             #region Default Channel Join
-            foreach (var savedChannel in Models.ApplicationSettings.SavedChannels)
+            // Per Kira's statements this avoids spamming the server
+            var waitTimer = new System.Timers.Timer(350);
+            var channels = from c in Models.ApplicationSettings.SavedChannels
+                           where !string.IsNullOrWhiteSpace(c)
+                           select new { channel = c };
+            var walk = channels.GetEnumerator();
+
+            if (walk.MoveNext())
             {
-                if (!string.IsNullOrWhiteSpace(savedChannel))
+                waitTimer.Elapsed += (s, e) =>
                 {
-                    Thread.Sleep(750); // according to Kira, we can overload the server's join buffer
-                    object toSend = new { channel = savedChannel };
-                    _connection.SendMessage(toSend, "JCH");
-                }
+                    _connection.SendMessage(walk.Current, "JCH");
+                    if (!walk.MoveNext())
+                    {
+                        waitTimer.Stop();
+                        waitTimer.Dispose();
+                    }
+                };
             }
+            waitTimer.Start();
             #endregion
         }
 
@@ -549,8 +569,6 @@ namespace Services
             var mode = (ChannelMode)Enum.Parse(typeof(ChannelMode), command["mode"] as string);
             var channel = _cm.CurrentChannels.FirstByIdOrDefault(channelName);
 
-            // TODO: delay channel initialization if 'channel' ends up null (i.e, no information)
-
             channel.Mode = mode;
             dynamic users = command["users"]; // dynamic lets us deal with odd syntax
             foreach (IDictionary<string, object> character in users)
@@ -739,8 +757,94 @@ namespace Services
 
         private void NewReportCommand(IDictionary<string, object> command)
         {
-            //{callid=lcallid, action="report", report=lreport, timestamp=ltimestamp, character=lname}
-            // TODO: Implement SFC for moderators
+            var type = command["action"] as string;
+            if (string.IsNullOrWhiteSpace(type)) return;
+
+            if (type.Equals("report")) // new report
+            {
+                var report = command["report"] as string;
+                var callId = command["callid"] as string;
+                int? logId = command.ContainsKey("logid") ? command["logid"] as int? : null;
+
+                var reportIsClean = false;
+
+                // "report" is in some sort of arbitrary and non-compulsory format
+                // attempt to decipher it
+
+                var rawReport = report.Split('|')
+                    .Select(x => x.Trim())
+                    .ToList();
+
+                var starters = new[] { "Current Tab/Channel:", "Reporting User:", "" }; // each section should start with one of these
+                var reportData = new List<string>();
+
+                for (int i = 0; i < rawReport.Count; i++)
+                {
+                    if (rawReport[i].StartsWith(starters[i])){
+                        reportData.Add(rawReport[i].Substring(starters[i].Length).Trim());
+                    }
+                }
+
+                if (reportData.Count == 3)
+                {
+                    reportIsClean = true;
+                }
+
+                var reporterName = command["character"] as string;
+                var reporter =  _cm.FindCharacter(reporterName);
+
+                if (reportIsClean)
+                {
+                    _events.GetEvent<NewUpdateEvent>().Publish(
+                        new CharacterUpdateModel(
+                            reporter,
+                            new CharacterUpdateModel.ReportFiledEventArgs()
+                            {
+                                Reported = reportData[0],
+                                Tab = reportData[1],
+                                Complaint = reportData[2],
+                                LogId = logId,
+                                CallId = callId,
+                            }
+                    ));
+
+                    reporter.LastReport = new ReportModel() 
+                    { Reporter = reporter
+                    , Reported = reportData[0]
+                    , Tab = reportData[1]
+                    , Complaint = reportData[2]
+                    , CallId = callId
+                    , LogId = logId
+                    };
+                }
+                else 
+                {
+                    _events.GetEvent<NewUpdateEvent>().Publish(
+                        new CharacterUpdateModel(
+                            reporter,
+                            new CharacterUpdateModel.ReportFiledEventArgs() 
+                            { }
+                    ));
+
+                    reporter.LastReport = null;
+                }
+            }
+            else if (type.Equals("confirm")) // someone else handling a report
+            {
+                var handlerName = command["moderator"] as string;
+                var handled = command["character"] as string;
+                var handler = _cm.FindCharacter(handlerName);
+                
+                _events.GetEvent<NewUpdateEvent>().Publish(
+                    new CharacterUpdateModel(
+                        handler,
+                        new CharacterUpdateModel.ReportHandledEventArgs()
+                        {
+                            Handled = handled
+                        }
+                ));
+            }
+
             return;
         }
 

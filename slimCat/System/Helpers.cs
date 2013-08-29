@@ -370,7 +370,7 @@ namespace System
         /// <param name="label">label to display with the output</param>
         /// <param name="getNewCount">function used to get the new count</param>
         /// <param name="updateResolution">how often, in seconds, it is updated</param>
-        public CacheCount(Func<int> getNewCount, int updateResolution)
+        public CacheCount(Func<int> getNewCount, int updateResolution, int wait = 0)
         {
             _oldCounts = new List<int>();
             _getNewCount = getNewCount;
@@ -378,7 +378,19 @@ namespace System
 
             _updateTick = new Timers.Timer(updateResolution * 1000);
             _updateTick.Elapsed += (s, e) => Update();
-            _updateTick.Start();
+
+            if (wait > 0)
+            {
+                var _waitToStartTick = new Timers.Timer(wait);
+                _waitToStartTick.Elapsed += (s, e) =>
+                {
+                    _updateTick.Start();
+                    _waitToStartTick.Dispose();
+                };
+                _waitToStartTick.Start();
+            }
+            else
+                _updateTick.Start();
         }
         #endregion
 

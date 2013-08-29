@@ -47,6 +47,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <DockPanel>
         <v:RightClickMenu />
+        <v:CreateReportView />
         <v:RestartButtonView Command="{Binding Path=ClearNotificationsCommand}"
                              ToolTip="Clear all notifications"
                              DockPanel.Dock="Top"/>

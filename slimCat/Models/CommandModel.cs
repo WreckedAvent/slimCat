@@ -42,6 +42,7 @@ namespace Models
             SingleArgsAndChannel,
             OnlyChannel,
             TwoArgs,
+            TwoArgsAndChannel,
         }
 
         public enum PermissionLevel
@@ -140,7 +141,8 @@ namespace Models
 
             bool isChannelCommand =
                 (CommandInformation.CommandType == CommandModel.CommandTypes.SingleArgsAndChannel
-                || CommandInformation.CommandType == CommandModel.CommandTypes.OnlyChannel);
+                || CommandInformation.CommandType == CommandModel.CommandTypes.OnlyChannel
+                || CommandInformation.CommandType == CommandModel.CommandTypes.TwoArgsAndChannel);
 
             if (ChannelName != null && isChannelCommand)
                 toSend.Add("channel", ChannelName);
@@ -172,7 +174,6 @@ namespace Models
             {"clear", new CommandModel("clear", "clear", null, CommandModel.CommandTypes.NoArgs)},
             {"clearall", new CommandModel("clearall", "clearall", null, CommandModel.CommandTypes.NoArgs)},
             {"close", new CommandModel("close", "close", new [] {"channel"}, CommandModel.CommandTypes.OnlyChannel)},
-            {"handlereport", new CommandModel("handlereport", "SFC", new [] {"callid", "action"}, CommandModel.CommandTypes.TwoArgs)},
             {"ignore", new CommandModel("ignore", "IGN", new [] {"character", "action"}, CommandModel.CommandTypes.TwoArgs)},
             {"interesting", new CommandModel("interesting", "interesting", new [] {"character"})},
             {"invite", new CommandModel("invite", "CIU", new [] {"character"}, CommandModel.CommandTypes.SingleArgsAndChannel)},
@@ -183,13 +184,13 @@ namespace Models
             {"lognewline", new CommandModel("lognewline", "_logger_new_line", null, CommandModel.CommandTypes.NoArgs)},
             {"makeroom", new CommandModel("makeroom", "CCR", new [] {"channel"})},
             {"notinteresting", new CommandModel("notinteresting", "notinteresting", new [] {"character"})},
-            {"openlog", new CommandModel("openlog", "_logger_open_log", null, CommandModel.CommandTypes.NoArgs)},
-            {"openlogfolder", new CommandModel("openlogfolder", "_logger_open_folder", null, CommandModel.CommandTypes.NoArgs)},
+            {"openlog", new CommandModel("openlog", "_logger_open_log", null, CommandModel.CommandTypes.OnlyChannel)},
+            {"openlogfolder", new CommandModel("openlogfolder", "_logger_open_folder", null, CommandModel.CommandTypes.OnlyChannel)},
             {"priv", new CommandModel("priv", "priv", new [] {"character"})},
             {"removebookmark", new CommandModel("removebookmark", "bookmark-remove", new [] {"name"})},
             {"removefriend", new CommandModel("removefriend", "friend-remove", new [] {"dest_name"})},
             {"roll", new CommandModel("roll", "RLL", new [] {"dice"}, CommandModel.CommandTypes.SingleArgsAndChannel)}, 
-            {"report", new CommandModel("report", "SFC", new [] {"name", "action"}, CommandModel.CommandTypes.TwoArgs)},
+            {"report", new CommandModel("report", "SFC", new [] {"name", "report"}, CommandModel.CommandTypes.TwoArgsAndChannel)},
             {"status", new CommandModel("status", "STA", new [] {"status", "statusmsg"}, CommandModel.CommandTypes.TwoArgs)},
             {"tempignore", new CommandModel("tempignore", "tempignore", new [] {"character"})},
             {"tempunignore", new CommandModel("tempunignore", "tempunignore", new [] {"character"})},
@@ -215,7 +216,9 @@ namespace Models
             {"chatunban", new CommandModel("chatunban", "UBN", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
             {"reward", new CommandModel("reward", "RWD", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
             {"timeout", new CommandModel("timeout", "TMO", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
-
+            {"handlereport", new CommandModel("report", "handlereport", new [] {"name"}, CommandModel.CommandTypes.SingleArgsAndChannel, CommandModel.PermissionLevel.GlobalMod)},
+            {"handlelatest", new CommandModel("report", "handlelatest", null, CommandModel.CommandTypes.NoArgs, CommandModel.PermissionLevel.GlobalMod)},
+            
             // admin commands
             {"broadcast", new CommandModel("broadcast", "BRO", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
             {"chatdemote", new CommandModel("chatdemote", "DOP", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
@@ -251,6 +254,8 @@ namespace Models
             {"gkick", "chatkick"},
             {"createchannel", "makechannel"},
             {"accountban", "chatban"},
+            {"handlereport", "hr"},
+            {"handlelatest", "r"},
         };
 
         public static IDictionary<string, CommandOverride> CommandOverrides = new Dictionary<string, CommandOverride>()

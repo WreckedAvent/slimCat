@@ -47,6 +47,7 @@ namespace Models
         private Gender _gender;
         private StatusType _status;
         private string _statusMessage = "";
+        private ReportModel _report;
         #endregion
 
         #region Properties
@@ -94,6 +95,21 @@ namespace Models
             }
         }
 
+        public bool HasReport
+        {
+            get { return _report != null; }
+        }
+
+        public ReportModel LastReport
+        {
+            get { return _report; }
+            set
+            {
+                _report = value;
+                OnPropertyChanged("LastReport");
+                OnPropertyChanged("HasReport");
+            }
+        }
         #endregion
 
         #region Methods
@@ -163,7 +179,8 @@ namespace Models
         {
             Name = null;
             StatusMessage = null;
-            // TODO: Release avatar from memory
+            Avatar.StreamSource.Dispose();
+            _report.Dispose();
         }
     }
 
@@ -187,6 +204,8 @@ namespace Models
         Gender Gender { get; set; }
         StatusType Status { get; set; }
         string StatusMessage { get; set; }
+        ReportModel LastReport { get; set; }
+        bool HasReport { get; }
 
         void GetAvatar();
     }
@@ -251,4 +270,31 @@ namespace Models
         Always_Sub,
     }
     #endregion
+
+    /// <summary>
+    /// A model for storing data related to character reports
+    /// </summary>
+    public sealed class ReportModel : IDisposable
+    {
+        public string Complaint { get; set; }
+        public int? LogId { get; set; }
+        public ICharacter Reporter  { get; set; }
+        public string Reported { get; set; }
+        public string Tab { get; set; }
+        public string CallId { get; set; }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+        }
+
+        private void Dispose(bool IsManaged)
+        {
+            if (IsManaged)
+            {
+                Complaint = null;
+                Reporter = null;
+            }
+        }
+    }
 }
