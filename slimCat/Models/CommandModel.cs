@@ -216,8 +216,8 @@ namespace Models
             {"chatunban", new CommandModel("chatunban", "UBN", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
             {"reward", new CommandModel("reward", "RWD", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
             {"timeout", new CommandModel("timeout", "TMO", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
-            {"handlereport", new CommandModel("report", "handlereport", new [] {"name"}, CommandModel.CommandTypes.SingleArgsAndChannel, CommandModel.PermissionLevel.GlobalMod)},
-            {"handlelatest", new CommandModel("report", "handlelatest", null, CommandModel.CommandTypes.NoArgs, CommandModel.PermissionLevel.GlobalMod)},
+            {"handlereport", new CommandModel("handlereport", "handlereport", new [] {"name"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},
+            {"handlelatest", new CommandModel("handlelatest", "handlelatest", null, CommandModel.CommandTypes.NoArgs, CommandModel.PermissionLevel.GlobalMod)},
             
             // admin commands
             {"broadcast", new CommandModel("broadcast", "BRO", new [] {"character"}, CommandModel.CommandTypes.SingleArgsLoose, CommandModel.PermissionLevel.GlobalMod)},

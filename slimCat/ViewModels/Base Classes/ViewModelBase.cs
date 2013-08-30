@@ -311,10 +311,9 @@ namespace ViewModels
         protected void HandleReportEvent(object args)
         {
             string name = args as string;
-            var report = CM.FindCharacter(name).LastReport;
 
             var command = CommandDefinitions
-                .CreateCommand("handlereport", new List<string> {name})
+                .CreateCommand("handlereport", new List<string>() { name })
                 .toDictionary();
 
             _events.GetEvent<UserCommandEvent>().Publish(command);

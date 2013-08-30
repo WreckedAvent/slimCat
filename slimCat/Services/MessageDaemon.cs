@@ -512,6 +512,8 @@ namespace Services
                         command.Remove("name");
                         command["report"] = reportText;
                         command["logid"] = -1; // no log
+                        if (!command.ContainsKey("action"))
+                            command["action"] = "report";
                         //TODO: log uploads
                         _events.GetEvent<ErrorEvent>().Publish("Your report has been sent. Staff will be with you shortly.");
                         break;

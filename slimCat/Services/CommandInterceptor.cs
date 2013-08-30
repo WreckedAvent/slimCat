@@ -111,6 +111,7 @@ namespace Services
                 case "RMO": return new CommandDelegate(RoomModeChangedCommand);
                 case "BRO": return new CommandDelegate(BroadcastCommand);
                 case "RTB": return new CommandDelegate(RealTimeBridgeCommand);
+                case "SFC": return new CommandDelegate(NewReportCommand);
                 default: return null;
             }
         }

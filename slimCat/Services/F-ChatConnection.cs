@@ -123,6 +123,7 @@ namespace Services
                 return;
             }
 
+            // todo: reconnect 
             Exceptions.HandleException(new Exception("Connection to the server was closed"),
                 "The connection to the server was closed.\n\nApplication will now exit.");
             #if (DEBUG)
@@ -177,9 +178,9 @@ namespace Services
             }
 
             else if (e.Message == "PIN")
-                this.SendMessage("PIN");
+                this.SendMessage("PIN"); // auto-respond to pings
 
-            else if (e.Message == "LRP") { }
+            else if (e.Message == "LRP") { } // useless to us
             
             #if (DEBUG)
             else
