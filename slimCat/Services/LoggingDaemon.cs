@@ -165,9 +165,20 @@ namespace Services
             return month.ToString() + "-" + day.ToString() + "-" + year.ToString() + ".txt";
         }
 
-        public IEnumerable<IMessage> GetLogs(string ID)
+        public IEnumerable<string> GetLogs(string Title, string ID)
         {
-            throw new NotImplementedException();
+            string loggingPath = StaticFunctions.MakeSafeFolderPath(_thisCharacter, Title, ID);
+
+            var fileName = dateToFileName();
+
+            if (!Directory.Exists(loggingPath))
+                return null;
+
+            var lines = File.ReadLines(Path.Combine(loggingPath, fileName));
+            var toSkip = Math.Max(lines.Count() - 10, 0);
+
+            var toReturn = lines.Skip(toSkip);
+            return toReturn;
         }
     }
 
@@ -193,7 +204,7 @@ namespace Services
         /// <summary>
         /// Returns the last few messages from a given channel
         /// </summary>
-        IEnumerable<IMessage> GetLogs(string ID);
+        IEnumerable<string> GetLogs(string Title, string ID);
     }
 
     public enum SpecialLogMessageKind

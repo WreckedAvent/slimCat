@@ -101,7 +101,8 @@ namespace Views
                 _vm.PropertyChanged -= OnNewPropertyChanged;
                 _vm = null;
                 _manager = null;
-                messages.ItemsSource = null;
+                history.ItemsSource = null;
+                current.ItemsSource = null;
                 this.DataContext = null;
             }
         }

@@ -214,6 +214,7 @@ namespace Services
                             foreach (var item in _model.SelectedChannel.Ads)
                                 item.Dispose();
 
+                            _model.SelectedChannel.History.Clear();
                             _model.SelectedChannel.Messages.Clear();
                             _model.SelectedChannel.Ads.Clear();
                             return;
@@ -228,6 +229,7 @@ namespace Services
                                 foreach (var item in channel.Ads)
                                     item.Dispose();
 
+                                channel.History.Clear();
                                 channel.Messages.Clear();
                                 channel.Ads.Clear();
                             }
@@ -237,6 +239,7 @@ namespace Services
                                 foreach (var item in pm.Messages)
                                     item.Dispose();
 
+                                pm.History.Clear();
                                 pm.Messages.Clear();
                             }
 
@@ -290,7 +293,7 @@ namespace Services
                             {
                                 var toOpen = command["channel"] as string;
                                 if (!string.IsNullOrWhiteSpace(toOpen))
-                                    _logger.OpenLog(true, toOpen);
+                                    _logger.OpenLog(true, toOpen, toOpen);
                             }
                             else
                                 _logger.OpenLog(true, _model.SelectedChannel.Title, _model.SelectedChannel.ID);
@@ -646,13 +649,31 @@ namespace Services
         #region Methods
         public void JoinChannel(ChannelType type, string ID, string name = "")
         {
-            var pm = _model.CurrentPMs.FirstByIdOrDefault(ID);
-            if (pm == null)
+            InstanceLogger();
+
+            IEnumerable<string> history = new List<string>();
+            if (!ID.Equals("Home"))
+                if (string.IsNullOrWhiteSpace(name))
+                    history = _logger.GetLogs(ID, ID);
+                else
+                    history = _logger.GetLogs(name, ID);
+
+            var toJoin = (ChannelModel)_model.CurrentPMs.FirstByIdOrDefault(ID) 
+                        ?? (ChannelModel)_model.CurrentChannels.FirstByIdOrDefault(ID);
+
+            if (toJoin == null)
+                AddChannel(type, ID, name);
+
+            toJoin = (ChannelModel)_model.CurrentPMs.FirstByIdOrDefault(ID)
+                        ?? (ChannelModel)_model.CurrentChannels.FirstByIdOrDefault(ID);
+
+            Dispatcher.BeginInvoke(
+                (Action)delegate
             {
-                var channel = _model.CurrentChannels.FirstByIdOrDefault(ID);
-                if (channel == null)
-                    AddChannel(type, ID, name);
-            }
+                toJoin.History.Clear();
+                foreach (var item in history) toJoin.History.Add(item);
+            });
+
             RequestNavigate(ID);
         }
 

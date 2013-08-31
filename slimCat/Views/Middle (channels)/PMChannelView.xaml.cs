@@ -101,6 +101,8 @@ namespace Views
                 _vm.StatusChanged -= OnStatusChanged;
                 _vm.NewMessageArrived -= OnNewMessageArrived;
                 _manager = null;
+                current.ItemsSource = null;
+                history.ItemsSource = null;
                 this.DataContext = null;
                 _vm = null;
             }

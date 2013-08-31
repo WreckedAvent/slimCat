@@ -42,6 +42,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <DataTemplate x:Key="MessageView">
         <v:MessageView />
     </DataTemplate>
+    
+    <DataTemplate x:Key="HistoryView">
+        <v:HistoryView />
+    </DataTemplate>
 
     <MouseBinding x:Key="TunnelingRightClickOpenMenu"
                       MouseAction="RightClick"

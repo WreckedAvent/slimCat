@@ -59,10 +59,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         <TextBlock Foreground="{StaticResource ForegroundBrush}"
                                    TextWrapping="Wrap"
                                    Visibility="{Binding Path=HasStatus, Converter={StaticResource BoolConverter}}">
-                        <lib:TextBlockHelper.InlineList>
-                            <Binding Converter="{StaticResource BBCodeConverter}"
-                                     Path="ConversationWith.StatusMessage" />
-                        </lib:TextBlockHelper.InlineList>
+                            <lib:TextBlockHelper.InlineList>
+                                <Binding Converter="{StaticResource BBCodeConverter}"
+                                         Path="ConversationWith.StatusMessage" />
+                            </lib:TextBlockHelper.InlineList>
+                        </TextBlock>
+                        <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                                   TextWrapping="Wrap"
+                                   Visibility="{Binding Path=ConversationWith.HasReport, Converter={StaticResource BoolConverter}}">
+                            <lib:TextBlockHelper.InlineList>
+                                <Binding Converter="{StaticResource BBCodeConverter}"
+                                         Path="ConversationWith.LastReport.Complaint" />
+                            </lib:TextBlockHelper.InlineList>
                         </TextBlock>
                     </StackPanel>
                 </Expander>
@@ -77,14 +85,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </Grid>
         </Border>
 
-        <Grid x:Name="PopupAnchor"
-              Grid.Row="1"
-              Margin="0,10,0,5">
-            <ItemsControl ItemsSource="{Binding Path=Model.Messages, Mode=OneWay}"
-                          ItemTemplate="{StaticResource MessageView}"
-                          Loaded="OnMessagesLoaded"
-                          x:Name="messages"/>
-        </Grid>
+        <ScrollViewer x:Name="messages"
+                      Grid.Row="1">
+            <Grid x:Name="PopupAnchor"
+                  Margin="0,10,0,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <ItemsControl ItemsSource="{Binding Path=Model.History, Mode=OneWay}"
+                              ItemTemplate="{StaticResource HistoryView}"
+                              Foreground="{StaticResource ForegroundBrush}"
+                              x:Name="history"/>
+                <ItemsControl ItemsSource="{Binding Path=Model.Messages, Mode=OneWay}"
+                              ItemTemplate="{StaticResource MessageView}"
+                              Loaded="OnMessagesLoaded"
+                              x:Name="current"
+                              Grid.Row="1"/>
+            </Grid>
+        </ScrollViewer>
 
         <v:ChannelSettingsView />
 

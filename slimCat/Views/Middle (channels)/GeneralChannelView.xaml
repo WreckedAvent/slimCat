@@ -79,14 +79,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </Grid>
         </Border>
 
-        <Grid Grid.Row="1"
-              x:Name="PopupAnchor"
-              Margin="0,10,0,5">
-            <ItemsControl ItemsSource="{Binding Path=CurrentMessages, Mode=OneWay}"
-                          x:Name="messages"
-                          ItemTemplate="{StaticResource MessageView}"
-                          Loaded="OnMessagesLoaded"/>
-        </Grid>
+        <ScrollViewer Grid.Row="1"
+                      x:Name="messages">
+            <Grid x:Name="PopupAnchor"
+                  Margin="0,10,0,5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                    <ItemsControl ItemsSource="{Binding Path=Model.History, Mode=OneWay}"
+                                  ItemTemplate="{StaticResource HistoryView}"
+                                  Foreground="{StaticResource ForegroundBrush}"
+                                  x:Name="history"
+                                  Grid.Row="0"/>
+                    <ItemsControl ItemsSource="{Binding Path=CurrentMessages, Mode=OneWay}"
+                                  ItemTemplate="{StaticResource MessageView}"
+                                  Loaded="OnMessagesLoaded"
+                                  x:Name="current"
+                                  Grid.Row="1"/>
+            </Grid>
+        </ScrollViewer>
         
         <Popup PlacementTarget="{Binding ElementName=PopupAnchor}"
                Placement="Center"

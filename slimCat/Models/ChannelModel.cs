@@ -43,6 +43,7 @@ namespace Models
         private ChannelMode _mode;
         protected ObservableCollection<IMessage> _messages = new ObservableCollection<IMessage>();
         protected ObservableCollection<IMessage> _ads = new ObservableCollection<IMessage>();
+        protected ObservableCollection<string> _history = new ObservableCollection<string>();
         protected ChannelSettingsModel _settings;
         private string _title;
         private int _lastRead;
@@ -67,6 +68,8 @@ namespace Models
         public ObservableCollection<IMessage> Messages { get { return _messages; } }
 
         public ObservableCollection<IMessage> Ads { get { return _ads; } }
+
+        public ObservableCollection<string> History { get { return _history; } }
 
         public ChannelMode Mode
         {

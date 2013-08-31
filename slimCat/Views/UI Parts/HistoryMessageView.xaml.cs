@@ -27,58 +27,24 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
-namespace System
+namespace Views
 {
-    public class SnapToBottomManager
+    /// <summary>
+    /// Interaction logic for MessageView.xaml
+    /// </summary>
+    public partial class HistoryView : UserControl
     {
-        private ScrollViewer _toManage;
-        private DependencyObject _messages;
-
-        public SnapToBottomManager(DependencyObject messages)
+        public HistoryView()
         {
-            _messages = messages;
-            _toManage = messages as ScrollViewer;
-        }
-
-        public void AutoDownScroll(bool keepAtCurrent, bool forceDown = false)
-        {
-            if (_toManage == null)
-                _toManage = _messages as ScrollViewer;
-
-            if (_toManage != null)
-            {
-                if (forceDown)
-                    _toManage.ScrollToBottom();
-
-                else if (ShouldAutoScroll())
-                    _toManage.ScrollToBottom();
-            }
-        }
-
-        private bool ShouldAutoScroll()
-        {
-            return (_toManage.ScrollableHeight - _toManage.VerticalOffset <= 25);
-        }
-
-        private static ScrollViewer FindChild(DependencyObject parent)
-        {
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
-            {
-
-                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
-
-                if (child is ScrollViewer)
-                    return child as ScrollViewer;
-
-                DependencyObject grandchild = FindChild(child);
-
-                if (grandchild != null)
-                    return grandchild as ScrollViewer;
-            }
-
-            return default(ScrollViewer);
+            InitializeComponent();
         }
     }
 }
