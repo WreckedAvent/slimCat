@@ -667,12 +667,15 @@ namespace Services
             toJoin = (ChannelModel)_model.CurrentPMs.FirstByIdOrDefault(ID)
                         ?? (ChannelModel)_model.CurrentChannels.FirstByIdOrDefault(ID);
 
-            Dispatcher.BeginInvoke(
-                (Action)delegate
+            if (history != null)
             {
-                toJoin.History.Clear();
-                foreach (var item in history) toJoin.History.Add(item);
-            });
+                Dispatcher.BeginInvoke(
+                    (Action)delegate
+                {
+                    toJoin.History.Clear();
+                    foreach (var item in history) toJoin.History.Add(item);
+                });
+            }
 
             RequestNavigate(ID);
         }

@@ -168,16 +168,21 @@ namespace Services
         public IEnumerable<string> GetLogs(string Title, string ID)
         {
             string loggingPath = StaticFunctions.MakeSafeFolderPath(_thisCharacter, Title, ID);
-
+            IEnumerable<string> toReturn = null;
             var fileName = dateToFileName();
 
             if (!Directory.Exists(loggingPath))
                 return null;
 
-            var lines = File.ReadLines(Path.Combine(loggingPath, fileName));
-            var toSkip = Math.Max(lines.Count() - 10, 0);
+            var toGet = Path.Combine(loggingPath, fileName);
 
-            var toReturn = lines.Skip(toSkip);
+            if (File.Exists(toGet))
+            {
+                var lines = File.ReadLines(Path.Combine(loggingPath, fileName));
+                var toSkip = Math.Max(lines.Count() - 10, 0);
+
+                toReturn = lines.Skip(toSkip);
+            }
             return toReturn;
         }
     }
