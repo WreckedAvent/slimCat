@@ -32,7 +32,7 @@ namespace System
     {
         public const string CLIENT_ID = "slimCat";
         public const string CLIENT_NAME = "Ocelot";
-        public const string CLIENT_VER = "rc1.00 prototype";
+        public const string CLIENT_VER = "rc1.00";
         public static string FRIENDLY_NAME = CLIENT_ID + ' ' + CLIENT_NAME + ' ' + CLIENT_VER;
 
         public static class UrlConstants
