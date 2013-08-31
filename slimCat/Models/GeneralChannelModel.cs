@@ -83,10 +83,13 @@ namespace Models
         {
             get
             {
-                if (Settings.MessageNotifyOnlyForInteresting)
+                if (Settings.MessageNotifyLevel == 0)
+                    return false;
+
+                else if (Settings.MessageNotifyOnlyForInteresting)
                     return base.NeedsAttention;
-                else
-                    return  (base.NeedsAttention || (UnreadAds >= Settings.FlashInterval));
+                
+                return  (base.NeedsAttention || (UnreadAds >= Settings.FlashInterval));
 
                 // this only returns true if we have more messages than the flash interval,
                 // if our notify message level is greater than one,

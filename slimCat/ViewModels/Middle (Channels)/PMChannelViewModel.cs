@@ -231,24 +231,19 @@ namespace ViewModels
             else if (String.IsNullOrWhiteSpace(Message))
                 UpdateError("Hmm. Did you ... did you write anything?");
 
-            else if (CM.IsOnline(Model.ID))
-            {
 
-                IDictionary<string, object> toSend = CommandDefinitions
-                    .CreateCommand(CommandDefinitions.ClientSendPM, new List<string>() { this.Message, ConversationWith.Name })
-                    .toDictionary();
+            IDictionary<string, object> toSend = CommandDefinitions
+                .CreateCommand(CommandDefinitions.ClientSendPM, new List<string>() { this.Message, ConversationWith.Name })
+                .toDictionary();
 
-                _events.GetEvent<UserCommandEvent>().Publish(toSend);
-                this.Message = "";
+            _events.GetEvent<UserCommandEvent>().Publish(toSend);
+            this.Message = "";
 
-                _isInCoolDown = true;
-                _cooldownTimer.Enabled = true;
-                OnPropertyChanged("CanPost");
-                IsTyping = false;
-                _checkTick.Enabled = false;
-            }
-
-            else UpdateError(string.Format("No, no... {0} no es online...", Model.ID));
+            _isInCoolDown = true;
+            _cooldownTimer.Enabled = true;
+            OnPropertyChanged("CanPost");
+            IsTyping = false;
+            _checkTick.Enabled = false;
         }
 
         private void SendTypingNotification(Typing_Status type)

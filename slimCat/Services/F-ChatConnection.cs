@@ -37,7 +37,7 @@ namespace Services
     public class ChatConnection : IChatConnection, IDisposable
     {
         #region Constants
-        public const string host = "ws://chat.f-list.net:8722/";
+        public const string host = "ws://chat.f-list.net:9722/";
         #endregion
 
         #region Fields

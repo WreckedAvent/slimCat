@@ -96,7 +96,7 @@ namespace Models
                 if (Settings.MessageNotifyLevel == 0)
                     return false;
 
-                if (Settings.MessageNotifyOnlyForInteresting)
+                else if (Settings.MessageNotifyOnlyForInteresting)
                     return _unreadContainsInteresting;
 
                 return !IsSelected && (_needsAttentionOverride || (Unread >= Settings.FlashInterval)); 
