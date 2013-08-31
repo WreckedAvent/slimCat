@@ -39,8 +39,6 @@ namespace Models
     /// </summary>
     public class CharacterUpdateModel : NotificationModel
     {
-        private const string domain_base = @"http://www.f-list.net/";
-
         /// <summary>
         /// Represents updates which have a character as their direct object
         /// </summary>
@@ -137,7 +135,7 @@ namespace Models
             {
                 get
                 {
-                    return domain_base + "view_note.php?note_id=" + NoteID;
+                    return Constants.UrlConstants.READ_NOTE + NoteID;
                 }
             }
 
@@ -178,10 +176,10 @@ namespace Models
                 {
                     switch (CommentType)
                     {
-                        case CommentTypes.newspost: return string.Format("{0}newspost/{1}/#Comment{2}", domain_base, TargetID, CommentID);
-                        case CommentTypes.bugreport: return string.Format("{0}view_bugreport.php?id={1}#Comment{2}", domain_base, TargetID, CommentID);
-                        case CommentTypes.changelog: return string.Format("{0}log.php?id={1}#Comment{2}", domain_base, TargetID, CommentID);
-                        case CommentTypes.feature: return string.Format("{0}vote.php?fid={1}#Comment{2}", domain_base, TargetID, CommentID);
+                        case CommentTypes.newspost: return string.Format("{0}/newspost/{1}/#Comment{2}", Constants.UrlConstants.DOMAIN, TargetID, CommentID);
+                        case CommentTypes.bugreport: return string.Format("{0}/view_bugreport.php?id={1}#Comment{2}", Constants.UrlConstants.DOMAIN, TargetID, CommentID);
+                        case CommentTypes.changelog: return string.Format("{0}/log.php?id={1}#Comment{2}", Constants.UrlConstants.DOMAIN, TargetID, CommentID);
+                        case CommentTypes.feature: return string.Format("{0}/vote.php?fid={1}#Comment{2}", Constants.UrlConstants.DOMAIN, TargetID, CommentID);
                         default: return string.Empty;
                     }
                 }
@@ -237,7 +235,7 @@ namespace Models
             {
                 get
                 {
-                    return domain_base + "fchat/getLog.php?log=" + LogId.Value;
+                    return Constants.UrlConstants.READ_LOG + LogId.Value;
                 }
             }
 

@@ -53,17 +53,10 @@ namespace ViewModels
         {
             try
             {
-                if (regman == null) throw new ArgumentNullException("contain");
-                _container = contain;
-
-                if (regman == null) throw new ArgumentNullException("regman");
-                _region = regman;
-
-                if (events == null) throw new ArgumentNullException("events");
-                _events = events;
-
-                if (cm == null) throw new ArgumentNullException("cm");
-                _cm = cm;
+                _container = contain.ThrowIfNull("contain");
+                _region = regman.ThrowIfNull("regman");
+                _events = events.ThrowIfNull("events");
+                _cm = cm.ThrowIfNull("cm");
 
                 _rcmvm = new ViewModels.RightClickMenuViewModel(_cm.IsGlobalModerator);
                 _crvm = new CreateReportViewModel(_events, _cm);

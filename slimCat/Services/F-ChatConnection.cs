@@ -37,7 +37,7 @@ namespace Services
     public class ChatConnection : IChatConnection, IDisposable
     {
         #region Constants
-        public const string host = "ws://chat.f-list.net:9722/";
+        public const string host = "ws://chat.f-list.net:8722/";
         #endregion
 
         #region Fields
@@ -63,8 +63,8 @@ namespace Services
         /// </summary>
         public ChatConnection(IAccount user, IEventAggregator eventagg)
         {
-            _account = user;
-            _events = eventagg;
+            _account = user.ThrowIfNull("user");
+            _events = eventagg.ThrowIfNull("eventagg");
 
             _events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(ConnectToChat, ThreadOption.BackgroundThread, true);
             
@@ -86,12 +86,10 @@ namespace Services
         {
             try
             {
-                if (character == null) throw new ArgumentNullException("Provided Character Name");
-                if (_account == null) throw new ArgumentNullException("Account Reference");
+                _selectedCharacter = character.ThrowIfNull("character");
 
                 _events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(ConnectToChat);
 
-                _selectedCharacter = character;
                 _ws = new WebSocket(host);
 
                 //define socket behavior

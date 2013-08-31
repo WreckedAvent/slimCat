@@ -722,7 +722,7 @@ namespace System
             int tolerance = (returnSeconds ? 1 : 60);
 
             if (rough.TotalSeconds < tolerance)
-                return ">1s ";
+                return "<1s ";
 
             if (rough.Days > 0)
                 temp.Append(rough.Days + "d ");

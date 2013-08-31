@@ -254,8 +254,8 @@ namespace Models
             {"gkick", "chatkick"},
             {"createchannel", "makechannel"},
             {"accountban", "chatban"},
-            {"handlereport", "hr"},
-            {"handlelatest", "r"},
+            {"hr", "handlereport"},
+            {"r", "handlelatest"},
         };
 
         public static IDictionary<string, CommandOverride> CommandOverrides = new Dictionary<string, CommandOverride>()

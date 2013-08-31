@@ -29,6 +29,7 @@ using slimCat;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Threading;
 using ViewModels;
@@ -47,27 +48,23 @@ namespace Services
         private readonly IEventAggregator _events;
         private readonly IChatModel _model;
         private readonly IChatConnection _connection;
+        private readonly IListConnection _api;
 
         private ChannelModel _lastSelected;
         private ILogger _logger;
         #endregion
 
         #region Constructors
-        public MessageDaemon(IRegionManager regman, IUnityContainer contain, IEventAggregator events, IChatModel model, IChatConnection connection)
+        public MessageDaemon(IRegionManager regman, IUnityContainer contain, IEventAggregator events, IChatModel model, IChatConnection connection, IListConnection api)
         {
             try
             {
-                if (regman == null) throw new ArgumentNullException("regman");
-                if (contain == null) throw new ArgumentNullException("contain");
-                if (events == null) throw new ArgumentNullException("contain");
-                if (model == null) throw new ArgumentNullException("model");
-                if (connection == null) throw new ArgumentException("connection");
-
-                _region = regman;
-                _container = contain;
-                _events = events;
-                _model = model;
-                _connection = connection;
+                _region = regman.ThrowIfNull("regman");
+                _container = contain.ThrowIfNull("contain");
+                _events = events.ThrowIfNull("events");
+                _model = model.ThrowIfNull("model");
+                _connection = connection.ThrowIfNull("connection");
+                _api = api.ThrowIfNull("api");
 
                 _model.SelectedChannelChanged += (s, e) => RequestNavigate(_model.SelectedChannel.ID);
 
@@ -349,6 +346,8 @@ namespace Services
                             {
                                 command.Clear();
                                 command["name"] = target;
+
+                                goto case "handlereport";
                             }
 
                             var guess = _model.CurrentPMs.FirstByIdOrDefault(target);
@@ -504,18 +503,44 @@ namespace Services
                         if (!command.ContainsKey("report"))
                             command.Add("report", string.Empty);
 
+                        var logId = -1; // no log
+
                         //  report format: "Current Tab/Channel: <channel> | Reporting User: <reported user> | <report body>
                         var reportText = string.Format("Current Tab/Channel: {0} | Reporting User: {1} | {2}",
                                                  command["channel"] as string,
                                                  command["name"] as string,
                                                  command["report"] as string);
+
+                        // upload log
+                        var channelText = command["channel"] as string;
+                        if (!string.IsNullOrWhiteSpace(channelText) && !channelText.Equals("None"))
+                        {
+                            // we could just use _model.SelectedChannel, but the user might change tabs immediately after reporting, creating a race condition
+                            ChannelModel channel;
+                            if (channelText == command["name"] as string)
+                                channel = _model.CurrentPMs.FirstByIdOrDefault(channelText);
+                            else
+                                channel = _model.CurrentChannels.FirstByIdOrDefault(channelText);
+
+                            if (channel != null)
+                            {
+                                var report = new ReportModel()
+                                {   Reporter = _model.SelectedCharacter
+                                ,   Reported = command["name"] as string
+                                ,   Complaint = command["report"] as string
+                                ,   Tab = channelText
+                                };
+
+                                logId = _api.UploadLog(report, channel.Messages);
+                            }
+                        }
+
                         command.Remove("name");
                         command["report"] = reportText;
-                        command["logid"] = -1; // no log
+                        command["logid"] = logId;
+
                         if (!command.ContainsKey("action"))
                             command["action"] = "report";
-                        //TODO: log uploads
-                        _events.GetEvent<ErrorEvent>().Publish("Your report has been sent. Staff will be with you shortly.");
                         break;
                     }
                     #endregion
@@ -553,6 +578,17 @@ namespace Services
                         command.Add("type", "SFC");
                         command.Add("callid", args.CallId);
                         command.Add("action", "confirm");
+
+                        JoinChannel(ChannelType.pm, latest.TargetCharacter.Name);
+
+                        int logId = -1;
+                        if (command.ContainsKey("logid"))
+                        {
+                            Int32.TryParse(command["logid"] as string, out logId);
+                        }
+
+                        if (logId != -1)
+                            System.Diagnostics.Process.Start(Constants.UrlConstants.READ_LOG + logId);
                         break;
                     }
 
@@ -560,26 +596,35 @@ namespace Services
                     {
                         if (command.ContainsKey("name"))
                         {
-                            var latest = (from n in _model.Notifications
-                                          where n is CharacterUpdateModel
-                                          && (n as CharacterUpdateModel).Arguments is CharacterUpdateModel.ReportFiledEventArgs
-                                          select n as CharacterUpdateModel)
-                                          .FirstOrDefault(n => n.TargetCharacter.NameContains(command["name"] as string));
+                            var target = _model.FindCharacter(command["name"] as string);
 
-                            if (latest == null)
+                            if (!target.HasReport)
+                            {
+                                _events.GetEvent<ErrorEvent>().Publish("Cannot find report for specified character!");
                                 return;
-
-                            var args = latest.Arguments as CharacterUpdateModel.ReportFiledEventArgs;
+                            }
 
                             command["type"] = "SFC";
-                            command.Add("callid", args.CallId);
+                            command.Add("callid", target.LastReport.CallId);
                             if (!command.ContainsKey("action"))
                                 command["action"] = "confirm";
+
+                            JoinChannel(ChannelType.pm, target.Name);
+
+                            int logId = -1;
+                            if (command.ContainsKey("logid"))
+                            {
+                                Int32.TryParse(command["logid"] as string, out logId);
+                            }
+
+                            if (logId != -1)
+                                System.Diagnostics.Process.Start(Constants.UrlConstants.READ_LOG+logId);
+
+                            break;
                         }
                         else
                             goto case "handlelatest";
 
-                        break;
                     }
                     #endregion
 

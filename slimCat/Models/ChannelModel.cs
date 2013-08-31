@@ -173,9 +173,7 @@ namespace Models
         {
             try
             {
-                if (identity == null) throw new ArgumentNullException("identity");
-
-                _identity = identity;
+                _identity = identity.ThrowIfNull("identity");
                 Type = kind;
                 Mode = mode;
                 LastReadCount = 0;

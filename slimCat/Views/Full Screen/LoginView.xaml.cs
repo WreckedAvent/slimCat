@@ -53,8 +53,7 @@ namespace Views
             try
             {
                 InitializeComponent();
-                _vm = vm;
-                if (_vm == null) throw new ArgumentNullException("vm");
+                _vm = vm.ThrowIfNull("vm");
 
                 this.DataContext = _vm;
             }

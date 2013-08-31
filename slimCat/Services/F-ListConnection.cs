@@ -32,6 +32,7 @@ using Microsoft.Practices.Prism.Events;
 using Models;
 using SimpleJson;
 using slimCat;
+using System.Linq;
 
 namespace Services
 {
@@ -42,10 +43,10 @@ namespace Services
     class ListConnection : IListConnection
     {
         #region Fields
-        private const string FLIST_HOST = "http://www.f-list.net";
         private IAccount _model;
         private IEventAggregator _event;
         private string _selectedCharacter;
+        private CookieContainer _loginCookies = new CookieContainer();
         #endregion
 
         #region Constructors
@@ -53,11 +54,8 @@ namespace Services
         {
             try
             {
-                if (model == null) throw new ArgumentNullException("model");
-                _model = model;
-
-                if (eventagg == null) throw new ArgumentNullException("eventagg");
-                _event = eventagg;
+                _model = model.ThrowIfNull("model");
+                _event = eventagg.ThrowIfNull("eventagg");
 
                 _event.GetEvent<LoginEvent>().Subscribe(getTicket, ThreadOption.BackgroundThread);
                 _event.GetEvent<UserCommandEvent>().Subscribe(handleCommand, ThreadOption.BackgroundThread);
@@ -77,15 +75,13 @@ namespace Services
             try
             {
                 _model.Error = "";
-                string ticketUrl = "/json/getApiTicket.php";
-                string host = FLIST_HOST + ticketUrl;
-
-                string buffer = getResponse(host,
-                    new Dictionary<string, object>()
+                var loginCredentials =  new Dictionary<string, object>()
                     {
                         {"account", _model.AccountName.ToLower()},
                         {"password", _model.Password},
-                    });
+                    };
+
+                string buffer = getResponse(Constants.UrlConstants.GET_TICKET, loginCredentials);
 
                 // assign the data to our account model
                 dynamic result = (JsonObject)SimpleJson.SimpleJson.DeserializeObject(buffer);
@@ -126,7 +122,18 @@ namespace Services
                         _model.Bookmarks.Add(item["name"] as string);
 
                 this._event.GetEvent<slimCat.LoginCompleteEvent>().Publish(!hasError);
-               
+
+                // login to F-list for our cookies, so that we can post logs
+                if (!hasError)
+                {
+                    loginCredentials = new Dictionary<string, object>()
+                    {
+                        {"username", _model.AccountName.ToLower()},
+                        {"password", _model.Password},
+                    };
+
+                    getResponse(Constants.UrlConstants.LOGIN, loginCredentials, true);
+                }
             }
 
             catch (Exception ex)
@@ -165,8 +172,7 @@ namespace Services
 
         private void doAPIAction(string apiName, IDictionary<string, object> command)
         {
-            const string API_STUB = "json/api/";
-            string host = FLIST_HOST + API_STUB + apiName + ".php";
+            string host = Constants.UrlConstants.API + apiName + ".php";
 
             command.Add("account", _model.AccountName.ToLower());
             command.Add("ticket", _model.Ticket);
@@ -183,7 +189,7 @@ namespace Services
         }
         
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-        private string getResponse(string host, IDictionary<string, object> arguments)
+        private string getResponse(string host, IDictionary<string, object> arguments, bool useCookies = false)
         {
             const string CONTENT_TYPE = "application/x-www-form-urlencoded";
             const string REQUEST_TYPE = "POST";
@@ -206,13 +212,14 @@ namespace Services
                 totalRequest.Append('=');
                 totalRequest.Append(HttpUtility.UrlEncode((string)arg.Value));
             }
-
             toPost = Encoding.ASCII.GetBytes(totalRequest.ToString()); // translate our request string into a byte array
 
             var req = (HttpWebRequest)WebRequest.Create(host);
             req.Method = REQUEST_TYPE;
             req.ContentType = CONTENT_TYPE;
             req.ContentLength = toPost.Length;
+            if (useCookies)
+                req.CookieContainer = _loginCookies;
 
             using (var postStream = req.GetRequestStream())
                 postStream.Write(toPost, 0, toPost.Length); // send the request
@@ -221,6 +228,57 @@ namespace Services
                 using (var answerStream = rep.GetResponseStream()) // turn it into a stream
                     using (var answerReader = new StreamReader(answerStream)) // put the stream into a reader
                         return answerReader.ReadToEnd(); // read our response
+        }
+
+        public int UploadLog(ReportModel report, IEnumerable<IMessage> log)
+        {
+            try
+            {
+                var logId = -1;
+
+                // log upload format doesn't allow much HTML or anything other than line breaks.
+                var sb = new StringBuilder(string.Format("{0} log upload <br/> All times in 24hr {1} <br/><br/>", Constants.FRIENDLY_NAME, TimeZone.CurrentTimeZone.StandardName));
+
+                var messages = log.Select(m => string.Format("{0} {1}: {2} <br/>", m.PostedTime.ToTimeStamp(), m.Poster.Name, m.Message));
+
+                int i = 0;
+                foreach (var m in messages)
+                {
+                    sb.Append(m);
+                    if (i >= 24)
+                    {
+                        sb.Append("<br/>"); //legibility
+                        i = 0;
+                    }
+                    i++;
+                }
+
+                var toUpload = new Dictionary<string, object>() 
+                {
+                    {"character", report.Reporter.Name},
+                    {"log", sb.ToString()},
+                    {"reportText", report.Complaint},
+                    {"reportUser", report.Reported},
+                    {"channel", report.Tab}
+                };
+
+                string buffer = getResponse(Constants.UrlConstants.UPLOAD_LOG, toUpload, true);
+                dynamic result = (JsonObject)SimpleJson.SimpleJson.DeserializeObject(buffer);
+                buffer = null;
+
+                if (result.log_id != null)
+                {
+                    // sometimes log_id appears to be a string
+                    Int32.TryParse(result.log_id, out logId);
+                }
+
+                return logId;
+            }
+            catch (Exception ex)
+            {
+                // when dealing with the web it's always possible something could mess up
+                return -1;
+            }
         }
         #endregion
     }
@@ -234,5 +292,13 @@ namespace Services
         /// Gets an F-list API ticket
         /// </summary>
         void getTicket(bool sendUpdate );
+
+        /// <summary>
+        /// Uploads a lot to F-list.net f.e reporting a user
+        /// </summary>
+        /// <param name="report">relevant data about the report</param>
+        /// <param name="log">the log to upload</param>
+        /// <returns>an int corresonding to the logid the server assigned</returns>
+        int UploadLog(ReportModel report, IEnumerable<IMessage> log);
     }
 }

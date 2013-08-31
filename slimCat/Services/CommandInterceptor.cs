@@ -824,10 +824,19 @@ namespace Services
                         new CharacterUpdateModel(
                             reporter,
                             new CharacterUpdateModel.ReportFiledEventArgs() 
-                            { }
+                            { 
+                                Complaint = report,
+                                CallId = callId,
+                                LogId = logId,
+                            }
                     ));
 
-                    reporter.LastReport = null;
+                    reporter.LastReport = new ReportModel() 
+                    { Reporter = reporter
+                    , Complaint = report
+                    , CallId = callId
+                    , LogId = logId
+                    };
                 }
             }
             else if (type.Equals("confirm")) // someone else handling a report

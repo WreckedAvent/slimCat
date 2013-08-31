@@ -54,9 +54,8 @@ namespace Views
             try
             {
                 InitializeComponent();
-                if (vm == null) throw new ArgumentNullException("vm");
+                _vm = vm.ThrowIfNull("vm");
 
-                _vm = vm;
                 this.DataContext = _vm;
 
                 _manager = new SnapToBottomManager(messages);

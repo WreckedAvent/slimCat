@@ -41,6 +41,12 @@ namespace System
         {
             return model.FirstOrDefault(param => param.ID.Equals(ID, StringComparison.OrdinalIgnoreCase));
         }
+
+        public static T ThrowIfNull<T>(this T x, string name)
+        {
+            if (x == null) throw new ArgumentNullException(name);
+            return x;
+        }
     }
 
     public static class StaticFunctions

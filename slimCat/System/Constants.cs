@@ -28,11 +28,26 @@ using System.Text;
 
 namespace System
 {
-    public class Constants
+    public static class Constants
     {
         public const string CLIENT_ID = "slimCat";
         public const string CLIENT_NAME = "Ocelot";
         public const string CLIENT_VER = "rc1.00 prototype";
         public static string FRIENDLY_NAME = CLIENT_ID + ' ' + CLIENT_NAME + ' ' + CLIENT_VER;
+
+        public static class UrlConstants
+        {
+            public const string DOMAIN = @"http://www.f-list.net";
+
+            // not-so-api
+            public const string LOGIN = DOMAIN + @"/action/script_login.php";
+            public const string UPLOAD_LOG = DOMAIN + @"/fchat/submitLog.php";
+            public const string READ_NOTE = DOMAIN + @"/view_note.php?note_id=";
+            public const string READ_LOG = DOMAIN + @"/fchat/getLog.php?log=";
+
+            // api
+            public const string GET_TICKET = DOMAIN + @"/json/getApiTicket.php";
+            public const string API = DOMAIN + @"/json/api/";
+        }
     }
 }

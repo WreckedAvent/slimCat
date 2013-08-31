@@ -84,8 +84,7 @@ namespace ViewModels
         {
             try
             {
-                if (acc == null) throw new ArgumentNullException("acc");
-                _model = acc;
+                _model = acc.ThrowIfNull("acc");
 
                 this._events.GetEvent<slimCat.LoginCompleteEvent>().Subscribe(handleLoginComplete, ThreadOption.UIThread, true);
             }
