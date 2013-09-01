@@ -48,7 +48,7 @@ namespace Models
         private string _title;
         private int _lastRead;
         private bool _isSelected = false;
-        private bool _needsAttentionOverride = false;
+        protected bool _needsAttentionOverride = false;
         internal bool _unreadContainsInteresting;
         private readonly string _identity; // an ID never changes
         #endregion
@@ -96,13 +96,16 @@ namespace Models
         {
             get
             {
+                if (!IsSelected && _needsAttentionOverride)
+                    return true; // flash if we have a ding word
+
                 if (Settings.MessageNotifyLevel == 0)
-                    return false;
+                    return false; // if we don't want any flashes then terminate
 
                 else if (Settings.MessageNotifyOnlyForInteresting)
                     return _unreadContainsInteresting;
 
-                return !IsSelected && (_needsAttentionOverride || (Unread >= Settings.FlashInterval)); 
+                return !IsSelected && (Unread >= Settings.FlashInterval); 
             }
         }
 

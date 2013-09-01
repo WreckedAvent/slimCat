@@ -57,7 +57,7 @@ namespace Models
         private IList<ICharacter> _onlineFriendCache = null;
         private IList<ICharacter> _onlineModsCache = null;
         private IEnumerable<ICharacter> _onlineCharactersCache = null;
-        private DateTime _lastCharacterListCache = DateTime.Now;
+        private DateTime _lastCharacterListCache = new DateTime();
         private IList<string> _ignored = new List<string>();
         #endregion
 

@@ -470,16 +470,14 @@ namespace Services
             // if it isn't, then it must be when someone else is.
             else
             {
-                if (!channel.Users.Any(user => user.Name.Equals(identity, StringComparison.OrdinalIgnoreCase))) // checking by name is safer
+                var toAdd = _cm.FindCharacter(identity);
+                if (channel.AddCharacter(toAdd))
                 {
-                    channel.Users.Add(_cm.FindCharacter(identity));
-                    channel.CallListChanged();
-
                     _events.GetEvent<NewUpdateEvent>().Publish // send the join/leave notification
                         (
                             new CharacterUpdateModel
                             (
-                                _cm.FindCharacter(identity),
+                                toAdd,
                                 new CharacterUpdateModel.JoinLeaveEventArgs() { Joined = true, TargetChannel = channel.Title, TargetChannelID = channel.ID }
                             )
                         );
@@ -495,25 +493,18 @@ namespace Services
             if (_cm.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase)) return;
 
             var channel = _cm.CurrentChannels.FirstByIdOrDefault(channelName);
-            if (channel != null)
-            {
-                var toRemove = channel.Users.FirstOrDefault(character => character.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase));
-                if (toRemove != null)
-                {
-                    _events.GetEvent<NewUpdateEvent>().Publish // send the join/leave notification
-                        (
-                            new CharacterUpdateModel
-                            (
-                                toRemove,
-                                new CharacterUpdateModel.JoinLeaveEventArgs() { Joined = false, TargetChannel = channel.Title, TargetChannelID = channel.ID }
-                            )
-                        );
+            if (channel == null) return;
 
-                    channel.Users.Remove(toRemove);
-                    channel.CallListChanged();
-                }
-                else
-                    Debug.WriteLine("Cannot do LCH with character " + characterName);
+            if (channel.RemoveCharacter(characterName))
+            {
+                _events.GetEvent<NewUpdateEvent>().Publish // send the join/leave notification
+                    (
+                        new CharacterUpdateModel
+                        (
+                            _cm.FindCharacter(characterName),
+                            new CharacterUpdateModel.JoinLeaveEventArgs() { Joined = false, TargetChannel = channel.Title, TargetChannelID = channel.ID }
+                        )
+                    );
             }
         }
 
@@ -526,15 +517,18 @@ namespace Services
                 var character = _cm.FindCharacter(characterName);
                 bool ofInterest = _cm.IsOfInterest(characterName);
 
-                foreach (GeneralChannelModel chan in _cm.CurrentChannels.Where(param => param.Users.Contains(character)))
+                var channels = from c in _cm.CurrentChannels
+                               where c.RemoveCharacter(characterName)
+                               select new Dictionary<string, object>() 
+                               { 
+                                {"character", character.Name}, 
+                                {"channel", c.ID}
+                               };
+
+                if (!ofInterest) // don't show leave/join notifications if we already get a log out notification
                 {
-                    if (!ofInterest) // show join/leave notifications for LCH if we won't get a 'x has logged out' notification
-                        LeaveChannelCommand(new Dictionary<string, object>() { { "character", character.Name }, { "channel", chan.ID } });
-                    else
-                    {
-                        chan.Users.Remove(character);
-                        chan.CallListChanged();
-                    }
+                    foreach (var c in channels)
+                        LeaveChannelCommand(c);
                 }
 
                 var characterChannel = _cm.CurrentPMs.FirstByIdOrDefault(characterName);

@@ -59,7 +59,12 @@ namespace System
 
         public static bool NameContains(this ICharacter character, string searchString)
         {
-            return character.Name.ToLower().Contains(searchString);
+            return character.Name.ToLower().Contains(searchString.ToLower());
+        }
+
+        public static bool NameEquals(this ICharacter character, string compare)
+        {
+            return character.Name.Equals(compare, StringComparison.OrdinalIgnoreCase);
         }
         #endregion
 

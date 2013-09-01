@@ -38,10 +38,11 @@ namespace Models
         private int _userCount;
         private int _lastAdCount;
         private IList<string> _mods;
+        private DateTime _lastUpdate = new DateTime();
         #endregion
 
         #region Properties
-        public ObservableCollection<ICharacter> Users  { get { return _users; } }
+        public ObservableCollection<ICharacter> Users { get { return _users; } }
         
         public IList<string> Moderators { get { return _mods; } }
 
@@ -83,17 +84,16 @@ namespace Models
         {
             get
             {
+                if (!IsSelected && _needsAttentionOverride)
+                    return true; // flash for ding words
+
                 if (Settings.MessageNotifyLevel == 0)
-                    return false;
+                    return false; // terminate early upon user request
 
                 else if (Settings.MessageNotifyOnlyForInteresting)
                     return base.NeedsAttention;
                 
                 return  (base.NeedsAttention || (UnreadAds >= Settings.FlashInterval));
-
-                // this only returns true if we have more messages than the flash interval,
-                // if our notify message level is greater than one,
-                // and we've deteced we have someone of interest in our unread backlog
             }
         }
 
@@ -215,11 +215,15 @@ namespace Models
 
         public void CallListChanged()
         {
-            OnPropertyChanged("Moderators");
-            OnPropertyChanged("Owner");
-            OnPropertyChanged("Banned");
-            OnPropertyChanged("Users");
-            OnPropertyChanged("UsersCount");
+            if (_lastUpdate.AddSeconds(3) < DateTime.Now)
+            {
+                OnPropertyChanged("Moderators");
+                OnPropertyChanged("Owner");
+                OnPropertyChanged("Banned");
+                OnPropertyChanged("Users");
+                OnPropertyChanged("UsersCount");
+                _lastUpdate = DateTime.Now;
+            }
         }
 
         protected override void Dispose(bool IsManaged)
@@ -233,6 +237,25 @@ namespace Models
         {
             base.UpdateBindings();
             OnPropertyChanged("CompositeUnreadCount");
+        }
+
+        public bool AddCharacter(ICharacter toAdd)
+        {
+            if (_users.Contains(toAdd)) return false;
+
+            _users.Add(toAdd);
+            CallListChanged();
+            return true;
+        }
+
+        public bool RemoveCharacter(string name)
+        {
+            var toRemove = _users.FirstOrDefault(c => c.NameEquals(name));
+            if (toRemove == null) return false;
+
+            _users.Remove(toRemove);
+            CallListChanged();
+            return true;
         }
         #endregion
     }
