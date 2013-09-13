@@ -30,10 +30,8 @@
 namespace Views
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.Linq;
-    using System.Windows.Controls;
     using System.Windows.Documents;
     using System.Windows.Threading;
 

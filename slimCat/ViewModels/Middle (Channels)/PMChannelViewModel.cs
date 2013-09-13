@@ -2,7 +2,6 @@
 // <copyright file="PMChannelViewModel.cs" company="Justin Kadrovach">
 //   Copyright (c) 2013, Justin Kadrovach
 //   All rights reserved.
-//   
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //       * Redistributions of source code must retain the above copyright
@@ -10,7 +9,6 @@
 //       * Redistributions in binary form must reproduce the above copyright
 //         notice, this list of conditions and the following disclaimer in the
 //         documentation and/or other materials provided with the distribution.
-//   
 //   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 //   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 //   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -26,7 +24,6 @@
 //   Used for most communications between users.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace ViewModels
 {
     using System;
@@ -67,7 +64,6 @@ namespace ViewModels
         public event EventHandler StatusChanged;
 
         #endregion
-
 
         #region Constructors and Destructors
 
@@ -132,8 +128,6 @@ namespace ViewModels
                         }
                     };
 
-                
-
                 this.Model.Settings = SettingsDaemon.GetChannelSettings(
                     cm.SelectedCharacter.Name, this.Model.Title, this.Model.ID, this.Model.Type);
 
@@ -146,8 +140,6 @@ namespace ViewModels
                                 this.ChannelSettings, cm.SelectedCharacter.Name, this.Model.Title, this.Model.ID);
                         }
                     };
-
-                
             }
             catch (Exception ex)
             {
@@ -178,14 +170,7 @@ namespace ViewModels
         {
             get
             {
-                if (this.CM.IsOnline(this.Model.ID))
-                {
-                    return this.CM.FindCharacter(this.Model.ID);
-                }
-                else
-                {
-                    return new CharacterModel { Name = this.Model.ID };
-                }
+                return this.CM.IsOnline(this.Model.ID) ? this.CM.FindCharacter(this.Model.ID) : new CharacterModel { Name = this.Model.ID };
             }
         }
 

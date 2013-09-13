@@ -167,7 +167,7 @@ namespace System
     }
 
     /// <summary>
-    ///     This is a primary converter which pulls some WPFy magic to convert BBCode
+    /// Converts active messages into textblock inlines.
     /// </summary>
     public sealed class BBCodePostConverter : IMultiValueConverter
     {
@@ -319,7 +319,7 @@ namespace System
     }
 
     /// <summary>
-    ///     The bb flow converter.
+    /// Converts active messages into flow document inlines.
     /// </summary>
     public sealed class BBFlowConverter : IValueConverter
     {
@@ -419,7 +419,77 @@ namespace System
     }
 
     /// <summary>
-    ///     This is a secondary converter for BBCode when there is no 'post', such as  room description
+    /// Converts history messages into flow document inlines.
+    /// </summary>
+    public sealed class BBFlowHistoryConverter : IValueConverter
+    {
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// The convert.
+        /// </summary>
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        /// <param name="targetType">
+        /// The target type.
+        /// </param>
+        /// <param name="parameter">
+        /// The parameter.
+        /// </param>
+        /// <param name="culture">
+        /// The culture.
+        /// </param>
+        /// <returns>
+        /// The <see cref="object"/>.
+        /// </returns>
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var inlines = new List<Inline>();
+
+            if (value == null)
+            {
+                return null;
+            }
+
+            var text = (string)value; // this is the beef of the message
+            text = HttpUtility.HtmlDecode(text); // translate the HTML characters
+
+            inlines.Add(HelperConverter.ParseBBCode(text, true));
+
+            return inlines;
+        }
+
+        /// <summary>
+        /// The convert back.
+        /// </summary>
+        /// <param name="value">
+        /// The value.
+        /// </param>
+        /// <param name="targetType">
+        /// The target type.
+        /// </param>
+        /// <param name="parameter">
+        /// The parameter.
+        /// </param>
+        /// <param name="culture">
+        /// The culture.
+        /// </param>
+        /// <returns>
+        /// The <see cref="object"/>.
+        /// </returns>
+        /// <exception cref="NotImplementedException">
+        /// </exception>
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    ///  Converts history messages into textblock inlines.
     /// </summary>
     public sealed class BBCodeConverter : IValueConverter
     {
@@ -456,7 +526,7 @@ namespace System
     }
 
     /// <summary>
-    ///     Colors the gender icons based
+    /// Converts gender string into gender color.
     /// </summary>
     public sealed class GenderColorConverter : IValueConverter
     {
@@ -578,7 +648,7 @@ namespace System
     }
 
     /// <summary>
-    ///     Creates gender icons from gender data type
+    /// Converts gender string into a gender image.
     /// </summary>
     public sealed class GenderImageConverter : IValueConverter
     {
@@ -666,7 +736,7 @@ namespace System
     }
 
     /// <summary>
-    ///     Converts notify level into strings
+    /// Converts notify level into strings.
     /// </summary>
     public sealed class NotifyLevelConverter : IValueConverter
     {
@@ -744,7 +814,7 @@ namespace System
     }
 
     /// <summary>
-    ///     Converts Interested-only data into strings
+    /// Converts Interested-only data into strings
     /// </summary>
     public sealed class InterestedOnlyBoolConverter : IValueConverter
     {
@@ -816,7 +886,7 @@ namespace System
     }
 
     /// <summary>
-    ///     Turns a channel type into an image source
+    /// Converts a channel type enum into a channel type image representation.
     /// </summary>
     public sealed class ChannelTypeToImageConverter : IValueConverter
     {

@@ -49,7 +49,7 @@ namespace System
         /// <summary>
         ///     The clien t_ ver.
         /// </summary>
-        public const string CLIENT_VER = "rc1.00";
+        public const string CLIENT_VER = "rc2.00";
 
         #endregion
 
