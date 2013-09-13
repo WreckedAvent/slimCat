@@ -1,258 +1,561 @@
-﻿/*
-Copyright (c) 2013, Justin Kadrovach
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Input;
-using slimCat;
-using lib;
-using Microsoft.Practices.Prism.Events;
-using Microsoft.Practices.Prism.Regions;
-using Microsoft.Practices.Unity;
-using Models;
-using ViewModels;
-using System.ComponentModel;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ChannelViewModelBase.cs" company="Justin Kadrovach">
+//   Copyright (c) 2013, Justin Kadrovach
+//   All rights reserved.
+//   
+//   Redistribution and use in source and binary forms, with or without
+//   modification, are permitted provided that the following conditions are met:
+//       * Redistributions of source code must retain the above copyright
+//         notice, this list of conditions and the following disclaimer.
+//       * Redistributions in binary form must reproduce the above copyright
+//         notice, this list of conditions and the following disclaimer in the
+//         documentation and/or other materials provided with the distribution.
+//   
+//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
+//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// </copyright>
+// <summary>
+//   This holds most of the logic for channel view models. Changing behaviors between channels should be done by overriding methods.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace ViewModels
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Linq;
+    using System.Timers;
+    using System.Windows.Input;
+
+    using lib;
+
+    using Microsoft.Practices.Prism.Events;
+    using Microsoft.Practices.Prism.Regions;
+    using Microsoft.Practices.Unity;
+
+    using Models;
+
+    using slimCat;
+
     /// <summary>
-    /// This holds most of the logic for channel view models. Changing behaviors between channels should be done by overriding methods.
+    ///     This holds most of the logic for channel view models. Changing behaviors between channels should be done by overriding methods.
     /// </summary>
     public abstract class ChannelViewModelBase : ViewModelBase
     {
-        #region Fields
-        private string _message = "";
+        #region Static Fields
+
         private static string _error;
-        private ChannelModel _model;
-        public EventHandler OnLineBreakEvent;
-        private static System.Timers.Timer _errorRemoveTimer;
+
+        private static Timer _errorRemoveTimer;
+
         #endregion
 
-        #region Properties
+        #region Fields
+
         /// <summary>
-        /// Message is what the user inputs to send
+        ///     The on line break event.
         /// </summary>
-        public string Message
-        {
-            get { return _message; }
-            set 
-            { 
-                _message = value; 
-                OnPropertyChanged("Message");
-            }
-        }
+        public EventHandler OnLineBreakEvent;
 
-        public string Error
-        {
-            get { return _error; }
-            set { _error = value; OnPropertyChanged("Error"); OnPropertyChanged("HasError"); }
-        }
+        private RelayCommand _clear;
 
-        public ChannelModel Model
-        {
-            get { return _model; }
-            set { _model = value; OnPropertyChanged("Model"); }
-        }
+        private RelayCommand _clearLog;
 
-        public bool HasError { get { return !string.IsNullOrWhiteSpace(Error); } }
+        private RelayCommand _linebreak;
 
-        public ChannelSettingsModel ChannelSettings { get { return _model.Settings; } }
+        private string _message = string.Empty;
+
+        private ChannelModel _model;
+
+        private RelayCommand _navDown;
+
+        private RelayCommand _navUp;
+
+        private RelayCommand _openLog;
+
+        private RelayCommand _openLogFolder;
+
+        private RelayCommand _sendText;
+
         #endregion
 
-        #region Constructors
-        public ChannelViewModelBase(IUnityContainer contain, IRegionManager regman,
-                                IEventAggregator events, IChatModel cm)
+        #region Constructors and Destructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChannelViewModelBase"/> class.
+        /// </summary>
+        /// <param name="contain">
+        /// The contain.
+        /// </param>
+        /// <param name="regman">
+        /// The regman.
+        /// </param>
+        /// <param name="events">
+        /// The events.
+        /// </param>
+        /// <param name="cm">
+        /// The cm.
+        /// </param>
+        public ChannelViewModelBase(
+            IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
             : base(contain, regman, events, cm)
         {
-            _events.GetEvent<ErrorEvent>().Subscribe(UpdateError);
+            this._events.GetEvent<ErrorEvent>().Subscribe(this.UpdateError);
 
-            PropertyChanged += OnThisPropertyChanged;
+            this.PropertyChanged += this.OnThisPropertyChanged;
 
             if (_errorRemoveTimer == null)
             {
-                _errorRemoveTimer = new System.Timers.Timer(5000);
-                _errorRemoveTimer.Elapsed += (s, e) =>
-                    {
-                        this.Error = null;
-                    };
+                _errorRemoveTimer = new Timer(5000);
+                _errorRemoveTimer.Elapsed += (s, e) => { this.Error = null; };
 
                 _errorRemoveTimer.AutoReset = false;
             }
         }
 
-        public override void Initialize() { }
         #endregion
 
-        #region Comands
-        private RelayCommand _clear;
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets the channel settings.
+        /// </summary>
+        public ChannelSettingsModel ChannelSettings
+        {
+            get
+            {
+                return this._model.Settings;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the clear error command.
+        /// </summary>
         public ICommand ClearErrorCommand
         {
             get
             {
-                if (_clear == null)
-                    _clear = new RelayCommand(delegate { Error = null; });
+                if (this._clear == null)
+                {
+                    this._clear = new RelayCommand(delegate { this.Error = null; });
+                }
 
-                return _clear;
+                return this._clear;
             }
         }
 
-        private RelayCommand _sendText;
-        public ICommand SendMessageCommand
-        {
-            get
-            {
-                if (_sendText == null)
-                    _sendText = new RelayCommand(param => this.ParseAndSend());
-
-                return _sendText;
-            }
-        }
-
-        private RelayCommand _linebreak;
-        public ICommand InsertLineBreakCommand
-        {
-            get
-            {
-                if (_linebreak == null)
-                    _linebreak = new RelayCommand(args => Message = Message + '\n');
-                return _linebreak;
-            }
-        }
-
-        private RelayCommand _openLog;
-        public ICommand OpenLogCommand
-        {
-            get
-            {
-                if (_openLog == null)
-                    _openLog = new RelayCommand(OnOpenLogEvent);
-                return _openLog;
-            }
-        }
-
-        private RelayCommand _openLogFolder;
-        public ICommand OpenLogFolderCommand
-        {
-            get
-            {
-                if (_openLogFolder == null)
-                    _openLogFolder = new RelayCommand(OnOpenLogFolderEvent);
-                return _openLogFolder;
-            }
-        }
-
-        public void OnOpenLogEvent(object args) { OpenLogEvent(args, false); }
-        public void OnOpenLogFolderEvent(object args) { OpenLogEvent(args, true); }
-
-        public void OpenLogEvent(object args, bool isFolder)
-        {
-            IDictionary<string, object> toSend = CommandDefinitions.CreateCommand((isFolder ? "openlogfolder" : "openlog")).toDictionary();
-
-            _events.GetEvent<UserCommandEvent>().Publish(toSend);
-        }
-
-        RelayCommand _clearLog;
+        /// <summary>
+        ///     Gets the clear log command.
+        /// </summary>
         public ICommand ClearLogCommand
         {
             get
             {
-                if (_clearLog == null)
-                    _clearLog = new RelayCommand(args =>
-                        {
-                            _events.GetEvent<UserCommandEvent>().Publish(
-                                CommandDefinitions.CreateCommand("clear").toDictionary()
-                            );
-                        });
-                return _clearLog;
+                if (this._clearLog == null)
+                {
+                    this._clearLog =
+                        new RelayCommand(
+                            args =>
+                                {
+                                    this._events.GetEvent<UserCommandEvent>()
+                                        .Publish(CommandDefinitions.CreateCommand("clear").toDictionary());
+                                });
+                }
+
+                return this._clearLog;
             }
         }
 
-        #region Navigate Shortcuts
-        private RelayCommand _navUp;
-        private RelayCommand _navDown;
-
-        public ICommand NavigateUpCommand
+        /// <summary>
+        ///     Gets or sets the error.
+        /// </summary>
+        public string Error
         {
             get
             {
-                if (_navUp == null)
-                    _navUp = new RelayCommand(args => RequestNavigateDirectionalEvent(true));
-                return _navUp;
+                return _error;
+            }
+
+            set
+            {
+                _error = value;
+                this.OnPropertyChanged("Error");
+                this.OnPropertyChanged("HasError");
             }
         }
 
+        /// <summary>
+        ///     Gets a value indicating whether has error.
+        /// </summary>
+        public bool HasError
+        {
+            get
+            {
+                return !string.IsNullOrWhiteSpace(this.Error);
+            }
+        }
+
+        /// <summary>
+        ///     Gets the insert line break command.
+        /// </summary>
+        public ICommand InsertLineBreakCommand
+        {
+            get
+            {
+                if (this._linebreak == null)
+                {
+                    this._linebreak = new RelayCommand(args => this.Message = this.Message + '\n');
+                }
+
+                return this._linebreak;
+            }
+        }
+
+        /// <summary>
+        ///     Message is what the user inputs to send
+        /// </summary>
+        public string Message
+        {
+            get
+            {
+                return this._message;
+            }
+
+            set
+            {
+                this._message = value;
+                this.OnPropertyChanged("Message");
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the model.
+        /// </summary>
+        public ChannelModel Model
+        {
+            get
+            {
+                return this._model;
+            }
+
+            set
+            {
+                this._model = value;
+                this.OnPropertyChanged("Model");
+            }
+        }
+
+        /// <summary>
+        ///     Gets the navigate down command.
+        /// </summary>
         public ICommand NavigateDownCommand
         {
             get
             {
-                if (_navDown == null)
-                    _navDown = new RelayCommand(args => RequestNavigateDirectionalEvent(false));
-                return _navDown;
+                if (this._navDown == null)
+                {
+                    this._navDown = new RelayCommand(args => this.RequestNavigateDirectionalEvent(false));
+                }
+
+                return this._navDown;
             }
+        }
+
+        /// <summary>
+        ///     Gets the navigate up command.
+        /// </summary>
+        public ICommand NavigateUpCommand
+        {
+            get
+            {
+                if (this._navUp == null)
+                {
+                    this._navUp = new RelayCommand(args => this.RequestNavigateDirectionalEvent(true));
+                }
+
+                return this._navUp;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the open log command.
+        /// </summary>
+        public ICommand OpenLogCommand
+        {
+            get
+            {
+                if (this._openLog == null)
+                {
+                    this._openLog = new RelayCommand(this.OnOpenLogEvent);
+                }
+
+                return this._openLog;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the open log folder command.
+        /// </summary>
+        public ICommand OpenLogFolderCommand
+        {
+            get
+            {
+                if (this._openLogFolder == null)
+                {
+                    this._openLogFolder = new RelayCommand(this.OnOpenLogFolderEvent);
+                }
+
+                return this._openLogFolder;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the send message command.
+        /// </summary>
+        public ICommand SendMessageCommand
+        {
+            get
+            {
+                if (this._sendText == null)
+                {
+                    this._sendText = new RelayCommand(param => this.ParseAndSend());
+                }
+
+                return this._sendText;
+            }
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     The initialize.
+        /// </summary>
+        public override void Initialize()
+        {
+        }
+
+        /// <summary>
+        /// The on open log event.
+        /// </summary>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public void OnOpenLogEvent(object args)
+        {
+            this.OpenLogEvent(args, false);
+        }
+
+        /// <summary>
+        /// The on open log folder event.
+        /// </summary>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public void OnOpenLogFolderEvent(object args)
+        {
+            this.OpenLogEvent(args, true);
+        }
+
+        /// <summary>
+        /// The open log event.
+        /// </summary>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        /// <param name="isFolder">
+        /// The is folder.
+        /// </param>
+        public void OpenLogEvent(object args, bool isFolder)
+        {
+            IDictionary<string, object> toSend =
+                CommandDefinitions.CreateCommand(isFolder ? "openlogfolder" : "openlog").toDictionary();
+
+            this._events.GetEvent<UserCommandEvent>().Publish(toSend);
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="IsManaged">
+        /// The is managed.
+        /// </param>
+        protected override void Dispose(bool IsManaged)
+        {
+            if (IsManaged)
+            {
+                this.PropertyChanged -= this.OnThisPropertyChanged;
+                this.Model.PropertyChanged -= this.OnModelPropertyChanged;
+                this._model = null;
+                this.OnLineBreakEvent = null;
+            }
+
+            base.Dispose(IsManaged);
+        }
+
+        /// <summary>
+        /// When properties change on the model
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        protected virtual void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+        }
+
+        /// <summary>
+        /// When properties on this class change
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        protected virtual void OnThisPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+        }
+
+        /// <summary>
+        ///     Parsing behavior
+        /// </summary>
+        protected virtual void ParseAndSend()
+        {
+            if (this.Message != null)
+            {
+                if (CommandParser.HasNonCommand(this.Message))
+                {
+                    this.SendMessage();
+                    return;
+                }
+
+                try
+                {
+                    var messageToCommand = new CommandParser(this.Message, this._model.ID);
+
+                    if (!messageToCommand.HasCommand)
+                    {
+                        this.SendMessage();
+                    }
+                    else if ((messageToCommand.RequiresMod && !this.HasPermissions)
+                             || (messageToCommand.Type.Equals("warn") && !this.HasPermissions))
+                    {
+                        this.UpdateError(
+                            string.Format(
+                                "I'm sorry Dave, I can't let you do the {0} command.", messageToCommand.Type));
+                    }
+                    else if (messageToCommand.IsValid)
+                    {
+                        this.SendCommand(messageToCommand.toDictionary());
+                    }
+                    else
+                    {
+                        this.UpdateError(string.Format("I don't know the {0} command.", messageToCommand.Type));
+                    }
+                }
+                catch (InvalidOperationException ex)
+                {
+                    this.UpdateError(ex.Message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Command sending behavior
+        /// </summary>
+        /// <param name="command">
+        /// The command.
+        /// </param>
+        protected virtual void SendCommand(IDictionary<string, object> command)
+        {
+            if (this.Error != null)
+            {
+                this.Error = null;
+            }
+
+            this.Message = null;
+            this._events.GetEvent<UserCommandEvent>().Publish(command);
+        }
+
+        /// <summary>
+        ///     Message sending behavior
+        /// </summary>
+        protected abstract void SendMessage();
+
+        /// <summary>
+        /// Error handling behavior
+        /// </summary>
+        /// <param name="error">
+        /// The error.
+        /// </param>
+        protected virtual void UpdateError(string error)
+        {
+            if (_errorRemoveTimer != null)
+            {
+                _errorRemoveTimer.Stop();
+            }
+
+            this.Error = error;
+            _errorRemoveTimer.Start();
         }
 
         private void RequestNavigateDirectionalEvent(bool isUp)
         {
-            if (_cm.SelectedChannel is PMChannelModel)
+            if (this._cm.SelectedChannel is PMChannelModel)
             {
-                var index = _cm.CurrentPMs.IndexOf(_cm.SelectedChannel as PMChannelModel);
+                int index = this._cm.CurrentPMs.IndexOf(this._cm.SelectedChannel as PMChannelModel);
                 if (index == 0 && isUp)
                 {
-                    _navigateStub(false, false);
+                    this._navigateStub(false, false);
                     return;
                 }
-                else if (index+1 == _cm.CurrentPMs.Count() && !isUp)
+                else if (index + 1 == this._cm.CurrentPMs.Count() && !isUp)
                 {
-                    _navigateStub(true, false);
+                    this._navigateStub(true, false);
                     return;
                 }
                 else
                 {
                     index += isUp ? -1 : 1;
-                    RequestPMEvent(_cm.CurrentPMs[index].ID);
+                    this.RequestPMEvent(this._cm.CurrentPMs[index].ID);
                     return;
                 }
             }
             else
             {
-                var index = _cm.CurrentChannels.IndexOf(_cm.SelectedChannel as GeneralChannelModel);
+                int index = this._cm.CurrentChannels.IndexOf(this._cm.SelectedChannel as GeneralChannelModel);
                 if (index == 0 && isUp)
                 {
-                    _navigateStub(false, true);
+                    this._navigateStub(false, true);
                     return;
                 }
-                else if (index+1 == _cm.CurrentChannels.Count() && !isUp)
+                else if (index + 1 == this._cm.CurrentChannels.Count() && !isUp)
                 {
-                    _navigateStub(true, true);
+                    this._navigateStub(true, true);
                     return;
                 }
                 else
                 {
                     index += isUp ? -1 : 1;
-                    RequestChannelJoinEvent(_cm.CurrentChannels[index].ID);
+                    this.RequestChannelJoinEvent(this._cm.CurrentChannels[index].ID);
                     return;
                 }
             }
@@ -262,113 +565,24 @@ namespace ViewModels
         {
             if (fromPMs)
             {
-                var collection = _cm.CurrentPMs;
+                ObservableCollection<PMChannelModel> collection = this._cm.CurrentPMs;
                 if (collection.Count() == 0)
                 {
-                    _navigateStub(false, false);
+                    this._navigateStub(false, false);
                     return;
                 }
 
-                var target = (getTop ? collection.First() : collection.Last()).ID;
-                RequestPMEvent(target);
+                string target = (getTop ? collection.First() : collection.Last()).ID;
+                this.RequestPMEvent(target);
             }
             else
             {
-                var collection = _cm.CurrentChannels;
-                var target = (getTop ? collection.First() : collection.Last()).ID;
-                RequestChannelJoinEvent(target);
-            }
-        }
-        #endregion
-        #endregion
-
-        #region Methods
-        /// <summary>
-        /// Parsing behavior
-        /// </summary>
-        protected virtual void ParseAndSend()
-        {
-            if (Message != null)
-            {
-                if (CommandParser.HasNonCommand(Message))
-                {
-                    SendMessage();
-                    return;
-                }
-
-                try
-                {
-                    CommandParser messageToCommand = new CommandParser(Message, _model.ID);
-
-                    if (!messageToCommand.HasCommand)
-                        SendMessage();
-
-                    else if ((messageToCommand.RequiresMod && !HasPermissions) || (messageToCommand.Type.Equals("warn") && !HasPermissions))
-                        UpdateError(string.Format("I'm sorry Dave, I can't let you do the {0} command.", messageToCommand.Type));
-
-                    else if (messageToCommand.IsValid)
-                        SendCommand(messageToCommand.toDictionary());
-
-                    else
-                        UpdateError(string.Format("I don't know the {0} command.", messageToCommand.Type));
-                }
-
-                catch (InvalidOperationException ex)
-                {
-                    UpdateError(ex.Message);
-                }
+                ObservableCollection<GeneralChannelModel> collection = this._cm.CurrentChannels;
+                string target = (getTop ? collection.First() : collection.Last()).ID;
+                this.RequestChannelJoinEvent(target);
             }
         }
 
-        /// <summary>
-        /// Message sending behavior
-        /// </summary>
-        protected abstract void SendMessage();
-
-        /// <summary>
-        /// Command sending behavior
-        /// </summary>
-        protected virtual void SendCommand(IDictionary<string, object> command)
-        {
-            if (Error != null) this.Error = null;
-
-            Message = null;
-            this._events.GetEvent<UserCommandEvent>().Publish(command);
-        }
-
-        /// <summary>
-        /// Error handling behavior
-        /// </summary>
-        protected virtual void UpdateError(string error)
-        {
-            if (_errorRemoveTimer != null)
-                _errorRemoveTimer.Stop();
-            this.Error = error;
-            _errorRemoveTimer.Start();
-        }
-
-        /// <summary>
-        /// When properties on this class change
-        /// </summary>
-        protected virtual void OnThisPropertyChanged(object sender, PropertyChangedEventArgs e) {}
-
-        /// <summary>
-        /// When properties change on the model
-        /// </summary>
-        protected virtual void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e) { }
         #endregion
-
-        override protected void Dispose(bool IsManaged)
-        {
-            if (IsManaged)
-            {
-                PropertyChanged -= OnThisPropertyChanged;
-                Model.PropertyChanged -= OnModelPropertyChanged;
-                _model = null;
-                OnLineBreakEvent = null;
-            }
-
-            base.Dispose(IsManaged);
-        }
     }
 }

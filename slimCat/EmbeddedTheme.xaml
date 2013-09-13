@@ -1,101 +1,93 @@
-﻿<!--
-Copyright (c) 2013, Justin Kadrovach
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of the <organization> nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:lib="clr-namespace:lib"
                     xmlns:sys="clr-namespace:System"
                     xmlns:v="clr-namespace:Views">
-    
+
+    <SolidColorBrush Color="{StaticResource ForegroundColor}" Opacity="0.9" x:Key="HistoryBrush" />
+
     <BooleanToVisibilityConverter x:Key="BoolConverter" />
     <sys:OppositeBoolConverter x:Key="OppositeBoolConverter" />
-    <sys:BoolColorConverter x:Key="ColorConverter"/>
+    <sys:BoolColorConverter x:Key="ColorConverter" />
     <sys:BBCodePostConverter x:Key="BBPostConverter" />
+    <sys:BBFlowConverter x:Key="BBFlowConverter" />
     <sys:BBCodeConverter x:Key="BBCodeConverter" />
     <sys:GenderColorConverter x:Key="GenderColorConverter" />
     <sys:GenderImageConverter x:Key="GenderImageConverter" />
-    <sys:ChannelTypeToImageConverter x:Key="ChannelTypeToImageConverter"/>
-    
+    <sys:ChannelTypeToImageConverter x:Key="ChannelTypeToImageConverter" />
+
     <DataTemplate x:Key="MessageView">
         <v:MessageView />
     </DataTemplate>
-    
+
     <DataTemplate x:Key="HistoryView">
         <v:HistoryView />
     </DataTemplate>
 
     <MouseBinding x:Key="TunnelingRightClickOpenMenu"
-                      MouseAction="RightClick"
-                      Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
-                      RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-    
+                  MouseAction="RightClick"
+                  Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
+                      RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+
     <MouseBinding x:Key="RightClickOpenMenu"
-                      MouseAction="RightClick"
-                      Command="{Binding OpenRightClickMenuCommand}"/>
+                  MouseAction="RightClick"
+                  Command="{Binding OpenRightClickMenuCommand}" />
+
+    <Style TargetType="{x:Type Button}" x:Key="ChannelInterfaceButton" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Padding" Value="2,0" />
+        <Setter Property="Command"
+                Value="{Binding Path=DataContext.JoinChannelCommand,
+                    RelativeSource={RelativeSource Mode=FindAncestor,
+                    AncestorType={x:Type Grid}, AncestorLevel=2} }" />
+    </Style>
 
     <Style TargetType="Hyperlink" x:Key="TunnelingUsernameStyle">
-        <Setter Property="Command" Value="{Binding Path=DataContext.NavigateTo,
-                                            RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-        <Setter Property="TextDecorations" Value="{x:Null}"/>
-        <Setter Property="TextBlock.FontWeight" Value="SemiBold"/>
-        <Setter Property="Foreground" Value="{StaticResource HighlightBrush}"/>
+        <Setter Property="Command"
+                Value="{Binding Path=DataContext.NavigateTo,
+                                            RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+        <Setter Property="TextDecorations" Value="{x:Null}" />
+        <Setter Property="TextBlock.FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
     </Style>
 
     <Style TargetType="Hyperlink" x:Key="UsernameStyle" BasedOn="{StaticResource TunnelingUsernameStyle}">
-        <Setter Property="Command" Value="{Binding Path=DataContext.NavigateTo,
-                                            RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"/>
+        <Setter Property="Command"
+                Value="{Binding Path=DataContext.NavigateTo,
+                                            RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}" />
     </Style>
-
+    <Style TargetType="Hyperlink" x:Key="FlowUsernameLink" BasedOn="{StaticResource TunnelingUsernameStyle}">
+        <Setter Property="Command"
+                Value="{Binding Path=DataContext.NavigateTo,
+                                            RelativeSource={RelativeSource AncestorType={x:Type Grid}}}" />
+    </Style>
     <DataTemplate x:Key="TunnelingUsernameTemplate">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="15"/>
-                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="15" />
+                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
             <Rectangle Fill="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderColorConverter}}"
                        Height="15" Width="15">
                 <Rectangle.OpacityMask>
-                    <ImageBrush ImageSource="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}"/>
+                    <ImageBrush
+                        ImageSource="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
                 </Rectangle.OpacityMask>
             </Rectangle>
-            
+
             <TextBlock TextWrapping="Wrap"
                        Grid.Column="1">
                 <Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
                            Style="{StaticResource TunnelingUsernameStyle}">
-                    <Run Text="{Binding Path=Name, Mode=OneTime}"/>
+                    <Run Text="{Binding Path=Name, Mode=OneTime}" />
                     <Hyperlink.InputBindings>
                         <MouseBinding MouseAction="RightClick"
                                       Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
                                       RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                      CommandParameter="{Binding Path=Name, Mode=OneTime}"/>
+                                      CommandParameter="{Binding Path=Name, Mode=OneTime}" />
                     </Hyperlink.InputBindings>
                 </Hyperlink>
-        </TextBlock>
+            </TextBlock>
 
         </Grid>
     </DataTemplate>
@@ -103,26 +95,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <DataTemplate x:Key="UsernameTemplate">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="15"/>
-                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="15" />
+                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
             <Rectangle Fill="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderColorConverter}}"
                        Height="15" Width="15">
                 <Rectangle.OpacityMask>
-                    <ImageBrush ImageSource="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}"/>
+                    <ImageBrush
+                        ImageSource="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
                 </Rectangle.OpacityMask>
             </Rectangle>
             <TextBlock TextWrapping="Wrap"
                        Grid.Column="1">
                 <Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
                            Style="{StaticResource UsernameStyle}">
-                    <Run Text="{Binding Path=Name, Mode=OneTime}"/>
-                                    <Hyperlink.InputBindings>
+                    <Run Text="{Binding Path=Name, Mode=OneTime}" />
+                    <Hyperlink.InputBindings>
                         <MouseBinding MouseAction="RightClick"
                                       Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
                                       RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
-                                      CommandParameter="{Binding Path=Name, Mode=OneTime}"/>
+                                      CommandParameter="{Binding Path=Name, Mode=OneTime}" />
                     </Hyperlink.InputBindings>
                 </Hyperlink>
             </TextBlock>
@@ -133,26 +126,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <Grid ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            
+
             <TextBlock Foreground="{StaticResource ForegroundBrush}"
                        TextAlignment="Left"
                        TextWrapping="Wrap">
                 <lib:TextBlockHelper.InlineList>
                     <MultiBinding Converter="{StaticResource BBPostConverter}">
                         <Binding Path="."
-                                 Mode="OneTime"/>
+                                 Mode="OneTime" />
                     </MultiBinding>
                 </lib:TextBlockHelper.InlineList>
             </TextBlock>
-            
+
             <v:CloseButtonView Grid.Column="1"
                                VerticalAlignment="Top"
                                Command="{Binding Path=DataContext.RemoveNotificationCommand,
                                RelativeSource={RelativeSource Mode=FindAncestor,
                                AncestorType={x:Type ItemsControl}} }"
-                               CommandParameter="{Binding}"/>
+                               CommandParameter="{Binding}" />
         </Grid>
     </DataTemplate>
 
@@ -160,18 +153,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <Grid ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <TextBlock TextWrapping="Wrap"
                        TextAlignment="Left">
                 <InlineUIContainer BaselineAlignment="TextBottom">
                     <Button Content="{Binding Path=ChannelTitle, Mode=OneWay}"
-	                        Style="{StaticResource ChannelInterfaceButton}"
-	                        CommandParameter="{Binding Path=ChannelID, Mode=OneWay}" />
-                
+                            Style="{StaticResource ChannelInterfaceButton}"
+                            CommandParameter="{Binding Path=ChannelID, Mode=OneWay}" />
+
                 </InlineUIContainer>
                 <Run Text="{Binding Path=Arguments, Mode=OneWay}"
-                     Foreground="{StaticResource ForegroundBrush}"/>
+                     Foreground="{StaticResource ForegroundBrush}" />
             </TextBlock>
 
             <v:CloseButtonView Grid.Column="1"
@@ -179,20 +172,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                                Command="{Binding Path=DataContext.RemoveNotificationCommand,
                                RelativeSource={RelativeSource Mode=FindAncestor,
                                AncestorType={x:Type ItemsControl}} }"
-                               CommandParameter="{Binding}"/>
+                               CommandParameter="{Binding}" />
         </Grid>
     </DataTemplate>
 
     <Style TargetType="Hyperlink" x:Key="TunnelingHyperlink">
-        <Setter Property="Command" Value="{Binding Path=DataContext.NavigateTo,
+        <Setter Property="Command"
+                Value="{Binding Path=DataContext.NavigateTo,
                                   RelativeSource={RelativeSource Mode=FindAncestor,
-                                  AncestorType={x:Type ItemsControl}} }" />
+                                  AncestorType={x:Type Grid}, AncestorLevel=2} }" />
 
         <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
 
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource HighlightBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -201,7 +195,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <StackPanel Orientation="Vertical">
             <TextBlock Foreground="{StaticResource ForegroundBrush}"
                        Text="Show ..."
-                       Margin="2,0"/>
+                       Margin="2,0" />
             <CheckBox IsChecked="{Binding ShowMales}">Males</CheckBox>
             <CheckBox IsChecked="{Binding ShowFemales}">Females</CheckBox>
             <CheckBox IsChecked="{Binding ShowMaleHerms}">Masculine Herms</CheckBox>
@@ -217,7 +211,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <StackPanel Orientation="Vertical">
             <TextBlock Foreground="{StaticResource ForegroundBrush}"
                        Text="Who are ..."
-                       Margin="2,0"/>
+                       Margin="2,0" />
             <CheckBox IsChecked="{Binding ShowFriends}">Friends</CheckBox>
             <CheckBox IsChecked="{Binding ShowBookmarks}">Bookmarked</CheckBox>
             <CheckBox IsChecked="{Binding ShowMods}">Moderators</CheckBox>

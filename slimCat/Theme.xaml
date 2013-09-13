@@ -1,37 +1,11 @@
-﻿<!--
-Copyright (c) 2013, Justin Kadrovach
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of the <organization> nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!-- Resource Dictionary to hold all of the themes used in the application -->
 
     <ControlTemplate x:Key="EntryBox">
         <Border x:Name="Border" BorderThickness="2" Padding="2"
-                                 Background="{StaticResource ForegroundBrush}">
-            <ScrollViewer Margin="0" x:Name="PART_ContentHost"/>
+                Background="{StaticResource ForegroundBrush}">
+            <ScrollViewer Margin="0" x:Name="PART_ContentHost" />
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsFocused" Value="False">
@@ -60,14 +34,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <Setter Property="FontSize" Value="18" />
         <Setter Property="Template" Value="{StaticResource EntryBox}" />
     </Style>
-    
+
     <Style TargetType="Hyperlink">
         <Setter Property="Command" Value="{Binding NavigateTo}" />
         <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
-        
+
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource HighlightBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -77,9 +51,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="FocusVisualStyle" Value="{DynamicResource CheckBoxFocusVisual}" />
         <Setter Property="Margin" Value="5" />
-        <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource BrightBackgroundBrush}" />
-        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type CheckBox}">
@@ -92,7 +66,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                                     BorderThickness="1"
                                     VerticalAlignment="Center"
                                     BorderBrush="{TemplateBinding BorderBrush}">
-                                
+
                                 <Grid>
                                     <Path Visibility="Collapsed"
                                           Width="7"
@@ -125,7 +99,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                                 <VisualState x:Name="MouseOver">
                                     <Storyboard>
                                         <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
-                                                Storyboard.TargetProperty="BorderBrush.Color">
+                                                                      Storyboard.TargetProperty="BorderBrush.Color">
                                             <EasingColorKeyFrame KeyTime="0"
                                                                  Value="{StaticResource HighlightColor}" />
                                         </ColorAnimationUsingKeyFrames>
@@ -134,9 +108,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                                 <VisualState x:Name="Pressed">
                                     <Storyboard>
                                         <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
-                                                Storyboard.TargetProperty="BorderBrush.Color">
+                                                                      Storyboard.TargetProperty="BorderBrush.Color">
                                             <EasingColorKeyFrame KeyTime="0"
-                                                Value="{StaticResource DepressedColor}" />
+                                                                 Value="{StaticResource DepressedColor}" />
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -146,10 +120,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                                 <VisualState x:Name="Checked">
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames
-                                                Storyboard.TargetProperty="(UIElement.Visibility)"
-                                                 Storyboard.TargetName="CheckMark">
+                                            Storyboard.TargetProperty="(UIElement.Visibility)"
+                                            Storyboard.TargetName="CheckMark">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                            Value="{x:Static Visibility.Visible}" />
+                                                                    Value="{x:Static Visibility.Visible}" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -157,10 +131,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                                 <VisualState x:Name="Indeterminate">
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames
-                                                Storyboard.TargetProperty="(UIElement.Visibility)"
-                                                 Storyboard.TargetName="InderminateMark">
+                                            Storyboard.TargetProperty="(UIElement.Visibility)"
+                                            Storyboard.TargetName="InderminateMark">
                                             <DiscreteObjectKeyFrame KeyTime="0"
-                                                                     Value="{x:Static Visibility.Visible}" />
+                                                                    Value="{x:Static Visibility.Visible}" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -180,7 +154,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <Setter Property="FontSize" Value="18" />
         <Setter Property="Template" Value="{StaticResource EntryBox}" />
     </Style>
-    
+
     <Style TargetType="{x:Type Button}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="BorderThickness" Value="2" />
@@ -199,9 +173,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                             Background="{TemplateBinding Property=Background}"
                             RenderTransformOrigin="0.5,0.5">
                         <Border.RenderTransform>
-                            <ScaleTransform x:Name="Scale" ScaleX="1" ScaleY="1"/>
+                            <ScaleTransform x:Name="Scale" ScaleX="1" ScaleY="1" />
                         </Border.RenderTransform>
-                        
+
                         <ContentPresenter x:Name="PART_ContentHost"
                                           OverridesDefaultStyle="True"
                                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -211,7 +185,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         <Trigger Property="IsPressed" Value="True">
                             <Setter Property="Background" TargetName="Root"
                                     Value="{StaticResource DepressedBrush}" />
-                            
+
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
@@ -259,7 +233,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="True">
                             <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
-                         </Trigger>
+                        </Trigger>
                         <Trigger Property="IsFocused" Value="True">
                             <Setter Property="BorderBrush" TargetName="Root"
                                     Value="{StaticResource HighlightBrush}" />
@@ -273,30 +247,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <Style TargetType="{x:Type Button}" x:Key="ChannelMarkupButton" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Padding" Value="0" />
-        <Setter Property="Command" Value="{Binding Path=JoinChannelCommand}"/>
-    </Style>
-
-    <Style TargetType="{x:Type Button}" x:Key="TunnelingChannelMarkupButton" BasedOn="{StaticResource ChannelMarkupButton}">
-        <Setter Property="Command" Value="{Binding Path=DataContext.JoinChannelCommand,
-                                  RelativeSource={RelativeSource Mode=FindAncestor,
-                                  AncestorType={x:Type ItemsControl}} }" />
-    </Style>
-
-    <Style TargetType="{x:Type Button}" x:Key="ChannelInterfaceButton" BasedOn="{StaticResource {x:Type Button}}">
-        <Setter Property="Padding" Value="2,0"/>
-        <Setter Property="Command" Value="{Binding Path=DataContext.JoinChannelCommand,
-                    RelativeSource={RelativeSource Mode=FindAncestor,
-                    AncestorType={x:Type ItemsControl}} }"/>
+        <Setter Property="Command" Value="{Binding Path=JoinChannelCommand}" />
     </Style>
 
     <Style TargetType="{x:Type Button}" x:Key="ImageContentButton" BasedOn="{StaticResource {x:Type Button}}">
-        <Setter Property="Padding" Value="0"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Margin" Value="2,0"/>
-        <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Margin" Value="2,0" />
+        <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Cursor" Value="Hand" />
@@ -306,7 +267,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -327,9 +288,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                             BorderBrush="{StaticResource DepressedBrush}"
                             Background="{TemplateBinding Property=Background}"
                             RenderTransformOrigin="0.5,0.5">
-                        
+
                         <Border.RenderTransform>
-                            <ScaleTransform x:Name="Scale" ScaleX="1" ScaleY="1"/>
+                            <ScaleTransform x:Name="Scale" ScaleX="1" ScaleY="1" />
                         </Border.RenderTransform>
 
                         <ContentPresenter x:Name="PART_ContentHost"
@@ -342,12 +303,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                             <Setter Property="Background" Value="{StaticResource BrightBackgroundBrush}" />
                             <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
                         </Trigger>
-                        
+
                         <Trigger Property="IsChecked" Value="False">
                             <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
                             <Setter Property="BorderBrush" Value="{StaticResource DepressedBrush}" />
                         </Trigger>
-                        
+
                         <Trigger Property="IsPressed" Value="True">
                             <Setter Property="Background" TargetName="Root"
                                     Value="{StaticResource DepressedBrush}" />
@@ -412,10 +373,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </Style>
 
     <Style x:Key="ImageContentToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
-        <Setter Property="Padding" Value="0"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Margin" Value="2,0"/>
-        <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Margin" Value="2,0" />
+        <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
@@ -424,14 +385,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>
 
     <ControlTemplate x:Key="SimpleExpanderButton"
                      TargetType="{x:Type ToggleButton}">
-        <Border x:Name="ExpanderButtonBorder" 
+        <Border x:Name="ExpanderButtonBorder"
                 Margin="{TemplateBinding Property=Margin}"
                 Background="{TemplateBinding Property=Background}"
                 BorderBrush="{TemplateBinding Property=BorderBrush}"
@@ -442,7 +403,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     <ColumnDefinition Width="auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                
+
                 <Rectangle Fill="Transparent"
                            Grid.ColumnSpan="2" />
                 <Path x:Name="Sign"
@@ -463,7 +424,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <ContentPresenter x:Name="HeaderContent"
                                   Grid.Column="1"
                                   ContentSource="Content"
-                                  TextBlock.Foreground="{StaticResource ForegroundBrush}"/>
+                                  TextBlock.Foreground="{StaticResource ForegroundBrush}" />
             </Grid>
         </Border>
         <ControlTemplate.Triggers>
@@ -474,15 +435,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         TargetName="Sign" />
             </Trigger>
             <Trigger Property="IsMouseOver" Value="true">
-                <Setter Property="Stroke" Value="{StaticResource ForegroundBrush}" 
+                <Setter Property="Stroke" Value="{StaticResource ForegroundBrush}"
                         TargetName="Sign" />
             </Trigger>
             <Trigger Property="IsPressed" Value="true">
                 <Setter Property="StrokeThickness" Value="0" TargetName="Sign" />
             </Trigger>
-        </ControlTemplate.Triggers>             
+        </ControlTemplate.Triggers>
     </ControlTemplate>
-    
+
     <ControlTemplate x:Key="ThemedExpander" TargetType="{x:Type Expander}">
         <DockPanel>
             <ToggleButton x:Name="ExpanderButton"
@@ -497,9 +458,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                           Padding="1"
                           Margin="{TemplateBinding Property=Margin}">
             </ToggleButton>
-            
+
             <ContentPresenter x:Name="ExpanderContent"
-                              DockPanel.Dock="Bottom" 
+                              DockPanel.Dock="Bottom"
                               TextBlock.Foreground="{StaticResource ForegroundBrush}"
                               Visibility="Collapsed"
                               Margin="0,0,0,5">
@@ -512,16 +473,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <Trigger Property="IsExpanded" Value="True">
                 <Setter Property="Visibility"
                         TargetName="ExpanderContent"
-                        Value="Visible"/>
+                        Value="Visible" />
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
-    
+
     <Style TargetType="Expander">
         <Setter Property="Template" Value="{StaticResource ThemedExpander}" />
         <Setter Property="IsExpanded" Value="False" />
     </Style>
-    
+
     <DataTemplate x:Key="AvatarListBox">
         <Border Background="Transparent" x:Name="root" Margin="5"
                 BorderBrush="Transparent" BorderThickness="2">
@@ -531,14 +492,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </StackPanel>
         </Border>
         <DataTemplate.Triggers>
-            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
+            <DataTrigger
+                Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
+                Value="True">
                 <Setter Property="TextBlock.Foreground" Value="{StaticResource DepressedBrush}" />
                 <Setter TargetName="root" Property="BorderBrush" Value="{StaticResource HighlightBrush}" />
                 <Setter TargetName="root" Property="Background" Value="{StaticResource ForegroundBrush}" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="False">
+            <DataTrigger
+                Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
+                Value="False">
                 <Setter Property="TextBlock.Foreground" Value="{StaticResource ForegroundBrush}" />
                 <Setter Property="Effect">
                     <Setter.Value>
@@ -548,19 +513,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </DataTrigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                    AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="False" />
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                    AncestorType={x:Type ListBox}}, Path=IsEnabled}" Value="False" />    
+                    <Condition
+                        Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                    AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
+                        Value="False" />
+                    <Condition
+                        Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                    AncestorType={x:Type ListBox}}, Path=IsEnabled}"
+                        Value="False" />
                 </MultiDataTrigger.Conditions>
                 <Setter Property="TextBlock.Foreground" Value="Transparent" />
             </MultiDataTrigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                    AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True" />
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
-                    AncestorType={x:Type ListBox}}, Path=IsEnabled}" Value="False" />
+                    <Condition
+                        Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                    AncestorType={x:Type ListBoxItem}}, Path=IsSelected}"
+                        Value="True" />
+                    <Condition
+                        Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                    AncestorType={x:Type ListBox}}, Path=IsEnabled}"
+                        Value="False" />
                 </MultiDataTrigger.Conditions>
                 <Setter TargetName="root" Property="Background" Value="Transparent" />
                 <Setter Property="TextBlock.Foreground" Value="{StaticResource ForegroundBrush}" />
@@ -585,7 +558,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="ListBoxItem">
@@ -607,11 +580,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}"
                              Color="Transparent" />
         </Style.Resources>
-        
-        <Setter Property="VirtualizingStackPanel.VirtualizationMode" Value="Recycling"/>
-        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-        <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="True"/>
+
+        <Setter Property="VirtualizingStackPanel.VirtualizationMode" Value="Recycling" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="True" />
         <Setter Property="Margin" Value="0,5" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
@@ -624,8 +597,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </Setter.Value>
         </Setter>
     </Style>
-    
-    <Storyboard x:Key="FadeInAnimation" >
+
+    <Storyboard x:Key="FadeInAnimation">
         <DoubleAnimation Storyboard.TargetProperty="Opacity"
                          Duration="0:0:0.3"
                          From="0"
@@ -637,7 +610,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </DoubleAnimation>
     </Storyboard>
 
-    <Storyboard x:Key="FadeOutAnimation" >
+    <Storyboard x:Key="FadeOutAnimation">
         <DoubleAnimation Storyboard.TargetProperty="Opacity"
                          Duration="0:0:0.3"
                          From="1"
@@ -660,7 +633,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <Setter.Value>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel IsItemsHost="True"
-                                            VirtualizationMode="Recycling"/>
+                                            VirtualizationMode="Recycling" />
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
@@ -674,7 +647,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         <ScrollViewer Padding="{TemplateBinding Control.Padding}"
                                       Focusable="False">
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
-                                            Margin="0,0,5,0"/>
+                                            Margin="0,0,5,0" />
                         </ScrollViewer>
                     </Border>
                 </ControlTemplate>
@@ -684,9 +657,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <!-- Scollbar styles -->
     <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
-        <Setter Property="OverridesDefaultStyle" Value="true"/>
-        <Setter Property="Focusable" Value="false"/>
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Focusable" Value="false" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
@@ -707,7 +680,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
                             <Setter TargetName="Border" Property="Background"
-                                        Value="{StaticResource HighlightBrush}" />
+                                    Value="{StaticResource HighlightBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -715,17 +688,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </Setter>
     </Style>
     <Style x:Key="ScrollBarThumb" TargetType="{x:Type Thumb}">
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
-        <Setter Property="OverridesDefaultStyle" Value="true"/>
-        <Setter Property="IsTabStop" Value="false"/>
-        <Setter Property="Focusable" Value="false"/>
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="Focusable" Value="false" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
                     <Border Background="{TemplateBinding Background}"
                             CornerRadius="2"
                             BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="2" Name="Border"/>
+                            BorderThickness="2" Name="Border" />
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="BorderBrush" TargetName="Border"
@@ -741,12 +714,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </Setter>
     </Style>
     <ControlTemplate x:Key="VerticalScrollBar"
-            TargetType="{x:Type ScrollBar}">
-        <Grid >
+                     TargetType="{x:Type ScrollBar}">
+        <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition MaxHeight="18"/>
-                <RowDefinition Height="0.00001*"/>
-                <RowDefinition MaxHeight="18"/>
+                <RowDefinition MaxHeight="18" />
+                <RowDefinition Height="0.00001*" />
+                <RowDefinition MaxHeight="18" />
             </Grid.RowDefinitions>
             <Border Grid.RowSpan="3" Background="Transparent" />
             <RepeatButton Grid.Row="0" Style="{StaticResource ScrollBarLineButton}"
@@ -755,49 +728,49 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <Track Name="PART_Track" Grid.Row="1" IsDirectionReversed="True">
                 <Track.Thumb>
                     <Thumb Style="{StaticResource ScrollBarThumb}" Margin="0,1,0,1"
-                          Background="Transparent" BorderBrush="{StaticResource DepressedBrush}"/>
+                           Background="Transparent" BorderBrush="{StaticResource DepressedBrush}" />
                 </Track.Thumb>
             </Track>
             <RepeatButton Grid.Row="3" Style="{StaticResource ScrollBarLineButton}"
                           Height="18" Command="ScrollBar.LineDownCommand"
-                          Content="M 0 0 L 4 4 L 8 0 Z"/>
+                          Content="M 0 0 L 4 4 L 8 0 Z" />
         </Grid>
     </ControlTemplate>
     <ControlTemplate x:Key="HorizontalScrollBar"
-            TargetType="{x:Type ScrollBar}">
-        <Grid >
+                     TargetType="{x:Type ScrollBar}">
+        <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition MaxWidth="18"/>
-                <ColumnDefinition Width="0.00001*"/>
-                <ColumnDefinition MaxWidth="18"/>
+                <ColumnDefinition MaxWidth="18" />
+                <ColumnDefinition Width="0.00001*" />
+                <ColumnDefinition MaxWidth="18" />
             </Grid.ColumnDefinitions>
             <Border Grid.ColumnSpan="3" Background="Transparent" />
-             <RepeatButton Grid.Column="0" Style="{StaticResource ScrollBarLineButton}"
+            <RepeatButton Grid.Column="0" Style="{StaticResource ScrollBarLineButton}"
                           Width="18" Command="ScrollBar.LineLeftCommand"
                           Content="M 4 0 L 4 8 L 0 4 Z" />
             <Track Name="PART_Track" Grid.Column="1" IsDirectionReversed="False">
                 <Track.Thumb>
                     <Thumb Style="{StaticResource ScrollBarThumb}" Margin="0,1,0,1"
-                          Background="Transparent" BorderBrush="{StaticResource DepressedBrush}"/>
+                           Background="Transparent" BorderBrush="{StaticResource DepressedBrush}" />
                 </Track.Thumb>
             </Track>
             <RepeatButton Grid.Column="3" Style="{StaticResource ScrollBarLineButton}"
                           Width="18" Command="ScrollBar.LineRightCommand"
-                          Content="M 0 0 L 4 4 L 0 8 Z"/>
+                          Content="M 0 0 L 4 4 L 0 8 Z" />
         </Grid>
     </ControlTemplate>
     <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
-        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Horizontal">
-                <Setter Property="Width" Value="Auto"/>
+                <Setter Property="Width" Value="Auto" />
                 <Setter Property="Height" Value="18" />
                 <Setter Property="Template"
                         Value="{StaticResource HorizontalScrollBar}" />
             </Trigger>
             <Trigger Property="Orientation" Value="Vertical">
-                <Setter Property="Width" Value="18"/>
+                <Setter Property="Width" Value="18" />
                 <Setter Property="Height" Value="Auto" />
                 <Setter Property="Template"
                         Value="{StaticResource VerticalScrollBar}" />

@@ -1,235 +1,351 @@
-﻿/*
-Copyright (c) 2013, Justin Kadrovach
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-using lib;
-using Microsoft.Practices.Prism.Events;
-using Microsoft.Practices.Unity;
-using Models;
-using slimCat;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Threading;
-using ViewModels;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="NotificationsDaemon.cs" company="Justin Kadrovach">
+//   Copyright (c) 2013, Justin Kadrovach
+//   All rights reserved.
+//   
+//   Redistribution and use in source and binary forms, with or without
+//   modification, are permitted provided that the following conditions are met:
+//       * Redistributions of source code must retain the above copyright
+//         notice, this list of conditions and the following disclaimer.
+//       * Redistributions in binary form must reproduce the above copyright
+//         notice, this list of conditions and the following disclaimer in the
+//         documentation and/or other materials provided with the distribution.
+//   
+//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
+//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// </copyright>
+// <summary>
+//   This handles pushing and creating all notifications. This means it plays all sounds, creates all toast notifications,
+//   and is responsible for managing the little tray icon. Additionally, it manages the singleton instance of the notifications class.
+//   It responds to NewMessageEvent, NewPMEvent, NewUpdateEvent
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.Linq;
+    using System.Web;
+    using System.Windows;
+    using System.Windows.Forms;
+    using System.Windows.Media;
+    using System.Windows.Threading;
+
+    using lib;
+
+    using Microsoft.Practices.Prism.Events;
+    using Microsoft.Practices.Unity;
+
+    using Models;
+
+    using slimCat;
+    using slimCat.Properties;
+
+    using ViewModels;
+
+    using Application = System.Windows.Application;
+
     /// <summary>
-    /// This handles pushing and creating all notifications. This means it plays all sounds, creates all toast notifications,
-    /// and is responsible for managing the little tray icon. Additionally, it manages the singleton instance of the notifications class.
-    /// 
-    /// It responds to NewMessageEvent, NewPMEvent, NewUpdateEvent
+    ///     This handles pushing and creating all notifications. This means it plays all sounds, creates all toast notifications,
+    ///     and is responsible for managing the little tray icon. Additionally, it manages the singleton instance of the notifications class.
+    ///     It responds to NewMessageEvent, NewPMEvent, NewUpdateEvent
     /// </summary>
     public class NotificationsDaemon : DispatcherObject, IDisposable
     {
         #region Fields
-        IUnityContainer _contain;
-        IEventAggregator _events;
-        IChatModel _cm;
-        MediaPlayer DingLing = new MediaPlayer();
-        DateTime _lastDingLinged;
-        System.Windows.Forms.NotifyIcon icon = new System.Windows.Forms.NotifyIcon();
-        ToastNotificationsViewModel toast;
-        bool _windowHasFocus;
-        private double _soundSaveVolume = 0.0;
+
+        private readonly IChatModel _cm;
+
+        private readonly IEventAggregator _events;
+
+        private readonly NotifyIcon icon = new NotifyIcon();
+
+        private readonly ToastNotificationsViewModel toast;
+
+        private MediaPlayer DingLing = new MediaPlayer();
+
+        private IUnityContainer _contain;
+
+        private DateTime _lastDingLinged;
+
+        private double _soundSaveVolume;
+
+        private bool _windowHasFocus;
+
         #endregion
 
-        #region constructors
+        #region Constructors and Destructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotificationsDaemon"/> class.
+        /// </summary>
+        /// <param name="contain">
+        /// The contain.
+        /// </param>
+        /// <param name="eventagg">
+        /// The eventagg.
+        /// </param>
+        /// <param name="cm">
+        /// The cm.
+        /// </param>
         public NotificationsDaemon(IUnityContainer contain, IEventAggregator eventagg, IChatModel cm)
         {
-            _contain = contain;
-            _events = eventagg;
-            _cm = cm;
-            toast = new ToastNotificationsViewModel(_events);
+            this._contain = contain;
+            this._events = eventagg;
+            this._cm = cm;
+            this.toast = new ToastNotificationsViewModel(this._events);
 
-            _events.GetEvent<NewMessageEvent>().Subscribe(HandleNewChannelMessage, true);
-            _events.GetEvent<NewPMEvent>().Subscribe(HandleNewMessage, true);
-            _events.GetEvent<NewUpdateEvent>().Subscribe(HandleNotification, true);
+            this._events.GetEvent<NewMessageEvent>().Subscribe(this.HandleNewChannelMessage, true);
+            this._events.GetEvent<NewPMEvent>().Subscribe(this.HandleNewMessage, true);
+            this._events.GetEvent<NewUpdateEvent>().Subscribe(this.HandleNotification, true);
 
-            _events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(
+            this._events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(
                 args =>
-                {
-                    Application.Current.MainWindow.Closing += (s, e) =>
-                        {
-                            e.Cancel = true;
-                            HideWindow();
-                        };
-
-                    #region some notifications based on mainwindow focus
-                    Application.Current.MainWindow.MouseLeave += (s, e) =>
                     {
-                        _events.GetEvent<ErrorEvent>().Publish(null);
-                    };
+                        Application.Current.MainWindow.Closing += (s, e) =>
+                            {
+                                e.Cancel = true;
+                                this.HideWindow();
+                            };
 
-                    _cm.SelectedChannelChanged += (s, e) =>
-                    {
-                        _events.GetEvent<ErrorEvent>().Publish(null);
-                    };
-                    #endregion
+                        Application.Current.MainWindow.MouseLeave +=
+                            (s, e) => { this._events.GetEvent<ErrorEvent>().Publish(null); };
 
-                    #region Icon Init
-                    icon.Icon = new System.Drawing.Icon(Environment.CurrentDirectory + @"\icons\catIcon.ico");
-                    icon.DoubleClick += (s, e) =>
-                    {
-                        ShowWindow();
-                    };
+                        this._cm.SelectedChannelChanged +=
+                            (s, e) => { this._events.GetEvent<ErrorEvent>().Publish(null); };
 
-                    icon.BalloonTipClicked += (s, e) =>
-                    {
-                        slimCat.Properties.Settings.Default.ShowStillRunning = false;
-                        slimCat.Properties.Settings.Default.Save();
-                    };
+                        
 
-                    var iconMenu = new System.Windows.Forms.ContextMenu();
+                        this.icon.Icon = new Icon(Environment.CurrentDirectory + @"\icons\catIcon.ico");
+                        this.icon.DoubleClick += (s, e) => { this.ShowWindow(); };
 
-                    iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem(string.Format("{0} {1} ({2}) - {3}", Constants.CLIENT_ID, Constants.CLIENT_NAME, Constants.CLIENT_VER, args)) { Enabled = false });
-                    iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("-"));
+                        this.icon.BalloonTipClicked += (s, e) =>
+                            {
+                                Settings.Default.ShowStillRunning = false;
+                                Settings.Default.Save();
+                            };
 
-                    iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("Sounds Enabled", ToggleSound) { Checked = ApplicationSettings.Volume > 0.0, });
-                    iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("Toasts Enabled", ToggleToast) { Checked = ApplicationSettings.ShowNotificationsGlobal });
-                    iconMenu.MenuItems.Add(new System.Windows.Forms.MenuItem("-"));
+                        var iconMenu = new ContextMenu();
 
-                    iconMenu.MenuItems.Add("Show", (s, e) => ShowWindow());
-                    iconMenu.MenuItems.Add("Exit", (s, e) => ShutDown());
+                        iconMenu.MenuItems.Add(
+                            new MenuItem(
+                                string.Format(
+                                    "{0} {1} ({2}) - {3}", 
+                                    Constants.CLIENT_ID, 
+                                    Constants.CLIENT_NAME, 
+                                    Constants.CLIENT_VER, 
+                                    args)) {
+                                              Enabled = false 
+                                           });
+                        iconMenu.MenuItems.Add(new MenuItem("-"));
 
-                    icon.Text = string.Format("{0} - {1}", Constants.CLIENT_ID, args);
-                    icon.ContextMenu = iconMenu;
-                    icon.Visible = true;
-                    #endregion
-                });
+                        iconMenu.MenuItems.Add(
+                            new MenuItem("Sounds Enabled", this.ToggleSound)
+                                {
+                                    Checked =
+                                        ApplicationSettings.Volume > 0.0, 
+                                });
+                        iconMenu.MenuItems.Add(
+                            new MenuItem("Toasts Enabled", this.ToggleToast)
+                                {
+                                    Checked =
+                                        ApplicationSettings
+                                        .ShowNotificationsGlobal
+                                });
+                        iconMenu.MenuItems.Add(new MenuItem("-"));
+
+                        iconMenu.MenuItems.Add("Show", (s, e) => this.ShowWindow());
+                        iconMenu.MenuItems.Add("Exit", (s, e) => this.ShutDown());
+
+                        this.icon.Text = string.Format("{0} - {1}", Constants.CLIENT_ID, args);
+                        this.icon.ContextMenu = iconMenu;
+                        this.icon.Visible = true;
+
+                        
+                    });
         }
+
         #endregion
 
-        #region Methods
-        private void NotifyUser(bool bingLing = false, bool flashWindow = false, string message = null, string target = null, string kind = null)
+        #region Properties
+
+        private bool WindowIsFocused
         {
-            if (!ApplicationSettings.ShowNotificationsGlobal) return;
+            get
+            {
+                this.Dispatcher.Invoke(
+                    (Action)delegate { this._windowHasFocus = Application.Current.MainWindow.IsActive; });
 
-            Dispatcher.Invoke(
-                (Action)delegate
-                {
-                    if (flashWindow && !WindowIsFocused)
-                        Application.Current.MainWindow.FlashWindow();
+                return this._windowHasFocus;
+            }
+        }
 
-                    if (bingLing)
-                        DingTheCrapOutOfTheUser();
+        #endregion
 
-                    if (message != null)
-                        toast.UpdateNotification(message);
+        #region Public Methods and Operators
 
-                    toast.Target = target;
-                    toast.Kind = kind;
-                });
+        /// <summary>
+        ///     The dispose.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
         }
 
         /// <summary>
-        /// Notification logic for new PM messages
+        ///     The show window.
         /// </summary>
-        private void HandleNewMessage(IMessage Message)
+        public void ShowWindow()
         {
-            var poster = Message.Poster;
-            var channel = _cm.CurrentPMs.FirstByIdOrDefault(Message.Poster.Name);
-            if (channel == null) return;
-
-            if (channel.IsSelected && WindowIsFocused)
-                return;
-
-            switch ((Models.ChannelSettingsModel.NotifyLevel)channel.Settings.MessageNotifyLevel)
+            // this will ensure the window is showed no matter of its state.
+            Application.Current.MainWindow.Show();
+            if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
             {
-                case ChannelSettingsModel.NotifyLevel.NotificationAndToast:
-                    NotifyUser(false, false, poster.Name + '\n' + HttpUtility.HtmlDecode(Message.Message), poster.Name);
-                    return;
+                Application.Current.MainWindow.WindowState = WindowState.Normal;
+            }
 
-                case ChannelSettingsModel.NotifyLevel.NotificationAndSound:
-                    NotifyUser(true, true, poster.Name + '\n' + HttpUtility.HtmlDecode(Message.Message), poster.Name);
-                    return;
+            Application.Current.MainWindow.Focus();
+        }
 
-                default: return;
+        /// <summary>
+        ///     The shut down.
+        /// </summary>
+        public void ShutDown()
+        {
+            this.icon.Dispose();
+            this.Dispatcher.InvokeShutdown();
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="IsManagedDispose">
+        /// The is managed dispose.
+        /// </param>
+        protected virtual void Dispose(bool IsManagedDispose)
+        {
+            if (IsManagedDispose)
+            {
+                this.icon.Dispose();
+                this.DingLing.Close();
+                this.DingLing = null;
+                this.toast.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Adds the notification to the notifications collection
+        /// </summary>
+        /// <param name="Notification">
+        /// The Notification.
+        /// </param>
+        private void AddNotification(NotificationModel Notification)
+        {
+            this.Dispatcher.Invoke((Action)delegate { this._cm.Notifications.Add(Notification); });
+        }
+
+        private void DingTheCrapOutOfTheUser()
+        {
+            if ((DateTime.Now - this._lastDingLinged) > TimeSpan.FromSeconds(1))
+            {
+                this.ResetDingLing();
+                this.DingLing.Volume = ApplicationSettings.Volume;
+
+                if (this.DingLing.Volume != 0.0)
+                {
+                    this.DingLing.Play();
+                    this._lastDingLinged = DateTime.Now;
+                }
             }
         }
 
         /// <summary>
         /// Notification logic for new channel ads and messages
         /// </summary>
+        /// <param name="update">
+        /// The update.
+        /// </param>
         private void HandleNewChannelMessage(IDictionary<string, object> update)
         {
-            #region init
             var channel = update["channel"] as GeneralChannelModel;
             var message = update["message"] as IMessage;
-            var cleanMessageText = HttpUtility.HtmlDecode(message.Message);
+            string cleanMessageText = HttpUtility.HtmlDecode(message.Message);
 
             var temp = new List<string>(channel.Settings.EnumerableTerms);
-            foreach (var term in ApplicationSettings.GlobalNotifyTermsList)
+            foreach (string term in ApplicationSettings.GlobalNotifyTermsList)
+            {
                 temp.Add(term); // get our combined list of terms
+            }
 
-            var checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase);
-            #endregion
+            IEnumerable<string> checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase);
 
-            #region Early terminate logic
+            
+
             // if any of these conditions hold true we have no reason to evaluate further
             if (channel == null)
+            {
                 return;
+            }
 
-            if (channel.IsSelected && WindowIsFocused)
+            if (channel.IsSelected && this.WindowIsFocused)
+            {
                 return;
+            }
 
             if (ApplicationSettings.NotInterested.Contains(message.Poster.Name))
+            {
                 return;
-            #endregion
+            }
+
+            
 
             // now we check to see if we should notify because of settings
-            if (channel.Settings.MessageNotifyLevel > (int)Models.ChannelSettingsModel.NotifyLevel.NotificationOnly)
+            if (channel.Settings.MessageNotifyLevel > (int)ChannelSettingsModel.NotifyLevel.NotificationOnly)
             {
-                bool dingLing = channel.Settings.MessageNotifyLevel > (int)Models.ChannelSettingsModel.NotifyLevel.NotificationAndToast;
+                bool dingLing = channel.Settings.MessageNotifyLevel
+                                > (int)ChannelSettingsModel.NotifyLevel.NotificationAndToast;
 
-                if ((channel.Settings.MessageNotifyOnlyForInteresting && _cm.IsOfInterest(message.Poster.Name))
+                if ((channel.Settings.MessageNotifyOnlyForInteresting && this._cm.IsOfInterest(message.Poster.Name))
                     || !channel.Settings.MessageNotifyOnlyForInteresting)
                 {
-                    NotifyUser(dingLing, dingLing, message.Poster.Name + '\n' + cleanMessageText, channel.ID);
+                    this.NotifyUser(dingLing, dingLing, message.Poster.Name + '\n' + cleanMessageText, channel.ID);
                     return; // and if we do, there is no need to evalutae further
                 }
             }
 
             if (channel.Settings.EnumerableTerms.Count() == 0 && ApplicationSettings.GlobalNotifyTermsList.Count() == 0)
+            {
                 return; // if we don't have anything to check for, no need to evaluate further
+            }
 
             #region Ding Word evaluation
+
             // We have something to check for
 
             // Tokenized List is the list of terms the message has
             // Check against is a combined set of terms that the user has identified as ding words
             // Is Matching String uses Check against to see if any terms are a match
-
             if (channel.Settings.NotifyIncludesCharacterNames)
             {
                 // if the poster's name contains a ding word
                 Tuple<string, string> match = null;
-                foreach (var dingword in checkAgainst)
+                foreach (string dingword in checkAgainst)
                 {
-                    var attemptedMatch = message.Poster.Name.FirstMatch(dingword);
+                    Tuple<string, string> attemptedMatch = message.Poster.Name.FirstMatch(dingword);
                     if (!string.IsNullOrWhiteSpace(attemptedMatch.Item1))
                     {
                         match = attemptedMatch;
@@ -239,51 +355,95 @@ namespace Services
 
                 if (match != null)
                 {
-                    var notifyMessage = string.Format("{0}'s name matches {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
+                    string notifyMessage = string.Format(
+                        "{0}'s name matches {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
 
-                    NotifyUser(true, true, notifyMessage, channel.ID);
+                    this.NotifyUser(true, true, notifyMessage, channel.ID);
                     channel.FlashTab();
                     return;
                 }
             }
-
-            // Now our character's name is always added
             {
-                var name = _cm.SelectedCharacter.Name.ToLower();
+                // Now our character's name is always added
+                string name = this._cm.SelectedCharacter.Name.ToLower();
 
                 temp.Add(name); // fixes an issue where a user's name would ding constantly
                 if (name.Last() != 's' && name.Last() != 'z')
+                {
                     temp.Add(name + @"'s"); // possessive fix
+                }
                 else
+                {
                     temp.Add(name + @"'");
+                }
 
                 checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase);
             }
-
-            // check the message content
             {
+                // check the message content
                 Tuple<string, string> match = null;
 
-                foreach (var dingWord in checkAgainst)
+                foreach (string dingWord in checkAgainst)
                 {
-                    var attemptedMatch = cleanMessageText.FirstMatch(dingWord);
-                    if (!string.IsNullOrWhiteSpace(attemptedMatch.Item1)) // if it didn't return empty it found a match
+                    Tuple<string, string> attemptedMatch = cleanMessageText.FirstMatch(dingWord);
+                    if (!string.IsNullOrWhiteSpace(attemptedMatch.Item1))
                     {
+                        // if it didn't return empty it found a match
                         match = attemptedMatch;
                         break;
                     }
                 }
 
-                if (match != null) // if one of our words is a dingling word
+                if (match != null)
                 {
-                    var notifyMessage = string.Format("{0} mentioned {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
+                    // if one of our words is a dingling word
+                    string notifyMessage = string.Format(
+                        "{0} mentioned {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
 
-                    NotifyUser(true, true, notifyMessage, channel.ID);
+                    this.NotifyUser(true, true, notifyMessage, channel.ID);
                     channel.FlashTab();
                     return;
                 }
             }
+
             #endregion
+        }
+
+        /// <summary>
+        /// Notification logic for new PM messages
+        /// </summary>
+        /// <param name="Message">
+        /// The Message.
+        /// </param>
+        private void HandleNewMessage(IMessage Message)
+        {
+            ICharacter poster = Message.Poster;
+            PMChannelModel channel = this._cm.CurrentPMs.FirstByIdOrDefault(Message.Poster.Name);
+            if (channel == null)
+            {
+                return;
+            }
+
+            if (channel.IsSelected && this.WindowIsFocused)
+            {
+                return;
+            }
+
+            switch ((ChannelSettingsModel.NotifyLevel)channel.Settings.MessageNotifyLevel)
+            {
+                case ChannelSettingsModel.NotifyLevel.NotificationAndToast:
+                    this.NotifyUser(
+                        false, false, poster.Name + '\n' + HttpUtility.HtmlDecode(Message.Message), poster.Name);
+                    return;
+
+                case ChannelSettingsModel.NotifyLevel.NotificationAndSound:
+                    this.NotifyUser(
+                        true, true, poster.Name + '\n' + HttpUtility.HtmlDecode(Message.Message), poster.Name);
+                    return;
+
+                default:
+                    return;
+            }
         }
 
         private void HandleNotification(NotificationModel Notification)
@@ -291,222 +451,215 @@ namespace Services
             // character update models will be *most* of the notification the user will see
             if (Notification is CharacterUpdateModel)
             {
-                var targetCharacter = ((CharacterUpdateModel)Notification).TargetCharacter.Name;
-                var args = ((CharacterUpdateModel)Notification).Arguments;
+                string targetCharacter = ((CharacterUpdateModel)Notification).TargetCharacter.Name;
+                CharacterUpdateModel.CharacterUpdateEventArgs args = ((CharacterUpdateModel)Notification).Arguments;
 
                 // handle if the notification involves a character being promoted or demoted
-                if (args is Models.CharacterUpdateModel.PromoteDemoteEventArgs)
+                if (args is CharacterUpdateModel.PromoteDemoteEventArgs)
                 {
-                    var channelID = ((Models.CharacterUpdateModel.PromoteDemoteEventArgs)args).TargetChannelID; // find by ID, not name
-                    var channel = _cm.CurrentChannels.FirstByIdOrDefault(channelID);
+                    string channelID = ((CharacterUpdateModel.PromoteDemoteEventArgs)args).TargetChannelID;
 
-                    if (channel == null) return;
+                    // find by ID, not name
+                    GeneralChannelModel channel = this._cm.CurrentChannels.FirstByIdOrDefault(channelID);
+
+                    if (channel == null)
+                    {
+                        return;
+                    }
 
                     if (channel.Settings.PromoteDemoteNotifyOnlyForInteresting)
-                        if (!_cm.IsOfInterest(targetCharacter)) return; // if we only want to know interesting people, no need to evalute further
+                    {
+                        if (!this._cm.IsOfInterest(targetCharacter))
+                        {
+                            return; // if we only want to know interesting people, no need to evalute further
+                        }
+                    }
 
-                    convertNotificationLevelToAction(channel.Settings.PromoteDemoteNotifyLevel, channelID, Notification);
+                    this.convertNotificationLevelToAction(
+                        channel.Settings.PromoteDemoteNotifyLevel, channelID, Notification);
                 }
 
-                // handle if the notification involves a character joining or leaving
-                else if (args is Models.CharacterUpdateModel.JoinLeaveEventArgs) // special check for this as it has settings per channel
+                    // handle if the notification involves a character joining or leaving
+                else if (args is CharacterUpdateModel.JoinLeaveEventArgs)
                 {
-                    var target = ((Models.CharacterUpdateModel.JoinLeaveEventArgs)args).TargetChannelID; // find by ID, not name
-                    var channel = _cm.CurrentChannels.FirstByIdOrDefault(target);
+                    // special check for this as it has settings per channel
+                    string target = ((CharacterUpdateModel.JoinLeaveEventArgs)args).TargetChannelID;
 
-                    if (channel == null) return;
+                    // find by ID, not name
+                    GeneralChannelModel channel = this._cm.CurrentChannels.FirstByIdOrDefault(target);
+
+                    if (channel == null)
+                    {
+                        return;
+                    }
 
                     if (channel.Settings.JoinLeaveNotifyOnlyForInteresting)
-                        if (!_cm.IsOfInterest(targetCharacter)) return;
+                    {
+                        if (!this._cm.IsOfInterest(targetCharacter))
+                        {
+                            return;
+                        }
+                    }
 
-                    convertNotificationLevelToAction(channel.Settings.JoinLeaveNotifyLevel, target, Notification);
+                    this.convertNotificationLevelToAction(channel.Settings.JoinLeaveNotifyLevel, target, Notification);
                 }
 
-                // handle if the notification is an RTB event like a note or a new comment reply
-                else if (args is Models.CharacterUpdateModel.NoteEventArgs || args is Models.CharacterUpdateModel.CommentEventArgs)
+                    // handle if the notification is an RTB event like a note or a new comment reply
+                else if (args is CharacterUpdateModel.NoteEventArgs || args is CharacterUpdateModel.CommentEventArgs)
                 {
-                    AddNotification(Notification);
+                    this.AddNotification(Notification);
 
+                    string link = args is CharacterUpdateModel.NoteEventArgs
+                                      ? ((CharacterUpdateModel.NoteEventArgs)args).Link
+                                      : ((CharacterUpdateModel.CommentEventArgs)args).Link;
 
-                    var link = (args is Models.CharacterUpdateModel.NoteEventArgs ?
-                                    ((Models.CharacterUpdateModel.NoteEventArgs)args).Link
-                                    : ((Models.CharacterUpdateModel.CommentEventArgs)args).Link);
-
-                    NotifyUser(false, false, Notification.ToString(), link);
+                    this.NotifyUser(false, false, Notification.ToString(), link);
                 }
 
-                // handle if the notification is something like them being added to our interested/not list
-                else if (args is Models.CharacterUpdateModel.ListChangedEventArgs)
+                    // handle if the notification is something like them being added to our interested/not list
+                else if (args is CharacterUpdateModel.ListChangedEventArgs)
                 {
-                    AddNotification(Notification);
-                    NotifyUser(false, false, Notification.ToString(), targetCharacter);
+                    this.AddNotification(Notification);
+                    this.NotifyUser(false, false, Notification.ToString(), targetCharacter);
                 }
 
-                // handle moderator events
-                else if (args is Models.CharacterUpdateModel.ReportHandledEventArgs)
+                    // handle moderator events
+                else if (args is CharacterUpdateModel.ReportHandledEventArgs)
                 {
-                    AddNotification(Notification);
-                    NotifyUser(true, true, Notification.ToString(), targetCharacter);
+                    this.AddNotification(Notification);
+                    this.NotifyUser(true, true, Notification.ToString(), targetCharacter);
+                }
+                else if (args is CharacterUpdateModel.ReportFiledEventArgs)
+                {
+                    this.AddNotification(Notification);
+                    this.NotifyUser(true, true, Notification.ToString(), targetCharacter, "report");
                 }
 
-                else if (args is Models.CharacterUpdateModel.ReportFiledEventArgs)
+                    // finally, if nothing else, add their update if we're interested in them in some way
+                else if (this._cm.IsOfInterest(targetCharacter))
                 {
-                    AddNotification(Notification);
-                    NotifyUser(true, true, Notification.ToString(),targetCharacter, "report");
-                }
+                    this.AddNotification(Notification);
 
-                // finally, if nothing else, add their update if we're interested in them in some way
-                else if (_cm.IsOfInterest(targetCharacter))
-                {
-                    AddNotification(Notification);
-
-                    if (_cm.SelectedChannel is PMChannelModel)
-                        if ((_cm.SelectedChannel as PMChannelModel).ID.Equals(targetCharacter, StringComparison.OrdinalIgnoreCase))
+                    if (this._cm.SelectedChannel is PMChannelModel)
+                    {
+                        if ((this._cm.SelectedChannel as PMChannelModel).ID.Equals(
+                            targetCharacter, StringComparison.OrdinalIgnoreCase))
+                        {
                             return; // don't make a toast if we have their tab focused as it is redundant
+                        }
+                    }
 
-                    NotifyUser(false, false, Notification.ToString(), targetCharacter);
+                    this.NotifyUser(false, false, Notification.ToString(), targetCharacter);
                 }
             }
 
-            // the only other kind of update model is a channel update model
+                // the only other kind of update model is a channel update model
             else
             {
-                var channelID = ((ChannelUpdateModel)Notification).ChannelID;
-                var args = ((ChannelUpdateModel)Notification).Arguments;
+                string channelID = ((ChannelUpdateModel)Notification).ChannelID;
+                ChannelUpdateModel.ChannelUpdateEventArgs args = ((ChannelUpdateModel)Notification).Arguments;
 
-                AddNotification(Notification);
-                NotifyUser(false, false, Notification.ToString(), channelID);
+                this.AddNotification(Notification);
+                this.NotifyUser(false, false, Notification.ToString(), channelID);
             }
-        }
-
-        private void convertNotificationLevelToAction(int NotificationLevel, string ActionID, NotificationModel Notification)
-        {
-            switch ((Models.ChannelSettingsModel.NotifyLevel)NotificationLevel) // convert our int into an enum to avoid magic numbers
-            {
-                case ChannelSettingsModel.NotifyLevel.NoNotification: return;
-
-                case ChannelSettingsModel.NotifyLevel.NotificationOnly:
-                    AddNotification(Notification); 
-                    return;
-
-                case ChannelSettingsModel.NotifyLevel.NotificationAndToast:
-                    AddNotification(Notification);
-                    NotifyUser(false, false, Notification.ToString(), ActionID);
-                    return;
-
-                case ChannelSettingsModel.NotifyLevel.NotificationAndSound:
-                    AddNotification(Notification);
-                    NotifyUser(true, true, Notification.ToString(), ActionID);
-                    return;
-            }
-        }
-
-        /// <summary>
-        /// Adds the notification to the notifications collection
-        /// </summary>
-        private void AddNotification(NotificationModel Notification)
-        {
-            Dispatcher.Invoke(
-                (Action)delegate
-                {
-                    _cm.Notifications.Add(Notification);
-                });
         }
 
         private void HideWindow()
         {
-            App.Current.MainWindow.Hide();
-            icon.Visible = true;
-            if (slimCat.Properties.Settings.Default.ShowStillRunning)
-                icon.ShowBalloonTip(5,
-                    "slimCat", "slimCat is still running in the background."
-                    +"\nClick on this to silence this notification (forever and ever).",
-                    System.Windows.Forms.ToolTipIcon.Info);
-        }
-
-        public void ShowWindow()
-        {
-            // this will ensure the window is showed no matter of its state.
-            Application.Current.MainWindow.Show();
-            if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
-                Application.Current.MainWindow.WindowState = WindowState.Normal;
-            Application.Current.MainWindow.Focus();
-        }
-
-        public void ShutDown()
-        {
-            icon.Dispose();
-            Dispatcher.InvokeShutdown();
-        }
-
-        private void DingTheCrapOutOfTheUser()
-        {
-            if ((DateTime.Now - _lastDingLinged) > TimeSpan.FromSeconds(1))
+            Application.Current.MainWindow.Hide();
+            this.icon.Visible = true;
+            if (Settings.Default.ShowStillRunning)
             {
-                ResetDingLing();
-                DingLing.Volume = ApplicationSettings.Volume;
-
-                if (DingLing.Volume != 0.0)
-                {
-                    DingLing.Play();
-                    _lastDingLinged = DateTime.Now;
-                }
+                this.icon.ShowBalloonTip(
+                    5, 
+                    "slimCat", 
+                    "slimCat is still running in the background."
+                    + "\nClick on this to silence this notification (forever and ever).", 
+                    ToolTipIcon.Info);
             }
-            
+        }
+
+        private void NotifyUser(
+            bool bingLing = false, 
+            bool flashWindow = false, 
+            string message = null, 
+            string target = null, 
+            string kind = null)
+        {
+            if (!ApplicationSettings.ShowNotificationsGlobal)
+            {
+                return;
+            }
+
+            this.Dispatcher.Invoke(
+                (Action)delegate
+                    {
+                        if (flashWindow && !this.WindowIsFocused)
+                        {
+                            Application.Current.MainWindow.FlashWindow();
+                        }
+
+                        if (bingLing)
+                        {
+                            this.DingTheCrapOutOfTheUser();
+                        }
+
+                        if (message != null)
+                        {
+                            this.toast.UpdateNotification(message);
+                        }
+
+                        this.toast.Target = target;
+                        this.toast.Kind = kind;
+                    });
         }
 
         private void ResetDingLing()
         {
-            DingLing.Close();
-            DingLing.Open(new Uri(Environment.CurrentDirectory + @"\sounds\" + "newmessage.wav"));
+            this.DingLing.Close();
+            this.DingLing.Open(new Uri(Environment.CurrentDirectory + @"\sounds\" + "newmessage.wav"));
         }
 
-        private bool WindowIsFocused
+        private void ToggleSound(object sender, EventArgs e)
         {
-            get
-            {
-                Dispatcher.Invoke(
-                    (Action)delegate
-                    {
-                        _windowHasFocus = Application.Current.MainWindow.IsActive;
-                    });
+            double temp = ApplicationSettings.Volume;
+            ApplicationSettings.Volume = this._soundSaveVolume;
+            this._soundSaveVolume = temp;
 
-                return _windowHasFocus;
-            }
+            this.icon.ContextMenu.MenuItems[2].Checked = ApplicationSettings.Volume > 0.0;
         }
 
         private void ToggleToast(object sender, EventArgs e)
         {
             ApplicationSettings.ShowNotificationsGlobal = !ApplicationSettings.ShowNotificationsGlobal;
-            icon.ContextMenu.MenuItems[3].Checked = ApplicationSettings.ShowNotificationsGlobal;
+            this.icon.ContextMenu.MenuItems[3].Checked = ApplicationSettings.ShowNotificationsGlobal;
         }
 
-        private void ToggleSound(object sender, EventArgs e)
+        private void convertNotificationLevelToAction(
+            int NotificationLevel, string ActionID, NotificationModel Notification)
         {
-            var temp = ApplicationSettings.Volume;
-            ApplicationSettings.Volume = _soundSaveVolume;
-            _soundSaveVolume = temp;
-
-            icon.ContextMenu.MenuItems[2].Checked = ApplicationSettings.Volume > 0.0;
-        }
-        #endregion
-
-        #region IDispose
-        public void Dispose()
-        {
-            this.Dispose(true);
-        }
-
-        protected virtual void Dispose(bool IsManagedDispose)
-        {
-            if (IsManagedDispose)
+            switch ((ChannelSettingsModel.NotifyLevel)NotificationLevel)
             {
-                icon.Dispose();
-                DingLing.Close();
-                DingLing = null;
-                toast.Dispose();
+                    // convert our int into an enum to avoid magic numbers
+                case ChannelSettingsModel.NotifyLevel.NoNotification:
+                    return;
+
+                case ChannelSettingsModel.NotifyLevel.NotificationOnly:
+                    this.AddNotification(Notification);
+                    return;
+
+                case ChannelSettingsModel.NotifyLevel.NotificationAndToast:
+                    this.AddNotification(Notification);
+                    this.NotifyUser(false, false, Notification.ToString(), ActionID);
+                    return;
+
+                case ChannelSettingsModel.NotifyLevel.NotificationAndSound:
+                    this.AddNotification(Notification);
+                    this.NotifyUser(true, true, Notification.ToString(), ActionID);
+                    return;
             }
         }
+
         #endregion
     }
 }

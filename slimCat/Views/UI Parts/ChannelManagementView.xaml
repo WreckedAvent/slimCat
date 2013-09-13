@@ -1,51 +1,25 @@
-﻿<!--
-Copyright (c) 2013, Justin Kadrovach
-All rights reserved.
+﻿<Popup x:Class="Views.ChannelManagementView"
+       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of the <organization> nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
+       PlacementTarget="{Binding ElementName=PopupAnchor}"
+       Placement="Center"
+       StaysOpen="False"
+       IsOpen="{Binding Path=ChannelManagementViewModel.IsManaging, Mode=OneWay}">
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-<Popup  x:Class="Views.ChannelManagementView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-
-        PlacementTarget="{Binding ElementName=PopupAnchor}"
-        Placement="Center"
-        StaysOpen="False"
-        IsOpen="{Binding Path=ChannelManagementViewModel.IsManaging, Mode=OneWay}">
-    
     <Border BorderBrush="{StaticResource HighlightBrush}"
             BorderThickness="2"
             Background="{StaticResource BackgroundBrush}">
         <WrapPanel Orientation="Vertical"
-                    Margin="10">
+                   Margin="10">
             <TextBlock Foreground="{StaticResource ForegroundBrush}"
-                        FontSize="20"
-                        HorizontalAlignment="Center"
-                        Margin="10,0">
-                    <Run Text="{Binding Path=Model.Title, Mode=OneWay}"/>
-                    <Run Text="Channel Management" />
+                       FontSize="20"
+                       HorizontalAlignment="Center"
+                       Margin="10,0">
+                <Run Text="{Binding Path=Model.Title, Mode=OneWay}" />
+                <Run Text="Channel Management" />
             </TextBlock>
-            
+
             <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
                         Margin="10"
                         TextBlock.FontSize="18"
@@ -56,17 +30,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                          MaxWidth="500"
                          FontSize="12"
                          AcceptsReturn="True"
-                         TextWrapping="Wrap"/>
+                         TextWrapping="Wrap" />
                 <DockPanel Margin="0,10">
                     <Button DockPanel.Dock="Right"
                             Content="{Binding Path=ToggleRoomTypeString, Mode=OneWay}"
                             ToolTip="{Binding Path=ToggleRoomToolTip, Mode=OneWay}"
                             Command="{Binding Path=ToggleRoomTypeCommand}"
-                            Margin="10,0,0,0"/>
+                            Margin="10,0,0,0" />
                     <TextBlock VerticalAlignment="Center">
-                        <Run Text="Room Type:"/>
+                        <Run Text="Room Type:" />
                         <Run Text="{Binding Path=RoomTypeString, Mode=OneWay}"
-                             Foreground="{StaticResource HighlightBrush}"/>
+                             Foreground="{StaticResource HighlightBrush}" />
                     </TextBlock>
                 </DockPanel>
                 <DockPanel Margin="0,10">
@@ -74,19 +48,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                               DockPanel.Dock="Right"
                               ItemsSource="{Binding Path=ModeTypes, Mode=OneWay}"
                               SelectedValue="{Binding Path=RoomModeType}"
-                              Text="Click to change ..."
-                              />
+                              Text="Click to change ..." />
                     <TextBlock VerticalAlignment="Center">
-                        <Run Text="This channel"/>
+                        <Run Text="This channel" />
                         <Run Text="{Binding Path=RoomModeString, Mode=OneWay}"
-                             Foreground="{StaticResource HighlightBrush}"/>
+                             Foreground="{StaticResource HighlightBrush}" />
                     </TextBlock>
 
                 </DockPanel>
                 <Button Content="Close Management Window"
                         Margin="10,5"
                         FontSize="16"
-                        Command="{Binding Path=OpenChannelManagementCommand}"/>
+                        Command="{Binding Path=OpenChannelManagementCommand}" />
             </StackPanel>
         </WrapPanel>
     </Border>

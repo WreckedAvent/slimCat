@@ -1,49 +1,23 @@
-﻿<!--
-Copyright (c) 2013, Justin Kadrovach
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of the <organization> nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-<UserControl x:Class="Views.UsersTabView"
+﻿<UserControl x:Class="Views.UsersTabView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:m="clr-namespace:Models"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:v="clr-namespace:Views">
-    
+
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type m:CharacterModel}">
             <ContentControl Margin="0"
-                            Content="{Binding}"
-                            ContentTemplate="{StaticResource TunnelingUsernameTemplate}"                            
+                            Content="{Binding IsAsync=True}"
+                            ContentTemplate="{StaticResource TunnelingUsernameTemplate}"
                             HorizontalAlignment="Left"
                             TextBlock.TextAlignment="Left">
             </ContentControl>
         </DataTemplate>
     </UserControl.Resources>
-    
+
     <Grid TextBlock.Foreground="{StaticResource ForegroundBrush}"
           TextBlock.FontSize="14">
-        
+
         <DockPanel Grid.Row="1"
                    LastChildFill="True">
             <Popup PlacementTarget="{Binding ElementName=PopupAnchor}"
@@ -59,19 +33,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         <TextBlock Foreground="{StaticResource ForegroundBrush}"
                                    FontSize="20"
                                    HorizontalAlignment="Center"
-                                   Margin="10,5"
-                                   >
+                                   Margin="10,5">
                             <Run Text="User List Filter Settings" />
                             <LineBreak />
                             <Run Text="Current list:"
-                                 FontSize="16"/>
+                                 FontSize="16" />
                             <Run Text="{Binding Path=SortContentString, Mode=OneWay}"
-                                 FontSize="16"/>
+                                 FontSize="16" />
                         </TextBlock>
 
                         <ContentControl Template="{StaticResource GenderCheckBoxes}"
-                                    DataContext="{Binding Path=GenderSettings}"/>
-                        
+                                        DataContext="{Binding Path=GenderSettings}" />
+
                         <ContentControl Template="{StaticResource GeneralFilterCheckBoxes}"
                                         DataContext="{Binding Path=SearchSettings}" />
 
@@ -79,7 +52,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                                 Margin="10,5"
                                 DataContext="{Binding Path=SearchSettings}"
                                 Foreground="{StaticResource ForegroundBrush}"
-                                Command="{Binding OpenSearchSettingsCommand}"/>
+                                Command="{Binding OpenSearchSettingsCommand}" />
                     </WrapPanel>
                 </Border>
             </Popup>
@@ -87,11 +60,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <v:RightClickMenu />
             <v:CreateReportView />
             <v:SearchBoxView DockPanel.Dock="Bottom"
-                             DataContext="{Binding SearchSettings}"/>
-            
+                             DataContext="{Binding SearchSettings}" />
+
             <ListBox ItemsSource="{Binding Path=SortedUsers, Mode=OneWay}"
                      Style="{StaticResource ContentListBox}"
-                     x:Name="PopupAnchor"/>
+                     x:Name="PopupAnchor" />
         </DockPanel>
     </Grid>
 </UserControl>

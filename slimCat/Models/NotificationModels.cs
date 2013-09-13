@@ -1,410 +1,1070 @@
-﻿/*
-Copyright (c) 2013, Justin Kadrovach
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="NotificationModels.cs" company="Justin Kadrovach">
+//   Copyright (c) 2013, Justin Kadrovach
+//   All rights reserved.
+//   
+//   Redistribution and use in source and binary forms, with or without
+//   modification, are permitted provided that the following conditions are met:
+//       * Redistributions of source code must retain the above copyright
+//         notice, this list of conditions and the following disclaimer.
+//       * Redistributions in binary form must reproduce the above copyright
+//         notice, this list of conditions and the following disclaimer in the
+//         documentation and/or other materials provided with the distribution.
+//   
+//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
+//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// </copyright>
+// <summary>
+//   The notification model.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Models
 {
+    using System;
+    using System.Linq;
+    using System.Text;
+
+    /// <summary>
+    ///     The notification model.
+    /// </summary>
     public abstract class NotificationModel : MessageBase
     {
-        public NotificationModel()
-            : base() { }
     }
 
     /// <summary>
-    /// Used to represent an update about a character
+    ///     Used to represent an update about a character
     /// </summary>
     public class CharacterUpdateModel : NotificationModel
     {
+        #region Fields
+
+        private CharacterUpdateEventArgs _args;
+
+        private ICharacter _target;
+
+        #endregion
+
+        #region Constructors and Destructors
+
         /// <summary>
-        /// Represents updates which have a character as their direct object
+        /// Initializes a new instance of the <see cref="CharacterUpdateModel"/> class.
         /// </summary>
-        public abstract class CharacterUpdateEventArgs : EventArgs
-        { }
-
-        #region Character Update Event Args subclasses
-        public class LoginStateChangedEventArgs : CharacterUpdateEventArgs
+        /// <param name="target">
+        /// The target.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        public CharacterUpdateModel(ICharacter target, CharacterUpdateEventArgs e)
         {
-            public bool IsLogIn { get; set; }
+            this._target = target;
+            this._args = e;
+        }
 
-            public override string ToString()
+        #endregion
+
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets the arguments.
+        /// </summary>
+        public CharacterUpdateEventArgs Arguments
+        {
+            get
             {
-                return "has logged " + (IsLogIn ? "in." : "out.");
+                return this._args;
             }
         }
 
-        public class StatusChangedEventArgs : CharacterUpdateEventArgs
+        /// <summary>
+        ///     Gets the target character.
+        /// </summary>
+        public ICharacter TargetCharacter
         {
-            public bool IsStatusTypeChanged { get { return NewStatusType != StatusType.offline; } }
-            public bool IsStatusMessageChanged { get { return NewStatusMessage != null; } }
-
-            public StatusType NewStatusType { get; set; }
-            public string NewStatusMessage { get; set; }
-
-            public override string ToString()
+            get
             {
-                StringBuilder toReturn = new StringBuilder();
-
-                if (IsStatusTypeChanged)
-                    toReturn.Append("is now " + NewStatusType.ToString());
-
-                if (IsStatusMessageChanged)
-                {
-                    if (IsStatusTypeChanged && NewStatusMessage.Length > 0)
-                        toReturn.Append(": " + NewStatusMessage);
-                    else if (NewStatusMessage.Length > 0)
-                        toReturn.Append("has updated their status: " + NewStatusMessage);
-                    else if (toReturn.Length > 0)
-                        toReturn.Append(" and has blanked their status");
-                    else
-                        toReturn.Append("has blanked their status");
-                }
-
-                if (!char.IsPunctuation(toReturn.ToString().Trim().Last()))
-                    toReturn.Append('.'); // if the last non-whitespace character is not punctuation, add a period
-
-                return toReturn.ToString();
+                return this._target;
             }
         }
 
-        public class PromoteDemoteEventArgs : CharacterUpdateEventArgs
-        {
-            public bool IsPromote { get; set; }
-            public string TargetChannel { get; set; }
-            public string TargetChannelID { get; set; } // used for other parts of the code to understand what channel
+        #endregion
 
-            public override string ToString()
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     The to string.
+        /// </summary>
+        /// <returns>
+        ///     The <see cref="string" />.
+        /// </returns>
+        public override string ToString()
+        {
+            return this.TargetCharacter.Name + " " + this.Arguments;
+        }
+
+        #endregion
+
+        #region Methods
+
+        internal override void Dispose(bool IsManaged)
+        {
+            if (IsManaged)
             {
-                if (TargetChannel == null)
-                    return "has been " + (IsPromote ? "promoted to" : "demoted from") + " global moderator.";
-                else
-                    return "has been " + (IsPromote ? "promoted to" : "demoted from") + " channel moderator in " + TargetChannel + ".";
+                this._target = null;
+                this._args = null;
             }
         }
 
-        public class JoinLeaveEventArgs : CharacterUpdateEventArgs
-        {
-            public string TargetChannel { get; set; }
-            public string TargetChannelID { get; set; } // used for other parts of the code to understand what channel
-            public bool Joined { get; set; }
+        #endregion
 
-            public override string ToString()
-            {
-                return "has " + (Joined ? "joined" : "left") + string.Format(" {0}.", TargetChannel);
-            }
-        }
-
+        /// <summary>
+        ///     The broadcast event args.
+        /// </summary>
         public class BroadcastEventArgs : CharacterUpdateEventArgs
         {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets the message.
+            /// </summary>
             public string Message { get; set; }
 
+            #endregion
+
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
             public override string ToString()
             {
-                return "broadcasted " + Message + (Char.IsPunctuation(Message.Last()) ? "" : ".");
+                return "broadcasted " + this.Message + (char.IsPunctuation(this.Message.Last()) ? string.Empty : ".");
             }
+
+            #endregion
         }
 
-        public class NoteEventArgs : CharacterUpdateEventArgs
+        /// <summary>
+        ///     Represents updates which have a character as their direct object
+        /// </summary>
+        public abstract class CharacterUpdateEventArgs : EventArgs
         {
-            public long NoteID { get; set; }
-            public string Subject { get; set; }
-            public string Link
-            {
-                get
-                {
-                    return Constants.UrlConstants.READ_NOTE + NoteID;
-                }
-            }
-
-            public override string ToString()
-            {
-                return string.Format(@"has sent you a note: [url={0}]{1}[/url]", Link, Subject);
-            }
         }
 
+        /// <summary>
+        ///     The comment event args.
+        /// </summary>
         public class CommentEventArgs : CharacterUpdateEventArgs
         {
+            #region Enums
+
+            /// <summary>
+            ///     The comment types.
+            /// </summary>
             public enum CommentTypes
             {
-                comment,
-                newspost,
-                bugreport,
-                changelog,
+                /// <summary>
+                ///     The comment.
+                /// </summary>
+                comment, 
+
+                /// <summary>
+                ///     The newspost.
+                /// </summary>
+                newspost, 
+
+                /// <summary>
+                ///     The bugreport.
+                /// </summary>
+                bugreport, 
+
+                /// <summary>
+                ///     The changelog.
+                /// </summary>
+                changelog, 
+
+                /// <summary>
+                ///     The feature.
+                /// </summary>
                 feature
             }
 
-            private string commentTypeToString(CommentTypes argument)
-            {
-                if (argument == CommentTypes.bugreport)
-                    return "bug report";
-                else if (argument == CommentTypes.feature)
-                    return "feature suggestion";
-                else return argument.ToString();
-            }
+            #endregion
 
-            public long ParentID { get; set; } // the parent of whatever was replied to
-            public long TargetID { get; set; } // the id of the content, such as newspost ID
-            public long CommentID { get; set; } // the id of the comment that is new
-            public string Title { get; set; } // title of the newpost, suggestion, etc
-            public CommentTypes CommentType { get; set; }  // the type of comment we got
+            // the id of the content, such as newspost ID
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets the comment id.
+            /// </summary>
+            public long CommentID { get; set; }
+
+            // the id of the comment that is new
+
+            // title of the newpost, suggestion, etc
+            /// <summary>
+            ///     Gets or sets the comment type.
+            /// </summary>
+            public CommentTypes CommentType { get; set; }
+
+            // the type of comment we got
+            /// <summary>
+            ///     Gets the link.
+            /// </summary>
             public string Link
             {
                 get
                 {
-                    switch (CommentType)
+                    switch (this.CommentType)
                     {
-                        case CommentTypes.newspost: return string.Format("{0}/newspost/{1}/#Comment{2}", Constants.UrlConstants.DOMAIN, TargetID, CommentID);
-                        case CommentTypes.bugreport: return string.Format("{0}/view_bugreport.php?id={1}#Comment{2}", Constants.UrlConstants.DOMAIN, TargetID, CommentID);
-                        case CommentTypes.changelog: return string.Format("{0}/log.php?id={1}#Comment{2}", Constants.UrlConstants.DOMAIN, TargetID, CommentID);
-                        case CommentTypes.feature: return string.Format("{0}/vote.php?fid={1}#Comment{2}", Constants.UrlConstants.DOMAIN, TargetID, CommentID);
-                        default: return string.Empty;
+                        case CommentTypes.newspost:
+                            return string.Format(
+                                "{0}/newspost/{1}/#Comment{2}", 
+                                Constants.UrlConstants.DOMAIN, 
+                                this.TargetID, 
+                                this.CommentID);
+                        case CommentTypes.bugreport:
+                            return string.Format(
+                                "{0}/view_bugreport.php?id={1}#Comment{2}", 
+                                Constants.UrlConstants.DOMAIN, 
+                                this.TargetID, 
+                                this.CommentID);
+                        case CommentTypes.changelog:
+                            return string.Format(
+                                "{0}/log.php?id={1}#Comment{2}", 
+                                Constants.UrlConstants.DOMAIN, 
+                                this.TargetID, 
+                                this.CommentID);
+                        case CommentTypes.feature:
+                            return string.Format(
+                                "{0}/vote.php?fid={1}#Comment{2}", 
+                                Constants.UrlConstants.DOMAIN, 
+                                this.TargetID, 
+                                this.CommentID);
+                        default:
+                            return string.Empty;
                     }
                 }
             }
 
+            /// <summary>
+            ///     Gets or sets the parent id.
+            /// </summary>
+            public long ParentID { get; set; }
+
+            // the parent of whatever was replied to
+            /// <summary>
+            ///     Gets or sets the target id.
+            /// </summary>
+            public long TargetID { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the title.
+            /// </summary>
+            public string Title { get; set; }
+
+            #endregion
+
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
             public override string ToString()
             {
-                if (ParentID == 0) // not a comment, but a suggestion, newspost, etc.
+                if (this.ParentID == 0)
                 {
-                    return "has replied to your " + commentTypeToString(CommentType) + ", " + string.Format("[url={0}]{1}[/url]", Link, Title);
+                    // not a comment, but a suggestion, newspost, etc.
+                    return "has replied to your " + this.commentTypeToString(this.CommentType) + ", "
+                           + string.Format("[url={0}]{1}[/url]", this.Link, this.Title);
                 }
-
-                else // our comment *on* a suggestion, newspost, comment, etc.
+                else
                 {
-                    return "has replied to your comment on the " + commentTypeToString(CommentType) + ' ' + string.Format("[url={0}]{1}[/url]", Link, Title);
+                    // our comment *on* a suggestion, newspost, comment, etc.
+                    return "has replied to your comment on the " + this.commentTypeToString(this.CommentType) + ' '
+                           + string.Format("[url={0}]{1}[/url]", this.Link, this.Title);
                 }
             }
+
+            #endregion
+
+            #region Methods
+
+            private string commentTypeToString(CommentTypes argument)
+            {
+                if (argument == CommentTypes.bugreport)
+                {
+                    return "bug report";
+                }
+                else if (argument == CommentTypes.feature)
+                {
+                    return "feature suggestion";
+                }
+                else
+                {
+                    return argument.ToString();
+                }
+            }
+
+            #endregion
         }
 
+        /// <summary>
+        ///     The join leave event args.
+        /// </summary>
+        public class JoinLeaveEventArgs : CharacterUpdateEventArgs
+        {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets a value indicating whether joined.
+            /// </summary>
+            public bool Joined { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the target channel.
+            /// </summary>
+            public string TargetChannel { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the target channel id.
+            /// </summary>
+            public string TargetChannelID { get; set; }
+
+            #endregion
+
+            // used for other parts of the code to understand what channel
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
+            public override string ToString()
+            {
+                return "has " + (this.Joined ? "joined" : "left") + string.Format(" {0}.", this.TargetChannel);
+            }
+
+            #endregion
+        }
+
+        /// <summary>
+        ///     The list changed event args.
+        /// </summary>
         public class ListChangedEventArgs : CharacterUpdateEventArgs
         {
+            #region Enums
+
+            /// <summary>
+            ///     The list type.
+            /// </summary>
             public enum ListType
             {
-                friends,
-                bookmarks,
-                ignored,
-                interested,
+                /// <summary>
+                ///     The friends.
+                /// </summary>
+                friends, 
+
+                /// <summary>
+                ///     The bookmarks.
+                /// </summary>
+                bookmarks, 
+
+                /// <summary>
+                ///     The ignored.
+                /// </summary>
+                ignored, 
+
+                /// <summary>
+                ///     The interested.
+                /// </summary>
+                interested, 
+
+                /// <summary>
+                ///     The notinterested.
+                /// </summary>
                 notinterested
             }
 
+            #endregion
+
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets a value indicating whether is added.
+            /// </summary>
             public bool IsAdded { get; set; }
+
+            /// <summary>
+            ///     Gets or sets a value indicating whether is temporary.
+            /// </summary>
             public bool IsTemporary { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the list argument.
+            /// </summary>
             public ListType ListArgument { get; set; }
 
+            #endregion
+
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
             public override string ToString()
             {
-                var listKind = (ListArgument != ListType.notinterested ? ListArgument.ToString() : "not interested");
-                bool isTemp = (IsTemporary == null ? false : IsTemporary);
+                string listKind = this.ListArgument != ListType.notinterested
+                                      ? this.ListArgument.ToString()
+                                      : "not interested";
+                bool isTemp = this.IsTemporary == null ? false : this.IsTemporary;
 
-                return "has been " + (IsAdded ? "added to" : "removed from") + " your " + listKind + " list"
-                    + (IsTemporary ? " until this character logs out" : "") + '.';
+                return "has been " + (this.IsAdded ? "added to" : "removed from") + " your " + listKind + " list"
+                       + (this.IsTemporary ? " until this character logs out" : string.Empty) + '.';
             }
+
+            #endregion
         }
 
+        /// <summary>
+        ///     The login state changed event args.
+        /// </summary>
+        public class LoginStateChangedEventArgs : CharacterUpdateEventArgs
+        {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets a value indicating whether is log in.
+            /// </summary>
+            public bool IsLogIn { get; set; }
+
+            #endregion
+
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
+            public override string ToString()
+            {
+                return "has logged " + (this.IsLogIn ? "in." : "out.");
+            }
+
+            #endregion
+        }
+
+        /// <summary>
+        ///     The note event args.
+        /// </summary>
+        public class NoteEventArgs : CharacterUpdateEventArgs
+        {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets the link.
+            /// </summary>
+            public string Link
+            {
+                get
+                {
+                    return Constants.UrlConstants.READ_NOTE + this.NoteID;
+                }
+            }
+
+            /// <summary>
+            ///     Gets or sets the note id.
+            /// </summary>
+            public long NoteID { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the subject.
+            /// </summary>
+            public string Subject { get; set; }
+
+            #endregion
+
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
+            public override string ToString()
+            {
+                return string.Format(@"has sent you a note: [url={0}]{1}[/url]", this.Link, this.Subject);
+            }
+
+            #endregion
+        }
+
+        /// <summary>
+        ///     The promote demote event args.
+        /// </summary>
+        public class PromoteDemoteEventArgs : CharacterUpdateEventArgs
+        {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets a value indicating whether is promote.
+            /// </summary>
+            public bool IsPromote { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the target channel.
+            /// </summary>
+            public string TargetChannel { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the target channel id.
+            /// </summary>
+            public string TargetChannelID { get; set; }
+
+            #endregion
+
+            // used for other parts of the code to understand what channel
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
+            public override string ToString()
+            {
+                if (this.TargetChannel == null)
+                {
+                    return "has been " + (this.IsPromote ? "promoted to" : "demoted from") + " global moderator.";
+                }
+                else
+                {
+                    return "has been " + (this.IsPromote ? "promoted to" : "demoted from") + " channel moderator in "
+                           + this.TargetChannel + ".";
+                }
+            }
+
+            #endregion
+        }
+
+        /// <summary>
+        ///     The report filed event args.
+        /// </summary>
         public class ReportFiledEventArgs : CharacterUpdateEventArgs
         {
-            public string Reported { get; set; }
-            public string Tab { get; set; }
-            public string Complaint { get; set; }
-            public int? LogId { get; set; }
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets the call id.
+            /// </summary>
             public string CallId { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the complaint.
+            /// </summary>
+            public string Complaint { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the log id.
+            /// </summary>
+            public int? LogId { get; set; }
+
+            /// <summary>
+            ///     Gets the log link.
+            /// </summary>
             public string LogLink
             {
                 get
                 {
-                    return Constants.UrlConstants.READ_LOG + LogId.Value;
+                    return Constants.UrlConstants.READ_LOG + this.LogId.Value;
                 }
             }
 
+            /// <summary>
+            ///     Gets or sets the reported.
+            /// </summary>
+            public string Reported { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the tab.
+            /// </summary>
+            public string Tab { get; set; }
+
+            #endregion
+
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
             public override string ToString()
             {
                 string toReturn = null;
-                if (Reported == null && Tab == null)
+                if (this.Reported == null && this.Tab == null)
+                {
                     toReturn = "has requested staff assistance";
-                else if (Reported != Tab)
-                    toReturn = "has reported " + Reported + " in " + Tab;
+                }
+                else if (this.Reported != this.Tab)
+                {
+                    toReturn = "has reported " + this.Reported + " in " + this.Tab;
+                }
                 else
-                    toReturn = "has reported" + Reported;
+                {
+                    toReturn = "has reported" + this.Reported;
+                }
 
-                if (LogId != null)
-                    toReturn += string.Format(" [url={0}]view log[/url]", LogLink);
+                if (this.LogId != null)
+                {
+                    toReturn += string.Format(" [url={0}]view log[/url]", this.LogLink);
+                }
 
                 return toReturn;
             }
+
+            #endregion
         }
 
+        /// <summary>
+        ///     The report handled event args.
+        /// </summary>
         public class ReportHandledEventArgs : CharacterUpdateEventArgs
         {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets the handled.
+            /// </summary>
             public string Handled { get; set; }
 
+            #endregion
+
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
             public override string ToString()
             {
-                return "has handled a report filed by " + Handled;
+                return "has handled a report filed by " + this.Handled;
             }
+
+            #endregion
         }
+
+        /// <summary>
+        ///     The status changed event args.
+        /// </summary>
+        public class StatusChangedEventArgs : CharacterUpdateEventArgs
+        {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets a value indicating whether is status message changed.
+            /// </summary>
+            public bool IsStatusMessageChanged
+            {
+                get
+                {
+                    return this.NewStatusMessage != null;
+                }
+            }
+
+            /// <summary>
+            ///     Gets a value indicating whether is status type changed.
+            /// </summary>
+            public bool IsStatusTypeChanged
+            {
+                get
+                {
+                    return this.NewStatusType != StatusType.offline;
+                }
+            }
+
+            /// <summary>
+            ///     Gets or sets the new status message.
+            /// </summary>
+            public string NewStatusMessage { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the new status type.
+            /// </summary>
+            public StatusType NewStatusType { get; set; }
+
+            #endregion
+
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
+            public override string ToString()
+            {
+                var toReturn = new StringBuilder();
+
+                if (this.IsStatusTypeChanged)
+                {
+                    toReturn.Append("is now " + this.NewStatusType.ToString());
+                }
+
+                if (this.IsStatusMessageChanged)
+                {
+                    if (this.IsStatusTypeChanged && this.NewStatusMessage.Length > 0)
+                    {
+                        toReturn.Append(": " + this.NewStatusMessage);
+                    }
+                    else if (this.NewStatusMessage.Length > 0)
+                    {
+                        toReturn.Append("has updated their status: " + this.NewStatusMessage);
+                    }
+                    else if (toReturn.Length > 0)
+                    {
+                        toReturn.Append(" and has blanked their status");
+                    }
+                    else
+                    {
+                        toReturn.Append("has blanked their status");
+                    }
+                }
+
+                if (!char.IsPunctuation(toReturn.ToString().Trim().Last()))
+                {
+                    toReturn.Append('.'); // if the last non-whitespace character is not punctuation, add a period
+                }
+
+                return toReturn.ToString();
+            }
+
+            #endregion
+        }
+    }
+
+    /// <summary>
+    ///     Used to represent an update about a channel
+    /// </summary>
+    public class ChannelUpdateModel : NotificationModel
+    {
+        #region Fields
+
+        private ChannelUpdateEventArgs _args;
+
+        private string _channelID;
+
+        private string _channelTitle;
+
         #endregion
 
-        #region Class Implentation
-        private ICharacter _target;
-        private CharacterUpdateEventArgs _args;
+        #region Constructors and Destructors
 
-        public CharacterUpdateModel(ICharacter target, CharacterUpdateEventArgs e)
-            : base()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChannelUpdateModel"/> class.
+        /// </summary>
+        /// <param name="channelID">
+        /// The channel id.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        /// <param name="channelTitle">
+        /// The channel title.
+        /// </param>
+        public ChannelUpdateModel(string channelID, ChannelUpdateEventArgs e, string channelTitle = null)
         {
-            _target = target;
-            _args = e;
+            this._channelID = channelID;
+            this._args = e;
+
+            if (channelTitle == null)
+            {
+                this._channelTitle = this._channelID;
+            }
+            else
+            {
+                this._channelTitle = channelTitle;
+            }
         }
 
-        public ICharacter TargetCharacter { get { return _target; } }
-        public CharacterUpdateEventArgs Arguments { get { return _args; } }
+        #endregion
 
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets the arguments.
+        /// </summary>
+        public ChannelUpdateEventArgs Arguments
+        {
+            get
+            {
+                return this._args;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the channel id.
+        /// </summary>
+        public string ChannelID
+        {
+            get
+            {
+                return this._channelID;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the channel title.
+        /// </summary>
+        public string ChannelTitle
+        {
+            get
+            {
+                return this._channelTitle;
+            }
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     The to string.
+        /// </summary>
+        /// <returns>
+        ///     The <see cref="string" />.
+        /// </returns>
         public override string ToString()
         {
-            return TargetCharacter.Name + " " + Arguments.ToString();
+            return this.ChannelTitle + " " + this.Arguments;
         }
+
+        #endregion
+
+        #region Methods
 
         internal override void Dispose(bool IsManaged)
         {
             if (IsManaged)
             {
-                _target = null;
-                _args = null;
+                this._channelID = null;
+                this._channelTitle = null;
+                this._args = null;
             }
         }
+
         #endregion
-    }
 
-    /// <summary>
-    /// Used to represent an update about a channel
-    /// </summary>
-    public class ChannelUpdateModel : NotificationModel
-    {
         /// <summary>
-        /// Represents arguments which have a channel as their direct object
+        ///     The channel description changed event args.
         /// </summary>
-        public abstract class ChannelUpdateEventArgs : EventArgs
-        { }
-
-        #region Channel Update Event Args sub classes
         public class ChannelDescriptionChangedEventArgs : ChannelUpdateEventArgs
         {
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
             public override string ToString()
             {
                 return "has a new description.";
             }
+
+            #endregion
         }
 
-        public class ChannelModeUpdateEventArgs : ChannelUpdateEventArgs
-        {
-            public ChannelMode NewMode { get; set; }
-
-            public override string ToString()
-            {
-                if (NewMode != ChannelMode.both)
-                    return "now only allows " + NewMode.ToString() + '.';
-                return "now allows ads and chatting.";
-            }
-        }
-
+        /// <summary>
+        ///     The channel discipline event args.
+        /// </summary>
         public class ChannelDisciplineEventArgs : ChannelUpdateEventArgs
         {
-            public string Kicked { get; set; }
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets a value indicating whether is ban.
+            /// </summary>
             public bool IsBan { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the kicked.
+            /// </summary>
+            public string Kicked { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the kicker.
+            /// </summary>
             public string Kicker { get; set; }
 
+            #endregion
+
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
             public override string ToString()
             {
-                return ": " + Kicker + " has " + (IsBan ? "banned " : "kicked ") + Kicked + '.';
+                return ": " + this.Kicker + " has " + (this.IsBan ? "banned " : "kicked ") + this.Kicked + '.';
             }
+
+            #endregion
         }
 
+        /// <summary>
+        ///     The channel invite event args.
+        /// </summary>
         public class ChannelInviteEventArgs : ChannelUpdateEventArgs
         {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets the inviter.
+            /// </summary>
             public string Inviter { get; set; }
 
+            #endregion
+
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
             public override string ToString()
             {
-                return (": " + Inviter + " has invited you to join their room.");
+                return ": " + this.Inviter + " has invited you to join their room.";
             }
+
+            #endregion
         }
 
-        public class ChannelTypeChangedEventArgs : ChannelUpdateEventArgs
+        /// <summary>
+        ///     The channel mode update event args.
+        /// </summary>
+        public class ChannelModeUpdateEventArgs : ChannelUpdateEventArgs
         {
-            public bool IsOpen { get; set; }
+            #region Public Properties
 
+            /// <summary>
+            ///     Gets or sets the new mode.
+            /// </summary>
+            public ChannelMode NewMode { get; set; }
+
+            #endregion
+
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
             public override string ToString()
             {
-                return ": is now " + (IsOpen ? "open" : "closed") + '.';
+                if (this.NewMode != ChannelMode.both)
+                {
+                    return "now only allows " + this.NewMode.ToString() + '.';
+                }
+
+                return "now allows ads and chatting.";
             }
+
+            #endregion
         }
 
+        /// <summary>
+        ///     The channel type banned list event args.
+        /// </summary>
         public class ChannelTypeBannedListEventArgs : ChannelUpdateEventArgs
         {
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
             public override string ToString()
             {
                 return "'s ban list has been updated";
             }
-        }
-        #endregion
 
-        #region Class Implementation
-        private string _channelID;
-        private string _channelTitle;
-        private ChannelUpdateEventArgs _args;
-
-        public ChannelUpdateModel(string channelID, ChannelUpdateEventArgs e, string channelTitle = null)
-            : base()
-        {
-            _channelID = channelID;
-            _args = e;
-
-            if (channelTitle == null)
-                _channelTitle = _channelID;
-            else
-                _channelTitle = channelTitle;
+            #endregion
         }
 
-        public string ChannelID { get { return _channelID; } }
-        public string ChannelTitle { get { return _channelTitle; } }
-        public ChannelUpdateEventArgs Arguments { get { return _args; } }
-
-        public override string ToString()
+        /// <summary>
+        ///     The channel type changed event args.
+        /// </summary>
+        public class ChannelTypeChangedEventArgs : ChannelUpdateEventArgs
         {
-            return ChannelTitle + " " + Arguments.ToString();
-        }
+            #region Public Properties
 
-        internal override void Dispose(bool IsManaged)
-        {
-            if (IsManaged)
+            /// <summary>
+            ///     Gets or sets a value indicating whether is open.
+            /// </summary>
+            public bool IsOpen { get; set; }
+
+            #endregion
+
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
+            public override string ToString()
             {
-                _channelID = null;
-                _channelTitle = null;
-                _args = null;
+                return ": is now " + (this.IsOpen ? "open" : "closed") + '.';
             }
+
+            #endregion
         }
-        #endregion
+
+        /// <summary>
+        ///     Represents arguments which have a channel as their direct object
+        /// </summary>
+        public abstract class ChannelUpdateEventArgs : EventArgs
+        {
+        }
     }
 }

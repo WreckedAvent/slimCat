@@ -1,110 +1,153 @@
-﻿/*
-Copyright (c) 2013, Justin Kadrovach
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-using System;
-using System.Collections.Generic;
-using System.Windows.Controls;
-using System.Windows.Input;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ChannelTextBoxEntryView.xaml.cs" company="Justin Kadrovach">
+//   Copyright (c) 2013, Justin Kadrovach
+//   All rights reserved.
+//   
+//   Redistribution and use in source and binary forms, with or without
+//   modification, are permitted provided that the following conditions are met:
+//       * Redistributions of source code must retain the above copyright
+//         notice, this list of conditions and the following disclaimer.
+//       * Redistributions in binary form must reproduce the above copyright
+//         notice, this list of conditions and the following disclaimer in the
+//         documentation and/or other materials provided with the distribution.
+//   
+//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
+//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// </copyright>
+// <summary>
+//   Interaction logic for ChannelTextBoxEntryView.xaml
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Views
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+
     /// <summary>
-    /// Interaction logic for ChannelTextBoxEntryView.xaml
+    ///     Interaction logic for ChannelTextBoxEntryView.xaml
     /// </summary>
     public partial class ChannelTextBoxEntryView : UserControl
     {
-        private static IDictionary<Key, Tuple<string, bool>> _acceptedKeys = new Dictionary<Key, Tuple<string, bool>>()
-        {
-            // accepted shorcut keys.
-            // format: 
-            // target key, matching bbtag, if the bbtag takes arguments
-            {Key.B, new Tuple<string, bool>("b", false)},
-            {Key.S, new Tuple<string, bool>("s", false)},
-            {Key.I, new Tuple<string, bool>("i", false)},
-            {Key.U, new Tuple<string, bool>("u", false)},
-            {Key.L, new Tuple<string, bool>("url", true)},
-            {Key.Up, new Tuple<string, bool>("sup", false)},
-            {Key.Down, new Tuple<string, bool>("sub", false)}
-        };
+        #region Static Fields
+
+        private static readonly IDictionary<Key, Tuple<string, bool>> _acceptedKeys =
+            new Dictionary<Key, Tuple<string, bool>>
+                {
+                    // accepted shorcut keys.
+                    { Key.B, new Tuple<string, bool>("b", false) }, 
+                    { Key.S, new Tuple<string, bool>("s", false) }, 
+                    { Key.I, new Tuple<string, bool>("i", false) }, 
+                    { Key.U, new Tuple<string, bool>("u", false) }, 
+                    { Key.L, new Tuple<string, bool>("url", true) }, 
+                    { Key.Up, new Tuple<string, bool>("sup", false) }, 
+                    { Key.Down, new Tuple<string, bool>("sub", false) }
+                    
+                    // format: 
+                    
+                    
+                    // target key, matching bbtag, if the bbtag takes arguments
+                };
+
+        #endregion
+
+        #region Constructors and Destructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ChannelTextBoxEntryView" /> class.
+        /// </summary>
         public ChannelTextBoxEntryView()
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
-            Entry.FocusableChanged += (s, e) =>
+            this.Entry.FocusableChanged += (s, e) =>
                 {
-                    if ((bool)e.NewValue == true)
-                        Entry.Focus();
+                    if ((bool)e.NewValue)
+                    {
+                        this.Entry.Focus();
+                    }
                 };
         }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// The on key up.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
         public void OnKeyUp(object sender, KeyEventArgs e)
         {
             // this defines shortcuts when the textbox has focus --- in particular, ones which modify the content of the textbox
-            #region Text-only (non-command) shortcuts
             if (e.Key == Key.Return && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
-                var caretIndex = Entry.CaretIndex;
-                Entry.Text = Entry.Text.Insert(caretIndex, "\r");
-                Entry.CaretIndex = caretIndex + 1;
+                int caretIndex = this.Entry.CaretIndex;
+                this.Entry.Text = this.Entry.Text.Insert(caretIndex, "\r");
+                this.Entry.CaretIndex = caretIndex + 1;
             }
             else if (e.Key == Key.Return)
+            {
                 e.Handled = true; // don't do the funny business with inserting a new line
-            #endregion
+            }
+                
 
-            #region BBCode shortcuts
+                #region BBCode shortcuts
             else if (_acceptedKeys.ContainsKey(e.Key) && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
                 e.Handled = true;
 
-                var tupleData = _acceptedKeys[e.Key];
+                Tuple<string, bool> tupleData = _acceptedKeys[e.Key];
 
-                var bbtag = tupleData.Item1;
-                var useArgs = tupleData.Item2;
+                string bbtag = tupleData.Item1;
+                bool useArgs = tupleData.Item2;
 
-                if (!String.IsNullOrWhiteSpace(Entry.SelectedText))
+                if (!string.IsNullOrWhiteSpace(this.Entry.SelectedText))
                 {
-                    var selected = Entry.SelectedText;
+                    string selected = this.Entry.SelectedText;
 
                     if (!useArgs)
-                        Entry.SelectedText = String.Format("[{0}]{1}[/{0}]", bbtag, selected);
+                    {
+                        this.Entry.SelectedText = string.Format("[{0}]{1}[/{0}]", bbtag, selected);
+                    }
                     else
                     {
-                        var toEnter = string.Format("[{0}={1}]", bbtag, selected);
-                        var caretIndex = Entry.CaretIndex;
+                        string toEnter = string.Format("[{0}={1}]", bbtag, selected);
+                        int caretIndex = this.Entry.CaretIndex;
 
-                        Entry.SelectedText = string.Format("{0}[/{1}]", toEnter, bbtag);
-                        Entry.CaretIndex = caretIndex + toEnter.Length;
+                        this.Entry.SelectedText = string.Format("{0}[/{1}]", toEnter, bbtag);
+                        this.Entry.CaretIndex = caretIndex + toEnter.Length;
                     }
                 }
-
                 else
                 {
-                    var caretIndex = Entry.CaretIndex;
+                    int caretIndex = this.Entry.CaretIndex;
 
-                    Entry.Text = Entry.Text.Insert(caretIndex, String.Format("[{0}][/{0}]", bbtag));
-                    Entry.CaretIndex = caretIndex + bbtag.Length + 2; // 2 is a magic number representing the brackets around the BBCode
+                    this.Entry.Text = this.Entry.Text.Insert(caretIndex, string.Format("[{0}][/{0}]", bbtag));
+                    this.Entry.CaretIndex = caretIndex + bbtag.Length + 2;
+
+                    // 2 is a magic number representing the brackets around the BBCode
                 }
             }
+
             #endregion
         }
+
+        #endregion
     }
 }

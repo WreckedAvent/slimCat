@@ -1,110 +1,191 @@
-﻿/*
-Copyright (c) 2013, Justin Kadrovach
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-using System;
-using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using ViewModels;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="GeneralChannelView.xaml.cs" company="Justin Kadrovach">
+//   Copyright (c) 2013, Justin Kadrovach
+//   All rights reserved.
+//   
+//   Redistribution and use in source and binary forms, with or without
+//   modification, are permitted provided that the following conditions are met:
+//       * Redistributions of source code must retain the above copyright
+//         notice, this list of conditions and the following disclaimer.
+//       * Redistributions in binary form must reproduce the above copyright
+//         notice, this list of conditions and the following disclaimer in the
+//         documentation and/or other materials provided with the distribution.
+//   
+//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
+//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// </copyright>
+// <summary>
+//   Interaction logic for GeneralChannelView.xaml
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Views
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.Linq;
+    using System.Windows.Controls;
+    using System.Windows.Documents;
+    using System.Windows.Threading;
+
+    using Models;
+
+    using ViewModels;
+
     /// <summary>
-    /// Interaction logic for GeneralChannelView.xaml
+    ///     Interaction logic for GeneralChannelView.xaml
     /// </summary>
     public partial class GeneralChannelView : DisposableView
     {
         #region Fields
+
+        private bool _historyLoaded = false;
+
+        private bool _historyInitialized = false;
+
         private GeneralChannelViewModel _vm;
-        private SnapToBottomManager _manager;
+
+        private KeepToCurrentScrollViewer _scroll;
+
         #endregion
 
-        #region Constructors
+        #region Constructors and Destructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GeneralChannelView"/> class.
+        /// </summary>
+        /// <param name="vm">
+        /// The vm.
+        /// </param>
         public GeneralChannelView(GeneralChannelViewModel vm)
         {
             try
             {
-                InitializeComponent();
-                _vm = vm.ThrowIfNull("vm");
+                this.InitializeComponent();
+                this._vm = vm.ThrowIfNull("vm");
 
-                this.DataContext = _vm;
-
-                _manager = new SnapToBottomManager(messages);
-
-                _vm.NewAdArrived += OnNewAdArrived;
-                _vm.NewMessageArrived += OnNewMessageArrived;
-                _vm.PropertyChanged += OnNewPropertyChanged;
+                this.DataContext = this._vm;
+                this._vm.CurrentMessages.CollectionChanged += this.OnDisplayChanged;
             }
-
             catch (Exception ex)
             {
-                ex.Source = "PMChannel View, init";
+                ex.Source = "General Channel View, init";
                 Exceptions.HandleException(ex);
             }
         }
+
         #endregion
 
         #region Methods
-        private void OnMessagesLoaded(object sender, EventArgs e)
-        {
-            _manager.AutoDownScroll(false, true);
-        }
-
-        private void OnNewAdArrived(object sender, EventArgs e)
-        {
-            bool keepAtCurrent = _vm.Model.Messages.Count >= Models.ApplicationSettings.BackLogMax;
-
-            _manager.AutoDownScroll(keepAtCurrent);
-        }
-
-        private void OnNewMessageArrived(object sender, EventArgs e)
-        {
-            bool keepAtCurrent = _vm.Model.Messages.Count >= Models.ApplicationSettings.BackLogMax;
-
-            _manager.AutoDownScroll(keepAtCurrent);
-        }
-
-        private void OnNewPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName.Equals("IsSearching"))
-                _manager.AutoDownScroll(true, true);
-        }
-        #endregion
 
         internal override void Dispose(bool isManaged)
         {
-            if (isManaged)
+            if (!isManaged)
             {
-                _vm.NewAdArrived -= OnNewAdArrived;
-                _vm.NewMessageArrived -= OnNewMessageArrived;
-                _vm.PropertyChanged -= OnNewPropertyChanged;
-                _vm = null;
-                _manager = null;
-                history.ItemsSource = null;
-                current.ItemsSource = null;
-                this.DataContext = null;
+                return;
+            }
+
+            this._vm.CurrentMessages.CollectionChanged -= this.OnDisplayChanged;
+            this._vm = null;
+            this.DataContext = null;
+            this._scroll = null;
+        }
+
+        private void OnDisplayChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    {
+                        var items = e.NewItems.Cast<IMessage>();
+                        foreach (var template in items.Select(item => new MessageView { DataContext = item }))
+                        {
+                            this.Messages.Blocks.Add(template);
+                        }
+                    }
+
+                    break;
+
+                case NotifyCollectionChangedAction.Reset:
+                    this.Messages.Blocks.Clear();
+                    break;
+
+                case NotifyCollectionChangedAction.Remove:
+                    {
+                        this._scroll.Stick();
+                        if (this._historyLoaded)
+                        {
+                            for (var i = 0; i < this._vm.Model.History.Count; i++)
+                            {
+                                this.Messages.Blocks.Remove(this.Messages.Blocks.FirstBlock);
+                            }
+
+                            this._historyLoaded = false;
+                        }
+
+
+                        this.Messages.Blocks.Remove(this.Messages.Blocks.FirstBlock);
+                        this.PopupAnchor.UpdateLayout();
+                        this._scroll.ScrollToStick();
+                    }
+
+                    break;
             }
         }
+
+        private void OnLoad(object s, EventArgs e)
+        {
+            var loadedCount = 0;
+            this._scroll = new KeepToCurrentScrollViewer(PopupAnchor);
+
+            foreach (var template in this._vm.CurrentMessages.Reverse().Select(item => new MessageView { DataContext = item }))
+            {
+                this.AddAsync(template, ref loadedCount);
+            }
+
+            if (this._historyInitialized)
+            {
+                return;
+            }
+
+            foreach (var template in this._vm.Model.History.Reverse().Select(item => new HistoryView { DataContext = item }))
+            {
+                this.AddAsync(template, ref loadedCount);
+            }
+
+            this._historyLoaded = true;
+            this._historyInitialized = true;
+        }
+
+        private void AddAsync(Block item, ref int count)
+        {
+            count++;
+
+            var priority = count < 25 ? DispatcherPriority.Normal : DispatcherPriority.DataBind;
+            Dispatcher.BeginInvoke(
+                priority,
+                (Action)(() =>
+                    {
+                        var last = this.Messages.Blocks.LastBlock;
+                        if (last != null)
+                        {
+                            this.Messages.Blocks.InsertBefore(this.Messages.Blocks.FirstBlock, item);
+                        }
+                        else
+                        {
+                            this.Messages.Blocks.Add(item);
+                        }
+                }));
+        }
+        #endregion
     }
 }

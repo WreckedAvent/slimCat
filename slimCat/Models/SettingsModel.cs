@@ -1,395 +1,609 @@
-﻿/*
-Copyright (c) 2013, Justin Kadrovach
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Input;
-using lib;
-using slimCat.Properties;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="SettingsModel.cs" company="Justin Kadrovach">
+//   Copyright (c) 2013, Justin Kadrovach
+//   All rights reserved.
+//   
+//   Redistribution and use in source and binary forms, with or without
+//   modification, are permitted provided that the following conditions are met:
+//       * Redistributions of source code must retain the above copyright
+//         notice, this list of conditions and the following disclaimer.
+//       * Redistributions in binary form must reproduce the above copyright
+//         notice, this list of conditions and the following disclaimer in the
+//         documentation and/or other materials provided with the distribution.
+//   
+//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
+//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// </copyright>
+// <summary>
+//   Gender Settings Model provides basic settings for a gender filter
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace Models
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Windows.Input;
+
+    using lib;
+
     /// <summary>
-    /// Gender Settings Model provides basic settings for a gender filter
+    ///     Gender Settings Model provides basic settings for a gender filter
     /// </summary>
     public class GenderSettingsModel
     {
-        #region Events
+        #region Fields
+
+        private readonly IDictionary<Gender, bool> _genderFilter = new Dictionary<Gender, bool>
+                                                                       {
+                                                                           { Gender.Male, true }, 
+                                                                           {
+                                                                               Gender.Female, true
+                                                                           }, 
+                                                                           {
+                                                                               Gender.Herm_F, true
+                                                                           }, 
+                                                                           {
+                                                                               Gender.Herm_M, true
+                                                                           }, 
+                                                                           {
+                                                                               Gender.Cuntboy, true
+                                                                           }, 
+                                                                           {
+                                                                               Gender.Shemale, true
+                                                                           }, 
+                                                                           { Gender.None, true }, 
+                                                                           {
+                                                                               Gender.Transgender, 
+                                                                               true
+                                                                           }, 
+                                                                       };
+
+        #endregion
+
+        #region Public Events
+
         /// <summary>
-        /// Called whenever the UI updates one of the genders
+        ///     Called whenever the UI updates one of the genders
         /// </summary>
         public event EventHandler Updated;
+
         #endregion
 
-        #region Fields
-        private IDictionary<Gender, bool> _genderFilter = new Dictionary<Gender, bool>
-        { 
-            { Gender.Male, true }, { Gender.Female, true }, { Gender.Herm_F, true },
-            { Gender.Herm_M, true }, { Gender.Cuntboy, true }, { Gender.Shemale, true },
-            { Gender.None, true }, { Gender.Transgender, true },
-        };
-        #endregion
+        #region Public Properties
 
-        #region Properties
-        public IDictionary<Gender, bool> GenderFilter { get { return _genderFilter; } }
-
+        /// <summary>
+        ///     Gets the filtered genders.
+        /// </summary>
         public IEnumerable<Gender> FilteredGenders
         {
             get
             {
-               return GenderFilter.Where(x => x.Value == false).Select(x => x.Key);
+                return this.GenderFilter.Where(x => x.Value == false).Select(x => x.Key);
             }
         }
 
-        #region Gender Accessors for UI
-        public bool ShowMales
+        /// <summary>
+        ///     Gets the gender filter.
+        /// </summary>
+        public IDictionary<Gender, bool> GenderFilter
         {
-            get { return _genderFilter[Gender.Male]; }
-
-            set
+            get
             {
-                if (_genderFilter[Gender.Male] != value)
-                {
-                    _genderFilter[Gender.Male] = value;
-                    CallUpdate();
-                }
+                return this._genderFilter;
             }
         }
 
-        public bool ShowFemales
-        {
-            get { return _genderFilter[Gender.Female]; }
-
-            set
-            {
-                if (_genderFilter[Gender.Female] != value)
-                {
-                    _genderFilter[Gender.Female] = value;
-                    CallUpdate();
-                }
-            }
-        }
-
-        public bool ShowMaleHerms
-        {
-            get { return _genderFilter[Gender.Herm_M]; }
-
-            set
-            {
-                if (_genderFilter[Gender.Herm_M] != value)
-                {
-                    _genderFilter[Gender.Herm_M] = value;
-                    CallUpdate();
-                }
-            }
-        }
-
-        public bool ShowFemaleHerms
-        {
-            get { return _genderFilter[Gender.Herm_F]; }
-
-            set
-            {
-                if (_genderFilter[Gender.Herm_F] != value)
-                {
-                    _genderFilter[Gender.Herm_F] = value;
-                    CallUpdate();
-                }
-            }
-        }
-
+        /// <summary>
+        ///     Gets or sets a value indicating whether show cuntboys.
+        /// </summary>
         public bool ShowCuntboys
         {
-            get { return _genderFilter[Gender.Cuntboy]; }
+            get
+            {
+                return this._genderFilter[Gender.Cuntboy];
+            }
 
             set
             {
-                if (_genderFilter[Gender.Cuntboy] != value)
+                if (this._genderFilter[Gender.Cuntboy] != value)
                 {
-                    _genderFilter[Gender.Cuntboy] = value;
-                    CallUpdate();
+                    this._genderFilter[Gender.Cuntboy] = value;
+                    this.CallUpdate();
                 }
             }
         }
 
+        /// <summary>
+        ///     Gets or sets a value indicating whether show female herms.
+        /// </summary>
+        public bool ShowFemaleHerms
+        {
+            get
+            {
+                return this._genderFilter[Gender.Herm_F];
+            }
+
+            set
+            {
+                if (this._genderFilter[Gender.Herm_F] != value)
+                {
+                    this._genderFilter[Gender.Herm_F] = value;
+                    this.CallUpdate();
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether show females.
+        /// </summary>
+        public bool ShowFemales
+        {
+            get
+            {
+                return this._genderFilter[Gender.Female];
+            }
+
+            set
+            {
+                if (this._genderFilter[Gender.Female] != value)
+                {
+                    this._genderFilter[Gender.Female] = value;
+                    this.CallUpdate();
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether show male herms.
+        /// </summary>
+        public bool ShowMaleHerms
+        {
+            get
+            {
+                return this._genderFilter[Gender.Herm_M];
+            }
+
+            set
+            {
+                if (this._genderFilter[Gender.Herm_M] != value)
+                {
+                    this._genderFilter[Gender.Herm_M] = value;
+                    this.CallUpdate();
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether show males.
+        /// </summary>
+        public bool ShowMales
+        {
+            get
+            {
+                return this._genderFilter[Gender.Male];
+            }
+
+            set
+            {
+                if (this._genderFilter[Gender.Male] != value)
+                {
+                    this._genderFilter[Gender.Male] = value;
+                    this.CallUpdate();
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether show no genders.
+        /// </summary>
         public bool ShowNoGenders
         {
-            get { return _genderFilter[Gender.None]; }
+            get
+            {
+                return this._genderFilter[Gender.None];
+            }
 
             set
             {
-                if (_genderFilter[Gender.None] != value)
+                if (this._genderFilter[Gender.None] != value)
                 {
-                    _genderFilter[Gender.None] = value;
-                    CallUpdate();
+                    this._genderFilter[Gender.None] = value;
+                    this.CallUpdate();
                 }
             }
         }
 
+        /// <summary>
+        ///     Gets or sets a value indicating whether show shemales.
+        /// </summary>
         public bool ShowShemales
         {
-            get { return _genderFilter[Gender.Shemale]; }
+            get
+            {
+                return this._genderFilter[Gender.Shemale];
+            }
 
             set
             {
-                if (_genderFilter[Gender.Shemale] != value)
+                if (this._genderFilter[Gender.Shemale] != value)
                 {
-                    _genderFilter[Gender.Shemale] = value;
-                    CallUpdate();
+                    this._genderFilter[Gender.Shemale] = value;
+                    this.CallUpdate();
                 }
             }
         }
 
+        /// <summary>
+        ///     Gets or sets a value indicating whether show transgenders.
+        /// </summary>
         public bool ShowTransgenders
         {
-            get { return _genderFilter[Gender.Transgender]; }
+            get
+            {
+                return this._genderFilter[Gender.Transgender];
+            }
 
             set
             {
-                if (_genderFilter[Gender.Transgender] != value)
+                if (this._genderFilter[Gender.Transgender] != value)
                 {
-                    _genderFilter[Gender.Transgender] = value;
-                    Updated(this, new EventArgs());
+                    this._genderFilter[Gender.Transgender] = value;
+                    this.Updated(this, new EventArgs());
                 }
             }
         }
+
         #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// The meets gender filter.
+        /// </summary>
+        /// <param name="character">
+        /// The character.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
+        public bool MeetsGenderFilter(ICharacter character)
+        {
+            return this._genderFilter[character.Gender];
+        }
+
         #endregion
+
+        #region Methods
 
         private void CallUpdate()
         {
-            if (Updated != null)
-                Updated(this, new EventArgs());
+            if (this.Updated != null)
+            {
+                this.Updated(this, new EventArgs());
+            }
         }
 
-        public bool MeetsGenderFilter(ICharacter character)
-        {
-            return _genderFilter[character.Gender];
-        }
+        #endregion
     }
 
     /// <summary>
-    /// Search settings to be used with a search text box tool cahin
+    ///     Search settings to be used with a search text box tool cahin
     /// </summary>
     public class GenericSearchSettingsModel
     {
-        #region Events
+        // dev note: I haven't really found a better way to do a lot of properties like this. UI can't access dictionaries.
+        #region Fields
+
+        private RelayCommand _expandSearch;
+
+        private bool _isChangingSettings;
+
+        private string _search = string.Empty;
+
+        private bool _showBookmarks = true;
+
+        private bool _showBusyAway = true;
+
+        private bool _showDND = true;
+
+        private bool _showFriends = true;
+
+        private bool _showIgnored;
+
+        private bool _showLooking = true;
+
+        private bool _showMods = true;
+
+        private bool _showNormal = true;
+
+        private bool _showNotInterested;
+
+        #endregion
+
+        #region Public Events
+
         /// <summary>
-        /// Called when our search settings are updated
+        ///     Called when our search settings are updated
         /// </summary>
         public event EventHandler Updated;
+
         #endregion
 
-        // dev note: I haven't really found a better way to do a lot of properties like this. UI can't access dictionaries.
+        #region Public Properties
 
-        #region Fields
-        private bool _isChangingSettings = false;
-        private string _search = "";
-        private bool _showFriends = true;
-        private bool _showBookmarks = true;
-        private bool _showMods = true;
-        private bool _showLooking = true;
-        private bool _showNormal = true;
-        private bool _showBusyAway = true;
-        private bool _showDND = true;
-        private bool _showIgnored = false;
-        private bool _showNotInterested = false;
-        #endregion
-
-        #region Properties
-        public string SearchString
-        {
-            get { return (_search == null ? _search: _search.ToLower()); }
-            set
-            {
-                if (_search != value)
-                {
-                    _search = value;
-                    CallUpdate();
-                }
-            }
-        }
-
-        #region Accessors for the UI
-        public bool ShowFriends
-        {
-            get { return _showFriends; }
-
-            set
-            {
-                if (_showFriends != value)
-                {
-                    _showFriends = value;
-                    CallUpdate();
-                }
-            }
-        }
-
-        public bool ShowBookmarks
-        {
-            get { return _showBookmarks; }
-
-            set
-            {
-                if (_showBookmarks != value)
-                {
-                    _showBookmarks = value;
-                    CallUpdate();
-                }
-            }
-        }
-
-        public bool ShowMods
-        {
-            get { return _showMods; }
-
-            set
-            {
-                if (_showMods != value)
-                {
-                    _showMods = value;
-                    CallUpdate();
-                }
-            }
-        }
-
-        public bool ShowLooking
-        {
-            get { return _showLooking; }
-            set
-            {
-                if (_showLooking != value)
-                {
-                    _showLooking = value;
-                    CallUpdate();
-                }
-            }
-        }
-
-        public bool ShowNormal
-        {
-            get { return _showNormal; }
-
-            set
-            {
-                if (_showNormal != value)
-                {
-                    _showNormal = value;
-                    CallUpdate();
-                }
-            }
-        }
-
-        public bool ShowBusyAway
-        {
-            get { return _showBusyAway; }
-
-            set
-            {
-                if (_showBusyAway != value)
-                {
-                    _showBusyAway = value;
-                    CallUpdate();
-                }
-            }
-        }
-
-        public bool ShowIgnored
-        {
-            get { return _showIgnored; }
-            set
-            {
-                if (_showIgnored != value)
-                {
-                    _showIgnored = value;
-                    CallUpdate();
-                }
-            }
-        }
-
-        public bool ShowNotInterested
-        {
-            get { return _showNotInterested; }
-            set
-            {
-                if (_showNotInterested != value)
-                {
-                    _showNotInterested = value;
-                    CallUpdate();
-                }
-            }
-        }
-
-        public bool ShowDND
-        {
-            get { return _showDND; }
-            set
-            {
-                if (_showDND != value)
-                {
-                    _showDND = value;
-                    CallUpdate();
-                }
-            }
-        }
-        #endregion
-
+        /// <summary>
+        ///     Gets or sets a value indicating whether is changing settings.
+        /// </summary>
         public bool IsChangingSettings
         {
-            get { return _isChangingSettings; }
+            get
+            {
+                return this._isChangingSettings;
+            }
+
             set
             {
-                if (_isChangingSettings != value)
+                if (this._isChangingSettings != value)
                 {
-                    _isChangingSettings = value;
-                    CallUpdate();
+                    this._isChangingSettings = value;
+                    this.CallUpdate();
                 }
             }
         }
-        #endregion
 
-        #region Commands
-        RelayCommand _expandSearch;
+        /// <summary>
+        ///     Gets the open search settings command.
+        /// </summary>
         public ICommand OpenSearchSettingsCommand
         {
             get
             {
-                if (_expandSearch == null)
-                    _expandSearch = new RelayCommand(param => IsChangingSettings = !IsChangingSettings);
+                if (this._expandSearch == null)
+                {
+                    this._expandSearch = new RelayCommand(param => this.IsChangingSettings = !this.IsChangingSettings);
+                }
 
-                return _expandSearch;
+                return this._expandSearch;
             }
         }
-        #endregion
 
-        private void CallUpdate()
+        /// <summary>
+        ///     Gets or sets the search string.
+        /// </summary>
+        public string SearchString
         {
-            if (Updated != null)
-                Updated(this, new EventArgs());
+            get
+            {
+                return this._search == null ? this._search : this._search.ToLower();
+            }
+
+            set
+            {
+                if (this._search != value)
+                {
+                    this._search = value;
+                    this.CallUpdate();
+                }
+            }
         }
 
+        /// <summary>
+        ///     Gets or sets a value indicating whether show bookmarks.
+        /// </summary>
+        public bool ShowBookmarks
+        {
+            get
+            {
+                return this._showBookmarks;
+            }
+
+            set
+            {
+                if (this._showBookmarks != value)
+                {
+                    this._showBookmarks = value;
+                    this.CallUpdate();
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether show busy away.
+        /// </summary>
+        public bool ShowBusyAway
+        {
+            get
+            {
+                return this._showBusyAway;
+            }
+
+            set
+            {
+                if (this._showBusyAway != value)
+                {
+                    this._showBusyAway = value;
+                    this.CallUpdate();
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether show dnd.
+        /// </summary>
+        public bool ShowDND
+        {
+            get
+            {
+                return this._showDND;
+            }
+
+            set
+            {
+                if (this._showDND != value)
+                {
+                    this._showDND = value;
+                    this.CallUpdate();
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether show friends.
+        /// </summary>
+        public bool ShowFriends
+        {
+            get
+            {
+                return this._showFriends;
+            }
+
+            set
+            {
+                if (this._showFriends != value)
+                {
+                    this._showFriends = value;
+                    this.CallUpdate();
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether show ignored.
+        /// </summary>
+        public bool ShowIgnored
+        {
+            get
+            {
+                return this._showIgnored;
+            }
+
+            set
+            {
+                if (this._showIgnored != value)
+                {
+                    this._showIgnored = value;
+                    this.CallUpdate();
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether show looking.
+        /// </summary>
+        public bool ShowLooking
+        {
+            get
+            {
+                return this._showLooking;
+            }
+
+            set
+            {
+                if (this._showLooking != value)
+                {
+                    this._showLooking = value;
+                    this.CallUpdate();
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether show mods.
+        /// </summary>
+        public bool ShowMods
+        {
+            get
+            {
+                return this._showMods;
+            }
+
+            set
+            {
+                if (this._showMods != value)
+                {
+                    this._showMods = value;
+                    this.CallUpdate();
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether show normal.
+        /// </summary>
+        public bool ShowNormal
+        {
+            get
+            {
+                return this._showNormal;
+            }
+
+            set
+            {
+                if (this._showNormal != value)
+                {
+                    this._showNormal = value;
+                    this.CallUpdate();
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether show not interested.
+        /// </summary>
+        public bool ShowNotInterested
+        {
+            get
+            {
+                return this._showNotInterested;
+            }
+
+            set
+            {
+                if (this._showNotInterested != value)
+                {
+                    this._showNotInterested = value;
+                    this.CallUpdate();
+                }
+            }
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// The meets search string.
+        /// </summary>
+        /// <param name="character">
+        /// The character.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
+        public bool MeetsSearchString(ICharacter character)
+        {
+            return character.NameContains(this.SearchString);
+        }
+
+        /// <summary>
+        /// The meets status filter.
+        /// </summary>
+        /// <param name="character">
+        /// The character.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
         public bool MeetsStatusFilter(ICharacter character)
         {
             switch (character.Status)
@@ -397,235 +611,416 @@ namespace Models
                 case StatusType.idle:
                 case StatusType.away:
                 case StatusType.busy:
-                    return _showBusyAway;
+                    return this._showBusyAway;
 
                 case StatusType.dnd:
-                    return _showDND;
+                    return this._showDND;
 
                 case StatusType.looking:
-                    return _showLooking;
+                    return this._showLooking;
 
                 case StatusType.crown:
                 case StatusType.online:
-                    return _showNormal;
+                    return this._showNormal;
 
                 default:
                     return false;
             }
         }
 
-        public bool MeetsSearchString(ICharacter character)
+        #endregion
+
+        #region Methods
+
+        private void CallUpdate()
         {
-            return character.NameContains(SearchString);
+            if (this.Updated != null)
+            {
+                this.Updated(this, new EventArgs());
+            }
         }
+
+        #endregion
     }
 
     /// <summary>
-    /// Channel settings specific to each channel
+    ///     Channel settings specific to each channel
     /// </summary>
     public class ChannelSettingsModel
     {
-        public event EventHandler Updated;
-        public enum NotifyLevel
-        {
-            NoNotification,
-            NotificationOnly,
-            NotificationAndToast,
-            NotificationAndSound
-        };
-
         #region Fields
-        private bool _enableLogging = true;
-        private int _shouldFlashInterval = 1;
 
-        private bool _notifyIncludesCharacterNames = false;
-        private string _notifyOnTheseTerms = "";
-        private IEnumerable<string> _notifyEnumerate;
-        private bool _notifyTermsChanged = false;
+        private bool _enableLogging = true;
+
+        private RelayCommand _expandSettings;
+
+        private bool _isChangingSettings;
+
+        private int _joinLeaveLevel = (int)NotifyLevel.NotificationOnly;
+
+        private bool _joinLeaveNotifyOnlyForInteresting = true;
 
         private int _messageLevel = (int)NotifyLevel.NotificationOnly;
-        private int _joinLeaveLevel = (int)NotifyLevel.NotificationOnly;
-        private int _promoteDemoteLevel = (int)NotifyLevel.NotificationAndToast;
 
         private bool _messageOnlyForInteresting;
-        private bool _joinLeaveNotifyOnlyForInteresting = true;
+
+        private IEnumerable<string> _notifyEnumerate;
+
+        private bool _notifyIncludesCharacterNames;
+
+        private string _notifyOnTheseTerms = string.Empty;
+
+        private bool _notifyTermsChanged;
+
+        private int _promoteDemoteLevel = (int)NotifyLevel.NotificationAndToast;
+
         private bool _promoteDemoteNotifyOnlyForInteresting;
 
-        private bool _isChangingSettings = false;
+        private int _shouldFlashInterval = 1;
+
         #endregion
 
-        public ChannelSettingsModel() : this(false) { }
+        #region Constructors and Destructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ChannelSettingsModel" /> class.
+        /// </summary>
+        public ChannelSettingsModel()
+            : this(false)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChannelSettingsModel"/> class.
+        /// </summary>
+        /// <param name="isPM">
+        /// The is pm.
+        /// </param>
         public ChannelSettingsModel(bool isPM = false)
         {
             if (isPM)
-                MessageNotifyLevel = (int)NotifyLevel.NotificationAndSound;
-        }
-
-        #region Properties
-        /// <summary>
-        /// How many unread messages must be accumulated before the channel tab flashes
-        /// </summary>
-        public int FlashInterval
-        {
-            get { return _shouldFlashInterval; }
-            set
             {
-                if (_shouldFlashInterval != value || value < 1)
-                {
-                    _shouldFlashInterval = value;
-                    CallUpdate();
-                }
+                this.MessageNotifyLevel = (int)NotifyLevel.NotificationAndSound;
             }
         }
 
-        /// <summary>
-        /// Raw terms which will ding the user when mentioned
-        /// </summary>
-        public string NotifyTerms
-        {
-            get { return _notifyOnTheseTerms.Trim().ToLower(); }
-            set
-            {
-                if (_notifyOnTheseTerms != value)
-                {
-                    _notifyOnTheseTerms = value;
-                    CallUpdate();
-                }
-            }
-        }
+        #endregion
+
+        #region Public Events
 
         /// <summary>
-        /// NotifyTerms processed into an array
+        ///     The updated.
+        /// </summary>
+        public event EventHandler Updated;
+
+        #endregion
+
+        #region Enums
+
+        /// <summary>
+        ///     The notify level.
+        /// </summary>
+        public enum NotifyLevel
+        {
+            /// <summary>
+            ///     The no notification.
+            /// </summary>
+            NoNotification, 
+
+            /// <summary>
+            ///     The notification only.
+            /// </summary>
+            NotificationOnly, 
+
+            /// <summary>
+            ///     The notification and toast.
+            /// </summary>
+            NotificationAndToast, 
+
+            /// <summary>
+            ///     The notification and sound.
+            /// </summary>
+            NotificationAndSound
+        };
+
+        #endregion
+
+        #region Public Properties
+
+        /// <summary>
+        ///     NotifyTerms processed into an array
         /// </summary>
         public IEnumerable<string> EnumerableTerms
         {
             get
             {
-                if (!_notifyTermsChanged || _notifyEnumerate != null)
+                if (!this._notifyTermsChanged || this._notifyEnumerate != null)
                 {
-                    _notifyTermsChanged = false;
+                    this._notifyTermsChanged = false;
 
-                    _notifyEnumerate = _notifyOnTheseTerms.Split(',').Select(word => word.Trim()).Where(word => !string.IsNullOrWhiteSpace(word));
+                    this._notifyEnumerate =
+                        this._notifyOnTheseTerms.Split(',')
+                            .Select(word => word.Trim())
+                            .Where(word => !string.IsNullOrWhiteSpace(word));
+
                     // tokenizes our terms
                 }
 
-                return _notifyEnumerate;
+                return this._notifyEnumerate;
             }
         }
 
         /// <summary>
-        /// If we log each message 
+        ///     How many unread messages must be accumulated before the channel tab flashes
         /// </summary>
-        public bool LoggingEnabled
+        public int FlashInterval
         {
-            get { return _enableLogging; }
-            set
+            get
             {
-                _enableLogging = value;
-                CallUpdate();
+                return this._shouldFlashInterval;
             }
-        }
 
-        public bool IsChangingSettings
-        {
-            get { return _isChangingSettings; }
             set
             {
-                if (_isChangingSettings != value)
+                if (this._shouldFlashInterval != value || value < 1)
                 {
-                    _isChangingSettings = value;
-                    CallUpdate();
+                    this._shouldFlashInterval = value;
+                    this.CallUpdate();
                 }
             }
         }
 
         /// <summary>
-        /// All Notify levels perform fairly simply:
-        /// 0 for no notification ever
-        /// 1 for a simple notification
-        /// 2 for a simple notification and a toast
-        /// 3 for a simple notification, a toast, and a sound
+        ///     Gets or sets a value indicating whether is changing settings.
         /// </summary>
-        /// 
-        public int MessageNotifyLevel
+        public bool IsChangingSettings
         {
-            get { return _messageLevel; }
-            set { _messageLevel = value; CallUpdate(); }
-        }
+            get
+            {
+                return this._isChangingSettings;
+            }
 
-        public bool MessageNotifyOnlyForInteresting
-        {
-            get { return _messageOnlyForInteresting; }
-            set { _messageOnlyForInteresting = value; CallUpdate(); }
+            set
+            {
+                if (this._isChangingSettings != value)
+                {
+                    this._isChangingSettings = value;
+                    this.CallUpdate();
+                }
+            }
         }
 
         /// <summary>
-        /// If a term notification dings when the term appears in a character's name
+        ///     Gets or sets the join leave notify level.
+        /// </summary>
+        public int JoinLeaveNotifyLevel
+        {
+            get
+            {
+                return this._joinLeaveLevel;
+            }
+
+            set
+            {
+                this._joinLeaveLevel = value;
+                this.CallUpdate();
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether join leave notify only for interesting.
+        /// </summary>
+        public bool JoinLeaveNotifyOnlyForInteresting
+        {
+            get
+            {
+                return this._joinLeaveNotifyOnlyForInteresting;
+            }
+
+            set
+            {
+                this._joinLeaveNotifyOnlyForInteresting = value;
+                this.CallUpdate();
+            }
+        }
+
+        /// <summary>
+        ///     If we log each message
+        /// </summary>
+        public bool LoggingEnabled
+        {
+            get
+            {
+                return this._enableLogging;
+            }
+
+            set
+            {
+                this._enableLogging = value;
+                this.CallUpdate();
+            }
+        }
+
+        /// <summary>
+        ///     All Notify levels perform fairly simply:
+        ///     0 for no notification ever
+        ///     1 for a simple notification
+        ///     2 for a simple notification and a toast
+        ///     3 for a simple notification, a toast, and a sound
+        /// </summary>
+        public int MessageNotifyLevel
+        {
+            get
+            {
+                return this._messageLevel;
+            }
+
+            set
+            {
+                this._messageLevel = value;
+                this.CallUpdate();
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether message notify only for interesting.
+        /// </summary>
+        public bool MessageNotifyOnlyForInteresting
+        {
+            get
+            {
+                return this._messageOnlyForInteresting;
+            }
+
+            set
+            {
+                this._messageOnlyForInteresting = value;
+                this.CallUpdate();
+            }
+        }
+
+        /// <summary>
+        ///     If a term notification dings when the term appears in a character's name
         /// </summary>
         public bool NotifyIncludesCharacterNames
         {
-            get { return _notifyIncludesCharacterNames; }
-            set { _notifyIncludesCharacterNames = value; CallUpdate(); }
-        }
-        
-        public int JoinLeaveNotifyLevel
-        {
-            get { return _joinLeaveLevel; }
-            set { _joinLeaveLevel = value; CallUpdate(); }
+            get
+            {
+                return this._notifyIncludesCharacterNames;
+            }
+
+            set
+            {
+                this._notifyIncludesCharacterNames = value;
+                this.CallUpdate();
+            }
         }
 
-        public bool JoinLeaveNotifyOnlyForInteresting
+        /// <summary>
+        ///     Raw terms which will ding the user when mentioned
+        /// </summary>
+        public string NotifyTerms
         {
-            get { return _joinLeaveNotifyOnlyForInteresting; }
-            set { _joinLeaveNotifyOnlyForInteresting = value; CallUpdate(); }
-        }
-        
-        public int PromoteDemoteNotifyLevel
-        {
-            get { return _promoteDemoteLevel; }
-            set { _promoteDemoteLevel = value; CallUpdate(); }
+            get
+            {
+                return this._notifyOnTheseTerms.Trim().ToLower();
+            }
+
+            set
+            {
+                if (this._notifyOnTheseTerms != value)
+                {
+                    this._notifyOnTheseTerms = value;
+                    this.CallUpdate();
+                }
+            }
         }
 
-        public bool PromoteDemoteNotifyOnlyForInteresting
-        {
-            get { return _promoteDemoteNotifyOnlyForInteresting; }
-            set { _promoteDemoteNotifyOnlyForInteresting = value; CallUpdate(); }
-        }
-        #endregion
-
-        #region Commands
-        RelayCommand _expandSettings;
+        /// <summary>
+        ///     Gets the open channel settings command.
+        /// </summary>
         public ICommand OpenChannelSettingsCommand
         {
             get
             {
-                if (_expandSettings == null)
-                    _expandSettings = new RelayCommand(param => IsChangingSettings = !IsChangingSettings);
+                if (this._expandSettings == null)
+                {
+                    this._expandSettings = new RelayCommand(param => this.IsChangingSettings = !this.IsChangingSettings);
+                }
 
-                return _expandSettings;
+                return this._expandSettings;
             }
         }
+
+        /// <summary>
+        ///     Gets or sets the promote demote notify level.
+        /// </summary>
+        public int PromoteDemoteNotifyLevel
+        {
+            get
+            {
+                return this._promoteDemoteLevel;
+            }
+
+            set
+            {
+                this._promoteDemoteLevel = value;
+                this.CallUpdate();
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether promote demote notify only for interesting.
+        /// </summary>
+        public bool PromoteDemoteNotifyOnlyForInteresting
+        {
+            get
+            {
+                return this._promoteDemoteNotifyOnlyForInteresting;
+            }
+
+            set
+            {
+                this._promoteDemoteNotifyOnlyForInteresting = value;
+                this.CallUpdate();
+            }
+        }
+
         #endregion
+
+        #region Methods
 
         private void CallUpdate()
         {
-            if (Updated != null)
-                Updated(this, new EventArgs());
+            if (this.Updated != null)
+            {
+                this.Updated(this, new EventArgs());
+            }
         }
+
+        #endregion
     }
 
     /// <summary>
-    /// Settings for the entire application
+    ///     Settings for the entire application
     /// </summary>
     public static class ApplicationSettings
     {
-        #region Fields
-        private static IList<string> _savedChannels;
-        private static IList<string> _interested;
-        private static IList<string> _uninterested;
+        #region Static Fields
+
+        private static readonly IList<string> _interested;
+
+        private static readonly IList<string> _savedChannels;
+
+        private static readonly IList<string> _uninterested;
+
         #endregion
 
-        #region Constructor
+        #region Constructors and Destructors
+
+        /// <summary>
+        ///     Initializes static members of the <see cref="ApplicationSettings" /> class.
+        /// </summary>
         static ApplicationSettings()
         {
             Volume = 0.5;
@@ -633,31 +1028,85 @@ namespace Models
             AllowLogging = true;
 
             BackLogMax = 300;
-            GlobalNotifyTerms = "";
+            GlobalNotifyTerms = string.Empty;
             _savedChannels = new List<string>();
             _interested = new List<string>();
             _uninterested = new List<string>();
         }
+
         #endregion
 
-        #region Properties
-        public static double Volume { get; set; }
-        public static bool ShowNotificationsGlobal { get; set; }
-        public static int BackLogMax { get; set; }
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether allow logging.
+        /// </summary>
         public static bool AllowLogging { get; set; }
 
-        public static IList<string> SavedChannels { get { return _savedChannels; } }
-        public static IList<string> Interested { get { return _interested; } }
-        public static IList<string> NotInterested { get { return _uninterested; } }
+        /// <summary>
+        ///     Gets or sets the back log max.
+        /// </summary>
+        public static int BackLogMax { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the global notify terms.
+        /// </summary>
         public static string GlobalNotifyTerms { get; set; }
+
+        /// <summary>
+        ///     Gets the global notify terms list.
+        /// </summary>
         public static IEnumerable<string> GlobalNotifyTermsList
         {
             get
             {
-                    return GlobalNotifyTerms.Split(',').Select(word => word.ToLower());
+                return GlobalNotifyTerms.Split(',').Select(word => word.ToLower());
             }
         }
+
+        /// <summary>
+        ///     Gets the interested.
+        /// </summary>
+        public static IList<string> Interested
+        {
+            get
+            {
+                return _interested;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the not interested.
+        /// </summary>
+        public static IList<string> NotInterested
+        {
+            get
+            {
+                return _uninterested;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the saved channels.
+        /// </summary>
+        public static IList<string> SavedChannels
+        {
+            get
+            {
+                return _savedChannels;
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether show notifications global.
+        /// </summary>
+        public static bool ShowNotificationsGlobal { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the volume.
+        /// </summary>
+        public static double Volume { get; set; }
+
         #endregion
     }
 }

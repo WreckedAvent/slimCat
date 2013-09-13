@@ -1,42 +1,15 @@
-﻿<!--
-Copyright (c) 2013, Justin Kadrovach
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of the <organization> nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-<v:DisposableView x:Class="Views.GeneralChannelView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:v="clr-namespace:Views"
-             xmlns:lib="clr-namespace:lib"
-             xmlns:sys="clr-namespace:System">
-
+﻿<v:DisposableView x:Class="Views.GeneralChannelView"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:v="clr-namespace:Views"
+                  xmlns:lib="clr-namespace:lib"
+                  xmlns:sys="clr-namespace:System">
     <Grid Margin="10"
           TextBlock.FontSize="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto" />
             <RowDefinition />
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
 
         <Border BorderBrush="{StaticResource HighlightBrush}"
@@ -48,37 +21,42 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                                    Foreground="{StaticResource ForegroundBrush}"
                                    TextWrapping="Wrap"
                                    ToolTip="Expand or retract the channel header">
-                            <v:ChannelTypeButtonView IsEnabled="False"/>
-                            
-                            <Run Text="{Binding Path=Model.Title, Mode=OneWay}" Foreground="{StaticResource HighlightBrush}"/>
+                            <v:ChannelTypeButtonView IsEnabled="False" />
+
+                            <Run Text="{Binding Path=Model.Title, Mode=OneWay}"
+                                 Foreground="{StaticResource HighlightBrush}" />
                             <Run Text="{Binding Path=ChatContentString, Mode=OneWay}" />
                         </TextBlock>
                     </Expander.Header>
                     <ScrollViewer MaxHeight="100">
                         <TextBlock Margin="0"
-                            TextBlock.FontSize="12"
-                            Foreground="{StaticResource ForegroundBrush}"
-                            TextWrapping="Wrap">
-                        <lib:TextBlockHelper.InlineList>
-                            <Binding Converter="{StaticResource BBCodeConverter}"
-                                        Path="MOTD" />
-                        </lib:TextBlockHelper.InlineList>
+                                   TextBlock.FontSize="12"
+                                   Foreground="{StaticResource ForegroundBrush}"
+                                   TextWrapping="Wrap">
+                            <lib:TextBlockHelper.InlineList>
+                                <Binding Converter="{StaticResource BBCodeConverter}"
+                                         IsAsync="True"
+                                         Mode="OneWay"
+                                         Path="MOTD" />
+                            </lib:TextBlockHelper.InlineList>
                         </TextBlock>
                     </ScrollViewer>
                 </Expander>
                 <WrapPanel HorizontalAlignment="Right"
                            VerticalAlignment="Top">
                     <v:EditButtonView Command="{Binding Path=ChannelManagementViewModel.OpenChannelManagementCommand}"
-                                      Visibility="{Binding Path=HasPermissions, Converter={StaticResource BoolConverter}}"/>
-                    <v:RestartButtonView Command="{Binding Path=ClearLogCommand}"/>
-                    <v:FolderButtonView Command="{Binding Path=OpenLogFolderCommand}"/>
-                    <v:FileButtonView Command="{Binding Path=OpenLogCommand}"/>
+                                      Visibility="{Binding Path=HasPermissions, Converter={StaticResource BoolConverter}}" />
+                    <v:RestartButtonView Command="{Binding Path=ClearLogCommand}" />
+                    <v:FolderButtonView Command="{Binding Path=OpenLogFolderCommand}" />
+                    <v:FileButtonView Command="{Binding Path=OpenLogCommand}" />
                     <v:SettingsButtonView Command="{Binding Path=OpenChannelSettingsCommand}"
-                                          DataContext="{Binding Path=ChannelSettings}"/>
+                                          DataContext="{Binding Path=ChannelSettings}" />
                 </WrapPanel>
             </Grid>
         </Border>
 
+        <!--
+        this is the old layout manager, and is now depreciated
         <ScrollViewer Grid.Row="1"
                       x:Name="messages">
             <Grid x:Name="PopupAnchor"
@@ -98,13 +76,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                                   x:Name="current"
                                   Grid.Row="1"/>
             </Grid>
-        </ScrollViewer>
-        
+        </ScrollViewer>-->
+        <FlowDocumentScrollViewer Grid.Row="1"
+                                  x:Name="PopupAnchor"
+                                  HorizontalAlignment="Stretch"
+                                  UseLayoutRounding="True"
+                                  Foreground="{StaticResource HighlightBrush}"
+                                  Background="Transparent"
+                                  VerticalScrollBarVisibility="Auto"
+                                   >
+            <FlowDocument PagePadding="2,5"
+                          IsOptimalParagraphEnabled="True"
+                          IsHyphenationEnabled="True"
+                          Loaded="OnLoad"
+                          x:Name="Messages" />
+        </FlowDocumentScrollViewer>
+
         <Popup PlacementTarget="{Binding ElementName=PopupAnchor}"
                Placement="Center"
                StaysOpen="False"
                IsOpen="{Binding Path=SearchSettings.IsChangingSettings}">
-            
+
             <Border BorderBrush="{StaticResource HighlightBrush}"
                     BorderThickness="2"
                     Background="{StaticResource BackgroundBrush}">
@@ -114,31 +106,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                                FontSize="20"
                                HorizontalAlignment="Center"
                                Margin="10,5">
-                        <Run Text="{Binding Path=Model.Title}"/>
-                        <Run Text="Filter Settings"/>
+                        <Run Text="{Binding Path=Model.Title}" />
+                        <Run Text="Filter Settings" />
                     </TextBlock>
                     <ContentControl Template="{StaticResource GenderCheckBoxes}"
-                                    DataContext="{Binding Path=GenderSettings}"/>
-                    
+                                    DataContext="{Binding Path=GenderSettings}" />
+
                     <ContentControl Template="{StaticResource GeneralFilterCheckBoxes}"
                                     DataContext="{Binding Path=SearchSettings}" />
-                    
+
                     <Button Content="Close Settings"
                             Margin="10,5"
                             DataContext="{Binding Path=SearchSettings}"
                             Foreground="{StaticResource ForegroundBrush}"
-                            Command="{Binding OpenSearchSettingsCommand}"/>
+                            Command="{Binding OpenSearchSettingsCommand}" />
                 </WrapPanel>
             </Border>
         </Popup>
-        
+
         <v:ChannelSettingsView />
-        
+
         <StackPanel Grid.Row="2">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal"
                             VerticalAlignment="Center"
@@ -147,50 +139,53 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     <TextBlock Foreground="{StaticResource HighlightBrush}"
                                VerticalAlignment="Center"
                                Margin="2,0,4,0"
-                               Text="{Binding Path=StatusString, Mode=OneWay}"/>
+                               Text="{Binding Path=StatusString, Mode=OneWay}" />
                     <TextBlock Foreground="{StaticResource HighlightBrush}"
                                Text="{Binding Path=TimeLeft, Mode=OneWay}"
                                VerticalAlignment="Center"
                                Margin="2,0,0,0"
-                               Visibility="{Binding Path=CannotPost, Mode=OneWay, Converter={StaticResource BoolConverter}}"/>
+                               Visibility="{Binding Path=CannotPost, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Right"
                             Margin="0"
                             Grid.Column="1">
-                    
-                    <v:AutoButtonView IsChecked="{Binding Path=AutoPost, Mode=TwoWay}" 
+
+                    <v:AutoButtonView IsChecked="{Binding Path=AutoPost, Mode=TwoWay}"
                                       Visibility="{Binding Path=ShouldShowAutoPost, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                                       Margin="4"
-                                      VerticalAlignment="Center"/>
-                    
-                    <v:SearchButtonView Visibility="{Binding Path=IsNotSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                                        Command="{Binding SwitchSearchCommand}"
-                                        Margin="4"/>
-                    
-                    <v:ChatButtonView Visibility="{Binding Path=IsSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                                      Command="{Binding SwitchSearchCommand}"
-                                      Margin="4,6,4,4"/>
+                                      VerticalAlignment="Center" />
+
+                    <v:SearchButtonView
+                        Visibility="{Binding Path=IsNotSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                        Command="{Binding SwitchSearchCommand}"
+                        Margin="4" />
+
+                    <v:ChatButtonView
+                        Visibility="{Binding Path=IsSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                        Command="{Binding SwitchSearchCommand}"
+                        Margin="4,6,4,4" />
 
                     <v:MoreButtonView Command="{Binding SwitchCommand}"
                                       Visibility="{Binding Path=CanSwitch, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                                       BorderBrush="{Binding Path=OtherTabHasMessages, Mode=OneWay, Converter={StaticResource ColorConverter}}"
-                                      Margin="4"/>
+                                      Margin="4" />
                 </StackPanel>
             </Grid>
-            
+
             <v:CreateReportView />
             <v:RightClickMenu />
             <v:ChannelManagementView />
-            <v:ChannelTextBoxEntryView Visibility="{Binding Path=IsChatting, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                                       IsEnabled="{Binding Path=CanPost, Mode=OneWay}"
-                                       Margin="0,0,0,10"/>
-            
+            <v:ChannelTextBoxEntryView
+                Visibility="{Binding Path=IsChatting, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                IsEnabled="{Binding Path=CanPost, Mode=OneWay}"
+                Margin="0,0,0,10" />
+
             <Grid Visibility="{Binding Path=IsSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}">
                 <v:SearchBoxView DataContext="{Binding SearchSettings}"
-                                 Margin="0,0,0,10"/>
+                                 Margin="0,0,0,10" />
             </Grid>
         </StackPanel>
     </Grid>
-</v:DisposableView >
+</v:DisposableView>

@@ -1,30 +1,4 @@
-﻿<!--
-Copyright (c) 2013, Justin Kadrovach
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of the <organization> nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-<Popup x:Class="Views.RightClickMenu"
+﻿<Popup x:Class="Views.RightClickMenu"
        StaysOpen="False"
        IsOpen="{Binding Path=RightClickMenuViewModel.IsOpen}"
        Placement="MousePoint"
@@ -45,8 +19,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     Padding="10">
                 <DockPanel>
                     <Image Source="{Binding Path=Target.Avatar}"
-                            Height="75"
-                            Width="75"/>
+                           Height="75"
+                           Width="75" />
                     <StackPanel DockPanel.Dock="Right"
                                 HorizontalAlignment="Right"
                                 TextBlock.TextAlignment="Right"
@@ -54,9 +28,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         <TextBlock Text="{Binding Path=Target.Name}"
                                    MaxWidth="125"
                                    TextWrapping="Wrap"
-                                   FontSize="20"/>
-                        <TextBlock Text="{Binding Path=TargetGender}"/>
-                        <TextBlock Text="{Binding Path=TargetStatus}"/>
+                                   FontSize="20" />
+                        <TextBlock Text="{Binding Path=TargetGender}" />
+                        <TextBlock Text="{Binding Path=TargetStatus}" />
                     </StackPanel>
                 </DockPanel>
             </Border>
@@ -70,10 +44,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                                TextAlignment="Left"
                                TextWrapping="Wrap"
                                MaxWidth="200"
-                               Margin="5,0">                            
+                               Margin="5,0">
                         <lib:TextBlockHelper.InlineList>
                             <Binding Converter="{StaticResource BBCodeConverter}"
-                                        Path="RightClickMenuViewModel.Target.StatusMessage" />
+                                     Path="RightClickMenuViewModel.Target.StatusMessage" />
                         </lib:TextBlockHelper.InlineList>
                     </TextBlock>
                 </Expander>
@@ -82,13 +56,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <StackPanel.Resources>
                     <Style TargetType="Button" BasedOn="{StaticResource ImageContentButton}">
                         <Setter Property="CommandParameter"
-                                Value="{Binding Path=RightClickMenuViewModel.Target.Name}"/>
+                                Value="{Binding Path=RightClickMenuViewModel.Target.Name}" />
                         <Setter Property="HorizontalAlignment"
-                                Value="Left"/>
+                                Value="Left" />
                         <Setter Property="TextBlock.FontSize"
-                                Value="16"/>
+                                Value="16" />
                         <Setter Property="Margin"
-                                Value="5"/>
+                                Value="5" />
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="False">
                                 <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
@@ -97,35 +71,35 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     </Style>
                 </StackPanel.Resources>
                 <Button Command="{Binding RequestPMCommand}"
-                        Content="Message"/>
+                        Content="Message" />
                 <Button Command="{Binding FindLogCommand}"
                         Content="View Logs" />
                 <Button Command="{Binding IgnoreCommand}"
                         Content="Ignore"
-                        Visibility="{Binding Path=RightClickMenuViewModel.CanIgnore, Converter={StaticResource BoolConverter}}"/>
+                        Visibility="{Binding Path=RightClickMenuViewModel.CanIgnore, Converter={StaticResource BoolConverter}}" />
                 <Button Command="{Binding UnignoreCommand}"
-                        Content="Unignore" 
-                        Visibility="{Binding Path=RightClickMenuViewModel.CanUnignore, Converter={StaticResource BoolConverter}}"/>
-                
+                        Content="Unignore"
+                        Visibility="{Binding Path=RightClickMenuViewModel.CanUnignore, Converter={StaticResource BoolConverter}}" />
+
                 <Button Command="{Binding InterestedCommand}"
-                        Content="{Binding Path=RightClickMenuViewModel.MarkInterested}"/>
+                        Content="{Binding Path=RightClickMenuViewModel.MarkInterested}" />
                 <Button Command="{Binding NotInterestedCommand}"
-                        Content="{Binding Path=RightClickMenuViewModel.MarkUninterested}"/>
-                
+                        Content="{Binding Path=RightClickMenuViewModel.MarkUninterested}" />
+
                 <Button Command="{Binding ReportCommand}"
                         Visibility="{Binding Path=RightClickMenuViewModel.HasReport, Converter={StaticResource OppositeBoolConverter}}"
-                        Content="Report User"/>
-                
+                        Content="Report User" />
+
                 <!-- Mod Commands -->
                 <Button Command="{Binding KickCommand}"
                         Content="Kick"
-                        Visibility="{Binding HasPermissions, Converter={StaticResource BoolConverter}}"/>
+                        Visibility="{Binding HasPermissions, Converter={StaticResource BoolConverter}}" />
                 <Button Command="{Binding BanCommand}"
                         Content="Ban"
-                        Visibility="{Binding HasPermissions, Converter={StaticResource BoolConverter}}"/>
+                        Visibility="{Binding HasPermissions, Converter={StaticResource BoolConverter}}" />
                 <Button Command="{Binding HandleReportCommand}"
                         Content="Accept Report"
-                        Visibility="{Binding Path=RightClickMenuViewModel.HasReport, Converter={StaticResource BoolConverter}}"/>
+                        Visibility="{Binding Path=RightClickMenuViewModel.HasReport, Converter={StaticResource BoolConverter}}" />
             </StackPanel>
         </StackPanel>
     </Border>

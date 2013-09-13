@@ -1,55 +1,37 @@
-﻿<!--
-Copyright (c) 2013, Justin Kadrovach
-All rights reserved.
+﻿<Paragraph x:Class="Views.MessageView"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:v="clr-namespace:Views"
+           xmlns:lib="clr-namespace:lib"
+           xmlns:sys="clr-namespace:System"
+           Margin="0,2"
+           Padding="0"
+           Foreground="{StaticResource ForegroundBrush}"
+           FontFamily="Segoe UI, Verdanda"
+           FontSize="13">
+    <Run Text="{Binding TimeStamp, Mode=OneTime, IsAsync=True}" Foreground="{StaticResource HighlightBrush}"
+         FontSize="12" />
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of the <organization> nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
+    <InlineUIContainer BaselineAlignment="Bottom">
+        <Rectangle Fill="{Binding Path=Poster.Gender, Mode=OneTime, Converter={StaticResource GenderColorConverter}, IsAsync=True}"
+                   Height="15" Width="15" Margin="0">
+            <Rectangle.OpacityMask>
+                <ImageBrush
+                    ImageSource="{Binding Path=Poster.Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}, IsAsync=True}" />
+            </Rectangle.OpacityMask>
+        </Rectangle>
+    </InlineUIContainer>
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-<UserControl x:Class="Views.MessageView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:lib="clr-namespace:lib"
-             xmlns:sys="clr-namespace:System">
-    <Grid HorizontalAlignment="Stretch"
-          TextBlock.FontSize="13">
-        <DockPanel HorizontalAlignment="Stretch">
-            <TextBlock Text="{Binding Path=TimeStamp, Mode=OneWay}"
-                        Foreground="{StaticResource HighlightBrush}"
-                        DockPanel.Dock="Right"
-                        VerticalAlignment="Center"
-                        FontSize="12"/>
-            <TextBlock TextWrapping="Wrap"
-                        TextBlock.Foreground="{StaticResource ForegroundBrush}">
-                <lib:TextBlockHelper.InlineList>
-                    <MultiBinding Converter="{StaticResource BBPostConverter}">
-                        <Binding Path="Message"
-                                 Mode="OneTime"/>
-                        <Binding Path="Poster"
-                                 Mode="OneTime"/>
-                        <Binding Path="Type"
-                                 Mode="OneTime"/>
-                    </MultiBinding>
-                </lib:TextBlockHelper.InlineList>
-            </TextBlock>
-        </DockPanel>
-    </Grid>
-</UserControl>
+    <Hyperlink CommandParameter="{Binding Path=Poster.Name, Mode=OneTime, IsAsync=True}"
+               Style="{StaticResource FlowUsernameLink}">
+        <Run Text="{Binding Path=Poster.Name, Mode=OneTime, IsAsync=True}" />
+        <Hyperlink.InputBindings>
+            <MouseBinding MouseAction="RightClick"
+                          Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
+                                    RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
+                          CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}" />
+        </Hyperlink.InputBindings>
+    </Hyperlink>
+
+    <Span lib:SpanHelper.InlineSource="{Binding Message, Mode=OneTime, Converter={StaticResource BBFlowConverter}, IsAsync=True}"/>
+</Paragraph>
