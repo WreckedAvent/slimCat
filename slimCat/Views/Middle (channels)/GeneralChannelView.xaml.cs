@@ -30,6 +30,7 @@
 namespace Views
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.Linq;
     using System.Windows.Documents;
@@ -46,13 +47,15 @@ namespace Views
     {
         #region Fields
 
-        private bool _historyLoaded = false;
+        private bool historyLoaded;
 
-        private bool _historyInitialized = false;
+        private bool historyInitialized;
 
-        private GeneralChannelViewModel _vm;
+        private bool loaded;
 
-        private KeepToCurrentScrollViewer _scroll;
+        private GeneralChannelViewModel vm;
+
+        private KeepToCurrentScrollViewer scroller;
 
         #endregion
 
@@ -69,10 +72,10 @@ namespace Views
             try
             {
                 this.InitializeComponent();
-                this._vm = vm.ThrowIfNull("vm");
+                this.vm = vm.ThrowIfNull("vm");
 
-                this.DataContext = this._vm;
-                this._vm.CurrentMessages.CollectionChanged += this.OnDisplayChanged;
+                this.DataContext = this.vm;
+                this.vm.CurrentMessages.CollectionChanged += this.OnDisplayChanged;
             }
             catch (Exception ex)
             {
@@ -92,14 +95,19 @@ namespace Views
                 return;
             }
 
-            this._vm.CurrentMessages.CollectionChanged -= this.OnDisplayChanged;
-            this._vm = null;
+            this.vm.CurrentMessages.CollectionChanged -= this.OnDisplayChanged;
+            this.vm = null;
             this.DataContext = null;
-            this._scroll = null;
+            this.scroller = null;
         }
 
         private void OnDisplayChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            if (!this.loaded)
+            {
+                return; // sometimes we will get a collection changed before our UI has finished loading
+            }
+
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
@@ -114,26 +122,35 @@ namespace Views
                     break;
 
                 case NotifyCollectionChangedAction.Reset:
-                    this.Messages.Blocks.Clear();
-                    break;
+                    {
+                        this.Messages.Blocks.Clear();
+                        var loadedCount = 0;
+
+                        foreach (var template in this.GetHistory().Reverse().Select(item => new HistoryView { DataContext = item }))
+                        {
+                            this.AddAsync(template, ref loadedCount);
+                        }
+
+                        break;
+                    }
 
                 case NotifyCollectionChangedAction.Remove:
                     {
-                        this._scroll.Stick();
-                        if (this._historyLoaded)
+                        this.scroller.Stick();
+                        if (this.historyLoaded)
                         {
-                            for (var i = 0; i < this._vm.Model.History.Count; i++)
+                            for (var i = 0; i < this.vm.Model.History.Count; i++)
                             {
                                 this.Messages.Blocks.Remove(this.Messages.Blocks.FirstBlock);
                             }
 
-                            this._historyLoaded = false;
+                            this.historyLoaded = false;
                         }
 
 
                         this.Messages.Blocks.Remove(this.Messages.Blocks.FirstBlock);
                         this.PopupAnchor.UpdateLayout();
-                        this._scroll.ScrollToStick();
+                        this.scroller.ScrollToStick();
                     }
 
                     break;
@@ -143,25 +160,34 @@ namespace Views
         private void OnLoad(object s, EventArgs e)
         {
             var loadedCount = 0;
-            this._scroll = new KeepToCurrentScrollViewer(PopupAnchor);
+            this.scroller = new KeepToCurrentScrollViewer(PopupAnchor);
 
-            foreach (var template in this._vm.CurrentMessages.Reverse().Select(item => new MessageView { DataContext = item }))
+            foreach (var template in this.vm.CurrentMessages.Reverse().Select(item => new MessageView { DataContext = item }))
             {
                 this.AddAsync(template, ref loadedCount);
             }
 
-            if (this._historyInitialized)
+            if (this.historyInitialized)
             {
                 return;
             }
 
-            foreach (var template in this._vm.Model.History.Reverse().Select(item => new HistoryView { DataContext = item }))
+            foreach (var template in this.GetHistory().Reverse().Select(item => new HistoryView { DataContext = item }))
             {
                 this.AddAsync(template, ref loadedCount);
             }
 
-            this._historyLoaded = true;
-            this._historyInitialized = true;
+            this.historyLoaded = true;
+            this.historyInitialized = true;
+            this.loaded = true;
+        }
+
+        private IEnumerable<string> GetHistory()
+        {
+            var history = this.vm.Model.History;
+            Func<string, bool> isChatMessage = s => s.StartsWith("[", StringComparison.OrdinalIgnoreCase);
+
+            return this.vm.IsDisplayingChat ? history.Where(isChatMessage) : history.Where(s => !isChatMessage(s));
         }
 
         private void AddAsync(Block item, ref int count)
@@ -169,6 +195,8 @@ namespace Views
             count++;
 
             var priority = count < 25 ? DispatcherPriority.Normal : DispatcherPriority.DataBind;
+            if (count > 25) return;
+
             Dispatcher.BeginInvoke(
                 priority,
                 (Action)(() =>

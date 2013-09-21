@@ -9,22 +9,22 @@
            Foreground="{StaticResource ForegroundBrush}"
            FontFamily="Segoe UI, Verdanda"
            FontSize="13">
-    <Run Text="{Binding TimeStamp, Mode=OneTime, IsAsync=True}" Foreground="{StaticResource HighlightBrush}"
+    <Run Text="{Binding TimeStamp, Mode=OneTime}" Foreground="{StaticResource HighlightBrush}"
          FontSize="12" />
 
     <InlineUIContainer BaselineAlignment="Bottom">
-        <Rectangle Fill="{Binding Path=Poster.Gender, Mode=OneTime, Converter={StaticResource GenderColorConverter}, IsAsync=True}"
+        <Rectangle Fill="{Binding Path=Poster.Gender, Mode=OneTime, Converter={StaticResource GenderColorConverter}}"
                    Height="15" Width="15" Margin="0">
             <Rectangle.OpacityMask>
                 <ImageBrush
-                    ImageSource="{Binding Path=Poster.Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}, IsAsync=True}" />
+                    ImageSource="{Binding Path=Poster.Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
             </Rectangle.OpacityMask>
         </Rectangle>
     </InlineUIContainer>
 
-    <Hyperlink CommandParameter="{Binding Path=Poster.Name, Mode=OneTime, IsAsync=True}"
+    <Hyperlink CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}"
                Style="{StaticResource FlowUsernameLink}">
-        <Run Text="{Binding Path=Poster.Name, Mode=OneTime, IsAsync=True}" />
+        <Run Text="{Binding Path=Poster.Name, Mode=OneTime}" />
         <Hyperlink.InputBindings>
             <MouseBinding MouseAction="RightClick"
                           Command="{Binding Path=DataContext.OpenRightClickMenuCommand,

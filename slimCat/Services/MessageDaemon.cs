@@ -220,12 +220,8 @@ namespace Services
                                     : this._model.FindCharacter(this._model.SelectedCharacter.Name);
             this.InstanceLogger();
 
-            channel = this._model.CurrentChannels.FirstByIdOrDefault(channelName);
-
-            if (channel == null)
-            {
-                channel = this._model.CurrentPMs.FirstByIdOrDefault(channelName);
-            }
+            channel = this._model.CurrentChannels.FirstByIdOrDefault(channelName)
+                      ?? (ChannelModel)this._model.CurrentPMs.FirstByIdOrDefault(channelName);
 
             if (channel == null)
             {
@@ -245,23 +241,25 @@ namespace Services
                             this._logger.LogMessage(channel.Title, channel.ID, thisMessage);
                         }
 
-                        if (poster != "_thisCharacter")
+                        if (poster == "_thisCharacter")
                         {
-                            // don't push events for our own messages
-                            if (channel is GeneralChannelModel)
-                            {
-                                this._events.GetEvent<NewMessageEvent>()
-                                    .Publish(
-                                        new Dictionary<string, object>
-                                            {
-                                                { "message", thisMessage }, 
-                                                { "channel", channel }
-                                            });
-                            }
-                            else
-                            {
-                                this._events.GetEvent<NewPMEvent>().Publish(thisMessage);
-                            }
+                            return;
+                        }
+
+                        // don't push events for our own messages
+                        if (channel is GeneralChannelModel)
+                        {
+                            this._events.GetEvent<NewMessageEvent>()
+                                .Publish(
+                                    new Dictionary<string, object>
+                                        {
+                                            { "message", thisMessage }, 
+                                            { "channel", channel }
+                                        });
+                        }
+                        else
+                        {
+                            this._events.GetEvent<NewPMEvent>().Publish(thisMessage);
                         }
                     });
         }
@@ -1021,34 +1019,27 @@ namespace Services
             IEnumerable<string> history = new List<string>();
             if (!ID.Equals("Home"))
             {
-                if (string.IsNullOrWhiteSpace(name))
-                {
-                    history = this._logger.GetLogs(ID, ID);
-                }
-                else
-                {
-                    history = this._logger.GetLogs(name, ID);
-                }
+                history = this._logger.GetLogs(string.IsNullOrWhiteSpace(name) ? ID : name, ID).ToList();
             }
 
-            ChannelModel toJoin = this._model.CurrentPMs.FirstByIdOrDefault(ID)
-                                  ?? (ChannelModel)this._model.CurrentChannels.FirstByIdOrDefault(ID);
+            var toJoin = this._model.CurrentPMs.FirstByIdOrDefault(ID)
+                         ?? (ChannelModel)this._model.CurrentChannels.FirstByIdOrDefault(ID);
 
             if (toJoin == null)
             {
                 this.AddChannel(type, ID, name);
+
+                toJoin = this._model.CurrentPMs.FirstByIdOrDefault(ID)
+                         ?? (ChannelModel)this._model.CurrentChannels.FirstByIdOrDefault(ID);
             }
 
-            toJoin = this._model.CurrentPMs.FirstByIdOrDefault(ID)
-                     ?? (ChannelModel)this._model.CurrentChannels.FirstByIdOrDefault(ID);
-
-            if (history != null)
+            if (history.Any())
             {
                 this.Dispatcher.BeginInvoke(
                     (Action)delegate
                         {
                             toJoin.History.Clear();
-                            foreach (string item in history)
+                            foreach (var item in history)
                             {
                                 toJoin.History.Add(item);
                             }

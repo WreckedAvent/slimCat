@@ -331,7 +331,7 @@ namespace ViewModels
         {
             get
             {
-                return this.ChannelSettings.NotifyTerms != null && this.ChannelSettings.NotifyTerms.Length > 0;
+                return !string.IsNullOrEmpty(this.ChannelSettings.NotifyTerms);
             }
         }
 

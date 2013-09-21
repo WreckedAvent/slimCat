@@ -92,12 +92,12 @@ namespace Services
         public IEnumerable<string> GetLogs(string Title, string ID)
         {
             string loggingPath = StaticFunctions.MakeSafeFolderPath(this._thisCharacter, Title, ID);
-            IEnumerable<string> toReturn = null;
+            IEnumerable<string> toReturn = new List<string>();
             string fileName = this.dateToFileName();
 
             if (!Directory.Exists(loggingPath))
             {
-                return null;
+                return new List<string>();
             }
 
             string toGet = Path.Combine(loggingPath, fileName);

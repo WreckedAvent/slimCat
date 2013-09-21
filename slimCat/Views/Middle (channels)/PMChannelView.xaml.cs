@@ -156,7 +156,9 @@ namespace Views
         {
             count++;
 
-            var priority = count < 25 ? DispatcherPriority.Render : DispatcherPriority.DataBind;
+            var priority = count < 25 ? DispatcherPriority.Normal : DispatcherPriority.DataBind;
+            if (count > 25) return;
+            
             Dispatcher.BeginInvoke(
                 priority,
                 (Action)delegate
