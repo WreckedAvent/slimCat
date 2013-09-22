@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.Generic;
@@ -38,19 +38,16 @@ namespace ViewModels
     using System.Timers;
     using System.Windows.Input;
 
-    using lib;
-
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using Services;
-
-    using slimCat;
-
-    using Views;
+    using Slimcat;
+    using Slimcat.Libraries;
+    using Slimcat.Models;
+    using Slimcat.Services;
+    using Slimcat.Utilities;
+    using Slimcat.Views;
 
     /// <summary>
     ///     The general channel view model. This manages bindings for general channels, e.g anything that isn't a PM or the 'home' tab.
@@ -59,44 +56,44 @@ namespace ViewModels
     {
         #region Fields
 
-        private readonly ChannelManagementViewModel _channManVM;
+        private readonly ChannelManagementViewModel channelManagementViewModel;
 
-        private readonly ObservableCollection<IMessage> _currentMessages = new ObservableCollection<IMessage>();
+        private readonly ObservableCollection<IMessage> currentMessages = new ObservableCollection<IMessage>();
 
-        private readonly IList<string> _thisDingTerms = new List<string>();
+        private readonly IList<string> thisDingTerms = new List<string>();
 
         // this is a combination of all relevant ding terms 
-        private Timer _adFlood = new Timer(602000);
+        private Timer adFlood = new Timer(602000);
 
-        private string _adMessage = string.Empty;
+        private string adMessage = string.Empty;
 
-        private bool _autoPostAds;
+        private bool autoPostAds;
 
-        private GenderSettingsModel _genderSettings = new GenderSettingsModel();
+        private GenderSettingsModel genderSettings = new GenderSettingsModel();
 
-        private bool _hasNewAds;
+        private bool hasNewAds;
 
-        private bool _hasNewMessages;
+        private bool hasNewMessages;
 
-        private bool _isDisplayingChat;
+        private bool isDisplayingChat;
 
-        private bool _isInCoolDownAd;
+        private bool isInCoolDownAd;
 
-        private bool _isInCoolDownMessage;
+        private bool isInCoolDownMessage;
 
-        private bool _isSearching;
+        private bool isSearching;
 
-        private Timer _messageFlood = new Timer(500);
+        private Timer messageFlood = new Timer(500);
 
-        private GenericSearchSettingsModel _searchSettings = new GenericSearchSettingsModel();
+        private GenericSearchSettingsModel searchSettings = new GenericSearchSettingsModel();
 
-        private RelayCommand _switch;
+        private RelayCommand @switch;
 
-        private RelayCommand _switchSearch;
+        private RelayCommand switchSearch;
 
-        private DateTimeOffset _timeLeftAd;
+        private DateTimeOffset timeLeftAd;
 
-        private Timer _update = new Timer(1000);
+        private Timer update = new Timer(1000);
 
         #endregion
 
@@ -126,56 +123,56 @@ namespace ViewModels
         {
             try
             {
-                this.Model = this.CM.CurrentChannels.FirstOrDefault(chan => chan.ID == name)
-                             ?? this.CM.AllChannels.First(chan => chan.ID == name);
+                this.Model = this.ChatModel.CurrentChannels.FirstOrDefault(chan => chan.Id == name)
+                             ?? this.ChatModel.AllChannels.First(chan => chan.Id == name);
                 this.Model.ThrowIfNull("this.Model");
 
-                string safeName = HelperConverter.EscapeSpaces(name);
+                var safeName = HelperConverter.EscapeSpaces(name);
 
-                this._container.RegisterType<object, GeneralChannelView>(safeName, new InjectionConstructor(this));
+                this.Container.RegisterType<object, GeneralChannelView>(safeName, new InjectionConstructor(this));
 
-                this._isDisplayingChat = this.ShouldDisplayChat;
+                this.isDisplayingChat = this.ShouldDisplayChat;
 
-                this._channManVM = new ChannelManagementViewModel(this._events, this.Model as GeneralChannelModel);
+                this.channelManagementViewModel = new ChannelManagementViewModel(this.Events, this.Model as GeneralChannelModel);
 
                 // instance our management vm
                 this.Model.Messages.CollectionChanged += this.OnMessagesChanged;
                 this.Model.Ads.CollectionChanged += this.OnAdsChanged;
                 this.Model.PropertyChanged += this.OnModelPropertyChanged;
 
-                this._genderSettings.Updated += (s, e) =>
+                this.genderSettings.Updated += (s, e) =>
                     {
                         this.OnPropertyChanged("CurrentMessages");
                         this.OnPropertyChanged("GenderSettings");
                     };
 
-                this._searchSettings.Updated += (s, e) =>
+                this.searchSettings.Updated += (s, e) =>
                     {
                         this.OnPropertyChanged("SearchSettings");
                         this.OnPropertyChanged("CurrentMessages");
                     };
 
-                this._messageFlood.Elapsed += (s, e) =>
+                this.messageFlood.Elapsed += (s, e) =>
                     {
-                        this._isInCoolDownMessage = false;
-                        this._messageFlood.Enabled = false;
+                        this.isInCoolDownMessage = false;
+                        this.messageFlood.Enabled = false;
                         this.OnPropertyChanged("CanPost");
                     };
 
-                this._adFlood.Elapsed += (s, e) =>
+                this.adFlood.Elapsed += (s, e) =>
                     {
-                        this._isInCoolDownAd = false;
-                        this._adFlood.Enabled = false;
+                        this.isInCoolDownAd = false;
+                        this.adFlood.Enabled = false;
                         this.OnPropertyChanged("CanPost");
                         this.OnPropertyChanged("CannotPost");
                         this.OnPropertyChanged("ShouldShowAutoPost");
-                        if (this._autoPostAds)
+                        if (this.autoPostAds)
                         {
                             this.SendAutoAd();
                         }
                     };
 
-                this._update.Elapsed += (s, e) =>
+                this.update.Elapsed += (s, e) =>
                     {
                         if (!this.Model.IsSelected)
                         {
@@ -190,12 +187,12 @@ namespace ViewModels
                         this.OnPropertyChanged("StatusString");
                     };
 
-                this._channManVM.PropertyChanged += (s, e) => this.OnPropertyChanged("ChannelManagementViewModel");
+                this.channelManagementViewModel.PropertyChanged += (s, e) => this.OnPropertyChanged("ChannelManagementViewModel");
 
-                this._update.Enabled = true;
+                this.update.Enabled = true;
 
                 var newSettings = SettingsDaemon.GetChannelSettings(
-                    cm.SelectedCharacter.Name, this.Model.Title, this.Model.ID, this.Model.Type);
+                    cm.CurrentCharacter.Name, this.Model.Title, this.Model.Id, this.Model.Type);
                 this.Model.Settings = newSettings;
 
                 this.ChannelSettings.Updated += (s, e) =>
@@ -205,13 +202,13 @@ namespace ViewModels
                         if (!this.ChannelSettings.IsChangingSettings)
                         {
                             SettingsDaemon.UpdateSettingsFile(
-                                this.ChannelSettings, cm.SelectedCharacter.Name, this.Model.Title, this.Model.ID);
+                                this.ChannelSettings, cm.CurrentCharacter.Name, this.Model.Title, this.Model.Id);
                         }
                     };
 
                 this.PropertyChanged += this.OnPropertyChanged;
 
-                this._events.GetEvent<NewUpdateEvent>().Subscribe(this.UpdateChat);
+                this.Events.GetEvent<NewUpdateEvent>().Subscribe(this.UpdateChat);
             }
             catch (Exception ex)
             {
@@ -231,12 +228,12 @@ namespace ViewModels
         {
             get
             {
-                return this._autoPostAds;
+                return this.autoPostAds;
             }
 
             set
             {
-                this._autoPostAds = value;
+                this.autoPostAds = value;
                 this.OnPropertyChanged("AutoPost");
             }
         }
@@ -248,8 +245,8 @@ namespace ViewModels
         {
             get
             {
-                return (this.IsDisplayingChat && !this._isInCoolDownMessage)
-                       || (this.IsDisplayingAds && !this._isInCoolDownAd);
+                return (this.IsDisplayingChat && !this.isInCoolDownMessage)
+                       || (this.IsDisplayingAds && !this.isInCoolDownAd);
             }
         }
 
@@ -287,7 +284,7 @@ namespace ViewModels
         {
             get
             {
-                return this._channManVM;
+                return this.channelManagementViewModel;
             }
         }
 
@@ -309,7 +306,7 @@ namespace ViewModels
         {
             get
             {
-                return this._currentMessages;
+                return this.currentMessages;
             }
         }
 
@@ -320,7 +317,7 @@ namespace ViewModels
         {
             get
             {
-                return this._genderSettings;
+                return this.genderSettings;
             }
         }
 
@@ -347,7 +344,7 @@ namespace ViewModels
         }
 
         /// <summary>
-        ///     Gets a value indicating whether is displaying ads.
+        ///     Gets a value indicating whether is displaying Ads.
         /// </summary>
         public bool IsDisplayingAds
         {
@@ -364,21 +361,21 @@ namespace ViewModels
         {
             get
             {
-                return this._isDisplayingChat;
+                return this.isDisplayingChat;
             }
 
             set
             {
-                if (this._isDisplayingChat == value)
+                if (this.isDisplayingChat == value)
                 {
                     return;
                 }
 
-                this._isDisplayingChat = value;
+                this.isDisplayingChat = value;
 
                 string temp = this.Message;
-                this.Message = this._adMessage;
-                this._adMessage = temp;
+                this.Message = this.adMessage;
+                this.adMessage = temp;
 
                 this.OnPropertyChanged("IsDisplayingChat");
                 this.OnPropertyChanged("IsDisplayingAds");
@@ -392,11 +389,11 @@ namespace ViewModels
 
                 if (value)
                 {
-                    this._hasNewMessages = false;
+                    this.hasNewMessages = false;
                 }
                 else
                 {
-                    this._hasNewAds = false;
+                    this.hasNewAds = false;
                 }
 
                 this.OnPropertyChanged("OtherTabHasMessages");
@@ -421,17 +418,17 @@ namespace ViewModels
         {
             get
             {
-                return this._isSearching;
+                return this.isSearching;
             }
 
             set
             {
-                if (this._isSearching == value)
+                if (this.isSearching == value)
                 {
                     return;
                 }
 
-                this._isSearching = value;
+                this.isSearching = value;
                 this.OnPropertyChanged("IsSearching");
                 this.OnPropertyChanged("SearchSwitchMessageString");
                 this.OnPropertyChanged("IsChatting");
@@ -442,11 +439,11 @@ namespace ViewModels
         /// <summary>
         ///     Gets the motd.
         /// </summary>
-        public string MOTD
+        public string Description
         {
             get
             {
-                return ((GeneralChannelModel)this.Model).MOTD;
+                return ((GeneralChannelModel)this.Model).Description;
             }
         }
 
@@ -457,14 +454,7 @@ namespace ViewModels
         {
             get
             {
-                if (this.IsDisplayingChat)
-                {
-                    return this._hasNewAds;
-                }
-                else
-                {
-                    return this._hasNewMessages;
-                }
+                return this.IsDisplayingChat ? this.hasNewAds : this.hasNewMessages;
             }
         }
 
@@ -475,18 +465,18 @@ namespace ViewModels
         {
             get
             {
-                return this._searchSettings;
+                return this.searchSettings;
             }
         }
 
         /// <summary>
-        ///     Gets a value indicating whether should display ads.
+        ///     Gets a value indicating whether should display Ads.
         /// </summary>
         public bool ShouldDisplayAds
         {
             get
             {
-                return (this.Model.Mode == ChannelMode.both) || (this.Model.Mode == ChannelMode.ads);
+                return (this.Model.Mode == ChannelMode.Both) || (this.Model.Mode == ChannelMode.Ads);
             }
         }
 
@@ -497,7 +487,7 @@ namespace ViewModels
         {
             get
             {
-                return (this.Model.Mode == ChannelMode.both) || (this.Model.Mode == ChannelMode.chat);
+                return (this.Model.Mode == ChannelMode.Both) || (this.Model.Mode == ChannelMode.Chat);
             }
         }
 
@@ -508,7 +498,7 @@ namespace ViewModels
         {
             get
             {
-                if (!this._isInCoolDownAd)
+                if (!this.isInCoolDownAd)
                 {
                     return this.IsDisplayingAds;
                 }
@@ -535,9 +525,9 @@ namespace ViewModels
         {
             get
             {
-                if (this.IsDisplayingAds && this.AutoPost && this._isInCoolDownAd)
+                if (this.IsDisplayingAds && this.AutoPost && this.isInCoolDownAd)
                 {
-                    return "Auto post ads enabled";
+                    return "Auto post Ads enabled";
                 }
 
                 if (!string.IsNullOrEmpty(this.Message))
@@ -546,12 +536,12 @@ namespace ViewModels
                         "{0} / {1} characters", this.Message.Length, this.IsDisplayingChat ? "4,096" : "50,000");
                 }
 
-                if (this._hasNewAds && this.IsDisplayingChat)
+                if (this.hasNewAds && this.IsDisplayingChat)
                 {
                     return "This channel has new ad(s).";
                 }
 
-                if (this._hasNewMessages && this.IsDisplayingAds)
+                if (this.hasNewMessages && this.IsDisplayingAds)
                 {
                     return "This channel has new message(s).";
                 }
@@ -567,8 +557,8 @@ namespace ViewModels
         {
             get
             {
-                return this._switch
-                       ?? (this._switch = new RelayCommand(param => this.IsDisplayingChat = !this.IsDisplayingChat));
+                return this.@switch
+                       ?? (this.@switch = new RelayCommand(param => this.IsDisplayingChat = !this.IsDisplayingChat));
             }
         }
 
@@ -579,12 +569,12 @@ namespace ViewModels
         {
             get
             {
-                return this._switchSearch ?? (this._switchSearch = new RelayCommand(
-                                                                       param =>
-                                                                           {
-                                                                               this.OnPropertyChanged("CurrentMessages");
-                                                                               this.IsSearching = !this.IsSearching;
-                                                                           }));
+                return this.switchSearch ?? (this.switchSearch = new RelayCommand(
+                                                                     delegate
+                                                                         {
+                                                                             this.OnPropertyChanged("CurrentMessages");
+                                                                             this.IsSearching = !this.IsSearching;
+                                                                         }));
             }
         }
 
@@ -595,7 +585,7 @@ namespace ViewModels
         {
             get
             {
-                return HelperConverter.DateTimeInFutureToRough(this._timeLeftAd) + "left";
+                return HelperConverter.DateTimeInFutureToRough(this.timeLeftAd) + "left";
             }
         }
 
@@ -603,34 +593,34 @@ namespace ViewModels
 
         #region Properties
 
-        private IEnumerable<string> thisDingTerms
+        private IEnumerable<string> ThisDingTerms
         {
             get
             {
                 const int CharacterNameOffset = 2; // how many ding terms we have to offset for the character's name
-                int count = this._thisDingTerms.Count;
-                int shouldBe = ApplicationSettings.GlobalNotifyTermsList.Count()
+                var count = this.thisDingTerms.Count;
+                var shouldBe = ApplicationSettings.GlobalNotifyTermsList.Count()
                                + this.Model.Settings.EnumerableTerms.Count() + CharacterNameOffset;
 
                 if (count != shouldBe)
                 {
-                    this._thisDingTerms.Clear();
+                    this.thisDingTerms.Clear();
 
-                    foreach (string term in ApplicationSettings.GlobalNotifyTermsList)
+                    foreach (var term in ApplicationSettings.GlobalNotifyTermsList)
                     {
-                        this._thisDingTerms.Add(term);
+                        this.thisDingTerms.Add(term);
                     }
 
-                    foreach (string term in this.Model.Settings.EnumerableTerms)
+                    foreach (var term in this.Model.Settings.EnumerableTerms)
                     {
-                        this._thisDingTerms.Add(term);
+                        this.thisDingTerms.Add(term);
                     }
 
-                    this._thisDingTerms.Add(this._cm.SelectedCharacter.Name);
-                    this._thisDingTerms.Add(this._cm.SelectedCharacter.Name + "'s");
+                    this.thisDingTerms.Add(this.ChatModel.CurrentCharacter.Name);
+                    this.thisDingTerms.Add(this.ChatModel.CurrentCharacter.Name + "'s");
                 }
 
-                return this._thisDingTerms.Distinct().Where(term => !string.IsNullOrWhiteSpace(term));
+                return this.thisDingTerms.Distinct().Where(term => !string.IsNullOrWhiteSpace(term));
             }
         }
 
@@ -642,22 +632,22 @@ namespace ViewModels
         /// </summary>
         public void SendAutoAd()
         {
-            var messageToSend = this.IsDisplayingChat ? this._adMessage : this.Message;
+            var messageToSend = this.IsDisplayingChat ? this.adMessage : this.Message;
             if (messageToSend == null)
             {
                 this.UpdateError("There is no ad to auto-post!");
             }
 
-            IDictionary<string, object> toSend =
+            var toSend =
                 CommandDefinitions.CreateCommand(
-                    CommandDefinitions.ClientSendChannelAd, new List<string> { messageToSend }, this.Model.ID)
-                                  .toDictionary();
+                    CommandDefinitions.ClientSendChannelAd, new List<string> { messageToSend }, this.Model.Id)
+                                  .ToDictionary();
 
-            this._events.GetEvent<UserCommandEvent>().Publish(toSend);
-            this._timeLeftAd = DateTimeOffset.Now.AddMinutes(10).AddSeconds(2);
+            this.Events.GetEvent<UserCommandEvent>().Publish(toSend);
+            this.timeLeftAd = DateTimeOffset.Now.AddMinutes(10).AddSeconds(2);
 
-            this._isInCoolDownAd = true;
-            this._adFlood.Start();
+            this.isInCoolDownAd = true;
+            this.adFlood.Start();
             this.OnPropertyChanged("CanPost");
             this.OnPropertyChanged("CannotPost");
         }
@@ -666,7 +656,7 @@ namespace ViewModels
 
         #region Methods
 
-        internal override void InvertButton(object arguments)
+        protected override void InvertButton(object arguments)
         {
             var args = arguments as string;
             if (args == null)
@@ -705,24 +695,24 @@ namespace ViewModels
         {
             if (isManaged)
             {
-                this._update.Dispose();
-                this._update = null;
+                this.update.Dispose();
+                this.update = null;
 
-                this._adFlood.Dispose();
-                this._adFlood = null;
+                this.adFlood.Dispose();
+                this.adFlood = null;
 
-                this._messageFlood.Dispose();
-                this._messageFlood = null;
+                this.messageFlood.Dispose();
+                this.messageFlood = null;
 
-                this._searchSettings = null;
-                this._genderSettings = null;
+                this.searchSettings = null;
+                this.genderSettings = null;
 
-                this._events.GetEvent<NewUpdateEvent>().Unsubscribe(this.UpdateChat);
+                this.Events.GetEvent<NewUpdateEvent>().Unsubscribe(this.UpdateChat);
                 this.Model.Messages.CollectionChanged -= this.OnMessagesChanged;
                 this.Model.Ads.CollectionChanged -= this.OnAdsChanged;
                 this.PropertyChanged -= this.OnPropertyChanged;
 
-                (this.Model as GeneralChannelModel).MOTD = null;
+                (this.Model as GeneralChannelModel).Description = null;
                 (this.Model as GeneralChannelModel).Moderators.Clear();
             }
 
@@ -752,12 +742,12 @@ namespace ViewModels
                     this.OnPropertyChanged("HasPermissions"); // fixes laggy permissions
                     break;
                 case "Mode":
-                    if (this.Model.Mode == ChannelMode.ads && this.IsDisplayingChat)
+                    if (this.Model.Mode == ChannelMode.Ads && this.IsDisplayingChat)
                     {
                         this.IsDisplayingChat = false;
                     }
 
-                    if (this.Model.Mode == ChannelMode.chat && this.IsDisplayingAds)
+                    if (this.Model.Mode == ChannelMode.Chat && this.IsDisplayingAds)
                     {
                         this.IsDisplayingChat = true;
                     }
@@ -785,7 +775,7 @@ namespace ViewModels
                 return;
             }
 
-            if ((this._isInCoolDownAd && this.IsDisplayingAds) || (this._isInCoolDownMessage && this.IsDisplayingChat))
+            if ((this.isInCoolDownAd && this.IsDisplayingAds) || (this.isInCoolDownMessage && this.IsDisplayingChat))
             {
                 this.UpdateError("Cool your engines. Wait a little before you post again.");
                 return;
@@ -802,40 +792,40 @@ namespace ViewModels
                                  : CommandDefinitions.ClientSendChannelAd;
 
             var toSend =
-                CommandDefinitions.CreateCommand(command, new List<string> { this.Message }, this.Model.ID)
-                                  .toDictionary();
+                CommandDefinitions.CreateCommand(command, new List<string> { this.Message }, this.Model.Id)
+                                  .ToDictionary();
 
-            this._events.GetEvent<UserCommandEvent>().Publish(toSend);
+            this.Events.GetEvent<UserCommandEvent>().Publish(toSend);
 
-            if (!this._autoPostAds || this.IsDisplayingChat)
+            if (!this.autoPostAds || this.IsDisplayingChat)
             {
                 this.Message = null;
             }
 
             if (this.IsDisplayingChat)
             {
-                this._isInCoolDownMessage = true;
+                this.isInCoolDownMessage = true;
                 this.OnPropertyChanged("CanPost");
 
-                this._messageFlood.Enabled = true;
+                this.messageFlood.Enabled = true;
             }
             else
             {
-                this._timeLeftAd = DateTime.Now.AddMinutes(10).AddSeconds(2);
+                this.timeLeftAd = DateTime.Now.AddMinutes(10).AddSeconds(2);
 
-                this._isInCoolDownAd = true;
+                this.isInCoolDownAd = true;
                 this.OnPropertyChanged("CanPost");
                 this.OnPropertyChanged("CannotPost");
                 this.OnPropertyChanged("ShouldShowAutoPost");
 
-                this._adFlood.Enabled = true;
+                this.adFlood.Enabled = true;
             }
         }
 
         private bool MeetsFilter(IMessage message)
         {
             return message.MeetsFilters(
-                this.GenderSettings, this.SearchSettings, this.CM, this.CM.SelectedChannel as GeneralChannelModel);
+                this.GenderSettings, this.SearchSettings, this.ChatModel, this.ChatModel.CurrentChannel as GeneralChannelModel);
         }
 
         private void OnAdsChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -849,20 +839,20 @@ namespace ViewModels
                             var items = e.NewItems.Cast<IMessage>();
                             foreach (var item in items.Where(this.MeetsFilter))
                             {
-                                this._currentMessages.Add(item);
+                                this.currentMessages.Add(item);
                             }
                         }
 
                         break;
                     case NotifyCollectionChangedAction.Reset:
-                        this._currentMessages.Clear();
+                        this.currentMessages.Clear();
                         break;
                 }
             }
 
             if (this.IsDisplayingChat)
             {
-                this._hasNewAds = this.Model.Ads.Where(this.MeetsFilter).Any();
+                this.hasNewAds = this.Model.Ads.Where(this.MeetsFilter).Any();
                 this.OnPropertyChanged("OtherTabHasMessages");
             }
 
@@ -880,22 +870,22 @@ namespace ViewModels
                             var items = e.NewItems.Cast<IMessage>();
                             foreach (var item in items.Where(this.MeetsFilter))
                             {
-                                this._currentMessages.Add(item);
+                                this.currentMessages.Add(item);
                             }
                         }
 
                         break;
                     case NotifyCollectionChangedAction.Reset:
-                        this._currentMessages.Clear();
+                        this.currentMessages.Clear();
                         break;
                     case NotifyCollectionChangedAction.Remove:
-                        this._currentMessages.RemoveAt(0);
+                        this.currentMessages.RemoveAt(0);
                         break;
                 }
             }
             else if (this.IsDisplayingAds)
             {
-                this._hasNewMessages = this.Model.Messages.Count > 0;
+                this.hasNewMessages = this.Model.Messages.Count > 0;
                 this.OnPropertyChanged("OtherTabHasMessages");
             }
 
@@ -911,26 +901,26 @@ namespace ViewModels
                     break;
                 case "SearchSettings":
                     {
-                        this._currentMessages.Clear();
-                        ObservableCollection<IMessage> collection = this.IsDisplayingChat
-                                                                        ? this.Model.Messages
-                                                                        : this.Model.Ads;
-                        foreach (IMessage message in collection.Where(this.MeetsFilter))
+                        this.currentMessages.Clear();
+                        var collection = this.IsDisplayingChat
+                                        ? this.Model.Messages
+                                        : this.Model.Ads;
+                        foreach (var message in collection.Where(this.MeetsFilter))
                         {
-                            this._currentMessages.Add(message);
+                            this.currentMessages.Add(message);
                         }
                     }
 
                     break;
                 case "IsDisplayingChat":
                     {
-                        this._currentMessages.Clear();
-                        IEnumerable<IMessage> collection = this.IsDisplayingChat
-                                                               ? this.Model.Messages.Where(this.MeetsFilter)
-                                                               : this.Model.Ads.Where(this.MeetsFilter);
-                        foreach (IMessage item in collection)
+                        this.currentMessages.Clear();
+                        var collection = this.IsDisplayingChat
+                                            ? this.Model.Messages.Where(this.MeetsFilter)
+                                            : this.Model.Ads.Where(this.MeetsFilter);
+                        foreach (var item in collection)
                         {
-                            this._currentMessages.Add(item);
+                            this.currentMessages.Add(item);
                         }
                     }
 
@@ -938,15 +928,15 @@ namespace ViewModels
             }
         }
 
-        private void UpdateChat(NotificationModel Update)
+        private void UpdateChat(NotificationModel update)
         {
-            var update = Update as CharacterUpdateModel;
-            if (update == null)
+            var updateModel = update as CharacterUpdateModel;
+            if (updateModel == null)
             {
                 return;
             }
 
-            if (update.Arguments is CharacterUpdateModel.ListChangedEventArgs)
+            if (updateModel.Arguments is CharacterUpdateModel.ListChangedEventArgs)
             {
                 this.OnPropertyChanged("CurrentMessages");
             }

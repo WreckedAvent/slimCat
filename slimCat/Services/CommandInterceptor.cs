@@ -29,7 +29,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Services
+namespace Slimcat.Services
 {
     using System;
     using System.Collections.Generic;
@@ -42,13 +42,12 @@ namespace Services
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
     using SimpleJson;
 
-    using slimCat;
-
-    using ViewModels;
+    using Slimcat;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
+    using Slimcat.ViewModels;
 
     /// <summary>
     ///     This interprets the commands and translates them to methods that our various other services can use.
@@ -59,11 +58,11 @@ namespace Services
     {
         #region Fields
 
-        private readonly IChatConnection _connection;
+        private readonly IChatConnection connection;
 
-        private readonly IChannelManager _manager;
+        private readonly IChannelManager manager;
 
-        private readonly IList<IDictionary<string, object>> _que = new List<IDictionary<string, object>>();
+        private readonly IList<IDictionary<string, object>> que = new List<IDictionary<string, object>>();
 
         #endregion
 
@@ -99,14 +98,14 @@ namespace Services
             IEventAggregator eventagg)
             : base(contain, regman, eventagg, cm)
         {
-            this._connection = conn;
-            this._manager = manager;
+            this.connection = conn;
+            this.manager = manager;
 
-            this._events.GetEvent<CharacterSelectedLoginEvent>()
+            this.Events.GetEvent<CharacterSelectedLoginEvent>()
                 .Subscribe(this.GetCharacter, ThreadOption.BackgroundThread, true);
-            this._events.GetEvent<ChatCommandEvent>().Subscribe(this.EnqueAction, ThreadOption.BackgroundThread, true);
+            this.Events.GetEvent<ChatCommandEvent>().Subscribe(this.EnqueAction, ThreadOption.BackgroundThread, true);
 
-            this._cm.OurAccount = this._connection.Account;
+            this.ChatModel.CurrentAccount = this.connection.Account;
         }
 
         #endregion
@@ -171,10 +170,10 @@ namespace Services
 
         private void AdminsCommand(IDictionary<string, object> command)
         {
-            AddToSomeListCommand(command, "ops", this._cm.Mods);
-            if (this._cm.Mods.Contains(this._cm.SelectedCharacter.Name))
+            AddToSomeListCommand(command, "ops", this.ChatModel.Mods);
+            if (this.ChatModel.Mods.Contains(this.ChatModel.CurrentCharacter.Name))
             {
-                this.Dispatcher.Invoke((Action)delegate { this._cm.IsGlobalModerator = true; });
+                this.Dispatcher.Invoke((Action)delegate { this.ChatModel.IsGlobalModerator = true; });
             }
         }
 
@@ -182,9 +181,9 @@ namespace Services
         {
             var message = command["message"] as string;
             var posterName = command["character"] as string;
-            var poster = this._cm.FindCharacter(posterName);
+            var poster = this.ChatModel.FindCharacter(posterName);
 
-            this._events.GetEvent<NewUpdateEvent>()
+            this.Events.GetEvent<NewUpdateEvent>()
                 .Publish(
                     new CharacterUpdateModel(poster, new CharacterUpdateModel.BroadcastEventArgs { Message = message }));
         }
@@ -192,7 +191,7 @@ namespace Services
         private void ChannelBanListCommand(IDictionary<string, object> command)
         {
             var channelId = (string)command["channel"];
-            var channel = this._cm.CurrentChannels.FirstByIdOrDefault(channelId);
+            var channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
 
             if (channel == null)
             {
@@ -217,7 +216,7 @@ namespace Services
                 }
             }
 
-            this._events.GetEvent<NewUpdateEvent>()
+            this.Events.GetEvent<NewUpdateEvent>()
                 .Publish(
                     new ChannelUpdateModel(
                         channelId, new ChannelUpdateModel.ChannelTypeBannedListEventArgs(), channel.Title));
@@ -226,24 +225,24 @@ namespace Services
         private void ChannelDesciptionCommand(IDictionary<string, object> command)
         {
             var channelName = command["channel"];
-            var channel = this._cm.CurrentChannels.First((x) => x.ID == channelName as string);
+            var channel = this.ChatModel.CurrentChannels.First(x => x.Id == channelName as string);
             var description = command["description"];
 
-            var isInitializer = string.IsNullOrWhiteSpace(channel.MOTD);
+            var isInitializer = string.IsNullOrWhiteSpace(channel.Description);
 
             if (!isInitializer)
             {
-                channel.MOTD = description as string;
+                channel.Description = description as string;
             }
             else if (description.ToString().StartsWith("Welcome to your private room!"))
             {
                 // shhh go away lame init description
-                channel.MOTD =
+                channel.Description =
                     "Man this description is lame. You should change it and make it amaaaaaazing. Click that pencil, man.";
             }
             else
             {
-                channel.MOTD = description as string; // derpherp no channel description bug fix
+                channel.Description = description as string; // derpherp no channel description bug fix
             }
 
             if (isInitializer)
@@ -252,14 +251,14 @@ namespace Services
             }
 
             var args = new ChannelUpdateModel.ChannelDescriptionChangedEventArgs();
-            this._events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(channel.ID, args, channel.Title));
+            this.Events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(channel.Id, args, channel.Title));
         }
 
         private void ChannelInitializedCommand(IDictionary<string, object> command)
         {
             var channelName = (string)command["channel"];
-            var mode = (ChannelMode)Enum.Parse(typeof(ChannelMode), command["mode"] as string);
-            var channel = this._cm.CurrentChannels.FirstByIdOrDefault(channelName);
+            var mode = (ChannelMode)Enum.Parse(typeof(ChannelMode), command["mode"] as string, true);
+            var channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
 
             channel.Mode = mode;
             dynamic users = command["users"]; // dynamic lets us deal with odd syntax
@@ -274,9 +273,9 @@ namespace Services
 
                 if (
                     !channel.Users.Any(
-                        x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && this._cm.IsOnline(name)))
+                        x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && this.ChatModel.IsOnline(name)))
                 {
-                    channel.Users.Add(this._cm.FindCharacter(name));
+                    channel.Users.Add(this.ChatModel.FindCharacter(name));
                 }
             }
         }
@@ -293,7 +292,7 @@ namespace Services
                     title = HttpUtility.HtmlDecode(channel["title"] as string);
                 }
 
-                var mode = ChannelMode.both;
+                var mode = ChannelMode.Both;
                 if (isPublic)
                 {
                     mode = (ChannelMode)Enum.Parse(typeof(ChannelMode), channel["mode"] as string, true);
@@ -308,8 +307,8 @@ namespace Services
                 this.Dispatcher.Invoke(
                     (Action)
                     (() =>
-                     this._cm.AllChannels.Add(
-                         new GeneralChannelModel(name, isPublic ? ChannelType.pub : ChannelType.priv, (int)number, mode)
+                     this.ChatModel.AllChannels.Add(
+                         new GeneralChannelModel(name, isPublic ? ChannelType.Public : ChannelType.Private, (int)number, mode)
                              {
                                  Title
                                      =
@@ -328,7 +327,7 @@ namespace Services
         private void ChannelOperatorListCommand(IDictionary<string, object> command)
         {
             var channelName = (string)command["channel"];
-            var channel = this._cm.CurrentChannels.FirstByIdOrDefault(channelName);
+            var channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
 
             if (channel == null)
             {
@@ -343,15 +342,15 @@ namespace Services
         {
             var characterName = (string)command["character"];
 
-            if (!this._cm.IsOnline(characterName))
+            if (!this.ChatModel.IsOnline(characterName))
             {
                 return;
             }
 
-            var character = this._cm.FindCharacter(characterName);
-            var ofInterest = this._cm.IsOfInterest(characterName);
+            var character = this.ChatModel.FindCharacter(characterName);
+            var ofInterest = this.ChatModel.IsOfInterest(characterName);
 
-            var channels = from c in this._cm.CurrentChannels
+            var channels = from c in this.ChatModel.CurrentChannels
                             where c.RemoveCharacter(characterName)
                             select
                                 new Dictionary<string, object>
@@ -363,7 +362,7 @@ namespace Services
                                         }, 
                                         {
                                             "channel", 
-                                            c.ID
+                                            c.Id
                                         }
                                     };
 
@@ -376,14 +375,14 @@ namespace Services
                 }
             }
 
-            var characterChannel = this._cm.CurrentPMs.FirstByIdOrDefault(characterName);
+            var characterChannel = this.ChatModel.CurrentPMs.FirstByIdOrDefault(characterName);
             if (characterChannel != null)
             {
-                characterChannel.TypingStatus = Typing_Status.clear;
+                characterChannel.TypingStatus = TypingStatus.Clear;
             }
 
-            this._cm.RemoveCharacter(characterName);
-            this._events.GetEvent<NewUpdateEvent>()
+            this.ChatModel.RemoveCharacter(characterName);
+            this.Events.GetEvent<NewUpdateEvent>()
                 .Publish(
                     new CharacterUpdateModel(
                         character, new CharacterUpdateModel.LoginStateChangedEventArgs { IsLogIn = false }));
@@ -391,21 +390,20 @@ namespace Services
 
         private void DoAction()
         {
-            lock (this._que)
+            lock (this.que)
             {
-                if (this._que.Count > 0)
+                if (this.que.Count > 0)
                 {
-                    IDictionary<string, object> workingData = this._que[0];
+                    IDictionary<string, object> workingData = this.que[0];
                     CommandDelegate toInvoke = this.InterpretCommand(workingData);
                     if (toInvoke != null)
                     {
                         toInvoke.Invoke(workingData);
                     }
 
-                    this._que.RemoveAt(0);
+                    this.que.RemoveAt(0);
 
                     this.DoAction();
-                    return;
                 }
             }
         }
@@ -418,7 +416,7 @@ namespace Services
         /// </param>
         private void EnqueAction(IDictionary<string, object> data)
         {
-            this._que.Add(data);
+            this.que.Add(data);
 
             this.DoAction();
         }
@@ -444,7 +442,7 @@ namespace Services
             // checks to ensure it's not a mod promote message
             if (thisMessage.IndexOf("has been", StringComparison.OrdinalIgnoreCase) == -1)
             {
-                this._events.GetEvent<ErrorEvent>().Publish(thisMessage);
+                this.Events.GetEvent<ErrorEvent>().Publish(thisMessage);
             }
         }
 
@@ -452,15 +450,8 @@ namespace Services
         {
             if ((command["action"] as string) != "delete")
             {
-                if (command.ContainsKey("character"))
-                {
-                    AddToSomeListCommand(command, "character", this._cm.Ignored);
-                }
-                else
-                {
-                    // implicit, no need for if else check here
-                    AddToSomeListCommand(command, "characters", this._cm.Ignored);
-                }
+                AddToSomeListCommand(
+                    command, command.ContainsKey("character") ? "character" : "characters", this.ChatModel.Ignored);
 
                 // todo: add notification for this
             }
@@ -468,11 +459,11 @@ namespace Services
             {
                 // this makes unignore actually work
                 string toRemove =
-                    this._cm.Ignored.FirstOrDefault(
+                    this.ChatModel.Ignored.FirstOrDefault(
                         ignore => ignore.Equals(command["character"] as string, StringComparison.OrdinalIgnoreCase));
                 if (toRemove != null)
                 {
-                    this._cm.Ignored.Remove(toRemove);
+                    this.ChatModel.Ignored.Remove(toRemove);
                 }
 
                 // todo: add notification for this
@@ -488,16 +479,16 @@ namespace Services
 
                 temp.Name = (string)character[0]; // Character's name
 
-                if (!this._cm.IsOnline(temp.Name))
+                if (!this.ChatModel.IsOnline(temp.Name))
                 {
                     temp.Gender = ParseGender((string)character[1]); // character's gender
 
-                    temp.Status = (StatusType)Enum.Parse(typeof(StatusType), (string)character[2]);
+                    temp.Status = (StatusType)Enum.Parse(typeof(StatusType), (string)character[2], true);
 
                     // Character's status
                     temp.StatusMessage = (string)character[3]; // Character's status message
 
-                    this._cm.AddCharacter(temp); // also add it to the online characters collection
+                    this.ChatModel.AddCharacter(temp); // also add it to the online characters collection
                 }
             }
         }
@@ -509,7 +500,7 @@ namespace Services
                 return null;
             }
 
-            this._cm.LastMessageReceived = DateTimeOffset.Now;
+            this.ChatModel.LastMessageReceived = DateTimeOffset.Now;
 
             switch ((string)command["command"])
             {
@@ -590,7 +581,7 @@ namespace Services
             var channelName = command["title"] as string;
 
             var args = new ChannelUpdateModel.ChannelInviteEventArgs { Inviter = sender };
-            this._events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(channelID, args, channelName));
+            this.Events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(channelID, args, channelName));
         }
 
         private new void JoinChannelCommand(IDictionary<string, object> command)
@@ -604,25 +595,25 @@ namespace Services
             // JCH is used in a few situations. It is used when others join a channel and when we join a channel
 
             // if this is a situation where we are joining a channel...
-            GeneralChannelModel channel = this._cm.CurrentChannels.FirstByIdOrDefault(channelName);
+            GeneralChannelModel channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
             if (channel == null)
             {
-                var kind = ChannelType.pub;
+                var kind = ChannelType.Public;
                 if (channelName.Contains("ADH-"))
                 {
-                    kind = ChannelType.priv;
+                    kind = ChannelType.Private;
                 }
 
-                this._manager.JoinChannel(kind, channelName, title);
+                this.manager.JoinChannel(kind, channelName, title);
             }
 
                 // if it isn't, then it must be when someone else is.
             else
             {
-                ICharacter toAdd = this._cm.FindCharacter(identity);
+                ICharacter toAdd = this.ChatModel.FindCharacter(identity);
                 if (channel.AddCharacter(toAdd))
                 {
-                    this._events.GetEvent<NewUpdateEvent>().Publish // send the join/leave notification
+                    this.Events.GetEvent<NewUpdateEvent>().Publish // send the join/leave notification
                         (
                             new CharacterUpdateModel(
                                 toAdd, 
@@ -630,7 +621,7 @@ namespace Services
                                     {
                                         Joined = true, 
                                         TargetChannel = channel.Title, 
-                                        TargetChannelID = channel.ID
+                                        TargetChannelID = channel.Id
                                     }));
                 }
             }
@@ -643,12 +634,12 @@ namespace Services
             var kicked = (string)command["character"];
             var isBan = (string)command["command"] == "CBU";
 
-            if (kicked.Equals(this._cm.SelectedCharacter.Name, StringComparison.OrdinalIgnoreCase))
+            if (kicked.Equals(this.ChatModel.CurrentCharacter.Name, StringComparison.OrdinalIgnoreCase))
             {
                 kicked = "you";
             }
 
-            var channel = this._cm.CurrentChannels.FirstByIdOrDefault(channelId);
+            var channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
 
             var args = new ChannelUpdateModel.ChannelDisciplineEventArgs
                            {
@@ -658,11 +649,11 @@ namespace Services
                            };
             var update = new ChannelUpdateModel(channelId, args, channel.Title);
 
-            this._events.GetEvent<NewUpdateEvent>().Publish(update);
+            this.Events.GetEvent<NewUpdateEvent>().Publish(update);
 
             if (kicked == "you")
             {
-                this._manager.RemoveChannel(channelId);
+                this.manager.RemoveChannel(channelId);
             }
         }
 
@@ -671,12 +662,12 @@ namespace Services
             var channelName = (string)command["channel"];
             var characterName = (string)command["character"];
 
-            if (this._cm.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
+            if (this.ChatModel.CurrentCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
-            var channel = this._cm.CurrentChannels.FirstByIdOrDefault(channelName);
+            var channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
             if (channel == null)
             {
                 return;
@@ -684,28 +675,28 @@ namespace Services
 
             if (channel.RemoveCharacter(characterName))
             {
-                this._events.GetEvent<NewUpdateEvent>().Publish // send the join/leave notification
+                this.Events.GetEvent<NewUpdateEvent>().Publish // send the join/leave notification
                     (
                         new CharacterUpdateModel(
-                            this._cm.FindCharacter(characterName), 
+                            this.ChatModel.FindCharacter(characterName), 
                             new CharacterUpdateModel.JoinLeaveEventArgs
                                 {
                                     Joined = false, 
                                     TargetChannel = channel.Title, 
-                                    TargetChannelID = channel.ID
+                                    TargetChannelID = channel.Id
                                 }));
             }
         }
 
         private void LoginCommand(IDictionary<string, object> command)
         {
-            this._cm.ClientUptime = DateTimeOffset.Now;
+            this.ChatModel.ClientUptime = DateTimeOffset.Now;
 
-            this._connection.SendMessage("CHA"); // request channels
-            this._connection.SendMessage("UPT"); // request uptime
-            this._connection.SendMessage("ORS"); // request private channels
+            this.connection.SendMessage("CHA"); // request channels
+            this.connection.SendMessage("UPT"); // request uptime
+            this.connection.SendMessage("ORS"); // request private channels
 
-            this.Dispatcher.Invoke((Action)delegate { this._cm.IsAuthenticated = true; });
+            this.Dispatcher.Invoke((Action)delegate { this.ChatModel.IsAuthenticated = true; });
         }
 
         private void MessageRecieved(IDictionary<string, object> command, bool isAd)
@@ -714,9 +705,9 @@ namespace Services
             var message = (string)command["message"];
             var channel = (string)command["channel"];
 
-            if (!this._cm.Ignored.Contains(character, StringComparer.OrdinalIgnoreCase))
+            if (!this.ChatModel.Ignored.Contains(character, StringComparer.OrdinalIgnoreCase))
             {
-                this._manager.AddMessage(message, channel, character, isAd ? MessageType.ad : MessageType.normal);
+                this.manager.AddMessage(message, channel, character, isAd ? MessageType.Ad : MessageType.Normal);
             }
         }
 
@@ -762,11 +753,11 @@ namespace Services
                     }
 
                     var reporterName = command["character"] as string;
-                    var reporter = this._cm.FindCharacter(reporterName);
+                    var reporter = this.ChatModel.FindCharacter(reporterName);
 
                     if (reportIsClean)
                     {
-                        this._events.GetEvent<NewUpdateEvent>()
+                        this.Events.GetEvent<NewUpdateEvent>()
                             .Publish(
                                 new CharacterUpdateModel(
                                     reporter, 
@@ -791,7 +782,7 @@ namespace Services
                     }
                     else
                     {
-                        this._events.GetEvent<NewUpdateEvent>()
+                        this.Events.GetEvent<NewUpdateEvent>()
                             .Publish(
                                 new CharacterUpdateModel(
                                     reporter, 
@@ -817,15 +808,13 @@ namespace Services
                 // someone else handling a report
                 var handlerName = command["moderator"] as string;
                 var handled = command["character"] as string;
-                ICharacter handler = this._cm.FindCharacter(handlerName);
+                ICharacter handler = this.ChatModel.FindCharacter(handlerName);
 
-                this._events.GetEvent<NewUpdateEvent>()
+                this.Events.GetEvent<NewUpdateEvent>()
                     .Publish(
                         new CharacterUpdateModel(
                             handler, new CharacterUpdateModel.ReportHandledEventArgs { Handled = handled }));
             }
-
-            return;
         }
 
         private void OperatorDemoteCommand(IDictionary<string, object> command)
@@ -869,7 +858,7 @@ namespace Services
                     return Gender.Cuntboy;
 
                 default: // every other gender is parsed normally
-                    return (Gender)Enum.Parse(typeof(Gender), input);
+                    return (Gender)Enum.Parse(typeof(Gender), input, true);
             }
         }
 
@@ -881,26 +870,26 @@ namespace Services
         private void PrivateMessageCommand(IDictionary<string, object> command)
         {
             var sender = (string)command["character"];
-            if (!this._cm.Ignored.Contains(sender, StringComparer.OrdinalIgnoreCase))
+            if (!this.ChatModel.Ignored.Contains(sender, StringComparer.OrdinalIgnoreCase))
             {
-                if (this._cm.CurrentPMs.FirstByIdOrDefault(sender) == null)
+                if (this.ChatModel.CurrentPMs.FirstByIdOrDefault(sender) == null)
                 {
-                    this._manager.AddChannel(ChannelType.pm, sender);
+                    this.manager.AddChannel(ChannelType.PrivateMessage, sender);
                 }
 
-                this._manager.AddMessage(command["message"] as string, sender, sender);
+                this.manager.AddMessage(command["message"] as string, sender, sender);
 
-                var temp = this._cm.CurrentPMs.FirstByIdOrDefault(sender);
+                var temp = this.ChatModel.CurrentPMs.FirstByIdOrDefault(sender);
                 if (temp == null)
                 {
                     return;
                 }
 
-                temp.TypingStatus = Typing_Status.clear; // webclient assumption
+                temp.TypingStatus = TypingStatus.Clear; // webclient assumption
             }
             else
             {
-                this._connection.SendMessage(
+                this.connection.SendMessage(
                     new Dictionary<string, object>
                         {
                             { "action", "notify" }, 
@@ -915,19 +904,19 @@ namespace Services
             string title = null;
             if (channelID != null)
             {
-                var channel = this._cm.CurrentChannels.FirstByIdOrDefault(channelID);
+                var channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelID);
                 if (channel != null)
                 {
                     title = channel.Title;
                 }
             }
 
-            var target = this._cm.FindCharacter(character);
+            var target = this.ChatModel.FindCharacter(character);
 
             if (target != null)
             {
                 // avoids nasty null reference
-                this._events.GetEvent<NewUpdateEvent>()
+                this.Events.GetEvent<NewUpdateEvent>()
                     .Publish(
                         new CharacterUpdateModel(
                             target, 
@@ -955,7 +944,7 @@ namespace Services
             {
                 waitTimer.Elapsed += (s, e) =>
                     {
-                        this._connection.SendMessage(walk.Current, "JCH");
+                        this.connection.SendMessage(walk.Current, "JCH");
                         if (walk.MoveNext())
                         {
                             return;
@@ -979,9 +968,9 @@ namespace Services
                 var subject = command["subject"] as string;
                 var id = (long)command["id"];
 
-                var sender = this._cm.FindCharacter(senderName);
+                var sender = this.ChatModel.FindCharacter(senderName);
 
-                this._events.GetEvent<NewUpdateEvent>()
+                this.Events.GetEvent<NewUpdateEvent>()
                     .Publish(
                         new CharacterUpdateModel(
                             sender, new CharacterUpdateModel.NoteEventArgs { Subject = subject, NoteID = id }));
@@ -989,22 +978,22 @@ namespace Services
             else if (type != null && type.Equals("comment"))
             {
                 var name = command["name"] as string;
-                ICharacter character = this._cm.FindCharacter(name);
+                var character = this.ChatModel.FindCharacter(name);
 
                 // sometimes ID is sent as a string. Sometimes it is sent as a number.
                 // so even though it's THE SAME COMMAND we have to treat *each* number differently
-                long commentId = long.Parse(command["id"] as string);
+                var commentId = long.Parse(command["id"] as string);
                 var parentId = (long)command["parent_id"];
-                long targetId = long.Parse(command["target_id"] as string);
+                var targetId = long.Parse(command["target_id"] as string);
 
-                string title = HttpUtility.HtmlDecode(command["target"] as string);
+                var title = HttpUtility.HtmlDecode(command["target"] as string);
 
                 var commentType =
                     (CharacterUpdateModel.CommentEventArgs.CommentTypes)
                     Enum.Parse(
-                        typeof(CharacterUpdateModel.CommentEventArgs.CommentTypes), command["target_type"] as string);
+                        typeof(CharacterUpdateModel.CommentEventArgs.CommentTypes), command["target_type"] as string, true);
 
-                this._events.GetEvent<NewUpdateEvent>()
+                this.Events.GetEvent<NewUpdateEvent>()
                     .Publish(
                         new CharacterUpdateModel(
                             character, 
@@ -1026,9 +1015,9 @@ namespace Services
             var message = command["message"] as string;
             var poster = command["character"] as string;
 
-            if (!this._cm.Ignored.Contains(poster))
+            if (!this.ChatModel.Ignored.Contains(poster))
             {
-                this._manager.AddMessage(message, channel, poster, MessageType.roll);
+                this.manager.AddMessage(message, channel, poster, MessageType.Roll);
             }
         }
 
@@ -1037,8 +1026,8 @@ namespace Services
             var channelId = command["channel"] as string;
             var mode = command["mode"] as string;
 
-            var newMode = (ChannelMode)Enum.Parse(typeof(ChannelMode), mode);
-            var channel = this._cm.CurrentChannels.FirstByIdOrDefault(channelId);
+            var newMode = (ChannelMode)Enum.Parse(typeof(ChannelMode), mode, true);
+            var channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
 
             if (channel == null)
             {
@@ -1046,10 +1035,10 @@ namespace Services
             }
 
             channel.Mode = newMode;
-            this._events.GetEvent<NewUpdateEvent>()
+            this.Events.GetEvent<NewUpdateEvent>()
                 .Publish(
                     new ChannelUpdateModel(
-                        channel.ID, 
+                        channel.Id, 
                         new ChannelUpdateModel.ChannelModeUpdateEventArgs { NewMode = newMode, }, 
                         channel.Title));
         }
@@ -1059,7 +1048,7 @@ namespace Services
             var channelId = command["channel"] as string;
             var isPublic = (command["message"] as string).IndexOf("public", StringComparison.OrdinalIgnoreCase) != -1;
 
-            var channel = this._cm.CurrentChannels.FirstByIdOrDefault(channelId);
+            var channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
 
             if (channel == null)
             {
@@ -1069,9 +1058,9 @@ namespace Services
             if (isPublic)
             {
                 // room is now open
-                channel.Type = ChannelType.priv;
+                channel.Type = ChannelType.Private;
 
-                this._events.GetEvent<NewUpdateEvent>()
+                this.Events.GetEvent<NewUpdateEvent>()
                     .Publish(
                         new ChannelUpdateModel(
                             channelId, 
@@ -1080,10 +1069,10 @@ namespace Services
             }
             else
             {
-                // room is closed
-                channel.Type = ChannelType.closed;
+                // room is InviteOnly
+                channel.Type = ChannelType.InviteOnly;
 
-                this._events.GetEvent<NewUpdateEvent>()
+                this.Events.GetEvent<NewUpdateEvent>()
                     .Publish(
                         new ChannelUpdateModel(
                             channelId, 
@@ -1095,15 +1084,15 @@ namespace Services
         private void StatusChangedCommand(IDictionary<string, object> command)
         {
             var character = (string)command["character"];
-            var status = (StatusType)Enum.Parse(typeof(StatusType), command["status"] as string);
+            var status = (StatusType)Enum.Parse(typeof(StatusType), command["status"] as string, true);
             var statusMessage = (string)command["statusmsg"];
 
-            if (!this._cm.IsOnline(character))
+            if (!this.ChatModel.IsOnline(character))
             {
                 return;
             }
 
-            var temp = this._cm.FindCharacter(character);
+            var temp = this.ChatModel.FindCharacter(character);
             var statusChanged = false;
             var statusMessageChanged = false;
 
@@ -1137,20 +1126,20 @@ namespace Services
                                        : null
                            };
 
-            this._events.GetEvent<NewUpdateEvent>().Publish(new CharacterUpdateModel(temp, args));
+            this.Events.GetEvent<NewUpdateEvent>().Publish(new CharacterUpdateModel(temp, args));
         }
 
         private void TypingStatusCommand(IDictionary<string, object> command)
         {
             var sender = (string)command["character"];
 
-            var channel = this._cm.CurrentPMs.FirstByIdOrDefault(sender);
+            var channel = this.ChatModel.CurrentPMs.FirstByIdOrDefault(sender);
             if (channel == null)
             {
                 return;
             }
 
-            var type = (Typing_Status)Enum.Parse(typeof(Typing_Status), (string)command["status"]);
+            var type = (TypingStatus)Enum.Parse(typeof(TypingStatus), (string)command["status"], true);
 
             channel.TypingStatus = type;
         }
@@ -1158,20 +1147,20 @@ namespace Services
         private void UptimeCommand(IDictionary<string, object> command)
         {
             var time = (long)command["starttime"];
-            this._cm.ServerUpTime = HelperConverter.UnixTimeToDateTime(time);
+            this.ChatModel.ServerUpTime = HelperConverter.UnixTimeToDateTime(time);
         }
 
         private void UserLoggedInCommand(IDictionary<string, object> command)
         {
             var character = (string)command["identity"];
 
-            if (this._cm.SelectedCharacter.Name.Equals(character, StringComparison.OrdinalIgnoreCase))
+            if (this.ChatModel.CurrentCharacter.Name.Equals(character, StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
             // we do not need to keep track of our own character in the character list
-            if (this._cm.IsOnline(character))
+            if (this.ChatModel.IsOnline(character))
             {
                 return;
             }
@@ -1181,13 +1170,13 @@ namespace Services
                                Name = character,
                                Gender = ParseGender((string)command["gender"]),
                                Status =
-                                   (StatusType)Enum.Parse(typeof(StatusType), (string)command["status"])
+                                   (StatusType)Enum.Parse(typeof(StatusType), (string)command["status"], true)
                            };
 
             // Character's status
-            this._cm.AddCharacter(temp); // also add it to the online characters collection
+            this.ChatModel.AddCharacter(temp); // also add it to the online characters collection
 
-            this._events.GetEvent<NewUpdateEvent>()
+            this.Events.GetEvent<NewUpdateEvent>()
                 .Publish(
                     new CharacterUpdateModel(
                         temp, new CharacterUpdateModel.LoginStateChangedEventArgs { IsLogIn = true }));
@@ -1201,16 +1190,16 @@ namespace Services
         /// </param>
         private void GetCharacter(string character)
         {
-            this._events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(this.GetCharacter);
-            this._cm.SelectedCharacter = new CharacterModel { Name = character, Status = StatusType.online };
-            this._cm.SelectedCharacter.GetAvatar();
+            this.Events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(this.GetCharacter);
+            this.ChatModel.CurrentCharacter = new CharacterModel { Name = character, Status = StatusType.online };
+            this.ChatModel.CurrentCharacter.GetAvatar();
 
             this.Dispatcher.Invoke(
                 (Action)
                 delegate
                     {
                         Application.Current.MainWindow.Title = string.Format(
-                            "{0} {1} ({2})", Constants.CLIENT_ID, Constants.CLIENT_NAME, character);
+                            "{0} {1} ({2})", Constants.ClientID, Constants.ClientName, character);
                     });
         }
 

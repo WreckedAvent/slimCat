@@ -1,9 +1,8 @@
-﻿<v:DisposableView x:Class="Views.PMChannelView"
+﻿<v:DisposableView x:Class="Slimcat.Views.PMChannelView"
                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                  xmlns:v="clr-namespace:Views"
-                  xmlns:lib="clr-namespace:lib"
-                  xmlns:sys="clr-namespace:System">
+                  xmlns:v="clr-namespace:Slimcat.Views"
+                  xmlns:lib="clr-namespace:Slimcat.Libraries">
     <Grid Margin="10"
           TextBlock.FontSize="16">
         <Grid.RowDefinitions>
@@ -21,7 +20,7 @@
                                    TextAlignment="Left"
                                    HorizontalAlignment="Left">
                             <v:ChannelTypeButtonView IsEnabled="False" />
-                            <Run Text="{Binding Path=Model.ID, Mode=OneWay}"
+                            <Run Text="{Binding Path=Model.Id, Mode=OneWay}"
                                  Foreground="{StaticResource HighlightBrush}" />
                         </TextBlock>
                     </Expander.Header>

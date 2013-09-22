@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Models
+namespace Slimcat.Models
 {
     using System;
     using System.ComponentModel;
@@ -36,6 +36,8 @@ namespace Models
     using System.Net.Cache;
     using System.Windows.Media.Imaging;
 
+    using Slimcat.ViewModels;
+
     /// <summary>
     ///     A character model which stores data related to characters
     /// </summary>
@@ -43,19 +45,19 @@ namespace Models
     {
         #region Fields
 
-        private BitmapImage _avatar;
+        private BitmapImage avatar;
 
-        private Gender _gender;
+        private Gender gender;
 
-        private string _name = string.Empty;
+        private string name = string.Empty;
 
-        private Orientation _orient;
+        private ReportModel lastReport;
 
-        private ReportModel _report;
+        private StatusType status;
 
-        private StatusType _status;
+        private string statusMessage = string.Empty;
 
-        private string _statusMessage = string.Empty;
+        private bool isOfInterest;
 
         #endregion
 
@@ -68,12 +70,12 @@ namespace Models
         {
             get
             {
-                return this._avatar;
+                return this.avatar;
             }
 
             set
             {
-                this._avatar = value;
+                this.avatar = value;
                 this.OnPropertyChanged("Avatar");
             }
         }
@@ -85,12 +87,12 @@ namespace Models
         {
             get
             {
-                return this._gender;
+                return this.gender;
             }
 
             set
             {
-                this._gender = value;
+                this.gender = value;
                 this.OnPropertyChanged("Gender");
             }
         }
@@ -102,7 +104,7 @@ namespace Models
         {
             get
             {
-                return this._report != null;
+                return this.lastReport != null;
             }
         }
 
@@ -113,12 +115,12 @@ namespace Models
         {
             get
             {
-                return this._report;
+                return this.lastReport;
             }
 
             set
             {
-                this._report = value;
+                this.lastReport = value;
                 this.OnPropertyChanged("LastReport");
                 this.OnPropertyChanged("HasReport");
             }
@@ -131,30 +133,35 @@ namespace Models
         {
             get
             {
-                return this._name;
+                return this.name;
             }
 
             set
             {
-                this._name = value;
+                this.name = value;
                 this.OnPropertyChanged("Name");
             }
         }
 
         /// <summary>
-        ///     Gets or sets the orientation.
+        ///     Gets or sets whether a user is interesting to our current character.
         /// </summary>
-        public Orientation Orientation
+        public bool IsOfInterest
         {
             get
             {
-                return this._orient;
+                return this.isOfInterest;
             }
 
             set
             {
-                this._orient = value;
-                this.OnPropertyChanged("Orientation");
+                if (this.isOfInterest == value)
+                {
+                    return;
+                }
+
+                this.isOfInterest = value;
+                this.OnPropertyChanged("IsOfInterest");
             }
         }
 
@@ -165,12 +172,12 @@ namespace Models
         {
             get
             {
-                return this._status;
+                return this.status;
             }
 
             set
             {
-                this._status = value;
+                this.status = value;
                 this.OnPropertyChanged("Status");
             }
         }
@@ -182,12 +189,12 @@ namespace Models
         {
             get
             {
-                return this._statusMessage;
+                return this.statusMessage;
             }
 
             set
             {
-                this._statusMessage = value;
+                this.statusMessage = value;
                 this.OnPropertyChanged("StatusMessage");
             }
         }
@@ -209,7 +216,7 @@ namespace Models
         /// </summary>
         public void GetAvatar()
         {
-            if (this._name == null)
+            if (this.name == null)
             {
                 return;
             }
@@ -225,8 +232,7 @@ namespace Models
                         webClient.CachePolicy = new RequestCachePolicy(RequestCacheLevel.Default);
                         try
                         {
-                            byte[] imageBytes = null;
-                            imageBytes = webClient.DownloadData(uri);
+                            byte[] imageBytes = webClient.DownloadData(uri);
 
                             if (imageBytes == null)
                             {
@@ -274,322 +280,15 @@ namespace Models
         /// <summary>
         /// The dispose.
         /// </summary>
-        /// <param name="IsManaged">
+        /// <param name="isManaged">
         /// The is managed.
         /// </param>
-        protected virtual void Dispose(bool IsManaged)
+        protected virtual void Dispose(bool isManaged)
         {
             this.Name = null;
             this.StatusMessage = null;
             this.Avatar.StreamSource.Dispose();
-            this._report.Dispose();
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    ///     For everything that interacts directly with character data
-    /// </summary>
-    public interface ICharacter
-    {
-        #region Public Properties
-
-        /// <summary>
-        ///     Call GetAvatar before this is used
-        /// </summary>
-        BitmapImage Avatar { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the gender.
-        /// </summary>
-        Gender Gender { get; set; }
-
-        /// <summary>
-        ///     Gets a value indicating whether has report.
-        /// </summary>
-        bool HasReport { get; }
-
-        /// <summary>
-        ///     Gets or sets the last report.
-        /// </summary>
-        ReportModel LastReport { get; set; }
-
-        /// <summary>
-        ///     The full name is the character's gender, op status, and name in one line
-        /// </summary>
-        string Name { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the orientation.
-        /// </summary>
-        Orientation Orientation { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the status.
-        /// </summary>
-        StatusType Status { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the status message.
-        /// </summary>
-        string StatusMessage { get; set; }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        ///     The get avatar.
-        /// </summary>
-        void GetAvatar();
-
-        #endregion
-    }
-
-    #region Enums
-
-    /// <summary>
-    ///     Types of available status
-    /// </summary>
-    public enum StatusType
-    {
-        /// <summary>
-        ///     The offline.
-        /// </summary>
-        offline, 
-
-        /// <summary>
-        ///     The online.
-        /// </summary>
-        online, 
-
-        /// <summary>
-        ///     The away.
-        /// </summary>
-        away, 
-
-        /// <summary>
-        ///     The busy.
-        /// </summary>
-        busy, 
-
-        /// <summary>
-        ///     The looking.
-        /// </summary>
-        looking, 
-
-        /// <summary>
-        ///     The idle.
-        /// </summary>
-        idle, 
-
-        /// <summary>
-        ///     The dnd.
-        /// </summary>
-        dnd, 
-
-        /// <summary>
-        ///     The crown.
-        /// </summary>
-        crown, 
-    }
-
-    /// <summary>
-    ///     Orientation selections
-    /// </summary>
-    public enum Orientation
-    {
-        /// <summary>
-        ///     The none.
-        /// </summary>
-        None, 
-
-        /// <summary>
-        ///     The straight.
-        /// </summary>
-        Straight, 
-
-        /// <summary>
-        ///     The gay.
-        /// </summary>
-        Gay, 
-
-        /// <summary>
-        ///     The bisexual_ mpref.
-        /// </summary>
-        Bisexual_Mpref, 
-
-        /// <summary>
-        ///     The bisexual_ fpref.
-        /// </summary>
-        Bisexual_Fpref, 
-
-        /// <summary>
-        ///     The bisexual.
-        /// </summary>
-        Bisexual, 
-
-        /// <summary>
-        ///     The asexual.
-        /// </summary>
-        Asexual, 
-
-        /// <summary>
-        ///     The pansexual.
-        /// </summary>
-        Pansexual, 
-
-        /// <summary>
-        ///     The unsure.
-        /// </summary>
-        Unsure, 
-
-        /// <summary>
-        ///     The bisexual_ curios.
-        /// </summary>
-        Bisexual_Curios
-    }
-
-    /// <summary>
-    ///     Gender selections
-    /// </summary>
-    public enum Gender
-    {
-        /// <summary>
-        ///     The none.
-        /// </summary>
-        None, 
-
-        /// <summary>
-        ///     The male.
-        /// </summary>
-        Male, 
-
-        /// <summary>
-        ///     The female.
-        /// </summary>
-        Female, 
-
-        /// <summary>
-        ///     The herm_ f.
-        /// </summary>
-        Herm_F, 
-
-        /// <summary>
-        ///     The shemale.
-        /// </summary>
-        Shemale, 
-
-        /// <summary>
-        ///     The cuntboy.
-        /// </summary>
-        Cuntboy, 
-
-        /// <summary>
-        ///     The herm_ m.
-        /// </summary>
-        Herm_M, 
-
-        /// <summary>
-        ///     The transgender.
-        /// </summary>
-        Transgender
-    }
-
-    /// <summary>
-    ///     D/s selections
-    /// </summary>
-    public enum DomSubRoles
-    {
-        /// <summary>
-        ///     The always_ dom.
-        /// </summary>
-        Always_Dom, 
-
-        /// <summary>
-        ///     The dom.
-        /// </summary>
-        Dom, 
-
-        /// <summary>
-        ///     The switch.
-        /// </summary>
-        Switch, 
-
-        /// <summary>
-        ///     The sub.
-        /// </summary>
-        Sub, 
-
-        /// <summary>
-        ///     The always_ sub.
-        /// </summary>
-        Always_Sub, 
-    }
-
-    #endregion
-
-    /// <summary>
-    ///     A model for storing data related to character reports
-    /// </summary>
-    public sealed class ReportModel : IDisposable
-    {
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the call id.
-        /// </summary>
-        public string CallId { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the complaint.
-        /// </summary>
-        public string Complaint { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the log id.
-        /// </summary>
-        public int? LogId { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the reported.
-        /// </summary>
-        public string Reported { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the reporter.
-        /// </summary>
-        public ICharacter Reporter { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the tab.
-        /// </summary>
-        public string Tab { get; set; }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        ///     The dispose.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-        }
-
-        #endregion
-
-        #region Methods
-
-        private void Dispose(bool IsManaged)
-        {
-            if (IsManaged)
-            {
-                this.Complaint = null;
-                this.Reporter = null;
-            }
+            this.lastReport.Dispose();
         }
 
         #endregion

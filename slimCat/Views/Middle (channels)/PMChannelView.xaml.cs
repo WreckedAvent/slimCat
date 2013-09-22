@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
     using System;
     using System.Collections.Specialized;
@@ -35,24 +35,24 @@ namespace Views
     using System.Windows.Documents;
     using System.Windows.Threading;
 
-    using Models;
-
-    using ViewModels;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
+    using Slimcat.ViewModels;
 
     /// <summary>
     ///     Interaction logic for PMChannelView.xaml
     /// </summary>
-    public partial class PMChannelView : DisposableView
+    public partial class PMChannelView
     {
         #region Fields
 
-        private bool _historyLoaded = false;
+        private bool historyLoaded;
 
-        private bool _historyInitialized = false;
+        private bool historyInitialized;
 
-        private PMChannelViewModel _vm;
+        private PMChannelViewModel vm;
 
-        private KeepToCurrentScrollViewer _scroll;
+        private KeepToCurrentScrollViewer scroll;
 
         #endregion
 
@@ -69,12 +69,12 @@ namespace Views
             try
             {
                 this.InitializeComponent();
-                this._vm = vm.ThrowIfNull("vm");
+                this.vm = vm.ThrowIfNull("vm");
 
-                this.DataContext = this._vm;
+                this.DataContext = this.vm;
 
-                this._vm.Model.Messages.CollectionChanged += this.OnDisplayChanged;
-                this._vm.StatusChanged += this.OnStatusChanged;
+                this.vm.Model.Messages.CollectionChanged += this.OnDisplayChanged;
+                this.vm.StatusChanged += this.OnStatusChanged;
             }
             catch (Exception ex)
             {
@@ -107,21 +107,21 @@ namespace Views
 
                 case NotifyCollectionChangedAction.Remove:
                     {
-                        this._scroll.Stick();
-                        if (this._historyLoaded)
+                        this.scroll.Stick();
+                        if (this.historyLoaded)
                         {
-                            for (var i = 0; i < this._vm.Model.History.Count; i++)
+                            for (var i = 0; i < this.vm.Model.History.Count; i++)
                             {
                                 this.Messages.Blocks.Remove(this.Messages.Blocks.FirstBlock);
                             }
 
-                            this._historyLoaded = false;
+                            this.historyLoaded = false;
                         }
 
 
                         this.Messages.Blocks.Remove(this.Messages.Blocks.FirstBlock);
                         this.PopupAnchor.UpdateLayout();
-                        this._scroll.ScrollToStick();
+                        this.scroll.ScrollToStick();
                     }
 
                     break;
@@ -131,25 +131,25 @@ namespace Views
         private void OnLoad(object s, EventArgs e)
         {
             var loadedCount = 0;
-            this._scroll = new KeepToCurrentScrollViewer(PopupAnchor);
+            this.scroll = new KeepToCurrentScrollViewer(PopupAnchor);
 
-            foreach (var template in this._vm.Model.Messages.Reverse().Select(item => new MessageView { DataContext = item }))
+            foreach (var template in this.vm.Model.Messages.Reverse().Select(item => new MessageView { DataContext = item }))
             {
                 this.AddAsync(template, ref loadedCount);
             }
 
-            if (this._historyInitialized)
+            if (this.historyInitialized)
             {
                 return;
             }
 
-            foreach (var template in this._vm.Model.History.Reverse().Select(item => new HistoryView { DataContext = item }))
+            foreach (var template in this.vm.Model.History.Reverse().Select(item => new HistoryView { DataContext = item }))
             {
                 this.AddAsync(template, ref loadedCount);
             }
 
-            this._historyLoaded = true;
-            this._historyInitialized = true;
+            this.historyLoaded = true;
+            this.historyInitialized = true;
         }
 
         private void AddAsync(Block item, ref int count)
@@ -157,8 +157,11 @@ namespace Views
             count++;
 
             var priority = count < 25 ? DispatcherPriority.Normal : DispatcherPriority.DataBind;
-            if (count > 25) return;
-            
+            if (count > 25)
+            {
+                return;
+            }
+
             Dispatcher.BeginInvoke(
                 priority,
                 (Action)delegate
@@ -175,17 +178,17 @@ namespace Views
                 });
         }
 
-        internal override void Dispose(bool IsManaged)
+        protected override void Dispose(bool isManaged)
         {
-            if (!IsManaged)
+            if (!isManaged)
             {
                 return;
             }
 
-            this._vm.StatusChanged -= this.OnStatusChanged;
-            this._vm.Model.Messages.CollectionChanged -= this.OnDisplayChanged;
+            this.vm.StatusChanged -= this.OnStatusChanged;
+            this.vm.Model.Messages.CollectionChanged -= this.OnDisplayChanged;
             this.DataContext = null;
-            this._vm = null;
+            this.vm = null;
         }
 
         private void OnStatusChanged(object sender, EventArgs e)

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Views.ChannelTextBoxEntryView"
+﻿<UserControl x:Class="Slimcat.Views.ChannelTextBoxEntryView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>

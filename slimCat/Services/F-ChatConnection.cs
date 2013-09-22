@@ -27,20 +27,19 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Services
+namespace Slimcat.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Timers;
 
     using Microsoft.Practices.Prism.Events;
 
-    using Models;
-
     using SimpleJson;
 
-    using slimCat;
+    using Slimcat;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
 
     using WebSocket4Net;
 
@@ -62,21 +61,17 @@ namespace Services
 
         #region Fields
 
-        private readonly IAccount _account;
+        private readonly IEventAggregator events;
 
-        private readonly IEventAggregator _events;
+        private WebSocket socket;
 
-        private string _selectedCharacter;
+        #if (DEBUG)
+        private readonly StreamWriter logger;
+        #endif
 
-        private WebSocket _ws;
+        private Timer staggerTimer;
 
-#if (DEBUG)
-        private readonly StreamWriter _logger;
-#endif
-
-        private Timer _stagger;
-
-        private bool _isAuth;
+        private bool isAuthenticated;
 
         #endregion
 
@@ -85,24 +80,12 @@ namespace Services
         /// <summary>
         ///     Gets the account.
         /// </summary>
-        public IAccount Account
-        {
-            get
-            {
-                return this._account;
-            }
-        }
+        public IAccount Account { get; private set; }
 
         /// <summary>
         ///     Gets the character.
         /// </summary>
-        public string Character
-        {
-            get
-            {
-                return this._selectedCharacter;
-            }
-        }
+        public string Character { get; private set; }
 
         #endregion
 
@@ -120,20 +103,20 @@ namespace Services
         /// </param>
         public ChatConnection(IAccount user, IEventAggregator eventagg)
         {
-            this._account = user.ThrowIfNull("user");
-            this._events = eventagg.ThrowIfNull("eventagg");
+            this.Account = user.ThrowIfNull("user");
+            this.events = eventagg.ThrowIfNull("eventagg");
 
-            this._events.GetEvent<CharacterSelectedLoginEvent>()
+            this.events.GetEvent<CharacterSelectedLoginEvent>()
                 .Subscribe(this.ConnectToChat, ThreadOption.BackgroundThread, true);
 
-#if (DEBUG)
+            #if (DEBUG)
             if (!Directory.Exists(@"Debug"))
             {
                 Directory.CreateDirectory("Debug");
             }
 
-            this._logger = new StreamWriter(@"Debug\Rawchat " + DateTime.Now.Ticks + ".log", true);
-#endif
+            this.logger = new StreamWriter(@"Debug\Rawchat " + DateTime.Now.Ticks + ".log", true);
+            #endif
         }
 
         #endregion
@@ -150,20 +133,20 @@ namespace Services
         {
             try
             {
-                this._selectedCharacter = character.ThrowIfNull("character");
+                this.Character = character.ThrowIfNull("character");
 
-                this._events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(this.ConnectToChat);
+                this.events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(this.ConnectToChat);
 
-                this._ws = new WebSocket(host);
+                this.socket = new WebSocket(host);
 
                 // define socket behavior
-                this._ws.Opened += this.ConnectionOpened;
-                this._ws.Error += this.ConnectionError;
-                this._ws.MessageReceived += this.ConnectionMessageReceived;
-                this._ws.Closed += this.ConnectionClosed;
+                this.socket.Opened += this.ConnectionOpened;
+                this.socket.Error += this.ConnectionError;
+                this.socket.MessageReceived += this.ConnectionMessageReceived;
+                this.socket.Closed += this.ConnectionClosed;
 
                 // start connection
-                this._ws.Open();
+                this.socket.Open();
             }
             catch (Exception ex)
             {
@@ -183,9 +166,9 @@ namespace Services
         /// </param>
         private void ConnectionClosed(object s, EventArgs e)
         {
-            if (!this._isAuth)
+            if (!this.isAuthenticated)
             {
-                this._events.GetEvent<LoginFailedEvent>().Publish("Server closed the connection");
+                this.events.GetEvent<LoginFailedEvent>().Publish("Server closed the connection");
                 this.AttemptReconnect();
                 return;
             }
@@ -194,9 +177,10 @@ namespace Services
             Exceptions.HandleException(
                 new Exception("Connection to the server was closed"), 
                 "The connection to the server was closed.\n\nApplication will now exit.");
-#if (DEBUG)
-            this._logger.Close();
-#endif
+
+            #if (DEBUG)
+            this.logger.Close();
+            #endif
         }
 
         /// <summary>
@@ -210,14 +194,14 @@ namespace Services
         /// </param>
         private void ConnectionMessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            if (!this._isAuth)
+            if (!this.isAuthenticated)
             {
-                this._isAuth = true;
+                this.isAuthenticated = true;
             }
 
-            string command_type = e.Message.Substring(0, 3); // type of command sent
+            var commandType = e.Message.Substring(0, 3); // type of command sent
 
-            string message = e.Message; // actual arguments sent
+            var message = e.Message; // actual arguments sent
 
             if (e.Message.Length > 3)
             {
@@ -227,63 +211,64 @@ namespace Services
                 var json = (IDictionary<string, object>)SimpleJson.DeserializeObject(message);
 
                 // de-serialize it to an object model
-                json.Add("command", command_type);
+                json.Add("command", commandType);
 
                 // add back in the command type so our models can listen for them
-#if (DEBUG)
-
+                #if (DEBUG)
                 // for debug, write the command received to file
-                this._logger.WriteLine("<<- Command: {0}", json["command"]);
+                this.logger.WriteLine("<<- Command: {0}", json["command"]);
 
                 foreach (var pair in json)
                 {
                     if (pair.Key != "command")
                     {
-                        this._logger.WriteLine("{0}: {1}", pair.Key, pair.Value);
+                        this.logger.WriteLine("{0}: {1}", pair.Key, pair.Value);
                     }
                 }
 
-                this._logger.WriteLine();
-                this._logger.Flush();
-#endif
+                this.logger.WriteLine();
+                this.logger.Flush();
+                #endif
 
                 if ((json["command"] as string) == "ERR" && json.ContainsKey("number"))
                 {
                     if (json["number"] as string == "2")
                     {
                         // no login spaces error
-                        this._isAuth = false;
+                        this.isAuthenticated = false;
                     }
 
                     if (json["number"] as string == "62")
                     {
                         // no login slots error
-                        this._isAuth = false;
+                        this.isAuthenticated = false;
                     }
                 }
 
-                this._events.GetEvent<ChatCommandEvent>().Publish(json);
+                this.events.GetEvent<ChatCommandEvent>().Publish(json);
             }
-            else if (e.Message == "PIN")
+            else
             {
-                this.SendMessage("PIN"); // auto-respond to pings
+                switch (e.Message)
+                {
+                    case "PIN":
+                        this.SendMessage("PIN"); // auto-respond to pings
+                        break;
+                    case "LRP":
+                        break;
+                }
             }
-            else if (e.Message == "LRP")
-            {
-            }
-                
-                // useless to us
-            
-#if (DEBUG)
+
+            #if (DEBUG)
             else
             {
                 // some other, odd, no argument command not specified
-                this._logger.WriteLine("Server sent unknown command: " + e.Message);
-                this._logger.WriteLine();
-                this._logger.Flush();
+                this.logger.WriteLine("Server sent unknown command: " + e.Message);
+                this.logger.WriteLine();
+                this.logger.Flush();
             }
 
-#endif
+            #endif
         }
 
         /// <summary>
@@ -297,7 +282,7 @@ namespace Services
         /// </param>
         private void ConnectionError(object sender, ErrorEventArgs e)
         {
-            this._events.GetEvent<LoginFailedEvent>().Publish(e.Exception.Message);
+            this.events.GetEvent<LoginFailedEvent>().Publish(e.Exception.Message);
             this.AttemptReconnect();
         }
 
@@ -316,12 +301,12 @@ namespace Services
             object idn =
                 new
                     {
-                        ticket = this._account.Ticket, 
+                        ticket = this.Account.Ticket, 
                         method = "ticket", 
-                        account = this._account.AccountName, 
-                        character = this._selectedCharacter, 
-                        cname = Constants.CLIENT_ID, 
-                        cversion = string.Format("{0} {1}", Constants.CLIENT_NAME, Constants.CLIENT_VER)
+                        account = this.Account.AccountName, 
+                        character = this.Character, 
+                        cname = Constants.ClientID, 
+                        cversion = string.Format("{0} {1}", Constants.ClientName, Constants.ClientVer)
                     };
 
             this.SendMessage(idn, "IDN");
@@ -332,19 +317,19 @@ namespace Services
         /// </summary>
         private void AttemptReconnect()
         {
-            if (this._stagger != null)
+            if (this.staggerTimer != null)
             {
-                this._stagger.Dispose();
-                this._stagger = null;
+                this.staggerTimer.Dispose();
+                this.staggerTimer = null;
             }
 
-            this._stagger = new Timer((new Random().Next(10) + 5) * 1000); // between 5 and 15 seconds
-            this._stagger.Elapsed += (s, e) =>
+            this.staggerTimer = new Timer((new Random().Next(10) + 5) * 1000); // between 5 and 15 seconds
+            this.staggerTimer.Elapsed += (s, e) =>
                 {
-                    this.ConnectToChat(this._selectedCharacter);
-                    this._events.GetEvent<ReconnectingEvent>().Publish(string.Empty);
+                    this.ConnectToChat(this.Character);
+                    this.events.GetEvent<ReconnectingEvent>().Publish(string.Empty);
                 };
-            this._stagger.Enabled = true;
+            this.staggerTimer.Enabled = true;
         }
 
         #endregion
@@ -380,7 +365,7 @@ namespace Services
                 this._logger.Flush();
 #endif
 
-                this._ws.Send(command_type + " " + ser);
+                this.socket.Send(command_type + " " + ser);
             }
             catch (Exception ex)
             {
@@ -403,7 +388,7 @@ namespace Services
 
                 command.Remove("type");
 
-                string ser = SimpleJson.SerializeObject(command);
+                var ser = SimpleJson.SerializeObject(command);
 
 #if (DEBUG)
                 this._logger.WriteLine("->> Command: " + type);
@@ -412,7 +397,7 @@ namespace Services
                 this._logger.Flush();
 #endif
 
-                this._ws.Send(type + " " + ser);
+                this.socket.Send(type + " " + ser);
             }
             catch (Exception ex)
             {
@@ -442,7 +427,7 @@ namespace Services
                 this._logger.Flush();
 #endif
 
-                this._ws.Send(commandType);
+                this.socket.Send(commandType);
             }
             catch (Exception ex)
             {
@@ -469,65 +454,14 @@ namespace Services
         /// </param>
         protected virtual void Dispose(bool isManagedDispose)
         {
-#if (DEBUG)
+            #if (DEBUG)
             if (isManagedDispose)
             {
-                this._logger.Dispose();
+                this.logger.Dispose();
             }
 
-#endif
-            this._ws.Close();
+            #endif
+            this.socket.Close();
         }
-    }
-
-    /// <summary>
-    ///     The ChatConnection interface.
-    /// </summary>
-    public interface IChatConnection
-    {
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets the account.
-        /// </summary>
-        IAccount Account { get; }
-
-        /// <summary>
-        ///     Gets the character.
-        /// </summary>
-        string Character { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        /// The send message.
-        /// </summary>
-        /// <param name="command">
-        /// The command.
-        /// </param>
-        /// <param name="command_type">
-        /// The command_type.
-        /// </param>
-        void SendMessage(object command, string command_type);
-
-        /// <summary>
-        /// The send message.
-        /// </summary>
-        /// <param name="commandType">
-        /// The command type.
-        /// </param>
-        void SendMessage(string commandType);
-
-        /// <summary>
-        /// The send message.
-        /// </summary>
-        /// <param name="command">
-        /// The command.
-        /// </param>
-        void SendMessage(IDictionary<string, object> command);
-
-        #endregion
     }
 }

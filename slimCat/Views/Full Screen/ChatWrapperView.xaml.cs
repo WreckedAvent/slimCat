@@ -27,17 +27,17 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
     using System;
-    using System.Windows.Controls;
 
-    using ViewModels;
+    using Slimcat.Utilities;
+    using Slimcat.ViewModels;
 
     /// <summary>
     ///     Interaction logic for ChatWrapperView.xaml
     /// </summary>
-    public partial class ChatWrapperView : UserControl
+    public partial class ChatWrapperView
     {
         #region Constants
 
@@ -60,7 +60,7 @@ namespace Views
 
         #region Fields
 
-        private readonly ViewModelBase _vm;
+        private readonly ViewModelBase vm;
 
         #endregion
 
@@ -78,9 +78,9 @@ namespace Views
             {
                 this.InitializeComponent();
 
-                this._vm = vm.ThrowIfNull("vm");
+                this.vm = vm.ThrowIfNull("vm");
 
-                this.DataContext = this._vm;
+                this.DataContext = this.vm;
             }
             catch (Exception ex)
             {

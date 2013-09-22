@@ -27,18 +27,18 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
-    using ViewModels;
+    using Slimcat.ViewModels;
 
     /// <summary>
     ///     Interaction logic for UtilityChannelView.xaml
     /// </summary>
-    public partial class UtilityChannelView : DisposableView
+    public partial class UtilityChannelView
     {
         #region Fields
 
-        private ViewModelBase _vm;
+        private ViewModelBase vm;
 
         #endregion
 
@@ -53,21 +53,21 @@ namespace Views
         public UtilityChannelView(UtilityChannelViewModel vm)
         {
             this.InitializeComponent();
-            this._vm = vm;
+            this.vm = vm;
 
-            this.DataContext = this._vm;
+            this.DataContext = this.vm;
         }
 
         #endregion
 
         #region Methods
 
-        internal override void Dispose(bool isManaged)
+        protected override void Dispose(bool isManaged)
         {
             if (isManaged)
             {
                 this.DataContext = null;
-                this._vm = null;
+                this.vm = null;
             }
         }
 

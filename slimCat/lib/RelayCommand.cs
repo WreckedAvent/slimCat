@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace lib
+namespace Slimcat.Libraries
 {
     using System;
     using System.Diagnostics;
@@ -117,7 +117,7 @@ namespace lib
         [DebuggerStepThrough]
         public bool CanExecute(object parameter)
         {
-            return this._canExecute == null ? true : this._canExecute(parameter);
+            return this._canExecute == null || this._canExecute(parameter);
         }
 
         /// <summary>

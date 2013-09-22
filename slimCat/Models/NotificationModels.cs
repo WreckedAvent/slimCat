@@ -27,11 +27,13 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Models
+namespace Slimcat.Models
 {
     using System;
     using System.Linq;
     using System.Text;
+
+    using Slimcat.Utilities;
 
     /// <summary>
     ///     The notification model.
@@ -47,9 +49,9 @@ namespace Models
     {
         #region Fields
 
-        private CharacterUpdateEventArgs _args;
+        private CharacterUpdateEventArgs args;
 
-        private ICharacter _target;
+        private ICharacter target;
 
         #endregion
 
@@ -66,8 +68,8 @@ namespace Models
         /// </param>
         public CharacterUpdateModel(ICharacter target, CharacterUpdateEventArgs e)
         {
-            this._target = target;
-            this._args = e;
+            this.target = target;
+            this.args = e;
         }
 
         #endregion
@@ -81,7 +83,7 @@ namespace Models
         {
             get
             {
-                return this._args;
+                return this.args;
             }
         }
 
@@ -92,7 +94,7 @@ namespace Models
         {
             get
             {
-                return this._target;
+                return this.target;
             }
         }
 
@@ -115,12 +117,12 @@ namespace Models
 
         #region Methods
 
-        internal override void Dispose(bool IsManaged)
+        internal override void Dispose(bool isManaged)
         {
-            if (IsManaged)
+            if (isManaged)
             {
-                this._target = null;
-                this._args = null;
+                this.target = null;
+                this.args = null;
             }
         }
 
@@ -175,35 +177,19 @@ namespace Models
             /// </summary>
             public enum CommentTypes
             {
-                /// <summary>
-                ///     The comment.
-                /// </summary>
-                comment, 
+                Comment, 
 
-                /// <summary>
-                ///     The newspost.
-                /// </summary>
-                newspost, 
+                Newspost, 
 
-                /// <summary>
-                ///     The bugreport.
-                /// </summary>
-                bugreport, 
+                BugReport, 
 
-                /// <summary>
-                ///     The changelog.
-                /// </summary>
-                changelog, 
+                ChangeLog, 
 
-                /// <summary>
-                ///     The feature.
-                /// </summary>
-                feature
+                Feature
             }
 
             #endregion
 
-            // the id of the content, such as newspost ID
             #region Public Properties
 
             /// <summary>
@@ -211,15 +197,11 @@ namespace Models
             /// </summary>
             public long CommentID { get; set; }
 
-            // the id of the comment that is new
-
-            // title of the newpost, suggestion, etc
             /// <summary>
             ///     Gets or sets the comment type.
             /// </summary>
             public CommentTypes CommentType { get; set; }
 
-            // the type of comment we got
             /// <summary>
             ///     Gets the link.
             /// </summary>
@@ -229,28 +211,28 @@ namespace Models
                 {
                     switch (this.CommentType)
                     {
-                        case CommentTypes.newspost:
+                        case CommentTypes.Newspost:
                             return string.Format(
                                 "{0}/newspost/{1}/#Comment{2}", 
-                                Constants.UrlConstants.DOMAIN, 
+                                Constants.UrlConstants.Domain, 
                                 this.TargetID, 
                                 this.CommentID);
-                        case CommentTypes.bugreport:
+                        case CommentTypes.BugReport:
                             return string.Format(
                                 "{0}/view_bugreport.php?id={1}#Comment{2}", 
-                                Constants.UrlConstants.DOMAIN, 
+                                Constants.UrlConstants.Domain, 
                                 this.TargetID, 
                                 this.CommentID);
-                        case CommentTypes.changelog:
+                        case CommentTypes.ChangeLog:
                             return string.Format(
                                 "{0}/log.php?id={1}#Comment{2}", 
-                                Constants.UrlConstants.DOMAIN, 
+                                Constants.UrlConstants.Domain, 
                                 this.TargetID, 
                                 this.CommentID);
-                        case CommentTypes.feature:
+                        case CommentTypes.Feature:
                             return string.Format(
                                 "{0}/vote.php?fid={1}#Comment{2}", 
-                                Constants.UrlConstants.DOMAIN, 
+                                Constants.UrlConstants.Domain, 
                                 this.TargetID, 
                                 this.CommentID);
                         default:
@@ -264,9 +246,8 @@ namespace Models
             /// </summary>
             public long ParentID { get; set; }
 
-            // the parent of whatever was replied to
             /// <summary>
-            ///     Gets or sets the target id.
+            ///     Gets or sets the target id. This is the parent of whatever we were replied to.
             /// </summary>
             public long TargetID { get; set; }
 
@@ -290,35 +271,27 @@ namespace Models
                 if (this.ParentID == 0)
                 {
                     // not a comment, but a suggestion, newspost, etc.
-                    return "has replied to your " + this.commentTypeToString(this.CommentType) + ", "
+                    return "has replied to your " + CommentTypeToString(this.CommentType) + ", "
                            + string.Format("[url={0}]{1}[/url]", this.Link, this.Title);
                 }
-                else
-                {
-                    // our comment *on* a suggestion, newspost, comment, etc.
-                    return "has replied to your comment on the " + this.commentTypeToString(this.CommentType) + ' '
-                           + string.Format("[url={0}]{1}[/url]", this.Link, this.Title);
-                }
+
+                // our comment *on* a suggestion, newspost, comment, etc.
+                return "has replied to your comment on the " + CommentTypeToString(this.CommentType) + ' '
+                       + string.Format("[url={0}]{1}[/url]", this.Link, this.Title);
             }
 
             #endregion
 
             #region Methods
 
-            private string commentTypeToString(CommentTypes argument)
+            private static string CommentTypeToString(CommentTypes argument)
             {
-                if (argument == CommentTypes.bugreport)
+                if (argument == CommentTypes.BugReport)
                 {
                     return "bug report";
                 }
-                else if (argument == CommentTypes.feature)
-                {
-                    return "feature suggestion";
-                }
-                else
-                {
-                    return argument.ToString();
-                }
+
+                return argument == CommentTypes.Feature ? "feature suggestion" : argument.ToString();
             }
 
             #endregion
@@ -377,30 +350,15 @@ namespace Models
             /// </summary>
             public enum ListType
             {
-                /// <summary>
-                ///     The friends.
-                /// </summary>
-                friends, 
+                Friends, 
 
-                /// <summary>
-                ///     The bookmarks.
-                /// </summary>
-                bookmarks, 
+                Bookmarks, 
 
-                /// <summary>
-                ///     The ignored.
-                /// </summary>
-                ignored, 
+                Ignored, 
 
-                /// <summary>
-                ///     The interested.
-                /// </summary>
-                interested, 
+                Interested, 
 
-                /// <summary>
-                ///     The notinterested.
-                /// </summary>
-                notinterested
+                NotInterested
             }
 
             #endregion
@@ -434,10 +392,11 @@ namespace Models
             /// </returns>
             public override string ToString()
             {
-                string listKind = this.ListArgument != ListType.notinterested
+                var listKind = this.ListArgument != ListType.NotInterested
                                       ? this.ListArgument.ToString()
                                       : "not interested";
-                bool isTemp = this.IsTemporary == null ? false : this.IsTemporary;
+
+                var isTemp = this.IsTemporary;
 
                 return "has been " + (this.IsAdded ? "added to" : "removed from") + " your " + listKind + " list"
                        + (this.IsTemporary ? " until this character logs out" : string.Empty) + '.';
@@ -490,7 +449,7 @@ namespace Models
             {
                 get
                 {
-                    return Constants.UrlConstants.READ_NOTE + this.NoteID;
+                    return Constants.UrlConstants.ViewNote + this.NoteID;
                 }
             }
 
@@ -561,11 +520,9 @@ namespace Models
                 {
                     return "has been " + (this.IsPromote ? "promoted to" : "demoted from") + " global moderator.";
                 }
-                else
-                {
-                    return "has been " + (this.IsPromote ? "promoted to" : "demoted from") + " channel moderator in "
-                           + this.TargetChannel + ".";
-                }
+
+                return "has been " + (this.IsPromote ? "promoted to" : "demoted from") + " channel moderator in "
+                       + this.TargetChannel + ".";
             }
 
             #endregion
@@ -600,7 +557,13 @@ namespace Models
             {
                 get
                 {
-                    return Constants.UrlConstants.READ_LOG + this.LogId.Value;
+                    var logId = this.LogId;
+                    if (logId != null)
+                    {
+                        return Constants.UrlConstants.ReadLog + logId.Value;
+                    }
+
+                    return string.Empty;
                 }
             }
 
@@ -626,7 +589,7 @@ namespace Models
             /// </returns>
             public override string ToString()
             {
-                string toReturn = null;
+                string toReturn;
                 if (this.Reported == null && this.Tab == null)
                 {
                     toReturn = "has requested staff assistance";
@@ -778,11 +741,11 @@ namespace Models
     {
         #region Fields
 
-        private ChannelUpdateEventArgs _args;
+        private ChannelUpdateEventArgs args;
 
-        private string _channelID;
+        private string channelId;
 
-        private string _channelTitle;
+        private string channelTitle;
 
         #endregion
 
@@ -802,17 +765,10 @@ namespace Models
         /// </param>
         public ChannelUpdateModel(string channelID, ChannelUpdateEventArgs e, string channelTitle = null)
         {
-            this._channelID = channelID;
-            this._args = e;
+            this.channelId = channelID;
+            this.args = e;
 
-            if (channelTitle == null)
-            {
-                this._channelTitle = this._channelID;
-            }
-            else
-            {
-                this._channelTitle = channelTitle;
-            }
+            this.channelTitle = channelTitle ?? this.channelId;
         }
 
         #endregion
@@ -826,7 +782,7 @@ namespace Models
         {
             get
             {
-                return this._args;
+                return this.args;
             }
         }
 
@@ -837,7 +793,7 @@ namespace Models
         {
             get
             {
-                return this._channelID;
+                return this.channelId;
             }
         }
 
@@ -848,7 +804,7 @@ namespace Models
         {
             get
             {
-                return this._channelTitle;
+                return this.channelTitle;
             }
         }
 
@@ -871,14 +827,16 @@ namespace Models
 
         #region Methods
 
-        internal override void Dispose(bool IsManaged)
+        internal override void Dispose(bool isManaged)
         {
-            if (IsManaged)
+            if (!isManaged)
             {
-                this._channelID = null;
-                this._channelTitle = null;
-                this._args = null;
+                return;
             }
+
+            this.channelId = null;
+            this.channelTitle = null;
+            this.args = null;
         }
 
         #endregion
@@ -998,12 +956,12 @@ namespace Models
             /// </returns>
             public override string ToString()
             {
-                if (this.NewMode != ChannelMode.both)
+                if (this.NewMode != ChannelMode.Both)
                 {
                     return "now only allows " + this.NewMode.ToString() + '.';
                 }
 
-                return "now allows ads and chatting.";
+                return "now allows Ads and chatting.";
             }
 
             #endregion
@@ -1054,7 +1012,7 @@ namespace Models
             /// </returns>
             public override string ToString()
             {
-                return ": is now " + (this.IsOpen ? "open" : "closed") + '.';
+                return ": is now " + (this.IsOpen ? "open" : "InviteOnly") + '.';
             }
 
             #endregion

@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace System
+namespace Slimcat.Utilities
 {
     /// <summary>
     ///     The constants.
@@ -36,29 +36,17 @@ namespace System
     {
         #region Constants
 
-        /// <summary>
-        ///     The clien t_ id.
-        /// </summary>
-        public const string CLIENT_ID = "slimCat";
+        public const string ClientID = "slimCat";
 
-        /// <summary>
-        ///     The clien t_ name.
-        /// </summary>
-        public const string CLIENT_NAME = "Ocelot";
+        public const string ClientName = "Ocelot";
 
-        /// <summary>
-        ///     The clien t_ ver.
-        /// </summary>
-        public const string CLIENT_VER = "rc2.00";
+        public const string ClientVer = "rc2.01";
 
         #endregion
 
         #region Static Fields
 
-        /// <summary>
-        ///     The friendl y_ name.
-        /// </summary>
-        public static string FRIENDLY_NAME = CLIENT_ID + ' ' + CLIENT_NAME + ' ' + CLIENT_VER;
+        public static readonly string FriendlyName = ClientID + ' ' + ClientName + ' ' + ClientVer;
 
         #endregion
 
@@ -70,40 +58,39 @@ namespace System
             #region Constants
 
             /// <summary>
-            ///     The api.
+            ///     The url for the root api.
             /// </summary>
-            public const string API = DOMAIN + @"/json/api/";
+            public const string Api = Domain + @"/json/api/";
 
             /// <summary>
-            ///     The domain.
+            ///     The url for f-list.
             /// </summary>
-            public const string DOMAIN = @"http://www.f-list.net";
+            public const string Domain = @"http://www.f-list.net";
 
             /// <summary>
-            ///     The ge t_ ticket.
+            ///     The url for the ticket get script.
             /// </summary>
-            public const string GET_TICKET = DOMAIN + @"/json/getApiTicket.php";
-
-            // not-so-api
-            /// <summary>
-            ///     The login.
-            /// </summary>
-            public const string LOGIN = DOMAIN + @"/action/script_login.php";
+            public const string GetTicket = Domain + @"/json/getApiTicket.php";
 
             /// <summary>
-            ///     The rea d_ log.
+            ///     The url for the login script.
             /// </summary>
-            public const string READ_LOG = DOMAIN + @"/fchat/getLog.php?log=";
+            public const string Login = Domain + @"/action/script_login.php";
 
             /// <summary>
-            ///     The rea d_ note.
+            ///     The url for the get log script.
             /// </summary>
-            public const string READ_NOTE = DOMAIN + @"/view_note.php?note_id=";
+            public const string ReadLog = Domain + @"/fchat/getLog.php?log=";
 
             /// <summary>
-            ///     The uploa d_ log.
+            ///     The url for the view note script.
             /// </summary>
-            public const string UPLOAD_LOG = DOMAIN + @"/fchat/submitLog.php";
+            public const string ViewNote = Domain + @"/view_note.php?note_id=";
+
+            /// <summary>
+            ///     The url for the upload log script.
+            /// </summary>
+            public const string UploadLog = Domain + @"/fchat/submitLog.php";
 
             #endregion
 

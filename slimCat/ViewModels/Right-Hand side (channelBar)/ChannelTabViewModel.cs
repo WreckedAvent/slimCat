@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.Generic;
@@ -37,9 +37,8 @@ namespace ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using Views;
+    using Slimcat.Models;
+    using Slimcat.Views;
 
     /// <summary>
     ///     The channels tab view model.
@@ -62,13 +61,13 @@ namespace ViewModels
         /// </summary>
         public bool ShowOnlyAlphabet;
 
-        private bool _showPrivate = true;
+        private bool showPrivate = true;
 
-        private bool _showPublic = true;
+        private bool showPublic = true;
 
-        private bool _sortByName;
+        private bool sortByName;
 
-        private int _thresh;
+        private int thresh;
 
         #endregion
 
@@ -93,7 +92,7 @@ namespace ViewModels
             IChatModel cm, IUnityContainer contain, IRegionManager reggman, IEventAggregator events)
             : base(contain, reggman, events, cm)
         {
-            this._container.RegisterType<object, ChannelTabView>(ChannelsTabView);
+            this.Container.RegisterType<object, ChannelTabView>(ChannelsTabView);
 
             this.SearchSettings.Updated += (s, e) =>
                 {
@@ -113,16 +112,18 @@ namespace ViewModels
         {
             get
             {
-                return this._showPrivate;
+                return this.showPrivate;
             }
 
             set
             {
-                if (this._showPrivate != value)
+                if (this.showPrivate == value)
                 {
-                    this._showPrivate = value;
-                    this.OnPropertyChanged("SortedChannels");
+                    return;
                 }
+
+                this.showPrivate = value;
+                this.OnPropertyChanged("SortedChannels");
             }
         }
 
@@ -133,16 +134,18 @@ namespace ViewModels
         {
             get
             {
-                return this._showPublic;
+                return this.showPublic;
             }
 
             set
             {
-                if (this._showPublic != value)
+                if (this.showPublic == value)
                 {
-                    this._showPublic = value;
-                    this.OnPropertyChanged("SortedChannels");
+                    return;
                 }
+
+                this.showPublic = value;
+                this.OnPropertyChanged("SortedChannels");
             }
         }
 
@@ -153,16 +156,18 @@ namespace ViewModels
         {
             get
             {
-                return this._sortByName;
+                return this.sortByName;
             }
 
             set
             {
-                if (this._sortByName != value)
+                if (this.sortByName == value)
                 {
-                    this._sortByName = value;
-                    this.OnPropertyChanged("SortedChannels");
+                    return;
                 }
+
+                this.sortByName = value;
+                this.OnPropertyChanged("SortedChannels");
             }
         }
 
@@ -173,29 +178,25 @@ namespace ViewModels
         {
             get
             {
-                Func<GeneralChannelModel, bool> ContainsSearchString =
+                Func<GeneralChannelModel, bool> containsSearchString =
                     channel =>
-                    channel.ID.ToLower().Contains(this.SearchSettings.SearchString)
+                    channel.Id.ToLower().Contains(this.SearchSettings.SearchString)
                     || channel.Title.ToLower().Contains(this.SearchSettings.SearchString);
 
-                Func<GeneralChannelModel, bool> MeetsThreshold = channel => channel.UserCount >= this.Threshold;
+                Func<GeneralChannelModel, bool> meetsThreshold = channel => channel.UserCount >= this.Threshold;
 
-                Func<GeneralChannelModel, bool> MeetsTypeFilter =
+                Func<GeneralChannelModel, bool> meetsTypeFilter =
                     channel =>
-                    ((channel.Type == ChannelType.pub) && this._showPublic)
-                    || ((channel.Type == ChannelType.priv) && this._showPrivate);
+                    ((channel.Type == ChannelType.Public) && this.showPublic)
+                    || ((channel.Type == ChannelType.Private) && this.showPrivate);
 
-                Func<GeneralChannelModel, bool> MeetsFilter =
-                    channel => ContainsSearchString(channel) && MeetsTypeFilter(channel) && MeetsThreshold(channel);
 
-                if (this.SortByName)
-                {
-                    return this.CM.AllChannels.Where(MeetsFilter).OrderBy(channel => channel.Title);
-                }
-                else
-                {
-                    return this.CM.AllChannels.Where(MeetsFilter).OrderByDescending(channel => channel.UserCount);
-                }
+                Func<GeneralChannelModel, bool> meetsFilter =
+                    channel => containsSearchString(channel) && meetsTypeFilter(channel) && meetsThreshold(channel);
+
+                return this.SortByName 
+                    ? this.ChatModel.AllChannels.Where(meetsFilter).OrderBy(channel => channel.Title) 
+                    : this.ChatModel.AllChannels.Where(meetsFilter).OrderByDescending(channel => channel.UserCount);
             }
         }
 
@@ -206,16 +207,18 @@ namespace ViewModels
         {
             get
             {
-                return this._thresh;
+                return this.thresh;
             }
 
             set
             {
-                if (this._thresh != value && value > 0 && value < 1000)
+                if (this.thresh == value || value <= 0 || value >= 1000)
                 {
-                    this._thresh = value;
-                    this.OnPropertyChanged("SortedChannels");
+                    return;
                 }
+
+                this.thresh = value;
+                this.OnPropertyChanged("SortedChannels");
             }
         }
 

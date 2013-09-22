@@ -1,12 +1,8 @@
-﻿<UserControl x:Class="Views.LoginView"
+﻿<UserControl x:Class="Slimcat.Views.LoginView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="clr-namespace:ViewModels"
-             xmlns:lib="clr-namespace:lib"
-             xmlns:sys="clr-namespace:System">
-    <UserControl.Resources>
-        <sys:OppositeBoolConverter x:Key="BoolConverter" />
-    </UserControl.Resources>
+             xmlns:lib="clr-namespace:Slimcat.Libraries">
+    
     <StackPanel IsEnabled="{Binding RequestSent, Converter={StaticResource BoolConverter}}"
                 VerticalAlignment="Center"
                 Margin="20"

@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace slimCat
+namespace Slimcat
 {
     using System;
     using System.IO;
@@ -35,10 +35,12 @@ namespace slimCat
     using System.Windows;
     using System.Windows.Markup;
 
+    using Slimcat.Utilities;
+
     /// <summary>
     ///     Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
         #region Constructors and Destructors
 
@@ -68,33 +70,40 @@ namespace slimCat
                     // load external colors
                     string exeFilePath = Assembly.GetExecutingAssembly().GetName().CodeBase;
                     string exeDirPath = Path.GetDirectoryName(exeFilePath);
-                    string targetFile = "Theme\\Colors.xaml";
-                    string path_to_xaml_dictionary = new Uri(Path.Combine(exeDirPath, targetFile)).LocalPath;
-                    string strXaml = File.ReadAllText(path_to_xaml_dictionary);
+                    const string TargetFile = "Theme\\Colors.xaml";
+                    string pathToXamlDictionary = new Uri(Path.Combine(exeDirPath, TargetFile)).LocalPath;
+                    string strXaml = File.ReadAllText(pathToXamlDictionary);
                     var resourceDictionary = (ResourceDictionary)XamlReader.Parse(strXaml);
                     Current.Resources.MergedDictionaries.Add(resourceDictionary);
                 }
+
                 {
                     // load external theme
                     string exeFilePath = Assembly.GetExecutingAssembly().GetName().CodeBase;
                     string exeDirPath = Path.GetDirectoryName(exeFilePath);
-                    string targetFile = "Theme\\Theme.xaml";
-                    string path_to_xaml_dictionary = new Uri(Path.Combine(exeDirPath, targetFile)).LocalPath;
-                    string strXaml = File.ReadAllText(path_to_xaml_dictionary);
+                    const string TargetFile = "Theme\\Theme.xaml";
+                    string pathToXamlDictionary = new Uri(Path.Combine(exeDirPath, TargetFile)).LocalPath;
+                    string strXaml = File.ReadAllText(pathToXamlDictionary);
                     var resourceDictionary = (ResourceDictionary)XamlReader.Parse(strXaml);
                     Current.Resources.MergedDictionaries.Add(resourceDictionary);
                 }
+
                 {
                     // load internal theme
-                    var resources = new ResourceDictionary();
-                    resources.Source = new Uri("/slimCat;component/EmbeddedTheme.xaml", UriKind.RelativeOrAbsolute);
+                    var resources = new ResourceDictionary
+                                        {
+                                            Source =
+                                                new Uri(
+                                                "/slimCat;component/EmbeddedTheme.xaml",
+                                                UriKind.RelativeOrAbsolute)
+                                        };
 
                     Current.Resources.MergedDictionaries.Add(resources);
                 }
 
                 base.OnStartup(e);
 
-                var bstrap = new bootstrapper();
+                var bstrap = new Bootstrapper();
                 bstrap.Run();
             }
             catch (Exception ex)

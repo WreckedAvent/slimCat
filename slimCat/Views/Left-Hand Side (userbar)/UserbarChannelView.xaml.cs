@@ -27,14 +27,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     Interaction logic for ChannelSelectView.xaml
     /// </summary>
-    public partial class ChannelSelectView : UserControl
+    public partial class ChannelSelectView
     {
         #region Constructors and Destructors
 

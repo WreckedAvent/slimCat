@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.Generic;
@@ -38,11 +38,10 @@ namespace ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using slimCat;
-
-    using Views;
+    using Slimcat;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
+    using Slimcat.Views;
 
     /// <summary>
     ///     On the channel bar (right-hand side) the 'users' tab, only it shows only the users in the current channel
@@ -60,11 +59,11 @@ namespace ViewModels
 
         #region Fields
 
-        private readonly GenderSettingsModel _genderSettings;
+        private readonly GenderSettingsModel genderSettings;
 
-        private readonly Timer _updateTick = new Timer(3000);
+        private readonly Timer updateTick = new Timer(3000);
 
-        private GeneralChannelModel _currentChan;
+        private GeneralChannelModel currentChan;
 
         #endregion
 
@@ -89,8 +88,8 @@ namespace ViewModels
             IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
             : base(contain, regman, eventagg, cm)
         {
-            this._container.RegisterType<object, UsersTabView>(UsersTabView);
-            this._genderSettings = new GenderSettingsModel();
+            this.Container.RegisterType<object, UsersTabView>(UsersTabView);
+            this.genderSettings = new GenderSettingsModel();
 
             this.SearchSettings.Updated += (s, e) =>
                 {
@@ -104,14 +103,14 @@ namespace ViewModels
                     this.OnPropertyChanged("SortedUsers");
                 };
 
-            this.CM.SelectedChannelChanged += (s, e) =>
+            this.ChatModel.SelectedChannelChanged += (s, e) =>
                 {
-                    this._currentChan = null;
+                    this.currentChan = null;
                     this.OnPropertyChanged("SortContentString");
                     this.OnPropertyChanged("SortedUsers");
                 };
 
-            this._events.GetEvent<NewUpdateEvent>().Subscribe(
+            this.Events.GetEvent<NewUpdateEvent>().Subscribe(
                 args =>
                     {
                         var thisNotification = args as CharacterUpdateModel;
@@ -126,8 +125,8 @@ namespace ViewModels
                         }
                     });
 
-            this._updateTick.Elapsed += this.OnChannelListUpdated;
-            this._updateTick.Start();
+            this.updateTick.Elapsed += this.OnChannelListUpdated;
+            this.updateTick.Start();
         }
 
         #endregion
@@ -141,7 +140,7 @@ namespace ViewModels
         {
             get
             {
-                return this._genderSettings;
+                return this.genderSettings;
             }
         }
 
@@ -152,7 +151,7 @@ namespace ViewModels
         {
             get
             {
-                return this._currentChan ?? this._cm.SelectedChannel as GeneralChannelModel;
+                return this.currentChan ?? this.ChatModel.CurrentChannel as GeneralChannelModel;
             }
         }
 
@@ -163,14 +162,7 @@ namespace ViewModels
         {
             get
             {
-                if (this.HasUsers)
-                {
-                    return this.SelectedChan.Title;
-                }
-                else
-                {
-                    return null;
-                }
+                return this.HasUsers ? this.SelectedChan.Title : null;
             }
         }
 
@@ -188,10 +180,7 @@ namespace ViewModels
                             .OrderBy(this.RelationshipToUser)
                             .ThenBy(x => x.Name);
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
         }
 
@@ -202,7 +191,7 @@ namespace ViewModels
         private bool MeetsFilter(ICharacter character)
         {
             return character.MeetsFilters(
-                this.GenderSettings, this.SearchSettings, this.CM, this.CM.SelectedChannel as GeneralChannelModel);
+                this.GenderSettings, this.SearchSettings, this.ChatModel, this.ChatModel.CurrentChannel as GeneralChannelModel);
         }
 
         private void OnChannelListUpdated(object sender, EventArgs e)
@@ -215,7 +204,7 @@ namespace ViewModels
 
         private string RelationshipToUser(ICharacter character)
         {
-            return character.RelationshipToUser(this.CM, this.CM.SelectedChannel as GeneralChannelModel);
+            return character.RelationshipToUser(this.ChatModel, this.ChatModel.CurrentChannel as GeneralChannelModel);
         }
 
         #endregion

@@ -27,14 +27,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     Interaction logic for PMSelectView.xaml
     /// </summary>
-    public partial class PMSelectView : UserControl
+    public partial class PMSelectView
     {
         #region Constructors and Destructors
 

@@ -27,14 +27,16 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Models
+namespace Slimcat.Models
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
 
-    using Services;
+    using Slimcat.Services;
+    using Slimcat.ViewModels;
 
     /// <summary>
     ///     Contains most chat data which spans channels. Channel-wide UI binds to this.
@@ -43,43 +45,43 @@ namespace Models
     {
         #region Fields
 
-        private readonly ObservableCollection<GeneralChannelModel> _channels =
+        private readonly ObservableCollection<GeneralChannelModel> channels =
             new ObservableCollection<GeneralChannelModel>();
 
-        private readonly IList<string> _globalMods = new List<string>();
+        private readonly IList<string> globalMods = new List<string>();
 
-        private readonly IList<string> _ignored = new List<string>();
+        private readonly IList<string> ignored = new List<string>();
 
-        private readonly ObservableCollection<NotificationModel> _notifications =
+        private readonly ObservableCollection<NotificationModel> notifications =
             new ObservableCollection<NotificationModel>();
 
-        private readonly IDictionary<string, ICharacter> _onlineCharacters = new Dictionary<string, ICharacter>(StringComparer.OrdinalIgnoreCase);
+        private readonly IDictionary<string, ICharacter> onlineCharacters = new ConcurrentDictionary<string, ICharacter>(StringComparer.OrdinalIgnoreCase);
 
-        private readonly ObservableCollection<GeneralChannelModel> _ourChannels =
+        private readonly ObservableCollection<GeneralChannelModel> ourChannels =
             new ObservableCollection<GeneralChannelModel>();
 
-        private readonly ObservableCollection<PMChannelModel> _pms = new ObservableCollection<PMChannelModel>();
+        private readonly ObservableCollection<PMChannelModel> pms = new ObservableCollection<PMChannelModel>();
 
-        private IAccount _account;
+        private IAccount account;
 
-        private bool _isAuth;
+        private bool isAuthenticated;
 
-        private DateTime _lastCharacterListCache;
+        private DateTime lastCharacterListCache;
 
         // things that we should keep a track of, yet not needed frequently
 
         // caches for speed improvements in filtering
-        private IList<ICharacter> _onlineBookmarkCache;
+        private IList<ICharacter> onlineBookmarkCache;
 
-        private IEnumerable<ICharacter> _onlineCharactersCache;
+        private IEnumerable<ICharacter> onlineCharactersCache;
 
-        private IList<ICharacter> _onlineFriendCache;
+        private IList<ICharacter> onlineFriendCache;
 
-        private IList<ICharacter> _onlineModsCache;
+        private IList<ICharacter> onlineModsCache;
 
-        private ChannelModel _thisChannel;
+        private ChannelModel currentChannel;
 
-        private ICharacter _thisCharacter;
+        private ICharacter currentCharacter;
 
         #endregion
 
@@ -101,7 +103,7 @@ namespace Models
         {
             get
             {
-                return this._channels;
+                return this.channels;
             }
         }
 
@@ -112,7 +114,7 @@ namespace Models
         {
             get
             {
-                return this.OurAccount.Bookmarks;
+                return this.CurrentAccount.Bookmarks;
             }
         }
 
@@ -128,7 +130,7 @@ namespace Models
         {
             get
             {
-                return this._ourChannels;
+                return this.ourChannels;
             }
         }
 
@@ -139,7 +141,7 @@ namespace Models
         {
             get
             {
-                return this._pms;
+                return this.pms;
             }
         }
 
@@ -153,7 +155,7 @@ namespace Models
             get
             {
                 return
-                    this.OurAccount.AllFriends.Where(pair => pair.Value.Contains(this.SelectedCharacter.Name))
+                    this.CurrentAccount.AllFriends.Where(pair => pair.Value.Contains(this.CurrentCharacter.Name))
                         .Select(pair => pair.Key)
                         .ToList();
             }
@@ -166,7 +168,7 @@ namespace Models
         {
             get
             {
-                return this._ignored;
+                return this.ignored;
             }
         }
 
@@ -188,12 +190,12 @@ namespace Models
         {
             get
             {
-                return this._isAuth;
+                return this.isAuthenticated;
             }
 
             set
             {
-                this._isAuth = value;
+                this.isAuthenticated = value;
                 this.OnPropertyChanged("IsAuthenticated");
             }
         }
@@ -215,7 +217,7 @@ namespace Models
         {
             get
             {
-                return this._globalMods;
+                return this.globalMods;
             }
         }
 
@@ -237,7 +239,7 @@ namespace Models
         {
             get
             {
-                return this._notifications;
+                return this.notifications;
             }
         }
 
@@ -248,8 +250,8 @@ namespace Models
         {
             get
             {
-                return this._onlineBookmarkCache
-                       ?? (this._onlineBookmarkCache =
+                return this.onlineBookmarkCache
+                       ?? (this.onlineBookmarkCache =
                            this.OnlineCharacters.Where(
                                character =>
                                this.Bookmarks.Any(
@@ -266,19 +268,8 @@ namespace Models
         {
             get
             {
-                return this._onlineCharactersCache
-                       ?? (this._onlineCharactersCache = this.OnlineCharactersDictionary.Values.ToList());
-            }
-        }
-
-        /// <summary>
-        ///     Gets the online characters dictionary.
-        /// </summary>
-        public IDictionary<string, ICharacter> OnlineCharactersDictionary
-        {
-            get
-            {
-                return this._onlineCharacters;
+                return this.onlineCharactersCache
+                       ?? (this.onlineCharactersCache = this.OnlineCharactersDictionary.Values.ToList());
             }
         }
 
@@ -289,16 +280,17 @@ namespace Models
         {
             get
             {
-                if (this._onlineFriendCache == null && this.Friends != null)
+                if (this.onlineFriendCache == null && this.Friends != null)
                 {
-                    this._onlineFriendCache =
+                    this.onlineFriendCache =
                         this.OnlineCharacters.Where(
                             character =>
                             this.Friends.Any(
                                 friend => character.Name.Equals(friend, StringComparison.OrdinalIgnoreCase)))
                             .ToList();
                 }
-                return this._onlineFriendCache;
+
+                return this.onlineFriendCache;
             }
         }
 
@@ -309,12 +301,12 @@ namespace Models
         {
             get
             {
-                return this._onlineModsCache
-                       ?? (this._onlineModsCache =
+                return this.onlineModsCache
+                       ?? (this.onlineModsCache =
                            this.OnlineCharacters.Where(
                                character =>
                                (character != null
-                                && this._globalMods.Any(
+                                && this.globalMods.Any(
                                     mod => mod.Equals(character.Name, StringComparison.OrdinalIgnoreCase)))).ToList());
             }
         }
@@ -322,60 +314,62 @@ namespace Models
         /// <summary>
         ///     Gets or sets the our account.
         /// </summary>
-        public IAccount OurAccount
+        public IAccount CurrentAccount
         {
             get
             {
-                return this._account;
+                return this.account;
             }
 
             set
             {
-                this._account = value;
+                this.account = value;
                 this.OnPropertyChanged("OurAccount");
             }
         }
 
         /// <summary>
-        ///     Gets or sets the selected channel.
+        ///     Gets or sets the current channel.
         /// </summary>
-        public ChannelModel SelectedChannel
+        public ChannelModel CurrentChannel
         {
             get
             {
-                return this._thisChannel;
+                return this.currentChannel;
             }
 
             set
             {
-                if (this._thisChannel != value && value != null)
+                if (this.currentChannel == value || value == null)
                 {
-                    this._thisChannel = value;
-
-                    if (this.SelectedChannelChanged != null)
-                    {
-                        this.SelectedChannelChanged(this, new EventArgs());
-                    }
-
-                    this.OnPropertyChanged("SelectedChannel");
+                    return;
                 }
+
+                this.currentChannel = value;
+
+                if (this.SelectedChannelChanged != null)
+                {
+                    this.SelectedChannelChanged(this, new EventArgs());
+                }
+
+                this.OnPropertyChanged("CurrentChannel");
             }
         }
 
         /// <summary>
-        ///     Gets or sets the selected character.
+        ///     Gets or sets the current character.
         /// </summary>
-        public ICharacter SelectedCharacter
+        public ICharacter CurrentCharacter
         {
             get
             {
-                return this._thisCharacter;
+                return this.currentCharacter;
             }
 
             set
             {
-                this._thisCharacter = value;
-                this.OnPropertyChanged("SelectedCharacter");
+                this.currentCharacter = value;
+                this.OnPropertyChanged("CurrentCharacter");
             }
         }
 
@@ -384,6 +378,16 @@ namespace Models
         /// </summary>
         public DateTimeOffset ServerUpTime { get; set; }
 
+        /// <summary>
+        ///     Gets the online characters dictionary.
+        /// </summary>
+        private IDictionary<string, ICharacter> OnlineCharactersDictionary
+        {
+            get
+            {
+                return this.onlineCharacters;
+            }
+        }
         #endregion
 
         #region Public Methods and Operators
@@ -423,11 +427,9 @@ namespace Models
             {
                 return this.OnlineCharactersDictionary[name];
             }
-            else
-            {
-                Console.WriteLine("Unknown character: " + name);
-                return new CharacterModel { Name = name, Status = StatusType.offline };
-            }
+
+            Console.WriteLine("Unknown character: " + name);
+            return new CharacterModel { Name = name, Status = StatusType.offline };
         }
 
         /// <summary>
@@ -444,7 +446,7 @@ namespace Models
             return (this.Bookmarks.Any(bookmark => bookmark.Equals(character, StringComparison.OrdinalIgnoreCase))
                     || this.Friends.Any(friend => friend.Equals(character, StringComparison.OrdinalIgnoreCase))
                     || this.Interested.Any(interest => interest.Equals(character, StringComparison.OrdinalIgnoreCase)))
-                   || this.CurrentPMs.Any(pm => pm.ID.Equals(character, StringComparison.OrdinalIgnoreCase));
+                   || this.CurrentPMs.Any(pm => pm.Id.Equals(character, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -502,7 +504,7 @@ namespace Models
                 this.Interested.Remove(character);
             }
 
-            SettingsDaemon.SaveApplicationSettingsToXML(this.SelectedCharacter.Name);
+            SettingsDaemon.SaveApplicationSettingsToXml(this.CurrentCharacter.Name);
         }
 
         /// <summary>
@@ -526,7 +528,7 @@ namespace Models
                 this.NotInterested.Remove(character);
             }
 
-            SettingsDaemon.SaveApplicationSettingsToXML(this.SelectedCharacter.Name);
+            SettingsDaemon.SaveApplicationSettingsToXml(this.CurrentCharacter.Name);
         }
 
         #endregion
@@ -537,13 +539,13 @@ namespace Models
         {
             if (this.Bookmarks.Contains(name))
             {
-                this._onlineBookmarkCache = null;
+                this.onlineBookmarkCache = null;
                 this.OnPropertyChanged("OnlineBookmarks");
             }
 
             if (this.Friends.Contains(name))
             {
-                this._onlineFriendCache = null;
+                this.onlineFriendCache = null;
                 this.OnPropertyChanged("OnlineFriends");
             }
 
@@ -552,219 +554,21 @@ namespace Models
                 return;
             }
 
-            this._onlineModsCache = null;
+            this.onlineModsCache = null;
             this.OnPropertyChanged("OnlineGlobalMods");
         }
 
         private void UpdateCharacterList(bool force)
         {
-            if (!force && this._lastCharacterListCache.AddSeconds(15) >= DateTime.Now)
+            if (!force && this.lastCharacterListCache.AddSeconds(15) >= DateTime.Now)
             {
                 return;
             }
 
-            this._onlineCharactersCache = this._onlineCharacters.Values.ToList();
-            this._lastCharacterListCache = DateTime.Now;
+            this.onlineCharactersCache = this.onlineCharacters.Values.ToList();
+            this.lastCharacterListCache = DateTime.Now;
             this.OnPropertyChanged("OnlineCharacters");
         }
-
-        #endregion
-    }
-
-    /// <summary>
-    ///     The ChatModel interface.
-    /// </summary>
-    public interface IChatModel
-    {
-        #region Public Events
-
-        /// <summary>
-        ///     The selected channel changed.
-        /// </summary>
-        event EventHandler SelectedChannelChanged;
-
-        #endregion
-
-        #region Public Properties
-
-        /// <summary>
-        ///     A collection of ALL channels, public or private
-        /// </summary>
-        ObservableCollection<GeneralChannelModel> AllChannels { get; }
-
-        /// <summary>
-        ///     A list of all bookmarked characters
-        /// </summary>
-        IList<string> Bookmarks { get; }
-
-        /// <summary>
-        ///     Gets or sets the client uptime.
-        /// </summary>
-        DateTimeOffset ClientUptime { get; set; }
-
-        /// <summary>
-        ///     A colleciton of all opened channels
-        /// </summary>
-        ObservableCollection<GeneralChannelModel> CurrentChannels { get; }
-
-        /// <summary>
-        ///     A collection of all opened PMs
-        /// </summary>
-        ObservableCollection<PMChannelModel> CurrentPMs { get; }
-
-        /// <summary>
-        ///     Gets the friends.
-        /// </summary>
-        IList<string> Friends { get; }
-
-        /// <summary>
-        ///     Gets the ignored.
-        /// </summary>
-        IList<string> Ignored { get; }
-
-        /// <summary>
-        ///     Gets the interested.
-        /// </summary>
-        IList<string> Interested { get; }
-
-        /// <summary>
-        ///     If we're actively connected and authenticated through F-Chat
-        /// </summary>
-        bool IsAuthenticated { get; set; }
-
-        /// <summary>
-        ///     Whether or not the current user has permissions to act like a moderator
-        /// </summary>
-        bool IsGlobalModerator { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the last message received.
-        /// </summary>
-        DateTimeOffset LastMessageReceived { get; set; }
-
-        /// <summary>
-        ///     A list of all global moderators
-        /// </summary>
-        IList<string> Mods { get; }
-
-        /// <summary>
-        ///     Gets the not interested.
-        /// </summary>
-        IList<string> NotInterested { get; }
-
-        /// <summary>
-        ///     A collection of all of our notifications
-        /// </summary>
-        ObservableCollection<NotificationModel> Notifications { get; }
-
-        /// <summary>
-        ///     A list of all online characters who are bookmarked
-        /// </summary>
-        IEnumerable<ICharacter> OnlineBookmarks { get; }
-
-        /// <summary>
-        ///     A list of all online characters
-        /// </summary>
-        IEnumerable<ICharacter> OnlineCharacters { get; }
-
-        /// <summary>
-        ///     A list of all online characters who are friends
-        /// </summary>
-        IEnumerable<ICharacter> OnlineFriends { get; }
-
-        /// <summary>
-        ///     A list of all online global moderators
-        /// </summary>
-        IEnumerable<ICharacter> OnlineGlobalMods { get; }
-
-        /// <summary>
-        ///     Information relating to the currently selected account
-        /// </summary>
-        IAccount OurAccount { get; set; }
-
-        /// <summary>
-        ///     The Channel we have selected as the 'active' one
-        /// </summary>
-        ChannelModel SelectedChannel { get; set; }
-
-        /// <summary>
-        ///     The Character we've chosen to enter chat with
-        /// </summary>
-        ICharacter SelectedCharacter { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the server up time.
-        /// </summary>
-        DateTimeOffset ServerUpTime { get; set; }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        /// The add character.
-        /// </summary>
-        /// <param name="character">
-        /// The character.
-        /// </param>
-        void AddCharacter(ICharacter character);
-
-        /// <summary>
-        /// Returns the ICharacter value of a given string, if online
-        /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ICharacter"/>.
-        /// </returns>
-        ICharacter FindCharacter(string name);
-
-        /// <summary>
-        /// The is of interest.
-        /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        bool IsOfInterest(string name);
-
-        /// <summary>
-        /// Checks if a given user is online
-        /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        bool IsOnline(string name);
-
-        /// <summary>
-        /// The remove character.
-        /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        void RemoveCharacter(string name);
-
-        /// <summary>
-        /// Toggle our interest in a character
-        /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        void ToggleInterestedMark(string name);
-
-        /// <summary>
-        /// Toggle our disinterested in a character
-        /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        void ToggleNotInterestedMark(string name);
 
         #endregion
     }

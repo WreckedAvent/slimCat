@@ -27,14 +27,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     Interaction logic for SearchBoxView.xaml
     /// </summary>
-    public partial class SearchBoxView : UserControl
+    public partial class SearchBoxView
     {
         #region Constructors and Destructors
 
@@ -45,21 +43,6 @@ namespace Views
         {
             this.InitializeComponent();
         }
-
-        #endregion
-    }
-
-    /// <summary>
-    ///     A box and filter chain for all things which can be searched
-    /// </summary>
-    public interface ISearchable
-    {
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the search string.
-        /// </summary>
-        string SearchString { get; set; }
 
         #endregion
     }

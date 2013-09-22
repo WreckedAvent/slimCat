@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.Generic;
@@ -38,11 +38,10 @@ namespace ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using slimCat;
-
-    using Views;
+    using Slimcat;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
+    using Slimcat.Views;
 
     /// <summary>
     ///     On the channel bar (right-hand side) the 'users' tab, only it shows the entire list
@@ -60,9 +59,9 @@ namespace ViewModels
 
         #region Fields
 
-        private readonly GenderSettingsModel _genderSettings;
+        private readonly GenderSettingsModel genderSettings;
 
-        private readonly Timer _updateTick = new Timer(5000);
+        private readonly Timer updateTick = new Timer(5000);
 
         #endregion
 
@@ -87,8 +86,8 @@ namespace ViewModels
             IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
             : base(contain, regman, eventagg, cm)
         {
-            this._container.RegisterType<object, GlobalTabView>(GlobalTabView);
-            this._genderSettings = new GenderSettingsModel();
+            this.Container.RegisterType<object, GlobalTabView>(GlobalTabView);
+            this.genderSettings = new GenderSettingsModel();
 
             this.SearchSettings.Updated += (s, e) =>
                 {
@@ -102,7 +101,7 @@ namespace ViewModels
                     this.OnPropertyChanged("SortedUsers");
                 };
 
-            this._events.GetEvent<NewUpdateEvent>().Subscribe(
+            this.Events.GetEvent<NewUpdateEvent>().Subscribe(
                 args =>
                     {
                         var thisNotification = args as CharacterUpdateModel;
@@ -112,18 +111,14 @@ namespace ViewModels
                         }
 
                         var thisArgument = thisNotification.Arguments as CharacterUpdateModel.ListChangedEventArgs;
-                        if (thisArgument == null)
-                        {
-                            return;
-                        }
-                        else
+                        if (thisArgument != null)
                         {
                             this.OnPropertyChanged("SortedUsers");
                         }
                     });
 
-            this._updateTick.Elapsed += this.OnChannelListUpdated;
-            this._updateTick.Start();
+            this.updateTick.Elapsed += this.OnChannelListUpdated;
+            this.updateTick.Start();
         }
 
         #endregion
@@ -137,7 +132,7 @@ namespace ViewModels
         {
             get
             {
-                return this._genderSettings;
+                return this.genderSettings;
             }
         }
 
@@ -148,7 +143,7 @@ namespace ViewModels
         {
             get
             {
-                return this.CM.SelectedChannel as GeneralChannelModel;
+                return this.ChatModel.CurrentChannel as GeneralChannelModel;
             }
         }
 
@@ -171,7 +166,7 @@ namespace ViewModels
             get
             {
                 return
-                    this.CM.OnlineCharacters.Where(this.MeetsFilter)
+                    this.ChatModel.OnlineCharacters.Where(this.MeetsFilter)
                         .OrderBy(this.RelationshipToUser)
                         .ThenBy(x => x.Name);
             }
@@ -183,7 +178,7 @@ namespace ViewModels
 
         private bool MeetsFilter(ICharacter character)
         {
-            return character.MeetsFilters(this.GenderSettings, this.SearchSettings, this.CM, null);
+            return character.MeetsFilters(this.GenderSettings, this.SearchSettings, this.ChatModel, null);
         }
 
         private void OnChannelListUpdated(object sender, EventArgs e)
@@ -196,7 +191,7 @@ namespace ViewModels
 
         private string RelationshipToUser(ICharacter character)
         {
-            return character.RelationshipToUser(this.CM, null);
+            return character.RelationshipToUser(this.ChatModel, null);
         }
 
         #endregion

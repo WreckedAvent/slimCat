@@ -29,23 +29,21 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.ObjectModel;
     using System.Windows.Input;
 
-    using lib;
-
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using slimCat;
-
-    using Views;
+    using Slimcat;
+    using Slimcat.Libraries;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
+    using Slimcat.Views;
 
     /// <summary>
     ///     This View model only serves to allow a user to select a character.
@@ -65,16 +63,16 @@ namespace ViewModels
 
         #region Fields
 
-        private readonly IAccount _model; // the model to interact with
+        private readonly IAccount model; // the model to interact with
 
-        private bool _connecting;
+        private bool isConnecting;
 
-        private string _relay = "Next, Select a Character ...";
+        private string relayMessage = "Next, Select a Character ...";
 
         // bound message used to relay information to the information
-        private string _selchar; // character we have selected
+        private string selectedCharacter; // character we have selected
 
-        private RelayCommand _select;
+        private RelayCommand @select;
 
         #endregion
 
@@ -104,10 +102,10 @@ namespace ViewModels
         {
             try
             {
-                this._model = acc.ThrowIfNull("acc");
+                this.model = acc.ThrowIfNull("acc");
 
-                this._events.GetEvent<LoginCompleteEvent>()
-                    .Subscribe(this.handleLoginComplete, ThreadOption.UIThread, true);
+                this.Events.GetEvent<LoginCompleteEvent>()
+                    .Subscribe(this.HandleLoginComplete, ThreadOption.UIThread, true);
             }
             catch (Exception ex)
             {
@@ -127,23 +125,23 @@ namespace ViewModels
         {
             get
             {
-                return this._model.Characters;
+                return this.model.Characters;
             }
         }
 
         /// <summary>
         ///     Gets or sets a value indicating whether is connecting.
         /// </summary>
-        public bool IsConnecting
+        public bool IsIsConnecting
         {
             get
             {
-                return this._connecting;
+                return this.isConnecting;
             }
 
             set
             {
-                this._connecting = value;
+                this.isConnecting = value;
                 this.OnPropertyChanged("IsConnecting");
             }
         }
@@ -155,12 +153,12 @@ namespace ViewModels
         {
             get
             {
-                return this._relay;
+                return this.relayMessage;
             }
 
             set
             {
-                this._relay = value;
+                this.relayMessage = value;
                 this.OnPropertyChanged("RelayMessage");
             }
         }
@@ -172,30 +170,27 @@ namespace ViewModels
         {
             get
             {
-                if (this._select == null)
-                {
-                    this._select = new RelayCommand(
-                        param => this.SendCharacterSelectEvent(), param => this.CanSendCharacterSelectEvent());
-                }
-
-                return this._select;
+                return this.@select
+                       ?? (this.@select =
+                           new RelayCommand(
+                               param => this.SendCharacterSelectEvent(), param => this.CanSendCharacterSelectEvent()));
             }
         }
 
         /// <summary>
         ///     Gets or sets the selected character.
         /// </summary>
-        public string SelectedCharacter
+        public string CurrentCharacter
         {
             get
             {
-                return this._selchar;
+                return this.selectedCharacter;
             }
 
             set
             {
-                this._selchar = value;
-                this.OnPropertyChanged("SelectedCharacter");
+                this.selectedCharacter = value;
+                this.OnPropertyChanged("CurrentCharacter");
             }
         }
 
@@ -210,7 +205,7 @@ namespace ViewModels
         {
             try
             {
-                this._container.RegisterType<object, CharacterSelectView>(CharacterSelectViewName);
+                this.Container.RegisterType<object, CharacterSelectView>(CharacterSelectViewName);
             }
             catch (Exception ex)
             {
@@ -225,23 +220,25 @@ namespace ViewModels
 
         private bool CanSendCharacterSelectEvent()
         {
-            return !string.IsNullOrWhiteSpace(this.SelectedCharacter);
+            return !string.IsNullOrWhiteSpace(this.CurrentCharacter);
         }
 
         private void SendCharacterSelectEvent()
         {
             this.RelayMessage = "Awesome! Connecting to F-Chat ...";
-            this.IsConnecting = true;
-            this._events.GetEvent<CharacterSelectedLoginEvent>().Publish(this.SelectedCharacter);
+            this.IsIsConnecting = true;
+            this.Events.GetEvent<CharacterSelectedLoginEvent>().Publish(this.CurrentCharacter);
         }
 
-        private void handleLoginComplete(bool should)
+        private void HandleLoginComplete(bool should)
         {
-            if (should)
+            if (!should)
             {
-                this.RelayMessage = "Done! Now pick a character.";
-                this._region.RequestNavigate(Shell.MainRegion, new Uri(CharacterSelectViewName, UriKind.Relative));
+                return;
             }
+
+            this.RelayMessage = "Done! Now pick a character.";
+            this.RegionManager.RequestNavigate(Shell.MainRegion, new Uri(CharacterSelectViewName, UriKind.Relative));
         }
 
         #endregion

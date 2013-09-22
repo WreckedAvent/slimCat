@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.IO;
@@ -40,36 +40,34 @@ namespace ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using Services;
-
-    using slimCat;
-
-    using Views;
+    using Slimcat;
+    using Slimcat.Models;
+    using Slimcat.Services;
+    using Slimcat.Utilities;
+    using Slimcat.Views;
 
     /// <summary>
     ///     Used for a few channels which are not treated normally and cannot receive/send messages.
     /// </summary>
-    public class UtilityChannelViewModel : ChannelViewModelBase, IDisposable
+    public class UtilityChannelViewModel : ChannelViewModelBase
     {
         #region Constants
 
-        private const string new_version_link = "https://dl.dropbox.com/u/29984849/slimCat/latest.csv";
+        private const string NewVersionLink = "https://dl.dropbox.com/u/29984849/slimCat/latest.csv";
 
         #endregion
 
         #region Fields
 
-        private readonly Timer UpdateTimer = new Timer(1000); // every second
+        private readonly Timer updateTimer = new Timer(1000); // every second
 
-        private readonly StringBuilder _connectDotDot;
+        private readonly StringBuilder connectDotDot;
 
-        private readonly CacheCount _minuteOnlineCount;
+        private readonly CacheCount minuteOnlineCount;
 
-        private StringBuilder _flavorText;
+        private StringBuilder flavorText;
 
-        private bool _inStagger;
+        private bool inStagger;
 
         #endregion
 
@@ -99,16 +97,16 @@ namespace ViewModels
         {
             try
             {
-                this.Model = this._container.Resolve<GeneralChannelModel>(name);
+                this.Model = this.Container.Resolve<GeneralChannelModel>(name);
                 this.ConnectTime = 0;
-                this._flavorText = new StringBuilder("Connecting");
-                this._connectDotDot = new StringBuilder();
+                this.flavorText = new StringBuilder("Connecting");
+                this.connectDotDot = new StringBuilder();
 
-                this._container.RegisterType<object, UtilityChannelView>(this.Model.ID, new InjectionConstructor(this));
-                this._minuteOnlineCount = new CacheCount(this.OnlineCountPrime, 15, 1000 * 15);
+                this.Container.RegisterType<object, UtilityChannelView>(this.Model.Id, new InjectionConstructor(this));
+                this.minuteOnlineCount = new CacheCount(this.OnlineCountPrime, 15, 1000 * 15);
 
-                this.UpdateTimer.Enabled = true;
-                this.UpdateTimer.Elapsed += (s, e) =>
+                this.updateTimer.Enabled = true;
+                this.updateTimer.Elapsed += (s, e) =>
                     {
                         this.OnPropertyChanged("RoughServerUpTime");
                         this.OnPropertyChanged("RoughClientUpTime");
@@ -116,9 +114,9 @@ namespace ViewModels
                         this.OnPropertyChanged("IsConnecting");
                     };
 
-                this.UpdateTimer.Elapsed += this.UpdateConnectText;
+                this.updateTimer.Elapsed += this.UpdateConnectText;
 
-                this._events.GetEvent<NewUpdateEvent>().Subscribe(
+                this.Events.GetEvent<NewUpdateEvent>().Subscribe(
                     param =>
                         {
                             if (param is CharacterUpdateModel)
@@ -134,30 +132,41 @@ namespace ViewModels
                             }
                         });
 
-                this._events.GetEvent<LoginAuthenticatedEvent>().Subscribe(this.LoggedInEvent);
-                this._events.GetEvent<LoginFailedEvent>().Subscribe(this.LoginFailedEvent);
-                this._events.GetEvent<ReconnectingEvent>().Subscribe(this.LoginReconnectingEvent);
+                this.Events.GetEvent<LoginAuthenticatedEvent>().Subscribe(this.LoggedInEvent);
+                this.Events.GetEvent<LoginFailedEvent>().Subscribe(this.LoginFailedEvent);
+                this.Events.GetEvent<ReconnectingEvent>().Subscribe(this.LoginReconnectingEvent);
 
-                SettingsDaemon.ReadApplicationSettingsFromXML(cm.SelectedCharacter.Name);
+                SettingsDaemon.ReadApplicationSettingsFromXml(cm.CurrentCharacter.Name);
 
                 try
                 {
                     string[] args;
-                    using (var client = new WebClient()) using (Stream stream = client.OpenRead("https://dl.dropbox.com/u/29984849/slimCat/latest.csv")) using (var reader = new StreamReader(stream)) args = reader.ReadToEnd().Split(',');
-
-                    if (args[0] != Constants.FRIENDLY_NAME)
+                    using (var client = new WebClient())
                     {
-                        this.HasNewUpdate = true;
-
-                        this.UpdateName = args[0];
-                        this.UpdateLink = args[1];
-                        this.UpdateBuildTime = args[2];
-
-                        this.OnPropertyChanged("HasNewUpdate");
-                        this.OnPropertyChanged("UpdateName");
-                        this.OnPropertyChanged("UpdateLink");
-                        this.OnPropertyChanged("UpdateBuildTime");
+                        using (var stream = client.OpenRead("https://dl.dropbox.com/u/29984849/slimCat/latest.csv"))
+                        {
+                            using (var reader = new StreamReader(stream))
+                            {
+                                args = reader.ReadToEnd().Split(',');
+                            }
+                        }
                     }
+
+                    if (args[0] == Constants.FriendlyName)
+                    {
+                        return;
+                    }
+
+                    this.HasNewUpdate = true;
+
+                    this.UpdateName = args[0];
+                    this.UpdateLink = args[1];
+                    this.UpdateBuildTime = args[2];
+
+                    this.OnPropertyChanged("HasNewUpdate");
+                    this.OnPropertyChanged("UpdateName");
+                    this.OnPropertyChanged("UpdateLink");
+                    this.OnPropertyChanged("UpdateBuildTime");
                 }
                 catch
                 {
@@ -187,7 +196,7 @@ namespace ViewModels
             set
             {
                 ApplicationSettings.AllowLogging = value;
-                SettingsDaemon.SaveApplicationSettingsToXML(this.CM.SelectedCharacter.Name);
+                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
             }
         }
 
@@ -208,7 +217,7 @@ namespace ViewModels
                     ApplicationSettings.BackLogMax = value;
                 }
 
-                SettingsDaemon.SaveApplicationSettingsToXML(this.CM.SelectedCharacter.Name);
+                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
             }
         }
 
@@ -219,7 +228,7 @@ namespace ViewModels
         {
             get
             {
-                return string.Format("{0} {1} ({2})", Constants.CLIENT_ID, Constants.CLIENT_NAME, Constants.CLIENT_VER);
+                return string.Format("{0} {1} ({2})", Constants.ClientID, Constants.ClientName, Constants.ClientVer);
             }
         }
 
@@ -230,8 +239,8 @@ namespace ViewModels
         {
             get
             {
-                return this._flavorText + this._connectDotDot.ToString()
-                       + (!this._inStagger ? "\nRequest sent " + this.ConnectTime + " seconds ago" : string.Empty);
+                return this.flavorText + this.connectDotDot.ToString()
+                       + (!this.inStagger ? "\nRequest sent " + this.ConnectTime + " seconds ago" : string.Empty);
             }
         }
 
@@ -253,7 +262,7 @@ namespace ViewModels
             set
             {
                 ApplicationSettings.GlobalNotifyTerms = value;
-                SettingsDaemon.SaveApplicationSettingsToXML(this.CM.SelectedCharacter.Name);
+                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
             }
         }
 
@@ -269,7 +278,7 @@ namespace ViewModels
         {
             get
             {
-                return !this.CM.IsAuthenticated;
+                return !this.ChatModel.IsAuthenticated;
             }
         }
 
@@ -280,7 +289,7 @@ namespace ViewModels
         {
             get
             {
-                return HelperConverter.DateTimeToRough(this.CM.LastMessageReceived, true, false);
+                return HelperConverter.DateTimeToRough(this.ChatModel.LastMessageReceived, true, false);
             }
         }
 
@@ -291,7 +300,7 @@ namespace ViewModels
         {
             get
             {
-                return this.CM.OnlineBookmarks == null ? 0 : this.CM.OnlineBookmarks.Count();
+                return this.ChatModel.OnlineBookmarks == null ? 0 : this.ChatModel.OnlineBookmarks.Count();
             }
         }
 
@@ -302,7 +311,7 @@ namespace ViewModels
         {
             get
             {
-                return this.CM.OnlineCharacters.Count();
+                return this.ChatModel.OnlineCharacters.Count();
             }
         }
 
@@ -313,7 +322,7 @@ namespace ViewModels
         {
             get
             {
-                return this._minuteOnlineCount.GetDisplayString();
+                return this.minuteOnlineCount.GetDisplayString();
             }
         }
 
@@ -324,7 +333,7 @@ namespace ViewModels
         {
             get
             {
-                return this.CM.OnlineFriends == null ? 0 : this.CM.OnlineFriends.Count();
+                return this.ChatModel.OnlineFriends == null ? 0 : this.ChatModel.OnlineFriends.Count();
             }
         }
 
@@ -335,7 +344,7 @@ namespace ViewModels
         {
             get
             {
-                return HelperConverter.DateTimeToRough(this.CM.ClientUptime, true, false);
+                return HelperConverter.DateTimeToRough(this.ChatModel.ClientUptime, true, false);
             }
         }
 
@@ -346,7 +355,7 @@ namespace ViewModels
         {
             get
             {
-                return HelperConverter.DateTimeToRough(this.CM.ServerUpTime, true, false);
+                return HelperConverter.DateTimeToRough(this.ChatModel.ServerUpTime, true, false);
             }
         }
 
@@ -363,7 +372,7 @@ namespace ViewModels
             set
             {
                 ApplicationSettings.ShowNotificationsGlobal = value;
-                SettingsDaemon.SaveApplicationSettingsToXML(this.CM.SelectedCharacter.Name);
+                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
             }
         }
 
@@ -395,7 +404,7 @@ namespace ViewModels
             set
             {
                 ApplicationSettings.Volume = value;
-                SettingsDaemon.SaveApplicationSettingsToXML(this.CM.SelectedCharacter.Name);
+                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
             }
         }
 
@@ -411,7 +420,7 @@ namespace ViewModels
         /// </param>
         public void LoggedInEvent(bool? payload)
         {
-            this.UpdateTimer.Elapsed -= this.UpdateConnectText;
+            this.updateTimer.Elapsed -= this.UpdateConnectText;
             this.OnPropertyChanged("IsConnecting");
         }
 
@@ -423,16 +432,16 @@ namespace ViewModels
         /// </param>
         public void LoginFailedEvent(string error)
         {
-            if (this.CM.IsAuthenticated)
+            if (this.ChatModel.IsAuthenticated)
             {
-                this.UpdateTimer.Elapsed += this.UpdateConnectText;
-                this.CM.IsAuthenticated = false;
+                this.updateTimer.Elapsed += this.UpdateConnectText;
+                this.ChatModel.IsAuthenticated = false;
             }
 
-            this._inStagger = true;
-            this._flavorText = new StringBuilder(error);
+            this.inStagger = true;
+            this.flavorText = new StringBuilder(error);
 
-            this._flavorText.Append("\nStaggering connection");
+            this.flavorText.Append("\nStaggering connection");
             this.ConnectTime = 0;
 
             this.OnPropertyChanged("IsConnecting");
@@ -446,14 +455,14 @@ namespace ViewModels
         /// </param>
         public void LoginReconnectingEvent(string payload)
         {
-            this._inStagger = false;
-            if (this.CM.IsAuthenticated)
+            this.inStagger = false;
+            if (this.ChatModel.IsAuthenticated)
             {
-                this.UpdateTimer.Elapsed += this.UpdateConnectText;
-                this.CM.IsAuthenticated = false;
+                this.updateTimer.Elapsed += this.UpdateConnectText;
+                this.ChatModel.IsAuthenticated = false;
             }
 
-            this._flavorText = new StringBuilder("Attempting reconnect");
+            this.flavorText = new StringBuilder("Attempting reconnect");
             this.ConnectTime = 0;
             this.OnPropertyChanged("IsConnecting");
         }
@@ -466,7 +475,7 @@ namespace ViewModels
         /// </returns>
         public int OnlineCountPrime()
         {
-            return this.CM.OnlineCharacters.Count();
+            return this.ChatModel.OnlineCharacters.Count();
         }
 
         /// <summary>
@@ -480,16 +489,16 @@ namespace ViewModels
         /// </param>
         public void UpdateConnectText(object sender, EventArgs e)
         {
-            if (!this.CM.IsAuthenticated)
+            if (!this.ChatModel.IsAuthenticated)
             {
                 this.ConnectTime++;
 
-                if (this._connectDotDot.Length >= 3)
+                if (this.connectDotDot.Length >= 3)
                 {
-                    this._connectDotDot.Clear();
+                    this.connectDotDot.Clear();
                 }
 
-                this._connectDotDot.Append('.');
+                this.connectDotDot.Append('.');
 
                 this.OnPropertyChanged("ConnectFlavorText");
             }
@@ -502,19 +511,21 @@ namespace ViewModels
         /// <summary>
         /// The dispose.
         /// </summary>
-        /// <param name="IsManagedDispose">
+        /// <param name="isManaged">
         /// The is managed dispose.
         /// </param>
-        protected override void Dispose(bool IsManagedDispose)
+        protected override void Dispose(bool isManaged)
         {
-            base.Dispose();
+            this.Dispose();
 
-            if (IsManagedDispose)
+            if (!isManaged)
             {
-                this.UpdateTimer.Dispose();
-                this._minuteOnlineCount.Dispose();
-                this.Model = null;
+                return;
             }
+
+            this.updateTimer.Dispose();
+            this.minuteOnlineCount.Dispose();
+            this.Model = null;
         }
 
         /// <summary>

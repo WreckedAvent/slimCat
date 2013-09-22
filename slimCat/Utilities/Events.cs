@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace slimCat
+namespace Slimcat
 {
     using System.Collections.Generic;
 

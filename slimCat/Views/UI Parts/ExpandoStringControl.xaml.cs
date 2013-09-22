@@ -27,17 +27,16 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
     using System;
     using System.ComponentModel;
     using System.Windows;
-    using System.Windows.Controls;
 
     /// <summary>
     ///     Interaction logic for ExpandoStringControl.xaml
     /// </summary>
-    public partial class ExpandoStringControl : UserControl, INotifyPropertyChanged
+    public partial class ExpandoStringControl : INotifyPropertyChanged
     {
         #region Static Fields
 
@@ -54,9 +53,9 @@ namespace Views
 
         #region Fields
 
-        private string _fullText;
+        private string fullText;
 
-        private bool _isExpanded = true;
+        private bool isExpanded = true;
 
         #endregion
 
@@ -90,9 +89,9 @@ namespace Views
         {
             get
             {
-                if (this._fullText != null)
+                if (this.fullText != null)
                 {
-                    return this._fullText.Length > 50;
+                    return this.fullText.Length > 50;
                 }
 
                 return false;
@@ -106,19 +105,16 @@ namespace Views
         {
             get
             {
-                if (!this._isExpanded && this._fullText.Length > 50)
+                if (!this.isExpanded && this.fullText.Length > 50)
                 {
-                    return this._fullText.Substring(0, 50) + " ...";
+                    return this.fullText.Substring(0, 50) + " ...";
                 }
-                else
-                {
-                    return this._fullText;
-                }
+                return this.fullText;
             }
 
             set
             {
-                this._fullText = value;
+                this.fullText = value;
             }
         }
 
@@ -134,14 +130,7 @@ namespace Views
                     return string.Empty;
                 }
 
-                if (this.IsExpanded)
-                {
-                    return "<--";
-                }
-                else
-                {
-                    return "-->";
-                }
+                return this.IsExpanded ? "<--" : "-->";
             }
         }
 
@@ -152,12 +141,12 @@ namespace Views
         {
             get
             {
-                return this._isExpanded;
+                return this.isExpanded;
             }
 
             set
             {
-                this._isExpanded = value;
+                this.isExpanded = value;
                 this.OnPropertyChanged("IsExpanded");
                 this.OnPropertyChanged("CanExpand");
                 this.OnPropertyChanged("DisplayText");

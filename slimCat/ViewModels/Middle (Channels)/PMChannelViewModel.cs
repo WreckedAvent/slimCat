@@ -24,11 +24,10 @@
 //   Used for most communications between users.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Specialized;
     using System.ComponentModel;
     using System.Timers;
 
@@ -36,13 +35,11 @@ namespace ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using Services;
-
-    using slimCat;
-
-    using Views;
+    using Slimcat;
+    using Slimcat.Models;
+    using Slimcat.Services;
+    using Slimcat.Utilities;
+    using Slimcat.Views;
 
     /// <summary>
     ///     Used for most communications between users.
@@ -51,15 +48,15 @@ namespace ViewModels
     {
         #region Fields
 
-        private Timer _checkTick = new Timer(5000);
+        private Timer checkTick = new Timer(5000);
 
-        private Timer _cooldownTimer = new Timer(500);
+        private Timer cooldownTimer = new Timer(500);
 
-        private bool _isInCoolDown;
+        private bool isInCoolDown;
 
-        private bool _isTyping;
+        private bool isTyping;
 
-        private int _typingLengthCache;
+        private int typingLengthCache;
 
         public event EventHandler StatusChanged;
 
@@ -91,45 +88,45 @@ namespace ViewModels
         {
             try
             {
-                var temp = this._container.Resolve<PMChannelModel>(name);
+                var temp = this.Container.Resolve<PMChannelModel>(name);
                 this.Model = temp;
 
                 this.Model.PropertyChanged += this.OnModelPropertyChanged;
 
-                this._container.RegisterType<object, PMChannelView>(
-                    HelperConverter.EscapeSpaces(this.Model.ID), new InjectionConstructor(this));
-                this._events.GetEvent<NewUpdateEvent>()
+                this.Container.RegisterType<object, PMChannelView>(
+                    HelperConverter.EscapeSpaces(this.Model.Id), new InjectionConstructor(this));
+                this.Events.GetEvent<NewUpdateEvent>()
                     .Subscribe(this.OnNewUpdateEvent, ThreadOption.PublisherThread, true, this.UpdateIsOurCharacter);
 
-                this._cooldownTimer.Elapsed += (s, e) =>
+                this.cooldownTimer.Elapsed += (s, e) =>
                     {
-                        this._isInCoolDown = false;
-                        this._cooldownTimer.Enabled = false;
+                        this.isInCoolDown = false;
+                        this.cooldownTimer.Enabled = false;
                         this.OnPropertyChanged("CanPost");
                     };
 
-                this._checkTick.Elapsed += (s, e) =>
+                this.checkTick.Elapsed += (s, e) =>
                     {
                         if (!this.IsTyping)
                         {
-                            this._checkTick.Enabled = false;
+                            this.checkTick.Enabled = false;
                         }
 
-                        if (this.Message != null && this._typingLengthCache == this.Message.Length)
+                        if (this.Message != null && this.typingLengthCache == this.Message.Length)
                         {
                             this.IsTyping = false;
-                            this.SendTypingNotification(Typing_Status.paused);
-                            this._checkTick.Enabled = false;
+                            this.SendTypingNotification(TypingStatus.Paused);
+                            this.checkTick.Enabled = false;
                         }
 
                         if (this.IsTyping)
                         {
-                            this._typingLengthCache = this.Message != null ? this.Message.Length : 0;
+                            this.typingLengthCache = this.Message != null ? this.Message.Length : 0;
                         }
                     };
 
                 this.Model.Settings = SettingsDaemon.GetChannelSettings(
-                    cm.SelectedCharacter.Name, this.Model.Title, this.Model.ID, this.Model.Type);
+                    cm.CurrentCharacter.Name, this.Model.Title, this.Model.Id, this.Model.Type);
 
                 this.ChannelSettings.Updated += (s, e) =>
                     {
@@ -137,7 +134,7 @@ namespace ViewModels
                         if (!this.ChannelSettings.IsChangingSettings)
                         {
                             SettingsDaemon.UpdateSettingsFile(
-                                this.ChannelSettings, cm.SelectedCharacter.Name, this.Model.Title, this.Model.ID);
+                                this.ChannelSettings, cm.CurrentCharacter.Name, this.Model.Title, this.Model.Id);
                         }
                     };
             }
@@ -159,7 +156,7 @@ namespace ViewModels
         {
             get
             {
-                return !this._isInCoolDown;
+                return !this.isInCoolDown;
             }
         }
 
@@ -170,7 +167,7 @@ namespace ViewModels
         {
             get
             {
-                return this.CM.IsOnline(this.Model.ID) ? this.CM.FindCharacter(this.Model.ID) : new CharacterModel { Name = this.Model.ID };
+                return this.ChatModel.IsOnline(this.Model.Id) ? this.ChatModel.FindCharacter(this.Model.Id) : new CharacterModel { Name = this.Model.Id };
             }
         }
 
@@ -203,12 +200,12 @@ namespace ViewModels
         {
             get
             {
-                return this._isTyping;
+                return this.isTyping;
             }
 
             set
             {
-                this._isTyping = value;
+                this.isTyping = value;
                 this.OnPropertyChanged("ShouldShowPostLength");
             }
         }
@@ -220,7 +217,7 @@ namespace ViewModels
         {
             get
             {
-                return !string.IsNullOrEmpty(this.Message) && this._isTyping;
+                return !string.IsNullOrEmpty(this.Message) && this.isTyping;
             }
         }
 
@@ -242,28 +239,28 @@ namespace ViewModels
         {
             get
             {
-                if (!this.CM.IsOnline(this.Model.ID))
+                if (!this.ChatModel.IsOnline(this.Model.Id))
                 {
-                    return string.Format("Warning: {0} is not online.", this.Model.ID);
+                    return string.Format("Warning: {0} is not online.", this.Model.Id);
                 }
 
                 switch (this.ConversationWith.Status)
                 {
                     case StatusType.away:
-                        return string.Format("Warning: {0} is currently away.", this.Model.ID);
+                        return string.Format("Warning: {0} is currently away.", this.Model.Id);
                     case StatusType.busy:
-                        return string.Format("Warning: {0} is currently busy.", this.Model.ID);
+                        return string.Format("Warning: {0} is currently busy.", this.Model.Id);
                     case StatusType.idle:
-                        return string.Format("Warning: {0} is currently idle.", this.Model.ID);
+                        return string.Format("Warning: {0} is currently idle.", this.Model.Id);
                     case StatusType.looking:
-                        return string.Format("{0} is looking for roleplay.", this.Model.ID);
+                        return string.Format("{0} is looking for roleplay.", this.Model.Id);
                     case StatusType.dnd:
-                        return string.Format("Warning: {0} does not wish to be disturbed.", this.Model.ID);
+                        return string.Format("Warning: {0} does not wish to be disturbed.", this.Model.Id);
                     case StatusType.online:
-                        return string.Format("{0} is online.", this.Model.ID);
+                        return string.Format("{0} is online.", this.Model.Id);
                     case StatusType.crown:
                         return string.Format(
-                            "{0} has been a good person and has been rewarded with a crown!", this.Model.ID);
+                            "{0} has been a good person and has been rewarded with a crown!", this.Model.Id);
                 }
 
                 return this.ConversationWith.Status.ToString();
@@ -279,18 +276,18 @@ namespace ViewModels
             {
                 var PM = (PMChannelModel)this.Model;
 
-                if (!this.CM.IsOnline(this.Model.ID))
+                if (!this.ChatModel.IsOnline(this.Model.Id))
                 {
                     // visual indicator to help the user know when the other has gone offline
-                    return string.Format("{0} is not online!", PM.ID);
+                    return string.Format("{0} is not online!", PM.Id);
                 }
 
                 switch (PM.TypingStatus)
                 {
-                    case Typing_Status.typing:
-                        return string.Format("{0} is typing " + PM.TypingString, PM.ID);
-                    case Typing_Status.paused:
-                        return string.Format("{0} has entered text.", PM.ID);
+                    case TypingStatus.Typing:
+                        return string.Format("{0} is typing " + PM.TypingString, PM.Id);
+                    case TypingStatus.Paused:
+                        return string.Format("{0} has entered text.", PM.Id);
                     default:
                         return string.Empty;
                 }
@@ -304,23 +301,23 @@ namespace ViewModels
         /// <summary>
         /// The dispose.
         /// </summary>
-        /// <param name="IsManaged">
+        /// <param name="isManaged">
         /// The is managed.
         /// </param>
-        protected override void Dispose(bool IsManaged)
+        protected override void Dispose(bool isManaged)
         {
-            if (IsManaged)
+            if (isManaged)
             {
-                this._checkTick.Dispose();
-                this._cooldownTimer.Dispose();
-                this._checkTick = null;
-                this._cooldownTimer = null;
+                this.checkTick.Dispose();
+                this.cooldownTimer.Dispose();
+                this.checkTick = null;
+                this.cooldownTimer = null;
 
                 this.StatusChanged = null;
-                this._events.GetEvent<NewUpdateEvent>().Unsubscribe(this.OnNewUpdateEvent);
+                this.Events.GetEvent<NewUpdateEvent>().Unsubscribe(this.OnNewUpdateEvent);
             }
 
-            base.Dispose(IsManaged);
+            base.Dispose(isManaged);
         }
 
         /// <summary>
@@ -358,14 +355,14 @@ namespace ViewModels
 
             if (string.IsNullOrEmpty(this.Message))
             {
-                this.SendTypingNotification(Typing_Status.clear);
+                this.SendTypingNotification(TypingStatus.Clear);
                 this.IsTyping = false;
             }
             else if (!this.IsTyping)
             {
                 this.IsTyping = true;
-                this.SendTypingNotification(Typing_Status.typing);
-                this._checkTick.Enabled = true;
+                this.SendTypingNotification(TypingStatus.Typing);
+                this.checkTick.Enabled = true;
             }
         }
 
@@ -378,7 +375,7 @@ namespace ViewModels
             {
                 this.UpdateError("I can't let you post that. That's way too big. Try again, buddy.");
             }
-            else if (this._isInCoolDown)
+            else if (this.isInCoolDown)
             {
                 this.UpdateError("Where's the fire, son? Slow it down.");
             }
@@ -387,19 +384,19 @@ namespace ViewModels
                 this.UpdateError("Hmm. Did you ... did you write anything?");
             }
 
-            IDictionary<string, object> toSend =
+            var toSend =
                 CommandDefinitions.CreateCommand(
-                    CommandDefinitions.ClientSendPM, new List<string> { this.Message, this.ConversationWith.Name })
-                                  .toDictionary();
+                    CommandDefinitions.ClientSendPm, new List<string> { this.Message, this.ConversationWith.Name })
+                                  .ToDictionary();
 
-            this._events.GetEvent<UserCommandEvent>().Publish(toSend);
+            this.Events.GetEvent<UserCommandEvent>().Publish(toSend);
             this.Message = string.Empty;
 
-            this._isInCoolDown = true;
-            this._cooldownTimer.Enabled = true;
+            this.isInCoolDown = true;
+            this.cooldownTimer.Enabled = true;
             this.OnPropertyChanged("CanPost");
             this.IsTyping = false;
-            this._checkTick.Enabled = false;
+            this.checkTick.Enabled = false;
         }
 
         private void OnNewUpdateEvent(NotificationModel param)
@@ -410,7 +407,7 @@ namespace ViewModels
             this.OnPropertyChanged("CanPost");
             this.OnPropertyChanged("TypingString");
 
-            CharacterUpdateModel.CharacterUpdateEventArgs arguments = ((CharacterUpdateModel)param).Arguments;
+            var arguments = ((CharacterUpdateModel)param).Arguments;
             if (!(arguments is CharacterUpdateModel.PromoteDemoteEventArgs))
             {
                 this.OnStatusChanged();
@@ -425,14 +422,14 @@ namespace ViewModels
             }
         }
 
-        private void SendTypingNotification(Typing_Status type)
+        private void SendTypingNotification(TypingStatus type)
         {
-            IDictionary<string, object> toSend =
+            var toSend =
                 CommandDefinitions.CreateCommand(
                     CommandDefinitions.ClientSendTypingStatus, 
-                    new List<string> { type.ToString(), this.ConversationWith.Name }).toDictionary();
+                    new List<string> { type.ToString(), this.ConversationWith.Name }).ToDictionary();
 
-            this._events.GetEvent<UserCommandEvent>().Publish(toSend);
+            this.Events.GetEvent<UserCommandEvent>().Publish(toSend);
         }
 
         /// <summary>

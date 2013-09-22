@@ -27,22 +27,19 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.Generic;
     using System.Timers;
     using System.Windows.Input;
 
-    using lib;
-
     using Microsoft.Practices.Prism.Events;
 
-    using Models;
-
-    using slimCat;
-
-    using Views;
+    using Slimcat;
+    using Slimcat.Libraries;
+    using Slimcat.Models;
+    using Slimcat.Views;
 
     /// <summary>
     ///     A light-weight viewmodel for toastnofications
@@ -51,23 +48,23 @@ namespace ViewModels
     {
         #region Constants
 
-        private const int cutoffLength = 300;
+        private const int CutoffLength = 300;
 
         #endregion
 
         #region Fields
 
-        private readonly IEventAggregator _events;
+        private readonly IEventAggregator events;
 
-        private readonly Timer _hideDelay = new Timer(5000);
+        private readonly Timer hideDelay = new Timer(5000);
 
-        private string _content = string.Empty;
+        private string content = string.Empty;
 
-        private RelayCommand _hide;
+        private RelayCommand hide;
 
-        private RelayCommand _snap;
+        private RelayCommand snap;
 
-        private NotificationsView _view;
+        private NotificationsView view;
 
         #endregion
 
@@ -76,13 +73,13 @@ namespace ViewModels
         /// <summary>
         /// Initializes a new instance of the <see cref="ToastNotificationsViewModel"/> class.
         /// </summary>
-        /// <param name="_eventAgg">
+        /// <param name="eventAgg">
         /// The _event agg.
         /// </param>
-        public ToastNotificationsViewModel(IEventAggregator _eventAgg)
+        public ToastNotificationsViewModel(IEventAggregator eventAgg)
         {
-            this._hideDelay.Elapsed += (s, e) => { this.HideNotifications(); };
-            this._events = _eventAgg;
+            this.hideDelay.Elapsed += (s, e) => this.HideNotifications();
+            this.events = eventAgg;
         }
 
         #endregion
@@ -96,20 +93,20 @@ namespace ViewModels
         {
             get
             {
-                return this._content;
+                return this.content;
             }
 
             set
             {
-                if (value.Length < cutoffLength)
+                if (value.Length < CutoffLength)
                 {
-                    this._content = value;
+                    this.content = value;
                 }
                 else
                 {
-                    string brevity = value.Substring(0, cutoffLength);
+                    string brevity = value.Substring(0, CutoffLength);
                     brevity += " ...";
-                    this._content = brevity;
+                    this.content = brevity;
                 }
 
                 this.OnPropertyChanged("Content");
@@ -123,12 +120,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._hide == null)
-                {
-                    this._hide = new RelayCommand(args => this.HideNotifications());
-                }
-
-                return this._hide;
+                return this.hide ?? (this.hide = new RelayCommand(args => this.HideNotifications()));
             }
         }
 
@@ -144,12 +136,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._snap == null)
-                {
-                    this._snap = new RelayCommand(this.OnSnapToLatestEvent);
-                }
-
-                return this._snap;
+                return this.snap ?? (this.snap = new RelayCommand(this.OnSnapToLatestEvent));
             }
         }
 
@@ -178,8 +165,8 @@ namespace ViewModels
             this.Dispatcher.Invoke(
                 (Action)delegate
                     {
-                        this._view.OnHideCommand();
-                        this._hideDelay.Stop();
+                        this.view.OnHideCommand();
+                        this.hideDelay.Stop();
                     });
         }
 
@@ -191,7 +178,7 @@ namespace ViewModels
         /// </param>
         public void OnSnapToLatestEvent(object args)
         {
-            IDictionary<string, object> toSend = CommandDefinitions.CreateCommand("lastupdate").toDictionary();
+            IDictionary<string, object> toSend = CommandDefinitions.CreateCommand("lastupdate").ToDictionary();
 
             if (this.Target != null)
             {
@@ -204,7 +191,7 @@ namespace ViewModels
             }
 
             this.HideNotifications();
-            this._events.GetEvent<UserCommandEvent>().Publish(toSend);
+            this.events.GetEvent<UserCommandEvent>().Publish(toSend);
         }
 
         /// <summary>
@@ -212,27 +199,27 @@ namespace ViewModels
         /// </summary>
         public void ShowNotifications()
         {
-            this._hideDelay.Stop();
-            if (this._view == null)
+            this.hideDelay.Stop();
+            if (this.view == null)
             {
-                this._view = new NotificationsView(this);
+                this.view = new NotificationsView(this);
             }
 
-            this.Dispatcher.Invoke((Action)delegate { this._view.OnShowCommand(); });
-            this._hideDelay.Start();
+            this.Dispatcher.Invoke((Action)(() => this.view.OnShowCommand()));
+            this.hideDelay.Start();
         }
 
         /// <summary>
         /// The update notification.
         /// </summary>
-        /// <param name="content">
+        /// <param name="newContent">
         /// The content.
         /// </param>
-        public void UpdateNotification(string content)
+        public void UpdateNotification(string newContent)
         {
-            this.Content = content;
+            this.Content = newContent;
             this.ShowNotifications();
-            this._view.OnContentChanged();
+            this.view.OnContentChanged();
         }
 
         #endregion
@@ -247,12 +234,14 @@ namespace ViewModels
         /// </param>
         protected virtual void Dispose(bool isManagedDispose)
         {
-            if (isManagedDispose)
+            if (!isManagedDispose)
             {
-                this._hideDelay.Dispose();
-                this._view.Close();
-                this._view = null;
+                return;
             }
+
+            this.hideDelay.Dispose();
+            this.view.Close();
+            this.view = null;
         }
 
         #endregion

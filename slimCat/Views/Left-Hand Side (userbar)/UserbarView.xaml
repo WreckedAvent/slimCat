@@ -1,12 +1,10 @@
-﻿<UserControl x:Class="Views.UserbarView"
+﻿<UserControl x:Class="Slimcat.Views.UserbarView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:lib="clr-namespace:lib"
-             xmlns:v="clr-namespace:Views"
-             xmlns:sys="clr-namespace:System">
+             xmlns:v="clr-namespace:Slimcat.Views">
 
     <DockPanel TextBlock.FontSize="14"
-               Visibility="{Binding Path=CM.IsAuthenticated, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+               Visibility="{Binding Path=ChatModel.IsAuthenticated, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                TextBlock.Foreground="{StaticResource ForegroundBrush}"
                TextBlock.TextAlignment="Center">
 
@@ -30,7 +28,7 @@
                     x:Name="PopupAnchor"
                     HorizontalAlignment="Stretch">
                 <DockPanel>
-                    <Image Source="{Binding Path=CM.SelectedCharacter.Avatar}"
+                    <Image Source="{Binding Path=ChatModel.CurrentCharacter.Avatar}"
                            Height="75"
                            Width="75" />
                     <Grid Margin="5,-5,0,0"
@@ -43,14 +41,14 @@
                             <RowDefinition Height="20" />
                         </Grid.RowDefinitions>
 
-                        <TextBlock Text="{Binding Path=CM.SelectedCharacter.Name}"
+                        <TextBlock Text="{Binding Path=ChatModel.CurrentCharacter.Name}"
                                    HorizontalAlignment="Right"
                                    TextAlignment="Right"
                                    MaxWidth="100"
                                    TextWrapping="Wrap"
                                    FontSize="20" />
 
-                        <Button Content="{Binding Path=CM.SelectedCharacter.Status}"
+                        <Button Content="{Binding Path=ChatModel.CurrentCharacter.Status}"
                                 Grid.Row="1"
                                 VerticalAlignment="Top"
                                 HorizontalAlignment="Right"
@@ -99,13 +97,13 @@
 
                         <ComboBox ItemsSource="{Binding Path=StatusTypes}"
                                   DisplayMemberPath="Key"
-                                  SelectedValue="{Binding CM.SelectedCharacter.Status}"
+                                  SelectedValue="{Binding Path=ChatModel.CurrentCharacter.Status}"
                                   SelectedValuePath="Value"
                                   Margin="10,5"
                                   FontSize="12" />
 
                         <TextBox
-                            Text="{Binding Path=CM.SelectedCharacter.StatusMessage, UpdateSourceTrigger=PropertyChanged}"
+                            Text="{Binding Path=ChatModel.CurrentCharacter.StatusMessage, UpdateSourceTrigger=PropertyChanged}"
                             FontSize="12"
                             TextWrapping="Wrap"
                             MaxWidth="200"
@@ -126,9 +124,9 @@
                               IsExpanded="{Binding Path=PMsAreExpanded}"
                               Visibility="{Binding Path=HasPMs, Converter={StaticResource BoolConverter}}"
                               Grid.Row="1">
-                        <ListBox ItemsSource="{Binding Path=CM.CurrentPMs, Mode=OneWay}"
+                        <ListBox ItemsSource="{Binding Path=ChatModel.CurrentPMs, Mode=OneWay}"
                                  HorizontalContentAlignment="Stretch"
-                                 SelectedIndex="{Binding Path=PM_Selected, Mode=TwoWay}">
+                                 SelectedIndex="{Binding Path=PmSelected, Mode=TwoWay}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <v:PMSelectView />
@@ -139,9 +137,9 @@
                     <Expander Header="Channels"
                               IsExpanded="{Binding Path=ChannelsAreExpanded}"
                               Grid.Row="2">
-                        <ListBox ItemsSource="{Binding Path=CM.CurrentChannels, Mode=OneWay}"
+                        <ListBox ItemsSource="{Binding Path=ChatModel.CurrentChannels, Mode=OneWay}"
                                  HorizontalContentAlignment="Stretch"
-                                 SelectedIndex="{Binding Path=Chan_Selected, Mode=TwoWay}">
+                                 SelectedIndex="{Binding Path=ChannelSelected, Mode=TwoWay}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <v:ChannelSelectView />

@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
 
@@ -35,11 +35,10 @@ namespace ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using slimCat;
-
-    using Views;
+    using Slimcat;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
+    using Slimcat.Views;
 
     /// <summary>
     ///     A specific viewmodel for the chat wrapper itself
@@ -78,8 +77,8 @@ namespace ViewModels
         {
             try
             {
-                this._events.GetEvent<CharacterSelectedLoginEvent>()
-                    .Subscribe(this.handleSelectedCharacter, ThreadOption.UIThread, true);
+                this.Events.GetEvent<CharacterSelectedLoginEvent>()
+                    .Subscribe(this.handleCurrentCharacter, ThreadOption.UIThread, true);
             }
             catch (Exception ex)
             {
@@ -99,7 +98,7 @@ namespace ViewModels
         {
             try
             {
-                this._container.RegisterType<object, ChatWrapperView>(ChatWrapperView);
+                this.Container.RegisterType<object, ChatWrapperView>(ChatWrapperView);
             }
             catch (Exception ex)
             {
@@ -112,9 +111,9 @@ namespace ViewModels
 
         #region Methods
 
-        private void handleSelectedCharacter(string chara)
+        private void handleCurrentCharacter(string chara)
         {
-            this._region.RequestNavigate(
+            this.RegionManager.RequestNavigate(
                 Shell.MainRegion, new Uri(ChatWrapperView, UriKind.Relative), this.navigationCompleted);
         }
 
@@ -122,7 +121,7 @@ namespace ViewModels
         {
             if (result.Result == true)
             {
-                this._events.GetEvent<ChatOnDisplayEvent>().Publish(null);
+                this.Events.GetEvent<ChatOnDisplayEvent>().Publish(null);
             }
         }
 

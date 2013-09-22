@@ -27,19 +27,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Windows;
-    using System.Windows.Documents;
-
-    using Models;
-
     /// <summary>
     ///     Interaction logic for MessageView.xaml
     /// </summary>
-    public partial class MessageView : Paragraph
+    public partial class MessageView
     {
         #region Constructors and Destructors
 

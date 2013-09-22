@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace lib
+namespace Slimcat.Libraries
 {
     using System.Collections.Generic;
     using System.Windows;
@@ -142,7 +142,7 @@ namespace lib
         /// The obj.
         /// </param>
         /// <returns>
-        /// The <see cref="IEnumerable"/>.
+        /// The <see cref="IEnumerable{T}"/>.
         /// </returns>
         public static IEnumerable<Inline> GetInlineSource(DependencyObject obj)
         {

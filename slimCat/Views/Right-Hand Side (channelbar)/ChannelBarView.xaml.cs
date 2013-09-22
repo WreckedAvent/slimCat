@@ -27,20 +27,18 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
-    using ViewModels;
+    using Slimcat.ViewModels;
 
     /// <summary>
     ///     Interaction logic for ChannelBarView.xaml
     /// </summary>
-    public partial class ChannelbarView : UserControl
+    public partial class ChannelbarView
     {
         #region Fields
 
-        private readonly ChannelbarViewModel _vm;
+        private readonly ChannelbarViewModel vm;
 
         #endregion
 
@@ -55,11 +53,11 @@ namespace Views
         public ChannelbarView(ChannelbarViewModel vm)
         {
             this.InitializeComponent();
-            this._vm = vm;
+            this.vm = vm;
 
-            this.DataContext = this._vm;
+            this.DataContext = this.vm;
 
-            this._vm.OnJumpToNotifications += (s, e) =>
+            this.vm.OnJumpToNotifications += (s, e) =>
                 {
                     if (this.NotificationButton.IsChecked == false)
                     {
@@ -79,7 +77,7 @@ namespace Views
         {
             get
             {
-                return this._vm;
+                return this.vm;
             }
         }
 

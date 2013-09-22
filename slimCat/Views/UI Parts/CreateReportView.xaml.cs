@@ -27,14 +27,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
-    using System.Windows.Controls.Primitives;
-
     /// <summary>
     ///     Interaction logic for CreateReportView.xaml
     /// </summary>
-    public partial class CreateReportView : Popup
+    public partial class CreateReportView
     {
         #region Constructors and Destructors
 

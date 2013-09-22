@@ -27,10 +27,13 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Models
+namespace Slimcat.Models
 {
     using System;
     using System.Collections.ObjectModel;
+
+    using Slimcat.Utilities;
+    using Slimcat.ViewModels;
 
     /// <summary>
     ///     The channel model is used as a base for channels and conversations
@@ -39,44 +42,25 @@ namespace Models
     {
         #region Fields
 
-        internal bool _unreadContainsInteresting;
+        private readonly ObservableCollection<IMessage> ads = new ObservableCollection<IMessage>();
 
-        /// <summary>
-        ///     The _ads.
-        /// </summary>
-        protected ObservableCollection<IMessage> _ads = new ObservableCollection<IMessage>();
+        private readonly ObservableCollection<string> history = new ObservableCollection<string>();
 
-        /// <summary>
-        ///     The _history.
-        /// </summary>
-        protected ObservableCollection<string> _history = new ObservableCollection<string>();
+        private readonly ObservableCollection<IMessage> messages = new ObservableCollection<IMessage>();
 
-        /// <summary>
-        ///     The _messages.
-        /// </summary>
-        protected ObservableCollection<IMessage> _messages = new ObservableCollection<IMessage>();
+        private readonly string identity;
 
-        /// <summary>
-        ///     The _needs attention override.
-        /// </summary>
-        protected bool _needsAttentionOverride = false;
+        private bool isSelected;
 
-        /// <summary>
-        ///     The _settings.
-        /// </summary>
-        protected ChannelSettingsModel _settings;
+        private ChannelSettingsModel settings;
 
-        private readonly string _identity; // an ID never changes
+        private int lastRead;
 
-        private bool _isSelected;
+        private ChannelMode mode;
 
-        private int _lastRead;
+        private string title;
 
-        private ChannelMode _mode;
-
-        private string _title;
-
-        private ChannelType _type;
+        private ChannelType type;
 
         #endregion
 
@@ -93,13 +77,13 @@ namespace Models
         /// Type of the channel
         /// </param>
         /// <param name="mode">
-        /// The rules associated with the channel (only ads, only posts, or both)
+        /// The rules associated with the channel (only Ads, only posts, or both)
         /// </param>
-        public ChannelModel(string identity, ChannelType kind, ChannelMode mode = ChannelMode.both)
+        protected ChannelModel(string identity, ChannelType kind, ChannelMode mode = ChannelMode.Both)
         {
             try
             {
-                this._identity = identity.ThrowIfNull("identity");
+                this.identity = identity.ThrowIfNull("identity");
                 this.Type = kind;
                 this.Mode = mode;
                 this.LastReadCount = 0;
@@ -116,13 +100,13 @@ namespace Models
         #region Public Properties
 
         /// <summary>
-        ///     Gets the ads.
+        ///     Gets the Ads.
         /// </summary>
         public ObservableCollection<IMessage> Ads
         {
             get
             {
-                return this._ads;
+                return this.ads;
             }
         }
 
@@ -142,6 +126,10 @@ namespace Models
         /// </summary>
         public abstract int DisplayNumber { get; }
 
+        public bool UnreadContainsInteresting { get; protected set; }
+
+        public bool NeedsAttentionOverride { get; protected set; }
+
         /// <summary>
         ///     Gets the history.
         /// </summary>
@@ -149,18 +137,18 @@ namespace Models
         {
             get
             {
-                return this._history;
+                return this.history;
             }
         }
 
         /// <summary>
         ///     An ID is used to unambigiously identify the channel or character's name
         /// </summary>
-        public string ID
+        public string Id
         {
             get
             {
-                return this._identity;
+                return this.identity;
             }
         }
 
@@ -171,46 +159,28 @@ namespace Models
         {
             get
             {
-                return this._isSelected;
+                return this.isSelected;
             }
 
             set
             {
-                if (this._isSelected != value)
+                if (this.isSelected == value)
                 {
-                    this._isSelected = value;
-
-                    if (value)
-                    {
-                        this.LastReadCount = this.Messages.Count;
-                    }
-
-                    this._needsAttentionOverride = false;
-                    this._unreadContainsInteresting = false;
-
-                    this.UpdateBindings();
-                    this.OnPropertyChanged("IsSelected");
+                    return;
                 }
-            }
-        }
 
-        /// <summary>
-        ///     The number of messages we've read up to
-        /// </summary>
-        public virtual int LastReadCount
-        {
-            get
-            {
-                return this._lastRead;
-            }
+                this.isSelected = value;
 
-            set
-            {
-                if (this._lastRead != value)
+                if (value)
                 {
-                    this._lastRead = value;
-                    this.UpdateBindings();
+                    this.LastReadCount = this.Messages.Count;
                 }
+
+                this.NeedsAttentionOverride = false;
+                this.UnreadContainsInteresting = false;
+
+                this.UpdateBindings();
+                this.OnPropertyChanged("IsSelected");
             }
         }
 
@@ -221,7 +191,7 @@ namespace Models
         {
             get
             {
-                return this._messages;
+                return this.messages;
             }
         }
 
@@ -232,12 +202,12 @@ namespace Models
         {
             get
             {
-                return this._mode;
+                return this.mode;
             }
 
             set
             {
-                this._mode = value;
+                this.mode = value;
                 this.OnPropertyChanged("Mode");
             }
         }
@@ -249,7 +219,7 @@ namespace Models
         {
             get
             {
-                if (!this.IsSelected && this._needsAttentionOverride)
+                if (!this.IsSelected && this.NeedsAttentionOverride)
                 {
                     return true; // flash if we have a ding word
                 }
@@ -258,9 +228,10 @@ namespace Models
                 {
                     return false; // if we don't want any flashes then terminate
                 }
-                else if (this.Settings.MessageNotifyOnlyForInteresting)
+
+                if (this.Settings.MessageNotifyOnlyForInteresting)
                 {
-                    return this._unreadContainsInteresting;
+                    return this.UnreadContainsInteresting;
                 }
 
                 return !this.IsSelected && (this.Unread >= this.Settings.FlashInterval);
@@ -270,16 +241,16 @@ namespace Models
         /// <summary>
         ///     Gets or sets the settings.
         /// </summary>
-        public virtual ChannelSettingsModel Settings
+        public ChannelSettingsModel Settings
         {
             get
             {
-                return this._settings;
+                return this.settings;
             }
 
             set
             {
-                this._settings = value;
+                this.settings = value;
                 this.UpdateBindings();
             }
         }
@@ -291,12 +262,12 @@ namespace Models
         {
             get
             {
-                return this._title == null ? this.ID : this._title;
+                return this.title ?? this.Id;
             }
 
             set
             {
-                this._title = value;
+                this.title = value;
                 this.OnPropertyChanged("Title");
             }
         }
@@ -308,12 +279,12 @@ namespace Models
         {
             get
             {
-                return this._type;
+                return this.type;
             }
 
             set
             {
-                this._type = value;
+                this.type = value;
                 this.OnPropertyChanged("Type");
             }
         }
@@ -321,11 +292,33 @@ namespace Models
         /// <summary>
         ///     Number of messages we haven't read
         /// </summary>
-        public int Unread
+        protected int Unread
         {
             get
             {
                 return this.Messages.Count - this.LastReadCount;
+            }
+        }
+
+        /// <summary>
+        ///     The number of messages we've read up to
+        /// </summary>
+        protected int LastReadCount
+        {
+            get
+            {
+                return this.lastRead;
+            }
+
+            set
+            {
+                if (this.lastRead == value)
+                {
+                    return;
+                }
+
+                this.lastRead = value;
+                this.UpdateBindings();
             }
         }
 
@@ -344,23 +337,23 @@ namespace Models
         /// </param>
         public virtual void AddMessage(IMessage message, bool isOfInterest = false)
         {
-            while (this._messages.Count >= ApplicationSettings.BackLogMax)
+            while (this.messages.Count >= ApplicationSettings.BackLogMax)
             {
-                this._messages[0].Dispose();
-                this._messages[0] = null;
-                this._messages.RemoveAt(0);
+                this.messages[0].Dispose();
+                this.messages[0] = null;
+                this.messages.RemoveAt(0);
             }
 
-            this._messages.Add(message);
+            this.messages.Add(message);
 
-            if (this._isSelected)
+            if (this.isSelected)
             {
-                this._lastRead = this._messages.Count;
+                this.lastRead = this.messages.Count;
             }
-            else if (this._messages.Count == ApplicationSettings.BackLogMax)
+            else if (this.messages.Count == ApplicationSettings.BackLogMax)
             {
-                this._unreadContainsInteresting = this._unreadContainsInteresting || isOfInterest;
-                this._lastRead--;
+                this.UnreadContainsInteresting = this.UnreadContainsInteresting || isOfInterest;
+                this.lastRead--;
             }
 
             this.UpdateBindings();
@@ -377,9 +370,9 @@ namespace Models
         /// <summary>
         ///     The flash tab.
         /// </summary>
-        public virtual void FlashTab()
+        public void FlashTab()
         {
-            this._needsAttentionOverride = this._needsAttentionOverride || true;
+            this.NeedsAttentionOverride = true;
             this.UpdateBindings();
         }
 
@@ -390,16 +383,19 @@ namespace Models
         /// <summary>
         /// The dispose.
         /// </summary>
-        /// <param name="IsManaged">
+        /// <param name="isManaged">
         /// The is managed.
         /// </param>
-        protected virtual void Dispose(bool IsManaged)
+        protected virtual void Dispose(bool isManaged)
         {
-            if (IsManaged)
+            if (!isManaged)
             {
-                this._messages.Clear();
-                this._ads.Clear();
+                return;
             }
+
+            this.messages.Clear();
+            this.ads.Clear();
+            this.settings = new ChannelSettingsModel();
         }
 
         /// <summary>
@@ -414,77 +410,5 @@ namespace Models
         }
 
         #endregion
-    }
-
-    /// <summary>
-    ///     Represents the possible channel types
-    /// </summary>
-    public enum ChannelType
-    {
-        /* Official Channels */
-
-        /// <summary>
-        ///     The pub.
-        /// </summary>
-        pub, 
-
-        // pub channels are official channels which are open to the public and abide by F-list's rules and moderation.
-
-        /* Private Channels */
-
-        /// <summary>
-        ///     The priv.
-        /// </summary>
-        priv, 
-
-        // priv channels are private channels which are open to the public
-
-        /// <summary>
-        ///     The pm.
-        /// </summary>
-        pm, 
-
-        // pm channels are private channels which can only be accessed by two characters
-
-        /// <summary>
-        ///     The closed.
-        /// </summary>
-        closed, 
-
-        // closed channels are private channels which can only be joined with an outstanding invite
-
-        /// <summary>
-        ///     The utility.
-        /// </summary>
-        utility, 
-
-        // utility channels are channels which have custom functionality, such as the home page
-    }
-
-    /// <summary>
-    ///     Represents possible channel modes
-    /// </summary>
-    public enum ChannelMode
-    {
-        /// <summary>
-        ///     The ads.
-        /// </summary>
-        ads, 
-
-        // ad-only channels, e.g LfRP
-
-        /// <summary>
-        ///     The chat.
-        /// </summary>
-        chat, 
-
-        // no-ad channels, e.g. most private channels
-
-        /// <summary>
-        ///     The both.
-        /// </summary>
-        both, 
-
-        // both messages and ads, e.g most public channels
     }
 }

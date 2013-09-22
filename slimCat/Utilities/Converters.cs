@@ -27,8 +27,9 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace System
+namespace Slimcat.Utilities
 {
+    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
@@ -50,50 +51,12 @@ namespace System
     {
         #region Public Methods and Operators
 
-        /// <summary>
-        /// The convert.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="paramater">
-        /// The paramater.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
         public object Convert(object value, Type targetType, object paramater, CultureInfo culture)
         {
             var v = (bool)value;
             return !v;
         }
 
-        /// <summary>
-        /// The convert back.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
-        /// <exception cref="NotImplementedException">
-        /// </exception>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
@@ -109,24 +72,6 @@ namespace System
     {
         #region Public Methods and Operators
 
-        /// <summary>
-        /// The convert.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var v = (bool)value;
@@ -138,26 +83,6 @@ namespace System
             return Application.Current.FindResource("BrightBackgroundBrush") as SolidColorBrush;
         }
 
-        /// <summary>
-        /// The convert back.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
-        /// <exception cref="NotImplementedException">
-        /// </exception>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
@@ -173,24 +98,6 @@ namespace System
     {
         #region Public Methods and Operators
 
-        /// <summary>
-        /// The convert.
-        /// </summary>
-        /// <param name="values">
-        /// The values.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             var inlines = new List<Inline>();
@@ -204,14 +111,14 @@ namespace System
                 var user = (ICharacter)values[1]; // this is our poster's name
                 var type = (MessageType)values[2]; // what kind of type our message is
 
-                if (type == MessageType.roll)
+                if (type == MessageType.Roll)
                 {
-                    inlines.Add(HelperConverter.ParseBBCode(text, true));
+                    inlines.Add(HelperConverter.ParseBbCode(text, true));
                     return inlines;
                 }
 
                 // this creates the name link
-                Inline nameLink = HelperConverter.MakeUsernameLink(user, true);
+                var nameLink = HelperConverter.MakeUsernameLink(user, true);
 
                 inlines.Add(nameLink); // name first
 
@@ -224,25 +131,27 @@ namespace System
                         // if the post is a /me "command"
                         text = text.Substring("/me".Length);
                         inlines.Insert(0, new Run("*")); // push the name button to the second slot
-                        inlines.Add(new Italic(HelperConverter.ParseBBCode(text, true)));
+                        inlines.Add(new Italic(HelperConverter.ParseBbCode(text, true)));
                         inlines.Add(new Run("*"));
                         return inlines;
                     }
-                    else if (text.StartsWith("/post"))
+
+                    if (text.StartsWith("/post"))
                     {
                         // or a post "command"
                         text = text.Substring("/post ".Length);
 
-                        inlines.Insert(0, HelperConverter.ParseBBCode(text, true));
+                        inlines.Insert(0, HelperConverter.ParseBbCode(text, true));
                         inlines.Insert(1, new Run(" ~"));
                         return inlines;
                     }
-                    else if (text.StartsWith("/warn"))
+
+                    if (text.StartsWith("/warn"))
                     {
                         // or a warn "command"
                         text = text.Substring("/warn ".Length);
                         inlines.Add(new Run(" warns, "));
-                        Inline toAdd = HelperConverter.ParseBBCode(text, true);
+                        var toAdd = HelperConverter.ParseBbCode(text, true);
 
                         toAdd.Foreground = (Brush)Application.Current.FindResource("HighlightBrush");
                         toAdd.FontWeight = FontWeights.ExtraBold;
@@ -252,18 +161,12 @@ namespace System
                     }
 
                     inlines.Add(new Run(": "));
-                    inlines.Add(HelperConverter.ParseBBCode(text, true));
+                    inlines.Add(HelperConverter.ParseBbCode(text, true));
                     return inlines;
                 }
 
-                
-
-                #region Fallback addition
-
                 inlines.Add(new Run(": "));
                 inlines.Add(new Run(text));
-
-                #endregion
             }
             else if (values.Length == 1 && values[0] is NotificationModel)
             {
@@ -279,7 +182,7 @@ namespace System
 
                     inlines.Add(nameLink);
                     inlines.Add(new Run(" "));
-                    inlines.Add(HelperConverter.ParseBBCode(text, true));
+                    inlines.Add(HelperConverter.ParseBbCode(text, true));
                 }
             }
             else
@@ -290,26 +193,7 @@ namespace System
             return inlines;
         }
 
-        /// <summary>
-        /// The convert back.
-        /// </summary>
-        /// <param name="values">
-        /// The values.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object[]"/>.
-        /// </returns>
-        /// <exception cref="NotImplementedException">
-        /// </exception>
+
         public object[] ConvertBack(object values, Type[] targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
@@ -325,24 +209,6 @@ namespace System
     {
         #region Public Methods and Operators
 
-        /// <summary>
-        /// The convert.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var inlines = new List<Inline>();
@@ -359,7 +225,7 @@ namespace System
             {
                 // if the post is a /me "command"
                 text = text.Substring("/me".Length);
-                inlines.Add(new Italic(HelperConverter.ParseBBCode(text, true)));
+                inlines.Add(new Italic(HelperConverter.ParseBbCode(text, true)));
                 inlines.Add(new Run("*"));
             }
             else if (text.StartsWith("/post"))
@@ -367,7 +233,7 @@ namespace System
                 // or a post "command"
                 text = text.Substring("/post ".Length);
 
-                inlines.Insert(0, HelperConverter.ParseBBCode(text, true));
+                inlines.Insert(0, HelperConverter.ParseBbCode(text, true));
                 inlines.Insert(1, new Run(" ~"));
             }
             else if (text.StartsWith("/warn"))
@@ -375,7 +241,7 @@ namespace System
                 // or a warn "command"
                 text = text.Substring("/warn ".Length);
                 inlines.Add(new Run(" warns, "));
-                Inline toAdd = HelperConverter.ParseBBCode(text, true);
+                Inline toAdd = HelperConverter.ParseBbCode(text, true);
 
                 toAdd.Foreground = (Brush)Application.Current.FindResource("HighlightBrush");
                 toAdd.FontWeight = FontWeights.ExtraBold;
@@ -384,32 +250,12 @@ namespace System
             else
             {
                 inlines.Add(new Run(": "));
-                inlines.Add(HelperConverter.ParseBBCode(text, true));
+                inlines.Add(HelperConverter.ParseBbCode(text, true));
             }
 
             return inlines;
         }
 
-        /// <summary>
-        /// The convert back.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
-        /// <exception cref="NotImplementedException">
-        /// </exception>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
@@ -425,24 +271,6 @@ namespace System
     {
         #region Public Methods and Operators
 
-        /// <summary>
-        /// The convert.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var inlines = new List<Inline>();
@@ -455,31 +283,11 @@ namespace System
             var text = (string)value; // this is the beef of the message
             text = HttpUtility.HtmlDecode(text); // translate the HTML characters
 
-            inlines.Add(HelperConverter.ParseBBCode(text, true));
+            inlines.Add(HelperConverter.ParseBbCode(text, true));
 
             return inlines;
         }
 
-        /// <summary>
-        /// The convert back.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
-        /// <exception cref="NotImplementedException">
-        /// </exception>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
@@ -512,7 +320,7 @@ namespace System
             text = HttpUtility.HtmlDecode(text);
 
             IList<Inline> toReturn = new List<Inline>();
-            toReturn.Add(HelperConverter.ParseBBCode(text, false));
+            toReturn.Add(HelperConverter.ParseBbCode(text, false));
 
             return toReturn;
         }
@@ -532,24 +340,6 @@ namespace System
     {
         #region Public Methods and Operators
 
-        /// <summary>
-        /// The convert.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try
@@ -619,26 +409,6 @@ namespace System
             }
         }
 
-        /// <summary>
-        /// The convert back.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
-        /// <exception cref="NotImplementedException">
-        /// </exception>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
@@ -654,24 +424,6 @@ namespace System
     {
         #region Public Methods and Operators
 
-        /// <summary>
-        /// The convert.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try
@@ -707,26 +459,6 @@ namespace System
             }
         }
 
-        /// <summary>
-        /// The convert back.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
-        /// <exception cref="NotImplementedException">
-        /// </exception>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
@@ -847,14 +579,7 @@ namespace System
 
             var v = (bool)value;
 
-            if (v)
-            {
-                return "only for people of interest.";
-            }
-            else
-            {
-                return "for everyone.";
-            }
+            return v ? "only for people of interest." : "for everyone.";
         }
 
         /// <summary>
@@ -916,16 +641,16 @@ namespace System
             var uri = new Uri("pack://application:,,,/icons/chat.png");
             switch (args)
             {
-                case ChannelType.pm:
+                case ChannelType.PrivateMessage:
                     uri = new Uri("pack://application:,,,/icons/chat.png");
                     break;
-                case ChannelType.closed:
+                case ChannelType.InviteOnly:
                     uri = new Uri("pack://application:,,,/icons/private_closed.png");
                     break;
-                case ChannelType.priv:
+                case ChannelType.Private:
                     uri = new Uri("pack://application:,,,/icons/private_open.png");
                     break;
-                case ChannelType.pub:
+                case ChannelType.Public:
                     uri = new Uri("pack://application:,,,/icons/public.png");
                     break;
             }
@@ -968,7 +693,7 @@ namespace System
     {
         #region Static Fields
 
-        private static readonly IList<string> BBType = new List<string>
+        private static readonly IList<string> BbType = new List<string>
                                                            {
                                                                "b", 
                                                                "s", 
@@ -987,10 +712,10 @@ namespace System
                                                                "big"
                                                            };
 
-        private static readonly IList<string> SpecialBBCases = new List<string> { "url", "channel", "user", "icon", };
+        private static readonly IList<string> SpecialBbCases = new List<string> { "url", "channel", "user", "icon", };
 
         // determines if a string has a (valid) opening BBCode tag
-        private static readonly string[] validStartTerms = new[] { "http://", "https://", "ftp://" };
+        private static readonly string[] ValidStartTerms = new[] { "http://", "https://", "ftp://" };
 
         #endregion
 
@@ -1151,9 +876,9 @@ namespace System
         /// <returns>
         /// The <see cref="Inline"/>.
         /// </returns>
-        public static Inline ParseBBCode(string text, bool useTunnelingStyles)
+        public static Inline ParseBbCode(string text, bool useTunnelingStyles)
         {
-            return bbcodeToInline(PreProcessBBCode(text), useTunnelingStyles);
+            return BbcodeToInline(PreProcessBbCode(text), useTunnelingStyles);
         }
 
         /// <summary>
@@ -1165,85 +890,18 @@ namespace System
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        public static string PreProcessBBCode(string text)
+        public static string PreProcessBbCode(string text)
         {
-            if (containsUrl(text))
-            {
-                // #region Find start and end of url
-                // int start;
-                IEnumerable<Tuple<string, string>> matches = from word in text.Split(' ')
-                                                             // explode them into an array
-                                                             where startsWithValidTerm(word)
-                                                             select
-                                                                 new Tuple<string, string>(
-                                                                 word, markUpUrlWithBBCode(word));
-
-                // put the match terms into a useful tuple
-                string toReturn = text;
-                foreach (var toReplace in matches)
-                {
-                    toReturn = toReturn.Replace(toReplace.Item1, toReplace.Item2); // replace each match
-                }
-
-                return toReturn; // return the replacements
-
-                /*
-                var match = text.Split(' ').FirstOrDefault(word => validStartTerms.Any(term => word.StartsWith(term)));
-
-                if (match == null)
-                    return text;
-                else
-                    start = text.IndexOf(match);
-
-                int end = text.IndexOf(text.Skip(start).FirstOrDefault(Char.IsWhiteSpace), start); // find the first space
-
-                if (end == -1) // if the string doesn't contain a space, assume the entire thing is part of the url
-                    end = text.Length;
-                end -= start;
-
-                string fullurl = text.Substring(start, end); // this should be our entire url
-                string final = null;
-                #endregion
-
-                #region mark it up
-                if (start == 0 || Char.IsWhiteSpace(text[start - 1]))
-                {
-                    string toShow = getUrlDisplay(fullurl);
-                    string markedupurl = "[url=" + fullurl + "]" + toShow + "[/url]"; // mark the bitch up
-
-                    final = text.Replace(fullurl, markedupurl); // then replace it in our string
-                    end = final.IndexOf(' ', start); // we just changed our string so we need to find our new end.
-                    if (end == -1) end = final.Length;
-                }
-                #endregion
-
-                #region recursively proess the rest of the string
-                string sub;
-                string rest;
-
-                if (final != null) // if we wrapped our link with BBcode
-                {
-                    sub = final.Substring(0, end); // what we've already processed
-                    rest = final.Substring(end); // what is left to process
-                }
-
-                else
-                {
-                    sub = text.Substring(0, start) + fullurl;
-                    rest = text.Substring(end+start);
-                }
-
-                if (!String.IsNullOrWhiteSpace(rest)) // if there's something after our url, then process it recursively
-                    return sub + PreProcessBBCode(rest);
-                #endregion
-
-                return sub; // otherwise we have our pre-processed url
-                */
-            }
-            else
+            if (!ContainsUrl(text))
             {
                 return text; // if there's no url in it, we don't have a link to mark up
             }
+
+            var matches = from word in text.Split(' ')
+                          where StartsWithValidTerm(word)
+                          select new Tuple<string, string>(word, MarkUpUrlWithBbCode(word));
+
+            return matches.Aggregate(text, (current, toReplace) => current.Replace(toReplace.Item1, toReplace.Item2)); 
         }
 
         /// <summary>
@@ -1257,8 +915,8 @@ namespace System
         /// </returns>
         public static string ToTimeStamp(this DateTimeOffset time)
         {
-            int minute = time.Minute;
-            string minuteFix = minute.ToString().Insert(0, minute < 10 ? "0" : string.Empty);
+            var minute = time.Minute;
+            var minuteFix = minute.ToString(CultureInfo.InvariantCulture).Insert(0, minute < 10 ? "0" : string.Empty);
 
             return "[" + time.Hour + ":" + minuteFix + "]";
         }
@@ -1295,148 +953,136 @@ namespace System
         /// <returns>
         /// The <see cref="Inline"/>.
         /// </returns>
-        private static Inline bbcodeToInline(string x, bool useTunnelingStyles)
+        private static Inline BbcodeToInline(string x, bool useTunnelingStyles)
         {
-            if (!hasOpenTag(x))
+            if (!HasOpenTag(x))
             {
                 return new Run(x);
             }
-            else
+
+            var toReturn = new Span();
+
+            var startType = FindStartType(x);
+            var startIndex = x.IndexOf("[" + startType + "]", StringComparison.Ordinal);
+
+            if (startIndex > 0)
             {
-                var toReturn = new Span();
+                toReturn.Inlines.Add(new Run(x.Substring(0, startIndex)));
+            }
 
-                string startType = findStartType(x);
-                int startIndex = x.IndexOf("[" + startType + "]");
+            if (startType.StartsWith("session"))
+            {
+                // hack-in for session to work
+                var rough = x.Substring(startIndex);
+                var firstBrace = rough.IndexOf(']');
+                var endInd = rough.IndexOf("[/session]", StringComparison.Ordinal);
 
-                if (startIndex > 0)
+                if (firstBrace != -1 || endInd != -1)
                 {
-                    toReturn.Inlines.Add(new Run(x.Substring(0, startIndex)));
-                }
+                    var channel = rough.Substring(firstBrace + 1, endInd - firstBrace - 1);
+                    var title = rough.Substring("[session=".Length, firstBrace - "[session=".Length);
 
-                if (startType.StartsWith("session"))
-                {
-                    // hack-in for session to work
-                    string rough = x.Substring(startIndex);
-                    int firstBrace = rough.IndexOf(']');
-                    int endInd = rough.IndexOf("[/session]");
-
-                    if (firstBrace != -1 || endInd != -1)
+                    if (!title.Contains("ADH-"))
                     {
-                        string channel = rough.Substring(firstBrace + 1, endInd - firstBrace - 1);
-                        string title = rough.Substring("[session=".Length, firstBrace - "[session=".Length);
-
-                        if (!title.Contains("ADH-"))
-                        {
-                            x = x.Replace(channel, title);
-                            x = x.Replace("[session=" + title + "]", "[session=" + channel + "]");
-                            startType = findStartType(x);
-                        }
+                        x = x.Replace(channel, title);
+                        x = x.Replace("[session=" + title + "]", "[session=" + channel + "]");
+                        startType = FindStartType(x);
                     }
                 }
+            }
 
-                string roughString = x.Substring(startIndex);
-                roughString = roughString.Remove(0, roughString.IndexOf(']') + 1);
+            string roughString = x.Substring(startIndex);
+            roughString = roughString.Remove(0, roughString.IndexOf(']') + 1);
 
-                string endType = findEndType(roughString);
-                int endIndex = roughString.IndexOf("[/" + endType + "]");
-                int endLength = ("[/" + endType + "]").Length;
+            string endType = FindEndType(roughString);
+            int endIndex = roughString.IndexOf("[/" + endType + "]", StringComparison.Ordinal);
+            int endLength = ("[/" + endType + "]").Length;
 
-                // for BBCode with arguments, we must do this
-                if (SpecialBBCases.Any(bbcase => startType.Equals(bbcase)))
+            // for BBCode with arguments, we must do this
+            if (SpecialBbCases.Any(bbcase => startType.Equals(bbcase)))
+            {
+                startType += "=";
+
+                string content = endIndex != -1 ? roughString.Substring(0, endIndex) : roughString;
+
+                startType += content;
+            }
+
+            if (startType == "noparse")
+            {
+                endIndex = roughString.IndexOf("[/noparse]", StringComparison.Ordinal);
+                string restofString = roughString.Substring(endIndex + "[/noparse]".Length);
+                string skipthis = roughString.Substring(0, endIndex);
+
+                toReturn.Inlines.Add(new Run(skipthis));
+                toReturn.Inlines.Add(BbcodeToInline(restofString, useTunnelingStyles));
+            }
+            else if (endType == "n" || endIndex == -1)
+            {
+                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType, useTunnelingStyles));
+            }
+            else if (endType != startType)
+            {
+                var properEnd = "[/" + StripAfterType(startType) + "]";
+                if (roughString.Contains(properEnd))
                 {
-                    startType += "=";
+                    var properIndex = roughString.IndexOf(properEnd, StringComparison.Ordinal);
+                    var toMarkUp = roughString.Substring(0, properIndex);
+                    var restOfString = roughString.Substring(properIndex + properEnd.Length);
 
-                    string content;
-                    if (endIndex != -1)
-                    {
-                        content = roughString.Substring(0, endIndex);
-                    }
-                    else
-                    {
-                        content = roughString;
-                    }
+                    toReturn.Inlines.Add(
+                        TypeToInline(BbcodeToInline(toMarkUp, useTunnelingStyles), startType, useTunnelingStyles));
 
-                    startType += content;
-                }
-
-                if (startType == "noparse")
-                {
-                    endIndex = roughString.IndexOf("[/noparse]");
-                    string restofString = roughString.Substring(endIndex + "[/noparse]".Length);
-                    string skipthis = roughString.Substring(0, endIndex);
-
-                    toReturn.Inlines.Add(new Run(skipthis));
-                    toReturn.Inlines.Add(bbcodeToInline(restofString, useTunnelingStyles));
-                }
-                else if (endType == "n" || endIndex == -1)
-                {
-                    toReturn.Inlines.Add(typeToInline(new Run(roughString), startType, useTunnelingStyles));
-                }
-                else if (endType != startType)
-                {
-                    string properEnd = "[/" + stripAfterType(startType) + "]";
-                    if (roughString.Contains(properEnd))
-                    {
-                        int properIndex = roughString.IndexOf(properEnd);
-                        string toMarkUp = roughString.Substring(0, properIndex);
-                        string restOfString = roughString.Substring(properIndex + properEnd.Length);
-
-                        toReturn.Inlines.Add(
-                            typeToInline(bbcodeToInline(toMarkUp, useTunnelingStyles), startType, useTunnelingStyles));
-
-                        toReturn.Inlines.Add(bbcodeToInline(restOfString, useTunnelingStyles));
-                    }
-                    else
-                    {
-                        toReturn.Inlines.Add(
-                            typeToInline(bbcodeToInline(roughString, useTunnelingStyles), startType, useTunnelingStyles));
-                    }
-                }
-                else if (endIndex + endLength == roughString.Length)
-                {
-                    roughString = roughString.Remove(endIndex, endLength);
-                    toReturn.Inlines.Add(typeToInline(new Run(roughString), startType, useTunnelingStyles));
+                    toReturn.Inlines.Add(BbcodeToInline(restOfString, useTunnelingStyles));
                 }
                 else
                 {
-                    string restOfString = roughString.Substring(endIndex + endLength);
-
-                    roughString = roughString.Substring(0, endIndex);
-
-                    toReturn.Inlines.Add(typeToInline(new Run(roughString), startType, useTunnelingStyles));
-
-                    toReturn.Inlines.Add(bbcodeToInline(restOfString, useTunnelingStyles));
+                    toReturn.Inlines.Add(
+                        TypeToInline(BbcodeToInline(roughString, useTunnelingStyles), startType, useTunnelingStyles));
                 }
-
-                return toReturn;
             }
+            else if (endIndex + endLength == roughString.Length)
+            {
+                roughString = roughString.Remove(endIndex, endLength);
+                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType, useTunnelingStyles));
+            }
+            else
+            {
+                string restOfString = roughString.Substring(endIndex + endLength);
+
+                roughString = roughString.Substring(0, endIndex);
+
+                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType, useTunnelingStyles));
+
+                toReturn.Inlines.Add(BbcodeToInline(restOfString, useTunnelingStyles));
+            }
+
+            return toReturn;
         }
 
-        private static bool containsUrl(string args)
+        private static bool ContainsUrl(string args)
         {
-            string match = args.Split(' ').FirstOrDefault(word => startsWithValidTerm(word));
+            string match = args.Split(' ').FirstOrDefault(StartsWithValidTerm);
 
             // see if it starts with something useful
             if (match == null)
             {
                 return false;
             }
-            else
-            {
-                string starter = validStartTerms.First(term => match.StartsWith(term));
-                return args.Trim().Length > starter.Length;
-            }
+
+            var starter = ValidStartTerms.First(match.StartsWith);
+            return args.Trim().Length > starter.Length;
         }
 
-        private static string findEndType(string x)
+        private static string FindEndType(string x)
         {
-            int root = x.IndexOf('[');
+            var root = x.IndexOf('[');
             if (root == -1 || x.Length < 4)
             {
                 return "n";
             }
 
-            int end = x.IndexOf(']', root);
+            var end = x.IndexOf(']', root);
             if (end == -1)
             {
                 return "n";
@@ -1444,53 +1090,37 @@ namespace System
 
             if (x[root + 1] != '/')
             {
-                return findEndType(x.Substring(end + 1));
+                return FindEndType(x.Substring(end + 1));
             }
 
-            string type = x.Substring(root + 2, end - (root + 2));
+            var type = x.Substring(root + 2, end - (root + 2));
 
-            if (BBType.Any(bbtype => type.Equals(bbtype)))
-            {
-                return type;
-            }
-            else
-            {
-                return findEndType(x.Substring(end + 1));
-            }
+            return BbType.Any(type.Equals) ? type : FindEndType(x.Substring(end + 1));
         }
 
-        private static string findStartType(string x)
+        private static string FindStartType(string x)
         {
-            int root = x.IndexOf('[');
+            var root = x.IndexOf('[');
             if (root == -1 || x.Length < 3)
             {
                 return "n";
             }
 
-            int end = x.IndexOf(']', root);
+            var end = x.IndexOf(']', root);
             if (end == -1)
             {
                 return "n";
             }
 
-            string type = x.Substring(root + 1, end - root - 1);
+            var type = x.Substring(root + 1, end - root - 1);
 
-            if (BBType.Any(bbtype => type.StartsWith(bbtype)))
-            {
-                return type;
-            }
-            else
-            {
-                return findStartType(x.Substring(end + 1));
-            }
+            return BbType.Any(type.StartsWith) ? type : FindStartType(x.Substring(end + 1));
         }
 
-        private static string getUrlDisplay(string args)
+        private static string GetUrlDisplay(string args)
         {
-            // forgot about the wonderful principle of KISS. This works better and is way more simple
-            string stripped;
-            string match = validStartTerms.FirstOrDefault(term => args.StartsWith(term));
-            stripped = args.Substring(match.Length); // remove the starting term
+            var match = ValidStartTerms.FirstOrDefault(args.StartsWith);
+            var stripped = args.Substring(match.Length);
 
             if (stripped.Contains('/'))
             {
@@ -1507,41 +1137,34 @@ namespace System
             return stripped;
         }
 
-        private static bool hasCloseTag(string x)
+        private static bool HasCloseTag(string x)
         {
-            int root = x.IndexOf("[/");
+            var root = x.IndexOf("[/", StringComparison.Ordinal);
             if (root == -1 || x.Length < 4 || x[root + 1] != '/')
             {
                 return false;
             }
 
-            int end = x.IndexOf("]", root);
+            var end = x.IndexOf(']', root);
             if (end == -1)
             {
                 return false;
             }
 
-            string type = x.Substring(root + 1, end - root - 1);
+            var type = x.Substring(root + 1, end - root - 1);
 
-            if (!BBType.Any(bbtype => bbtype.Equals(type)))
-            {
-                return hasCloseTag(x.Substring(end + 1));
-            }
-            else
-            {
-                return true;
-            }
+            return BbType.Any(bbtype => bbtype.Equals(type)) || HasCloseTag(x.Substring(end + 1));
         }
 
-        private static bool hasOpenTag(string x)
+        private static bool HasOpenTag(string x)
         {
-            int root = x.IndexOf('[');
+            var root = x.IndexOf('[');
             if (root == -1 || x.Length < 3)
             {
                 return false;
             }
 
-            int end = x.IndexOf(']', root);
+            var end = x.IndexOf(']', root);
             if (end == -1)
             {
                 return false;
@@ -1549,66 +1172,50 @@ namespace System
 
             if (x[root + 1] == '/')
             {
-                hasOpenTag(x.Substring(end));
+                HasOpenTag(x.Substring(end));
             }
 
-            string type = x.Substring(root + 1, end - root - 1);
+            var type = x.Substring(root + 1, end - root - 1);
 
-            if (!BBType.Any(bbtype => type.StartsWith(bbtype)))
-            {
-                return hasOpenTag(x.Substring(end + 1));
-            }
-            else
-            {
-                return true;
-            }
+            return BbType.Any(type.StartsWith) || HasOpenTag(x.Substring(end + 1));
         }
 
-        private static string markUpUrlWithBBCode(string args)
+        private static string MarkUpUrlWithBbCode(string args)
         {
-            string toShow = getUrlDisplay(args);
+            string toShow = GetUrlDisplay(args);
             return "[url=" + args + "]" + toShow + "[/url]"; // mark the bitch up
         }
 
-        private static string removeFirstEndType(string x, string type)
+        private static string RemoveFirstEndType(string x, string type)
         {
-            string endtype = "[/" + type + "]";
-            int firstOccur = x.IndexOf(endtype);
+            var endtype = "[/" + type + "]";
+            var firstOccur = x.IndexOf(endtype, StringComparison.Ordinal);
 
-            string interestedin = x.Substring(0, firstOccur);
-            string rest = x.Substring(firstOccur + endtype.Length);
+            var interestedin = x.Substring(0, firstOccur);
+            var rest = x.Substring(firstOccur + endtype.Length);
 
             return interestedin + rest;
         }
 
-        private static bool startsWithValidTerm(string text)
+        private static bool StartsWithValidTerm(string text)
         {
-            return validStartTerms.Any(term => text.StartsWith(term));
+            return ValidStartTerms.Any(text.StartsWith);
         }
 
-        private static string stripAfterType(string z)
+        private static string StripAfterType(string z)
+        {
+            return z.Contains('=') ? z.Substring(0, z.IndexOf('=')) : z;
+        }
+
+        private static string StripBeforeType(string z)
         {
             if (z.Contains('='))
             {
-                return z.Substring(0, z.IndexOf('='));
-            }
-            else
-            {
-                return z;
-            }
-        }
-
-        private static string stripBeforeType(string z)
-        {
-            if (z.Contains('='))
-            {
-                string type = z.Substring(0, z.IndexOf('='));
+                var type = z.Substring(0, z.IndexOf('='));
                 return z.Substring(z.IndexOf('=') + 1, z.Length - (type.Length + 1));
             }
-            else
-            {
-                return z;
-            }
+
+            return z;
         }
 
         /// <summary>
@@ -1626,27 +1233,52 @@ namespace System
         /// <returns>
         /// The <see cref="Inline"/>.
         /// </returns>
-        private static Inline typeToInline(Inline x, string y, bool useTunnelingStyles)
+        private static Inline TypeToInline(Inline x, string y, bool useTunnelingStyles)
         {
-            if (y == "b")
+            switch (y)
             {
-                return new Bold(x);
+                case "b":
+                    return new Bold(x);
+                case "u":
+                    return new Span(x) { TextDecorations = TextDecorations.Underline };
+                case "i":
+                    return new Italic(x);
+                case "s":
+                    return new Span(x) { TextDecorations = TextDecorations.Strikethrough };
+                case "sub":
+                    return new Span(x) { BaselineAlignment = BaselineAlignment.Subscript, FontSize = 10 };
+                case "sup":
+                    return new Span(x) { BaselineAlignment = BaselineAlignment.Top, FontSize = 10 };
+                case "small":
+                    return new Span(x) { FontSize = 9 };
+                case "big":
+                    return new Span(x) { FontSize = 16 };
             }
-            else if (y == "u")
+
+            if (y.StartsWith("url"))
             {
-                return new Span(x) { TextDecorations = TextDecorations.Underline };
+                var url = StripBeforeType(y);
+
+                var toReturn = new Hyperlink(x) { CommandParameter = url, ToolTip = url };
+
+                if (useTunnelingStyles)
+                {
+                    toReturn.Style = (Style)Application.Current.FindResource("TunnelingHyperlink");
+                }
+
+                return toReturn;
             }
-            else if (y == "i")
+
+            if (y.StartsWith("user") || y.StartsWith("icon"))
             {
-                return new Italic(x);
+                var target = StripBeforeType(y);
+
+                return MakeUsernameLink(new CharacterModel { Name = target, Gender = Gender.None }, useTunnelingStyles);
             }
-            else if (y == "s")
+
+            if (y.StartsWith("channel") || y.StartsWith("session"))
             {
-                return new Span(x) { TextDecorations = TextDecorations.Strikethrough };
-            }
-            else if (y.StartsWith("channel") || y.StartsWith("session"))
-            {
-                string channel = stripBeforeType(y);
+                var channel = StripBeforeType(y);
 
                 return
                     new InlineUIContainer(
@@ -1659,45 +1291,8 @@ namespace System
                                   BaselineAlignment = BaselineAlignment.TextBottom 
                                };
             }
-            else if (y.StartsWith("url"))
-            {
-                string url = stripBeforeType(y);
 
-                var toReturn = new Hyperlink(x) { CommandParameter = url, ToolTip = url };
-
-                if (useTunnelingStyles)
-                {
-                    toReturn.Style = (Style)Application.Current.FindResource("TunnelingHyperlink");
-                }
-
-                return toReturn;
-            }
-            else if (y.StartsWith("user") || y.StartsWith("icon"))
-            {
-                string target = stripBeforeType(y);
-
-                return MakeUsernameLink(new CharacterModel { Name = target, Gender = Gender.None }, useTunnelingStyles);
-            }
-            else if (y == "sub")
-            {
-                return new Span(x) { BaselineAlignment = BaselineAlignment.Subscript, FontSize = 10 };
-            }
-            else if (y == "sup")
-            {
-                return new Span(x) { BaselineAlignment = BaselineAlignment.Top, FontSize = 10 };
-            }
-            else if (y == "small")
-            {
-                return new Span(x) { FontSize = 9 };
-            }
-            else if (y == "big")
-            {
-                return new Span(x) { FontSize = 16 };
-            }
-            else
-            {
-                return new Span(x);
-            }
+            return new Span(x);
         }
 
         #endregion

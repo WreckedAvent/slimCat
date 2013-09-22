@@ -27,78 +27,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Models
+namespace Slimcat.Models
 {
-    using System;
-
-    /// <summary>
-    ///     The message base.
-    /// </summary>
-    public abstract class MessageBase : IDisposable
-    {
-        #region Fields
-
-        internal readonly DateTimeOffset _posted;
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="MessageBase" /> class.
-        /// </summary>
-        public MessageBase()
-        {
-            this._posted = DateTimeOffset.Now;
-        }
-
-        #endregion
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets the posted time.
-        /// </summary>
-        public DateTimeOffset PostedTime
-        {
-            get
-            {
-                return this._posted;
-            }
-        }
-
-        /// <summary>
-        ///     Gets the time stamp.
-        /// </summary>
-        public string TimeStamp
-        {
-            get
-            {
-                return this._posted.ToTimeStamp();
-            }
-        }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        ///     The dispose.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-        }
-
-        #endregion
-
-        #region Methods
-
-        internal abstract void Dispose(bool IsManaged);
-
-        #endregion
-    }
-
     /// <summary>
     ///     A model to hold data on messages
     /// </summary>
@@ -106,12 +36,6 @@ namespace Models
     {
         // Messages cannot be modified whence sent, safe to make these readonly
         #region Fields
-
-        private readonly MessageType _type;
-
-        private string _message;
-
-        private ICharacter _poster;
 
         #endregion
 
@@ -130,11 +54,11 @@ namespace Models
         /// <param name="type">
         /// The type of message posted
         /// </param>
-        public MessageModel(ICharacter poster, string message, MessageType type = MessageType.normal)
+        public MessageModel(ICharacter poster, string message, MessageType type = MessageType.Normal)
         {
-            this._poster = poster;
-            this._message = message;
-            this._type = type;
+            this.Poster = poster;
+            this.Message = message;
+            this.Type = type;
         }
 
         #endregion
@@ -144,35 +68,17 @@ namespace Models
         /// <summary>
         ///     Gets the message.
         /// </summary>
-        public string Message
-        {
-            get
-            {
-                return this._message;
-            }
-        }
+        public string Message { get; private set; }
 
         /// <summary>
         ///     Gets the poster.
         /// </summary>
-        public ICharacter Poster
-        {
-            get
-            {
-                return this._poster;
-            }
-        }
+        public ICharacter Poster { get; private set; }
 
         /// <summary>
         ///     Gets the type.
         /// </summary>
-        public MessageType Type
-        {
-            get
-            {
-                return this._type;
-            }
-        }
+        public MessageType Type { get; private set; }
 
         #endregion
 
@@ -180,68 +86,13 @@ namespace Models
 
         internal override void Dispose(bool isManaged)
         {
-            if (isManaged)
+            if (!isManaged)
             {
-                this._poster = null;
-                this._message = null;
+                return;
             }
+
+            this.Poster = null;
         }
-
-        #endregion
-    }
-
-    /// <summary>
-    ///     Used to represent possible types of message sent to the client
-    /// </summary>
-    public enum MessageType
-    {
-        /// <summary>
-        ///     The ad.
-        /// </summary>
-        ad, 
-
-        /// <summary>
-        ///     The normal.
-        /// </summary>
-        normal, 
-
-        /// <summary>
-        ///     The roll.
-        /// </summary>
-        roll, 
-    }
-
-    /// <summary>
-    ///     The Message interface.
-    /// </summary>
-    public interface IMessage : IDisposable
-    {
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets the message.
-        /// </summary>
-        string Message { get; }
-
-        /// <summary>
-        ///     Gets the posted time.
-        /// </summary>
-        DateTimeOffset PostedTime { get; }
-
-        /// <summary>
-        ///     Gets the poster.
-        /// </summary>
-        ICharacter Poster { get; }
-
-        /// <summary>
-        ///     Gets the time stamp.
-        /// </summary>
-        string TimeStamp { get; }
-
-        /// <summary>
-        ///     Gets the type.
-        /// </summary>
-        MessageType Type { get; }
 
         #endregion
     }

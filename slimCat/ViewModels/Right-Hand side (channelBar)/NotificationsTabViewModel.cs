@@ -27,22 +27,21 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows.Input;
 
-    using lib;
-
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using Views;
+    using Slimcat.Libraries;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
+    using Slimcat.Views;
 
     /// <summary>
     ///     This is the tab labled "notifications" in the channel bar, or the bar on the right-hand side
@@ -60,13 +59,13 @@ namespace ViewModels
 
         #region Fields
 
-        private RelayCommand _clearNoti;
+        private RelayCommand clearNoti;
 
-        private bool _isSelected;
+        private bool isSelected;
 
-        private RelayCommand _killNoti;
+        private RelayCommand killNoti;
 
-        private string _search = string.Empty;
+        private string search = string.Empty;
 
         #endregion
 
@@ -91,9 +90,9 @@ namespace ViewModels
             IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
             : base(contain, regman, eventagg, cm)
         {
-            this._container.RegisterType<object, NotificationsTabView>(NotificationsTabView);
+            this.Container.RegisterType<object, NotificationsTabView>(NotificationsTabView);
 
-            this.CM.Notifications.CollectionChanged += (s, e) =>
+            this.ChatModel.Notifications.CollectionChanged += (s, e) =>
                 {
                     this.OnPropertyChanged("NeedsAttention");
                     this.OnPropertyChanged("SortedNotifications");
@@ -112,12 +111,8 @@ namespace ViewModels
         {
             get
             {
-                if (this._clearNoti == null)
-                {
-                    this._clearNoti = new RelayCommand(args => this.CM.Notifications.Clear());
-                }
-
-                return this._clearNoti;
+                return this.clearNoti
+                       ?? (this.clearNoti = new RelayCommand(args => this.ChatModel.Notifications.Clear()));
             }
         }
 
@@ -130,7 +125,7 @@ namespace ViewModels
         {
             get
             {
-                return this.CM.Notifications.Count == 0;
+                return this.ChatModel.Notifications.Count == 0;
             }
         }
 
@@ -141,14 +136,14 @@ namespace ViewModels
         {
             get
             {
-                return this._isSelected;
+                return this.isSelected;
             }
 
             set
             {
-                if (this._isSelected != value)
+                if (this.isSelected != value)
                 {
-                    this._isSelected = value;
+                    this.isSelected = value;
                     this.OnPropertyChanged("NeedsAttention");
                 }
             }
@@ -161,12 +156,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._killNoti == null)
-                {
-                    this._killNoti = new RelayCommand(this.RemoveNotification);
-                }
-
-                return this._killNoti;
+                return this.killNoti ?? (this.killNoti = new RelayCommand(this.RemoveNotification));
             }
         }
 
@@ -177,12 +167,12 @@ namespace ViewModels
         {
             get
             {
-                return this._search.ToLower();
+                return this.search.ToLower();
             }
 
             set
             {
-                this._search = value;
+                this.search = value;
                 this.OnPropertyChanged("SearchString");
                 this.OnPropertyChanged("SortedNotifications");
             }
@@ -195,24 +185,24 @@ namespace ViewModels
         {
             get
             {
-                if (this._search == string.Empty)
+                if (this.search == string.Empty)
                 {
-                    return this.CM.Notifications;
+                    return this.ChatModel.Notifications;
                 }
 
                 Func<NotificationModel, bool> MeetsString = args =>
                     {
-                        string arguments = args.ToString().ToLower();
+                        var arguments = args.ToString().ToLower();
                         if (args is CharacterUpdateModel)
                         {
-                            string characterName = ((CharacterUpdateModel)args).TargetCharacter.Name;
+                            var characterName = ((CharacterUpdateModel)args).TargetCharacter.Name;
                             return arguments.ContainsOrd(this.SearchString, true)
                                    || characterName.ContainsOrd(this.SearchString, true);
                         }
 
                         if (args is ChannelUpdateModel)
                         {
-                            string channelName = ((ChannelUpdateModel)args).ChannelTitle;
+                            var channelName = ((ChannelUpdateModel)args).ChannelTitle;
                             return arguments.ContainsOrd(this.SearchString, true)
                                    || channelName.ContainsOrd(this.SearchString, true);
                         }
@@ -220,7 +210,7 @@ namespace ViewModels
                         return arguments.Contains(this.SearchString);
                     };
 
-                return this.CM.Notifications.Where(MeetsString);
+                return this.ChatModel.Notifications.Where(MeetsString);
             }
         }
 
@@ -236,11 +226,13 @@ namespace ViewModels
         /// </param>
         public void RemoveNotification(object args)
         {
-            if (args is NotificationModel)
+            if (!(args is NotificationModel))
             {
-                var toRemove = args as NotificationModel;
-                this.CM.Notifications.Remove(toRemove);
+                return;
             }
+
+            var toRemove = args as NotificationModel;
+            this.ChatModel.Notifications.Remove(toRemove);
         }
 
         #endregion

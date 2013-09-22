@@ -27,20 +27,18 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
-    using ViewModels;
+    using Slimcat.ViewModels;
 
     /// <summary>
     ///     Interaction logic for ChannelbarNotificationsTabView.xaml
     /// </summary>
-    public partial class NotificationsTabView : UserControl
+    public partial class NotificationsTabView
     {
         #region Fields
 
-        private readonly NotificationsTabViewModel _vm;
+        private readonly NotificationsTabViewModel vm;
 
         #endregion
 
@@ -55,9 +53,9 @@ namespace Views
         public NotificationsTabView(NotificationsTabViewModel vm)
         {
             this.InitializeComponent();
-            this._vm = vm;
+            this.vm = vm;
 
-            this.DataContext = this._vm;
+            this.DataContext = this.vm;
         }
 
         #endregion

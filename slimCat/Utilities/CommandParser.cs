@@ -27,8 +27,9 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace System
+namespace Slimcat.Utilities
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -41,15 +42,15 @@ namespace System
     {
         #region Fields
 
-        private readonly string _args;
+        private readonly string args;
 
-        private readonly string _currentChan;
+        private readonly string currentChan;
 
-        private readonly bool _hasBadSyntx;
+        private readonly bool isInvalid;
 
-        private readonly bool _hasCommand = true;
+        private readonly bool hasCommand = true;
 
-        private readonly string _type;
+        private readonly string type;
 
         #endregion
 
@@ -68,49 +69,51 @@ namespace System
         {
             if (!rawInput.StartsWith("/"))
             {
-                this._hasCommand = false;
+                this.hasCommand = false;
             }
 
             string type;
-            string arguments;
 
-            if (this.HasCommand)
+            if (!this.HasCommand)
             {
-                if (!rawInput.Trim().Contains(' '))
-                {
-                    this._type = rawInput.Trim().Substring(1);
-                }
-                else
-                {
-                    int firstSpace = rawInput.Substring(1).IndexOf(' ');
-                    type = rawInput.Substring(1, firstSpace);
-
-                    arguments = rawInput.Substring(firstSpace + 2);
-
-                    if (type.Equals("status", StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (!arguments.Contains(' '))
-                        {
-                            this._hasBadSyntx = true;
-                        }
-                        else
-                        {
-                            type = arguments.Substring(0, arguments.IndexOf(' '));
-                            arguments = arguments.Substring(arguments.IndexOf(' ') + 1);
-                        }
-                    }
-
-                    if (type.Contains('_'))
-                    {
-                        this._hasBadSyntx = true;
-                    }
-
-                    this._type = type;
-                    this._args = arguments;
-                }
-
-                this._currentChan = currentChannel;
+                return;
             }
+
+            if (!rawInput.Trim().Contains(' '))
+            {
+                this.type = rawInput.Trim().Substring(1);
+            }
+
+            else
+            {
+                var firstSpace = rawInput.Substring(1).IndexOf(' ');
+                type = rawInput.Substring(1, firstSpace);
+
+                var arguments = rawInput.Substring(firstSpace + 2);
+
+                if (type.Equals("status", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!arguments.Contains(' '))
+                    {
+                        this.isInvalid = true;
+                    }
+                    else
+                    {
+                        type = arguments.Substring(0, arguments.IndexOf(' '));
+                        arguments = arguments.Substring(arguments.IndexOf(' ') + 1);
+                    }
+                }
+
+                if (type.Contains('_'))
+                {
+                    this.isInvalid = true;
+                }
+
+                this.type = type;
+                this.args = arguments;
+            }
+
+            this.currentChan = currentChannel;
         }
 
         #endregion
@@ -124,7 +127,7 @@ namespace System
         {
             get
             {
-                return this._hasCommand;
+                return this.hasCommand;
             }
         }
 
@@ -135,7 +138,7 @@ namespace System
         {
             get
             {
-                return !this._hasBadSyntx && this.HasCommand && CommandDefinitions.IsValidCommand(this.Type);
+                return !this.isInvalid && this.HasCommand && CommandDefinitions.IsValidCommand(this.Type);
             }
         }
 
@@ -151,10 +154,8 @@ namespace System
                     return CommandDefinitions.Commands[this.Type].PermissionsLevel
                            == CommandModel.PermissionLevel.GlobalMod;
                 }
-                else
-                {
-                    return false;
-                }
+
+                return false;
             }
         }
 
@@ -170,10 +171,8 @@ namespace System
                     return CommandDefinitions.GetCommandModelFromName(this.Type).PermissionsLevel
                            == CommandModel.PermissionLevel.Moderator;
                 }
-                else
-                {
-                    return false;
-                }
+
+                return false;
             }
         }
 
@@ -184,7 +183,7 @@ namespace System
         {
             get
             {
-                return this.HasCommand ? this._type.ToLower() : "none";
+                return this.HasCommand ? this.type.ToLower() : "none";
             }
         }
 
@@ -203,20 +202,23 @@ namespace System
         /// </returns>
         public static bool HasNonCommand(string input)
         {
-            return CommandDefinitions.NonCommandCommands.Any(noncommand => input.StartsWith(noncommand));
+            return CommandDefinitions.NonCommandCommands.Any(input.StartsWith);
         }
 
         /// <summary>
         ///     The to dictionary.
         /// </summary>
         /// <returns>
-        ///     The <see cref="IDictionary" />.
+        ///     The <see>
+        ///             <cref>IDictionary</cref>
+        ///         </see>
+        ///     .
         /// </returns>
-        public IDictionary<string, object> toDictionary()
+        public IDictionary<string, object> ToDictionary()
         {
             return
-                CommandDefinitions.CreateCommand(this.Type, new List<string> { this._args }, this._currentChan)
-                                  .toDictionary();
+                CommandDefinitions.CreateCommand(this.Type, new List<string> { this.args }, this.currentChan)
+                                  .ToDictionary();
         }
 
         #endregion

@@ -27,20 +27,18 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
-    using ViewModels;
+    using Slimcat.ViewModels;
 
     /// <summary>
     ///     The actual view for the tab on the right-hand side labeled 'global'
     /// </summary>
-    public partial class GlobalTabView : UserControl
+    public partial class GlobalTabView
     {
         #region Fields
 
-        private readonly GlobalTabViewModel _vm;
+        private readonly GlobalTabViewModel vm;
 
         #endregion
 
@@ -55,9 +53,9 @@ namespace Views
         public GlobalTabView(GlobalTabViewModel vm)
         {
             this.InitializeComponent();
-            this._vm = vm;
+            this.vm = vm;
 
-            this.DataContext = this._vm;
+            this.DataContext = this.vm;
         }
 
         #endregion

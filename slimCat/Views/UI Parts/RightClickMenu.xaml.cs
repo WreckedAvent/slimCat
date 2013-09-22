@@ -27,14 +27,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
-    using System.Windows.Controls.Primitives;
-
     /// <summary>
     ///     Interaction logic for RightClickMenu.xaml
     /// </summary>
-    public partial class RightClickMenu : Popup
+    public partial class RightClickMenu
     {
         #region Constructors and Destructors
 

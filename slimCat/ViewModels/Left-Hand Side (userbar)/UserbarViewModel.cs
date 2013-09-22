@@ -28,26 +28,24 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Timers;
     using System.Windows.Input;
-
-    using lib;
 
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using Services;
-
-    using slimCat;
-
-    using Views;
+    using Slimcat;
+    using Slimcat.Libraries;
+    using Slimcat.Models;
+    using Slimcat.Services;
+    using Slimcat.Utilities;
+    using Slimcat.Views;
 
     /// <summary>
     ///     The UserbarViewCM allows the user to navigate the current conversations they have open.
@@ -66,67 +64,64 @@ namespace ViewModels
 
         #region Fields
 
-        private readonly IDictionary<string, StatusType> _statuskinds = new Dictionary<string, StatusType>
-                                                                            {
-                                                                                {
-                                                                                    "Online"
-                                                                                    , 
-                                                                                    StatusType
-                                                                                    .online
-                                                                                }, 
-                                                                                {
-                                                                                    "Busy", 
-                                                                                    StatusType
-                                                                                    .busy
-                                                                                }, 
-                                                                                {
-                                                                                    "Do not Disturb"
-                                                                                    , 
-                                                                                    StatusType
-                                                                                    .dnd
-                                                                                }, 
-                                                                                {
-                                                                                    "Looking For Play"
-                                                                                    , 
-                                                                                    StatusType
-                                                                                    .looking
-                                                                                }, 
-                                                                                {
-                                                                                    "Away", 
-                                                                                    StatusType
-                                                                                    .away
-                                                                                }
-                                                                            };
+        private readonly IDictionary<string, StatusType> statusKinds = new Dictionary<string, StatusType>
+        {
+            {
+                "Online",  
+                StatusType
+                .online
+            }, 
+            {
+                "Busy", 
+                StatusType
+                .busy
+            }, 
+            {
+                "Do not Disturb",  
+                StatusType
+                .dnd
+            }, 
+            {
+                "Looking For Play",  
+                StatusType
+                .looking
+            }, 
+            {
+                "Away", 
+                StatusType
+                .away
+            }
+        };
 
-        private readonly Timer _updateTick = new Timer(2500);
+        private readonly Timer updateTick = new Timer(2500);
 
-        private bool _channelsExpanded = true;
+        private bool channelsExpanded = true;
 
-        private RelayCommand _close;
+        private RelayCommand close;
 
-        private bool _hasNewChanMessage;
+        private bool hasNewChanMessage;
 
-        private bool _hasNewPM;
+        private bool hasNewPm;
 
-        private bool _isChangingStatus;
+        private bool isChangingStatus;
 
-        private bool _isExpanded = true;
+        private bool isExpanded = true;
 
-        private bool _pmsExpanded = true;
+        private bool pmsExpanded = true;
 
-        private RelayCommand _saveChannels;
+        private RelayCommand saveChannels;
 
-        private int _selChanIndex;
+        private int selChannelIndex;
 
-        private int _selPMIndex = -1;
+        private int selPmIndex = -1;
 
-        private string _status_cache = string.Empty;
+        private string statusCache = string.Empty;
 
-        private StatusType _status_type_cache;
+        private StatusType statusTypeCache;
 
-        private RelayCommand _toggle;
+        private RelayCommand toggle;
 
-        private RelayCommand _toggleStatus;
+        private RelayCommand toggleStatus;
 
         #endregion
 
@@ -152,21 +147,21 @@ namespace ViewModels
         {
             try
             {
-                this.CM.CurrentPMs.CollectionChanged += (s, e) => this.OnPropertyChanged("HasPMs");
+                this.ChatModel.CurrentPMs.CollectionChanged += (s, e) => this.OnPropertyChanged("HasPMs");
 
                 // this checks if we need to hide/show the PM tab
-                this._events.GetEvent<ChatOnDisplayEvent>().Subscribe(this.requestNavigate, ThreadOption.UIThread, true);
+                this.Events.GetEvent<ChatOnDisplayEvent>().Subscribe(this.RequestNavigate, ThreadOption.UIThread, true);
 
-                this._events.GetEvent<NewPMEvent>()
-                    .Subscribe(param => { this.updateFlashingTabs(); }, ThreadOption.UIThread, true);
+                this.Events.GetEvent<NewPMEvent>()
+                    .Subscribe(param => this.UpdateFlashingTabs(), ThreadOption.UIThread, true);
 
-                this._events.GetEvent<NewMessageEvent>()
-                    .Subscribe(param => { this.updateFlashingTabs(); }, ThreadOption.UIThread, true);
+                this.Events.GetEvent<NewMessageEvent>()
+                    .Subscribe(param => this.UpdateFlashingTabs(), ThreadOption.UIThread, true);
 
-                this.CM.SelectedChannelChanged += (s, e) => this.updateFlashingTabs();
+                this.ChatModel.SelectedChannelChanged += (s, e) => this.UpdateFlashingTabs();
 
-                this._updateTick.Enabled = true;
-                this._updateTick.Elapsed += this.updateConnectionBars;
+                this.updateTick.Enabled = true;
+                this.updateTick.Elapsed += this.UpdateConnectionBars;
             }
             catch (Exception ex)
             {
@@ -182,32 +177,31 @@ namespace ViewModels
         /// <summary>
         ///     Gets or sets the chan_ selected.
         /// </summary>
-        public int Chan_Selected
+        public int ChannelSelected
         {
             get
             {
-                return this._selChanIndex;
+                return this.selChannelIndex;
             }
 
             set
             {
-                if (this._selChanIndex != value)
+                if (this.selChannelIndex == value)
                 {
-                    this._selChanIndex = value;
-                    this.OnPropertyChanged("Chan_Selected");
+                    return;
+                }
 
-                    if (value != -1 && this.CM.SelectedChannel != this.CM.CurrentChannels[value])
-                    {
-                        this._events.GetEvent<RequestChangeTabEvent>().Publish(this.CM.CurrentChannels[value].ID);
-                    }
+                this.selChannelIndex = value;
+                this.OnPropertyChanged("ChannelSelected");
 
-                    if (this.Chan_Selected != -1)
-                    {
-                        if (this.PM_Selected != -1)
-                        {
-                            this.PM_Selected = -1;
-                        }
-                    }
+                if (value != -1 && this.ChatModel.CurrentChannel != this.ChatModel.CurrentChannels[value])
+                {
+                    this.Events.GetEvent<RequestChangeTabEvent>().Publish(this.ChatModel.CurrentChannels[value].Id);
+                }
+
+                if (this.ChannelSelected != -1)
+                {
+                    this.PmSelected = -1;
                 }
             }
         }
@@ -219,12 +213,12 @@ namespace ViewModels
         {
             get
             {
-                return this._channelsExpanded;
+                return this.channelsExpanded;
             }
 
             set
             {
-                this._channelsExpanded = value;
+                this.channelsExpanded = value;
                 this.OnPropertyChanged("ChannelsAreExpanded");
             }
         }
@@ -236,12 +230,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._close == null)
-                {
-                    this._close = new RelayCommand(this.TabCloseEvent);
-                }
-
-                return this._close;
+                return this.close ?? (this.close = new RelayCommand(this.TabCloseEvent));
             }
         }
 
@@ -288,12 +277,12 @@ namespace ViewModels
         {
             get
             {
-                return this._hasNewChanMessage;
+                return this.hasNewChanMessage;
             }
 
             set
             {
-                this._hasNewChanMessage = value;
+                this.hasNewChanMessage = value;
                 this.OnPropertyChanged("HasNewMessage");
                 this.OnPropertyChanged("HasUpdate");
                 this.OnPropertyChanged("ExpandString");
@@ -301,18 +290,18 @@ namespace ViewModels
         }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether has new pm.
+        ///     Gets or sets a value indicating whether has new PrivateMessage.
         /// </summary>
         public bool HasNewPM
         {
             get
             {
-                return this._hasNewPM;
+                return this.hasNewPm;
             }
 
             set
             {
-                this._hasNewPM = value;
+                this.hasNewPm = value;
                 this.OnPropertyChanged("HasNewPM");
                 this.OnPropertyChanged("HasUpdate");
                 this.OnPropertyChanged("ExpandString");
@@ -326,7 +315,7 @@ namespace ViewModels
         {
             get
             {
-                return this.CM.CurrentPMs.Count > 0;
+                return this.ChatModel.CurrentPMs.Count > 0;
             }
         }
 
@@ -337,7 +326,7 @@ namespace ViewModels
         {
             get
             {
-                return this._hasNewChanMessage || this._hasNewPM;
+                return this.hasNewChanMessage || this.hasNewPm;
             }
         }
 
@@ -348,25 +337,29 @@ namespace ViewModels
         {
             get
             {
-                return this._isChangingStatus;
+                return this.isChangingStatus;
             }
 
             set
             {
-                if (this._isChangingStatus != value)
+                if (this.isChangingStatus == value)
                 {
-                    this._isChangingStatus = value;
-                    this.OnPropertyChanged("IsChangingStatus");
-
-                    if (value == false
-                        && (this._status_cache != this.CM.SelectedCharacter.StatusMessage
-                            || this._status_type_cache != this.CM.SelectedCharacter.Status))
-                    {
-                        this.sendStatusChangedCommand();
-                        this._status_cache = this.CM.SelectedCharacter.StatusMessage;
-                        this._status_type_cache = this.CM.SelectedCharacter.Status;
-                    }
+                    return;
                 }
+
+                this.isChangingStatus = value;
+                this.OnPropertyChanged("IsChangingStatus");
+
+                if (value
+                    || (this.statusCache == this.ChatModel.CurrentCharacter.StatusMessage
+                        && this.statusTypeCache == this.ChatModel.CurrentCharacter.Status))
+                {
+                    return;
+                }
+
+                this.SendStatusChangedCommand();
+                this.statusCache = this.ChatModel.CurrentCharacter.StatusMessage;
+                this.statusTypeCache = this.ChatModel.CurrentCharacter.Status;
             }
         }
 
@@ -377,12 +370,12 @@ namespace ViewModels
         {
             get
             {
-                return this._isExpanded;
+                return this.isExpanded;
             }
 
             set
             {
-                this._isExpanded = value;
+                this.isExpanded = value;
                 this.OnPropertyChanged("IsExpanded");
                 this.OnPropertyChanged("ExpandString");
             }
@@ -393,32 +386,31 @@ namespace ViewModels
         /// <summary>
         ///     Gets or sets the p m_ selected.
         /// </summary>
-        public int PM_Selected
+        public int PmSelected
         {
             get
             {
-                return this._selPMIndex;
+                return this.selPmIndex;
             }
 
             set
             {
-                if (this._selPMIndex != value)
+                if (this.selPmIndex == value)
                 {
-                    this._selPMIndex = value;
-                    this.OnPropertyChanged("PM_Selected");
+                    return;
+                }
 
-                    if (value != -1 && this.CM.SelectedChannel != this.CM.CurrentPMs[value])
-                    {
-                        this._events.GetEvent<RequestChangeTabEvent>().Publish(this.CM.CurrentPMs[value].ID);
-                    }
+                this.selPmIndex = value;
+                this.OnPropertyChanged("PmSelected");
 
-                    if (this.PM_Selected != -1)
-                    {
-                        if (this.Chan_Selected != -1)
-                        {
-                            this.Chan_Selected = -1;
-                        }
-                    }
+                if (value != -1 && this.ChatModel.CurrentChannel != this.ChatModel.CurrentPMs[value])
+                {
+                    this.Events.GetEvent<RequestChangeTabEvent>().Publish(this.ChatModel.CurrentPMs[value].Id);
+                }
+
+                if (this.PmSelected != -1)
+                {
+                    this.ChannelSelected = -1;
                 }
             }
         }
@@ -430,12 +422,12 @@ namespace ViewModels
         {
             get
             {
-                return this._pmsExpanded;
+                return this.pmsExpanded;
             }
 
             set
             {
-                this._pmsExpanded = value;
+                this.pmsExpanded = value;
                 this.OnPropertyChanged("PMsAreExpanded");
             }
         }
@@ -447,27 +439,23 @@ namespace ViewModels
         {
             get
             {
-                if (this._saveChannels == null)
-                {
-                    this._saveChannels = new RelayCommand(
-                        args =>
-                            {
-                                ApplicationSettings.SavedChannels.Clear();
+                return this.saveChannels ?? (this.saveChannels = new RelayCommand(
+                args =>
+                    {
+                        ApplicationSettings.SavedChannels.Clear();
 
-                                foreach (GeneralChannelModel channel in this.CM.CurrentChannels)
-                                {
-                                    if (!channel.ID.Equals("Home", StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        ApplicationSettings.SavedChannels.Add(channel.ID);
-                                    }
-                                }
+                        foreach (
+                            var channel in
+                                this.ChatModel.CurrentChannels.Where(
+                                    channel => !channel.Id.Equals("Home", StringComparison.OrdinalIgnoreCase)))
+                        {
+                            ApplicationSettings.SavedChannels.Add(channel.Id);
+                        }
 
-                                SettingsDaemon.SaveApplicationSettingsToXML(this.CM.SelectedCharacter.Name);
-                                this._events.GetEvent<ErrorEvent>().Publish("Channels saved.");
-                            });
-                }
-
-                return this._saveChannels;
+                        SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
+                        this.Events.GetEvent<ErrorEvent>()
+                            .Publish("Channels saved.");
+                    }));
             }
         }
 
@@ -478,7 +466,7 @@ namespace ViewModels
         {
             get
             {
-                return this._statuskinds;
+                return this.statusKinds;
             }
         }
 
@@ -489,12 +477,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._toggle == null)
-                {
-                    this._toggle = new RelayCommand(this.onExpanded);
-                }
-
-                return this._toggle;
+                return this.toggle ?? (this.toggle = new RelayCommand(this.OnExpanded));
             }
         }
 
@@ -505,12 +488,8 @@ namespace ViewModels
         {
             get
             {
-                if (this._toggleStatus == null)
-                {
-                    this._toggleStatus = new RelayCommand(args => this.IsChangingStatus = !this.IsChangingStatus);
-                }
-
-                return this._toggleStatus;
+                return this.toggleStatus
+                       ?? (this.toggleStatus = new RelayCommand(args => this.IsChangingStatus = !this.IsChangingStatus));
             }
         }
 
@@ -525,7 +504,7 @@ namespace ViewModels
         {
             try
             {
-                this._container.RegisterType<object, UserbarView>(UserbarView);
+                this.Container.RegisterType<object, UserbarView>(UserbarView);
             }
             catch (Exception ex)
             {
@@ -541,42 +520,42 @@ namespace ViewModels
         private void TabCloseEvent(object args)
         {
             IDictionary<string, object> toSend =
-                CommandDefinitions.CreateCommand("close", null, args as string).toDictionary();
+                CommandDefinitions.CreateCommand("close", null, args as string).ToDictionary();
 
-            this._events.GetEvent<UserCommandEvent>().Publish(toSend);
+            this.Events.GetEvent<UserCommandEvent>().Publish(toSend);
         }
 
-        private void onExpanded(object args = null)
+        private void OnExpanded(object args = null)
         {
             this.PMsAreExpanded = this.PMsAreExpanded || this.HasNewPM;
             this.ChannelsAreExpanded = this.ChannelsAreExpanded || this.HasNewMessage;
             this.IsExpanded = !this.IsExpanded;
         }
 
-        private void requestNavigate(bool? payload)
+        private void RequestNavigate(bool? payload)
         {
-            this._events.GetEvent<ChatOnDisplayEvent>().Unsubscribe(this.requestNavigate);
-            this._region.Regions[ChatWrapperView.UserbarRegion].Add(this._container.Resolve<UserbarView>());
+            this.Events.GetEvent<ChatOnDisplayEvent>().Unsubscribe(this.RequestNavigate);
+            this.RegionManager.Regions[ChatWrapperView.UserbarRegion].Add(this.Container.Resolve<UserbarView>());
         }
 
-        private void sendStatusChangedCommand()
+        private void SendStatusChangedCommand()
         {
             IDictionary<string, object> torSend =
                 CommandDefinitions.CreateCommand(
                     "status", 
                     new List<string>
                         {
-                            this.CM.SelectedCharacter.Status.ToString(), 
-                            this.CM.SelectedCharacter.StatusMessage
-                        }).toDictionary();
+                            this.ChatModel.CurrentCharacter.Status.ToString(), 
+                            this.ChatModel.CurrentCharacter.StatusMessage
+                        }).ToDictionary();
 
-            this._events.GetEvent<UserCommandEvent>().Publish(torSend);
+            this.Events.GetEvent<UserCommandEvent>().Publish(torSend);
         }
 
         // this will update the connection bars to show the user about how good our connection is to the server
-        private void updateConnectionBars(object sender, EventArgs e)
+        private void UpdateConnectionBars(object sender, EventArgs e)
         {
-            TimeSpan difference = DateTime.Now - this.CM.LastMessageReceived;
+            var difference = DateTime.Now - this.ChatModel.LastMessageReceived;
             this.ConnectionIsPerfect = true;
             this.ConnectionIsGood = true;
             this.ConnectionIsModerate = true;
@@ -608,40 +587,19 @@ namespace ViewModels
             this.OnPropertyChanged("ConnectionIsConnected");
         }
 
-        private void updateFlashingTabs()
+        private void UpdateFlashingTabs()
         {
-            if (this.CM.SelectedChannel is PMChannelModel)
+            if (this.ChatModel.CurrentChannel is PMChannelModel)
             {
-                this.PM_Selected = this.CM.CurrentPMs.IndexOf(this.CM.SelectedChannel as PMChannelModel);
+                this.PmSelected = this.ChatModel.CurrentPMs.IndexOf(this.ChatModel.CurrentChannel as PMChannelModel);
             }
             else
             {
-                this.Chan_Selected = this.CM.CurrentChannels.IndexOf(this.CM.SelectedChannel as GeneralChannelModel);
+                this.ChannelSelected = this.ChatModel.CurrentChannels.IndexOf(this.ChatModel.CurrentChannel as GeneralChannelModel);
             }
 
-            bool stillHasPMs = false;
-            foreach (ChannelModel cm in this.CM.CurrentPMs)
-            {
-                if (cm.NeedsAttention)
-                {
-                    stillHasPMs = true;
-                    break;
-                }
-            }
-
-            this.HasNewPM = stillHasPMs;
-
-            bool stillHasMessages = false;
-            foreach (ChannelModel cm in this.CM.CurrentChannels)
-            {
-                if (cm.NeedsAttention)
-                {
-                    stillHasMessages = true;
-                    break;
-                }
-            }
-
-            this.HasNewMessage = stillHasMessages;
+            this.hasNewPm = this.ChatModel.CurrentPMs.Cast<ChannelModel>().Any(cm => cm.NeedsAttention);
+            this.HasNewMessage = this.ChatModel.CurrentChannels.Cast<ChannelModel>().Any(cm => cm.NeedsAttention);
         }
 
         #endregion

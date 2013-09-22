@@ -1,4 +1,4 @@
-﻿<Button x:Class="Views.FolderButtonView"
+﻿<Button x:Class="Slimcat.Views.FolderButtonView"
         x:Name="folderButton"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

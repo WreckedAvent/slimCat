@@ -27,8 +27,9 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace System
+namespace Slimcat.Utilities
 {
+    using System;
     using System.IO;
     using System.Windows.Forms;
     using System.Windows.Threading;
@@ -36,14 +37,14 @@ namespace System
     using Application = System.Windows.Application;
     using MessageBox = System.Windows.Forms.MessageBox;
 
-    internal class Exceptions
+    internal static class Exceptions
     {
         #region Constants
 
         /// <summary>
         ///     The defaul t_ message.
         /// </summary>
-        public const string DEFAULT_MESSAGE =
+        public const string DefaultMessage =
             "Oops! Looks like the application done goofed itself."
             + "Please submit the Stacktrace.log file for inspection." + "\n\nApplication will now exit.";
 
@@ -60,39 +61,46 @@ namespace System
         /// <param name="message">
         /// The message.
         /// </param>
-        public static void HandleException(Exception ex, string message = DEFAULT_MESSAGE)
+        public static void HandleException(Exception ex, string message = DefaultMessage)
         {
-            using (var file = new StreamWriter(@"Stacktrace.log", true))
+            try
             {
-                file.WriteLine();
-                file.WriteLine("====================================");
-                file.WriteLine("BEGIN EXCEPTION REPORT");
-                file.WriteLine(DateTime.UtcNow);
-                file.WriteLine("====================================");
-                file.WriteLine();
-                file.WriteLine("Exception: {0}", ex.Message);
-                file.WriteLine("Occured at: {0}", ex.Source);
-                file.WriteLine();
-                file.Write("Immediate stack trace: {0}", ex.TargetSite);
-                file.WriteLine(ex.StackTrace);
 
-                if (ex.InnerException != null)
+                using (var file = new StreamWriter(@"Stacktrace.log", true))
                 {
-                    file.WriteLine("Inner Exception: {0}", ex.InnerException);
+                    file.WriteLine();
+                    file.WriteLine("====================================");
+                    file.WriteLine("BEGIN EXCEPTION REPORT");
+                    file.WriteLine(DateTime.UtcNow);
+                    file.WriteLine("====================================");
+                    file.WriteLine();
+                    file.WriteLine("Exception: {0}", ex.Message);
+                    file.WriteLine("Occured at: {0}", ex.Source);
+                    file.WriteLine();
+                    file.Write("Immediate stack trace: {0}", ex.TargetSite);
+                    file.WriteLine(ex.StackTrace);
+
+                    if (ex.InnerException != null)
+                    {
+                        file.WriteLine("Inner Exception: {0}", ex.InnerException);
+                    }
+
+                    file.WriteLine();
+
+                    file.WriteLine("====================================");
+                    file.WriteLine("END EXCEPTION REPORT");
+                    file.WriteLine("====================================");
+                    file.Flush();
+
+                    var dis = Application.Current.Dispatcher;
+
+                    MessageBox.Show(message, "An error has occured!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    dis.BeginInvoke((Action)(() => Application.Current.Shutdown()));
                 }
-
-                file.WriteLine();
-
-                file.WriteLine("====================================");
-                file.WriteLine("END EXCEPTION REPORT");
-                file.WriteLine("====================================");
-                file.Flush();
-
-                Dispatcher dis = Application.Current.Dispatcher;
-
-                MessageBox.Show(message, "An error has occured!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                dis.BeginInvoke((Action)delegate { Application.Current.Shutdown(); });
+            }
+            catch
+            {
             }
         }
 
@@ -107,7 +115,7 @@ namespace System
         /// </param>
         public static void HandleException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            Exception ex = e.Exception;
+            var ex = e.Exception;
             HandleException(ex);
         }
 

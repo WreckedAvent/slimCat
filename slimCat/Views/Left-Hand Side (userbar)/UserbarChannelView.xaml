@@ -1,7 +1,7 @@
-﻿<UserControl x:Class="Views.ChannelSelectView"
+﻿<UserControl x:Class="Slimcat.Views.ChannelSelectView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:v="clr-namespace:Views"
+             xmlns:v="clr-namespace:Slimcat.Views"
 
              BorderThickness="0,0,1,1"
              BorderBrush="{StaticResource DepressedBrush}"
@@ -45,7 +45,7 @@
                            Visibility="{Binding Path=CanClose, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                            Command="{Binding DataContext.CloseCommand,
                            RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                           CommandParameter="{Binding Path=ID}">
+                           CommandParameter="{Binding Path=Id}">
             <v:CloseButtonView.Style>
                 <Style TargetType="{x:Type v:CloseButtonView}" BasedOn="{StaticResource ImageContentButton}">
                     <Style.Triggers>

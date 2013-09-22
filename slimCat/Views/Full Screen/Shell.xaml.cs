@@ -27,14 +27,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace slimCat
+namespace Slimcat
 {
-    using System.Windows;
-
     /// <summary>
     ///     The shell has no meaningful purpose other than being a giant container.
     /// </summary>
-    public partial class Shell : Window
+    public partial class Shell
     {
         #region Constants
 

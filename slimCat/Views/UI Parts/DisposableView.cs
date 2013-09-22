@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
     using System;
     using System.Windows.Controls;
@@ -52,7 +52,7 @@ namespace Views
 
         #region Methods
 
-        internal abstract void Dispose(bool IsManaged);
+        protected abstract void Dispose(bool isManaged);
 
         #endregion
     }

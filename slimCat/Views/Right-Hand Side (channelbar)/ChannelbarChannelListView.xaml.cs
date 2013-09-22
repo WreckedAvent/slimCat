@@ -27,20 +27,18 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
-    using ViewModels;
+    using Slimcat.ViewModels;
 
     /// <summary>
     ///     Interaction logic for ChanneListView.xaml
     /// </summary>
-    public partial class ChannelTabView : UserControl
+    public partial class ChannelTabView
     {
         #region Fields
 
-        private readonly ChannelsTabViewModel _vm;
+        private readonly ChannelsTabViewModel vm;
 
         #endregion
 
@@ -55,9 +53,9 @@ namespace Views
         public ChannelTabView(ChannelsTabViewModel vm)
         {
             this.InitializeComponent();
-            this._vm = vm;
+            this.vm = vm;
 
-            this.DataContext = this._vm;
+            this.DataContext = this.vm;
         }
 
         #endregion

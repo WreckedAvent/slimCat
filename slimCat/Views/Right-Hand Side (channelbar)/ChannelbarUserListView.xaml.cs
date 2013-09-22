@@ -27,20 +27,18 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
-    using ViewModels;
+    using Slimcat.ViewModels;
 
     /// <summary>
     ///     The actual view for the tab on the right-hand side labeled 'users'
     /// </summary>
-    public partial class UsersTabView : UserControl
+    public partial class UsersTabView
     {
         #region Fields
 
-        private readonly UsersTabViewModel _vm;
+        private readonly UsersTabViewModel vm;
 
         #endregion
 
@@ -55,9 +53,9 @@ namespace Views
         public UsersTabView(UsersTabViewModel vm)
         {
             this.InitializeComponent();
-            this._vm = vm;
+            this.vm = vm;
 
-            this.DataContext = this._vm;
+            this.DataContext = this.vm;
         }
 
         #endregion

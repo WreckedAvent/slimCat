@@ -27,25 +27,23 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Linq;
     using System.Timers;
     using System.Windows.Input;
 
-    using lib;
-
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using slimCat;
+    using Slimcat;
+    using Slimcat.Libraries;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
 
     /// <summary>
     ///     This holds most of the logic for channel view models. Changing behaviors between channels should be done by overriding methods.
@@ -54,9 +52,9 @@ namespace ViewModels
     {
         #region Static Fields
 
-        private static string _error;
+        private static string error;
 
-        private static Timer _errorRemoveTimer;
+        private static Timer errorRemoveTimer;
 
         #endregion
 
@@ -67,25 +65,25 @@ namespace ViewModels
         /// </summary>
         public EventHandler OnLineBreakEvent;
 
-        private RelayCommand _clear;
+        private RelayCommand clear;
 
-        private RelayCommand _clearLog;
+        private RelayCommand clearLog;
 
-        private RelayCommand _linebreak;
+        private RelayCommand linebreak;
 
-        private string _message = string.Empty;
+        private string message = string.Empty;
 
-        private ChannelModel _model;
+        private ChannelModel model;
 
-        private RelayCommand _navDown;
+        private RelayCommand navDown;
 
-        private RelayCommand _navUp;
+        private RelayCommand navUp;
 
-        private RelayCommand _openLog;
+        private RelayCommand openLog;
 
-        private RelayCommand _openLogFolder;
+        private RelayCommand openLogFolder;
 
-        private RelayCommand _sendText;
+        private RelayCommand sendText;
 
         #endregion
 
@@ -110,17 +108,19 @@ namespace ViewModels
             IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
             : base(contain, regman, events, cm)
         {
-            this._events.GetEvent<ErrorEvent>().Subscribe(this.UpdateError);
+            this.Events.GetEvent<ErrorEvent>().Subscribe(this.UpdateError);
 
             this.PropertyChanged += this.OnThisPropertyChanged;
 
-            if (_errorRemoveTimer == null)
+            if (errorRemoveTimer != null)
             {
-                _errorRemoveTimer = new Timer(5000);
-                _errorRemoveTimer.Elapsed += (s, e) => { this.Error = null; };
-
-                _errorRemoveTimer.AutoReset = false;
+                return;
             }
+
+            errorRemoveTimer = new Timer(5000);
+            errorRemoveTimer.Elapsed += (s, e) => { this.Error = null; };
+
+            errorRemoveTimer.AutoReset = false;
         }
 
         #endregion
@@ -134,7 +134,7 @@ namespace ViewModels
         {
             get
             {
-                return this._model.Settings;
+                return this.model.Settings;
             }
         }
 
@@ -145,12 +145,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._clear == null)
-                {
-                    this._clear = new RelayCommand(delegate { this.Error = null; });
-                }
-
-                return this._clear;
+                return this.clear ?? (this.clear = new RelayCommand(delegate { this.Error = null; }));
             }
         }
 
@@ -161,18 +156,11 @@ namespace ViewModels
         {
             get
             {
-                if (this._clearLog == null)
-                {
-                    this._clearLog =
-                        new RelayCommand(
-                            args =>
-                                {
-                                    this._events.GetEvent<UserCommandEvent>()
-                                        .Publish(CommandDefinitions.CreateCommand("clear").toDictionary());
-                                });
-                }
-
-                return this._clearLog;
+                return this.clearLog
+                       ?? (this.clearLog =
+                           new RelayCommand(
+                               args => this.Events.GetEvent<UserCommandEvent>()
+                                           .Publish(CommandDefinitions.CreateCommand("clear").ToDictionary())));
             }
         }
 
@@ -183,12 +171,12 @@ namespace ViewModels
         {
             get
             {
-                return _error;
+                return error;
             }
 
             set
             {
-                _error = value;
+                error = value;
                 this.OnPropertyChanged("Error");
                 this.OnPropertyChanged("HasError");
             }
@@ -212,12 +200,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._linebreak == null)
-                {
-                    this._linebreak = new RelayCommand(args => this.Message = this.Message + '\n');
-                }
-
-                return this._linebreak;
+                return this.linebreak ?? (this.linebreak = new RelayCommand(args => this.Message = this.Message + '\n'));
             }
         }
 
@@ -228,12 +211,12 @@ namespace ViewModels
         {
             get
             {
-                return this._message;
+                return this.message;
             }
 
             set
             {
-                this._message = value;
+                this.message = value;
                 this.OnPropertyChanged("Message");
             }
         }
@@ -245,12 +228,12 @@ namespace ViewModels
         {
             get
             {
-                return this._model;
+                return this.model;
             }
 
             set
             {
-                this._model = value;
+                this.model = value;
                 this.OnPropertyChanged("Model");
             }
         }
@@ -262,12 +245,8 @@ namespace ViewModels
         {
             get
             {
-                if (this._navDown == null)
-                {
-                    this._navDown = new RelayCommand(args => this.RequestNavigateDirectionalEvent(false));
-                }
-
-                return this._navDown;
+                return this.navDown
+                       ?? (this.navDown = new RelayCommand(args => this.RequestNavigateDirectionalEvent(false)));
             }
         }
 
@@ -278,12 +257,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._navUp == null)
-                {
-                    this._navUp = new RelayCommand(args => this.RequestNavigateDirectionalEvent(true));
-                }
-
-                return this._navUp;
+                return this.navUp ?? (this.navUp = new RelayCommand(args => this.RequestNavigateDirectionalEvent(true)));
             }
         }
 
@@ -294,12 +268,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._openLog == null)
-                {
-                    this._openLog = new RelayCommand(this.OnOpenLogEvent);
-                }
-
-                return this._openLog;
+                return this.openLog ?? (this.openLog = new RelayCommand(this.OnOpenLogEvent));
             }
         }
 
@@ -310,12 +279,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._openLogFolder == null)
-                {
-                    this._openLogFolder = new RelayCommand(this.OnOpenLogFolderEvent);
-                }
-
-                return this._openLogFolder;
+                return this.openLogFolder ?? (this.openLogFolder = new RelayCommand(this.OnOpenLogFolderEvent));
             }
         }
 
@@ -326,12 +290,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._sendText == null)
-                {
-                    this._sendText = new RelayCommand(param => this.ParseAndSend());
-                }
-
-                return this._sendText;
+                return this.sendText ?? (this.sendText = new RelayCommand(param => this.ParseAndSend()));
             }
         }
 
@@ -380,9 +339,9 @@ namespace ViewModels
         public void OpenLogEvent(object args, bool isFolder)
         {
             IDictionary<string, object> toSend =
-                CommandDefinitions.CreateCommand(isFolder ? "openlogfolder" : "openlog").toDictionary();
+                CommandDefinitions.CreateCommand(isFolder ? "openlogfolder" : "openlog").ToDictionary();
 
-            this._events.GetEvent<UserCommandEvent>().Publish(toSend);
+            this.Events.GetEvent<UserCommandEvent>().Publish(toSend);
         }
 
         #endregion
@@ -392,20 +351,20 @@ namespace ViewModels
         /// <summary>
         /// The dispose.
         /// </summary>
-        /// <param name="IsManaged">
+        /// <param name="isManaged">
         /// The is managed.
         /// </param>
-        protected override void Dispose(bool IsManaged)
+        protected override void Dispose(bool isManaged)
         {
-            if (IsManaged)
+            if (isManaged)
             {
                 this.PropertyChanged -= this.OnThisPropertyChanged;
                 this.Model.PropertyChanged -= this.OnModelPropertyChanged;
-                this._model = null;
+                this.model = null;
                 this.OnLineBreakEvent = null;
             }
 
-            base.Dispose(IsManaged);
+            base.Dispose(isManaged);
         }
 
         /// <summary>
@@ -449,7 +408,7 @@ namespace ViewModels
 
                 try
                 {
-                    var messageToCommand = new CommandParser(this.Message, this._model.ID);
+                    var messageToCommand = new CommandParser(this.Message, this.model.Id);
 
                     if (!messageToCommand.HasCommand)
                     {
@@ -464,7 +423,7 @@ namespace ViewModels
                     }
                     else if (messageToCommand.IsValid)
                     {
-                        this.SendCommand(messageToCommand.toDictionary());
+                        this.SendCommand(messageToCommand.ToDictionary());
                     }
                     else
                     {
@@ -486,13 +445,10 @@ namespace ViewModels
         /// </param>
         protected virtual void SendCommand(IDictionary<string, object> command)
         {
-            if (this.Error != null)
-            {
-                this.Error = null;
-            }
+            this.Error = null;
 
             this.Message = null;
-            this._events.GetEvent<UserCommandEvent>().Publish(command);
+            this.Events.GetEvent<UserCommandEvent>().Publish(command);
         }
 
         /// <summary>
@@ -506,79 +462,75 @@ namespace ViewModels
         /// <param name="error">
         /// The error.
         /// </param>
-        protected virtual void UpdateError(string error)
+        protected void UpdateError(string error)
         {
-            if (_errorRemoveTimer != null)
+            if (errorRemoveTimer != null)
             {
-                _errorRemoveTimer.Stop();
+                errorRemoveTimer.Stop();
             }
 
             this.Error = error;
-            _errorRemoveTimer.Start();
+            errorRemoveTimer.Start();
         }
 
         private void RequestNavigateDirectionalEvent(bool isUp)
         {
-            if (this._cm.SelectedChannel is PMChannelModel)
+            if (this.ChatModel.CurrentChannel is PMChannelModel)
             {
-                int index = this._cm.CurrentPMs.IndexOf(this._cm.SelectedChannel as PMChannelModel);
+                var index = this.ChatModel.CurrentPMs.IndexOf(this.ChatModel.CurrentChannel as PMChannelModel);
                 if (index == 0 && isUp)
                 {
-                    this._navigateStub(false, false);
+                    this.NavigateStub(false, false);
                     return;
                 }
-                else if (index + 1 == this._cm.CurrentPMs.Count() && !isUp)
+
+                if (index + 1 == this.ChatModel.CurrentPMs.Count() && !isUp)
                 {
-                    this._navigateStub(true, false);
+                    this.NavigateStub(true, false);
                     return;
                 }
-                else
-                {
-                    index += isUp ? -1 : 1;
-                    this.RequestPMEvent(this._cm.CurrentPMs[index].ID);
-                    return;
-                }
+
+                index += isUp ? -1 : 1;
+                this.RequestPmEvent(this.ChatModel.CurrentPMs[index].Id);
             }
             else
             {
-                int index = this._cm.CurrentChannels.IndexOf(this._cm.SelectedChannel as GeneralChannelModel);
+                var index = this.ChatModel.CurrentChannels.IndexOf(this.ChatModel.CurrentChannel as GeneralChannelModel);
                 if (index == 0 && isUp)
                 {
-                    this._navigateStub(false, true);
+                    this.NavigateStub(false, true);
                     return;
                 }
-                else if (index + 1 == this._cm.CurrentChannels.Count() && !isUp)
+
+                if (index + 1 == this.ChatModel.CurrentChannels.Count() && !isUp)
                 {
-                    this._navigateStub(true, true);
+                    this.NavigateStub(true, true);
                     return;
                 }
-                else
-                {
-                    index += isUp ? -1 : 1;
-                    this.RequestChannelJoinEvent(this._cm.CurrentChannels[index].ID);
-                    return;
-                }
+
+                index += isUp ? -1 : 1;
+                this.RequestChannelJoinEvent(this.ChatModel.CurrentChannels[index].Id);
             }
         }
 
-        private void _navigateStub(bool getTop, bool fromPMs)
+        private void NavigateStub(bool getTop, bool fromPMs)
         {
             if (fromPMs)
             {
-                ObservableCollection<PMChannelModel> collection = this._cm.CurrentPMs;
-                if (collection.Count() == 0)
+                var collection = this.ChatModel.CurrentPMs;
+                if (!collection.Any())
                 {
-                    this._navigateStub(false, false);
+                    this.NavigateStub(false, false);
                     return;
                 }
 
-                string target = (getTop ? collection.First() : collection.Last()).ID;
-                this.RequestPMEvent(target);
+                var target = (getTop ? collection.First() : collection.Last()).Id;
+                this.RequestPmEvent(target);
             }
             else
             {
-                ObservableCollection<GeneralChannelModel> collection = this._cm.CurrentChannels;
-                string target = (getTop ? collection.First() : collection.Last()).ID;
+                var collection = this.ChatModel.CurrentChannels;
+                var target = (getTop ? collection.First() : collection.Last()).Id;
                 this.RequestChannelJoinEvent(target);
             }
         }

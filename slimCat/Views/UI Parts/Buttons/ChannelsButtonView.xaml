@@ -1,4 +1,4 @@
-﻿<RadioButton x:Class="Views.ChannelsButtonView"
+﻿<RadioButton x:Class="Slimcat.Views.ChannelsButtonView"
              x:Name="channelsButton"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

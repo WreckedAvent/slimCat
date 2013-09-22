@@ -1,4 +1,4 @@
-﻿<Window x:Class="slimCat.Shell"
+﻿<Window x:Class="Slimcat.Shell"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://www.codeplex.com/prism"

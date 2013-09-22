@@ -26,9 +26,9 @@
 //   This is a master class which provides access to the Dispather and NotifyPropertyChanged
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
-namespace System
+namespace Slimcat.ViewModels
 {
+    using System;
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Windows.Threading;

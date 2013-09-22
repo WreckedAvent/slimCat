@@ -28,22 +28,20 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.Windows.Input;
-
-    using lib;
 
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using slimCat;
-
-    using Views;
+    using Slimcat;
+    using Slimcat.Libraries;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
+    using Slimcat.Views;
 
     /// <summary>
     ///     The ChannebarViewModel is a wrapper to hold the other viewmodels which form the gist of the interaction network.
@@ -64,15 +62,15 @@ namespace ViewModels
 
         #region Fields
 
-        private string _currentSelected;
+        private string currentSelected;
 
-        private bool _hasUpdate;
+        private bool hasUpdate;
 
-        private bool _isExpanded = true;
+        private bool isExpanded = true;
 
-        private RelayCommand _select;
+        private RelayCommand @select;
 
-        private RelayCommand _toggle;
+        private RelayCommand toggle;
 
         #endregion
 
@@ -99,21 +97,21 @@ namespace ViewModels
         {
             try
             {
-                this._events.GetEvent<ChatOnDisplayEvent>().Subscribe(this.requestNavigate, ThreadOption.UIThread, true);
+                this.Events.GetEvent<ChatOnDisplayEvent>().Subscribe(this.RequestNavigate, ThreadOption.UIThread, true);
 
                 // create the tabs
-                this._container.Resolve<ChannelsTabViewModel>();
-                this._container.Resolve<UsersTabViewModel>();
-                this._container.Resolve<NotificationsTabViewModel>();
-                this._container.Resolve<GlobalTabViewModel>();
-                this._container.Resolve<ManageListsTabView>();
+                this.Container.Resolve<ChannelsTabViewModel>();
+                this.Container.Resolve<UsersTabViewModel>();
+                this.Container.Resolve<NotificationsTabViewModel>();
+                this.Container.Resolve<GlobalTabViewModel>();
+                this.Container.Resolve<ManageListsTabView>();
 
-                this._cm.Notifications.CollectionChanged += (s, e) =>
+                this.ChatModel.Notifications.CollectionChanged += (s, e) =>
                     {
                         if (!this.IsExpanded)
                         {
                             // removed checking logic, allow the notifications daemon to worry about that
-                            this.HasUpdate = this.HasUpdate || true;
+                            this.HasUpdate = true;
                         }
                     };
             }
@@ -144,12 +142,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._select == null)
-                {
-                    this._select = new RelayCommand(this.NavigateToTabEvent);
-                }
-
-                return this._select;
+                return this.@select ?? (this.@select = new RelayCommand(this.NavigateToTabEvent));
             }
         }
 
@@ -176,12 +169,12 @@ namespace ViewModels
         {
             get
             {
-                return this._hasUpdate;
+                return this.hasUpdate;
             }
 
             set
             {
-                this._hasUpdate = value;
+                this.hasUpdate = value;
                 this.OnPropertyChanged("HasUpdate");
                 this.OnPropertyChanged("ExpandString"); // bug fix where the exclaimation point would never show
             }
@@ -194,12 +187,12 @@ namespace ViewModels
         {
             get
             {
-                return this._isExpanded;
+                return this.isExpanded;
             }
 
             set
             {
-                this._isExpanded = value;
+                this.isExpanded = value;
                 this.OnPropertyChanged("IsExpanded");
                 this.OnPropertyChanged("ExpandString");
             }
@@ -212,45 +205,44 @@ namespace ViewModels
         {
             get
             {
-                if (this._toggle == null)
-                {
-                    this._toggle = new RelayCommand(
-                        delegate
+                return this.toggle ?? (this.toggle = new RelayCommand(
+                delegate
+                    {
+                        this.IsExpanded = !this.IsExpanded;
+
+                        if (this.IsExpanded)
+                        {
+                            // this shoots us to the notifications tab if we have something to see there
+                            if (this.hasUpdate)
                             {
-                                this.IsExpanded = !this.IsExpanded;
+                                this.NavigateToTabEvent("Notifications");
 
-                                if (this.IsExpanded)
+                                // used to check if we weren't already here; now that isn't possible
+                                if (this.OnJumpToNotifications != null)
                                 {
-                                    // this shoots us to the notifications tab if we have something to see there
-                                    if (this._hasUpdate)
-                                    {
-                                        this.NavigateToTabEvent("Notifications");
+                                    this.OnJumpToNotifications(
+                                        this, new EventArgs());
 
-                                        // used to check if we weren't already here; now that isn't possible
-                                        if (this.OnJumpToNotifications != null)
-                                        {
-                                            this.OnJumpToNotifications(this, new EventArgs());
-
-                                            // this lets the view sync our jump
-                                        }
-
-                                        this.HasUpdate = false;
-                                    }
-                                    else if (!string.IsNullOrWhiteSpace(this._currentSelected))
-                                    {
-                                        // this fixes a very subtle bug where a list won't load or won't load properly after switching tabs
-                                        this.NavigateToTabEvent(this._currentSelected);
-                                    }
+                                    // this lets the view sync our jump
                                 }
-                                else
-                                {
-                                    // when we close it, unload the tab, but _currentSelected remains what it was so we remember user input
-                                    this.NavigateToTabEvent("NoTab");
-                                }
-                            });
-                }
 
-                return this._toggle;
+                                this.HasUpdate = false;
+                            }
+                            else if (
+                                !string.IsNullOrWhiteSpace(
+                                    this.currentSelected))
+                            {
+                                // this fixes a very subtle bug where a list won't load or won't load properly after switching tabs
+                                this.NavigateToTabEvent(
+                                    this.currentSelected);
+                            }
+                        }
+                        else
+                        {
+                            // when we close it, unload the tab, but _currentSelected remains what it was so we remember user input
+                            this.NavigateToTabEvent("NoTab");
+                        }
+                    }));
             }
         }
 
@@ -265,7 +257,7 @@ namespace ViewModels
         {
             try
             {
-                this._container.RegisterType<object, ChannelbarView>(ChannelbarView);
+                this.Container.RegisterType<object, ChannelbarView>(ChannelbarView);
             }
             catch (Exception ex)
             {
@@ -285,61 +277,58 @@ namespace ViewModels
             if (newSelected != "NoTab")
             {
                 // this isn't really a selected state
-                this._currentSelected = newSelected;
+                this.currentSelected = newSelected;
             }
 
             switch (args as string)
             {
                 case "Channels":
                     {
-                        this._region.Regions[TabViewRegion].RequestNavigate(ChannelsTabViewModel.ChannelsTabView);
+                        this.RegionManager.Regions[TabViewRegion].RequestNavigate(ChannelsTabViewModel.ChannelsTabView);
                         break;
                     }
 
                 case "Users":
                     {
-                        this._region.Regions[TabViewRegion].RequestNavigate(UsersTabViewModel.UsersTabView);
+                        this.RegionManager.Regions[TabViewRegion].RequestNavigate(UsersTabViewModel.UsersTabView);
                         break;
                     }
 
                 case "Notifications":
                     {
-                        this._region.Regions[TabViewRegion].RequestNavigate(
+                        this.RegionManager.Regions[TabViewRegion].RequestNavigate(
                             NotificationsTabViewModel.NotificationsTabView);
                         break;
                     }
 
                 case "Global":
                     {
-                        this._region.Regions[TabViewRegion].RequestNavigate(GlobalTabViewModel.GlobalTabView);
+                        this.RegionManager.Regions[TabViewRegion].RequestNavigate(GlobalTabViewModel.GlobalTabView);
                         break;
                     }
 
                 case "ManageLists":
                     {
-                        this._region.Regions[TabViewRegion].RequestNavigate(ManageListsViewModel.ManageListsTabView);
+                        this.RegionManager.Regions[TabViewRegion].RequestNavigate(ManageListsViewModel.ManageListsTabView);
                         break;
                     }
 
                 case "NoTab":
                     {
-                        foreach (object view in this._region.Regions[TabViewRegion].Views)
+                        foreach (var view in this.RegionManager.Regions[TabViewRegion].Views)
                         {
-                            this._region.Regions[TabViewRegion].Remove(view);
+                            this.RegionManager.Regions[TabViewRegion].Remove(view);
                         }
 
                         break;
                     }
-
-                default:
-                    break;
             }
         }
 
-        private void requestNavigate(bool? payload)
+        private void RequestNavigate(bool? payload)
         {
-            this._events.GetEvent<ChatOnDisplayEvent>().Unsubscribe(this.requestNavigate);
-            this._region.Regions[ChatWrapperView.ChannelbarRegion].Add(this._container.Resolve<ChannelbarView>());
+            this.Events.GetEvent<ChatOnDisplayEvent>().Unsubscribe(this.RequestNavigate);
+            this.RegionManager.Regions[ChatWrapperView.ChannelbarRegion].Add(this.Container.Resolve<ChannelbarView>());
         }
 
         #endregion

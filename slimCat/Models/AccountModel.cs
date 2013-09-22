@@ -28,12 +28,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Models
+namespace Slimcat.Models
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
 
-    using slimCat.Properties;
+    using Slimcat.Properties;
 
     /// <summary>
     ///     A model which stores information relevant to accessing an F-list account,
@@ -43,11 +43,11 @@ namespace Models
     {
         #region Fields
 
-        private readonly IList<string> _bookmarks = new List<string>();
+        private readonly IList<string> bookmarks = new List<string>();
 
-        private readonly ObservableCollection<string> _characters = new ObservableCollection<string>();
+        private readonly ObservableCollection<string> characters = new ObservableCollection<string>();
 
-        private readonly IDictionary<string, IList<string>> _friends = new Dictionary<string, IList<string>>();
+        private readonly IDictionary<string, IList<string>> friends = new Dictionary<string, IList<string>>();
 
         #endregion
 
@@ -85,7 +85,7 @@ namespace Models
         {
             get
             {
-                return this._friends;
+                return this.friends;
             }
         }
 
@@ -96,7 +96,7 @@ namespace Models
         {
             get
             {
-                return this._bookmarks;
+                return this.bookmarks;
             }
         }
 
@@ -107,7 +107,7 @@ namespace Models
         {
             get
             {
-                return this._characters;
+                return this.characters;
             }
         }
 
@@ -125,51 +125,6 @@ namespace Models
         ///     Gets or sets the ticket.
         /// </summary>
         public string Ticket { get; set; }
-
-        #endregion
-    }
-
-    /// <summary>
-    ///     For everything that needs to interact with the user's account
-    /// </summary>
-    public interface IAccount
-    {
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the account name.
-        /// </summary>
-        string AccountName { get; set; }
-
-        /// <summary>
-        ///     Gets the all friends.
-        /// </summary>
-        IDictionary<string, IList<string>> AllFriends { get; }
-
-        /// <summary>
-        ///     Gets the bookmarks.
-        /// </summary>
-        IList<string> Bookmarks { get; }
-
-        /// <summary>
-        ///     Gets the characters.
-        /// </summary>
-        ObservableCollection<string> Characters { get; }
-
-        /// <summary>
-        ///     Gets or sets the error.
-        /// </summary>
-        string Error { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the password.
-        /// </summary>
-        string Password { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the ticket.
-        /// </summary>
-        string Ticket { get; set; }
 
         #endregion
     }

@@ -1,9 +1,9 @@
-﻿<Button x:Class="Views.MoreButtonView"
+﻿<Button x:Class="Slimcat.Views.MoreButtonView"
         x:Name="moreButton"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource ImageContentButton}"
-        ToolTip="Switch between viewing this channel's ads and normal messages"
+        ToolTip="Switch between viewing this channel's Ads and normal messages"
         Margin="2,10,2,0">
     <Button.Content>
         <Rectangle Fill="{Binding ElementName=moreButton, Path=Foreground}"

@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.Generic;
@@ -36,16 +36,15 @@ namespace ViewModels
     using System.Web;
     using System.Windows.Input;
 
-    using lib;
-
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Modularity;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using slimCat;
+    using Slimcat;
+    using Slimcat.Libraries;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
 
     /// <summary>
     ///     The view model base.
@@ -53,79 +52,33 @@ namespace ViewModels
     public abstract class ViewModelBase : SysProp, IModule, IDisposable
     {
         #region Fields
+        private RelayCommand ban;
 
-        /// <summary>
-        ///     The _ban.
-        /// </summary>
-        protected RelayCommand _ban;
+        private RelayCommand getLogs;
 
-        /// <summary>
-        ///     The _cm.
-        /// </summary>
-        protected IChatModel _cm;
+        private RelayCommand handleReport;
 
-        /// <summary>
-        ///     The _container.
-        /// </summary>
-        protected IUnityContainer _container;
+        private RelayCommand isInterested;
 
-        /// <summary>
-        ///     The _events.
-        /// </summary>
-        protected IEventAggregator _events;
+        private RelayCommand isNotInterested;
 
-        /// <summary>
-        ///     The _getlogs.
-        /// </summary>
-        protected RelayCommand _getlogs;
+        private RelayCommand kick;
 
-        /// <summary>
-        ///     The _handle report.
-        /// </summary>
-        protected RelayCommand _handleReport;
+        private RelayCommand report;
 
-        /// <summary>
-        ///     The _is inter.
-        /// </summary>
-        protected RelayCommand _isInter;
+        private RelayCommand ignore;
 
-        /// <summary>
-        ///     The _is n inter.
-        /// </summary>
-        protected RelayCommand _isNInter;
+        private RelayCommand invert;
 
-        /// <summary>
-        ///     The _kick.
-        /// </summary>
-        protected RelayCommand _kick;
+        private RelayCommand @join;
 
-        /// <summary>
-        ///     The _region.
-        /// </summary>
-        protected IRegionManager _region;
+        private RelayCommand link;
 
-        /// <summary>
-        ///     The _report.
-        /// </summary>
-        protected RelayCommand _report;
+        private RelayCommand openMenu;
 
-        private readonly CreateReportViewModel _crvm;
+        private RelayCommand openPm;
 
-        private RelayCommand _ign;
-
-        private RelayCommand _invertButton;
-
-        private RelayCommand _join;
-
-        private RelayCommand _link;
-
-        private RelayCommand _openMenu;
-
-        private RelayCommand _priv;
-
-        private RightClickMenuViewModel _rcmvm;
-
-        private RelayCommand _uign;
+        private RelayCommand unignore;
 
         #endregion
 
@@ -150,16 +103,16 @@ namespace ViewModels
         {
             try
             {
-                this._container = contain.ThrowIfNull("contain");
-                this._region = regman.ThrowIfNull("regman");
-                this._events = events.ThrowIfNull("events");
-                this._cm = cm.ThrowIfNull("cm");
+                this.Container = contain.ThrowIfNull("contain");
+                this.RegionManager = regman.ThrowIfNull("regman");
+                this.Events = events.ThrowIfNull("events");
+                this.ChatModel = cm.ThrowIfNull("cm");
 
-                this._rcmvm = new RightClickMenuViewModel(this._cm.IsGlobalModerator);
-                this._crvm = new CreateReportViewModel(this._events, this._cm);
-                this._cm.SelectedChannelChanged += this.OnSelectedChannelChanged;
+                this.RightClickMenuViewModel = new RightClickMenuViewModel(this.ChatModel.IsGlobalModerator);
+                this.CreateReportViewModel = new CreateReportViewModel(this.Events, this.ChatModel);
+                this.ChatModel.SelectedChannelChanged += this.OnSelectedChannelChanged;
 
-                this._events.GetEvent<NewUpdateEvent>().Subscribe(this.UpdateRightClickMenu);
+                this.Events.GetEvent<NewUpdateEvent>().Subscribe(this.UpdateRightClickMenu);
             }
             catch (Exception ex)
             {
@@ -179,36 +132,14 @@ namespace ViewModels
         {
             get
             {
-                if (this._ban == null)
-                {
-                    this._ban = new RelayCommand(this.BanEvent, param => this.HasPermissions);
-                }
-
-                return this._ban;
-            }
-        }
-
-        /// <summary>
-        ///     CM is the general reference to the ChatModel, which is central to anything which needs to interact with session data
-        /// </summary>
-        public IChatModel CM
-        {
-            get
-            {
-                return this._cm;
+                return this.ban ?? (this.ban = new RelayCommand(this.BanEvent, param => this.HasPermissions));
             }
         }
 
         /// <summary>
         ///     Gets the create report view model.
         /// </summary>
-        public CreateReportViewModel CreateReportViewModel
-        {
-            get
-            {
-                return this._crvm;
-            }
-        }
+        public CreateReportViewModel CreateReportViewModel { get; private set; }
 
         /// <summary>
         ///     Gets the find log command.
@@ -217,12 +148,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._getlogs == null)
-                {
-                    this._getlogs = new RelayCommand(this.FindLogEvent);
-                }
-
-                return this._getlogs;
+                return this.getLogs ?? (this.getLogs = new RelayCommand(this.FindLogEvent));
             }
         }
 
@@ -233,12 +159,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._handleReport == null)
-                {
-                    this._handleReport = new RelayCommand(this.HandleReportEvent);
-                }
-
-                return this._handleReport;
+                return this.handleReport ?? (this.handleReport = new RelayCommand(this.HandleReportEvent));
             }
         }
 
@@ -249,20 +170,20 @@ namespace ViewModels
         {
             get
             {
-                if (this._cm.SelectedCharacter == null)
+                if (this.ChatModel.CurrentCharacter == null)
                 {
                     return false;
                 }
 
-                bool isLocalMod = false;
-                if (this._cm.SelectedChannel is GeneralChannelModel)
+                var isLocalMod = false;
+                if (this.ChatModel.CurrentChannel is GeneralChannelModel)
                 {
                     isLocalMod =
-                        (this._cm.SelectedChannel as GeneralChannelModel).Moderators.Contains(
-                            this._cm.SelectedCharacter.Name);
+                        (this.ChatModel.CurrentChannel as GeneralChannelModel).Moderators.Contains(
+                            this.ChatModel.CurrentCharacter.Name);
                 }
 
-                return this._cm.IsGlobalModerator || isLocalMod;
+                return this.ChatModel.IsGlobalModerator || isLocalMod;
             }
         }
 
@@ -273,12 +194,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._ign == null)
-                {
-                    this._ign = new RelayCommand(this.AddIgnoreEvent, this.CanIgnore);
-                }
-
-                return this._ign;
+                return this.ignore ?? (this.ignore = new RelayCommand(this.AddIgnoreEvent, this.CanIgnore));
             }
         }
 
@@ -289,28 +205,18 @@ namespace ViewModels
         {
             get
             {
-                if (this._isInter == null)
-                {
-                    this._isInter = new RelayCommand(this.IsInterestedEvent);
-                }
-
-                return this._isInter;
+                return this.isInterested ?? (this.isInterested = new RelayCommand(this.IsInterestedEvent));
             }
         }
 
         /// <summary>
         ///     Gets the invert button command.
         /// </summary>
-        public ICommand InvertButtonCommand
+        public ICommand InvertCommand
         {
             get
             {
-                if (this._invertButton == null)
-                {
-                    this._invertButton = new RelayCommand(this.InvertButton);
-                }
-
-                return this._invertButton;
+                return this.invert ?? (this.invert = new RelayCommand(this.InvertButton));
             }
         }
 
@@ -321,12 +227,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._join == null)
-                {
-                    this._join = new RelayCommand(this.RequestChannelJoinEvent, this.CanJoinChannel);
-                }
-
-                return this._join;
+                return this.@join ?? (this.@join = new RelayCommand(this.RequestChannelJoinEvent, this.CanJoinChannel));
             }
         }
 
@@ -337,12 +238,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._kick == null)
-                {
-                    this._kick = new RelayCommand(this.KickEvent, param => this.HasPermissions);
-                }
-
-                return this._kick;
+                return this.kick ?? (this.kick = new RelayCommand(this.KickEvent, param => this.HasPermissions));
             }
         }
 
@@ -353,12 +249,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._link == null)
-                {
-                    this._link = new RelayCommand(this.StartLinkInDefaultBrowser);
-                }
-
-                return this._link;
+                return this.link ?? (this.link = new RelayCommand(this.StartLinkInDefaultBrowser));
             }
         }
 
@@ -369,12 +260,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._isNInter == null)
-                {
-                    this._isNInter = new RelayCommand(this.IsUninterestedEvent);
-                }
-
-                return this._isNInter;
+                return this.isNotInterested ?? (this.isNotInterested = new RelayCommand(this.IsUninterestedEvent));
             }
         }
 
@@ -385,17 +271,13 @@ namespace ViewModels
         {
             get
             {
-                if (this._openMenu == null)
-                {
-                    this._openMenu = new RelayCommand(
+                return this.openMenu ?? (this.openMenu = new RelayCommand(
                         args =>
                             {
-                                ICharacter newTarget = this.CM.FindCharacter(args as string);
+                                var newTarget =
+                                    this.ChatModel.FindCharacter(args as string);
                                 this.updateRightClickMenu(newTarget);
-                            });
-                }
-
-                return this._openMenu;
+                            }));
             }
         }
 
@@ -406,41 +288,25 @@ namespace ViewModels
         {
             get
             {
-                if (this._report == null)
-                {
-                    this._report = new RelayCommand(this.FileReportEvent);
-                }
-
-                return this._report;
+                return this.report ?? (this.report = new RelayCommand(this.FileReportEvent));
             }
         }
 
         /// <summary>
-        ///     Gets the request pm command.
+        ///     Gets the request PrivateMessage command.
         /// </summary>
         public ICommand RequestPMCommand
         {
             get
             {
-                if (this._priv == null)
-                {
-                    this._priv = new RelayCommand(this.RequestPMEvent, this.CanRequestPM);
-                }
-
-                return this._priv;
+                return this.openPm ?? (this.openPm = new RelayCommand(this.RequestPmEvent, this.CanRequestPM));
             }
         }
 
         /// <summary>
         ///     Gets the right click menu view model.
         /// </summary>
-        public RightClickMenuViewModel RightClickMenuViewModel
-        {
-            get
-            {
-                return this._rcmvm;
-            }
-        }
+        public RightClickMenuViewModel RightClickMenuViewModel { get; private set; }
 
         /// <summary>
         ///     Gets the unignore command.
@@ -449,15 +315,20 @@ namespace ViewModels
         {
             get
             {
-                if (this._uign == null)
-                {
-                    this._uign = new RelayCommand(this.RemoveIgnoreEvent, this.CanUnIgnore);
-                }
-
-                return this._uign;
+                return this.unignore ?? (this.unignore = new RelayCommand(this.RemoveIgnoreEvent, this.CanUnIgnore));
             }
         }
 
+        /// <summary>
+        ///     CM is the general reference to the ChatModel, which is central to anything which needs to interact with session data
+        /// </summary>
+        public IChatModel ChatModel { get; set; }
+
+        protected IUnityContainer Container { get; set; }
+
+        protected IRegionManager RegionManager { get; set; }
+
+        protected IEventAggregator Events { get; set; }
         #endregion
 
         #region Public Methods and Operators
@@ -473,7 +344,7 @@ namespace ViewModels
         /// </returns>
         public bool CanHandleReport(object args)
         {
-            return this._cm.FindCharacter(args as string).HasReport;
+            return this.ChatModel.FindCharacter(args as string).HasReport;
         }
 
         /// <summary>
@@ -493,17 +364,17 @@ namespace ViewModels
 
         #region Methods
 
-        internal virtual void InvertButton(object arguments)
+        protected virtual void InvertButton(object arguments)
         {
         }
 
-        internal void updateRightClickMenu(ICharacter NewTarget)
+        private void updateRightClickMenu(ICharacter newTarget)
         {
-            string name = NewTarget.Name;
-            this._rcmvm.SetNewTarget(
-                NewTarget, this.CanIgnore(name), this.CanUnIgnore(name), this.CanHandleReport(name));
-            this._rcmvm.IsOpen = true;
-            this._crvm.Target = name;
+            string name = newTarget.Name;
+            this.RightClickMenuViewModel.SetNewTarget(
+                newTarget, this.CanIgnore(name), this.CanUnIgnore(name), this.CanHandleReport(name));
+            this.RightClickMenuViewModel.IsOpen = true;
+            this.CreateReportViewModel.Target = name;
             this.OnPropertyChanged("RightClickMenuViewModel");
             this.OnPropertyChanged("CreateReportViewModel");
         }
@@ -514,7 +385,7 @@ namespace ViewModels
         /// <param name="args">
         /// The args.
         /// </param>
-        protected void AddIgnoreEvent(object args)
+        private void AddIgnoreEvent(object args)
         {
             this.IgnoreEvent(args);
         }
@@ -525,7 +396,7 @@ namespace ViewModels
         /// <param name="args">
         /// The args.
         /// </param>
-        protected void BanEvent(object args)
+        private void BanEvent(object args)
         {
             this.KickOrBanEvent(args, true);
         }
@@ -539,9 +410,9 @@ namespace ViewModels
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        protected bool CanIgnore(object args)
+        private bool CanIgnore(object args)
         {
-            return !this._cm.Ignored.Contains(args as string, StringComparer.OrdinalIgnoreCase);
+            return !this.ChatModel.Ignored.Contains(args as string, StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -553,15 +424,15 @@ namespace ViewModels
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        protected bool CanJoinChannel(object args)
+        private bool CanJoinChannel(object args)
         {
             return
-                !this._cm.CurrentChannels.Any(
-                    param => param.ID.Equals((string)args, StringComparison.OrdinalIgnoreCase));
+                !this.ChatModel.CurrentChannels.Any(
+                    param => param.Id.Equals((string)args, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
-        /// The can request pm.
+        /// The can request PrivateMessage.
         /// </summary>
         /// <param name="args">
         /// The args.
@@ -569,7 +440,7 @@ namespace ViewModels
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        protected bool CanRequestPM(object args)
+        private bool CanRequestPM(object args)
         {
             return true;
         }
@@ -583,7 +454,7 @@ namespace ViewModels
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        protected bool CanUnIgnore(object args)
+        private bool CanUnIgnore(object args)
         {
             return !this.CanIgnore(args);
         }
@@ -591,22 +462,24 @@ namespace ViewModels
         /// <summary>
         /// The dispose.
         /// </summary>
-        /// <param name="IsManaged">
+        /// <param name="isManaged">
         /// The is managed.
         /// </param>
-        protected virtual void Dispose(bool IsManaged)
+        protected virtual void Dispose(bool isManaged)
         {
-            if (IsManaged)
+            if (!isManaged)
             {
-                this._cm.SelectedChannelChanged -= this.OnSelectedChannelChanged;
-                this._events.GetEvent<NewUpdateEvent>().Unsubscribe(this.UpdateRightClickMenu);
-                this._container = null;
-                this._region = null;
-                this._cm = null;
-                this._events = null;
-                this._rcmvm.Dispose();
-                this._rcmvm = null;
+                return;
             }
+
+            this.ChatModel.SelectedChannelChanged -= this.OnSelectedChannelChanged;
+            this.Events.GetEvent<NewUpdateEvent>().Unsubscribe(this.UpdateRightClickMenu);
+            this.Container = null;
+            this.RegionManager = null;
+            this.ChatModel = null;
+            this.Events = null;
+            this.RightClickMenuViewModel.Dispose();
+            this.RightClickMenuViewModel = null;
         }
 
         /// <summary>
@@ -615,12 +488,12 @@ namespace ViewModels
         /// <param name="args">
         /// The args.
         /// </param>
-        protected void FileReportEvent(object args)
+        private void FileReportEvent(object args)
         {
-            this._rcmvm.IsOpen = false;
+            this.RightClickMenuViewModel.IsOpen = false;
             this.OnPropertyChanged("RightClickMenuViewModel");
 
-            this._crvm.IsOpen = true;
+            this.CreateReportViewModel.IsOpen = true;
             this.OnPropertyChanged("CreateReportViewModel");
         }
 
@@ -630,14 +503,14 @@ namespace ViewModels
         /// <param name="args">
         /// The args.
         /// </param>
-        protected void FindLogEvent(object args)
+        private void FindLogEvent(object args)
         {
             var name = args as string;
 
-            IDictionary<string, object> command =
-                CommandDefinitions.CreateCommand("openlogfolder", null, name).toDictionary();
+            var command =
+                CommandDefinitions.CreateCommand("openlogfolder", null, name).ToDictionary();
 
-            this._events.GetEvent<UserCommandEvent>().Publish(command);
+            this.Events.GetEvent<UserCommandEvent>().Publish(command);
         }
 
         /// <summary>
@@ -646,14 +519,14 @@ namespace ViewModels
         /// <param name="args">
         /// The args.
         /// </param>
-        protected void HandleReportEvent(object args)
+        private void HandleReportEvent(object args)
         {
             var name = args as string;
 
-            IDictionary<string, object> command =
-                CommandDefinitions.CreateCommand("handlereport", new List<string> { name }).toDictionary();
+            var command =
+                CommandDefinitions.CreateCommand("handlereport", new List<string> { name }).ToDictionary();
 
-            this._events.GetEvent<UserCommandEvent>().Publish(command);
+            this.Events.GetEvent<UserCommandEvent>().Publish(command);
         }
 
         /// <summary>
@@ -665,16 +538,16 @@ namespace ViewModels
         /// <param name="remove">
         /// The remove.
         /// </param>
-        protected void IgnoreEvent(object args, bool remove = false)
+        private void IgnoreEvent(object args, bool remove = false)
         {
             var name = args as string;
 
-            IDictionary<string, object> command =
+            var command =
                 CommandDefinitions.CreateCommand(remove ? "unignore" : "ignore", new List<string> { name })
-                                  .toDictionary();
+                                  .ToDictionary();
 
-            this._events.GetEvent<UserCommandEvent>().Publish(command);
-            this.updateRightClickMenu(this._rcmvm.Target); // updates the ignore/unignore text
+            this.Events.GetEvent<UserCommandEvent>().Publish(command);
+            this.updateRightClickMenu(this.RightClickMenuViewModel.Target); // updates the ignore/unignore text
         }
 
         /// <summary>
@@ -686,19 +559,13 @@ namespace ViewModels
         /// <param name="interestedIn">
         /// The interested in.
         /// </param>
-        protected void InterestedEvent(object args, bool interestedIn = true)
+        private void InterestedEvent(object args, bool interestedIn = true)
         {
-            if (interestedIn)
-            {
-                this._events.GetEvent<UserCommandEvent>()
-                    .Publish(CommandDefinitions.CreateCommand("interesting", new[] { args as string }).toDictionary());
-            }
-            else
-            {
-                this._events.GetEvent<UserCommandEvent>()
-                    .Publish(
-                        CommandDefinitions.CreateCommand("notinteresting", new[] { args as string }).toDictionary());
-            }
+            this.Events.GetEvent<UserCommandEvent>()
+                .Publish(
+                    interestedIn
+                        ? CommandDefinitions.CreateCommand("interesting", new[] { args as string }).ToDictionary()
+                        : CommandDefinitions.CreateCommand("notinteresting", new[] { args as string }).ToDictionary());
         }
 
         /// <summary>
@@ -707,7 +574,7 @@ namespace ViewModels
         /// <param name="args">
         /// The args.
         /// </param>
-        protected void IsInterestedEvent(object args)
+        private void IsInterestedEvent(object args)
         {
             this.InterestedEvent(args);
         }
@@ -718,7 +585,7 @@ namespace ViewModels
         /// <param name="args">
         /// The args.
         /// </param>
-        protected void IsUninterestedEvent(object args)
+        private void IsUninterestedEvent(object args)
         {
             this.InterestedEvent(args, false);
         }
@@ -729,7 +596,7 @@ namespace ViewModels
         /// <param name="args">
         /// The args.
         /// </param>
-        protected void KickEvent(object args)
+        private void KickEvent(object args)
         {
             this.KickOrBanEvent(args, false);
         }
@@ -743,15 +610,15 @@ namespace ViewModels
         /// <param name="isBan">
         /// The is ban.
         /// </param>
-        protected void KickOrBanEvent(object args, bool isBan)
+        private void KickOrBanEvent(object args, bool isBan)
         {
             var name = args as string;
 
-            IDictionary<string, object> command =
-                CommandDefinitions.CreateCommand(isBan ? "ban" : "kick", new[] { name }, this.CM.SelectedChannel.ID)
-                                  .toDictionary();
+            var command =
+                CommandDefinitions.CreateCommand(isBan ? "ban" : "kick", new[] { name }, this.ChatModel.CurrentChannel.Id)
+                                  .ToDictionary();
 
-            this._events.GetEvent<UserCommandEvent>().Publish(command);
+            this.Events.GetEvent<UserCommandEvent>().Publish(command);
         }
 
         /// <summary>
@@ -763,11 +630,11 @@ namespace ViewModels
         /// <param name="e">
         /// The e.
         /// </param>
-        protected virtual void OnSelectedChannelChanged(object sender, EventArgs e)
+        private void OnSelectedChannelChanged(object sender, EventArgs e)
         {
             this.OnPropertyChanged("HasPermissions");
-            this._rcmvm.IsOpen = false;
-            this._crvm.IsOpen = false;
+            this.RightClickMenuViewModel.IsOpen = false;
+            this.CreateReportViewModel.IsOpen = false;
         }
 
         /// <summary>
@@ -776,7 +643,7 @@ namespace ViewModels
         /// <param name="args">
         /// The args.
         /// </param>
-        protected void RemoveIgnoreEvent(object args)
+        private void RemoveIgnoreEvent(object args)
         {
             this.IgnoreEvent(args, true);
         }
@@ -789,31 +656,30 @@ namespace ViewModels
         /// </param>
         protected void RequestChannelJoinEvent(object args)
         {
-            IDictionary<string, object> command =
-                CommandDefinitions.CreateCommand("join", new List<string> { args as string }).toDictionary();
+            var command =
+                CommandDefinitions.CreateCommand("join", new List<string> { args as string }).ToDictionary();
 
-            this._events.GetEvent<UserCommandEvent>().Publish(command);
+            this.Events.GetEvent<UserCommandEvent>().Publish(command);
         }
 
         /// <summary>
-        /// The request pm event.
+        /// The request PrivateMessage event.
         /// </summary>
         /// <param name="args">
         /// The args.
         /// </param>
-        protected void RequestPMEvent(object args)
+        protected void RequestPmEvent(object args)
         {
-            var TabName = (string)args;
-            if (this._cm.CurrentPMs.Any(param => param.ID.Equals(TabName, StringComparison.OrdinalIgnoreCase)))
+            var tabName = (string)args;
+            if (this.ChatModel.CurrentPMs.Any(param => param.Id.Equals(tabName, StringComparison.OrdinalIgnoreCase)))
             {
-                this._events.GetEvent<RequestChangeTabEvent>().Publish(TabName);
+                this.Events.GetEvent<RequestChangeTabEvent>().Publish(tabName);
                 return;
             }
 
-            IDictionary<string, object> command =
-                CommandDefinitions.CreateCommand("priv", new List<string> { TabName }).toDictionary();
+            var command = CommandDefinitions.CreateCommand("priv", new List<string> { tabName }).ToDictionary();
 
-            this._events.GetEvent<UserCommandEvent>().Publish(command);
+            this.Events.GetEvent<UserCommandEvent>().Publish(command);
         }
 
         /// <summary>
@@ -822,7 +688,7 @@ namespace ViewModels
         /// <param name="link">
         /// The link.
         /// </param>
-        protected void StartLinkInDefaultBrowser(object link)
+        private void StartLinkInDefaultBrowser(object link)
         {
             var interpret = link as string;
             if (!interpret.Contains(".") || interpret.Contains(" "))
@@ -838,7 +704,7 @@ namespace ViewModels
 
         private void UpdateRightClickMenu(NotificationModel argument)
         {
-            if (!this._rcmvm.IsOpen)
+            if (!this.RightClickMenuViewModel.IsOpen)
             {
                 return;
             }
@@ -849,14 +715,14 @@ namespace ViewModels
                 return;
             }
 
-            if (this._rcmvm.Target == null)
+            if (this.RightClickMenuViewModel.Target == null)
             {
                 return;
             }
 
-            if (updateKind.TargetCharacter.Name == this._rcmvm.Target.Name)
+            if (updateKind.TargetCharacter.Name == this.RightClickMenuViewModel.Target.Name)
             {
-                this.updateRightClickMenu(this._rcmvm.Target);
+                this.updateRightClickMenu(this.RightClickMenuViewModel.Target);
             }
 
             this.OnPropertyChanged("RightClickMenuViewModel");

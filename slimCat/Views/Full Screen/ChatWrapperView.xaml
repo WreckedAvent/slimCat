@@ -1,8 +1,7 @@
-﻿<UserControl x:Class="Views.ChatWrapperView"
+﻿<UserControl x:Class="Slimcat.Views.ChatWrapperView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:prism="http://www.codeplex.com/prism"
-             xmlns:views="clr-namespace:Views">
+             xmlns:prism="http://www.codeplex.com/prism">
 
     <Grid HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">

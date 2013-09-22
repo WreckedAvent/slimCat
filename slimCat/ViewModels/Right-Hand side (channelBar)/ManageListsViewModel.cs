@@ -27,20 +27,19 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
-    using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using slimCat;
-
-    using Views;
+    using Slimcat;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
+    using Slimcat.Views;
 
     /// <summary>
     ///     The manage lists view model.
@@ -58,23 +57,23 @@ namespace ViewModels
 
         #region Fields
 
-        private readonly GenderSettingsModel _genderSettings;
+        private readonly GenderSettingsModel genderSettings;
 
-        private IList<ICharacter> _bookmarks;
+        private IList<ICharacter> bookmarks;
 
-        private IList<ICharacter> _friends;
+        private IList<ICharacter> friends;
 
-        private IList<ICharacter> _ignored;
+        private IList<ICharacter> ignored;
 
-        private IList<ICharacter> _interested;
+        private IList<ICharacter> interested;
 
-        private IList<ICharacter> _notInterested;
+        private IList<ICharacter> notInterested;
 
-        private IList<ICharacter> _roomBans;
+        private IList<ICharacter> roomBans;
 
-        private IList<ICharacter> _roomMods;
+        private IList<ICharacter> roomMods;
 
-        private bool _showOffline = true;
+        private bool showOffline = true;
 
         #endregion
 
@@ -99,25 +98,25 @@ namespace ViewModels
             IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
             : base(contain, regman, eventagg, cm)
         {
-            this._container.RegisterType<object, ManageListsTabView>(ManageListsTabView);
+            this.Container.RegisterType<object, ManageListsTabView>(ManageListsTabView);
 
-            this._genderSettings = new GenderSettingsModel();
+            this.genderSettings = new GenderSettingsModel();
             this.SearchSettings.ShowNotInterested = true;
             this.SearchSettings.ShowIgnored = true;
 
             this.SearchSettings.Updated += (s, e) =>
                 {
                     this.OnPropertyChanged("SearchSettings");
-                    this.updateBindings();
+                    this.UpdateBindings();
                 };
 
             this.GenderSettings.Updated += (s, e) =>
                 {
                     this.OnPropertyChanged("GenderSettings");
-                    this.updateBindings();
+                    this.UpdateBindings();
                 };
 
-            this._events.GetEvent<NewUpdateEvent>().Subscribe(
+            this.Events.GetEvent<NewUpdateEvent>().Subscribe(
                 args =>
                     {
                         var thisChannelUpdate = args as ChannelUpdateModel;
@@ -142,21 +141,21 @@ namespace ViewModels
 
                         switch (thisArguments.ListArgument)
                         {
-                            case CharacterUpdateModel.ListChangedEventArgs.ListType.interested:
+                            case CharacterUpdateModel.ListChangedEventArgs.ListType.Interested:
                                 this.OnPropertyChanged("Interested");
                                 this.OnPropertyChanged("NotInterested");
                                 break;
-                            case CharacterUpdateModel.ListChangedEventArgs.ListType.ignored:
+                            case CharacterUpdateModel.ListChangedEventArgs.ListType.Ignored:
                                 this.OnPropertyChanged("Ignored");
                                 break;
-                            case CharacterUpdateModel.ListChangedEventArgs.ListType.notinterested:
+                            case CharacterUpdateModel.ListChangedEventArgs.ListType.NotInterested:
                                 this.OnPropertyChanged("NotInterested");
                                 this.OnPropertyChanged("Interested");
                                 break;
-                            case CharacterUpdateModel.ListChangedEventArgs.ListType.bookmarks:
+                            case CharacterUpdateModel.ListChangedEventArgs.ListType.Bookmarks:
                                 this.OnPropertyChanged("Bookmarks");
                                 break;
-                            case CharacterUpdateModel.ListChangedEventArgs.ListType.friends:
+                            case CharacterUpdateModel.ListChangedEventArgs.ListType.Friends:
                                 this.OnPropertyChanged("Friends");
                                 break;
                         }
@@ -183,14 +182,7 @@ namespace ViewModels
         {
             get
             {
-                if (this.HasUsers)
-                {
-                    return this.update(((GeneralChannelModel)this.CM.SelectedChannel).Banned, this._roomBans);
-                }
-                else
-                {
-                    return null;
-                }
+                return this.HasUsers ? this.Update(((GeneralChannelModel)this.ChatModel.CurrentChannel).Banned, this.roomBans) : null;
             }
         }
 
@@ -201,8 +193,8 @@ namespace ViewModels
         {
             get
             {
-                this._bookmarks = this.update(this._cm.Bookmarks, this._bookmarks);
-                return this._bookmarks;
+                this.bookmarks = this.Update(this.ChatModel.Bookmarks, this.bookmarks);
+                return this.bookmarks;
             }
         }
 
@@ -213,8 +205,8 @@ namespace ViewModels
         {
             get
             {
-                this._friends = this.update(this._cm.Friends, this._friends);
-                return this._friends;
+                this.friends = this.Update(this.ChatModel.Friends, this.friends);
+                return this.friends;
             }
         }
 
@@ -225,7 +217,7 @@ namespace ViewModels
         {
             get
             {
-                return this._genderSettings;
+                return this.genderSettings;
             }
         }
 
@@ -236,7 +228,7 @@ namespace ViewModels
         {
             get
             {
-                return this.HasUsers && (((GeneralChannelModel)this.CM.SelectedChannel).Banned.Count > 0);
+                return this.HasUsers && (((GeneralChannelModel)this.ChatModel.CurrentChannel).Banned.Count > 0);
             }
         }
 
@@ -247,8 +239,8 @@ namespace ViewModels
         {
             get
             {
-                this._ignored = this.update(this.CM.Ignored, this._ignored);
-                return this._ignored;
+                this.ignored = this.Update(this.ChatModel.Ignored, this.ignored);
+                return this.ignored;
             }
         }
 
@@ -259,8 +251,8 @@ namespace ViewModels
         {
             get
             {
-                this._interested = this.update(ApplicationSettings.Interested, this._interested);
-                return this._interested;
+                this.interested = this.Update(ApplicationSettings.Interested, this.interested);
+                return this.interested;
             }
         }
 
@@ -271,14 +263,7 @@ namespace ViewModels
         {
             get
             {
-                if (this.HasUsers)
-                {
-                    return this.update(((GeneralChannelModel)this.CM.SelectedChannel).Moderators, this._roomMods);
-                }
-                else
-                {
-                    return null;
-                }
+                return this.HasUsers ? this.Update(((GeneralChannelModel)this.ChatModel.CurrentChannel).Moderators, this.roomMods) : null;
             }
         }
 
@@ -289,8 +274,8 @@ namespace ViewModels
         {
             get
             {
-                this._notInterested = this.update(ApplicationSettings.NotInterested, this._notInterested);
-                return this._notInterested;
+                this.notInterested = this.Update(ApplicationSettings.NotInterested, this.notInterested);
+                return this.notInterested;
             }
         }
 
@@ -301,7 +286,7 @@ namespace ViewModels
         {
             get
             {
-                return this._cm.SelectedChannel is GeneralChannelModel;
+                return this.ChatModel.CurrentChannel is GeneralChannelModel;
             }
         }
 
@@ -312,13 +297,13 @@ namespace ViewModels
         {
             get
             {
-                return this._showOffline;
+                return this.showOffline;
             }
 
             set
             {
-                this._showOffline = value;
-                this.updateBindings();
+                this.showOffline = value;
+                this.UpdateBindings();
             }
         }
 
@@ -329,59 +314,48 @@ namespace ViewModels
         private bool MeetsFilter(ICharacter character)
         {
             return character.MeetsFilters(
-                this.GenderSettings, this.SearchSettings, this.CM, this.CM.SelectedChannel as GeneralChannelModel);
+                this.GenderSettings, this.SearchSettings, this.ChatModel, this.ChatModel.CurrentChannel as GeneralChannelModel);
         }
 
-        private IList<ICharacter> update(IList<string> CharacterNames, IList<ICharacter> CurrentList)
+        private IList<ICharacter> Update(ICollection<string> characterNames, IList<ICharacter> currentList)
         {
-            if (CharacterNames == null)
+            if (characterNames == null)
             {
-                return CurrentList;
+                return currentList;
             }
 
-            if (CurrentList == null || CurrentList.Count != CharacterNames.Count)
+            if (currentList == null || currentList.Count != characterNames.Count)
             {
-                CurrentList = new List<ICharacter>();
-                foreach (string characterName in CharacterNames)
-                {
-                    ICharacter toAdd = this.CM.FindCharacter(characterName);
-
-                    if (toAdd.Status == StatusType.offline && !this._showOffline)
-                    {
-                        continue;
-                    }
-
-                    if (this.MeetsFilter(toAdd))
-                    {
-                        CurrentList.Add(toAdd);
-                    }
-                }
+                currentList = characterNames
+                    .Select(characterName => this.ChatModel.FindCharacter(characterName))
+                    .Where(toAdd => toAdd.Status != StatusType.offline || this.showOffline)
+                    .Where(this.MeetsFilter).ToList();
             }
 
-            return CurrentList;
+            return currentList;
         }
 
-        private void updateBindings()
+        private void UpdateBindings()
         {
-            this._friends = new List<ICharacter>();
+            this.friends = new List<ICharacter>();
             this.OnPropertyChanged("Friends");
 
-            this._bookmarks = new List<ICharacter>();
+            this.bookmarks = new List<ICharacter>();
             this.OnPropertyChanged("Bookmarks");
 
-            this._interested = new List<ICharacter>();
+            this.interested = new List<ICharacter>();
             this.OnPropertyChanged("Interested");
 
-            this._notInterested = new List<ICharacter>();
+            this.notInterested = new List<ICharacter>();
             this.OnPropertyChanged("NotInterested");
 
-            this._ignored = new List<ICharacter>();
+            this.ignored = new List<ICharacter>();
             this.OnPropertyChanged("Ignored");
 
-            this._roomMods = new List<ICharacter>();
+            this.roomMods = new List<ICharacter>();
             this.OnPropertyChanged("Moderators");
 
-            this._roomBans = new List<ICharacter>();
+            this.roomBans = new List<ICharacter>();
             this.OnPropertyChanged("Banned");
         }
 

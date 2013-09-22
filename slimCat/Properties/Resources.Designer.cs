@@ -8,8 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace slimCat.Properties {
-    using System;
+namespace Slimcat.Properties {
+    using Slimcat.Utilities;
     
     
     /// <summary>

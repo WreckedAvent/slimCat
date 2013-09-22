@@ -27,13 +27,15 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Models
+namespace Slimcat.Models
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Collections.Specialized;
     using System.Linq;
+
+    using Slimcat.Utilities;
 
     /// <summary>
     ///     The general channel model.
@@ -42,44 +44,44 @@ namespace Models
     {
         #region Fields
 
-        private readonly IList<string> _banned;
+        private readonly IList<string> banned;
 
-        private readonly IList<string> _mods;
+        private readonly IList<string> mods;
 
-        private readonly ObservableCollection<ICharacter> _users;
+        private readonly ObservableCollection<ICharacter> users;
 
-        private int _lastAdCount;
+        private string description;
 
-        private DateTime _lastUpdate;
+        private int lastAdCount;
 
-        private string _motd;
+        private DateTime lastUpdate;
 
-        private int _userCount;
+        private int userCount;
 
         #endregion
 
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GeneralChannelModel"/> class.
+        ///     Initializes a new instance of the <see cref="GeneralChannelModel" /> class.
         /// </summary>
-        /// <param name="channel_name">
-        /// The channel_name.
+        /// <param name="channelName">
+        ///     The channel_name.
         /// </param>
         /// <param name="type">
-        /// The type.
+        ///     The type.
         /// </param>
         /// <param name="users">
-        /// The users.
+        ///     The users.
         /// </param>
         /// <param name="mode">
-        /// The mode.
+        ///     The mode.
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// </exception>
         public GeneralChannelModel(
-            string channel_name, ChannelType type, int users = 0, ChannelMode mode = ChannelMode.both)
-            : base(channel_name, type, mode)
+            string channelName, ChannelType type, int users = 0, ChannelMode mode = ChannelMode.Both)
+            : base(channelName, type, mode)
         {
             try
             {
@@ -90,11 +92,10 @@ namespace Models
 
                 this.UserCount = users;
 
-                this._users = new ObservableCollection<ICharacter>();
-                this._mods = new List<string>();
-                this._banned = new List<string>();
-
-                this._settings = new ChannelSettingsModel();
+                this.users = new ObservableCollection<ICharacter>();
+                this.mods = new List<string>();
+                this.banned = new List<string>();
+                this.Settings = new ChannelSettingsModel();
 
                 this.Users.CollectionChanged += (s, e) =>
                     {
@@ -107,20 +108,24 @@ namespace Models
                 // the message count now faces the user, so when we reset it it now requires a UI update
                 this.Messages.CollectionChanged += (s, e) =>
                     {
-                        if (e.Action == NotifyCollectionChangedAction.Reset)
+                        if (e.Action != NotifyCollectionChangedAction.Reset)
                         {
-                            this.LastReadCount = this.Messages.Count;
-                            this.UpdateBindings();
+                            return;
                         }
+
+                        this.LastReadCount = this.Messages.Count;
+                        this.UpdateBindings();
                     };
 
                 this.Ads.CollectionChanged += (s, e) =>
                     {
-                        if (e.Action == NotifyCollectionChangedAction.Reset)
+                        if (e.Action != NotifyCollectionChangedAction.Reset)
                         {
-                            this.LastReadAdCount = this.Ads.Count;
-                            this.UpdateBindings();
+                            return;
                         }
+
+                        this.LastReadAdCount = this.Ads.Count;
+                        this.UpdateBindings();
                     };
             }
             catch (Exception ex)
@@ -141,7 +146,7 @@ namespace Models
         {
             get
             {
-                return this._banned;
+                return this.banned;
             }
         }
 
@@ -152,7 +157,7 @@ namespace Models
         {
             get
             {
-                return (this.ID != "Home") && this.IsSelected;
+                return (this.Id != "Home") && this.IsSelected;
             }
         }
 
@@ -164,6 +169,23 @@ namespace Models
             get
             {
                 return this.Unread + this.UnreadAds;
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the motd.
+        /// </summary>
+        public string Description
+        {
+            get
+            {
+                return this.description;
+            }
+
+            set
+            {
+                this.description = value;
+                this.OnPropertyChanged("Description");
             }
         }
 
@@ -205,33 +227,16 @@ namespace Models
         {
             get
             {
-                return this._lastAdCount;
+                return this.lastAdCount;
             }
 
             set
             {
-                if (this._lastAdCount != value)
+                if (this.lastAdCount != value)
                 {
-                    this._lastAdCount = value;
+                    this.lastAdCount = value;
                     this.UpdateBindings();
                 }
-            }
-        }
-
-        /// <summary>
-        ///     Gets or sets the motd.
-        /// </summary>
-        public string MOTD
-        {
-            get
-            {
-                return this._motd;
-            }
-
-            set
-            {
-                this._motd = value;
-                this.OnPropertyChanged("MOTD");
             }
         }
 
@@ -242,7 +247,7 @@ namespace Models
         {
             get
             {
-                return this._mods;
+                return this.mods;
             }
         }
 
@@ -253,7 +258,7 @@ namespace Models
         {
             get
             {
-                if (!this.IsSelected && this._needsAttentionOverride)
+                if (!this.IsSelected && this.NeedsAttentionOverride)
                 {
                     return true; // flash for ding words
                 }
@@ -262,7 +267,8 @@ namespace Models
                 {
                     return false; // terminate early upon user request
                 }
-                else if (this.Settings.MessageNotifyOnlyForInteresting)
+
+                if (this.Settings.MessageNotifyOnlyForInteresting)
                 {
                     return base.NeedsAttention;
                 }
@@ -278,25 +284,18 @@ namespace Models
         {
             get
             {
-                if (this._mods != null)
-                {
-                    return this._mods[0];
-                }
-                else
-                {
-                    return null;
-                }
+                return this.mods != null ? this.mods[0] : null;
             }
         }
 
         /// <summary>
-        ///     Gets the unread ads.
+        ///     Gets the unread Ads.
         /// </summary>
         public int UnreadAds
         {
             get
             {
-                return this.Ads.Count - this._lastAdCount;
+                return this.Ads.Count - this.lastAdCount;
             }
         }
 
@@ -307,19 +306,12 @@ namespace Models
         {
             get
             {
-                if (this.Users.Count == 0)
-                {
-                    return this._userCount;
-                }
-                else
-                {
-                    return this.Users.Count();
-                }
+                return this.Users.Count == 0 ? this.userCount : this.Users.Count();
             }
 
             set
             {
-                this._userCount = value;
+                this.userCount = value;
                 this.UpdateBindings();
             }
         }
@@ -331,7 +323,7 @@ namespace Models
         {
             get
             {
-                return this._users;
+                return this.users;
             }
         }
 
@@ -340,38 +332,38 @@ namespace Models
         #region Public Methods and Operators
 
         /// <summary>
-        /// The add character.
+        ///     The add character.
         /// </summary>
         /// <param name="toAdd">
-        /// The to add.
+        ///     The to add.
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         public bool AddCharacter(ICharacter toAdd)
         {
-            if (this._users.Contains(toAdd))
+            if (this.users.Contains(toAdd))
             {
                 return false;
             }
 
-            this._users.Add(toAdd);
+            this.users.Add(toAdd);
             this.CallListChanged();
             return true;
         }
 
         /// <summary>
-        /// The add message.
+        ///     The add message.
         /// </summary>
         /// <param name="message">
-        /// The message.
+        ///     The message.
         /// </param>
         /// <param name="isOfInterest">
-        /// The is of interest.
+        ///     The is of interest.
         /// </param>
         public override void AddMessage(IMessage message, bool isOfInterest = false)
         {
-            ObservableCollection<IMessage> messageCollection = message.Type == MessageType.ad ? this.Ads : this.Messages;
+            ObservableCollection<IMessage> messageCollection = message.Type == MessageType.Ad ? this.Ads : this.Messages;
 
             while (messageCollection.Count >= ApplicationSettings.BackLogMax)
             {
@@ -383,7 +375,7 @@ namespace Models
 
             if (this.IsSelected)
             {
-                if (message.Type == MessageType.normal)
+                if (message.Type == MessageType.Normal)
                 {
                     this.LastReadCount = messageCollection.Count;
                 }
@@ -394,7 +386,7 @@ namespace Models
             }
             else if (messageCollection.Count >= ApplicationSettings.BackLogMax)
             {
-                if (message.Type == MessageType.normal)
+                if (message.Type == MessageType.Normal)
                 {
                     this.LastReadCount--;
                 }
@@ -405,7 +397,7 @@ namespace Models
             }
             else if (!this.IsSelected)
             {
-                this._unreadContainsInteresting = this._unreadContainsInteresting || isOfInterest;
+                this.UnreadContainsInteresting = isOfInterest;
             }
 
             this.UpdateBindings();
@@ -416,35 +408,37 @@ namespace Models
         /// </summary>
         public void CallListChanged()
         {
-            if (this._lastUpdate.AddSeconds(3) < DateTime.Now)
+            if (this.lastUpdate.AddSeconds(3) >= DateTime.Now)
             {
-                this.OnPropertyChanged("Moderators");
-                this.OnPropertyChanged("Owner");
-                this.OnPropertyChanged("Banned");
-                this.OnPropertyChanged("Users");
-                this.OnPropertyChanged("UsersCount");
-                this._lastUpdate = DateTime.Now;
+                return;
             }
+
+            this.OnPropertyChanged("Moderators");
+            this.OnPropertyChanged("Owner");
+            this.OnPropertyChanged("Banned");
+            this.OnPropertyChanged("Users");
+            this.OnPropertyChanged("UsersCount");
+            this.lastUpdate = DateTime.Now;
         }
 
         /// <summary>
-        /// The remove character.
+        ///     The remove character.
         /// </summary>
         /// <param name="name">
-        /// The name.
+        ///     The name.
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         public bool RemoveCharacter(string name)
         {
-            ICharacter toRemove = this._users.FirstOrDefault(c => c.NameEquals(name));
+            var toRemove = this.users.FirstOrDefault(c => c.NameEquals(name));
             if (toRemove == null)
             {
                 return false;
             }
 
-            this._users.Remove(toRemove);
+            this.users.Remove(toRemove);
             this.CallListChanged();
             return true;
         }
@@ -452,21 +446,10 @@ namespace Models
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// The dispose.
-        /// </summary>
-        /// <param name="IsManaged">
-        /// The is managed.
-        /// </param>
-        protected override void Dispose(bool IsManaged)
+        protected override void Dispose(bool isManaged)
         {
-            if (IsManaged)
-            {
-                this._settings = new ChannelSettingsModel();
-            }
-
-            base.Dispose(IsManaged);
+            this.Settings = new ChannelSettingsModel();
+            base.Dispose(isManaged);
         }
 
         /// <summary>

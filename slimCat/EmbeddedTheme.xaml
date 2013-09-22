@@ -1,21 +1,20 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:lib="clr-namespace:lib"
-                    xmlns:sys="clr-namespace:System"
-                    xmlns:v="clr-namespace:Views">
+                    xmlns:lib="clr-namespace:Slimcat.Libraries"
+                    xmlns:v="clr-namespace:Slimcat.Views" xmlns:utilities="clr-namespace:Slimcat.Utilities">
 
     <SolidColorBrush Color="{StaticResource ForegroundColor}" Opacity="0.9" x:Key="HistoryBrush" />
 
     <BooleanToVisibilityConverter x:Key="BoolConverter" />
-    <sys:OppositeBoolConverter x:Key="OppositeBoolConverter" />
-    <sys:BoolColorConverter x:Key="ColorConverter" />
-    <sys:BBCodePostConverter x:Key="BBPostConverter" />
-    <sys:BBFlowConverter x:Key="BBFlowConverter" />
-    <sys:BBCodeConverter x:Key="BBCodeConverter" />
-    <sys:BBFlowHistoryConverter x:Key="BBFlowHistoryConverter"/>
-    <sys:GenderColorConverter x:Key="GenderColorConverter" />
-    <sys:GenderImageConverter x:Key="GenderImageConverter" />
-    <sys:ChannelTypeToImageConverter x:Key="ChannelTypeToImageConverter" />
+    <utilities:OppositeBoolConverter x:Key="OppositeBoolConverter" />
+    <utilities:BoolColorConverter x:Key="ColorConverter" />
+    <utilities:BBCodePostConverter x:Key="BBPostConverter" />
+    <utilities:BBFlowConverter x:Key="BBFlowConverter" />
+    <utilities:BBCodeConverter x:Key="BBCodeConverter" />
+    <utilities:BBFlowHistoryConverter x:Key="BBFlowHistoryConverter"/>
+    <utilities:GenderColorConverter x:Key="GenderColorConverter" />
+    <utilities:GenderImageConverter x:Key="GenderImageConverter" />
+    <utilities:ChannelTypeToImageConverter x:Key="ChannelTypeToImageConverter" />
 
     <DataTemplate x:Key="MessageView">
         <v:MessageView />
@@ -161,7 +160,7 @@
                 <InlineUIContainer BaselineAlignment="TextBottom">
                     <Button Content="{Binding Path=ChannelTitle, Mode=OneWay}"
                             Style="{StaticResource ChannelInterfaceButton}"
-                            CommandParameter="{Binding Path=ChannelID, Mode=OneWay}" />
+                            CommandParameter="{Binding Path=ChannelId, Mode=OneWay}" />
 
                 </InlineUIContainer>
                 <Run Text="{Binding Path=Arguments, Mode=OneWay}"
@@ -221,7 +220,7 @@
             <CheckBox IsChecked="{Binding ShowLooking}">Looking For Play</CheckBox>
             <CheckBox IsChecked="{Binding ShowNormal}">Just Online</CheckBox>
             <CheckBox IsChecked="{Binding ShowBusyAway}">Busy or Away</CheckBox>
-            <CheckBox IsChecked="{Binding ShowDND}">DND</CheckBox>
+            <CheckBox IsChecked="{Binding ShowDnd}">DND</CheckBox>
         </StackPanel>
     </ControlTemplate>
 </ResourceDictionary>

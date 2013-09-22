@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Services
+namespace Slimcat.Services
 {
     using System;
     using System.Collections.Generic;
@@ -40,17 +40,11 @@ namespace Services
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using slimCat;
-
-    using ViewModels;
-
-    using Views;
-
-    using Application = System.Windows.Application;
-    using Clipboard = System.Windows.Forms.Clipboard;
-    using DataFormats = System.Windows.Forms.DataFormats;
+    using Slimcat;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
+    using Slimcat.ViewModels;
+    using Slimcat.Views;
 
     /// <summary>
     ///     The message daemon is the service layer responsible for managing what the user sees and the commands the user sends.
@@ -59,21 +53,21 @@ namespace Services
     {
         #region Fields
 
-        private readonly IListConnection _api;
+        private readonly IListConnection api;
 
-        private readonly IChatConnection _connection;
+        private readonly IChatConnection connection;
 
-        private readonly IUnityContainer _container;
+        private readonly IUnityContainer container;
 
-        private readonly IEventAggregator _events;
+        private readonly IEventAggregator events;
 
-        private readonly IChatModel _model;
+        private readonly IChatModel model;
 
-        private readonly IRegionManager _region;
+        private readonly IRegionManager region;
 
-        private ChannelModel _lastSelected;
+        private ChannelModel lastSelected;
 
-        private ILogger _logger;
+        private ILogger logger;
 
         #endregion
 
@@ -110,20 +104,20 @@ namespace Services
         {
             try
             {
-                this._region = regman.ThrowIfNull("regman");
-                this._container = contain.ThrowIfNull("contain");
-                this._events = events.ThrowIfNull("events");
-                this._model = model.ThrowIfNull("model");
-                this._connection = connection.ThrowIfNull("connection");
-                this._api = api.ThrowIfNull("api");
+                this.region = regman.ThrowIfNull("regman");
+                this.container = contain.ThrowIfNull("contain");
+                this.events = events.ThrowIfNull("events");
+                this.model = model.ThrowIfNull("model");
+                this.connection = connection.ThrowIfNull("connection");
+                this.api = api.ThrowIfNull("api");
 
-                this._model.SelectedChannelChanged += (s, e) => this.RequestNavigate(this._model.SelectedChannel.ID);
+                this.model.SelectedChannelChanged += (s, e) => this.RequestNavigate(this.model.CurrentChannel.Id);
 
-                this._events.GetEvent<ChatOnDisplayEvent>()
+                this.events.GetEvent<ChatOnDisplayEvent>()
                     .Subscribe(this.BuildHomeChannel, ThreadOption.UIThread, true);
-                this._events.GetEvent<RequestChangeTabEvent>()
+                this.events.GetEvent<RequestChangeTabEvent>()
                     .Subscribe(this.RequestNavigate, ThreadOption.UIThread, true);
-                this._events.GetEvent<UserCommandEvent>().Subscribe(this.CommandRecieved, ThreadOption.UIThread, true);
+                this.events.GetEvent<UserCommandEvent>().Subscribe(this.CommandRecieved, ThreadOption.UIThread, true);
             }
             catch (Exception ex)
             {
@@ -150,48 +144,48 @@ namespace Services
         /// </param>
         public void AddChannel(ChannelType type, string ID, string name)
         {
-            if (type == ChannelType.pm)
+            if (type == ChannelType.PrivateMessage)
             {
-                this._model.FindCharacter(ID).GetAvatar(); // make sure we have their picture
+                this.model.FindCharacter(ID).GetAvatar(); // make sure we have their picture
 
-                // model doesn't have a reference to pm channels, build it manually
-                var temp = new PMChannelModel(this._model.FindCharacter(ID));
-                this._container.RegisterInstance(temp.ID, temp);
-                var pmChan = this._container.Resolve<PMChannelViewModel>(new ParameterOverride("name", temp.ID));
+                // model doesn't have a reference to PrivateMessage channels, build it manually
+                var temp = new PMChannelModel(this.model.FindCharacter(ID));
+                this.container.RegisterInstance(temp.Id, temp);
+                var pmChan = this.container.Resolve<PMChannelViewModel>(new ParameterOverride("name", temp.Id));
 
-                this.Dispatcher.Invoke((Action)delegate { this._model.CurrentPMs.Add(temp); });
+                this.Dispatcher.Invoke((Action)(() => this.model.CurrentPMs.Add(temp)));
 
                 // then add it to the model's data
             }
             else
             {
                 GeneralChannelModel temp;
-                if (type == ChannelType.utility)
+                if (type == ChannelType.Utility)
                 {
                     // our model won't have a reference to home, so we build it manually
-                    temp = new GeneralChannelModel(ID, ChannelType.utility);
-                    this._container.RegisterInstance(ID, temp);
-                    this._container.Resolve<UtilityChannelViewModel>(new ParameterOverride("name", ID));
+                    temp = new GeneralChannelModel(ID, ChannelType.Utility);
+                    this.container.RegisterInstance(ID, temp);
+                    this.container.Resolve<UtilityChannelViewModel>(new ParameterOverride("name", ID));
                 }
                 else
                 {
                     // our model should have a reference to other channels though
                     try
                     {
-                        temp = this._model.AllChannels.First(param => param.ID == ID);
+                        temp = this.model.AllChannels.First(param => param.Id == ID);
                     }
                     catch
                     {
-                        temp = new GeneralChannelModel(ID, ChannelType.closed) { Title = name };
-                        this.Dispatcher.Invoke((Action)delegate { this._model.CurrentChannels.Add(temp); });
+                        temp = new GeneralChannelModel(ID, ChannelType.InviteOnly) { Title = name };
+                        this.Dispatcher.Invoke((Action)(() => this.model.CurrentChannels.Add(temp)));
                     }
 
-                    this._container.Resolve<GeneralChannelViewModel>(new ParameterOverride("name", ID));
+                    this.container.Resolve<GeneralChannelViewModel>(new ParameterOverride("name", ID));
                 }
 
-                if (!this._model.CurrentChannels.Contains(temp))
+                if (!this.model.CurrentChannels.Contains(temp))
                 {
-                    this.Dispatcher.Invoke((Action)delegate { this._model.CurrentChannels.Add(temp); });
+                    this.Dispatcher.Invoke((Action)(() => this.model.CurrentChannels.Add(temp)));
                 }
             }
         }
@@ -212,16 +206,15 @@ namespace Services
         /// The message type.
         /// </param>
         public void AddMessage(
-            string message, string channelName, string poster, MessageType messageType = MessageType.normal)
+            string message, string channelName, string poster, MessageType messageType = MessageType.Normal)
         {
-            ChannelModel channel;
-            ICharacter sender = poster != "_thisCharacter"
-                                    ? this._model.FindCharacter(poster)
-                                    : this._model.FindCharacter(this._model.SelectedCharacter.Name);
+            var sender = poster != "_thisCharacter"
+                                    ? this.model.FindCharacter(poster)
+                                    : this.model.FindCharacter(this.model.CurrentCharacter.Name);
             this.InstanceLogger();
 
-            channel = this._model.CurrentChannels.FirstByIdOrDefault(channelName)
-                      ?? (ChannelModel)this._model.CurrentPMs.FirstByIdOrDefault(channelName);
+            var channel = this.model.CurrentChannels.FirstByIdOrDefault(channelName)
+                                   ?? (ChannelModel)this.model.CurrentPMs.FirstByIdOrDefault(channelName);
 
             if (channel == null)
             {
@@ -233,12 +226,12 @@ namespace Services
                     {
                         var thisMessage = new MessageModel(sender, message, messageType);
 
-                        channel.AddMessage(thisMessage, this._model.IsOfInterest(sender.Name));
+                        channel.AddMessage(thisMessage, this.model.IsOfInterest(sender.Name));
 
                         if (channel.Settings.LoggingEnabled && ApplicationSettings.AllowLogging)
                         {
                             // check if the user wants logging for this channel
-                            this._logger.LogMessage(channel.Title, channel.ID, thisMessage);
+                            this.logger.LogMessage(channel.Title, channel.Id, thisMessage);
                         }
 
                         if (poster == "_thisCharacter")
@@ -249,7 +242,7 @@ namespace Services
                         // don't push events for our own messages
                         if (channel is GeneralChannelModel)
                         {
-                            this._events.GetEvent<NewMessageEvent>()
+                            this.events.GetEvent<NewMessageEvent>()
                                 .Publish(
                                     new Dictionary<string, object>
                                         {
@@ -259,7 +252,7 @@ namespace Services
                         }
                         else
                         {
-                            this._events.GetEvent<NewPMEvent>().Publish(thisMessage);
+                            this.events.GetEvent<NewPMEvent>().Publish(thisMessage);
                         }
                     });
         }
@@ -281,26 +274,19 @@ namespace Services
                     case "priv":
                         {
                             var args = command["character"] as string;
-                            if (args.Equals(this._model.SelectedCharacter.Name, StringComparison.OrdinalIgnoreCase))
+                            if (args.Equals(this.model.CurrentCharacter.Name, StringComparison.OrdinalIgnoreCase))
                             {
-                                this._events.GetEvent<ErrorEvent>().Publish("Hmmm... talking to yourself?");
+                                this.events.GetEvent<ErrorEvent>().Publish("Hmmm... talking to yourself?");
                             }
                             else
                             {
                                 // orderby ensures that our search string won't produce a premature
                                 ICharacter guess =
-                                    this._model.OnlineCharacters.OrderBy(character => character.Name)
+                                    this.model.OnlineCharacters.OrderBy(character => character.Name)
                                         .FirstOrDefault(
                                             character => character.Name.ToLower().StartsWith(args.ToLower()));
 
-                                if (guess == null)
-                                {
-                                    this.JoinChannel(ChannelType.pm, args);
-                                }
-                                else
-                                {
-                                    this.JoinChannel(ChannelType.pm, guess.Name);
-                                }
+                                this.JoinChannel(ChannelType.PrivateMessage, guess == null ? args : guess.Name);
                             }
 
                             return;
@@ -336,7 +322,7 @@ namespace Services
                                 command["message"] as string, 
                                 command["channel"] as string, 
                                 "_thisCharacter", 
-                                MessageType.ad);
+                                MessageType.Ad);
                             break;
                         }
 
@@ -347,10 +333,10 @@ namespace Services
                     case "STA":
                         {
                             var statusmsg = command["statusmsg"] as string;
-                            var status = (StatusType)Enum.Parse(typeof(StatusType), command["status"] as string);
+                            var status = (StatusType)Enum.Parse(typeof(StatusType), command["status"] as string, true);
 
-                            this._model.SelectedCharacter.Status = status;
-                            this._model.SelectedCharacter.StatusMessage = statusmsg;
+                            this.model.CurrentCharacter.Status = status;
+                            this.model.CurrentCharacter.StatusMessage = statusmsg;
                             break;
                         }
 
@@ -373,25 +359,25 @@ namespace Services
                         {
                             var args = (string)command["channel"];
 
-                            if (this._model.CurrentChannels.FirstByIdOrDefault(args) != null)
+                            if (this.model.CurrentChannels.FirstByIdOrDefault(args) != null)
                             {
                                 this.RequestNavigate(args);
                                 return;
                             }
 
                             // orderby ensures that our search string won't produce a premature
-                            GeneralChannelModel guess =
-                                this._model.AllChannels.OrderBy(channel => channel.Title)
+                            var guess =
+                                this.model.AllChannels.OrderBy(channel => channel.Title)
                                     .FirstOrDefault(channel => channel.Title.ToLower().StartsWith(args.ToLower()));
                             if (guess != null)
                             {
-                                var toSend = new { channel = guess.ID };
-                                this._connection.SendMessage(toSend, "JCH");
+                                var toSend = new { channel = guess.Id };
+                                this.connection.SendMessage(toSend, "JCH");
                             }
                             else
                             {
                                 var toSend = new { channel = args };
-                                this._connection.SendMessage(toSend, "JCH");
+                                this.connection.SendMessage(toSend, "JCH");
                             }
 
                             return;
@@ -407,30 +393,30 @@ namespace Services
 
                             if ((string)command["action"] == "add")
                             {
-                                this._model.Ignored.Add(args);
+                                this.model.Ignored.Add(args);
                             }
                             else if ((string)command["action"] == "delete")
                             {
-                                this._model.Ignored.Remove(args);
+                                this.model.Ignored.Remove(args);
                             }
                             else
                             {
                                 break;
                             }
 
-                            this._events.GetEvent<NewUpdateEvent>()
+                            this.events.GetEvent<NewUpdateEvent>()
                                 .Publish(
                                     new CharacterUpdateModel(
-                                        this._model.FindCharacter(args), 
+                                        this.model.FindCharacter(args), 
                                         new CharacterUpdateModel.ListChangedEventArgs
                                             {
                                                 IsAdded =
-                                                    this._model.Ignored
+                                                    this.model.Ignored
                                                         .Contains(args), 
                                                 ListArgument =
                                                     CharacterUpdateModel
                                                     .ListChangedEventArgs
-                                                    .ListType.ignored
+                                                    .ListType.Ignored
                                             }));
                             break;
                         }
@@ -441,32 +427,32 @@ namespace Services
 
                     case "clear":
                         {
-                            foreach (IMessage item in this._model.SelectedChannel.Messages)
+                            foreach (var item in this.model.CurrentChannel.Messages)
                             {
                                 item.Dispose();
                             }
 
-                            foreach (IMessage item in this._model.SelectedChannel.Ads)
+                            foreach (var item in this.model.CurrentChannel.Ads)
                             {
                                 item.Dispose();
                             }
 
-                            this._model.SelectedChannel.History.Clear();
-                            this._model.SelectedChannel.Messages.Clear();
-                            this._model.SelectedChannel.Ads.Clear();
+                            this.model.CurrentChannel.History.Clear();
+                            this.model.CurrentChannel.Messages.Clear();
+                            this.model.CurrentChannel.Ads.Clear();
                             return;
                         }
 
                     case "clearall":
                         {
-                            foreach (GeneralChannelModel channel in this._model.CurrentChannels)
+                            foreach (var channel in this.model.CurrentChannels)
                             {
-                                foreach (IMessage item in channel.Messages)
+                                foreach (var item in channel.Messages)
                                 {
                                     item.Dispose();
                                 }
 
-                                foreach (IMessage item in channel.Ads)
+                                foreach (var item in channel.Ads)
                                 {
                                     item.Dispose();
                                 }
@@ -476,9 +462,9 @@ namespace Services
                                 channel.Ads.Clear();
                             }
 
-                            foreach (PMChannelModel pm in this._model.CurrentPMs)
+                            foreach (var pm in this.model.CurrentPMs)
                             {
-                                foreach (IMessage item in pm.Messages)
+                                foreach (var item in pm.Messages)
                                 {
                                     item.Dispose();
                                 }
@@ -497,26 +483,26 @@ namespace Services
                     case "_logger_new_line":
                         {
                             this.InstanceLogger();
-                            this._logger.LogSpecial(
-                                this._model.SelectedChannel.Title, 
-                                this._model.SelectedChannel.ID, 
+                            this.logger.LogSpecial(
+                                this.model.CurrentChannel.Title, 
+                                this.model.CurrentChannel.Id, 
                                 SpecialLogMessageKind.LineBreak, 
                                 string.Empty);
 
-                            this._events.GetEvent<ErrorEvent>().Publish("Logged a new line.");
+                            this.events.GetEvent<ErrorEvent>().Publish("Logged a new line.");
                             return;
                         }
 
                     case "_logger_new_header":
                         {
                             this.InstanceLogger();
-                            this._logger.LogSpecial(
-                                this._model.SelectedChannel.Title, 
-                                this._model.SelectedChannel.ID, 
+                            this.logger.LogSpecial(
+                                this.model.CurrentChannel.Title, 
+                                this.model.CurrentChannel.Id, 
                                 SpecialLogMessageKind.Header, 
                                 command["title"] as string);
 
-                            this._events.GetEvent<ErrorEvent>()
+                            this.events.GetEvent<ErrorEvent>()
                                 .Publish("Logged a header of \'" + command["title"] + "\'");
                             return;
                         }
@@ -524,13 +510,13 @@ namespace Services
                     case "_logger_new_section":
                         {
                             this.InstanceLogger();
-                            this._logger.LogSpecial(
-                                this._model.SelectedChannel.Title, 
-                                this._model.SelectedChannel.ID, 
+                            this.logger.LogSpecial(
+                                this.model.CurrentChannel.Title, 
+                                this.model.CurrentChannel.Id, 
                                 SpecialLogMessageKind.Section, 
                                 command["title"] as string);
 
-                            this._events.GetEvent<ErrorEvent>()
+                            this.events.GetEvent<ErrorEvent>()
                                 .Publish("Logged a section of \'" + command["title"] + "\'");
                             return;
                         }
@@ -539,8 +525,8 @@ namespace Services
                         {
                             this.InstanceLogger();
 
-                            this._logger.OpenLog(
-                                false, this._model.SelectedChannel.Title, this._model.SelectedChannel.ID);
+                            this.logger.OpenLog(
+                                false, this.model.CurrentChannel.Title, this.model.CurrentChannel.Id);
                             return;
                         }
 
@@ -552,13 +538,13 @@ namespace Services
                                 var toOpen = command["channel"] as string;
                                 if (!string.IsNullOrWhiteSpace(toOpen))
                                 {
-                                    this._logger.OpenLog(true, toOpen, toOpen);
+                                    this.logger.OpenLog(true, toOpen, toOpen);
                                 }
                             }
                             else
                             {
-                                this._logger.OpenLog(
-                                    true, this._model.SelectedChannel.Title, this._model.SelectedChannel.ID);
+                                this.logger.OpenLog(
+                                    true, this.model.CurrentChannel.Title, this.model.CurrentChannel.Id);
                             }
 
                             return;
@@ -570,18 +556,18 @@ namespace Services
 
                     case "code":
                         {
-                            if (this._model.SelectedChannel.ID.Equals("Home", StringComparison.OrdinalIgnoreCase))
+                            if (this.model.CurrentChannel.Id.Equals("Home", StringComparison.OrdinalIgnoreCase))
                             {
-                                this._events.GetEvent<ErrorEvent>().Publish("Home channel does not have a code.");
+                                this.events.GetEvent<ErrorEvent>().Publish("Home channel does not have a code.");
                                 return;
                             }
 
                             string toCopy = string.Format(
                                 "[session={0}]{1}[/session]", 
-                                this._model.SelectedChannel.Title, 
-                                this._model.SelectedChannel.ID);
+                                this.model.CurrentChannel.Title, 
+                                this.model.CurrentChannel.Id);
                             Clipboard.SetData(DataFormats.Text, toCopy);
-                            this._events.GetEvent<ErrorEvent>().Publish("Channel's code copied to clipboard.");
+                            this.events.GetEvent<ErrorEvent>().Publish("Channel's code copied to clipboard.");
                             return;
                         }
 
@@ -633,65 +619,65 @@ namespace Services
                                     goto case "handlereport";
                                 }
 
-                                PMChannelModel guess = this._model.CurrentPMs.FirstByIdOrDefault(target);
+                                var guess = this.model.CurrentPMs.FirstByIdOrDefault(target);
                                 if (guess != null)
                                 {
                                     this.RequestNavigate(target); // join the PM tab
                                     this.Dispatcher.Invoke(showMyDamnWindow);
                                     return;
                                 }
-                                else
+
+                                var secondGuess =
+                                    this.model.CurrentChannels.FirstByIdOrDefault(target);
+
+                                if (secondGuess != null)
                                 {
-                                    GeneralChannelModel secondGuess =
-                                        this._model.CurrentChannels.FirstByIdOrDefault(target);
+                                    this.RequestNavigate(target);
 
-                                    if (secondGuess != null)
-                                    {
-                                        this.RequestNavigate(target);
-
-                                        // if our second guess is accurate, join the channel
-                                        this.Dispatcher.Invoke(showMyDamnWindow);
-                                        return;
-                                    }
+                                    // if our second guess is accurate, join the channel
+                                    this.Dispatcher.Invoke(showMyDamnWindow);
+                                    return;
                                 }
                             }
 
-                            NotificationModel latest = this._model.Notifications.LastOrDefault();
+                            var latest = this.model.Notifications.LastOrDefault();
 
                             // if we got to this point our notification is doesn't involve an active tab
                             if (latest != null)
                             {
-                                if (latest is CharacterUpdateModel)
+                                var with = latest as CharacterUpdateModel;
+                                if (with != null)
                                 {
                                     // so tell our system to join the PM Tab
-                                    var doStuffWith = (CharacterUpdateModel)latest;
-                                    this.JoinChannel(ChannelType.pm, doStuffWith.TargetCharacter.Name);
+                                    var doStuffWith = with;
+                                    this.JoinChannel(ChannelType.PrivateMessage, doStuffWith.TargetCharacter.Name);
 
                                     this.Dispatcher.Invoke(showMyDamnWindow);
                                     return;
                                 }
 
-                                if (latest is ChannelUpdateModel)
+                                var stuffWith = latest as ChannelUpdateModel;
+                                if (stuffWith != null)
                                 {
                                     // or the channel tab
                                     // I'm not really sure how we can get a notification on a channel we're not in,
                                     // but there's no reason to crash if that is the case
-                                    var doStuffWith = (ChannelUpdateModel)latest;
-                                    GeneralChannelModel channel =
-                                        this._model.AllChannels.FirstByIdOrDefault(doStuffWith.ChannelID);
+                                    var doStuffWith = stuffWith;
+                                    var channel =
+                                        this.model.AllChannels.FirstByIdOrDefault(doStuffWith.ChannelID);
 
                                     if (channel == null)
                                     {
                                         // assume it's an invite
                                         var toSend = new { channel = doStuffWith.ChannelID };
-                                        this._connection.SendMessage(toSend, "JCH");
+                                        this.connection.SendMessage(toSend, "JCH");
 
                                         // tell the server to jump on that shit
                                         this.Dispatcher.Invoke(showMyDamnWindow);
                                         return;
                                     }
 
-                                    ChannelType chanType = channel.Type;
+                                    var chanType = channel.Type;
                                     this.JoinChannel(chanType, doStuffWith.ChannelID);
                                     this.Dispatcher.Invoke(showMyDamnWindow);
                                     return;
@@ -709,9 +695,9 @@ namespace Services
                         {
                             if (command.ContainsKey("character")
                                 && (command["character"] as string).Equals(
-                                    this._model.SelectedCharacter.Name, StringComparison.OrdinalIgnoreCase))
+                                    this.model.CurrentCharacter.Name, StringComparison.OrdinalIgnoreCase))
                             {
-                                this._events.GetEvent<ErrorEvent>()
+                                this.events.GetEvent<ErrorEvent>()
                                     .Publish("For the record, no, inviting yourself does not a party make.");
                                 return;
                             }
@@ -725,10 +711,10 @@ namespace Services
 
                     case "who":
                         {
-                            this._events.GetEvent<ErrorEvent>()
+                            this.events.GetEvent<ErrorEvent>()
                                 .Publish(
                                     "Server, server, across the sea,\nWho is connected, most to thee?\nWhy, "
-                                    + this._model.SelectedCharacter.Name + " is!");
+                                    + this.model.CurrentCharacter.Name + " is!");
                             return;
                         }
 
@@ -738,23 +724,23 @@ namespace Services
 
                     case "getdescription":
                         {
-                            if (this._model.SelectedChannel.ID.Equals("Home", StringComparison.OrdinalIgnoreCase))
+                            if (this.model.CurrentChannel.Id.Equals("Home", StringComparison.OrdinalIgnoreCase))
                             {
-                                this._events.GetEvent<ErrorEvent>()
+                                this.events.GetEvent<ErrorEvent>()
                                     .Publish("Poor home channel, with no description to speak of...");
                                 return;
                             }
 
-                            if (this._model.SelectedChannel is GeneralChannelModel)
+                            if (this.model.CurrentChannel is GeneralChannelModel)
                             {
                                 Clipboard.SetData(
-                                    DataFormats.Text, (this._model.SelectedChannel as GeneralChannelModel).MOTD);
-                                this._events.GetEvent<ErrorEvent>()
+                                    DataFormats.Text, (this.model.CurrentChannel as GeneralChannelModel).Description);
+                                this.events.GetEvent<ErrorEvent>()
                                     .Publish("Channel's description copied to clipboard.");
                             }
                             else
                             {
-                                this._events.GetEvent<ErrorEvent>().Publish("Hey! That's not a channel.");
+                                this.events.GetEvent<ErrorEvent>().Publish("Hey! That's not a channel.");
                             }
 
                             return;
@@ -767,26 +753,21 @@ namespace Services
                     case "interesting":
                         {
                             var args = command["character"] as string;
-                            bool isAdd = true;
+                            bool isAdd = !this.model.Interested.Contains(args);
 
-                            if (this._model.Interested.Contains(args))
-                            {
-                                isAdd = false;
-                            }
+                            this.model.ToggleInterestedMark(args);
 
-                            this._model.ToggleInterestedMark(args);
-
-                            this._events.GetEvent<NewUpdateEvent>()
+                            this.events.GetEvent<NewUpdateEvent>()
                                 .Publish(
                                     new CharacterUpdateModel(
-                                        this._model.FindCharacter(args), 
+                                        this.model.FindCharacter(args), 
                                         new CharacterUpdateModel.ListChangedEventArgs
                                             {
                                                 IsAdded = isAdd, 
                                                 ListArgument =
                                                     CharacterUpdateModel
                                                     .ListChangedEventArgs
-                                                    .ListType.interested
+                                                    .ListType.Interested
                                             }));
                             return;
                         }
@@ -797,24 +778,24 @@ namespace Services
 
                             bool isAdd = true;
 
-                            if (this._model.NotInterested.Contains(args))
+                            if (this.model.NotInterested.Contains(args))
                             {
                                 isAdd = false;
                             }
 
-                            this._model.ToggleNotInterestedMark(args);
+                            this.model.ToggleNotInterestedMark(args);
 
-                            this._events.GetEvent<NewUpdateEvent>()
+                            this.events.GetEvent<NewUpdateEvent>()
                                 .Publish(
                                     new CharacterUpdateModel(
-                                        this._model.FindCharacter(args), 
+                                        this.model.FindCharacter(args), 
                                         new CharacterUpdateModel.ListChangedEventArgs
                                             {
                                                 IsAdded = isAdd, 
                                                 ListArgument =
                                                     CharacterUpdateModel
                                                     .ListChangedEventArgs
-                                                    .ListType.notinterested
+                                                    .ListType.NotInterested
                                             }));
                             return;
                         }
@@ -847,24 +828,24 @@ namespace Services
                                 ChannelModel channel;
                                 if (channelText == command["name"] as string)
                                 {
-                                    channel = this._model.CurrentPMs.FirstByIdOrDefault(channelText);
+                                    channel = this.model.CurrentPMs.FirstByIdOrDefault(channelText);
                                 }
                                 else
                                 {
-                                    channel = this._model.CurrentChannels.FirstByIdOrDefault(channelText);
+                                    channel = this.model.CurrentChannels.FirstByIdOrDefault(channelText);
                                 }
 
                                 if (channel != null)
                                 {
                                     var report = new ReportModel
                                                      {
-                                                         Reporter = this._model.SelectedCharacter, 
+                                                         Reporter = this.model.CurrentCharacter, 
                                                          Reported = command["name"] as string, 
                                                          Complaint = command["report"] as string, 
                                                          Tab = channelText
                                                      };
 
-                                    logId = this._api.UploadLog(report, channel.Messages);
+                                    logId = this.api.UploadLog(report, channel.Messages);
                                 }
                             }
 
@@ -890,14 +871,14 @@ namespace Services
                             string character = (command["character"] as string).ToLower().Trim();
                             bool add = type == "tempignore";
 
-                            if (add && !this._model.Ignored.Contains(character, StringComparer.OrdinalIgnoreCase))
+                            if (add && !this.model.Ignored.Contains(character, StringComparer.OrdinalIgnoreCase))
                             {
-                                this._model.Ignored.Add(character);
+                                this.model.Ignored.Add(character);
                             }
 
-                            if (!add && this._model.Ignored.Contains(character, StringComparer.OrdinalIgnoreCase))
+                            if (!add && this.model.Ignored.Contains(character, StringComparer.OrdinalIgnoreCase))
                             {
-                                this._model.Ignored.Remove(character);
+                                this.model.Ignored.Remove(character);
                             }
 
                             return;
@@ -910,7 +891,7 @@ namespace Services
                     case "handlelatest":
                         {
                             command.Clear();
-                            CharacterUpdateModel latest = (from n in this._model.Notifications
+                            var latest = (from n in this.model.Notifications
                                                            where
                                                                n is CharacterUpdateModel
                                                                && (n as CharacterUpdateModel).Arguments is
@@ -928,7 +909,7 @@ namespace Services
                             command.Add("callid", args.CallId);
                             command.Add("action", "confirm");
 
-                            this.JoinChannel(ChannelType.pm, latest.TargetCharacter.Name);
+                            this.JoinChannel(ChannelType.PrivateMessage, latest.TargetCharacter.Name);
 
                             int logId = -1;
                             if (command.ContainsKey("logid"))
@@ -938,7 +919,7 @@ namespace Services
 
                             if (logId != -1)
                             {
-                                Process.Start(Constants.UrlConstants.READ_LOG + logId);
+                                Process.Start(Constants.UrlConstants.ReadLog + logId);
                             }
 
                             break;
@@ -948,11 +929,11 @@ namespace Services
                         {
                             if (command.ContainsKey("name"))
                             {
-                                ICharacter target = this._model.FindCharacter(command["name"] as string);
+                                var target = this.model.FindCharacter(command["name"] as string);
 
                                 if (!target.HasReport)
                                 {
-                                    this._events.GetEvent<ErrorEvent>()
+                                    this.events.GetEvent<ErrorEvent>()
                                         .Publish("Cannot find report for specified character!");
                                     return;
                                 }
@@ -964,9 +945,9 @@ namespace Services
                                     command["action"] = "confirm";
                                 }
 
-                                this.JoinChannel(ChannelType.pm, target.Name);
+                                this.JoinChannel(ChannelType.PrivateMessage, target.Name);
 
-                                int logId = -1;
+                                var logId = -1;
                                 if (command.ContainsKey("logid"))
                                 {
                                     int.TryParse(command["logid"] as string, out logId);
@@ -974,24 +955,18 @@ namespace Services
 
                                 if (logId != -1)
                                 {
-                                    Process.Start(Constants.UrlConstants.READ_LOG + logId);
+                                    Process.Start(Constants.UrlConstants.ReadLog + logId);
                                 }
 
                                 break;
                             }
-                            else
-                            {
-                                goto case "handlelatest";
-                            }
+                            goto case "handlelatest";
                         }
 
                         #endregion
-
-                    default:
-                        break;
                 }
 
-                this._connection.SendMessage(command);
+                this.connection.SendMessage(command);
             }
             catch (Exception ex)
             {
@@ -1006,31 +981,31 @@ namespace Services
         /// <param name="type">
         /// The type.
         /// </param>
-        /// <param name="ID">
+        /// <param name="id">
         /// The id.
         /// </param>
         /// <param name="name">
         /// The name.
         /// </param>
-        public void JoinChannel(ChannelType type, string ID, string name = "")
+        public void JoinChannel(ChannelType type, string id, string name = "")
         {
             this.InstanceLogger();
 
             IEnumerable<string> history = new List<string>();
-            if (!ID.Equals("Home"))
+            if (!id.Equals("Home"))
             {
-                history = this._logger.GetLogs(string.IsNullOrWhiteSpace(name) ? ID : name, ID).ToList();
+                history = this.logger.GetLogs(string.IsNullOrWhiteSpace(name) ? id : name, id).ToList();
             }
 
-            var toJoin = this._model.CurrentPMs.FirstByIdOrDefault(ID)
-                         ?? (ChannelModel)this._model.CurrentChannels.FirstByIdOrDefault(ID);
+            var toJoin = this.model.CurrentPMs.FirstByIdOrDefault(id)
+                         ?? (ChannelModel)this.model.CurrentChannels.FirstByIdOrDefault(id);
 
             if (toJoin == null)
             {
-                this.AddChannel(type, ID, name);
+                this.AddChannel(type, id, name);
 
-                toJoin = this._model.CurrentPMs.FirstByIdOrDefault(ID)
-                         ?? (ChannelModel)this._model.CurrentChannels.FirstByIdOrDefault(ID);
+                toJoin = this.model.CurrentPMs.FirstByIdOrDefault(id)
+                         ?? (ChannelModel)this.model.CurrentChannels.FirstByIdOrDefault(id);
             }
 
             if (history.Any())
@@ -1046,7 +1021,7 @@ namespace Services
                         });
             }
 
-            this.RequestNavigate(ID);
+            this.RequestNavigate(id);
         }
 
         /// <summary>
@@ -1061,31 +1036,31 @@ namespace Services
         {
             this.RequestNavigate("Home");
 
-            if (this._model.CurrentChannels.Any(param => param.ID == name))
+            if (this.model.CurrentChannels.Any(param => param.Id == name))
             {
-                GeneralChannelModel temp = this._model.CurrentChannels.First(param => param.ID == name);
+                var temp = this.model.CurrentChannels.First(param => param.Id == name);
 
-                var vm = this._container.Resolve<GeneralChannelViewModel>(new ParameterOverride("name", temp.ID));
+                var vm = this.container.Resolve<GeneralChannelViewModel>(new ParameterOverride("name", temp.Id));
                 vm.Dispose();
 
                 this.Dispatcher.Invoke(
                     (Action)delegate
                         {
-                            this._model.CurrentChannels.Remove(temp);
+                            this.model.CurrentChannels.Remove(temp);
                             temp.Dispose();
                         });
 
                 object toSend = new { channel = name };
-                this._connection.SendMessage(toSend, "LCH");
+                this.connection.SendMessage(toSend, "LCH");
             }
-            else if (this._model.CurrentPMs.Any(param => param.ID == name))
+            else if (this.model.CurrentPMs.Any(param => param.Id == name))
             {
-                PMChannelModel temp = this._model.CurrentPMs.First(param => param.ID == name);
+                var temp = this.model.CurrentPMs.First(param => param.Id == name);
 
-                var vm = this._container.Resolve<PMChannelViewModel>(new ParameterOverride("name", temp.ID));
+                var vm = this.container.Resolve<PMChannelViewModel>(new ParameterOverride("name", temp.Id));
                 vm.Dispose();
 
-                this._model.CurrentPMs.Remove(temp);
+                this.model.CurrentPMs.Remove(temp);
                 temp.Dispose();
             }
             else
@@ -1097,16 +1072,16 @@ namespace Services
         /// <summary>
         /// The request navigate.
         /// </summary>
-        /// <param name="ChannelID">
+        /// <param name="channelId">
         /// The channel id.
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// </exception>
-        public void RequestNavigate(string ChannelID)
+        private void RequestNavigate(string channelId)
         {
-            if (this._lastSelected != null)
+            if (this.lastSelected != null)
             {
-                if (this._lastSelected.ID.Equals(ChannelID, StringComparison.OrdinalIgnoreCase))
+                if (this.lastSelected.Id.Equals(channelId, StringComparison.OrdinalIgnoreCase))
                 {
                     return;
                 }
@@ -1114,69 +1089,52 @@ namespace Services
                 this.Dispatcher.Invoke(
                     (Action)delegate
                         {
-                            if (this._model.CurrentChannels.Any(param => param.ID == this._lastSelected.ID))
+                            var toUpdate = this.model.CurrentChannels.FirstByIdOrDefault(this.lastSelected.Id)
+                                           ?? (ChannelModel)this.model.CurrentPMs.FirstByIdOrDefault(this.lastSelected.Id);
+
+                            if (toUpdate == null)
                             {
-                                GeneralChannelModel temp =
-                                    this._model.CurrentChannels.First(param => param.ID == this._lastSelected.ID);
-                                temp.IsSelected = false;
+                                throw new ArgumentOutOfRangeException("channelId", "Cannot update unknown channel");
                             }
-                            else if (this._model.CurrentPMs.Any(param => param.ID == this._lastSelected.ID))
-                            {
-                                PMChannelModel temp =
-                                    this._model.CurrentPMs.First(param => param.ID == this._lastSelected.ID);
-                                temp.IsSelected = false;
-                            }
-                            else
-                            {
-                                throw new ArgumentOutOfRangeException("ChannelID", "Cannot update unknown channel");
-                            }
+
+                            toUpdate.IsSelected = false;
                         });
             }
 
-            ChannelModel ChannelModel;
+            var channelModel = this.model.CurrentChannels.FirstByIdOrDefault(channelId)
+                               ?? (ChannelModel)this.model.CurrentPMs.FirstByIdOrDefault(channelId);
 
-            // get the reference to our channel model
-            if (this._model.CurrentChannels.Any(param => param.ID == ChannelID))
+            if (channelModel == null)
             {
-                ChannelModel = this._model.CurrentChannels.First(param => param.ID == ChannelID);
-            }
-            else if (this._model.CurrentPMs.Any(param => param.ID == ChannelID))
-            {
-                ChannelModel = this._model.CurrentPMs.First(param => param.ID == ChannelID);
-                ChannelModel = ChannelModel as PMChannelModel;
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException("ChannelID", "Cannot navigate to unknown channel");
+                throw new ArgumentOutOfRangeException("channelId", "Cannot navigate to unknown channel");
             }
 
-            ChannelModel.IsSelected = true;
-            this._model.SelectedChannel = ChannelModel;
+            channelModel.IsSelected = true;
+            this.model.CurrentChannel = channelModel;
 
             this.Dispatcher.Invoke(
                 (Action)delegate
                     {
-                        foreach (object region in this._region.Regions[ChatWrapperView.ConversationRegion].Views)
+                        foreach (var r in this.region.Regions[ChatWrapperView.ConversationRegion].Views)
                         {
-                            DisposableView toDispose;
-
-                            if (region is DisposableView)
+                            var view = r as DisposableView;
+                            if (view != null)
                             {
-                                toDispose = (DisposableView)region;
+                                var toDispose = view;
                                 toDispose.Dispose();
-                                this._region.Regions[ChatWrapperView.ConversationRegion].Remove(toDispose);
+                                this.region.Regions[ChatWrapperView.ConversationRegion].Remove(toDispose);
                             }
                             else
                             {
-                                this._region.Regions[ChatWrapperView.ConversationRegion].Remove(region);
+                                this.region.Regions[ChatWrapperView.ConversationRegion].Remove(r);
                             }
                         }
 
-                        this._region.Regions[ChatWrapperView.ConversationRegion].RequestNavigate(
-                            HelperConverter.EscapeSpaces(ChannelModel.ID));
+                        this.region.Regions[ChatWrapperView.ConversationRegion].RequestNavigate(
+                            HelperConverter.EscapeSpaces(channelModel.Id));
                     });
 
-            this._lastSelected = ChannelModel;
+            this.lastSelected = channelModel;
         }
 
         #endregion
@@ -1185,83 +1143,20 @@ namespace Services
 
         private void BuildHomeChannel(bool? payload)
         {
-            this._events.GetEvent<ChatOnDisplayEvent>().Unsubscribe(this.BuildHomeChannel);
+            this.events.GetEvent<ChatOnDisplayEvent>().Unsubscribe(this.BuildHomeChannel);
 
             // we shouldn't need to know about this anymore
-            this.JoinChannel(ChannelType.utility, "Home");
+            this.JoinChannel(ChannelType.Utility, "Home");
         }
 
         // ensure that our logger has a proper instance
         private void InstanceLogger()
         {
-            if (this._logger == null)
+            if (this.logger == null)
             {
-                this._logger = new LoggingDaemon(this._model.SelectedCharacter.Name);
+                this.logger = new LoggingDaemon(this.model.CurrentCharacter.Name);
             }
         }
-
-        #endregion
-    }
-
-    /// <summary>
-    ///     The ChannelManager interface.
-    /// </summary>
-    public interface IChannelManager
-    {
-        #region Public Methods and Operators
-
-        /// <summary>
-        /// Used to join a channel but not switch to it automatically
-        /// </summary>
-        /// <param name="type">
-        /// The type.
-        /// </param>
-        /// <param name="ID">
-        /// The ID.
-        /// </param>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        void AddChannel(ChannelType type, string ID, string name = "");
-
-        /// <summary>
-        /// Used to add a message to a given channel
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="channelName">
-        /// The channel Name.
-        /// </param>
-        /// <param name="poster">
-        /// The poster.
-        /// </param>
-        /// <param name="messageType">
-        /// The message Type.
-        /// </param>
-        void AddMessage(string message, string channelName, string poster, MessageType messageType = MessageType.normal);
-
-        /// <summary>
-        /// Used to join or switch to a channel
-        /// </summary>
-        /// <param name="type">
-        /// The type.
-        /// </param>
-        /// <param name="ID">
-        /// The ID.
-        /// </param>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        void JoinChannel(ChannelType type, string ID, string name = "");
-
-        /// <summary>
-        /// Used to leave a channel
-        /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        void RemoveChannel(string name);
 
         #endregion
     }

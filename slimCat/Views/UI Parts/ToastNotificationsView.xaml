@@ -1,8 +1,8 @@
-﻿<Window x:Class="Views.NotificationsView"
+﻿<Window x:Class="Slimcat.Views.NotificationsView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:lib="clr-namespace:lib"
-        xmlns:v="clr-namespace:Views"
+        xmlns:lib="clr-namespace:Slimcat.Libraries"
+        xmlns:v="clr-namespace:Slimcat.Views"
 
         Title="slimCat Client Notifications"
         WindowStyle="None"

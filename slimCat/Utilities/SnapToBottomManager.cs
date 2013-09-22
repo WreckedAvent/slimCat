@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace System
+namespace Slimcat.Utilities
 {
     using System.Windows;
     using System.Windows.Controls;
@@ -40,9 +40,9 @@ namespace System
     {
         #region Fields
 
-        private readonly DependencyObject _messages;
+        private readonly DependencyObject messages;
 
-        private ScrollViewer _toManage;
+        private ScrollViewer toManage;
 
         #endregion
 
@@ -56,8 +56,8 @@ namespace System
         /// </param>
         public SnapToBottomManager(DependencyObject messages)
         {
-            this._messages = messages;
-            this._toManage = messages as ScrollViewer;
+            this.messages = messages;
+            this.toManage = messages as ScrollViewer;
         }
 
         #endregion
@@ -75,21 +75,23 @@ namespace System
         /// </param>
         public void AutoDownScroll(bool keepAtCurrent, bool forceDown = false)
         {
-            if (this._toManage == null)
+            if (this.toManage == null)
             {
-                this._toManage = this._messages as ScrollViewer;
+                this.toManage = this.messages as ScrollViewer;
             }
 
-            if (this._toManage != null)
+            if (this.toManage == null)
             {
-                if (forceDown)
-                {
-                    this._toManage.ScrollToBottom();
-                }
-                else if (this.ShouldAutoScroll())
-                {
-                    this._toManage.ScrollToBottom();
-                }
+                return;
+            }
+
+            if (forceDown)
+            {
+                this.toManage.ScrollToBottom();
+            }
+            else if (this.ShouldAutoScroll())
+            {
+                this.toManage.ScrollToBottom();
             }
         }
 
@@ -121,7 +123,7 @@ namespace System
 
         private bool ShouldAutoScroll()
         {
-            return this._toManage.ScrollableHeight - this._toManage.VerticalOffset <= 25;
+            return this.toManage.ScrollableHeight - this.toManage.VerticalOffset <= 25;
         }
 
         #endregion

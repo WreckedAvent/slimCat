@@ -27,20 +27,18 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Windows.Input;
 
-    using lib;
-
     using Microsoft.Practices.Prism.Events;
 
-    using Models;
-
-    using slimCat;
+    using Slimcat;
+    using Slimcat.Libraries;
+    using Slimcat.Models;
 
     /// <summary>
     ///     The channel management view model.
@@ -52,19 +50,19 @@ namespace ViewModels
         /// <summary>
         ///     The mode types.
         /// </summary>
-        public string[] modeTypes;
+        private readonly string[] modeTypes;
 
-        private IEventAggregator _events;
+        private IEventAggregator events;
 
-        private bool _isOpen;
+        private bool isOpen;
 
-        private GeneralChannelModel _model;
+        private GeneralChannelModel model;
 
-        private string _motd = string.Empty;
+        private string description = string.Empty;
 
-        private RelayCommand _open;
+        private RelayCommand open;
 
-        private RelayCommand _toggleType;
+        private RelayCommand toggleType;
 
         #endregion
 
@@ -81,12 +79,12 @@ namespace ViewModels
         /// </param>
         public ChannelManagementViewModel(IEventAggregator eventagg, GeneralChannelModel model)
         {
-            this._model = model;
-            this._motd = this._model.MOTD;
-            this._events = eventagg;
-            this._model.PropertyChanged += this.UpdateDescription;
+            this.model = model;
+            this.description = this.model.Description;
+            this.events = eventagg;
+            this.model.PropertyChanged += this.UpdateDescription;
 
-            this.modeTypes = new[] { "ads", "chat", "both" };
+            this.modeTypes = new[] { "Ads", "chat", "both" };
         }
 
         #endregion
@@ -100,15 +98,15 @@ namespace ViewModels
         {
             get
             {
-                return this._isOpen;
+                return this.isOpen;
             }
 
             set
             {
-                this._isOpen = value;
+                this.isOpen = value;
                 this.OnPropertyChanged("IsManaging");
 
-                if (!value && this.MOTD != this._model.MOTD)
+                if (!value && this.Description != this.model.Description)
                 {
                     this.UpdateDescription();
                 }
@@ -118,17 +116,17 @@ namespace ViewModels
         /// <summary>
         ///     Gets or sets the motd.
         /// </summary>
-        public string MOTD
+        public string Description
         {
             get
             {
-                return this._motd;
+                return this.description;
             }
 
             set
             {
-                this._motd = value;
-                this.OnPropertyChanged("MOTD");
+                this.description = value;
+                this.OnPropertyChanged("Description");
             }
         }
 
@@ -150,12 +148,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._open == null)
-                {
-                    this._open = new RelayCommand(args => this.IsManaging = !this.IsManaging);
-                }
-
-                return this._open;
+                return this.open ?? (this.open = new RelayCommand(args => this.IsManaging = !this.IsManaging));
             }
         }
 
@@ -166,17 +159,12 @@ namespace ViewModels
         {
             get
             {
-                if (this._model.Mode == ChannelMode.ads)
+                if (this.model.Mode == ChannelMode.Ads)
                 {
-                    return "allows only ads.";
+                    return "allows only Ads.";
                 }
 
-                if (this._model.Mode == ChannelMode.chat)
-                {
-                    return "allows only chatting.";
-                }
-
-                return "allows ads and chatting.";
+                return this.model.Mode == ChannelMode.Chat ? "allows only chatting." : "allows Ads and chatting.";
             }
         }
 
@@ -187,14 +175,14 @@ namespace ViewModels
         {
             get
             {
-                return this._model.Mode;
+                return this.model.Mode;
             }
 
             set
             {
-                if (this._model.Mode != value)
+                if (this.model.Mode != value)
                 {
-                    this._model.Mode = value;
+                    this.model.Mode = value;
                     this.OnRoomModeChanged(null);
                 }
             }
@@ -207,19 +195,12 @@ namespace ViewModels
         {
             get
             {
-                if (this._model.Type == ChannelType.closed)
+                if (this.model.Type == ChannelType.InviteOnly)
                 {
                     return "Closed Private Channel";
                 }
 
-                if (this._model.Type == ChannelType.priv)
-                {
-                    return "Open Private Channel";
-                }
-                else
-                {
-                    return "Public Channel";
-                }
+                return this.model.Type == ChannelType.Private ? "Open Private Channel" : "Public Channel";
             }
         }
 
@@ -230,21 +211,13 @@ namespace ViewModels
         {
             get
             {
-                if (this._model.Type == ChannelType.closed)
+                if (this.model.Type == ChannelType.InviteOnly)
                 {
                     return
                         "The room is currently closed and requires an invite to join. Click to declare the room open, which will allow anyone to join it.";
                 }
 
-                if (this._model.Type == ChannelType.priv)
-                {
-                    return
-                        "The room is currently open and does not require an invite to join. Click to declare the room closed, which will only allow those with an invite to join it.";
-                }
-                else
-                {
-                    return "The room is currently a public room and cannot be closed.";
-                }
+                return this.model.Type == ChannelType.Private ? "The room is currently open and does not require an invite to join. Click to declare the room closed, which will only allow those with an invite to join it." : "The room is currently a public room and cannot be closed.";
             }
         }
 
@@ -255,12 +228,8 @@ namespace ViewModels
         {
             get
             {
-                if (this._toggleType == null)
-                {
-                    this._toggleType = new RelayCommand(this.OnToggleRoomType, this.CanToggleRoomType);
-                }
-
-                return this._toggleType;
+                return this.toggleType
+                       ?? (this.toggleType = new RelayCommand(this.OnToggleRoomType, this.CanToggleRoomType));
             }
         }
 
@@ -271,19 +240,12 @@ namespace ViewModels
         {
             get
             {
-                if (this._model.Type == ChannelType.closed)
+                if (this.model.Type == ChannelType.InviteOnly)
                 {
                     return "Open this channel";
                 }
 
-                if (this._model.Type == ChannelType.priv)
-                {
-                    return "Close this channel";
-                }
-                else
-                {
-                    return "Cannot close channel";
-                }
+                return this.model.Type == ChannelType.Private ? "Close this channel" : "Cannot close channel";
             }
         }
 
@@ -299,12 +261,14 @@ namespace ViewModels
         /// </param>
         public void Dispose(bool IsManaged)
         {
-            if (IsManaged)
+            if (!IsManaged)
             {
-                this._model.PropertyChanged -= this.UpdateDescription;
-                this._events = null;
-                this._model = null;
+                return;
             }
+
+            this.model.PropertyChanged -= this.UpdateDescription;
+            this.events = null;
+            this.model = null;
         }
 
         #endregion
@@ -322,30 +286,24 @@ namespace ViewModels
 
         private bool CanToggleRoomType(object args)
         {
-            return this._model.Type != ChannelType.pub;
+            return this.model.Type != ChannelType.Public;
         }
 
         private void OnRoomModeChanged(object args)
         {
-            this._events.GetEvent<UserCommandEvent>()
+            this.events.GetEvent<UserCommandEvent>()
                 .Publish(
-                    CommandDefinitions.CreateCommand("setmode", new[] { this._model.Mode.ToString() }, this._model.ID)
-                                      .toDictionary());
+                    CommandDefinitions.CreateCommand("setmode", new[] { this.model.Mode.ToString() }, this.model.Id)
+                                      .ToDictionary());
         }
 
         private void OnToggleRoomType(object args)
         {
-            if (this._model.Type == ChannelType.closed)
-            {
-                this._events.GetEvent<UserCommandEvent>()
-                    .Publish(
-                        CommandDefinitions.CreateCommand("openroom", new List<string>(), this._model.ID).toDictionary());
-            }
-            else
-            {
-                this._events.GetEvent<UserCommandEvent>()
-                    .Publish(CommandDefinitions.CreateCommand("closeroom", null, this._model.ID).toDictionary());
-            }
+            this.events.GetEvent<UserCommandEvent>()
+                .Publish(
+                    this.model.Type == ChannelType.InviteOnly
+                        ? CommandDefinitions.CreateCommand("openroom", new List<string>(), this.model.Id).ToDictionary()
+                        : CommandDefinitions.CreateCommand("closeroom", null, this.model.Id).ToDictionary());
         }
 
         private void UpdateDescription(object sender = null, PropertyChangedEventArgs e = null)
@@ -355,7 +313,7 @@ namespace ViewModels
                 // if its our property changed sending this
                 if (e.PropertyName == "MOTD")
                 {
-                    this._motd = this._model.MOTD;
+                    this.description = this.model.Description;
                     this.OnPropertyChanged("MOTD");
                 }
                 else if (e.PropertyName == "Type")
@@ -372,10 +330,10 @@ namespace ViewModels
             else
             {
                 // if its us updating it
-                this._events.GetEvent<UserCommandEvent>()
+                this.events.GetEvent<UserCommandEvent>()
                     .Publish(
-                        CommandDefinitions.CreateCommand("setdescription", new[] { this._motd }, this._model.ID)
-                                          .toDictionary());
+                        CommandDefinitions.CreateCommand("setdescription", new[] { this.description }, this.model.Id)
+                                          .ToDictionary());
             }
         }
 

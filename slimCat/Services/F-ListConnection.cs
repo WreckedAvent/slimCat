@@ -28,7 +28,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Services
+namespace Slimcat.Services
 {
     using System;
     using System.Collections.Generic;
@@ -41,11 +41,11 @@ namespace Services
 
     using Microsoft.Practices.Prism.Events;
 
-    using Models;
-
     using SimpleJson;
 
-    using slimCat;
+    using Slimcat;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
 
     /// <summary>
     ///     F-list connection is used to authenticate the user's details and then get the API ticket.
@@ -55,13 +55,13 @@ namespace Services
     {
         #region Fields
 
-        private readonly IEventAggregator _event;
+        private readonly IEventAggregator events;
 
-        private readonly CookieContainer _loginCookies = new CookieContainer();
+        private readonly CookieContainer loginCookies = new CookieContainer();
 
-        private readonly IAccount _model;
+        private readonly IAccount model;
 
-        private string _selectedCharacter;
+        private string selectedCharacter;
 
         #endregion
 
@@ -80,12 +80,12 @@ namespace Services
         {
             try
             {
-                this._model = model.ThrowIfNull("model");
-                this._event = eventagg.ThrowIfNull("eventagg");
+                this.model = model.ThrowIfNull("model");
+                this.events = eventagg.ThrowIfNull("eventagg");
 
-                this._event.GetEvent<LoginEvent>().Subscribe(this.getTicket, ThreadOption.BackgroundThread);
-                this._event.GetEvent<UserCommandEvent>().Subscribe(this.handleCommand, ThreadOption.BackgroundThread);
-                this._event.GetEvent<CharacterSelectedLoginEvent>().Subscribe(args => this._selectedCharacter = args);
+                this.events.GetEvent<LoginEvent>().Subscribe(this.GetTicket, ThreadOption.BackgroundThread);
+                this.events.GetEvent<UserCommandEvent>().Subscribe(this.HandleCommand, ThreadOption.BackgroundThread);
+                this.events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(args => this.selectedCharacter = args);
             }
             catch (Exception ex)
             {
@@ -113,22 +113,22 @@ namespace Services
         {
             try
             {
-                int logId = -1;
+                var logId = -1;
 
                 // log upload format doesn't allow much HTML or anything other than line breaks.
                 var sb =
                     new StringBuilder(
                         string.Format(
                             "{0} log upload <br/> All times in 24hr {1} <br/><br/>", 
-                            Constants.FRIENDLY_NAME, 
+                            Constants.FriendlyName, 
                             TimeZone.CurrentTimeZone.StandardName));
 
-                IEnumerable<string> messages =
+                var messages =
                     log.Select(
                         m => string.Format("{0} {1}: {2} <br/>", m.PostedTime.ToTimeStamp(), m.Poster.Name, m.Message));
 
-                int i = 0;
-                foreach (string m in messages)
+                var i = 0;
+                foreach (var m in messages)
                 {
                     sb.Append(m);
                     if (i >= 24)
@@ -149,9 +149,8 @@ namespace Services
                                        { "channel", report.Tab }
                                    };
 
-                string buffer = this.getResponse(Constants.UrlConstants.UPLOAD_LOG, toUpload, true);
+                var buffer = this.GetResponse(Constants.UrlConstants.UploadLog, toUpload, true);
                 dynamic result = SimpleJson.DeserializeObject(buffer);
-                buffer = null;
 
                 if (result.log_id != null)
                 {
@@ -161,7 +160,7 @@ namespace Services
 
                 return logId;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // when dealing with the web it's always possible something could mess up
                 return -1;
@@ -174,64 +173,62 @@ namespace Services
         /// <param name="sendUpdate">
         /// The send update.
         /// </param>
-        public void getTicket(bool sendUpdate)
+        public void GetTicket(bool sendUpdate)
         {
             try
             {
-                this._model.Error = string.Empty;
+                this.model.Error = string.Empty;
                 var loginCredentials = new Dictionary<string, object>
                                            {
-                                               { "account", this._model.AccountName.ToLower() }, 
-                                               { "password", this._model.Password }, 
+                                               { "account", this.model.AccountName.ToLower() }, 
+                                               { "password", this.model.Password }, 
                                            };
 
-                string buffer = this.getResponse(Constants.UrlConstants.GET_TICKET, loginCredentials);
+                var buffer = this.GetResponse(Constants.UrlConstants.GetTicket, loginCredentials);
 
                 // assign the data to our account model
                 dynamic result = SimpleJson.DeserializeObject(buffer);
-                buffer = null;
 
-                bool hasError = !string.IsNullOrWhiteSpace((string)result.error);
+                var hasError = !string.IsNullOrWhiteSpace((string)result.error);
 
-                this._model.Ticket = (string)result.ticket;
+                this.model.Ticket = (string)result.ticket;
 
                 if (hasError)
                 {
-                    this._model.Error = (string)result.error;
+                    this.model.Error = (string)result.error;
 
-                    this._event.GetEvent<LoginCompleteEvent>().Publish(!hasError);
+                    this.events.GetEvent<LoginCompleteEvent>().Publish(false);
                     return;
                 }
 
-                foreach (dynamic item in result.characters)
+                foreach (var item in result.characters)
                 {
-                    this._model.Characters.Add((string)item);
+                    this.model.Characters.Add((string)item);
                 }
 
-                foreach (dynamic item in result.friends)
+                foreach (var item in result.friends)
                 {
-                    if (this._model.AllFriends.ContainsKey(item["source_name"]))
+                    if (this.model.AllFriends.ContainsKey(item["source_name"]))
                     {
-                        this._model.AllFriends[item["source_name"]].Add((string)item["dest_name"]);
+                        this.model.AllFriends[item["source_name"]].Add((string)item["dest_name"]);
                     }
                     else
                     {
-                        var list = new List<string>();
-                        list.Add((string)item["dest_name"]);
+                        var list = new List<string> { (string)item["dest_name"] };
 
-                        this._model.AllFriends.Add(item["source_name"], list);
+                        this.model.AllFriends.Add(item["source_name"], list);
                     }
                 }
 
-                foreach (dynamic item in result.bookmarks)
+                foreach (var item in result.bookmarks)
                 {
-                    if (!this._model.Bookmarks.Contains(item["name"] as string))
+                    if (!this.model.Bookmarks.Contains(item["name"] as string))
                     {
-                        this._model.Bookmarks.Add(item["name"] as string);
+                        this.model.Bookmarks.Add(item["name"] as string);
                     }
                 }
 
-                this._event.GetEvent<LoginCompleteEvent>().Publish(!hasError);
+                this.events.GetEvent<LoginCompleteEvent>().Publish(true);
 
                 // login to F-list for our cookies, so that we can post logs
                 if (!hasError)
@@ -240,18 +237,18 @@ namespace Services
                                            {
                                                {
                                                    "username", 
-                                                   this._model.AccountName.ToLower()
+                                                   this.model.AccountName.ToLower()
                                                }, 
-                                               { "password", this._model.Password }, 
+                                               { "password", this.model.Password }, 
                                            };
 
-                    this.getResponse(Constants.UrlConstants.LOGIN, loginCredentials, true);
+                    this.GetResponse(Constants.UrlConstants.Login, loginCredentials, true);
                 }
             }
             catch (Exception ex)
             {
-                this._model.Error = "Can't connect to F-List! \nError: " + ex.Message;
-                this._event.GetEvent<LoginCompleteEvent>().Publish(false);
+                this.model.Error = "Can't connect to F-List! \nError: " + ex.Message;
+                this.events.GetEvent<LoginCompleteEvent>().Publish(false);
             }
         }
 
@@ -259,43 +256,36 @@ namespace Services
 
         #region Methods
 
-        private void doAPIAction(string apiName, IDictionary<string, object> command)
+        private void DoApiAction(string apiName, IDictionary<string, object> command)
         {
-            string host = Constants.UrlConstants.API + apiName + ".php";
+            var host = Constants.UrlConstants.Api + apiName + ".php";
 
-            command.Add("account", this._model.AccountName.ToLower());
-            command.Add("ticket", this._model.Ticket);
+            command.Add("account", this.model.AccountName.ToLower());
+            command.Add("ticket", this.model.Ticket);
 
-            string buffer = this.getResponse(host, command);
+            var buffer = this.GetResponse(host, command);
 
             dynamic result = SimpleJson.DeserializeObject(buffer);
-            buffer = null;
 
-            bool hasError = !string.IsNullOrWhiteSpace((string)result.error);
+            var hasError = !string.IsNullOrWhiteSpace((string)result.error);
 
             if (hasError)
             {
-                this._event.GetEvent<ErrorEvent>().Publish((string)result.error);
+                this.events.GetEvent<ErrorEvent>().Publish((string)result.error);
             }
         }
 
         [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-        private string getResponse(string host, IDictionary<string, object> arguments, bool useCookies = false)
+        private string GetResponse(string host, IEnumerable<KeyValuePair<string, object>> arguments, bool useCookies = false)
         {
-            const string CONTENT_TYPE = "application/x-www-form-urlencoded";
-            const string REQUEST_TYPE = "POST";
+            const string ContentType = "application/x-www-form-urlencoded";
+            const string RequestType = "POST";
 
-            byte[] toPost;
-            bool isFirst = true;
+            var isFirst = true;
 
             var totalRequest = new StringBuilder();
-            foreach (var arg in arguments)
+            foreach (var arg in arguments.Where(arg => arg.Key != "type"))
             {
-                if (arg.Key == "type")
-                {
-                    continue;
-                }
-
                 if (!isFirst)
                 {
                     totalRequest.Append('&');
@@ -310,28 +300,37 @@ namespace Services
                 totalRequest.Append(HttpUtility.UrlEncode((string)arg.Value));
             }
 
-            toPost = Encoding.ASCII.GetBytes(totalRequest.ToString()); // translate our request string into a byte array
+            var toPost = Encoding.ASCII.GetBytes(totalRequest.ToString());
 
             var req = (HttpWebRequest)WebRequest.Create(host);
-            req.Method = REQUEST_TYPE;
-            req.ContentType = CONTENT_TYPE;
+            req.Method = RequestType;
+            req.ContentType = ContentType;
             req.ContentLength = toPost.Length;
             if (useCookies)
             {
-                req.CookieContainer = this._loginCookies;
+                req.CookieContainer = this.loginCookies;
             }
 
-            using (Stream postStream = req.GetRequestStream()) postStream.Write(toPost, 0, toPost.Length); // send the request
+            using (var postStream = req.GetRequestStream())
+            {
+                postStream.Write(toPost, 0, toPost.Length);
+            }
 
-            using (var rep = (HttpWebResponse)req.GetResponse()) // get our request
-            using (Stream answerStream = rep.GetResponseStream()) // turn it into a stream
-            using (var answerReader = new StreamReader(answerStream)) // put the stream into a reader
-                return answerReader.ReadToEnd(); // read our response
+            using (var rep = (HttpWebResponse)req.GetResponse())
+            {
+                using (var answerStream = rep.GetResponseStream()) 
+                {
+                    using (var answerReader = new StreamReader(answerStream))
+                    {
+                        return answerReader.ReadToEnd(); // read our response
+                    }
+                }
+            }
         }
 
-        private void handleCommand(IDictionary<string, object> command)
+        private void HandleCommand(IDictionary<string, object> command)
         {
-            if (this._model == null || this._model.Ticket == null)
+            if (this.model == null || this.model.Ticket == null)
             {
                 return;
             }
@@ -348,15 +347,15 @@ namespace Services
                 case "bookmark-add":
                 case "bookmark-remove":
                     {
-                        this.doAPIAction(commandType, command);
+                        this.DoApiAction(commandType, command);
                         break;
                     }
 
                 case "request-send":
                 case "friend-remove":
                     {
-                        command.Add("source_name", this._selectedCharacter);
-                        this.doAPIAction(commandType, command);
+                        command.Add("source_name", this.selectedCharacter);
+                        this.DoApiAction(commandType, command);
                         break;
                     }
 
@@ -364,38 +363,6 @@ namespace Services
                     return;
             }
         }
-
-        #endregion
-    }
-
-    /// <summary>
-    ///     Used for connectivity to F-list
-    /// </summary>
-    public interface IListConnection
-    {
-        #region Public Methods and Operators
-
-        /// <summary>
-        /// Uploads a lot to F-list.net f.e reporting a user
-        /// </summary>
-        /// <param name="report">
-        /// relevant data about the report
-        /// </param>
-        /// <param name="log">
-        /// the log to upload
-        /// </param>
-        /// <returns>
-        /// an int corresonding to the logid the server assigned
-        /// </returns>
-        int UploadLog(ReportModel report, IEnumerable<IMessage> log);
-
-        /// <summary>
-        /// Gets an F-list API ticket
-        /// </summary>
-        /// <param name="sendUpdate">
-        /// The send Update.
-        /// </param>
-        void getTicket(bool sendUpdate);
 
         #endregion
     }

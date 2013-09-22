@@ -1,8 +1,7 @@
-﻿<UserControl x:Class="Views.PMSelectView"
+﻿<UserControl x:Class="Slimcat.Views.PMSelectView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:c="clr-namespace:System"
-             xmlns:v="clr-namespace:Views"
+             xmlns:v="clr-namespace:Slimcat.Views"
 
              BorderThickness="0,0,1,1"
              BorderBrush="{StaticResource DepressedBrush}"
@@ -18,7 +17,7 @@
                 BorderBrush="{StaticResource BrightBackgroundBrush}"
                 BorderThickness="1">
             <Grid>
-                <Image Source="{Binding Path=PMCharacter.Avatar}" />
+                <Image Source="{Binding Path=TargetCharacter.Avatar}" />
 
                 <TextBlock Text="{Binding Path=TypingString, Mode=OneWay}"
                            VerticalAlignment="Bottom"
@@ -61,7 +60,7 @@
                                Visibility="{Binding Path=CanClose, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                                Command="{Binding DataContext.CloseCommand,
                                RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                               CommandParameter="{Binding Path=ID}">
+                               CommandParameter="{Binding Path=Id}">
                 <v:CloseButtonView.Style>
                     <Style TargetType="{x:Type v:CloseButtonView}" BasedOn="{StaticResource ImageContentButton}">
                         <Style.Triggers>
@@ -76,7 +75,7 @@
                 </v:CloseButtonView.Style>
             </v:CloseButtonView>
 
-            <TextBlock Text="{Binding Path=ID, Mode=OneTime}"
+            <TextBlock Text="{Binding Path=Id, Mode=OneTime}"
                        MaxWidth="135"
                        TextAlignment="Left"
                        TextWrapping="Wrap"

@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace lib
+namespace Slimcat.Libraries
 {
     using System.Diagnostics.CodeAnalysis;
     using System.Windows;

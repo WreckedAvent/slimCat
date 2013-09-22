@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace lib
+namespace Slimcat.Libraries
 {
     using System.Windows;
     using System.Windows.Controls;

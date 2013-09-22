@@ -27,19 +27,17 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.Generic;
     using System.Windows.Input;
 
-    using lib;
-
     using Microsoft.Practices.Prism.Events;
 
-    using Models;
-
-    using slimCat;
+    using Slimcat;
+    using Slimcat.Libraries;
+    using Slimcat.Models;
 
     /// <summary>
     ///     The create report view model.
@@ -48,21 +46,21 @@ namespace ViewModels
     {
         #region Fields
 
-        private RelayCommand _cancel;
+        private RelayCommand cancel;
 
-        private IChatModel _cm;
+        private IChatModel cm;
 
-        private string _complaint;
+        private string complaint;
 
-        private IEventAggregator _events;
+        private IEventAggregator events;
 
-        private bool _isOpen;
+        private bool isOpen;
 
-        private RelayCommand _send;
+        private RelayCommand send;
 
-        private bool _shouldUploadLogs;
+        private bool shouldUploadLogs;
 
-        private string _target;
+        private string target;
 
         #endregion
 
@@ -79,8 +77,8 @@ namespace ViewModels
         /// </param>
         public CreateReportViewModel(IEventAggregator eventagg, IChatModel cm)
         {
-            this._events = eventagg;
-            this._cm = cm;
+            this.events = eventagg;
+            this.cm = cm;
         }
 
         #endregion
@@ -94,12 +92,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._cancel == null)
-                {
-                    this._cancel = new RelayCommand(param => this.IsOpen = !this._isOpen);
-                }
-
-                return this._cancel;
+                return this.cancel ?? (this.cancel = new RelayCommand(param => this.IsOpen = !this.isOpen));
             }
         }
 
@@ -110,12 +103,12 @@ namespace ViewModels
         {
             get
             {
-                return this._complaint;
+                return this.complaint;
             }
 
             set
             {
-                this._complaint = value;
+                this.complaint = value;
                 this.OnPropertyChanged("Complaint");
             }
         }
@@ -127,7 +120,7 @@ namespace ViewModels
         {
             get
             {
-                return this._cm.SelectedChannel.ID == "Home" ? "None" : this._cm.SelectedChannel.ID;
+                return this.cm.CurrentChannel.Id == "Home" ? "None" : this.cm.CurrentChannel.Id;
             }
         }
 
@@ -138,12 +131,12 @@ namespace ViewModels
         {
             get
             {
-                return this._isOpen;
+                return this.isOpen;
             }
 
             set
             {
-                this._isOpen = value;
+                this.isOpen = value;
                 if (!value)
                 {
                     this.Complaint = null;
@@ -160,12 +153,7 @@ namespace ViewModels
         {
             get
             {
-                if (this._send == null)
-                {
-                    this._send = new RelayCommand(this.OnSendReport);
-                }
-
-                return this._send;
+                return this.send ?? (this.send = new RelayCommand(this.OnSendReport));
             }
         }
 
@@ -176,12 +164,12 @@ namespace ViewModels
         {
             get
             {
-                return this._shouldUploadLogs;
+                return this.shouldUploadLogs;
             }
 
             set
             {
-                this._shouldUploadLogs = value;
+                this.shouldUploadLogs = value;
                 this.OnPropertyChanged("ShouldUploadLogs");
             }
         }
@@ -193,12 +181,12 @@ namespace ViewModels
         {
             get
             {
-                return this._target;
+                return this.target;
             }
 
             set
             {
-                this._target = value;
+                this.target = value;
                 this.OnPropertyChanged("Target");
             }
         }
@@ -223,9 +211,9 @@ namespace ViewModels
         {
             if (isManaged)
             {
-                this._cm = null;
-                this._complaint = null;
-                this._events = null;
+                this.cm = null;
+                this.complaint = null;
+                this.events = null;
             }
         }
 
@@ -233,11 +221,11 @@ namespace ViewModels
         {
             IDictionary<string, object> command =
                 CommandDefinitions.CreateCommand(
-                    "report", new List<string> { this.Target, this.Complaint }, this.CurrentTab).toDictionary();
+                    "report", new List<string> { this.Target, this.Complaint }, this.CurrentTab).ToDictionary();
 
-            this._events.GetEvent<UserCommandEvent>().Publish(command);
+            this.events.GetEvent<UserCommandEvent>().Publish(command);
             this.IsOpen = !this.IsOpen;
-            this._target = null;
+            this.target = null;
             this.Complaint = null;
         }
 

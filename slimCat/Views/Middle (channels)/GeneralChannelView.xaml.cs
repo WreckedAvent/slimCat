@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
     using System;
     using System.Collections.Generic;
@@ -36,14 +36,14 @@ namespace Views
     using System.Windows.Documents;
     using System.Windows.Threading;
 
-    using Models;
-
-    using ViewModels;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
+    using Slimcat.ViewModels;
 
     /// <summary>
     ///     Interaction logic for GeneralChannelView.xaml
     /// </summary>
-    public partial class GeneralChannelView : DisposableView
+    public partial class GeneralChannelView
     {
         #region Fields
 
@@ -88,7 +88,7 @@ namespace Views
 
         #region Methods
 
-        internal override void Dispose(bool isManaged)
+        protected override void Dispose(bool isManaged)
         {
             if (!isManaged)
             {
@@ -195,7 +195,10 @@ namespace Views
             count++;
 
             var priority = count < 25 ? DispatcherPriority.Normal : DispatcherPriority.DataBind;
-            if (count > 25) return;
+            if (count > 25)
+            {
+                return;
+            }
 
             Dispatcher.BeginInvoke(
                 priority,

@@ -29,23 +29,21 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
     using System.Windows.Input;
-
-    using lib;
 
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Models;
-
-    using slimCat;
-    using slimCat.Properties;
-
-    using Views;
+    using Slimcat;
+    using Slimcat.Libraries;
+    using Slimcat.Models;
+    using Slimcat.Properties;
+    using Slimcat.Utilities;
+    using Slimcat.Views;
 
     /// <summary>
     ///     The LoginViewModel is responsible for displaying login details to the user.
@@ -65,13 +63,13 @@ namespace ViewModels
 
         #region Fields
 
-        private readonly IAccount _model; // the model to interact with
+        private readonly IAccount model; // the model to interact with
 
-        private RelayCommand _loginCommand;
+        private RelayCommand login;
 
-        private string _relay = "First, Enter your account details ..."; // message relayed to the user
+        private string relayMessage = "First, Enter your account details ..."; // message relayed to the user
 
-        private bool _requestSent; // used for determining Login UI state
+        private bool requestIsSent; // used for determining Login UI state
 
         #endregion
 
@@ -101,7 +99,7 @@ namespace ViewModels
         {
             try
             {
-                this._model = acc.ThrowIfNull("acc");
+                this.model = acc.ThrowIfNull("acc");
             }
             catch (Exception ex)
             {
@@ -121,16 +119,18 @@ namespace ViewModels
         {
             get
             {
-                return this._model.AccountName;
+                return this.model.AccountName;
             }
 
             set
             {
-                if (this._model.AccountName != value)
+                if (this.model.AccountName == value)
                 {
-                    this._model.AccountName = value;
-                    this.OnPropertyChanged("AccountName");
+                    return;
                 }
+
+                this.model.AccountName = value;
+                this.OnPropertyChanged("AccountName");
             }
         }
 
@@ -141,12 +141,8 @@ namespace ViewModels
         {
             get
             {
-                if (this._loginCommand == null)
-                {
-                    this._loginCommand = new RelayCommand(param => this.SendTicketRequest(), param => this.CanLogin());
-                }
-
-                return this._loginCommand;
+                return this.login
+                       ?? (this.login = new RelayCommand(param => this.SendTicketRequest(), param => this.CanLogin()));
             }
         }
 
@@ -157,16 +153,18 @@ namespace ViewModels
         {
             get
             {
-                return this._model.Password;
+                return this.model.Password;
             }
 
             set
             {
-                if (this._model.Password != value)
+                if (this.model.Password == value)
                 {
-                    this._model.Password = value;
-                    this.OnPropertyChanged("Password");
+                    return;
                 }
+
+                this.model.Password = value;
+                this.OnPropertyChanged("Password");
             }
         }
 
@@ -177,12 +175,12 @@ namespace ViewModels
         {
             get
             {
-                return this._relay;
+                return this.relayMessage;
             }
 
             set
             {
-                this._relay = value;
+                this.relayMessage = value;
                 this.OnPropertyChanged("RelayMessage");
             }
         }
@@ -194,12 +192,12 @@ namespace ViewModels
         {
             get
             {
-                return this._requestSent;
+                return this.requestIsSent;
             }
 
             set
             {
-                this._requestSent = value;
+                this.requestIsSent = value;
                 this.OnPropertyChanged("RequestSent");
             }
         }
@@ -232,9 +230,9 @@ namespace ViewModels
         {
             try
             {
-                this._container.RegisterType<object, LoginView>(LoginViewName);
+                this.Container.RegisterType<object, LoginView>(LoginViewName);
 
-                this._region.RequestNavigate(Shell.MainRegion, new Uri(LoginViewName, UriKind.Relative));
+                this.RegionManager.RequestNavigate(Shell.MainRegion, new Uri(LoginViewName, UriKind.Relative));
             }
             catch (Exception ex)
             {
@@ -257,25 +255,25 @@ namespace ViewModels
         {
             this.RelayMessage = "Great! Logging in ...";
             this.RequestSent = true;
-            this._events.GetEvent<LoginEvent>().Publish(true);
-            this._events.GetEvent<LoginCompleteEvent>().Subscribe(this.handleLogin, ThreadOption.UIThread);
+            this.Events.GetEvent<LoginEvent>().Publish(true);
+            this.Events.GetEvent<LoginCompleteEvent>().Subscribe(this.handleLogin, ThreadOption.UIThread);
         }
 
         private void handleLogin(bool gotTicket)
         {
-            this._events.GetEvent<LoginCompleteEvent>().Unsubscribe(this.handleLogin);
+            this.Events.GetEvent<LoginCompleteEvent>().Unsubscribe(this.handleLogin);
 
             if (!gotTicket)
             {
                 this.RequestSent = false;
-                this.RelayMessage = "Oops!" + " " + this._model.Error;
+                this.RelayMessage = "Oops!" + " " + this.model.Error;
             }
             else
             {
                 if (this.SaveLogin)
                 {
-                    Settings.Default.UserName = this._model.AccountName;
-                    Settings.Default.Password = this._model.Password;
+                    Settings.Default.UserName = this.model.AccountName;
+                    Settings.Default.Password = this.model.Password;
                     Settings.Default.Save();
                 }
                 else

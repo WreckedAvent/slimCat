@@ -27,14 +27,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
-    using System.Windows.Controls.Primitives;
-
     /// <summary>
     ///     Interaction logic for ChannelManagementView.xaml
     /// </summary>
-    public partial class ChannelManagementView : Popup
+    public partial class ChannelManagementView
     {
         #region Constructors and Destructors
 

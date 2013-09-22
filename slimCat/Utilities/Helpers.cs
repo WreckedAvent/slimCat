@@ -24,10 +24,11 @@
 //   The extension methods.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-namespace System
+namespace Slimcat.Utilities
 {
+    using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -62,7 +63,7 @@ namespace System
         /// </returns>
         public static T FirstByIdOrDefault<T>(this ICollection<T> model, string ID) where T : ChannelModel
         {
-            return model.FirstOrDefault(param => param.ID.Equals(ID, StringComparison.OrdinalIgnoreCase));
+            return model.FirstOrDefault(param => param.Id.Equals(ID, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -191,14 +192,9 @@ namespace System
                 }
             }
 
-            if (hasMatch)
-            {
-                return new Tuple<string, string>(checkAgainst, GetStringContext(fullString, checkAgainst));
-            }
-            else
-            {
-                return new Tuple<string, string>(string.Empty, string.Empty);
-            }
+            return hasMatch 
+                ? new Tuple<string, string>(checkAgainst, GetStringContext(fullString, checkAgainst)) 
+                : new Tuple<string, string>(string.Empty, string.Empty);
         }
 
         /// <summary>
@@ -215,13 +211,13 @@ namespace System
         /// </returns>
         public static string GetStringContext(string fullContent, string specificWord)
         {
-            const int maxDistance = 150;
-            int needle = fullContent.ToLower().IndexOf(specificWord.ToLower());
+            const int MaxDistance = 150;
+            var needle = fullContent.ToLower().IndexOf(specificWord.ToLower(), StringComparison.Ordinal);
 
-            int start = Math.Max(0, needle - maxDistance);
-            int end = Math.Min(fullContent.Length, needle + maxDistance);
+            var start = Math.Max(0, needle - MaxDistance);
+            var end = Math.Min(fullContent.Length, needle + MaxDistance);
 
-            Func<int, int> findStartOfWord = (suspectIndex) =>
+            Func<int, int> findStartOfWord = suspectIndex =>
                 {
                     while (suspectIndex != 0 && !char.IsWhiteSpace(fullContent[suspectIndex]))
                     {
@@ -261,15 +257,7 @@ namespace System
         /// </returns>
         public static bool HasDingTermMatch(this string checkAgainst, IEnumerable<string> dingTerms)
         {
-            foreach (string term in dingTerms)
-            {
-                if (FirstMatch(checkAgainst, term).Item1 != string.Empty)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return dingTerms.Any(term => FirstMatch(checkAgainst, term).Item1 != string.Empty);
         }
 
         /// <summary>
@@ -330,11 +318,9 @@ namespace System
 
             if (!title.Equals(ID))
             {
-                string safeTitle = title;
-                foreach (char c in Path.GetInvalidPathChars().Union(new List<char> { ':' }))
-                {
-                    safeTitle = safeTitle.Replace(c.ToString(), string.Empty);
-                }
+                var safeTitle = Path.GetInvalidPathChars()
+                    .Union(new List<char> { ':' })
+                    .Aggregate(title, (current, c) => current.Replace(c.ToString(CultureInfo.InvariantCulture), string.Empty));
 
                 if (safeTitle[0].Equals('.'))
                 {
@@ -554,51 +540,51 @@ namespace System
             {
                 return "a"; // Really important people!
             }
-            else if (cm.OnlineBookmarks.Contains(character))
+
+            if (cm.OnlineBookmarks.Contains(character))
             {
                 return "b"; // Important people!
             }
-            else if (cm.Interested.Contains(character.Name))
+
+            if (cm.Interested.Contains(character.Name))
             {
                 return "c"; // interesting people!
             }
-            else if (cm.OnlineGlobalMods.Contains(character))
+
+            if (cm.OnlineGlobalMods.Contains(character))
             {
                 return "d"; // Useful people!
             }
-            else if (channel != null && channel.Moderators.Contains(character.Name))
+
+            if (channel != null && channel.Moderators.Contains(character.Name))
             {
                 return "d";
             }
-            else if (cm.Ignored.Contains(character.Name))
+
+            if (cm.Ignored.Contains(character.Name))
             {
                 return "z"; // "I don't want to see this person"
             }
-            else if (cm.NotInterested.Contains(character.Name))
+
+            if (cm.NotInterested.Contains(character.Name))
             {
                 return "z"; // I also do not wish to see this person
             }
 
                 // then sort then by status
-            else if (character.Status == StatusType.looking)
+            switch (character.Status)
             {
-                return "e"; // People we want to bone!
-            }
-            else if (character.Status == StatusType.busy)
-            {
-                return "f"; // Not the most available, but still possible to play with
-            }
-            else if (character.Status == StatusType.away || character.Status == StatusType.idle)
-            {
-                return "g"; // probably not going to play with, lower on list
-            }
-            else if (character.Status == StatusType.dnd)
-            {
-                return "h"; // most likely not going to play with, lowest aside ignored
-            }
-            else
-            {
-                return "e"; // just normal joe user.
+                case StatusType.looking:
+                    return "e"; // People we want to bone!
+                case StatusType.busy:
+                    return "f"; // Not the most available, but still possible to play with
+                case StatusType.idle:
+                case StatusType.away:
+                    return "g"; // probably not going to play with, lower on list
+                case StatusType.dnd:
+                    return "h"; // most likely not going to play with, lowest aside ignored
+                default:
+                    return "e";
             }
         }
 
@@ -619,21 +605,14 @@ namespace System
                 return fullString;
             }
 
-            int index = fullString.Length - 1;
+            var index = fullString.Length - 1;
 
             while (char.IsPunctuation(fullString[index]) && index != 0)
             {
                 index--;
             }
 
-            if (index == 0)
-            {
-                return string.Empty;
-            }
-            else
-            {
-                return fullString.Substring(0, index);
-            }
+            return index == 0 ? string.Empty : fullString.Substring(0, index);
         }
 
         #endregion
@@ -646,11 +625,11 @@ namespace System
     {
         #region Fields
 
-        private bool _canChangeNow;
+        private bool canChangeNow;
 
-        private bool _couldChangeBefore;
+        private bool couldChangeBefore;
 
-        private FlowDocumentPageViewer _reader;
+        private FlowDocumentPageViewer reader;
 
         #endregion
 
@@ -664,11 +643,11 @@ namespace System
         /// </param>
         public KeepToCurrentFlowDocument(FlowDocumentPageViewer reader)
         {
-            this._reader = reader;
+            this.reader = reader;
 
-            this._couldChangeBefore = this._reader.CanGoToNextPage;
+            this.couldChangeBefore = this.reader.CanGoToNextPage;
 
-            this._reader.Document.DocumentPaginator.PagesChanged += this.KeepToBottom;
+            this.reader.Document.DocumentPaginator.PagesChanged += this.KeepToBottom;
         }
 
         #endregion
@@ -694,13 +673,13 @@ namespace System
         /// </param>
         public void KeepToBottom(object sender, PagesChangedEventArgs e)
         {
-            this._canChangeNow = this._reader.CanGoToNextPage;
-            if (this._canChangeNow && !this._couldChangeBefore)
+            this.canChangeNow = this.reader.CanGoToNextPage;
+            if (this.canChangeNow && !this.couldChangeBefore)
             {
-                this._reader.NextPage();
+                this.reader.NextPage();
             }
 
-            this._couldChangeBefore = this._canChangeNow;
+            this.couldChangeBefore = this.canChangeNow;
         }
 
         #endregion
@@ -711,8 +690,8 @@ namespace System
         {
             if (managed)
             {
-                this._reader.Document.DocumentPaginator.PagesChanged -= this.KeepToBottom;
-                this._reader = null;
+                this.reader.Document.DocumentPaginator.PagesChanged -= this.KeepToBottom;
+                this.reader = null;
             }
         }
 
@@ -794,23 +773,23 @@ namespace System
     /// <summary>
     ///     Caches some int and fetches a new one every so often, displaying how this int has changed
     /// </summary>
-    public class CacheCount : IDisposable
+    public sealed class CacheCount : IDisposable
     {
         #region Fields
 
-        private readonly int _updateRes;
+        private readonly int updateResolution;
 
-        private Func<int> _getNewCount;
+        private Func<int> getNewCount;
 
-        private bool _intialized;
+        private bool intialized;
 
-        private int _newCount;
+        private int newCount;
 
-        private int _oldCount;
+        private int oldCount;
 
-        private IList<int> _oldCounts;
+        private IList<int> oldCounts;
 
-        private Timer _updateTick;
+        private Timer updateTick;
 
         #endregion
 
@@ -831,26 +810,26 @@ namespace System
         /// </param>
         public CacheCount(Func<int> getNewCount, int updateResolution, int wait = 0)
         {
-            this._oldCounts = new List<int>();
-            this._getNewCount = getNewCount;
-            this._updateRes = updateResolution;
+            this.oldCounts = new List<int>();
+            this.getNewCount = getNewCount;
+            this.updateResolution = updateResolution;
 
-            this._updateTick = new Timer(updateResolution * 1000);
-            this._updateTick.Elapsed += (s, e) => this.Update();
+            this.updateTick = new Timer(updateResolution * 1000);
+            this.updateTick.Elapsed += (s, e) => this.Update();
 
             if (wait > 0)
             {
-                var _waitToStartTick = new Timer(wait);
-                _waitToStartTick.Elapsed += (s, e) =>
+                var waitToStartTick = new Timer(wait);
+                waitToStartTick.Elapsed += (s, e) =>
                     {
-                        this._updateTick.Start();
-                        _waitToStartTick.Dispose();
+                        this.updateTick.Start();
+                        waitToStartTick.Dispose();
                     };
-                _waitToStartTick.Start();
+                waitToStartTick.Start();
             }
             else
             {
-                this._updateTick.Start();
+                this.updateTick.Start();
             }
         }
 
@@ -866,7 +845,7 @@ namespace System
         /// </returns>
         public double Average()
         {
-            return this._oldCounts.Average();
+            return this.oldCounts.Average();
         }
 
         /// <summary>
@@ -883,14 +862,14 @@ namespace System
         /// <returns>
         ///     The <see cref="string" />.
         /// </returns>
-        public virtual string GetDisplayString()
+        public string GetDisplayString()
         {
-            if (!this._intialized)
+            if (!this.intialized)
             {
                 return string.Empty;
             }
 
-            int change = this._newCount - this._oldCount;
+            var change = this.newCount - this.oldCount;
 
             var toReturn = new StringBuilder();
             if (change != 0)
@@ -899,7 +878,7 @@ namespace System
                 toReturn.Append(change);
             }
 
-            if (this._oldCounts.Count > 0)
+            if (this.oldCounts.Count > 0)
             {
                 if (this.Average() != 0)
                 {
@@ -944,7 +923,7 @@ namespace System
         /// </returns>
         public double StdDev()
         {
-            IEnumerable<double> squares = this._oldCounts.Select(x => Math.Pow(x - this.Average(), 2));
+            var squares = this.oldCounts.Select(x => Math.Pow(x - this.Average(), 2)).ToList();
 
             // this is the squared distance from average
             return Math.Sqrt(squares.Sum() / (squares.Count() > 1 ? squares.Count() - 1 : squares.Count()));
@@ -957,27 +936,27 @@ namespace System
         /// </summary>
         public void Update()
         {
-            if (this._intialized)
+            if (this.intialized)
             {
-                this._oldCount = this._newCount;
+                this.oldCount = this.newCount;
 
                 // 60/updateres*30 returns how many update resolutions fit in 30 minutes
-                if (this._oldCounts.Count > ((60 / this._updateRes) * 30))
+                if (this.oldCounts.Count > ((60 / this.updateResolution) * 30))
                 {
-                    this._oldCounts.RemoveAt(0);
+                    this.oldCounts.RemoveAt(0);
                 }
 
-                this._oldCounts.Add(this._oldCount);
+                this.oldCounts.Add(this.oldCount);
 
-                this._newCount = this._getNewCount();
+                this.newCount = this.getNewCount();
             }
             else
             {
-                this._oldCount = this._newCount = this._getNewCount();
+                this.oldCount = this.newCount = this.getNewCount();
 
-                if (!(this._oldCount == 0 || this._newCount == 0))
+                if (!(this.oldCount == 0 || this.newCount == 0))
                 {
-                    this._intialized = true;
+                    this.intialized = true;
                 }
             }
         }
@@ -989,21 +968,23 @@ namespace System
         /// <summary>
         ///     The dispose.
         /// </summary>
-        /// <param name="IsManaged">
+        /// <param name="isManaged">
         ///     The is managed.
         /// </param>
-        protected virtual void Dispose(bool IsManaged)
+        private void Dispose(bool isManaged)
         {
-            if (IsManaged)
+            if (!isManaged)
             {
-                this._updateTick.Stop();
-                this._updateTick.Dispose();
-                this._updateTick = null;
-
-                this._getNewCount = null;
-                this._oldCounts.Clear();
-                this._oldCounts = null;
+                return;
             }
+
+            this.updateTick.Stop();
+            this.updateTick.Dispose();
+            this.updateTick = null;
+
+            this.getNewCount = null;
+            this.oldCounts.Clear();
+            this.oldCounts = null;
         }
 
         #endregion

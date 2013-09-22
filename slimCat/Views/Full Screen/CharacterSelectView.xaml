@@ -1,10 +1,6 @@
-﻿<UserControl x:Class="Views.CharacterSelectView"
+﻿<UserControl x:Class="Slimcat.Views.CharacterSelectView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:sys="clr-namespace:System">
-    <UserControl.Resources>
-        <sys:OppositeBoolConverter x:Key="BoolConverter" />
-    </UserControl.Resources>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Grid IsEnabled="{Binding Path=IsConnecting, Converter={StaticResource BoolConverter}}"
           TextBlock.FontSize="20"
@@ -24,7 +20,7 @@
             Grid.Row="1"
             MinWidth="200">
             <ListBox ItemsSource="{Binding Characters}"
-                     SelectedItem="{Binding Path=SelectedCharacter, Mode=TwoWay}" />
+                     SelectedItem="{Binding Path=CurrentCharacter, Mode=TwoWay}" />
         </ScrollViewer>
 
         <Button Content="Login"

@@ -27,21 +27,20 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
     using System;
     using System.Collections.Generic;
-    using System.Windows.Controls;
     using System.Windows.Input;
 
     /// <summary>
     ///     Interaction logic for ChannelTextBoxEntryView.xaml
     /// </summary>
-    public partial class ChannelTextBoxEntryView : UserControl
+    public partial class ChannelTextBoxEntryView
     {
         #region Static Fields
 
-        private static readonly IDictionary<Key, Tuple<string, bool>> _acceptedKeys =
+        private static readonly IDictionary<Key, Tuple<string, bool>> AcceptedKeys =
             new Dictionary<Key, Tuple<string, bool>>
                 {
                     // accepted shorcut keys.
@@ -108,11 +107,11 @@ namespace Views
                 
 
                 #region BBCode shortcuts
-            else if (_acceptedKeys.ContainsKey(e.Key) && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+            else if (AcceptedKeys.ContainsKey(e.Key) && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
                 e.Handled = true;
 
-                Tuple<string, bool> tupleData = _acceptedKeys[e.Key];
+                Tuple<string, bool> tupleData = AcceptedKeys[e.Key];
 
                 string bbtag = tupleData.Item1;
                 bool useArgs = tupleData.Item2;

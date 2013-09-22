@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Services
+namespace Slimcat.Services
 {
     using System;
     using System.Collections.Generic;
@@ -36,7 +36,8 @@ namespace Services
     using System.Reflection;
     using System.Xml.Linq;
 
-    using Models;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
 
     /// <summary>
     ///     The settings daemon.
@@ -45,7 +46,7 @@ namespace Services
     {
         #region Constants
 
-        private const string SETTINGS_FILE_NAME = "!settings.xml";
+        private const string SettingsFileName = "!settings.xml";
 
         #endregion
 
@@ -54,13 +55,13 @@ namespace Services
         /// <summary>
         /// Returns either the channel settings that already exist or a new settings file
         /// </summary>
-        /// <param name="CurrentCharacter">
+        /// <param name="currentCharacter">
         /// The Current Character.
         /// </param>
-        /// <param name="Title">
+        /// <param name="title">
         /// The Title.
         /// </param>
-        /// <param name="ID">
+        /// <param name="id">
         /// The ID.
         /// </param>
         /// <param name="chanType">
@@ -70,22 +71,22 @@ namespace Services
         /// The <see cref="ChannelSettingsModel"/>.
         /// </returns>
         public static ChannelSettingsModel GetChannelSettings(
-            string CurrentCharacter, string Title, string ID, ChannelType chanType)
+            string currentCharacter, string title, string id, ChannelType chanType)
         {
-            makeSettingsFileIfNotExist(CurrentCharacter, Title, ID, chanType);
-            string workingPath = StaticFunctions.MakeSafeFolderPath(CurrentCharacter, Title, ID);
-            workingPath = Path.Combine(workingPath, SETTINGS_FILE_NAME);
+            MakeSettingsFileIfNotExist(currentCharacter, title, id, chanType);
+            var workingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
+            workingPath = Path.Combine(workingPath, SettingsFileName);
 
             try
             {
-                return ReadObjectFromXML(
-                    workingPath, new ChannelSettingsModel(chanType == ChannelType.pm ? true : false));
+                return ReadObjectFromXml(
+                    workingPath, new ChannelSettingsModel(chanType == ChannelType.PrivateMessage));
 
                 // try and parse the XML file
             }
             catch
             {
-                return new ChannelSettingsModel(chanType == ChannelType.pm ? true : false);
+                return new ChannelSettingsModel(chanType == ChannelType.PrivateMessage);
 
                 // return a default if it's not legible
             }
@@ -94,23 +95,23 @@ namespace Services
         /// <summary>
         /// The has channel settings.
         /// </summary>
-        /// <param name="CurrentCharacter">
+        /// <param name="currentCharacter">
         /// The current character.
         /// </param>
-        /// <param name="Title">
+        /// <param name="title">
         /// The title.
         /// </param>
-        /// <param name="ID">
+        /// <param name="id">
         /// The id.
         /// </param>
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        public static bool HasChannelSettings(string CurrentCharacter, string Title, string ID)
+        public static bool HasChannelSettings(string currentCharacter, string title, string id)
         {
-            string path = StaticFunctions.MakeSafeFolderPath(CurrentCharacter, Title, ID);
+            var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
 
-            return Directory.Exists(Path.Combine(path, SETTINGS_FILE_NAME));
+            return Directory.Exists(Path.Combine(path, SettingsFileName));
         }
 
         /// <summary>
@@ -119,56 +120,49 @@ namespace Services
         /// <param name="currentCharacter">
         /// The current Character.
         /// </param>
-        public static void ReadApplicationSettingsFromXML(string currentCharacter)
+        public static void ReadApplicationSettingsFromXml(string currentCharacter)
         {
-            makeGlobalSettingsFileIfNotExist(currentCharacter);
+            MakeGlobalSettingsFileIfNotExist(currentCharacter);
 
-            Type type = typeof(ApplicationSettings);
-            PropertyInfo[] propertyList = type.GetProperties();
-            string path = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
-            path = Path.Combine(path, SETTINGS_FILE_NAME);
+            var type = typeof(ApplicationSettings);
+            var propertyList = type.GetProperties();
+            var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
+            path = Path.Combine(path, SettingsFileName);
 
             try
             {
                 using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
-                    XElement workingElement = XElement.Load(fs);
-                    foreach (XElement element in workingElement.Descendants())
+                    var workingElement = XElement.Load(fs);
+                    foreach (var element in workingElement.Descendants())
                     {
-                        foreach (PropertyInfo property in propertyList)
+                        var element1 = element;
+                        foreach (var property in propertyList
+                            .Where(property => string.Equals(property.Name, element1.Name.ToString(), StringComparison.Ordinal))
+                            .Where(property => !string.IsNullOrWhiteSpace(element1.Value)))
                         {
-                            if (string.Equals(property.Name, element.Name.ToString(), StringComparison.Ordinal))
+                            if (!element.HasElements)
                             {
-                                if (string.IsNullOrWhiteSpace(element.Value))
-                                {
-                                    continue; // fix a bad issue with the parser
-                                }
+                                var setter = Convert.ChangeType(element.Value, property.PropertyType);
+                                property.SetValue(null, setter, null);
+                                break;
+                            }
 
-                                if (!element.HasElements)
-                                {
-                                    object setter = Convert.ChangeType(element.Value, property.PropertyType);
-                                    property.SetValue(null, setter, null);
-                                    break;
-                                }
-                                else
-                                {
-                                    IList<string> collection = ApplicationSettings.SavedChannels;
+                            var collection = ApplicationSettings.SavedChannels;
 
-                                    if (property.Name.Equals("interested", StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        collection = ApplicationSettings.Interested;
-                                    }
-                                    else if (property.Name.Equals("notinterested", StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        collection = ApplicationSettings.NotInterested;
-                                    }
+                            if (property.Name.Equals("interested", StringComparison.OrdinalIgnoreCase))
+                            {
+                                collection = ApplicationSettings.Interested;
+                            }
+                            else if (property.Name.Equals("notinterested", StringComparison.OrdinalIgnoreCase))
+                            {
+                                collection = ApplicationSettings.NotInterested;
+                            }
 
-                                    collection.Clear();
-                                    foreach (XElement item in element.Elements())
-                                    {
-                                        collection.Add(item.Value);
-                                    }
-                                }
+                            collection.Clear();
+                            foreach (var item in element.Elements())
+                            {
+                                collection.Add(item.Value);
                             }
                         }
                     }
@@ -194,10 +188,10 @@ namespace Services
         /// <returns>
         /// The <see cref="T"/>.
         /// </returns>
-        public static T ReadObjectFromXML<T>(string fileName, T baseObject, bool decrypt = false) where T : new()
+        public static T ReadObjectFromXml<T>(string fileName, T baseObject, bool decrypt = false) where T : new()
         {
-            Type type = baseObject.GetType();
-            PropertyInfo[] propertyList = type.GetProperties(); // reflect property names
+            var type = baseObject.GetType();
+            var propertyList = type.GetProperties(); // reflect property names
 
             if (decrypt)
             {
@@ -207,19 +201,21 @@ namespace Services
             using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
             {
                 // open our file
-                XElement workingElement = XElement.Load(fs);
-                foreach (XElement element in workingElement.Descendants())
+                var workingElement = XElement.Load(fs);
+                foreach (var element in workingElement.Descendants())
                 {
                     // iterate through each element
-                    foreach (PropertyInfo property in propertyList)
+                    foreach (var property in propertyList)
                     {
                         // check if the element is one of our properties
-                        if (string.Equals(property.Name, element.Name.ToString(), StringComparison.Ordinal))
+                        if (!string.Equals(property.Name, element.Name.ToString(), StringComparison.Ordinal))
                         {
-                            object setter = Convert.ChangeType(element.Value, property.PropertyType);
-                            property.SetValue(baseObject, setter, null);
-                            break;
+                            continue;
                         }
+
+                        var setter = Convert.ChangeType(element.Value, property.PropertyType);
+                        property.SetValue(baseObject, setter, null);
+                        break;
                     }
                 }
             }
@@ -233,13 +229,13 @@ namespace Services
         /// <param name="currentCharacter">
         /// The current Character.
         /// </param>
-        public static void SaveApplicationSettingsToXML(string currentCharacter)
+        public static void SaveApplicationSettingsToXml(string currentCharacter)
         {
             var root = new XElement("settings");
-            string fileName = Path.Combine(
-                StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global"), SETTINGS_FILE_NAME);
+            var fileName = Path.Combine(
+                StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global"), SettingsFileName);
 
-            foreach (PropertyInfo property in typeof(ApplicationSettings).GetProperties())
+            foreach (var property in typeof(ApplicationSettings).GetProperties())
             {
                 if (property.PropertyType != typeof(IList<string>)
                     && property.PropertyType != typeof(IEnumerable<string>))
@@ -251,9 +247,9 @@ namespace Services
                     if (!property.Name.ToLower().Contains("list"))
                     {
                         var toAdd = new XElement(property.Name);
-                        foreach (string item in property.GetValue(null, null) as IEnumerable<string>)
+                        foreach (var item in property.GetValue(null, null) as IEnumerable<string>)
                         {
-                            string label = "item";
+                            var label = "item";
                             if (property.Name.ToLower().Contains("channel"))
                             {
                                 label = "channel";
@@ -272,9 +268,10 @@ namespace Services
             }
 
             File.Delete(fileName);
-            using (FileStream fs = File.OpenWrite(fileName)) root.Save(fs);
-
-            root = null;
+            using (var fs = File.OpenWrite(fileName))
+            {
+                root.Save(fs);
+            }
         }
 
         /// <summary>
@@ -289,34 +286,29 @@ namespace Services
         /// <param name="encrypt">
         /// The encrypt.
         /// </param>
-        public static void SerializeObjectToXML(object toSerialize, string fileName, bool encrypt = false)
+        public static void SerializeObjectToXml(object toSerialize, string fileName, bool encrypt = false)
         {
-            Type type = toSerialize.GetType();
+            var type = toSerialize.GetType();
             var checkTerms = new[] { "command", "is", "enumerable" };
             var root = new XElement("settings");
 
-            foreach (PropertyInfo property in type.GetProperties())
+            foreach (var property in type.GetProperties()
+                .Where(property => 
+                    !checkTerms.Any(term => property.Name.ToLower().Contains(term))))
             {
-                if (!checkTerms.Any(term => property.Name.ToLower().Contains(term)))
-                {
-                    root.Add(
-                        new XElement(property.Name, property.GetValue(toSerialize, null))
-                        
-                        
-                        // reflect its name and value, then write
-                        );
-                }
+                root.Add(new XElement(property.Name, property.GetValue(toSerialize, null)));
             }
 
             File.Delete(fileName);
-            using (FileStream fs = File.OpenWrite(fileName)) root.Save(fs);
+            using (var fs = File.OpenWrite(fileName))
+            {
+                root.Save(fs);
+            }
 
             if (encrypt)
             {
                 File.Encrypt(fileName);
             }
-
-            root = null;
         }
 
         /// <summary>
@@ -325,28 +317,28 @@ namespace Services
         /// <param name="newSettingsModel">
         /// The new Settings Model.
         /// </param>
-        /// <param name="CurrentCharacter">
+        /// <param name="currentCharacter">
         /// The Current Character.
         /// </param>
-        /// <param name="Title">
+        /// <param name="title">
         /// The Title.
         /// </param>
-        /// <param name="ID">
+        /// <param name="id">
         /// The ID.
         /// </param>
-        public static void UpdateSettingsFile(object newSettingsModel, string CurrentCharacter, string Title, string ID)
+        public static void UpdateSettingsFile(object newSettingsModel, string currentCharacter, string title, string id)
         {
-            string workingPath = StaticFunctions.MakeSafeFolderPath(CurrentCharacter, Title, ID);
-            workingPath = Path.Combine(workingPath, SETTINGS_FILE_NAME);
+            string workingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
+            workingPath = Path.Combine(workingPath, SettingsFileName);
 
-            SerializeObjectToXML(newSettingsModel, workingPath);
+            SerializeObjectToXml(newSettingsModel, workingPath);
         }
 
         #endregion
 
         #region Methods
 
-        private static void makeGlobalSettingsFileIfNotExist(string currentCharacter)
+        private static void MakeGlobalSettingsFileIfNotExist(string currentCharacter)
         {
             string path = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
 
@@ -355,32 +347,34 @@ namespace Services
                 Directory.CreateDirectory(path);
             }
 
-            string workingPath = Path.Combine(path, SETTINGS_FILE_NAME);
+            string workingPath = Path.Combine(path, SettingsFileName);
 
             if (!File.Exists(workingPath))
             {
-                SaveApplicationSettingsToXML(currentCharacter);
+                SaveApplicationSettingsToXml(currentCharacter);
             }
         }
 
-        private static void makeSettingsFileIfNotExist(
-            string CurrentCharacter, string Title, string ID, ChannelType chanType)
+        private static void MakeSettingsFileIfNotExist(
+            string currentCharacter, string title, string id, ChannelType chanType)
         {
-            string path = StaticFunctions.MakeSafeFolderPath(CurrentCharacter, Title, ID);
+            var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
 
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
 
-            string workingPath = Path.Combine(path, SETTINGS_FILE_NAME);
+            var workingPath = Path.Combine(path, SettingsFileName);
 
-            if (!File.Exists(workingPath))
+            if (File.Exists(workingPath))
             {
-                // make a new XML settings document
-                var newSettings = new ChannelSettingsModel(chanType == ChannelType.pm ? true : false);
-                SerializeObjectToXML(newSettings, workingPath);
+                return;
             }
+
+            // make a new XML settings document
+            var newSettings = new ChannelSettingsModel(chanType == ChannelType.PrivateMessage);
+            SerializeObjectToXml(newSettings, workingPath);
         }
 
         #endregion

@@ -1,7 +1,7 @@
-﻿<Popup x:Class="Views.ChannelSettingsView"
+﻿<Popup x:Class="Slimcat.Views.ChannelSettingsView"
        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-       xmlns:sys="clr-namespace:System"
+       xmlns:utilities="clr-namespace:Slimcat.Utilities"
 
        PlacementTarget="{Binding ElementName=PopupAnchor}"
        Placement="Center"
@@ -9,8 +9,8 @@
        IsOpen="{Binding Path=ChannelSettings.IsChangingSettings}">
 
     <Popup.Resources>
-        <sys:NotifyLevelConverter x:Key="NotifyLevelConverter" />
-        <sys:InterestedOnlyBoolConverter x:Key="InterestedOnlyBoolConverter" />
+        <utilities:NotifyLevelConverter x:Key="NotifyLevelConverter" />
+        <utilities:InterestedOnlyBoolConverter x:Key="InterestedOnlyBoolConverter" />
     </Popup.Resources>
 
     <Border BorderBrush="{StaticResource HighlightBrush}"
@@ -45,7 +45,7 @@
                         Text="{Binding ChannelSettings.MessageNotifyLevel, Converter={StaticResource NotifyLevelConverter}, ConverterParameter=flash}" />
                     <Button
                         Content="{Binding ChannelSettings.MessageNotifyOnlyForInteresting, Converter={StaticResource InterestedOnlyBoolConverter}}"
-                        Command="{Binding InvertButtonCommand}"
+                        Command="{Binding InvertCommand}"
                         CommandParameter="Messages"
                         Visibility="{Binding ShowAllSettings, Converter={StaticResource BoolConverter}}"
                         Style="{StaticResource ImageContentButton}" />
@@ -67,7 +67,7 @@
                             Text="{Binding ChannelSettings.JoinLeaveNotifyLevel, Converter={StaticResource NotifyLevelConverter}}" />
                         <Button
                             Content="{Binding ChannelSettings.JoinLeaveNotifyOnlyForInteresting, Converter={StaticResource InterestedOnlyBoolConverter}}"
-                            Command="{Binding InvertButtonCommand}"
+                            Command="{Binding InvertCommand}"
                             CommandParameter="JoinLeave"
                             Style="{StaticResource ImageContentButton}" />
                     </WrapPanel>
@@ -87,7 +87,7 @@
                             Text="{Binding ChannelSettings.PromoteDemoteNotifyLevel, Converter={StaticResource NotifyLevelConverter}}" />
                         <Button
                             Content="{Binding ChannelSettings.PromoteDemoteNotifyOnlyForInteresting, Converter={StaticResource InterestedOnlyBoolConverter}}"
-                            Command="{Binding InvertButtonCommand}"
+                            Command="{Binding InvertCommand}"
                             CommandParameter="PromoteDemote"
                             Style="{StaticResource ImageContentButton}" />
                     </WrapPanel>

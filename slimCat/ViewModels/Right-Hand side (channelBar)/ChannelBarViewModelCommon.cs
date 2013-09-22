@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
@@ -42,7 +42,7 @@ namespace ViewModels
     {
         #region Fields
 
-        private readonly GenericSearchSettingsModel _searchSettings = new GenericSearchSettingsModel();
+        private readonly GenericSearchSettingsModel searchSettings = new GenericSearchSettingsModel();
 
         #endregion
 
@@ -67,7 +67,7 @@ namespace ViewModels
             IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
             : base(contain, regman, events, cm)
         {
-            cm.SelectedChannelChanged += (s, e) => { this.OnPropertyChanged("HasUsers"); };
+            cm.SelectedChannelChanged += (s, e) => this.OnPropertyChanged("HasUsers");
         }
 
         #endregion
@@ -81,13 +81,13 @@ namespace ViewModels
         {
             get
             {
-                if (this.CM.SelectedChannel == null)
+                if (this.ChatModel.CurrentChannel == null)
                 {
                     return false;
                 }
 
-                return (this.CM.SelectedChannel.Type != ChannelType.pm)
-                       && this.CM.SelectedChannel.Type != ChannelType.utility;
+                return (this.ChatModel.CurrentChannel.Type != ChannelType.PrivateMessage)
+                       && this.ChatModel.CurrentChannel.Type != ChannelType.Utility;
             }
         }
 
@@ -98,7 +98,7 @@ namespace ViewModels
         {
             get
             {
-                return this._searchSettings;
+                return this.searchSettings;
             }
         }
 

@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Services
+namespace Slimcat.Services
 {
     using System;
     using System.Collections.Generic;
@@ -36,7 +36,8 @@ namespace Services
     using System.Linq;
     using System.Web;
 
-    using Models;
+    using Slimcat.Models;
+    using Slimcat.Utilities;
 
     /// <summary>
     ///     The logging daemon.
@@ -45,9 +46,9 @@ namespace Services
     {
         #region Fields
 
-        private readonly string _fullPath;
+        private readonly string fullPath;
 
-        private readonly string _thisCharacter;
+        private readonly string currentCharacter;
 
         #endregion
 
@@ -62,14 +63,14 @@ namespace Services
         /// </param>
         public LoggingDaemon(string characterName)
         {
-            this._thisCharacter = characterName;
+            this.currentCharacter = characterName;
 
-            this._fullPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "slimCat", this._thisCharacter);
+            this.fullPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "slimCat", this.currentCharacter);
 
-            if (!Directory.Exists(this._fullPath))
+            if (!Directory.Exists(this.fullPath))
             {
-                Directory.CreateDirectory(this._fullPath);
+                Directory.CreateDirectory(this.fullPath);
             }
         }
 
@@ -80,34 +81,36 @@ namespace Services
         /// <summary>
         /// The get logs.
         /// </summary>
-        /// <param name="Title">
+        /// <param name="title">
         /// The title.
         /// </param>
-        /// <param name="ID">
+        /// <param name="id">
         /// The id.
         /// </param>
         /// <returns>
-        /// The <see cref="IEnumerable"/>.
+        /// The <see cref="IEnumerable{T}"/>.
         /// </returns>
-        public IEnumerable<string> GetLogs(string Title, string ID)
+        public IEnumerable<string> GetLogs(string title, string id)
         {
-            string loggingPath = StaticFunctions.MakeSafeFolderPath(this._thisCharacter, Title, ID);
+            var loggingPath = StaticFunctions.MakeSafeFolderPath(this.currentCharacter, title, id);
             IEnumerable<string> toReturn = new List<string>();
-            string fileName = this.dateToFileName();
+            var fileName = DateToFileName();
 
             if (!Directory.Exists(loggingPath))
             {
                 return new List<string>();
             }
 
-            string toGet = Path.Combine(loggingPath, fileName);
+            var toGet = Path.Combine(loggingPath, fileName);
 
             if (File.Exists(toGet))
             {
-                IEnumerable<string> lines = File.ReadLines(Path.Combine(loggingPath, fileName));
-                int toSkip = Math.Max(lines.Count() - 10, 0);
+                var lines = File.ReadLines(Path.Combine(loggingPath, fileName));
+                var enumerable = lines as IList<string> ?? lines.ToList();
 
-                toReturn = lines.Skip(toSkip);
+                var toSkip = Math.Max(enumerable.Count() - 10, 0);
+
+                toReturn = enumerable.Skip(toSkip);
             }
 
             return toReturn;
@@ -116,48 +119,50 @@ namespace Services
         /// <summary>
         /// The log message.
         /// </summary>
-        /// <param name="Title">
+        /// <param name="title">
         /// The title.
         /// </param>
-        /// <param name="ID">
+        /// <param name="id">
         /// The id.
         /// </param>
         /// <param name="message">
         /// The message.
         /// </param>
-        public void LogMessage(string Title, string ID, IMessage message)
+        public void LogMessage(string title, string id, IMessage message)
         {
-            using (StreamWriter writer = this.accessLog(Title, ID))
+            using (var writer = this.AccessLog(title, id))
             {
-                string thisMessage = HttpUtility.HtmlDecode(message.Message);
-                string timestamp = message.TimeStamp;
+                var thisMessage = HttpUtility.HtmlDecode(message.Message);
+                var timestamp = message.TimeStamp;
 
-                if (message.Type == MessageType.normal)
+                switch (message.Type)
                 {
-                    if (!message.Message.StartsWith("/me"))
-                    {
-                        writer.WriteLine(timestamp + ' ' + message.Poster.Name + ": " + thisMessage);
-                    }
-                    else
-                    {
-                        writer.WriteLine(timestamp + ' ' + message.Poster.Name + thisMessage.Substring(3));
-                    }
-                }
-                else if (message.Type == MessageType.roll)
-                {
-                    writer.WriteLine(timestamp + ' ' + message);
-                }
-                else
-                {
-                    if (!message.Message.StartsWith("/me"))
-                    {
-                        writer.WriteLine("Ad at " + timestamp + ": " + thisMessage + " ~By " + message.Poster.Name);
-                    }
-                    else
-                    {
-                        writer.WriteLine(
-                            "Ad at " + timestamp + ": " + message.Poster.Name + " " + thisMessage.Substring(3));
-                    }
+                    case MessageType.Normal:
+                        if (!message.Message.StartsWith("/me"))
+                        {
+                            writer.WriteLine(timestamp + ' ' + message.Poster.Name + ": " + thisMessage);
+                        }
+                        else
+                        {
+                            writer.WriteLine(timestamp + ' ' + message.Poster.Name + thisMessage.Substring(3));
+                        }
+
+                        break;
+                    case MessageType.Roll:
+                        writer.WriteLine(timestamp + ' ' + message);
+                        break;
+                    default:
+                        if (!message.Message.StartsWith("/me"))
+                        {
+                            writer.WriteLine("Ad at " + timestamp + ": " + thisMessage + " ~By " + message.Poster.Name);
+                        }
+                        else
+                        {
+                            writer.WriteLine(
+                                "Ad at " + timestamp + ": " + message.Poster.Name + " " + thisMessage.Substring(3));
+                        }
+
+                        break;
                 }
             }
         }
@@ -168,7 +173,7 @@ namespace Services
         /// <param name="title">
         /// The title.
         /// </param>
-        /// <param name="ID">
+        /// <param name="id">
         /// The id.
         /// </param>
         /// <param name="kind">
@@ -177,9 +182,9 @@ namespace Services
         /// <param name="specialTitle">
         /// The special title.
         /// </param>
-        public void LogSpecial(string title, string ID, SpecialLogMessageKind kind, string specialTitle)
+        public void LogSpecial(string title, string id, SpecialLogMessageKind kind, string specialTitle)
         {
-            using (StreamWriter writer = this.accessLog(title, ID))
+            using (StreamWriter writer = this.AccessLog(title, id))
             {
                 switch (kind)
                 {
@@ -229,29 +234,29 @@ namespace Services
         /// <param name="isFolder">
         /// The is folder.
         /// </param>
-        /// <param name="Title">
+        /// <param name="title">
         /// The title.
         /// </param>
-        /// <param name="ID">
+        /// <param name="id">
         /// The id.
         /// </param>
-        public void OpenLog(bool isFolder = false, string Title = null, string ID = null)
+        public void OpenLog(bool isFolder = false, string title = null, string id = null)
         {
-            if (ID == null)
+            if (id == null)
             {
-                Process.Start(this._fullPath);
+                Process.Start(this.fullPath);
             }
             else
             {
-                string workingPath = StaticFunctions.MakeSafeFolderPath(this._thisCharacter, Title, ID);
+                var workingPath = StaticFunctions.MakeSafeFolderPath(this.currentCharacter, title, id);
 
                 if (!Directory.Exists(workingPath))
                 {
-                    Process.Start(this._fullPath);
+                    Process.Start(this.fullPath);
                     return;
                 }
 
-                string latest = this.dateToFileName();
+                var latest = DateToFileName();
 
                 if (!isFolder && File.Exists(Path.Combine(workingPath, latest)))
                 {
@@ -271,20 +276,20 @@ namespace Services
         /// <summary>
         /// Provides a streamwriter, given certain paramters
         /// </summary>
-        /// <param name="Title">
+        /// <param name="title">
         /// The Title.
         /// </param>
-        /// <param name="ID">
+        /// <param name="id">
         /// The ID.
         /// </param>
         /// <returns>
         /// The <see cref="StreamWriter"/>.
         /// </returns>
-        private StreamWriter accessLog(string Title, string ID)
+        private StreamWriter AccessLog(string title, string id)
         {
-            string loggingPath = StaticFunctions.MakeSafeFolderPath(this._thisCharacter, Title, ID);
+            string loggingPath = StaticFunctions.MakeSafeFolderPath(this.currentCharacter, title, id);
 
-            string fileName = this.dateToFileName();
+            string fileName = DateToFileName();
 
             if (!Directory.Exists(loggingPath))
             {
@@ -294,7 +299,7 @@ namespace Services
             return new StreamWriter(Path.Combine(loggingPath, fileName), true);
         }
 
-        private string dateToFileName()
+        private static string DateToFileName()
         {
             DateTime time = DateTimeOffset.Now.Date;
 
@@ -304,75 +309,6 @@ namespace Services
 
             return month.ToString() + "-" + day.ToString() + "-" + year.ToString() + ".txt";
         }
-
-        #endregion
-    }
-
-    /// <summary>
-    ///     The Logger interface.
-    /// </summary>
-    public interface ILogger
-    {
-        #region Public Methods and Operators
-
-        /// <summary>
-        /// Returns the last few messages from a given channel
-        /// </summary>
-        /// <param name="Title">
-        /// The Title.
-        /// </param>
-        /// <param name="ID">
-        /// The ID.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IEnumerable"/>.
-        /// </returns>
-        IEnumerable<string> GetLogs(string Title, string ID);
-
-        /// <summary>
-        /// Logs a given message in a given channel
-        /// </summary>
-        /// <param name="title">
-        /// The title.
-        /// </param>
-        /// <param name="ID">
-        /// The ID.
-        /// </param>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        void LogMessage(string title, string ID, IMessage message);
-
-        /// <summary>
-        /// Prints a special message to the log, such as a header
-        /// </summary>
-        /// <param name="title">
-        /// The title.
-        /// </param>
-        /// <param name="ID">
-        /// The ID.
-        /// </param>
-        /// <param name="type">
-        /// The type of special message
-        /// </param>
-        /// <param name="specialTitle">
-        /// The title for the special message
-        /// </param>
-        void LogSpecial(string title, string ID, SpecialLogMessageKind type, string specialTitle);
-
-        /// <summary>
-        /// Opens the log in the default text editor
-        /// </summary>
-        /// <param name="isFolder">
-        /// The is Folder.
-        /// </param>
-        /// <param name="Title">
-        /// The Title.
-        /// </param>
-        /// <param name="ID">
-        /// The ID.
-        /// </param>
-        void OpenLog(bool isFolder, string Title = null, string ID = null);
 
         #endregion
     }

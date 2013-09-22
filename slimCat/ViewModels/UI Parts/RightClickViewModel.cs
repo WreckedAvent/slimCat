@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace ViewModels
+namespace Slimcat.ViewModels
 {
     using System;
 
@@ -40,17 +40,17 @@ namespace ViewModels
     {
         #region Fields
 
-        private readonly bool _isModerator;
+        private readonly bool isModerator;
 
-        private bool _canIgnore;
+        private bool canIgnore;
 
-        private bool _canUnignore;
+        private bool canUnignore;
 
-        private bool _hasReports;
+        private bool hasReports;
 
-        private bool _isOpen;
+        private bool isOpen;
 
-        private ICharacter _target;
+        private ICharacter target;
 
         #endregion
 
@@ -64,7 +64,7 @@ namespace ViewModels
         /// </param>
         public RightClickMenuViewModel(bool isModerator)
         {
-            this._isModerator = isModerator;
+            this.isModerator = isModerator;
         }
 
         #endregion
@@ -78,7 +78,7 @@ namespace ViewModels
         {
             get
             {
-                return this._canIgnore;
+                return this.canIgnore;
             }
         }
 
@@ -89,7 +89,7 @@ namespace ViewModels
         {
             get
             {
-                return this._canUnignore;
+                return this.canUnignore;
             }
         }
 
@@ -100,7 +100,7 @@ namespace ViewModels
         {
             get
             {
-                return this._isModerator && this._hasReports;
+                return this.isModerator && this.hasReports;
             }
         }
 
@@ -111,14 +111,11 @@ namespace ViewModels
         {
             get
             {
-                if (this._target != null)
+                if (this.target != null)
                 {
-                    return this._target.StatusMessage.Length > 0;
+                    return this.target.StatusMessage.Length > 0;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
         }
 
@@ -129,12 +126,12 @@ namespace ViewModels
         {
             get
             {
-                return this._isOpen;
+                return this.isOpen;
             }
 
             set
             {
-                this._isOpen = value;
+                this.isOpen = value;
                 this.OnPropertyChanged("IsOpen");
             }
         }
@@ -148,19 +145,10 @@ namespace ViewModels
             {
                 if (this.Target != null)
                 {
-                    if (ApplicationSettings.Interested.Contains(this.Target.Name))
-                    {
-                        return "Remove interested mark";
-                    }
-                    else
-                    {
-                        return "Add interested mark";
-                    }
+                    return ApplicationSettings.Interested.Contains(this.Target.Name) ? "Remove interested mark" : "Add interested mark";
                 }
-                else
-                {
-                    return string.Empty;
-                }
+
+                return string.Empty;
             }
         }
 
@@ -173,19 +161,10 @@ namespace ViewModels
             {
                 if (this.Target != null)
                 {
-                    if (ApplicationSettings.NotInterested.Contains(this.Target.Name))
-                    {
-                        return "Remove not interested mark";
-                    }
-                    else
-                    {
-                        return "Add not interested mark";
-                    }
+                    return ApplicationSettings.NotInterested.Contains(this.Target.Name) ? "Remove not interested mark" : "Add not interested mark";
                 }
-                else
-                {
-                    return string.Empty;
-                }
+
+                return string.Empty;
             }
         }
 
@@ -196,7 +175,7 @@ namespace ViewModels
         {
             get
             {
-                return this._target;
+                return this.target;
             }
         }
 
@@ -244,10 +223,8 @@ namespace ViewModels
                                    + this.Target.Status.ToString().Substring(1);
                     }
                 }
-                else
-                {
-                    return "None";
-                }
+
+                return "None";
             }
         }
 
@@ -266,7 +243,7 @@ namespace ViewModels
         /// <summary>
         /// The set new target.
         /// </summary>
-        /// <param name="target">
+        /// <param name="newTarget">
         /// The target.
         /// </param>
         /// <param name="canIgnore">
@@ -278,14 +255,14 @@ namespace ViewModels
         /// <param name="hasReports">
         /// The has reports.
         /// </param>
-        public void SetNewTarget(ICharacter target, bool canIgnore, bool canUnignore, bool hasReports)
+        public void SetNewTarget(ICharacter newTarget, bool canIgnore, bool canUnignore, bool hasReports)
         {
-            this._target = target;
-            this._target.GetAvatar();
+            this.target = newTarget;
+            this.target.GetAvatar();
 
-            this._canIgnore = canIgnore;
-            this._canUnignore = canUnignore;
-            this._hasReports = hasReports;
+            this.canIgnore = canIgnore;
+            this.canUnignore = canUnignore;
+            this.hasReports = hasReports;
 
             this.OnPropertyChanged("Target");
             this.OnPropertyChanged("CanIgnore");
@@ -300,9 +277,9 @@ namespace ViewModels
 
         #region Methods
 
-        private void Dipose(bool IsManaged)
+        private void Dipose(bool isManaged)
         {
-            this._target = null;
+            this.target = null;
         }
 
         #endregion

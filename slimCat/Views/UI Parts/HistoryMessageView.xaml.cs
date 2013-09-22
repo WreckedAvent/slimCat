@@ -27,14 +27,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Views
+namespace Slimcat.Views
 {
-    using System.Windows.Documents;
-
     /// <summary>
     ///     Interaction logic for MessageView.xaml
     /// </summary>
-    public partial class HistoryView : Paragraph
+    public partial class HistoryView
     {
         #region Constructors and Destructors
 

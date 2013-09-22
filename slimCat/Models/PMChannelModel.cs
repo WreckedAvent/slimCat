@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Models
+namespace Slimcat.Models
 {
     using System;
     using System.Text;
@@ -40,13 +40,13 @@ namespace Models
     {
         #region Fields
 
-        private ICharacter _PMCharacter;
+        private ICharacter targetCharacter;
 
-        private StringBuilder _isTypingString;
+        private StringBuilder isTypingString;
 
-        private Timer _tick;
+        private Timer updateTick;
 
-        private Typing_Status _typing;
+        private TypingStatus typing;
 
         #endregion
 
@@ -60,25 +60,25 @@ namespace Models
         /// The character that sent the message
         /// </param>
         public PMChannelModel(ICharacter character)
-            : base(character.Name, ChannelType.pm)
+            : base(character.Name, ChannelType.PrivateMessage)
         {
-            this.PMCharacter = character;
-            this.PMCharacter.GetAvatar();
+            this.TargetCharacter = character;
+            this.TargetCharacter.GetAvatar();
 
-            this._tick = new Timer(1000);
-            this._isTypingString = new StringBuilder();
-            this._settings = new ChannelSettingsModel(true);
+            this.updateTick = new Timer(1000);
+            this.isTypingString = new StringBuilder();
+            this.Settings = new ChannelSettingsModel(true);
 
-            this._tick.Elapsed += (s, e) =>
+            this.updateTick.Elapsed += (s, e) =>
                 {
-                    if (this._isTypingString.Length < 3)
+                    if (this.isTypingString.Length < 3)
                     {
-                        this._isTypingString.Append(".");
+                        this.isTypingString.Append(".");
                     }
                     else
                     {
-                        this._isTypingString.Clear();
-                        this._isTypingString.Append(".");
+                        this.isTypingString.Clear();
+                        this.isTypingString.Append(".");
                     }
 
                     this.OnPropertyChanged("TypingString");
@@ -101,46 +101,39 @@ namespace Models
         }
 
         /// <summary>
-        ///     Gets or sets the pm character.
+        ///     Gets or sets the PrivateMessage character.
         /// </summary>
-        public ICharacter PMCharacter
+        public ICharacter TargetCharacter
         {
             get
             {
-                return this._PMCharacter;
+                return this.targetCharacter;
             }
 
             set
             {
-                this._PMCharacter = value;
-                this.OnPropertyChanged("PMCharacter");
+                this.targetCharacter = value;
+                this.OnPropertyChanged("TargetCharacter");
             }
         }
 
         /// <summary>
         ///     Gets or sets the typing status.
         /// </summary>
-        public Typing_Status TypingStatus
+        public TypingStatus TypingStatus
         {
             get
             {
-                return this._typing;
+                return this.typing;
             }
 
             set
             {
-                this._typing = value;
+                this.typing = value;
                 this.OnPropertyChanged("TypingStatus");
                 this.OnPropertyChanged("TypingString");
 
-                if (value == Typing_Status.typing)
-                {
-                    this._tick.Enabled = true;
-                }
-                else
-                {
-                    this._tick.Enabled = false;
-                }
+                this.updateTick.Enabled = value == TypingStatus.Typing;
             }
         }
 
@@ -153,12 +146,12 @@ namespace Models
             {
                 switch (this.TypingStatus)
                 {
-                    case Typing_Status.paused:
+                    case TypingStatus.Paused:
                         return "~";
-                    case Typing_Status.clear:
+                    case TypingStatus.Clear:
                         return string.Empty;
-                    case Typing_Status.typing:
-                        return this._isTypingString.ToString();
+                    case TypingStatus.Typing:
+                        return this.isTypingString.ToString();
                 }
 
                 return string.Empty;
@@ -172,43 +165,22 @@ namespace Models
         /// <summary>
         /// The dispose.
         /// </summary>
-        /// <param name="IsManaged">
+        /// <param name="isManaged">
         /// The is managed.
         /// </param>
-        protected override void Dispose(bool IsManaged)
+        protected override void Dispose(bool isManaged)
         {
-            if (IsManaged)
+            if (isManaged)
             {
-                this._tick.Dispose();
-                this._tick = null;
-                this._isTypingString = null;
-                this._settings = new ChannelSettingsModel(true);
+                this.updateTick.Dispose();
+                this.updateTick = null;
+                this.isTypingString = null;
+                this.Settings = new ChannelSettingsModel(true);
             }
 
-            base.Dispose(IsManaged);
+            base.Dispose(isManaged);
         }
 
         #endregion
-    }
-
-    /// <summary>
-    ///     The possible states of typing
-    /// </summary>
-    public enum Typing_Status
-    {
-        /// <summary>
-        ///     The clear.
-        /// </summary>
-        clear, 
-
-        /// <summary>
-        ///     The paused.
-        /// </summary>
-        paused, 
-
-        /// <summary>
-        ///     The typing.
-        /// </summary>
-        typing
     }
 }

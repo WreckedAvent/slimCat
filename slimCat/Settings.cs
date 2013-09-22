@@ -27,7 +27,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace slimCat.Properties
+namespace Slimcat.Properties
 {
     using System.ComponentModel;
     using System.Configuration;

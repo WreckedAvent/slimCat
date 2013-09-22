@@ -28,7 +28,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace slimCat
+namespace Slimcat.Utilities
 {
     using System;
     using System.Windows;
@@ -41,15 +41,15 @@ namespace slimCat
 
     using Models;
 
-    using Services;
+    using Slimcat.Services;
 
-    using ViewModels;
+    using Slimcat.ViewModels;
 
     /// <summary>
     ///     Bootstrapper responsible for starting the application,
     ///     as well as dependency injection for the various ViewModels and views
     /// </summary>
-    internal class bootstrapper : UnityBootstrapper
+    internal class Bootstrapper : UnityBootstrapper
     {
         #region Methods
 
@@ -65,31 +65,31 @@ namespace slimCat
                 // Note: These are manually added and not utilized as modules
 
                 // Create singleton instance of our account information, register
-                var _account = new AccountModel();
-                this.Container.RegisterInstance<IAccount>(_account);
+                var account = new AccountModel();
+                this.Container.RegisterInstance<IAccount>(account);
 
                 // Create singleton instance of our connection service, register
-                var _connection = this.Container.Resolve<ListConnection>();
-                this.Container.RegisterInstance<IListConnection>(_connection);
+                var connection = this.Container.Resolve<ListConnection>();
+                this.Container.RegisterInstance<IListConnection>(connection);
 
                 // Create singleton instance of our F-chat connection service, register
-                var _chat_connection = this.Container.Resolve<ChatConnection>();
-                this.Container.RegisterInstance<IChatConnection>(_chat_connection);
+                var chatConnection = this.Container.Resolve<ChatConnection>();
+                this.Container.RegisterInstance<IChatConnection>(chatConnection);
 
                 // Create a singleton instance of our Chat data model, register
-                var _model = this.Container.Resolve<ChatModel>();
-                this.Container.RegisterInstance<IChatModel>(_model);
+                var model = this.Container.Resolve<ChatModel>();
+                this.Container.RegisterInstance<IChatModel>(model);
 
                 // Create a singleton instance of our Message Daemon, register
-                var _daemon = this.Container.Resolve<MessageDaemon>();
-                this.Container.RegisterInstance<IChannelManager>(_daemon);
+                var daemon = this.Container.Resolve<MessageDaemon>();
+                this.Container.RegisterInstance<IChannelManager>(daemon);
 
-                var _notifications = this.Container.Resolve<NotificationsDaemon>();
+                this.Container.Resolve<NotificationsDaemon>();
 
                 // create singleton instance
-                var _inty = this.Container.Resolve<CommandInterceptor>();
+                this.Container.Resolve<CommandInterceptor>();
 
-                IEventAggregator _event = this.Container.Resolve<EventAggregator>();
+                this.Container.Resolve<EventAggregator>();
             }
             catch (Exception ex)
             {
@@ -107,33 +107,33 @@ namespace slimCat
             {
                 base.ConfigureModuleCatalog();
 
-                Type LoginVM = typeof(LoginViewModel);
+                var loginVm = typeof(LoginViewModel);
                 this.ModuleCatalog.AddModule(
-                    new ModuleInfo { ModuleName = LoginVM.Name, ModuleType = LoginVM.AssemblyQualifiedName, });
+                    new ModuleInfo { ModuleName = loginVm.Name, ModuleType = loginVm.AssemblyQualifiedName, });
 
-                Type CharacterSelVM = typeof(CharacterSelectViewModel);
+                var characterSelVm = typeof(CharacterSelectViewModel);
                 this.ModuleCatalog.AddModule(
                     new ModuleInfo
                         {
-                            ModuleName = CharacterSelVM.Name, 
-                            ModuleType = CharacterSelVM.AssemblyQualifiedName, 
+                            ModuleName = characterSelVm.Name, 
+                            ModuleType = characterSelVm.AssemblyQualifiedName, 
                         });
 
-                Type ChatWrapperVM = typeof(ChatWrapperViewModel);
+                var chatWrapperVm = typeof(ChatWrapperViewModel);
                 this.ModuleCatalog.AddModule(
                     new ModuleInfo
                         {
-                            ModuleName = ChatWrapperVM.Name, 
-                            ModuleType = ChatWrapperVM.AssemblyQualifiedName, 
+                            ModuleName = chatWrapperVm.Name, 
+                            ModuleType = chatWrapperVm.AssemblyQualifiedName, 
                         });
 
-                Type UserBarVM = typeof(UserbarViewModel);
+                var userBarVm = typeof(UserbarViewModel);
                 this.ModuleCatalog.AddModule(
-                    new ModuleInfo { ModuleName = UserBarVM.Name, ModuleType = UserBarVM.AssemblyQualifiedName, });
+                    new ModuleInfo { ModuleName = userBarVm.Name, ModuleType = userBarVm.AssemblyQualifiedName, });
 
-                Type ChannelBarVM = typeof(ChannelbarViewModel);
+                var channelBarVm = typeof(ChannelbarViewModel);
                 this.ModuleCatalog.AddModule(
-                    new ModuleInfo { ModuleName = ChannelBarVM.Name, ModuleType = ChannelBarVM.AssemblyQualifiedName, });
+                    new ModuleInfo { ModuleName = channelBarVm.Name, ModuleType = channelBarVm.AssemblyQualifiedName, });
             }
             catch (Exception ex)
             {
