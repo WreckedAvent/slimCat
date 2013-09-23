@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.ComponentModel;
 
     /// <summary>
     ///     The ChatModel interface.
@@ -15,6 +16,8 @@
         ///     The selected channel changed.
         /// </summary>
         event EventHandler SelectedChannelChanged;
+
+        event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
 
@@ -200,5 +203,7 @@
         void ToggleNotInterestedMark(string name);
 
         #endregion
+
+        void FriendsChanged();
     }
 }

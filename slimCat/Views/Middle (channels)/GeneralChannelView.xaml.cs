@@ -128,6 +128,9 @@ namespace Slimcat.Views
                         this.loadedCount = 0;
                         this.historyLoaded = false;
 
+                        this.GetHistory()
+                            .Select(item => new HistoryView { DataContext = item })
+                            .Each(this.AddAsync);
                         break;
                     }
 
@@ -167,7 +170,7 @@ namespace Slimcat.Views
 
                 this.vm.CurrentMessages
                     .Reverse()
-                    .Select(item => new MessageView() { DataContext = item })
+                    .Select(item => new MessageView { DataContext = item })
                     .Each(this.AddAsync);
 
                 if (this.historyInitialized)

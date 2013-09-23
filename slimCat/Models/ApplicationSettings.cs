@@ -85,6 +85,8 @@ namespace Slimcat.Models
             }
         }
 
+        public static bool FriendsAreAccountWide { get; set; }
+
         /// <summary>
         ///     Gets or sets a value indicating whether show notifications global.
         /// </summary>

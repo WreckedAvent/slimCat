@@ -68,8 +68,6 @@ namespace Slimcat.Models
 
         private DateTime lastCharacterListCache;
 
-        // things that we should keep a track of, yet not needed frequently
-
         // caches for speed improvements in filtering
         private IList<ICharacter> onlineBookmarkCache;
 
@@ -145,8 +143,6 @@ namespace Slimcat.Models
             }
         }
 
-        // and finally our notifications
-
         /// <summary>
         ///     Gets the friends.
         /// </summary>
@@ -154,8 +150,17 @@ namespace Slimcat.Models
         {
             get
             {
+                if (ApplicationSettings.FriendsAreAccountWide)
+                {
+                    return this.CurrentAccount.AllFriends
+                        .Select(pair => pair.Key)
+                        .Distinct()
+                        .ToList();
+                }
+
                 return
-                    this.CurrentAccount.AllFriends.Where(pair => pair.Value.Contains(this.CurrentCharacter.Name))
+                    this.CurrentAccount.AllFriends
+                        .Where(pair => pair.Value.Contains(this.CurrentCharacter.Name))
                         .Select(pair => pair.Key)
                         .ToList();
             }
@@ -532,6 +537,12 @@ namespace Slimcat.Models
             SettingsDaemon.SaveApplicationSettingsToXml(this.CurrentCharacter.Name);
         }
 
+        public void FriendsChanged()
+        {
+            this.onlineFriendCache = null;
+            this.OnPropertyChanged("Friends");
+            this.OnPropertyChanged("OnlineFriends");
+        }
         #endregion
 
         #region Methods

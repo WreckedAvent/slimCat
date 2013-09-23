@@ -428,12 +428,6 @@ namespace Slimcat.Services
             }
         }
 
-        /// <summary>
-        /// This converts our multi-threaded command receiver into a single-threaded executor.
-        /// </summary>
-        /// <param name="data">
-        /// The data.
-        /// </param>
         private void EnqueAction(IDictionary<string, object> data)
         {
             this.que.Add(data);
@@ -1179,12 +1173,6 @@ namespace Slimcat.Services
                         temp, new CharacterUpdateModel.LoginStateChangedEventArgs { IsLogIn = true }));
         }
 
-        /// <summary>
-        /// Get character gets the selected character info for storing elsewhere.
-        /// </summary>
-        /// <param name="character">
-        /// The character.
-        /// </param>
         private void GetCharacter(string character)
         {
             this.Events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(this.GetCharacter);

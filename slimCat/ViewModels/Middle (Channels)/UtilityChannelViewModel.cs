@@ -201,6 +201,23 @@ namespace Slimcat.ViewModels
         }
 
         /// <summary>
+        ///     Gets or sets a value indiciating whether friends are account wide, or character-specific
+        /// </summary>
+        public bool FriendsAreAccountWide
+        {
+            get
+            {
+                return ApplicationSettings.FriendsAreAccountWide;
+            }
+            set
+            {
+                ApplicationSettings.FriendsAreAccountWide = value;
+                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
+                this.ChatModel.FriendsChanged();
+            }
+        }
+
+        /// <summary>
         ///     Gets or sets the back log max.
         /// </summary>
         public int BackLogMax

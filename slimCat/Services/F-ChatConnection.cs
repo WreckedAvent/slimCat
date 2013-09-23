@@ -31,6 +31,8 @@ namespace Slimcat.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
     using System.Timers;
 
     using Microsoft.Practices.Prism.Events;
@@ -146,10 +148,10 @@ namespace Slimcat.Services
 #if (DEBUG)
 
                 // debug information
-                this._logger.WriteLine("->> Command: " + command_type);
-                this._logger.WriteLine("Data: " + ser);
-                this._logger.WriteLine();
-                this._logger.Flush();
+                this.logger.WriteLine("->> Command: " + command_type);
+                this.logger.WriteLine("Data: " + ser);
+                this.logger.WriteLine();
+                this.logger.Flush();
 #endif
 
                 this.socket.Send(command_type + " " + ser);
@@ -178,10 +180,10 @@ namespace Slimcat.Services
                 var ser = SimpleJson.SerializeObject(command);
 
 #if (DEBUG)
-                this._logger.WriteLine("->> Command: " + type);
-                this._logger.WriteLine("Data: " + ser);
-                this._logger.WriteLine();
-                this._logger.Flush();
+                this.logger.WriteLine("->> Command: " + type);
+                this.logger.WriteLine("Data: " + ser);
+                this.logger.WriteLine();
+                this.logger.Flush();
 #endif
 
                 this.socket.Send(type + " " + ser);
@@ -209,9 +211,9 @@ namespace Slimcat.Services
                 }
 
 #if (DEBUG)
-                this._logger.WriteLine("->> Command: " + commandType);
-                this._logger.WriteLine();
-                this._logger.Flush();
+                this.logger.WriteLine("->> Command: " + commandType);
+                this.logger.WriteLine();
+                this.logger.Flush();
 #endif
 
                 this.socket.Send(commandType);
@@ -348,12 +350,9 @@ namespace Slimcat.Services
                 // for debug, write the command received to file
                 this.logger.WriteLine("<<- Command: {0}", json["command"]);
 
-                foreach (var pair in json)
+                foreach (var pair in json.Where(pair => pair.Key != "command"))
                 {
-                    if (pair.Key != "command")
-                    {
-                        this.logger.WriteLine("{0}: {1}", pair.Key, pair.Value);
-                    }
+                    this.logger.WriteLine("{0}: {1}", pair.Key, pair.Value);
                 }
 
                 this.logger.WriteLine();
@@ -388,17 +387,6 @@ namespace Slimcat.Services
                         break;
                 }
             }
-
-#if (DEBUG)
-            else
-            {
-                // some other, odd, no argument command not specified
-                this.logger.WriteLine("Server sent unknown command: " + e.Message);
-                this.logger.WriteLine();
-                this.logger.Flush();
-            }
-
-#endif
         }
 
         /// <summary>

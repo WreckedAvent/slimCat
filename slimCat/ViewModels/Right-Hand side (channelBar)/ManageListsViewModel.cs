@@ -29,6 +29,7 @@
 
 namespace Slimcat.ViewModels
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -114,6 +115,14 @@ namespace Slimcat.ViewModels
                 {
                     this.OnPropertyChanged("GenderSettings");
                     this.UpdateBindings();
+                };
+
+            this.ChatModel.PropertyChanged += (s, e) =>
+                {
+                    if (e.PropertyName.Equals("OnlineFriends", StringComparison.OrdinalIgnoreCase))
+                    {
+                        this.OnPropertyChanged("Friends");
+                    }
                 };
 
             this.Events.GetEvent<NewUpdateEvent>().Subscribe(
