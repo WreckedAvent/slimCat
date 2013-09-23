@@ -402,6 +402,7 @@ namespace Slimcat.Models
         {
             try
             {
+                character.IsInteresting = this.IsOfInterest(character.Name);
                 this.OnlineCharactersDictionary.Add(character.Name, character);
                 this.UpdateCharacterList(this.IsOfInterest(character.Name));
                 this.UpdateBindings(character.Name);

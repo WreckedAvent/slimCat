@@ -44,9 +44,9 @@ namespace Slimcat.Models
     {
         #region Fields
 
-        private readonly IList<string> banned;
+        private readonly List<string> banned;
 
-        private readonly IList<string> mods;
+        private readonly List<string> mods;
 
         private readonly ObservableCollection<ICharacter> users;
 
@@ -232,11 +232,13 @@ namespace Slimcat.Models
 
             set
             {
-                if (this.lastAdCount != value)
+                if (this.lastAdCount == value)
                 {
-                    this.lastAdCount = value;
-                    this.UpdateBindings();
+                    return;
                 }
+
+                this.lastAdCount = value;
+                this.UpdateBindings();
             }
         }
 
@@ -363,7 +365,7 @@ namespace Slimcat.Models
         /// </param>
         public override void AddMessage(IMessage message, bool isOfInterest = false)
         {
-            ObservableCollection<IMessage> messageCollection = message.Type == MessageType.Ad ? this.Ads : this.Messages;
+            var messageCollection = message.Type == MessageType.Ad ? this.Ads : this.Messages;
 
             while (messageCollection.Count >= ApplicationSettings.BackLogMax)
             {

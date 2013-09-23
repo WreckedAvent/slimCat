@@ -92,6 +92,18 @@ namespace Slimcat.Utilities
             return x;
         }
 
+        public static void Each<T>(this IEnumerable<T> collection, Action<T> functor)
+        {
+            foreach (var item in collection)
+            {
+                functor(item);
+            }
+        }
+
+        public static string FormatWith(this string toFormat, params object[] args)
+        {
+            return string.Format(toFormat, args);
+        }
         #endregion
     }
 
@@ -134,7 +146,7 @@ namespace Slimcat.Utilities
         /// <returns>
         ///     The <see cref="bool" />.
         /// </returns>
-        public static bool ContainsOrd(this string fullString, string checkterm, bool ignoreCase)
+        public static bool ContainsOrdinal(this string fullString, string checkterm, bool ignoreCase = true)
         {
             StringComparison comparer = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
             return fullString.IndexOf(checkterm, comparer) >= 0;
@@ -334,7 +346,7 @@ namespace Slimcat.Utilities
                 folderName = ID;
             }
 
-            if (folderName.ContainsOrd(@"/", true) || folderName.ContainsOrd(@"\", true))
+            if (folderName.ContainsOrdinal(@"/", true) || folderName.ContainsOrdinal(@"\", true))
             {
                 folderName = folderName.Replace('/', '-');
                 folderName = folderName.Replace('\\', '-');
@@ -471,7 +483,7 @@ namespace Slimcat.Utilities
             GeneralChannelModel channel)
         {
             if (!message.Poster.NameContains(search.SearchString)
-                && !message.Message.ContainsOrd(search.SearchString, true))
+                && !message.Message.ContainsOrdinal(search.SearchString, true))
             {
                 return false;
             }

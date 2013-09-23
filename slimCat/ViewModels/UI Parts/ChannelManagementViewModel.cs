@@ -311,20 +311,20 @@ namespace Slimcat.ViewModels
             if (e != null)
             {
                 // if its our property changed sending this
-                if (e.PropertyName == "MOTD")
+                switch (e.PropertyName)
                 {
-                    this.description = this.model.Description;
-                    this.OnPropertyChanged("MOTD");
-                }
-                else if (e.PropertyName == "Type")
-                {
-                    this.OnPropertyChanged("ToggleRoomTip");
-                    this.OnPropertyChanged("ToggleRoomTypeString");
-                    this.OnPropertyChanged("RoomTypeString");
-                }
-                else if (e.PropertyName == "Mode")
-                {
-                    this.OnPropertyChanged("RoomModeString");
+                    case "Description":
+                        this.description = this.model.Description;
+                        this.OnPropertyChanged("Description");
+                        break;
+                    case "Type":
+                        this.OnPropertyChanged("ToggleRoomTip");
+                        this.OnPropertyChanged("ToggleRoomTypeString");
+                        this.OnPropertyChanged("RoomTypeString");
+                        break;
+                    case "Mode":
+                        this.OnPropertyChanged("RoomModeString");
+                        break;
                 }
             }
             else

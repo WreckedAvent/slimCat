@@ -37,16 +37,6 @@ namespace Slimcat.Models
     /// </summary>
     public static class ApplicationSettings
     {
-        #region Static Fields
-
-        public static readonly IList<string> Interested;
-
-        public static readonly IList<string> SavedChannels;
-
-        public static readonly IList<string> NotInterested;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
@@ -105,6 +95,20 @@ namespace Slimcat.Models
         /// </summary>
         public static double Volume { get; set; }
 
+        /// <summary>
+        ///     Gets the list of characters interesting to this user.
+        /// </summary>
+        public static IList<string> Interested { get; private set; }
+
+        /// <summary>
+        ///     Gets the list of channels saved to our user .
+        /// </summary>
+        public static IList<string> SavedChannels { get; private set; }
+
+        /// <summary>
+        ///     Gets the list of characters not interesting to this user.
+        /// </summary>
+        public static IList<string> NotInterested { get; private set; }
         #endregion
     }
 }

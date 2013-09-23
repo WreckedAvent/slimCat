@@ -443,9 +443,10 @@ namespace Slimcat.ViewModels
         /// </returns>
         private bool UpdateIsOurCharacter(NotificationModel param)
         {
-            if (param is CharacterUpdateModel)
+            var updateModel = param as CharacterUpdateModel;
+            if (updateModel != null)
             {
-                ICharacter args = ((CharacterUpdateModel)param).TargetCharacter;
+                var args = updateModel.TargetCharacter;
                 return args.Name.Equals(this.ConversationWith.Name, StringComparison.OrdinalIgnoreCase);
             }
 

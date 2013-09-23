@@ -59,6 +59,8 @@ namespace Slimcat.Models
 
         private bool isOfInterest;
 
+        private bool isInteresting;
+
         #endregion
 
         #region Public Properties
@@ -196,6 +198,19 @@ namespace Slimcat.Models
             {
                 this.statusMessage = value;
                 this.OnPropertyChanged("StatusMessage");
+            }
+        }
+
+        public bool IsInteresting
+        {
+            get
+            {
+                return this.isInteresting;
+            }
+            set
+            {
+                this.isInteresting = value;
+                this.OnPropertyChanged("IsInteresting");
             }
         }
 

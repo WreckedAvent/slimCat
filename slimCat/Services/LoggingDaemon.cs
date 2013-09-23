@@ -105,12 +105,20 @@ namespace Slimcat.Services
 
             if (File.Exists(toGet))
             {
-                var lines = File.ReadLines(Path.Combine(loggingPath, fileName));
-                var enumerable = lines as IList<string> ?? lines.ToList();
+                try
+                {
+                    var lines = File.ReadLines(Path.Combine(loggingPath, fileName));
+                    var enumerable = lines as IList<string> ?? lines.ToList();
 
-                var toSkip = Math.Max(enumerable.Count() - 10, 0);
+                    var toSkip = Math.Max(enumerable.Count() - 10, 0);
 
-                toReturn = enumerable.Skip(toSkip);
+                    toReturn = enumerable.Skip(toSkip).ToList();
+                }
+                catch
+                {
+                    // file operations run the risk of exceptions
+                    return new List<string>();
+                }
             }
 
             return toReturn;
@@ -149,7 +157,7 @@ namespace Slimcat.Services
 
                         break;
                     case MessageType.Roll:
-                        writer.WriteLine(timestamp + ' ' + message);
+                        writer.WriteLine(timestamp + ' ' + thisMessage);
                         break;
                     default:
                         if (!message.Message.StartsWith("/me"))

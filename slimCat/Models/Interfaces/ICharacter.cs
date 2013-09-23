@@ -20,7 +20,7 @@
         Gender Gender { get; set; }
 
         /// <summary>
-        ///     Gets a value indicating whether has report.
+        ///     Gets a value indicating whether the character has an open report.
         /// </summary>
         bool HasReport { get; }
 
@@ -30,7 +30,7 @@
         ReportModel LastReport { get; set; }
 
         /// <summary>
-        ///     The full name is the character's gender, op status, and name in one line
+        ///     Gets or sets the character's name.
         /// </summary>
         string Name { get; set; }
 
@@ -43,6 +43,11 @@
         ///     Gets or sets the status message.
         /// </summary>
         string StatusMessage { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether the user is interesting to our user.
+        /// </summary>
+        bool IsInteresting { get; set; }
 
         #endregion
 

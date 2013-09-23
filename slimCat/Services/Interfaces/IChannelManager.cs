@@ -15,13 +15,13 @@
         /// <param name="type">
         /// The type.
         /// </param>
-        /// <param name="ID">
+        /// <param name="id">
         /// The ID.
         /// </param>
         /// <param name="name">
         /// The name.
         /// </param>
-        void AddChannel(ChannelType type, string ID, string name = "");
+        void AddChannel(ChannelType type, string id, string name = "");
 
         /// <summary>
         /// Used to add a message to a given channel

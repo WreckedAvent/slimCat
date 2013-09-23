@@ -247,7 +247,7 @@ namespace Slimcat.Services
                     if (!property.Name.ToLower().Contains("list"))
                     {
                         var toAdd = new XElement(property.Name);
-                        foreach (var item in property.GetValue(null, null) as IEnumerable<string>)
+                        foreach (var item in property.GetValue(null, null) as IList<string>)
                         {
                             var label = "item";
                             if (property.Name.ToLower().Contains("channel"))

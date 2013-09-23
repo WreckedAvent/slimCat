@@ -134,24 +134,18 @@ namespace Slimcat.Services
         #endregion
 
         #region Methods
-
-        private void AdMessageCommand(IDictionary<string, object> command)
-        {
-            this.MessageRecieved(command, true);
-        }
-
         private static void AddToSomeListCommand(
-            IDictionary<string, object> command, string paramaterToPullFrom, IList<string> listToAddTo)
+            IDictionary<string, object> command, string paramaterToPullFrom, ICollection<string> listToAddTo)
         {
             if (!(command[paramaterToPullFrom] is string))
             {
                 // ensure that our arguments are actually an array
                 var arr = (JsonArray)command[paramaterToPullFrom];
                 foreach (
-                    var character in 
-                        from string character in arr 
-                        where !string.IsNullOrWhiteSpace(character) 
-                        where !listToAddTo.Contains(character) 
+                    var character in
+                        from string character in arr
+                        where !string.IsNullOrWhiteSpace(character)
+                        where !listToAddTo.Contains(character)
                         select character)
                 {
                     listToAddTo.Add(character);
@@ -166,6 +160,30 @@ namespace Slimcat.Services
                     listToAddTo.Add(toAdd);
                 }
             }
+        }
+
+        private static Gender ParseGender(string input)
+        {
+            switch (input)
+            {
+                // manually determine some really annoyingly-named genders
+                case "Male-Herm":
+                    return Gender.Herm_M;
+
+                case "Herm":
+                    return Gender.Herm_F;
+
+                case "Cunt-boy":
+                    return Gender.Cuntboy;
+
+                default: // every other gender is parsed normally
+                    return (Gender)Enum.Parse(typeof(Gender), input, true);
+            }
+        }
+
+        private void AdMessageCommand(IDictionary<string, object> command)
+        {
+            this.MessageRecieved(command, true);
         }
 
         private void AdminsCommand(IDictionary<string, object> command)
@@ -257,7 +275,7 @@ namespace Slimcat.Services
         private void ChannelInitializedCommand(IDictionary<string, object> command)
         {
             var channelName = (string)command["channel"];
-            var mode = (ChannelMode)Enum.Parse(typeof(ChannelMode), command["mode"] as string, true);
+            var mode = (ChannelMode)Enum.Parse(typeof(ChannelMode), (string)command["mode"], true);
             var channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
 
             channel.Mode = mode;
@@ -283,39 +301,42 @@ namespace Slimcat.Services
         private void ChannelListCommand(IDictionary<string, object> command, bool isPublic)
         {
             dynamic arr = command["channels"];
-            foreach (IDictionary<string, object> channel in arr)
+            lock (this.ChatModel.AllChannels)
             {
-                var name = channel["name"] as string;
-                string title = null;
-                if (!isPublic)
+                foreach (IDictionary<string, object> channel in arr)
                 {
-                    title = HttpUtility.HtmlDecode(channel["title"] as string);
-                }
+                    var name = channel["name"] as string;
+                    string title = null;
+                    if (!isPublic)
+                    {
+                        title = HttpUtility.HtmlDecode(channel["title"] as string);
+                    }
 
-                var mode = ChannelMode.Both;
-                if (isPublic)
-                {
-                    mode = (ChannelMode)Enum.Parse(typeof(ChannelMode), channel["mode"] as string, true);
-                }
+                    var mode = ChannelMode.Both;
+                    if (isPublic)
+                    {
+                        mode = (ChannelMode)Enum.Parse(typeof(ChannelMode), (string)channel["mode"], true);
+                    }
 
-                var number = (long)channel["characters"];
-                if (number < 0)
-                {
-                    number = 0;
-                }
+                    var number = (long)channel["characters"];
+                    if (number < 0)
+                    {
+                        number = 0;
+                    }
 
-                this.Dispatcher.Invoke(
-                    (Action)
-                    (() =>
-                     this.ChatModel.AllChannels.Add(
-                         new GeneralChannelModel(name, isPublic ? ChannelType.Public : ChannelType.Private, (int)number, mode)
-                             {
-                                 Title
-                                     =
-                                     isPublic
-                                         ? name
-                                         : title
-                             })));
+                    this.Dispatcher.Invoke(
+                        (Action)
+                        (() =>
+                         this.ChatModel.AllChannels.Add(
+                             new GeneralChannelModel(
+                             name, isPublic ? ChannelType.Public : ChannelType.Private, (int)number, mode)
+                                 {
+                                     Title =
+                                         isPublic
+                                             ? name
+                                             : title
+                                 })));
+                }
             }
         }
 
@@ -356,13 +377,10 @@ namespace Slimcat.Services
                                 new Dictionary<string, object>
                                     {
                                         {
-                                            "character", 
-                                            character
-                                            .Name
+                                            "character", character.Name
                                         }, 
                                         {
-                                            "channel", 
-                                            c.Id
+                                            "channel", c.Id
                                         }
                                     };
 
@@ -392,19 +410,21 @@ namespace Slimcat.Services
         {
             lock (this.que)
             {
-                if (this.que.Count > 0)
+                if (this.que.Count <= 0)
                 {
-                    IDictionary<string, object> workingData = this.que[0];
-                    CommandDelegate toInvoke = this.InterpretCommand(workingData);
-                    if (toInvoke != null)
-                    {
-                        toInvoke.Invoke(workingData);
-                    }
-
-                    this.que.RemoveAt(0);
-
-                    this.DoAction();
+                    return;
                 }
+
+                var workingData = this.que[0];
+                var toInvoke = this.InterpretCommand(workingData);
+                if (toInvoke != null)
+                {
+                    toInvoke.Invoke(workingData);
+                }
+
+                this.que.RemoveAt(0);
+
+                this.DoAction();
             }
         }
 
@@ -479,17 +499,19 @@ namespace Slimcat.Services
 
                 temp.Name = (string)character[0]; // Character's name
 
-                if (!this.ChatModel.IsOnline(temp.Name))
+                if (this.ChatModel.IsOnline(temp.Name))
                 {
-                    temp.Gender = ParseGender((string)character[1]); // character's gender
-
-                    temp.Status = (StatusType)Enum.Parse(typeof(StatusType), (string)character[2], true);
-
-                    // Character's status
-                    temp.StatusMessage = (string)character[3]; // Character's status message
-
-                    this.ChatModel.AddCharacter(temp); // also add it to the online characters collection
+                    continue;
                 }
+
+                temp.Gender = ParseGender((string)character[1]); // character's gender
+
+                temp.Status = (StatusType)Enum.Parse(typeof(StatusType), (string)character[2], true);
+
+                // Character's status
+                temp.StatusMessage = (string)character[3]; // Character's status message
+
+                this.ChatModel.AddCharacter(temp); // also add it to the online characters collection
             }
         }
 
@@ -595,7 +617,7 @@ namespace Slimcat.Services
             // JCH is used in a few situations. It is used when others join a channel and when we join a channel
 
             // if this is a situation where we are joining a channel...
-            GeneralChannelModel channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
+            var channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
             if (channel == null)
             {
                 var kind = ChannelType.Public;
@@ -606,15 +628,12 @@ namespace Slimcat.Services
 
                 this.manager.JoinChannel(kind, channelName, title);
             }
-
-                // if it isn't, then it must be when someone else is.
             else
             {
-                ICharacter toAdd = this.ChatModel.FindCharacter(identity);
+                var toAdd = this.ChatModel.FindCharacter(identity);
                 if (channel.AddCharacter(toAdd))
                 {
-                    this.Events.GetEvent<NewUpdateEvent>().Publish // send the join/leave notification
-                        (
+                    this.Events.GetEvent<NewUpdateEvent>().Publish(
                             new CharacterUpdateModel(
                                 toAdd, 
                                 new CharacterUpdateModel.JoinLeaveEventArgs
@@ -675,8 +694,7 @@ namespace Slimcat.Services
 
             if (channel.RemoveCharacter(characterName))
             {
-                this.Events.GetEvent<NewUpdateEvent>().Publish // send the join/leave notification
-                    (
+                this.Events.GetEvent<NewUpdateEvent>().Publish(
                         new CharacterUpdateModel(
                             this.ChatModel.FindCharacter(characterName), 
                             new CharacterUpdateModel.JoinLeaveEventArgs
@@ -843,25 +861,6 @@ namespace Slimcat.Services
             this.PromoteOrDemote(target, true, channelId);
         }
 
-        private static Gender ParseGender(string input)
-        {
-            switch (input)
-            {
-                    // manually determine some really annoyingly-named genders
-                case "Male-Herm":
-                    return Gender.Herm_M;
-
-                case "Herm":
-                    return Gender.Herm_F;
-
-                case "Cunt-boy":
-                    return Gender.Cuntboy;
-
-                default: // every other gender is parsed normally
-                    return (Gender)Enum.Parse(typeof(Gender), input, true);
-            }
-        }
-
         private void PrivateChannelListCommand(IDictionary<string, object> command)
         {
             this.ChannelListCommand(command, false);
@@ -982,16 +981,15 @@ namespace Slimcat.Services
 
                 // sometimes ID is sent as a string. Sometimes it is sent as a number.
                 // so even though it's THE SAME COMMAND we have to treat *each* number differently
-                var commentId = long.Parse(command["id"] as string);
+                var commentId = long.Parse((string)command["id"]);
                 var parentId = (long)command["parent_id"];
-                var targetId = long.Parse(command["target_id"] as string);
+                var targetId = long.Parse((string)command["target_id"]);
 
                 var title = HttpUtility.HtmlDecode(command["target"] as string);
 
                 var commentType =
                     (CharacterUpdateModel.CommentEventArgs.CommentTypes)
-                    Enum.Parse(
-                        typeof(CharacterUpdateModel.CommentEventArgs.CommentTypes), command["target_type"] as string, true);
+                    Enum.Parse(typeof(CharacterUpdateModel.CommentEventArgs.CommentTypes), (string)command["target_type"], true);
 
                 this.Events.GetEvent<NewUpdateEvent>()
                     .Publish(
@@ -1011,7 +1009,6 @@ namespace Slimcat.Services
         private void RollCommand(IDictionary<string, object> command)
         {
             var channel = command["channel"] as string;
-            var type = command["type"] as string;
             var message = command["message"] as string;
             var poster = command["character"] as string;
 
@@ -1024,7 +1021,7 @@ namespace Slimcat.Services
         private void RoomModeChangedCommand(IDictionary<string, object> command)
         {
             var channelId = command["channel"] as string;
-            var mode = command["mode"] as string;
+            var mode = (string)command["mode"];
 
             var newMode = (ChannelMode)Enum.Parse(typeof(ChannelMode), mode, true);
             var channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
@@ -1046,7 +1043,7 @@ namespace Slimcat.Services
         private void RoomTypeChangedCommand(IDictionary<string, object> command)
         {
             var channelId = command["channel"] as string;
-            var isPublic = (command["message"] as string).IndexOf("public", StringComparison.OrdinalIgnoreCase) != -1;
+            var isPublic = ((string)command["message"]).IndexOf("public", StringComparison.OrdinalIgnoreCase) != -1;
 
             var channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
 
@@ -1084,7 +1081,7 @@ namespace Slimcat.Services
         private void StatusChangedCommand(IDictionary<string, object> command)
         {
             var character = (string)command["character"];
-            var status = (StatusType)Enum.Parse(typeof(StatusType), command["status"] as string, true);
+            var status = (StatusType)Enum.Parse(typeof(StatusType), (string)command["status"], true);
             var statusMessage = (string)command["statusmsg"];
 
             if (!this.ChatModel.IsOnline(character))

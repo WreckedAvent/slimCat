@@ -196,15 +196,15 @@ namespace Slimcat.ViewModels
                         if (args is CharacterUpdateModel)
                         {
                             var characterName = ((CharacterUpdateModel)args).TargetCharacter.Name;
-                            return arguments.ContainsOrd(this.SearchString, true)
-                                   || characterName.ContainsOrd(this.SearchString, true);
+                            return arguments.ContainsOrdinal(this.SearchString, true)
+                                   || characterName.ContainsOrdinal(this.SearchString, true);
                         }
 
                         if (args is ChannelUpdateModel)
                         {
                             var channelName = ((ChannelUpdateModel)args).ChannelTitle;
-                            return arguments.ContainsOrd(this.SearchString, true)
-                                   || channelName.ContainsOrd(this.SearchString, true);
+                            return arguments.ContainsOrdinal(this.SearchString, true)
+                                   || channelName.ContainsOrdinal(this.SearchString, true);
                         }
 
                         return arguments.Contains(this.SearchString);

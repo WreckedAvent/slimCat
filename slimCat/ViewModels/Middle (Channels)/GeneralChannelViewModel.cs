@@ -456,6 +456,21 @@ namespace Slimcat.ViewModels
             {
                 return this.IsDisplayingChat ? this.hasNewAds : this.hasNewMessages;
             }
+
+            set
+            {
+                if (this.IsDisplayingChat)
+                {
+                    this.hasNewMessages = value;
+                }
+                else
+                {
+                    this.hasNewAds = value;
+                }
+
+                this.OnPropertyChanged("OtherTabHasMessages");
+                this.OnPropertyChanged("StatusString");
+            }
         }
 
         /// <summary>
@@ -732,8 +747,8 @@ namespace Slimcat.ViewModels
         {
             switch (e.PropertyName)
             {
-                case "MOTD":
-                    this.OnPropertyChanged("MOTD");
+                case "Description":
+                    this.OnPropertyChanged("Description");
                     break;
                 case "Type":
                     this.OnPropertyChanged("ChannelTypeString"); // fixes laggy room type change
@@ -830,66 +845,12 @@ namespace Slimcat.ViewModels
 
         private void OnAdsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (this.IsDisplayingAds)
-            {
-                switch (e.Action)
-                {
-                    case NotifyCollectionChangedAction.Add:
-                        {
-                            var items = e.NewItems.Cast<IMessage>();
-                            foreach (var item in items.Where(this.MeetsFilter))
-                            {
-                                this.currentMessages.Add(item);
-                            }
-                        }
-
-                        break;
-                    case NotifyCollectionChangedAction.Reset:
-                        this.currentMessages.Clear();
-                        break;
-                }
-            }
-
-            if (this.IsDisplayingChat)
-            {
-                this.hasNewAds = this.Model.Ads.Where(this.MeetsFilter).Any();
-                this.OnPropertyChanged("OtherTabHasMessages");
-            }
-
-            this.OnPropertyChanged("StatusString");
+            this.HandleCollectionChanged(e, true);
         }
 
         private void OnMessagesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (this.IsDisplayingChat)
-            {
-                switch (e.Action)
-                {
-                    case NotifyCollectionChangedAction.Add:
-                        {
-                            var items = e.NewItems.Cast<IMessage>();
-                            foreach (var item in items.Where(this.MeetsFilter))
-                            {
-                                this.currentMessages.Add(item);
-                            }
-                        }
-
-                        break;
-                    case NotifyCollectionChangedAction.Reset:
-                        this.currentMessages.Clear();
-                        break;
-                    case NotifyCollectionChangedAction.Remove:
-                        this.currentMessages.RemoveAt(0);
-                        break;
-                }
-            }
-            else if (this.IsDisplayingAds)
-            {
-                this.hasNewMessages = this.Model.Messages.Count > 0;
-                this.OnPropertyChanged("OtherTabHasMessages");
-            }
-
-            this.OnPropertyChanged("StatusString");
+            this.HandleCollectionChanged(e, false);
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -900,27 +861,22 @@ namespace Slimcat.ViewModels
                     this.OnPropertyChanged("StatusString"); // keep the counter updated
                     break;
                 case "SearchSettings":
+                case "IsDisplayingChat":
                     {
-                        this.currentMessages.Clear();
-                        var collection = this.IsDisplayingChat
-                                        ? this.Model.Messages
-                                        : this.Model.Ads;
-                        foreach (var message in collection.Where(this.MeetsFilter))
-                        {
-                            this.currentMessages.Add(message);
-                        }
+                        this.RebuildCurrentMessages();
                     }
 
                     break;
-                case "IsDisplayingChat":
+
+                case "IsSearching":
                     {
-                        this.currentMessages.Clear();
-                        var collection = this.IsDisplayingChat
-                                            ? this.Model.Messages.Where(this.MeetsFilter)
-                                            : this.Model.Ads.Where(this.MeetsFilter);
-                        foreach (var item in collection)
+                        if (this.isSearching)
                         {
-                            this.currentMessages.Add(item);
+                            this.RemoveUnwanted();
+                        }
+                        else
+                        {
+                            this.AddInWanted();
                         }
                     }
 
@@ -928,17 +884,119 @@ namespace Slimcat.ViewModels
             }
         }
 
-        private void UpdateChat(NotificationModel update)
+        private void UpdateChat(NotificationModel newUpdate)
         {
-            var updateModel = update as CharacterUpdateModel;
+            var updateModel = newUpdate as CharacterUpdateModel;
             if (updateModel == null)
             {
                 return;
             }
 
-            if (updateModel.Arguments is CharacterUpdateModel.ListChangedEventArgs)
+            var args = updateModel.Arguments as CharacterUpdateModel.ListChangedEventArgs;
+            if (args == null)
             {
-                this.OnPropertyChanged("CurrentMessages");
+                return;
+            }
+
+            if (args.IsAdded)
+            {
+                this.RemoveUnwanted();
+            }
+            else
+            {
+                this.AddInWanted();
+            }
+        }
+
+        private IEnumerable<IMessage> BuildCurrentMessages()
+        {
+            IEnumerable<IMessage> toReturn = this.IsDisplayingChat ? this.Model.Messages : this.Model.Ads;
+
+            if (this.IsSearching || this.IsDisplayingAds)
+            {
+                toReturn = toReturn.Where(this.MeetsFilter);
+            }
+
+            return toReturn;
+        }
+
+        private void RebuildCurrentMessages()
+        {
+            this.currentMessages.Clear();
+            foreach (var message in this.BuildCurrentMessages())
+            {
+                this.currentMessages.Add(message);
+            }
+        }
+
+        private void RemoveUnwanted()
+        {
+            lock (this.currentMessages)
+            {
+                if (!this.isSearching && this.isDisplayingChat)
+                {
+                    return;
+                }
+
+                var toRemove = this.currentMessages.Where(m => !this.MeetsFilter(m)).ToList();
+
+                foreach (var message in toRemove)
+                {
+                    this.currentMessages.Remove(message);
+                }
+            }
+        }
+
+        private void AddInWanted()
+        {
+            lock (this.currentMessages)
+            {
+                var total = this.BuildCurrentMessages().ToList();
+                var toAdd = new List<Tuple<IMessage, int>>();
+                for (var i = 0; i < total.Count; i++)
+                {
+                    var item = total[i];
+                    if (!this.currentMessages.Contains(item))
+                    {
+                        toAdd.Add(new Tuple<IMessage, int>(item, i));
+                    }
+                }
+
+                toAdd.Each(item => this.currentMessages.Insert(item.Item2, item.Item1));
+            }
+        }
+
+        private void HandleCollectionChanged(NotifyCollectionChangedEventArgs e, bool isAds)
+        {
+            if (isAds != this.IsDisplayingAds)
+            {
+                var predicate = isAds ? this.Model.Ads.Where(this.MeetsFilter) : this.Model.Messages;
+                this.OtherTabHasMessages = predicate.Any();
+            }
+
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    {
+                        var messages = e.NewItems.Cast<IMessage>();
+                        if (this.IsSearching || isAds)
+                        {
+                            messages = messages.Where(this.MeetsFilter);
+                        }
+
+                        foreach (var message in messages)
+                        {
+                            this.currentMessages.Add(message);
+                        }
+                    }
+
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    this.currentMessages.Clear();
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    this.currentMessages.RemoveAt(0);
+                    break;
             }
         }
 

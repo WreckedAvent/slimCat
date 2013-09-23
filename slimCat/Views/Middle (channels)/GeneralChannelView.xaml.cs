@@ -57,6 +57,8 @@ namespace Slimcat.Views
 
         private KeepToCurrentScrollViewer scroller;
 
+        private int loadedCount;
+
         #endregion
 
         #region Constructors and Destructors
@@ -112,11 +114,10 @@ namespace Slimcat.Views
             {
                 case NotifyCollectionChangedAction.Add:
                     {
-                        var items = e.NewItems.Cast<IMessage>();
-                        foreach (var template in items.Select(item => new MessageView { DataContext = item }))
-                        {
-                            this.Messages.Blocks.Add(template);
-                        }
+                        e.NewItems
+                            .Cast<IMessage>()
+                            .Select(item => new MessageView { DataContext = item })
+                            .Each(t => this.AddAtPositionAsync(t, e.NewStartingIndex));
                     }
 
                     break;
@@ -124,12 +125,8 @@ namespace Slimcat.Views
                 case NotifyCollectionChangedAction.Reset:
                     {
                         this.Messages.Blocks.Clear();
-                        var loadedCount = 0;
-
-                        foreach (var template in this.GetHistory().Reverse().Select(item => new HistoryView { DataContext = item }))
-                        {
-                            this.AddAsync(template, ref loadedCount);
-                        }
+                        this.loadedCount = 0;
+                        this.historyLoaded = false;
 
                         break;
                     }
@@ -147,10 +144,14 @@ namespace Slimcat.Views
                             this.historyLoaded = false;
                         }
 
+                        this.Messages.Blocks.Remove(
+                            e.OldStartingIndex != -1
+                                ? this.Messages.Blocks.ElementAt(e.OldStartingIndex)
+                                : this.Messages.Blocks.FirstBlock);
 
-                        this.Messages.Blocks.Remove(this.Messages.Blocks.FirstBlock);
                         this.PopupAnchor.UpdateLayout();
                         this.scroller.ScrollToStick();
+                        this.loadedCount--;
                     }
 
                     break;
@@ -159,27 +160,30 @@ namespace Slimcat.Views
 
         private void OnLoad(object s, EventArgs e)
         {
-            var loadedCount = 0;
-            this.scroller = new KeepToCurrentScrollViewer(PopupAnchor);
-
-            foreach (var template in this.vm.CurrentMessages.Reverse().Select(item => new MessageView { DataContext = item }))
+            lock (this.vm.CurrentMessages)
+            lock (this.Messages)
             {
-                this.AddAsync(template, ref loadedCount);
-            }
+                this.scroller = new KeepToCurrentScrollViewer(PopupAnchor);
 
-            if (this.historyInitialized)
-            {
-                return;
-            }
+                this.vm.CurrentMessages
+                    .Reverse()
+                    .Select(item => new MessageView() { DataContext = item })
+                    .Each(this.AddAsync);
 
-            foreach (var template in this.GetHistory().Reverse().Select(item => new HistoryView { DataContext = item }))
-            {
-                this.AddAsync(template, ref loadedCount);
-            }
+                if (this.historyInitialized)
+                {
+                    return;
+                }
 
-            this.historyLoaded = true;
-            this.historyInitialized = true;
-            this.loaded = true;
+                this.GetHistory()
+                    .Reverse()
+                    .Select(item => new HistoryView { DataContext = item })
+                    .Each(this.AddAsync);
+
+                this.historyLoaded = true;
+                this.historyInitialized = true;
+                this.loaded = true;
+            }
         }
 
         private IEnumerable<string> GetHistory()
@@ -190,12 +194,12 @@ namespace Slimcat.Views
             return this.vm.IsDisplayingChat ? history.Where(isChatMessage) : history.Where(s => !isChatMessage(s));
         }
 
-        private void AddAsync(Block item, ref int count)
+        private void AddAsync(Block item)
         {
-            count++;
+            this.loadedCount++;
 
-            var priority = count < 25 ? DispatcherPriority.Normal : DispatcherPriority.DataBind;
-            if (count > 25)
+            var priority = this.loadedCount < 25 ? DispatcherPriority.Normal : DispatcherPriority.DataBind;
+            if (this.loadedCount > 25)
             {
                 return;
             }
@@ -214,6 +218,23 @@ namespace Slimcat.Views
                             this.Messages.Blocks.Add(item);
                         }
                 }));
+        }
+
+        private void AddAtPositionAsync(Block item, int index)
+        {
+            var offset = this.historyLoaded ? index + this.GetHistory().Count() : index;
+            offset--;
+            offset = Math.Min(offset, this.Messages.Blocks.Count() - 1);
+
+            if (offset > 0)
+            {
+                var block = this.Messages.Blocks.ElementAt(offset);
+                this.Dispatcher.BeginInvoke((Action)(() => this.Messages.Blocks.InsertAfter(block, item)));
+            }
+            else
+            {
+                this.Dispatcher.BeginInvoke((Action)(() => this.Messages.Blocks.Add(item)));
+            }
         }
         #endregion
     }
