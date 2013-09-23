@@ -7,12 +7,18 @@
            Foreground="{StaticResource ForegroundBrush}"
            FontFamily="Segoe UI, Verdanda"
            FontSize="13">
-    <Run Text="{Binding TimeStamp, Mode=OneTime}" Foreground="{StaticResource HighlightBrush}"
+    <Run Text="{Binding TimeStamp, Mode=OneTime}" 
+         Foreground="{Binding Path=Poster.IsInteresting, Mode=OneWay, Converter={StaticResource NameplateColorConverter}}"
          FontSize="12" />
 
     <InlineUIContainer BaselineAlignment="Bottom">
-        <Rectangle Fill="{Binding Path=Poster.Gender, Mode=OneTime, Converter={StaticResource GenderColorConverter}}"
-                   Height="15" Width="15" Margin="0">
+        <Rectangle Height="15" Width="15" Margin="0">
+            <Rectangle.Fill>
+                <MultiBinding Converter="{StaticResource GenderColorConverter}" Mode="OneWay">
+                    <Binding Path="Poster.Gender"/>
+                    <Binding Path="Poster.IsInteresting"/>
+                </MultiBinding>
+            </Rectangle.Fill>
             <Rectangle.OpacityMask>
                 <ImageBrush
                     ImageSource="{Binding Path=Poster.Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
@@ -21,7 +27,8 @@
     </InlineUIContainer>
 
     <Hyperlink CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}"
-               Style="{StaticResource FlowUsernameLink}">
+               Style="{StaticResource FlowUsernameLink}"
+               Foreground="{Binding Path=Poster.IsInteresting, Mode=OneWay, Converter={StaticResource NameplateColorConverter}}">
         <Run Text="{Binding Path=Poster.Name, Mode=OneTime}" />
         <Hyperlink.InputBindings>
             <MouseBinding MouseAction="RightClick"

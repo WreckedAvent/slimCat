@@ -15,7 +15,8 @@
     <utilities:GenderColorConverter x:Key="GenderColorConverter" />
     <utilities:GenderImageConverter x:Key="GenderImageConverter" />
     <utilities:ChannelTypeToImageConverter x:Key="ChannelTypeToImageConverter" />
-
+    <utilities:NameplateColorConverter x:Key="NameplateColorConverter"/>
+    
     <DataTemplate x:Key="MessageView">
         <v:MessageView />
     </DataTemplate>
@@ -67,8 +68,13 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
-            <Rectangle Fill="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderColorConverter}}"
-                       Height="15" Width="15">
+            <Rectangle Height="15" Width="15">
+                <Rectangle.Fill>
+                    <MultiBinding Converter="{StaticResource GenderColorConverter}" Mode="OneWay">
+                        <Binding Path="Gender"/>
+                        <Binding Path="IsInteresting"/>
+                    </MultiBinding>
+                </Rectangle.Fill>
                 <Rectangle.OpacityMask>
                     <ImageBrush
                         ImageSource="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
@@ -78,7 +84,8 @@
             <TextBlock TextWrapping="Wrap"
                        Grid.Column="1">
                 <Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
-                           Style="{StaticResource TunnelingUsernameStyle}">
+                           Style="{StaticResource TunnelingUsernameStyle}"
+                           Foreground="{Binding Path=IsInteresting, Mode=OneWay, Converter={StaticResource NameplateColorConverter}}">
                     <Run Text="{Binding Path=Name, Mode=OneTime}" />
                     <Hyperlink.InputBindings>
                         <MouseBinding MouseAction="RightClick"

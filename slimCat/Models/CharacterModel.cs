@@ -57,8 +57,6 @@ namespace Slimcat.Models
 
         private string statusMessage = string.Empty;
 
-        private bool isOfInterest;
-
         private bool isInteresting;
 
         #endregion
@@ -146,28 +144,6 @@ namespace Slimcat.Models
         }
 
         /// <summary>
-        ///     Gets or sets whether a user is interesting to our current character.
-        /// </summary>
-        public bool IsOfInterest
-        {
-            get
-            {
-                return this.isOfInterest;
-            }
-
-            set
-            {
-                if (this.isOfInterest == value)
-                {
-                    return;
-                }
-
-                this.isOfInterest = value;
-                this.OnPropertyChanged("IsOfInterest");
-            }
-        }
-
-        /// <summary>
         ///     Gets or sets the status.
         /// </summary>
         public StatusType Status
@@ -207,6 +183,7 @@ namespace Slimcat.Models
             {
                 return this.isInteresting;
             }
+
             set
             {
                 this.isInteresting = value;

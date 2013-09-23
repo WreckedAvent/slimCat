@@ -336,15 +336,25 @@ namespace Slimcat.Utilities
     /// <summary>
     /// Converts gender string into gender color.
     /// </summary>
-    public sealed class GenderColorConverter : IValueConverter
+    public sealed class GenderColorConverter : IMultiValueConverter
     {
         #region Public Methods and Operators
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {
-                var gender = (Gender)value;
+                var gender = (Gender)values[0];
+                var paleColor = (Color)Application.Current.FindResource("ForegroundColor");
+                Color brightColor;
+                if (values.Length > 1 && (bool)values[1])
+                {
+                    brightColor = (Color)Application.Current.TryFindResource("ContrastColor");
+                }
+                else
+                {
+                    brightColor = (Color)Application.Current.FindResource("HighlightColor");
+                }
 
                 switch (gender)
                 {
@@ -354,23 +364,11 @@ namespace Slimcat.Utilities
                                 new GradientStopCollection(
                                     new List<GradientStop>
                                         {
-                                            new GradientStop(
-                                                (Color)
-                                                Application.Current.FindResource("ForegroundColor"), 
-                                                0.0), 
-                                            new GradientStop(
-                                                (Color)
-                                                Application.Current.FindResource("ForegroundColor"), 
-                                                0.5), 
-                                            new GradientStop(
-                                                (Color)
-                                                Application.Current.FindResource("HighlightColor"), 
-                                                0.5), 
-                                            new GradientStop(
-                                                (Color)
-                                                Application.Current.FindResource("HighlightColor"), 
-                                                1.0)
-                                        }), 
+                                            new GradientStop(paleColor, 0.0), 
+                                            new GradientStop(paleColor, 0.5), 
+                                            new GradientStop(brightColor, 0.5), 
+                                            new GradientStop(brightColor, 1.0)
+                                        }),
                                 0);
                     case Gender.Herm_M:
                         return
@@ -378,29 +376,17 @@ namespace Slimcat.Utilities
                                 new GradientStopCollection(
                                     new List<GradientStop>
                                         {
-                                            new GradientStop(
-                                                (Color)
-                                                Application.Current.FindResource("ForegroundColor"), 
-                                                0.0), 
-                                            new GradientStop(
-                                                (Color)
-                                                Application.Current.FindResource("ForegroundColor"), 
-                                                0.5), 
-                                            new GradientStop(
-                                                (Color)
-                                                Application.Current.FindResource("HighlightColor"), 
-                                                0.5), 
-                                            new GradientStop(
-                                                (Color)
-                                                Application.Current.FindResource("HighlightColor"), 
-                                                1.0)
+                                            new GradientStop(paleColor, 0.0), 
+                                            new GradientStop(paleColor, 0.5), 
+                                            new GradientStop(brightColor, 0.5), 
+                                            new GradientStop(brightColor, 1.0)
                                         }));
 
                     case Gender.Cuntboy:
                     case Gender.Shemale:
                         return Application.Current.FindResource("ForegroundBrush");
                     default:
-                        return Application.Current.FindResource("HighlightBrush");
+                        return new SolidColorBrush(brightColor);
                 }
             }
             catch
@@ -409,7 +395,7 @@ namespace Slimcat.Utilities
             }
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
@@ -684,6 +670,26 @@ namespace Slimcat.Utilities
         }
 
         #endregion
+    }
+
+    public sealed class NameplateColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var v = (bool)value;
+            SolidColorBrush brush = null;
+            if (v)
+            {
+                brush = (SolidColorBrush)Application.Current.TryFindResource("ContrastBrush");
+            }
+
+            return brush ?? (brush = (SolidColorBrush)Application.Current.FindResource("HighlightBrush"));
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>

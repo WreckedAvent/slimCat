@@ -497,9 +497,11 @@ namespace Slimcat.Models
         /// </param>
         public void ToggleInterestedMark(string character)
         {
+            var target = this.FindCharacter(character);
             if (!this.Interested.Contains(character))
             {
                 this.Interested.Add(character);
+                target.IsInteresting = true;
                 if (this.NotInterested.Contains(character))
                 {
                     this.NotInterested.Remove(character);
@@ -508,6 +510,7 @@ namespace Slimcat.Models
             else
             {
                 this.Interested.Remove(character);
+                target.IsInteresting = this.IsOfInterest(character);
             }
 
             SettingsDaemon.SaveApplicationSettingsToXml(this.CurrentCharacter.Name);
@@ -527,11 +530,13 @@ namespace Slimcat.Models
                 if (this.Interested.Contains(character))
                 {
                     this.Interested.Remove(character);
+                    this.FindCharacter(character).IsInteresting = this.IsOfInterest(character);
                 }
             }
             else
             {
                 this.NotInterested.Remove(character);
+                this.FindCharacter(character).IsInteresting = this.IsOfInterest(character);
             }
 
             SettingsDaemon.SaveApplicationSettingsToXml(this.CurrentCharacter.Name);
