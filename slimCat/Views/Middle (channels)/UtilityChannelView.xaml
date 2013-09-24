@@ -97,6 +97,12 @@
                                   Margin="0,5">
                             Friends are account wide
                         </CheckBox>
+                        
+                        <CheckBox IsChecked="{Binding AllowColors}"
+                                  VerticalAlignment="Center"
+                                  Margin="0,5">
+                            Colors allowed
+                        </CheckBox>
 
                         <WrapPanel Margin="0,5">
                             <TextBlock Margin="0,0,5,0">Keep</TextBlock>

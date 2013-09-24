@@ -132,7 +132,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets or sets a value indicating whether is connecting.
         /// </summary>
-        public bool IsIsConnecting
+        public bool IsConnecting
         {
             get
             {
@@ -226,7 +226,7 @@ namespace Slimcat.ViewModels
         private void SendCharacterSelectEvent()
         {
             this.RelayMessage = "Awesome! Connecting to F-Chat ...";
-            this.IsIsConnecting = true;
+            this.IsConnecting = true;
             this.Events.GetEvent<CharacterSelectedLoginEvent>().Publish(this.CurrentCharacter);
         }
 

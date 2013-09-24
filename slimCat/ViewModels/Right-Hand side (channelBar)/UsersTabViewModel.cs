@@ -175,10 +175,13 @@ namespace Slimcat.ViewModels
             {
                 if (this.HasUsers)
                 {
-                    return
-                        this.SelectedChan.Users.Where(this.MeetsFilter)
-                            .OrderBy(this.RelationshipToUser)
-                            .ThenBy(x => x.Name);
+                    lock (this.SelectedChan.Users)
+                    {
+                        return
+                            this.SelectedChan.Users.Where(this.MeetsFilter)
+                                .OrderBy(this.RelationshipToUser)
+                                .ThenBy(x => x.Name);
+                    }
                 }
                 return null;
             }

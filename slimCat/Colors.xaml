@@ -11,7 +11,7 @@
     <Color x:Key="HighlightColor">#0066cc</Color>
     
     <!-- Contrast color is used in some places where a contrasting color is needed, such as for the friend's nameplates -->
-    <Color x:Key="ContrastColor">#00cc66</Color>
+    <Color x:Key="ContrastColor">#ffb400</Color>
 
     <!-- Background is used as the basis for every UI element. -->
     <Color x:Key="BackgroundColor">#000022</Color>

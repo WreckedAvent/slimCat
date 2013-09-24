@@ -718,7 +718,7 @@ namespace Slimcat.Utilities
                                                                "big"
                                                            };
 
-        private static readonly IList<string> SpecialBbCases = new List<string> { "url", "channel", "user", "icon", };
+        private static readonly IList<string> SpecialBbCases = new List<string> { "url", "channel", "user", "icon", "color" };
 
         // determines if a string has a (valid) opening BBCode tag
         private static readonly string[] ValidStartTerms = new[] { "http://", "https://", "ftp://" };
@@ -1296,6 +1296,21 @@ namespace Slimcat.Utilities
                             }) {
                                   BaselineAlignment = BaselineAlignment.TextBottom 
                                };
+            }
+
+            if (y.StartsWith("color") && ApplicationSettings.AllowColors)
+            {
+                var colorString = StripBeforeType(y);
+                try
+                {
+                    var color = (Color)ColorConverter.ConvertFromString(colorString);
+                    var brush = new SolidColorBrush(color);
+                    return new Span(x) { Foreground = brush };
+                }
+                catch
+                {
+                    return new Span(x);
+                }
             }
 
             return new Span(x);

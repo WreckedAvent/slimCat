@@ -165,10 +165,13 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                return
-                    this.ChatModel.OnlineCharacters.Where(this.MeetsFilter)
-                        .OrderBy(this.RelationshipToUser)
-                        .ThenBy(x => x.Name);
+                lock (this.ChatModel.OnlineCharacters)
+                {
+                    return
+                        this.ChatModel.OnlineCharacters.Where(this.MeetsFilter)
+                            .OrderBy(this.RelationshipToUser)
+                            .ThenBy(x => x.Name);
+                }
             }
         }
 

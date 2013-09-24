@@ -118,6 +118,12 @@ namespace Slimcat.Views
                             .Cast<IMessage>()
                             .Select(item => new MessageView { DataContext = item })
                             .Each(t => this.AddAtPositionAsync(t, e.NewStartingIndex));
+
+                        while (this.loadedCount > ApplicationSettings.BackLogMax)
+                        {
+                            this.Messages.Blocks.Remove(this.Messages.Blocks.FirstBlock);
+                            this.loadedCount--;
+                        }
                     }
 
                     break;
@@ -126,7 +132,6 @@ namespace Slimcat.Views
                     {
                         this.Messages.Blocks.Clear();
                         this.loadedCount = 0;
-                        this.historyLoaded = false;
 
                         this.GetHistory()
                             .Select(item => new HistoryView { DataContext = item })
@@ -137,15 +142,6 @@ namespace Slimcat.Views
                 case NotifyCollectionChangedAction.Remove:
                     {
                         this.scroller.Stick();
-                        if (this.historyLoaded)
-                        {
-                            for (var i = 0; i < this.vm.Model.History.Count; i++)
-                            {
-                                this.Messages.Blocks.Remove(this.Messages.Blocks.FirstBlock);
-                            }
-
-                            this.historyLoaded = false;
-                        }
 
                         this.Messages.Blocks.Remove(
                             e.OldStartingIndex != -1
@@ -154,6 +150,7 @@ namespace Slimcat.Views
 
                         this.PopupAnchor.UpdateLayout();
                         this.scroller.ScrollToStick();
+
                         this.loadedCount--;
                     }
 
@@ -172,6 +169,7 @@ namespace Slimcat.Views
                     .Reverse()
                     .Select(item => new MessageView { DataContext = item })
                     .Each(this.AddAsync);
+                this.loaded = true;
 
                 if (this.historyInitialized)
                 {
@@ -185,7 +183,6 @@ namespace Slimcat.Views
 
                 this.historyLoaded = true;
                 this.historyInitialized = true;
-                this.loaded = true;
             }
         }
 
@@ -202,7 +199,7 @@ namespace Slimcat.Views
             this.loadedCount++;
 
             var priority = this.loadedCount < 25 ? DispatcherPriority.Normal : DispatcherPriority.DataBind;
-            if (this.loadedCount > 25)
+            if (this.loadedCount > ApplicationSettings.BackLogMax)
             {
                 return;
             }
@@ -225,6 +222,8 @@ namespace Slimcat.Views
 
         private void AddAtPositionAsync(Block item, int index)
         {
+            this.loadedCount++;
+
             var offset = this.historyLoaded ? index + this.GetHistory().Count() : index;
             offset--;
             offset = Math.Min(offset, this.Messages.Blocks.Count() - 1);

@@ -444,9 +444,9 @@ namespace Slimcat.Services
                 ICharacter guess;
                 lock (this.model.OnlineCharacters)
                 {
-                    guess = this.model.OnlineCharacters
-                        .OrderBy(c => c.Name)
-                        .FirstOrDefault(c => c.Name.ContainsOrdinal(characterName));
+                    guess =
+                        this.model.OnlineCharacters.OrderBy(c => c.Name)
+                            .FirstOrDefault(c => c.Name.StartsWith(characterName, true, null));
                 }
 
                 this.JoinChannel(ChannelType.PrivateMessage, guess == null ? characterName : guess.Name);
@@ -496,9 +496,9 @@ namespace Slimcat.Services
                 return;
             }
 
-            var guess = this.model.AllChannels
-                    .OrderBy(channel => channel.Title)
-                    .FirstOrDefault(channel => channel.Title.ContainsOrdinal(args));
+            var guess =
+                this.model.AllChannels.OrderBy(channel => channel.Title)
+                    .FirstOrDefault(channel => channel.Title.StartsWith(args, true, null));
 
             if (guess != null)
             {

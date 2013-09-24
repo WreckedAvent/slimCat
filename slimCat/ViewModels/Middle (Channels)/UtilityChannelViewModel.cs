@@ -183,6 +183,19 @@ namespace Slimcat.ViewModels
 
         #region Public Properties
 
+        public bool AllowColors
+        {
+            get
+            {
+                return ApplicationSettings.AllowColors;
+            }
+            set
+            {
+                ApplicationSettings.AllowColors = value;
+                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
+            }
+        }
+
         /// <summary>
         ///     Gets or sets a value indicating whether allow logging.
         /// </summary>

@@ -65,6 +65,11 @@ namespace Slimcat.Models
         public static bool AllowLogging { get; set; }
 
         /// <summary>
+        ///     Gets or sets a value indiciating whether to allow user-inputted colors to be displayed.
+        /// </summary>
+        public static bool AllowColors { get; set; }
+
+        /// <summary>
         ///     Gets or sets the back log max.
         /// </summary>
         public static int BackLogMax { get; set; }
