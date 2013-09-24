@@ -73,22 +73,23 @@
                         Content="Message" />
                 <Button Command="{Binding FindLogCommand}"
                         Content="View Logs" />
-                <Button Command="{Binding IgnoreCommand}"
-                        Content="Ignore"
-                        Visibility="{Binding Path=RightClickMenuViewModel.CanIgnore, Converter={StaticResource BoolConverter}}" />
-                <Button Command="{Binding UnignoreCommand}"
-                        Content="Unignore"
-                        Visibility="{Binding Path=RightClickMenuViewModel.CanUnignore, Converter={StaticResource BoolConverter}}" />
 
                 <Button Command="{Binding InterestedCommand}"
                         Content="{Binding Path=RightClickMenuViewModel.MarkInterested}" />
                 <Button Command="{Binding NotInterestedCommand}"
                         Content="{Binding Path=RightClickMenuViewModel.MarkUninterested}" />
 
+                <Button Command="{Binding IgnoreCommand}"
+                        Content="Ignore"
+                        Visibility="{Binding Path=RightClickMenuViewModel.CanIgnore, Converter={StaticResource BoolConverter}}" />
+                <Button Command="{Binding UnignoreCommand}"
+                        Content="Unignore"
+                        Visibility="{Binding Path=RightClickMenuViewModel.CanUnignore, Converter={StaticResource BoolConverter}}" />
+                
                 <Button Command="{Binding ReportCommand}"
                         Visibility="{Binding Path=RightClickMenuViewModel.HasReport, Converter={StaticResource OppositeBoolConverter}}"
                         Content="Report User" />
-
+                
                 <!-- Mod Commands -->
                 <Button Command="{Binding KickCommand}"
                         Content="Kick"

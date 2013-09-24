@@ -972,6 +972,7 @@ namespace Slimcat.ViewModels
             {
                 var predicate = isAds ? this.Model.Ads.Where(this.MeetsFilter) : this.Model.Messages;
                 this.OtherTabHasMessages = predicate.Any();
+                return;
             }
 
             switch (e.Action)

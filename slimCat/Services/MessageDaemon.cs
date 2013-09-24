@@ -924,6 +924,7 @@ namespace Slimcat.Services
                 this.commands.TryGetValue(type, out handler);
                 if (handler == null)
                 {
+                    this.connection.SendMessage(command);
                     return;
                 }
 
