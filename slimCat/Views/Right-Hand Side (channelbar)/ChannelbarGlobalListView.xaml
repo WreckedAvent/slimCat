@@ -7,7 +7,7 @@
         <DataTemplate DataType="{x:Type models:CharacterModel}">
             <ContentControl Margin="0"
                             Content="{Binding IsAsync=True}"
-                            ContentTemplate="{StaticResource TunnelingUsernameTemplate}"
+                            ContentTemplate="{StaticResource UsernameTemplate}"
                             HorizontalAlignment="Left"
                             TextBlock.TextAlignment="Left">
             </ContentControl>

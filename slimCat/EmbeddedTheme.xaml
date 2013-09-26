@@ -1,7 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:lib="clr-namespace:Slimcat.Libraries"
-                    xmlns:v="clr-namespace:Slimcat.Views" xmlns:utilities="clr-namespace:Slimcat.Utilities">
+                    xmlns:v="clr-namespace:Slimcat.Views" xmlns:utilities="clr-namespace:Slimcat.Utilities"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:models="clr-namespace:Slimcat.Models" mc:Ignorable="d">
 
     <SolidColorBrush Color="{StaticResource ForegroundColor}" Opacity="0.9" x:Key="HistoryBrush" />
 
@@ -25,14 +28,10 @@
         <v:HistoryView />
     </DataTemplate>
 
-    <MouseBinding x:Key="TunnelingRightClickOpenMenu"
+    <MouseBinding x:Key="RightClickOpenMenu"
                   MouseAction="RightClick"
                   Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
                       RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
-
-    <MouseBinding x:Key="RightClickOpenMenu"
-                  MouseAction="RightClick"
-                  Command="{Binding OpenRightClickMenuCommand}" />
 
     <Style TargetType="{x:Type Button}" x:Key="ChannelInterfaceButton" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Padding" Value="2,0" />
@@ -42,26 +41,17 @@
                     AncestorType={x:Type Grid}, AncestorLevel=2} }" />
     </Style>
 
-    <Style TargetType="Hyperlink" x:Key="TunnelingUsernameStyle">
+    <Style TargetType="Hyperlink" x:Key="UsernameStyle">
         <Setter Property="Command"
                 Value="{Binding Path=DataContext.NavigateTo,
-                                            RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+                                RelativeSource={RelativeSource AncestorType={x:Type Grid}, AncestorLevel=2}}" />
         <Setter Property="TextDecorations" Value="{x:Null}" />
         <Setter Property="TextBlock.FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
     </Style>
 
-    <Style TargetType="Hyperlink" x:Key="UsernameStyle" BasedOn="{StaticResource TunnelingUsernameStyle}">
-        <Setter Property="Command"
-                Value="{Binding Path=DataContext.NavigateTo,
-                                            RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}" />
-    </Style>
-    <Style TargetType="Hyperlink" x:Key="FlowUsernameLink" BasedOn="{StaticResource TunnelingUsernameStyle}">
-        <Setter Property="Command"
-                Value="{Binding Path=DataContext.NavigateTo,
-                                            RelativeSource={RelativeSource AncestorType={x:Type Grid}}}" />
-    </Style>
-    <DataTemplate x:Key="TunnelingUsernameTemplate">
+    <DataTemplate x:Key="UsernameTemplate"
+                  DataType="models:CharacterModel">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="15" />
@@ -84,13 +74,13 @@
             <TextBlock TextWrapping="Wrap"
                        Grid.Column="1">
                 <Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
-                           Style="{StaticResource TunnelingUsernameStyle}"
+                           Style="{StaticResource UsernameStyle}"
                            Foreground="{Binding Path=IsInteresting, Mode=OneWay, Converter={StaticResource NameplateColorConverter}}">
                     <Run Text="{Binding Path=Name, Mode=OneTime}" />
                     <Hyperlink.InputBindings>
                         <MouseBinding MouseAction="RightClick"
                                       Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
-                                      RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                        RelativeSource={RelativeSource AncestorType={x:Type Grid},AncestorLevel=2}}"
                                       CommandParameter="{Binding Path=Name, Mode=OneTime}" />
                     </Hyperlink.InputBindings>
                 </Hyperlink>
@@ -99,37 +89,8 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="UsernameTemplate">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="15" />
-                <ColumnDefinition Width="auto" />
-            </Grid.ColumnDefinitions>
-
-            <Rectangle Fill="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderColorConverter}}"
-                       Height="15" Width="15">
-                <Rectangle.OpacityMask>
-                    <ImageBrush
-                        ImageSource="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
-                </Rectangle.OpacityMask>
-            </Rectangle>
-            <TextBlock TextWrapping="Wrap"
-                       Grid.Column="1">
-                <Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
-                           Style="{StaticResource UsernameStyle}">
-                    <Run Text="{Binding Path=Name, Mode=OneTime}" />
-                    <Hyperlink.InputBindings>
-                        <MouseBinding MouseAction="RightClick"
-                                      Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
-                                      RelativeSource={RelativeSource AncestorType={x:Type ContentControl}}}"
-                                      CommandParameter="{Binding Path=Name, Mode=OneTime}" />
-                    </Hyperlink.InputBindings>
-                </Hyperlink>
-            </TextBlock>
-        </Grid>
-    </DataTemplate>
-
-    <DataTemplate x:Key="CharacterUpdateTemplate">
+    <DataTemplate x:Key="CharacterUpdateTemplate" 
+                  DataType="models:CharacterUpdateModel">
         <Grid ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -156,7 +117,8 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="ChannelUpdateTemplate">
+    <DataTemplate x:Key="ChannelUpdateTemplate"
+                  DataType="models:ChannelUpdateModel">
         <Grid ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -183,7 +145,7 @@
         </Grid>
     </DataTemplate>
 
-    <Style TargetType="Hyperlink" x:Key="TunnelingHyperlink">
+    <Style TargetType="Hyperlink" x:Key="Hyperlink">
         <Setter Property="Command"
                 Value="{Binding Path=DataContext.NavigateTo,
                                   RelativeSource={RelativeSource Mode=FindAncestor,

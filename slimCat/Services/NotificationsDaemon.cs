@@ -531,7 +531,7 @@ namespace Slimcat.Services
                 // the only other kind of update model is a channel update model
             else
             {
-                string channelID = ((ChannelUpdateModel)notification).ChannelID;
+                string channelID = ((ChannelUpdateModel)notification).ChannelId;
                 ChannelUpdateModel.ChannelUpdateEventArgs args = ((ChannelUpdateModel)notification).Arguments;
 
                 this.AddNotification(notification);

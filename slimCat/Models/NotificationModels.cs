@@ -789,7 +789,7 @@ namespace Slimcat.Models
         /// <summary>
         ///     Gets the channel id.
         /// </summary>
-        public string ChannelID
+        public string ChannelId
         {
             get
             {

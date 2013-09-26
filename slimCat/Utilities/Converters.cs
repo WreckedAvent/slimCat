@@ -113,7 +113,7 @@ namespace Slimcat.Utilities
 
                 if (type == MessageType.Roll)
                 {
-                    inlines.Add(HelperConverter.ParseBbCode(text, true));
+                    inlines.Add(HelperConverter.ParseBbCode(text));
                     return inlines;
                 }
 
@@ -131,7 +131,7 @@ namespace Slimcat.Utilities
                         // if the post is a /me "command"
                         text = text.Substring("/me".Length);
                         inlines.Insert(0, new Run("*")); // push the name button to the second slot
-                        inlines.Add(new Italic(HelperConverter.ParseBbCode(text, true)));
+                        inlines.Add(new Italic(HelperConverter.ParseBbCode(text)));
                         inlines.Add(new Run("*"));
                         return inlines;
                     }
@@ -141,7 +141,7 @@ namespace Slimcat.Utilities
                         // or a post "command"
                         text = text.Substring("/post ".Length);
 
-                        inlines.Insert(0, HelperConverter.ParseBbCode(text, true));
+                        inlines.Insert(0, HelperConverter.ParseBbCode(text));
                         inlines.Insert(1, new Run(" ~"));
                         return inlines;
                     }
@@ -151,7 +151,7 @@ namespace Slimcat.Utilities
                         // or a warn "command"
                         text = text.Substring("/warn ".Length);
                         inlines.Add(new Run(" warns, "));
-                        var toAdd = HelperConverter.ParseBbCode(text, true);
+                        var toAdd = HelperConverter.ParseBbCode(text);
 
                         toAdd.Foreground = (Brush)Application.Current.FindResource("HighlightBrush");
                         toAdd.FontWeight = FontWeights.ExtraBold;
@@ -161,7 +161,7 @@ namespace Slimcat.Utilities
                     }
 
                     inlines.Add(new Run(": "));
-                    inlines.Add(HelperConverter.ParseBbCode(text, true));
+                    inlines.Add(HelperConverter.ParseBbCode(text));
                     return inlines;
                 }
 
@@ -182,7 +182,7 @@ namespace Slimcat.Utilities
 
                     inlines.Add(nameLink);
                     inlines.Add(new Run(" "));
-                    inlines.Add(HelperConverter.ParseBbCode(text, true));
+                    inlines.Add(HelperConverter.ParseBbCode(text));
                 }
             }
             else
@@ -225,7 +225,7 @@ namespace Slimcat.Utilities
             {
                 // if the post is a /me "command"
                 text = text.Substring("/me".Length);
-                inlines.Add(new Italic(HelperConverter.ParseBbCode(text, true)));
+                inlines.Add(new Italic(HelperConverter.ParseBbCode(text)));
                 inlines.Add(new Run("*"));
             }
             else if (text.StartsWith("/post"))
@@ -233,7 +233,7 @@ namespace Slimcat.Utilities
                 // or a post "command"
                 text = text.Substring("/post ".Length);
 
-                inlines.Insert(0, HelperConverter.ParseBbCode(text, true));
+                inlines.Insert(0, HelperConverter.ParseBbCode(text));
                 inlines.Insert(1, new Run(" ~"));
             }
             else if (text.StartsWith("/warn"))
@@ -241,7 +241,7 @@ namespace Slimcat.Utilities
                 // or a warn "command"
                 text = text.Substring("/warn ".Length);
                 inlines.Add(new Run(" warns, "));
-                Inline toAdd = HelperConverter.ParseBbCode(text, true);
+                Inline toAdd = HelperConverter.ParseBbCode(text);
 
                 toAdd.Foreground = (Brush)Application.Current.FindResource("HighlightBrush");
                 toAdd.FontWeight = FontWeights.ExtraBold;
@@ -250,7 +250,7 @@ namespace Slimcat.Utilities
             else
             {
                 inlines.Add(new Run(": "));
-                inlines.Add(HelperConverter.ParseBbCode(text, true));
+                inlines.Add(HelperConverter.ParseBbCode(text));
             }
 
             return inlines;
@@ -283,7 +283,7 @@ namespace Slimcat.Utilities
             var text = (string)value; // this is the beef of the message
             text = HttpUtility.HtmlDecode(text); // translate the HTML characters
 
-            inlines.Add(HelperConverter.ParseBbCode(text, true));
+            inlines.Add(HelperConverter.ParseBbCode(text));
 
             return inlines;
         }
@@ -320,7 +320,7 @@ namespace Slimcat.Utilities
             text = HttpUtility.HtmlDecode(text);
 
             IList<Inline> toReturn = new List<Inline>();
-            toReturn.Add(HelperConverter.ParseBbCode(text, false));
+            toReturn.Add(HelperConverter.ParseBbCode(text));
 
             return toReturn;
         }
@@ -700,23 +700,23 @@ namespace Slimcat.Utilities
         #region Static Fields
 
         private static readonly IList<string> BbType = new List<string>
-                                                           {
-                                                               "b", 
-                                                               "s", 
-                                                               "u", 
-                                                               "i", 
-                                                               "url", 
-                                                               "color", 
-                                                               "channel", 
-                                                               "session", 
-                                                               "user", 
-                                                               "noparse", 
-                                                               "icon", 
-                                                               "sub", 
-                                                               "sup", 
-                                                               "small", 
-                                                               "big"
-                                                           };
+            {
+                "b", 
+                "s", 
+                "u", 
+                "i", 
+                "url", 
+                "color", 
+                "channel", 
+                "session", 
+                "user", 
+                "noparse", 
+                "icon", 
+                "sub", 
+                "sup", 
+                "small", 
+                "big"
+            };
 
         private static readonly IList<string> SpecialBbCases = new List<string> { "url", "channel", "user", "icon", "color" };
 
@@ -730,12 +730,6 @@ namespace Slimcat.Utilities
         /// <summary>
         /// Like above, but works for dates in the time
         /// </summary>
-        /// <param name="futureTime">
-        /// The future Time.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
         public static string DateTimeInFutureToRough(DateTimeOffset futureTime)
         {
             var temp = new StringBuilder();
@@ -772,18 +766,6 @@ namespace Slimcat.Utilities
         /// <summary>
         /// Converts a datetimeoffset to a "x h x m x s ago" format
         /// </summary>
-        /// <param name="original">
-        /// The original.
-        /// </param>
-        /// <param name="returnSeconds">
-        /// The return Seconds.
-        /// </param>
-        /// <param name="appendAgo">
-        /// The append Ago.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
         public static string DateTimeToRough(DateTimeOffset original, bool returnSeconds = false, bool appendAgo = true)
         {
             var temp = new StringBuilder();
@@ -829,12 +811,6 @@ namespace Slimcat.Utilities
         /// <summary>
         /// Used for shitty shit channel names with spaces
         /// </summary>
-        /// <param name="text">
-        /// The text.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
         public static string EscapeSpaces(string text)
         {
             return text.Replace(" ", "___");
@@ -843,16 +819,7 @@ namespace Slimcat.Utilities
         /// <summary>
         /// Used to make a username 'button'
         /// </summary>
-        /// <param name="target">
-        /// The target.
-        /// </param>
-        /// <param name="useTunnelingStyles">
-        /// The use Tunneling Styles.
-        /// </param>
-        /// <returns>
-        /// The <see cref="Inline"/>.
-        /// </returns>
-        public static Inline MakeUsernameLink(ICharacter target, bool useTunnelingStyles)
+        public static Inline MakeUsernameLink(ICharacter target, bool useStyles)
         {
             var toReturn =
                 new InlineUIContainer(
@@ -861,7 +828,7 @@ namespace Slimcat.Utilities
                             ContentTemplate =
                                 (DataTemplate)
                                 Application.Current.FindResource(
-                                    useTunnelingStyles ? "TunnelingUsernameTemplate" : "UsernameTemplate"), 
+                                    useStyles ? "UsernameTemplate" : "UsernameTemplate"), 
                             Content = target
                         }) {
                               BaselineAlignment = BaselineAlignment.TextBottom 
@@ -873,29 +840,14 @@ namespace Slimcat.Utilities
         /// <summary>
         /// The heart of BBCode converstion, turns a string of text into an inline
         /// </summary>
-        /// <param name="text">
-        /// The text.
-        /// </param>
-        /// <param name="useTunnelingStyles">
-        /// The use Tunneling Styles.
-        /// </param>
-        /// <returns>
-        /// The <see cref="Inline"/>.
-        /// </returns>
-        public static Inline ParseBbCode(string text, bool useTunnelingStyles)
+        public static Inline ParseBbCode(string text)
         {
-            return BbcodeToInline(PreProcessBbCode(text), useTunnelingStyles);
+            return BbcodeToInline(PreProcessBbCode(text));
         }
 
         /// <summary>
         /// Right now, all this does is warp a url tag around links.
         /// </summary>
-        /// <param name="text">
-        /// The text.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
         public static string PreProcessBbCode(string text)
         {
             if (!ContainsUrl(text))
@@ -913,12 +865,6 @@ namespace Slimcat.Utilities
         /// <summary>
         /// Turns a datetime to a timestamp (hh:mm)
         /// </summary>
-        /// <param name="time">
-        /// The time.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
         public static string ToTimeStamp(this DateTimeOffset time)
         {
             var minute = time.Minute;
@@ -930,12 +876,6 @@ namespace Slimcat.Utilities
         /// <summary>
         /// Converts a POSIX/UNIX timecode to a datetime
         /// </summary>
-        /// <param name="time">
-        /// The time.
-        /// </param>
-        /// <returns>
-        /// The <see cref="DateTimeOffset"/>.
-        /// </returns>
         public static DateTimeOffset UnixTimeToDateTime(long time)
         {
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0);
@@ -950,16 +890,7 @@ namespace Slimcat.Utilities
         /// <summary>
         /// Converts a marked-up BBCode string to a flowdocument inline
         /// </summary>
-        /// <param name="x">
-        /// string to convert
-        /// </param>
-        /// <param name="useTunnelingStyles">
-        /// if the styles used need to tunnel up the visual tree
-        /// </param>
-        /// <returns>
-        /// The <see cref="Inline"/>.
-        /// </returns>
-        private static Inline BbcodeToInline(string x, bool useTunnelingStyles)
+        private static Inline BbcodeToInline(string x)
         {
             if (!HasOpenTag(x))
             {
@@ -1021,11 +952,11 @@ namespace Slimcat.Utilities
                 string skipthis = roughString.Substring(0, endIndex);
 
                 toReturn.Inlines.Add(new Run(skipthis));
-                toReturn.Inlines.Add(BbcodeToInline(restofString, useTunnelingStyles));
+                toReturn.Inlines.Add(BbcodeToInline(restofString));
             }
             else if (endType == "n" || endIndex == -1)
             {
-                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType, useTunnelingStyles));
+                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType));
             }
             else if (endType != startType)
             {
@@ -1037,20 +968,20 @@ namespace Slimcat.Utilities
                     var restOfString = roughString.Substring(properIndex + properEnd.Length);
 
                     toReturn.Inlines.Add(
-                        TypeToInline(BbcodeToInline(toMarkUp, useTunnelingStyles), startType, useTunnelingStyles));
+                        TypeToInline(BbcodeToInline(toMarkUp), startType));
 
-                    toReturn.Inlines.Add(BbcodeToInline(restOfString, useTunnelingStyles));
+                    toReturn.Inlines.Add(BbcodeToInline(restOfString));
                 }
                 else
                 {
                     toReturn.Inlines.Add(
-                        TypeToInline(BbcodeToInline(roughString, useTunnelingStyles), startType, useTunnelingStyles));
+                        TypeToInline(BbcodeToInline(roughString), startType));
                 }
             }
             else if (endIndex + endLength == roughString.Length)
             {
                 roughString = roughString.Remove(endIndex, endLength);
-                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType, useTunnelingStyles));
+                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType));
             }
             else
             {
@@ -1058,9 +989,9 @@ namespace Slimcat.Utilities
 
                 roughString = roughString.Substring(0, endIndex);
 
-                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType, useTunnelingStyles));
+                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType));
 
-                toReturn.Inlines.Add(BbcodeToInline(restOfString, useTunnelingStyles));
+                toReturn.Inlines.Add(BbcodeToInline(restOfString));
             }
 
             return toReturn;
@@ -1224,22 +1155,7 @@ namespace Slimcat.Utilities
             return z;
         }
 
-        /// <summary>
-        /// Turns wraps x with an flowdocument inline matching y
-        /// </summary>
-        /// <param name="x">
-        /// The x.
-        /// </param>
-        /// <param name="y">
-        /// The y.
-        /// </param>
-        /// <param name="useTunnelingStyles">
-        /// The use Tunneling Styles.
-        /// </param>
-        /// <returns>
-        /// The <see cref="Inline"/>.
-        /// </returns>
-        private static Inline TypeToInline(Inline x, string y, bool useTunnelingStyles)
+        private static Inline TypeToInline(Inline x, string y)
         {
             switch (y)
             {
@@ -1265,12 +1181,12 @@ namespace Slimcat.Utilities
             {
                 var url = StripBeforeType(y);
 
-                var toReturn = new Hyperlink(x) { CommandParameter = url, ToolTip = url };
-
-                if (useTunnelingStyles)
-                {
-                    toReturn.Style = (Style)Application.Current.FindResource("TunnelingHyperlink");
-                }
+                var toReturn = new Hyperlink(x)
+                                {
+                                    CommandParameter = url,
+                                    ToolTip = url,
+                                    Style = (Style)Application.Current.FindResource("Hyperlink")
+                                };
 
                 return toReturn;
             }
@@ -1279,7 +1195,8 @@ namespace Slimcat.Utilities
             {
                 var target = StripBeforeType(y);
 
-                return MakeUsernameLink(new CharacterModel { Name = target, Gender = Gender.None }, useTunnelingStyles);
+                var model = new CharacterModel { Name = target, Gender = Gender.None };
+                return MakeUsernameLink(model, true);
             }
 
             if (y.StartsWith("channel") || y.StartsWith("session"))
