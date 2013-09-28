@@ -386,17 +386,7 @@ namespace Slimcat.ViewModels
                 this.OnPropertyChanged("CannotPost");
                 this.OnPropertyChanged("ShouldShowAutoPost");
                 this.OnPropertyChanged("SwitchChannelTypeString");
-
-                if (value)
-                {
-                    this.hasNewMessages = false;
-                }
-                else
-                {
-                    this.hasNewAds = false;
-                }
-
-                this.OnPropertyChanged("OtherTabHasMessages");
+                this.OtherTabHasMessages = false;
             }
         }
 
@@ -459,7 +449,7 @@ namespace Slimcat.ViewModels
 
             set
             {
-                if (this.IsDisplayingChat)
+                if (this.IsDisplayingAds)
                 {
                     this.hasNewMessages = value;
                 }

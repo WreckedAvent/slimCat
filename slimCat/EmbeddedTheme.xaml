@@ -11,10 +11,6 @@
     <BooleanToVisibilityConverter x:Key="BoolConverter" />
     <utilities:OppositeBoolConverter x:Key="OppositeBoolConverter" />
     <utilities:BoolColorConverter x:Key="ColorConverter" />
-    <utilities:BBCodePostConverter x:Key="BBPostConverter" />
-    <utilities:BBFlowConverter x:Key="BBFlowConverter" />
-    <utilities:BBCodeConverter x:Key="BBCodeConverter" />
-    <utilities:BBFlowHistoryConverter x:Key="BBFlowHistoryConverter"/>
     <utilities:GenderColorConverter x:Key="GenderColorConverter" />
     <utilities:GenderImageConverter x:Key="GenderImageConverter" />
     <utilities:ChannelTypeToImageConverter x:Key="ChannelTypeToImageConverter" />

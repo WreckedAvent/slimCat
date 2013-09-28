@@ -183,7 +183,9 @@
     <Compile Include="Services\Interfaces\IChatConnection.cs" />
     <Compile Include="Services\Interfaces\IListConnection.cs" />
     <Compile Include="Services\Interfaces\ILogger.cs" />
+    <Compile Include="Services\Interfaces\IStateManager.cs" />
     <Compile Include="Services\SettingsDaemon.cs" />
+    <Compile Include="Services\StateManager.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Compile Include="ViewModels\Right-Hand side %28channelBar%29\GlobalTabViewModel.cs" />
     <Compile Include="ViewModels\Right-Hand side %28channelBar%29\ManageListsViewModel.cs" />

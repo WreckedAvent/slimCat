@@ -90,6 +90,11 @@ namespace Slimcat.Utilities
                 this.Container.Resolve<CommandInterceptor>();
 
                 this.Container.Resolve<EventAggregator>();
+
+                Application.Current.Resources.Add("BBCodeConverter", this.Container.Resolve<BBCodeConverter>());
+                Application.Current.Resources.Add("BBFlowConverter", this.Container.Resolve<BBFlowConverter>());
+                Application.Current.Resources.Add("BBPostConverter", this.Container.Resolve<BBCodePostConverter>());
+
             }
             catch (Exception ex)
             {

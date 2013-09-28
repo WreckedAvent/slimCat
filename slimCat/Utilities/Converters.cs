@@ -91,19 +91,428 @@ namespace Slimcat.Utilities
         #endregion
     }
 
+    public abstract class BBCodeBaseConverter
+    {
+        #region Static Fields
+        private static readonly IList<string> BbType = new List<string>
+        {
+            "b", 
+            "s", 
+            "u", 
+            "i", 
+            "url", 
+            "color", 
+            "channel", 
+            "session", 
+            "user", 
+            "noparse", 
+            "icon", 
+            "sub", 
+            "sup", 
+            "small", 
+            "big"
+        };
+
+        private static readonly IList<string> SpecialBbCases = new List<string> { "url", "channel", "user", "icon", "color" };
+
+        private static readonly string[] ValidStartTerms = new[] { "http://", "https://", "ftp://" };
+        #endregion
+
+        #region Constructors
+        protected BBCodeBaseConverter(IChatModel chatModel)
+        {
+            this.ChatModel = chatModel;
+        }
+        #endregion
+
+        #region Properties
+        private IChatModel ChatModel { get; set; }
+        #endregion
+
+        #region Methods
+        /// <summary>
+        /// Converts an Icharacter into a username 'button'.
+        /// </summary>
+        internal static Inline MakeUsernameLink(ICharacter target)
+        {
+            var toReturn =
+                new InlineUIContainer
+                {
+                    Child = new ContentControl
+                    {
+                        ContentTemplate = (DataTemplate)Application.Current.FindResource("UsernameTemplate"),
+                        Content = target
+                    },
+                    BaselineAlignment = BaselineAlignment.TextBottom,
+                };
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Converts a string to richly-formatted inline elements.
+        /// </summary>
+        internal Inline Parse(string text)
+        {
+            return this.BbcodeToInline(PreProcessBbCode(text));
+        }
+
+        private static bool ContainsUrl(string args)
+        {
+            string match = args.Split(' ').FirstOrDefault(StartsWithValidTerm);
+
+            // see if it starts with something useful
+            if (match == null)
+            {
+                return false;
+            }
+
+            var starter = ValidStartTerms.First(match.StartsWith);
+            return args.Trim().Length > starter.Length;
+        }
+
+        private static string FindEndType(string x)
+        {
+            var root = x.IndexOf('[');
+            if (root == -1 || x.Length < 4)
+            {
+                return "n";
+            }
+
+            var end = x.IndexOf(']', root);
+            if (end == -1)
+            {
+                return "n";
+            }
+
+            if (x[root + 1] != '/')
+            {
+                return FindEndType(x.Substring(end + 1));
+            }
+
+            var type = x.Substring(root + 2, end - (root + 2));
+
+            return BbType.Any(type.Equals) ? type : FindEndType(x.Substring(end + 1));
+        }
+
+        private static string FindStartType(string x)
+        {
+            var root = x.IndexOf('[');
+            if (root == -1 || x.Length < 3)
+            {
+                return "n";
+            }
+
+            var end = x.IndexOf(']', root);
+            if (end == -1)
+            {
+                return "n";
+            }
+
+            var type = x.Substring(root + 1, end - root - 1);
+
+            return BbType.Any(type.StartsWith) ? type : FindStartType(x.Substring(end + 1));
+        }
+
+        private static string GetUrlDisplay(string args)
+        {
+            var match = ValidStartTerms.FirstOrDefault(args.StartsWith);
+            var stripped = args.Substring(match.Length);
+
+            if (stripped.Contains('/'))
+            {
+                // remove anything after the slash
+                stripped = stripped.Substring(0, stripped.IndexOf('/'));
+            }
+
+            if (stripped.StartsWith("www."))
+            {
+                // remove the www.
+                stripped = stripped.Substring("www.".Length);
+            }
+
+            return stripped;
+        }
+
+        private static bool HasOpenTag(string x)
+        {
+            var root = x.IndexOf('[');
+            if (root == -1 || x.Length < 3)
+            {
+                return false;
+            }
+
+            var end = x.IndexOf(']', root);
+            if (end == -1)
+            {
+                return false;
+            }
+
+            if (x[root + 1] == '/')
+            {
+                HasOpenTag(x.Substring(end));
+            }
+
+            var type = x.Substring(root + 1, end - root - 1);
+
+            return BbType.Any(type.StartsWith) || HasOpenTag(x.Substring(end + 1));
+        }
+
+        private static string MarkUpUrlWithBbCode(string args)
+        {
+            string toShow = GetUrlDisplay(args);
+            return "[url=" + args + "]" + toShow + "[/url]"; // mark the bitch up
+        }
+
+        private static string RemoveFirstEndType(string x, string type)
+        {
+            var endtype = "[/" + type + "]";
+            var firstOccur = x.IndexOf(endtype, StringComparison.Ordinal);
+
+            var interestedin = x.Substring(0, firstOccur);
+            var rest = x.Substring(firstOccur + endtype.Length);
+
+            return interestedin + rest;
+        }
+
+        private static bool StartsWithValidTerm(string text)
+        {
+            return ValidStartTerms.Any(text.StartsWith);
+        }
+
+        private static string StripAfterType(string z)
+        {
+            return z.Contains('=') ? z.Substring(0, z.IndexOf('=')) : z;
+        }
+
+        private static string StripBeforeType(string z)
+        {
+            if (z.Contains('='))
+            {
+                var type = z.Substring(0, z.IndexOf('='));
+                return z.Substring(z.IndexOf('=') + 1, z.Length - (type.Length + 1));
+            }
+
+            return z;
+        }
+
+        private static string PreProcessBbCode(string text)
+        {
+            if (!ContainsUrl(text))
+            {
+                return text; // if there's no url in it, we don't have a link to mark up
+            }
+
+            var matches = from word in text.Split(' ')
+                          where StartsWithValidTerm(word)
+                          select new Tuple<string, string>(word, MarkUpUrlWithBbCode(word));
+
+            return matches.Aggregate(text, (current, toReplace) => current.Replace(toReplace.Item1, toReplace.Item2));
+        }
+
+        private Inline TypeToInline(Inline x, string y)
+        {
+            switch (y)
+            {
+                case "b":
+                    return new Bold(x);
+                case "u":
+                    return new Span(x) { TextDecorations = TextDecorations.Underline };
+                case "i":
+                    return new Italic(x);
+                case "s":
+                    return new Span(x) { TextDecorations = TextDecorations.Strikethrough };
+                case "sub":
+                    return new Span(x) { BaselineAlignment = BaselineAlignment.Subscript, FontSize = 10 };
+                case "sup":
+                    return new Span(x) { BaselineAlignment = BaselineAlignment.Top, FontSize = 10 };
+                case "small":
+                    return new Span(x) { FontSize = 9 };
+                case "big":
+                    return new Span(x) { FontSize = 16 };
+            }
+
+            if (y.StartsWith("url"))
+            {
+                var url = StripBeforeType(y);
+
+                var toReturn = new Hyperlink(x)
+                {
+                    CommandParameter = url,
+                    ToolTip = url,
+                    Style = (Style)Application.Current.FindResource("Hyperlink")
+                };
+
+                return toReturn;
+            }
+
+            if (y.StartsWith("user") || y.StartsWith("icon"))
+            {
+                var target = StripBeforeType(y);
+                return MakeUsernameLink(this.ChatModel.FindCharacter(target));
+            }
+
+            if (y.StartsWith("channel") || y.StartsWith("session"))
+            {
+                var channel = StripBeforeType(y);
+
+                return
+                    new InlineUIContainer(
+                        new Button
+                        {
+                            Content = x,
+                            Style = (Style)Application.Current.FindResource("ChannelInterfaceButton"),
+                            CommandParameter = channel
+                        })
+                    {
+                        BaselineAlignment = BaselineAlignment.TextBottom
+                    };
+            }
+
+            if (y.StartsWith("color") && ApplicationSettings.AllowColors)
+            {
+                var colorString = StripBeforeType(y);
+
+                var converted = ColorConverter.ConvertFromString(colorString);
+                if (converted != null)
+                {
+                    var color = (Color)converted;
+                    var brush = new SolidColorBrush(color);
+                    return new Span(x) { Foreground = brush };
+                }
+
+                return new Span(x);
+            }
+
+            return new Span(x);
+        }
+
+        private Inline BbcodeToInline(string x)
+        {
+            if (!HasOpenTag(x))
+            {
+                return new Run(x);
+            }
+
+            var toReturn = new Span();
+
+            var startType = FindStartType(x);
+            var startIndex = x.IndexOf("[" + startType + "]", StringComparison.Ordinal);
+
+            if (startIndex > 0)
+            {
+                toReturn.Inlines.Add(new Run(x.Substring(0, startIndex)));
+            }
+
+            if (startType.StartsWith("session"))
+            {
+                // hack-in for session to work
+                var rough = x.Substring(startIndex);
+                var firstBrace = rough.IndexOf(']');
+                var endInd = rough.IndexOf("[/session]", StringComparison.Ordinal);
+
+                if (firstBrace != -1 || endInd != -1)
+                {
+                    var channel = rough.Substring(firstBrace + 1, endInd - firstBrace - 1);
+                    var title = rough.Substring("[session=".Length, firstBrace - "[session=".Length);
+
+                    if (!title.Contains("ADH-"))
+                    {
+                        x = x.Replace(channel, title);
+                        x = x.Replace("[session=" + title + "]", "[session=" + channel + "]");
+                        startType = FindStartType(x);
+                    }
+                }
+            }
+
+            var roughString = x.Substring(startIndex);
+            roughString = roughString.Remove(0, roughString.IndexOf(']') + 1);
+
+            var endType = FindEndType(roughString);
+            var endIndex = roughString.IndexOf("[/" + endType + "]", StringComparison.Ordinal);
+            var endLength = ("[/" + endType + "]").Length;
+
+            // for BBCode with arguments, we must do this
+            if (SpecialBbCases.Any(bbcase => startType.Equals(bbcase)))
+            {
+                startType += "=";
+
+                string content = endIndex != -1 ? roughString.Substring(0, endIndex) : roughString;
+
+                startType += content;
+            }
+
+            if (startType == "noparse")
+            {
+                endIndex = roughString.IndexOf("[/noparse]", StringComparison.Ordinal);
+                var restofString = roughString.Substring(endIndex + "[/noparse]".Length);
+                var skipthis = roughString.Substring(0, endIndex);
+
+                toReturn.Inlines.Add(new Run(skipthis));
+                toReturn.Inlines.Add(this.BbcodeToInline(restofString));
+            }
+            else if (endType == "n" || endIndex == -1)
+            {
+                toReturn.Inlines.Add(this.TypeToInline(new Run(roughString), startType));
+            }
+            else if (endType != startType)
+            {
+                var properEnd = "[/" + StripAfterType(startType) + "]";
+                if (roughString.Contains(properEnd))
+                {
+                    var properIndex = roughString.IndexOf(properEnd, StringComparison.Ordinal);
+                    var toMarkUp = roughString.Substring(0, properIndex);
+                    var restOfString = roughString.Substring(properIndex + properEnd.Length);
+
+                    toReturn.Inlines.Add(this.TypeToInline(this.BbcodeToInline(toMarkUp), startType));
+
+                    toReturn.Inlines.Add(this.BbcodeToInline(restOfString));
+                }
+                else
+                {
+                    toReturn.Inlines.Add(
+                        this.TypeToInline(this.BbcodeToInline(roughString), startType));
+                }
+            }
+            else if (endIndex + endLength == roughString.Length)
+            {
+                roughString = roughString.Remove(endIndex, endLength);
+                toReturn.Inlines.Add(this.TypeToInline(new Run(roughString), startType));
+            }
+            else
+            {
+                var restOfString = roughString.Substring(endIndex + endLength);
+
+                roughString = roughString.Substring(0, endIndex);
+
+                toReturn.Inlines.Add(this.TypeToInline(new Run(roughString), startType));
+
+                toReturn.Inlines.Add(this.BbcodeToInline(restOfString));
+            }
+
+            return toReturn;
+        }
+        #endregion
+    }
+
     /// <summary>
     /// Converts active messages into textblock inlines.
     /// </summary>
-    public sealed class BBCodePostConverter : IMultiValueConverter
+    public sealed class BBCodePostConverter : BBCodeBaseConverter, IMultiValueConverter
     {
-        #region Public Methods and Operators
+        #region Constructors
+        public BBCodePostConverter(IChatModel chatModel)
+            : base(chatModel)
+        {
+        }
+        #endregion
 
+        #region Public Methods and Operators
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             var inlines = new List<Inline>();
             if (values.Length == 3 && values[0] is string && values[1] is ICharacter && values[2] is MessageType)
             {
-                // avoids null reference
                 inlines.Clear(); // simple insurance that there's no junk
 
                 var text = (string)values[0]; // this is the beef of the message
@@ -113,16 +522,13 @@ namespace Slimcat.Utilities
 
                 if (type == MessageType.Roll)
                 {
-                    inlines.Add(HelperConverter.ParseBbCode(text));
+                    inlines.Add(this.Parse(text));
                     return inlines;
                 }
 
                 // this creates the name link
-                var nameLink = HelperConverter.MakeUsernameLink(user, true);
-
+                var nameLink = MakeUsernameLink(user);
                 inlines.Add(nameLink); // name first
-
-                
 
                 if (text.Length > "/me".Length)
                 {
@@ -131,7 +537,7 @@ namespace Slimcat.Utilities
                         // if the post is a /me "command"
                         text = text.Substring("/me".Length);
                         inlines.Insert(0, new Run("*")); // push the name button to the second slot
-                        inlines.Add(new Italic(HelperConverter.ParseBbCode(text)));
+                        inlines.Add(new Italic(this.Parse(text)));
                         inlines.Add(new Run("*"));
                         return inlines;
                     }
@@ -141,7 +547,7 @@ namespace Slimcat.Utilities
                         // or a post "command"
                         text = text.Substring("/post ".Length);
 
-                        inlines.Insert(0, HelperConverter.ParseBbCode(text));
+                        inlines.Insert(0, this.Parse(text));
                         inlines.Insert(1, new Run(" ~"));
                         return inlines;
                     }
@@ -151,7 +557,7 @@ namespace Slimcat.Utilities
                         // or a warn "command"
                         text = text.Substring("/warn ".Length);
                         inlines.Add(new Run(" warns, "));
-                        var toAdd = HelperConverter.ParseBbCode(text);
+                        var toAdd = this.Parse(text);
 
                         toAdd.Foreground = (Brush)Application.Current.FindResource("HighlightBrush");
                         toAdd.FontWeight = FontWeights.ExtraBold;
@@ -161,7 +567,7 @@ namespace Slimcat.Utilities
                     }
 
                     inlines.Add(new Run(": "));
-                    inlines.Add(HelperConverter.ParseBbCode(text));
+                    inlines.Add(this.Parse(text));
                     return inlines;
                 }
 
@@ -175,14 +581,14 @@ namespace Slimcat.Utilities
                 if (values[0] is CharacterUpdateModel)
                 {
                     var notification = values[0] as CharacterUpdateModel;
-                    ICharacter user = notification.TargetCharacter;
-                    string text = HttpUtility.HtmlDecode(notification.Arguments.ToString());
+                    var user = notification.TargetCharacter;
+                    var text = HttpUtility.HtmlDecode(notification.Arguments.ToString());
 
-                    Inline nameLink = HelperConverter.MakeUsernameLink(user, true);
+                    var nameLink = MakeUsernameLink(user);
 
                     inlines.Add(nameLink);
                     inlines.Add(new Run(" "));
-                    inlines.Add(HelperConverter.ParseBbCode(text));
+                    inlines.Add(this.Parse(text));
                 }
             }
             else
@@ -193,20 +599,25 @@ namespace Slimcat.Utilities
             return inlines;
         }
 
-
         public object[] ConvertBack(object values, Type[] targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
-
         #endregion
     }
 
     /// <summary>
     /// Converts active messages into flow document inlines.
     /// </summary>
-    public sealed class BBFlowConverter : IValueConverter
+    public sealed class BBFlowConverter : BBCodeBaseConverter, IValueConverter
     {
+        #region Constructors
+        public BBFlowConverter(IChatModel chatModel)
+            : base(chatModel)
+        {
+        }
+        #endregion
+
         #region Public Methods and Operators
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -225,7 +636,7 @@ namespace Slimcat.Utilities
             {
                 // if the post is a /me "command"
                 text = text.Substring("/me".Length);
-                inlines.Add(new Italic(HelperConverter.ParseBbCode(text)));
+                inlines.Add(new Italic(this.Parse(text)));
                 inlines.Add(new Run("*"));
             }
             else if (text.StartsWith("/post"))
@@ -233,7 +644,7 @@ namespace Slimcat.Utilities
                 // or a post "command"
                 text = text.Substring("/post ".Length);
 
-                inlines.Insert(0, HelperConverter.ParseBbCode(text));
+                inlines.Insert(0, this.Parse(text));
                 inlines.Insert(1, new Run(" ~"));
             }
             else if (text.StartsWith("/warn"))
@@ -241,16 +652,17 @@ namespace Slimcat.Utilities
                 // or a warn "command"
                 text = text.Substring("/warn ".Length);
                 inlines.Add(new Run(" warns, "));
-                Inline toAdd = HelperConverter.ParseBbCode(text);
 
+                var toAdd = this.Parse(text);
                 toAdd.Foreground = (Brush)Application.Current.FindResource("HighlightBrush");
                 toAdd.FontWeight = FontWeights.ExtraBold;
-                inlines.Add(toAdd);
+
+                inlines.Add(this.Parse(text));
             }
             else
             {
                 inlines.Add(new Run(": "));
-                inlines.Add(HelperConverter.ParseBbCode(text));
+                inlines.Add(this.Parse(text));
             }
 
             return inlines;
@@ -265,42 +677,17 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    /// Converts history messages into flow document inlines.
+    ///  Converts history messages into document inlines.
     /// </summary>
-    public sealed class BBFlowHistoryConverter : IValueConverter
+    public sealed class BBCodeConverter : BBCodeBaseConverter, IValueConverter
     {
-        #region Public Methods and Operators
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        #region Constructors
+        public BBCodeConverter(IChatModel chatModel)
+            : base(chatModel)
         {
-            var inlines = new List<Inline>();
-
-            if (value == null)
-            {
-                return null;
-            }
-
-            var text = (string)value; // this is the beef of the message
-            text = HttpUtility.HtmlDecode(text); // translate the HTML characters
-
-            inlines.Add(HelperConverter.ParseBbCode(text));
-
-            return inlines;
         }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion
-    }
 
-    /// <summary>
-    ///  Converts history messages into textblock inlines.
-    /// </summary>
-    public sealed class BBCodeConverter : IValueConverter
-    {
         #region Explicit Interface Methods
 
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -320,7 +707,7 @@ namespace Slimcat.Utilities
             text = HttpUtility.HtmlDecode(text);
 
             IList<Inline> toReturn = new List<Inline>();
-            toReturn.Add(HelperConverter.ParseBbCode(text));
+            toReturn.Add(this.Parse(text));
 
             return toReturn;
         }
@@ -356,31 +743,20 @@ namespace Slimcat.Utilities
                     brightColor = (Color)Application.Current.FindResource("HighlightColor");
                 }
 
+                var stops = new List<GradientStop>
+                                {
+                                    new GradientStop(paleColor, 0.0),
+                                    new GradientStop(paleColor, 0.5),
+                                    new GradientStop(brightColor, 0.5),
+                                    new GradientStop(brightColor, 1.0)
+                                };
+
                 switch (gender)
                 {
                     case Gender.Herm_F:
-                        return
-                            new LinearGradientBrush(
-                                new GradientStopCollection(
-                                    new List<GradientStop>
-                                        {
-                                            new GradientStop(paleColor, 0.0), 
-                                            new GradientStop(paleColor, 0.5), 
-                                            new GradientStop(brightColor, 0.5), 
-                                            new GradientStop(brightColor, 1.0)
-                                        }),
-                                0);
+                        return new LinearGradientBrush(new GradientStopCollection(stops), 0);
                     case Gender.Herm_M:
-                        return
-                            new LinearGradientBrush(
-                                new GradientStopCollection(
-                                    new List<GradientStop>
-                                        {
-                                            new GradientStop(paleColor, 0.0), 
-                                            new GradientStop(paleColor, 0.5), 
-                                            new GradientStop(brightColor, 0.5), 
-                                            new GradientStop(brightColor, 1.0)
-                                        }));
+                        return new LinearGradientBrush(new GradientStopCollection(stops));
 
                     case Gender.Cuntboy:
                     case Gender.Shemale:
@@ -697,34 +1073,6 @@ namespace Slimcat.Utilities
     /// </summary>
     public static class HelperConverter
     {
-        #region Static Fields
-
-        private static readonly IList<string> BbType = new List<string>
-            {
-                "b", 
-                "s", 
-                "u", 
-                "i", 
-                "url", 
-                "color", 
-                "channel", 
-                "session", 
-                "user", 
-                "noparse", 
-                "icon", 
-                "sub", 
-                "sup", 
-                "small", 
-                "big"
-            };
-
-        private static readonly IList<string> SpecialBbCases = new List<string> { "url", "channel", "user", "icon", "color" };
-
-        // determines if a string has a (valid) opening BBCode tag
-        private static readonly string[] ValidStartTerms = new[] { "http://", "https://", "ftp://" };
-
-        #endregion
-
         #region Public Methods and Operators
 
         /// <summary>
@@ -817,52 +1165,6 @@ namespace Slimcat.Utilities
         }
 
         /// <summary>
-        /// Used to make a username 'button'
-        /// </summary>
-        public static Inline MakeUsernameLink(ICharacter target, bool useStyles)
-        {
-            var toReturn =
-                new InlineUIContainer(
-                    new ContentControl
-                        {
-                            ContentTemplate =
-                                (DataTemplate)
-                                Application.Current.FindResource(
-                                    useStyles ? "UsernameTemplate" : "UsernameTemplate"), 
-                            Content = target
-                        }) {
-                              BaselineAlignment = BaselineAlignment.TextBottom 
-                           };
-
-            return toReturn;
-        }
-
-        /// <summary>
-        /// The heart of BBCode converstion, turns a string of text into an inline
-        /// </summary>
-        public static Inline ParseBbCode(string text)
-        {
-            return BbcodeToInline(PreProcessBbCode(text));
-        }
-
-        /// <summary>
-        /// Right now, all this does is warp a url tag around links.
-        /// </summary>
-        public static string PreProcessBbCode(string text)
-        {
-            if (!ContainsUrl(text))
-            {
-                return text; // if there's no url in it, we don't have a link to mark up
-            }
-
-            var matches = from word in text.Split(' ')
-                          where StartsWithValidTerm(word)
-                          select new Tuple<string, string>(word, MarkUpUrlWithBbCode(word));
-
-            return matches.Aggregate(text, (current, toReplace) => current.Replace(toReplace.Item1, toReplace.Item2)); 
-        }
-
-        /// <summary>
         /// Turns a datetime to a timestamp (hh:mm)
         /// </summary>
         public static string ToTimeStamp(this DateTimeOffset time)
@@ -881,356 +1183,6 @@ namespace Slimcat.Utilities
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0);
 
             return new DateTimeOffset(epoch.AddSeconds(time));
-        }
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Converts a marked-up BBCode string to a flowdocument inline
-        /// </summary>
-        private static Inline BbcodeToInline(string x)
-        {
-            if (!HasOpenTag(x))
-            {
-                return new Run(x);
-            }
-
-            var toReturn = new Span();
-
-            var startType = FindStartType(x);
-            var startIndex = x.IndexOf("[" + startType + "]", StringComparison.Ordinal);
-
-            if (startIndex > 0)
-            {
-                toReturn.Inlines.Add(new Run(x.Substring(0, startIndex)));
-            }
-
-            if (startType.StartsWith("session"))
-            {
-                // hack-in for session to work
-                var rough = x.Substring(startIndex);
-                var firstBrace = rough.IndexOf(']');
-                var endInd = rough.IndexOf("[/session]", StringComparison.Ordinal);
-
-                if (firstBrace != -1 || endInd != -1)
-                {
-                    var channel = rough.Substring(firstBrace + 1, endInd - firstBrace - 1);
-                    var title = rough.Substring("[session=".Length, firstBrace - "[session=".Length);
-
-                    if (!title.Contains("ADH-"))
-                    {
-                        x = x.Replace(channel, title);
-                        x = x.Replace("[session=" + title + "]", "[session=" + channel + "]");
-                        startType = FindStartType(x);
-                    }
-                }
-            }
-
-            string roughString = x.Substring(startIndex);
-            roughString = roughString.Remove(0, roughString.IndexOf(']') + 1);
-
-            string endType = FindEndType(roughString);
-            int endIndex = roughString.IndexOf("[/" + endType + "]", StringComparison.Ordinal);
-            int endLength = ("[/" + endType + "]").Length;
-
-            // for BBCode with arguments, we must do this
-            if (SpecialBbCases.Any(bbcase => startType.Equals(bbcase)))
-            {
-                startType += "=";
-
-                string content = endIndex != -1 ? roughString.Substring(0, endIndex) : roughString;
-
-                startType += content;
-            }
-
-            if (startType == "noparse")
-            {
-                endIndex = roughString.IndexOf("[/noparse]", StringComparison.Ordinal);
-                string restofString = roughString.Substring(endIndex + "[/noparse]".Length);
-                string skipthis = roughString.Substring(0, endIndex);
-
-                toReturn.Inlines.Add(new Run(skipthis));
-                toReturn.Inlines.Add(BbcodeToInline(restofString));
-            }
-            else if (endType == "n" || endIndex == -1)
-            {
-                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType));
-            }
-            else if (endType != startType)
-            {
-                var properEnd = "[/" + StripAfterType(startType) + "]";
-                if (roughString.Contains(properEnd))
-                {
-                    var properIndex = roughString.IndexOf(properEnd, StringComparison.Ordinal);
-                    var toMarkUp = roughString.Substring(0, properIndex);
-                    var restOfString = roughString.Substring(properIndex + properEnd.Length);
-
-                    toReturn.Inlines.Add(
-                        TypeToInline(BbcodeToInline(toMarkUp), startType));
-
-                    toReturn.Inlines.Add(BbcodeToInline(restOfString));
-                }
-                else
-                {
-                    toReturn.Inlines.Add(
-                        TypeToInline(BbcodeToInline(roughString), startType));
-                }
-            }
-            else if (endIndex + endLength == roughString.Length)
-            {
-                roughString = roughString.Remove(endIndex, endLength);
-                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType));
-            }
-            else
-            {
-                string restOfString = roughString.Substring(endIndex + endLength);
-
-                roughString = roughString.Substring(0, endIndex);
-
-                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType));
-
-                toReturn.Inlines.Add(BbcodeToInline(restOfString));
-            }
-
-            return toReturn;
-        }
-
-        private static bool ContainsUrl(string args)
-        {
-            string match = args.Split(' ').FirstOrDefault(StartsWithValidTerm);
-
-            // see if it starts with something useful
-            if (match == null)
-            {
-                return false;
-            }
-
-            var starter = ValidStartTerms.First(match.StartsWith);
-            return args.Trim().Length > starter.Length;
-        }
-
-        private static string FindEndType(string x)
-        {
-            var root = x.IndexOf('[');
-            if (root == -1 || x.Length < 4)
-            {
-                return "n";
-            }
-
-            var end = x.IndexOf(']', root);
-            if (end == -1)
-            {
-                return "n";
-            }
-
-            if (x[root + 1] != '/')
-            {
-                return FindEndType(x.Substring(end + 1));
-            }
-
-            var type = x.Substring(root + 2, end - (root + 2));
-
-            return BbType.Any(type.Equals) ? type : FindEndType(x.Substring(end + 1));
-        }
-
-        private static string FindStartType(string x)
-        {
-            var root = x.IndexOf('[');
-            if (root == -1 || x.Length < 3)
-            {
-                return "n";
-            }
-
-            var end = x.IndexOf(']', root);
-            if (end == -1)
-            {
-                return "n";
-            }
-
-            var type = x.Substring(root + 1, end - root - 1);
-
-            return BbType.Any(type.StartsWith) ? type : FindStartType(x.Substring(end + 1));
-        }
-
-        private static string GetUrlDisplay(string args)
-        {
-            var match = ValidStartTerms.FirstOrDefault(args.StartsWith);
-            var stripped = args.Substring(match.Length);
-
-            if (stripped.Contains('/'))
-            {
-                // remove anything after the slash
-                stripped = stripped.Substring(0, stripped.IndexOf('/'));
-            }
-
-            if (stripped.StartsWith("www."))
-            {
-                // remove the www.
-                stripped = stripped.Substring("www.".Length);
-            }
-
-            return stripped;
-        }
-
-        private static bool HasCloseTag(string x)
-        {
-            var root = x.IndexOf("[/", StringComparison.Ordinal);
-            if (root == -1 || x.Length < 4 || x[root + 1] != '/')
-            {
-                return false;
-            }
-
-            var end = x.IndexOf(']', root);
-            if (end == -1)
-            {
-                return false;
-            }
-
-            var type = x.Substring(root + 1, end - root - 1);
-
-            return BbType.Any(bbtype => bbtype.Equals(type)) || HasCloseTag(x.Substring(end + 1));
-        }
-
-        private static bool HasOpenTag(string x)
-        {
-            var root = x.IndexOf('[');
-            if (root == -1 || x.Length < 3)
-            {
-                return false;
-            }
-
-            var end = x.IndexOf(']', root);
-            if (end == -1)
-            {
-                return false;
-            }
-
-            if (x[root + 1] == '/')
-            {
-                HasOpenTag(x.Substring(end));
-            }
-
-            var type = x.Substring(root + 1, end - root - 1);
-
-            return BbType.Any(type.StartsWith) || HasOpenTag(x.Substring(end + 1));
-        }
-
-        private static string MarkUpUrlWithBbCode(string args)
-        {
-            string toShow = GetUrlDisplay(args);
-            return "[url=" + args + "]" + toShow + "[/url]"; // mark the bitch up
-        }
-
-        private static string RemoveFirstEndType(string x, string type)
-        {
-            var endtype = "[/" + type + "]";
-            var firstOccur = x.IndexOf(endtype, StringComparison.Ordinal);
-
-            var interestedin = x.Substring(0, firstOccur);
-            var rest = x.Substring(firstOccur + endtype.Length);
-
-            return interestedin + rest;
-        }
-
-        private static bool StartsWithValidTerm(string text)
-        {
-            return ValidStartTerms.Any(text.StartsWith);
-        }
-
-        private static string StripAfterType(string z)
-        {
-            return z.Contains('=') ? z.Substring(0, z.IndexOf('=')) : z;
-        }
-
-        private static string StripBeforeType(string z)
-        {
-            if (z.Contains('='))
-            {
-                var type = z.Substring(0, z.IndexOf('='));
-                return z.Substring(z.IndexOf('=') + 1, z.Length - (type.Length + 1));
-            }
-
-            return z;
-        }
-
-        private static Inline TypeToInline(Inline x, string y)
-        {
-            switch (y)
-            {
-                case "b":
-                    return new Bold(x);
-                case "u":
-                    return new Span(x) { TextDecorations = TextDecorations.Underline };
-                case "i":
-                    return new Italic(x);
-                case "s":
-                    return new Span(x) { TextDecorations = TextDecorations.Strikethrough };
-                case "sub":
-                    return new Span(x) { BaselineAlignment = BaselineAlignment.Subscript, FontSize = 10 };
-                case "sup":
-                    return new Span(x) { BaselineAlignment = BaselineAlignment.Top, FontSize = 10 };
-                case "small":
-                    return new Span(x) { FontSize = 9 };
-                case "big":
-                    return new Span(x) { FontSize = 16 };
-            }
-
-            if (y.StartsWith("url"))
-            {
-                var url = StripBeforeType(y);
-
-                var toReturn = new Hyperlink(x)
-                                {
-                                    CommandParameter = url,
-                                    ToolTip = url,
-                                    Style = (Style)Application.Current.FindResource("Hyperlink")
-                                };
-
-                return toReturn;
-            }
-
-            if (y.StartsWith("user") || y.StartsWith("icon"))
-            {
-                var target = StripBeforeType(y);
-
-                var model = new CharacterModel { Name = target, Gender = Gender.None };
-                return MakeUsernameLink(model, true);
-            }
-
-            if (y.StartsWith("channel") || y.StartsWith("session"))
-            {
-                var channel = StripBeforeType(y);
-
-                return
-                    new InlineUIContainer(
-                        new Button
-                            {
-                                Content = x, 
-                                Style = (Style)Application.Current.FindResource("ChannelInterfaceButton"), 
-                                CommandParameter = channel
-                            }) {
-                                  BaselineAlignment = BaselineAlignment.TextBottom 
-                               };
-            }
-
-            if (y.StartsWith("color") && ApplicationSettings.AllowColors)
-            {
-                var colorString = StripBeforeType(y);
-                try
-                {
-                    var color = (Color)ColorConverter.ConvertFromString(colorString);
-                    var brush = new SolidColorBrush(color);
-                    return new Span(x) { Foreground = brush };
-                }
-                catch
-                {
-                    return new Span(x);
-                }
-            }
-
-            return new Span(x);
         }
 
         #endregion
