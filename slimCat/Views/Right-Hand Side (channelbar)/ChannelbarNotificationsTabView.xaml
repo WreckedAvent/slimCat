@@ -2,8 +2,66 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:v="clr-namespace:Slimcat.Views"
-             xmlns:models="clr-namespace:Slimcat.Models">
+             xmlns:models="clr-namespace:Slimcat.Models" 
+             xmlns:lib="clr-namespace:Slimcat.Libraries">
     <UserControl.Resources>
+        <DataTemplate x:Key="CharacterUpdateTemplate" 
+                  DataType="models:CharacterUpdateModel">
+            <Grid ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                       TextAlignment="Left"
+                       TextWrapping="Wrap">
+                    <lib:TextBlockHelper.InlineList>
+                        <MultiBinding Converter="{StaticResource BBPostConverter}">
+                            <Binding Path="."
+                                     Mode="OneTime" />
+                        </MultiBinding>
+                    </lib:TextBlockHelper.InlineList>
+                </TextBlock>
+
+                <v:CloseButtonView Grid.Column="1"
+                               VerticalAlignment="Top"
+                              Command="{Binding Path=DataContext.RemoveNotificationCommand,
+                               RelativeSource={RelativeSource Mode=FindAncestor,
+                               AncestorType={x:Type ItemsControl}} }"
+                               CommandParameter="{Binding}" />
+            </Grid>
+        </DataTemplate>
+
+
+        <DataTemplate x:Key="ChannelUpdateTemplate"
+                  DataType="models:ChannelUpdateModel">
+            <Grid ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock TextWrapping="Wrap"
+                       TextAlignment="Left">
+                <InlineUIContainer BaselineAlignment="TextBottom">
+                    <Button Content="{Binding Path=ChannelTitle, Mode=OneWay}"
+                            Style="{StaticResource ChannelInterfaceButton}"
+                            CommandParameter="{Binding Path=ChannelId, Mode=OneWay}" />
+
+                </InlineUIContainer>
+                <Run Text="{Binding Path=Arguments, Mode=OneWay}"
+                     Foreground="{StaticResource ForegroundBrush}" />
+                </TextBlock>
+
+                <v:CloseButtonView Grid.Column="1"
+                               VerticalAlignment="Top"
+                               Command="{Binding Path=DataContext.RemoveNotificationCommand,
+                               RelativeSource={RelativeSource Mode=FindAncestor,
+                               AncestorType={x:Type ItemsControl}} }"
+                               CommandParameter="{Binding}" />
+            </Grid>
+        </DataTemplate>
+        
         <DataTemplate DataType="{x:Type models:CharacterUpdateModel}">
             <ContentControl Margin="0"
                             Content="{Binding}"
