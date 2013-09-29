@@ -10,6 +10,7 @@
            FontFamily="Segoe UI, Verdanda"
            FontSize="13" 
            d:DataContext="{models:IMessage}">
+    
     <Run Text="{Binding TimeStamp, Mode=OneTime}" 
          Foreground="{Binding Path=Poster.IsInteresting, Mode=OneWay, Converter={StaticResource NameplateColorConverter}}"
          FontSize="12" />
@@ -30,6 +31,7 @@
     </InlineUIContainer>
 
     <Hyperlink CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}"
+               Command="{Binding Path=DataContext.NavigateTo, RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
                Style="{StaticResource UsernameStyle}"
                Foreground="{Binding Path=Poster.IsInteresting, Mode=OneWay, Converter={StaticResource NameplateColorConverter}}">
         <Run Text="{Binding Path=Poster.Name, Mode=OneTime}" />

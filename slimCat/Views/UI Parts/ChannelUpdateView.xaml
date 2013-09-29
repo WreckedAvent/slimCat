@@ -1,0 +1,69 @@
+﻿<Paragraph x:Class="Slimcat.Views.ChannelUpdateView"
+           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+           xmlns:v="clr-namespace:Slimcat.Views"
+           xmlns:lib="clr-namespace:Slimcat.Libraries"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           xmlns:models="clr-namespace:Slimcat.Models" 
+           mc:Ignorable="d"
+           d:DataContext="{d:DesignInstance Type=models:ChannelUpdateModel}"
+           Margin="0,2"
+           Padding="0"
+           Foreground="{StaticResource ForegroundBrush}"
+           FontFamily="Segoe UI, Verdanda"
+           FontSize="13" 
+           ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
+    <InlineUIContainer BaselineAlignment="Bottom">
+        <Rectangle Height="15" Width="15" Fill="{StaticResource HighlightBrush}">
+            <Rectangle.OpacityMask>
+                <ImageBrush ImageSource="{Binding Path=TargetChannel.Type, Mode=OneTime, Converter={StaticResource ChannelTypeToImageConverter}}" />
+            </Rectangle.OpacityMask>
+        </Rectangle>
+    </InlineUIContainer>
+
+    <Hyperlink CommandParameter="{Binding Path=TargetChannel.Id, Mode=OneTime}"
+               Style="{StaticResource ChannelStyle}"
+               Foreground="{StaticResource HighlightBrush}">
+        <Run Text="{Binding Path=TargetChannel.Title, Mode=OneTime}" />
+    </Hyperlink>
+
+    <Span lib:SpanHelper.InlineSource="{Binding Path=Arguments, Mode=OneTime, Converter={StaticResource BBCodeConverter}, IsAsync=True}"/>
+    
+    <InlineUIContainer>
+        <v:CloseButtonView VerticalAlignment="Top"
+                               Command="{Binding Path=DataContext.RemoveNotificationCommand,
+                               RelativeSource={RelativeSource Mode=FindAncestor,
+                               AncestorType={x:Type FlowDocument}} }"
+                               CommandParameter="{Binding}" />
+    </InlineUIContainer>
+</Paragraph>
+
+<!--        <DataTemplate x:Key="ChannelUpdateTemplate"
+                  DataType="models:ChannelUpdateModel">
+            <Grid ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock TextWrapping="Wrap"
+                       TextAlignment="Left">
+                <InlineUIContainer BaselineAlignment="TextBottom">
+                    <Button Content="{Binding Path=ChannelTitle, Mode=OneWay}"
+                            Style="{StaticResource ChannelInterfaceButton}"
+                            CommandParameter="{Binding Path=ChannelId, Mode=OneWay}" />
+
+                </InlineUIContainer>
+                <Run Text="{Binding Path=Arguments, Mode=OneWay}"
+                     Foreground="{StaticResource ForegroundBrush}" />
+                </TextBlock>
+
+                <v:CloseButtonView Grid.Column="1"
+                               VerticalAlignment="Top"
+                               Command="{Binding Path=DataContext.RemoveNotificationCommand,
+                               RelativeSource={RelativeSource Mode=FindAncestor,
+                               AncestorType={x:Type ItemsControl}} }"
+                               CommandParameter="{Binding}" />
+            </Grid>
+        </DataTemplate>
+-->

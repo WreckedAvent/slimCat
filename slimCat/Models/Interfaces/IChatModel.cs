@@ -157,6 +157,14 @@
         ICharacter FindCharacter(string name);
 
         /// <summary>
+        /// Returns the ChannelModel for a given id/title, if it exists
+        /// </summary>
+        /// <param name="id">ID of the channel to find</param>
+        /// <param name="title">Title of the channel used to create if not existant</param>
+        /// <returns></returns>
+        ChannelModel FindChannel(string id, string title = null);
+
+        /// <summary>
         /// The is of interest.
         /// </summary>
         /// <param name="name">

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ChannelbarNotificationsTabView.xaml.cs" company="Justin Kadrovach">
+// <copyright file="ChannelUpdateView.xaml.cs" company="Justin Kadrovach">
 //   Copyright (c) 2013, Justin Kadrovach
 //   All rights reserved.
 //   
@@ -23,47 +23,25 @@
 //   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // </copyright>
 // <summary>
-//   Interaction logic for ChannelbarNotificationsTabView.xaml
+//   Interaction logic for ChannelUpdateView.xaml
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Slimcat.Views
 {
-    using System;
-    using System.Collections.Specialized;
-    using System.Windows.Documents;
-
-    using Slimcat.Models;
-    using Slimcat.Utilities;
-    using Slimcat.ViewModels;
-
-    using System.Linq;
-
     /// <summary>
-    ///     Interaction logic for ChannelbarNotificationsTabView.xaml
+    ///     Interaction logic for ChannelUpdateView.xaml
     /// </summary>
-    public partial class NotificationsTabView
+    public partial class ChannelUpdateView
     {
-        #region Fields
-
-        private readonly NotificationsTabViewModel vm;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotificationsTabView"/> class.
+        ///     Initializes a new instance of the <see cref="ChannelUpdateView" /> class.
         /// </summary>
-        /// <param name="vm">
-        /// The vm.
-        /// </param>
-        public NotificationsTabView(NotificationsTabViewModel vm)
+        public ChannelUpdateView()
         {
             this.InitializeComponent();
-            this.vm = vm;
-
-            this.DataContext = this.vm;
         }
 
         #endregion

@@ -131,7 +131,7 @@ namespace Slimcat.Views
         private void OnLoad(object s, EventArgs e)
         {
             var loadedCount = 0;
-            this.scroll = new KeepToCurrentScrollViewer(PopupAnchor);
+            this.scroll = this.scroll ?? new KeepToCurrentScrollViewer(PopupAnchor);
 
             foreach (var template in this.vm.Model.Messages.Reverse().Select(item => new MessageView { DataContext = item }))
             {

@@ -235,9 +235,7 @@ namespace Slimcat.Services
             }
 
             this.Events.GetEvent<NewUpdateEvent>()
-                .Publish(
-                    new ChannelUpdateModel(
-                        channelId, new ChannelUpdateModel.ChannelTypeBannedListEventArgs(), channel.Title));
+                .Publish(new ChannelUpdateModel(channel, new ChannelUpdateModel.ChannelTypeBannedListEventArgs()));
         }
 
         private void ChannelDesciptionCommand(IDictionary<string, object> command)
@@ -269,7 +267,7 @@ namespace Slimcat.Services
             }
 
             var args = new ChannelUpdateModel.ChannelDescriptionChangedEventArgs();
-            this.Events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(channel.Id, args, channel.Title));
+            this.Events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(channel, args));
         }
 
         private void ChannelInitializedCommand(IDictionary<string, object> command)
@@ -593,11 +591,11 @@ namespace Slimcat.Services
         private void InviteCommand(IDictionary<string, object> command)
         {
             var sender = command["sender"] as string;
-            var channelID = command["name"] as string;
-            var channelName = command["title"] as string;
+            var id = command["name"] as string;
+            var title = command["title"] as string;
 
             var args = new ChannelUpdateModel.ChannelInviteEventArgs { Inviter = sender };
-            this.Events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(channelID, args, channelName));
+            this.Events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(this.ChatModel.FindChannel(id, title), args));
         }
 
         private new void JoinChannelCommand(IDictionary<string, object> command)
@@ -652,15 +650,13 @@ namespace Slimcat.Services
                 kicked = "you";
             }
 
-            var channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
-
             var args = new ChannelUpdateModel.ChannelDisciplineEventArgs
                            {
                                IsBan = isBan, 
                                Kicked = kicked, 
                                Kicker = kicker
                            };
-            var update = new ChannelUpdateModel(channelId, args, channel.Title);
+            var update = new ChannelUpdateModel(this.ChatModel.FindChannel(channelId), args);
 
             this.Events.GetEvent<NewUpdateEvent>().Publish(update);
 
@@ -1029,9 +1025,8 @@ namespace Slimcat.Services
             this.Events.GetEvent<NewUpdateEvent>()
                 .Publish(
                     new ChannelUpdateModel(
-                        channel.Id, 
-                        new ChannelUpdateModel.ChannelModeUpdateEventArgs { NewMode = newMode, }, 
-                        channel.Title));
+                        channel,
+                        new ChannelUpdateModel.ChannelModeUpdateEventArgs { NewMode = newMode, }));
         }
 
         private void RoomTypeChangedCommand(IDictionary<string, object> command)
@@ -1054,9 +1049,8 @@ namespace Slimcat.Services
                 this.Events.GetEvent<NewUpdateEvent>()
                     .Publish(
                         new ChannelUpdateModel(
-                            channelId, 
-                            new ChannelUpdateModel.ChannelTypeChangedEventArgs { IsOpen = true }, 
-                            channel.Title));
+                            channel, 
+                            new ChannelUpdateModel.ChannelTypeChangedEventArgs { IsOpen = true }));
             }
             else
             {
@@ -1066,9 +1060,8 @@ namespace Slimcat.Services
                 this.Events.GetEvent<NewUpdateEvent>()
                     .Publish(
                         new ChannelUpdateModel(
-                            channelId, 
-                            new ChannelUpdateModel.ChannelTypeChangedEventArgs { IsOpen = false }, 
-                            channel.Title));
+                            channel, 
+                            new ChannelUpdateModel.ChannelTypeChangedEventArgs { IsOpen = false }));
             }
         }
 

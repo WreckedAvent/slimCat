@@ -173,6 +173,7 @@
     <Compile Include="Models\Interfaces\ICharacter.cs" />
     <Compile Include="Models\Interfaces\IChatModel.cs" />
     <Compile Include="Models\Interfaces\IMessage.cs" />
+    <Compile Include="Models\Interfaces\IViewableObject.cs" />
     <Compile Include="Models\MessageBase.cs" />
     <Compile Include="Models\Enums\MessageType.cs" />
     <Compile Include="Models\NotificationModels.cs" />
@@ -293,6 +294,12 @@
     <Compile Include="Views\UI Parts\ChannelStatsView.xaml.cs">
       <DependentUpon>ChannelStatsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UI Parts\CharacterUpdateView.xaml.cs">
+      <DependentUpon>CharacterUpdateView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UI Parts\ChannelUpdateView.xaml.cs">
+      <DependentUpon>ChannelUpdateView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UI Parts\HistoryMessageView.xaml.cs">
       <DependentUpon>HistoryMessageView.xaml</DependentUpon>
     </Compile>
@@ -314,6 +321,9 @@
     </Compile>
     <Compile Include="Views\UI Parts\Buttons\RestartButtonView.xaml.cs">
       <DependentUpon>RestartButtonView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UI Parts\ObservingFlowDocumentReader.xaml.cs">
+      <DependentUpon>ObservingFlowDocumentReader.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UI Parts\RightClickMenu.xaml.cs">
       <DependentUpon>RightClickMenu.xaml</DependentUpon>
@@ -452,6 +462,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\UI Parts\CharacterUpdateView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\UI Parts\ChannelUpdateView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\UI Parts\HistoryMessageView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -473,6 +491,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UI Parts\Buttons\RestartButtonView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UI Parts\ObservingFlowDocumentReader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

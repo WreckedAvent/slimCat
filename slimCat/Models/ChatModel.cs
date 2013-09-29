@@ -36,6 +36,7 @@ namespace Slimcat.Models
     using System.Linq;
 
     using Slimcat.Services;
+    using Slimcat.Utilities;
     using Slimcat.ViewModels;
 
     /// <summary>
@@ -436,6 +437,13 @@ namespace Slimcat.Models
 
             Console.WriteLine("Unknown character: " + name);
             return new CharacterModel { Name = name, Status = StatusType.offline };
+        }
+
+        public ChannelModel FindChannel(string id, string title = null)
+        {
+            var channel = this.AllChannels.FirstByIdOrDefault(id);
+
+            return channel ?? new GeneralChannelModel(id, ChannelType.InviteOnly) { Title = title };
         }
 
         /// <summary>

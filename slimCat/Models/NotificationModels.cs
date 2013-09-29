@@ -32,14 +32,17 @@ namespace Slimcat.Models
     using System;
     using System.Linq;
     using System.Text;
+    using System.Windows.Documents;
 
     using Slimcat.Utilities;
+    using Slimcat.Views;
 
     /// <summary>
     ///     The notification model.
     /// </summary>
-    public abstract class NotificationModel : MessageBase
+    public abstract class NotificationModel : MessageBase, IViewableObject
     {
+        public abstract Block View { get; }
     }
 
     /// <summary>
@@ -47,31 +50,21 @@ namespace Slimcat.Models
     /// </summary>
     public class CharacterUpdateModel : NotificationModel
     {
-        #region Fields
-
-        private CharacterUpdateEventArgs args;
-
-        private ICharacter target;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CharacterUpdateModel"/> class.
         /// </summary>
-        /// <param name="target">
-        /// The target.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
         public CharacterUpdateModel(ICharacter target, CharacterUpdateEventArgs e)
         {
-            this.target = target;
-            this.args = e;
+            this.TargetCharacter = target;
+            this.Arguments = e;
         }
 
+        public CharacterUpdateModel()
+        {
+                
+        }
         #endregion
 
         #region Public Properties
@@ -79,22 +72,18 @@ namespace Slimcat.Models
         /// <summary>
         ///     Gets the arguments.
         /// </summary>
-        public CharacterUpdateEventArgs Arguments
-        {
-            get
-            {
-                return this.args;
-            }
-        }
+        public CharacterUpdateEventArgs Arguments { get; private set; }
 
         /// <summary>
         ///     Gets the target character.
         /// </summary>
-        public ICharacter TargetCharacter
+        public ICharacter TargetCharacter { get; private set; }
+
+        public override Block View 
         {
             get
             {
-                return this.target;
+                return new CharacterUpdateView { DataContext = this };
             }
         }
 
@@ -121,8 +110,8 @@ namespace Slimcat.Models
         {
             if (isManaged)
             {
-                this.target = null;
-                this.args = null;
+                this.TargetCharacter = null;
+                this.Arguments = null;
             }
         }
 
@@ -739,36 +728,20 @@ namespace Slimcat.Models
     /// </summary>
     public class ChannelUpdateModel : NotificationModel
     {
-        #region Fields
-
-        private ChannelUpdateEventArgs args;
-
-        private string channelId;
-
-        private string channelTitle;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChannelUpdateModel"/> class.
         /// </summary>
-        /// <param name="channelID">
-        /// The channel id.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
-        /// <param name="channelTitle">
-        /// The channel title.
-        /// </param>
-        public ChannelUpdateModel(string channelID, ChannelUpdateEventArgs e, string channelTitle = null)
+        public ChannelUpdateModel(ChannelModel model, ChannelUpdateEventArgs e)
         {
-            this.channelId = channelID;
-            this.args = e;
+            this.TargetChannel = model;
+            this.Arguments = e;
+        }
 
-            this.channelTitle = channelTitle ?? this.channelId;
+        public ChannelUpdateModel()
+        {
+                
         }
 
         #endregion
@@ -778,33 +751,15 @@ namespace Slimcat.Models
         /// <summary>
         ///     Gets the arguments.
         /// </summary>
-        public ChannelUpdateEventArgs Arguments
-        {
-            get
-            {
-                return this.args;
-            }
-        }
+        public ChannelUpdateEventArgs Arguments { get; private set; }
 
-        /// <summary>
-        ///     Gets the channel id.
-        /// </summary>
-        public string ChannelId
-        {
-            get
-            {
-                return this.channelId;
-            }
-        }
+        public ChannelModel TargetChannel { get; set; }
 
-        /// <summary>
-        ///     Gets the channel title.
-        /// </summary>
-        public string ChannelTitle
+        public override Block View
         {
             get
             {
-                return this.channelTitle;
+                return new ChannelUpdateView { DataContext = this };
             }
         }
 
@@ -820,7 +775,7 @@ namespace Slimcat.Models
         /// </returns>
         public override string ToString()
         {
-            return this.ChannelTitle + " " + this.Arguments;
+            return this.Arguments.ToString();
         }
 
         #endregion
@@ -834,9 +789,8 @@ namespace Slimcat.Models
                 return;
             }
 
-            this.channelId = null;
-            this.channelTitle = null;
-            this.args = null;
+            this.TargetChannel = null;
+            this.Arguments = null;
         }
 
         #endregion
@@ -896,7 +850,7 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                return ": " + this.Kicker + " has " + (this.IsBan ? "banned " : "kicked ") + this.Kicked + '.';
+                return "(" + this.Kicker + ") has " + (this.IsBan ? "banned " : "kicked ") + this.Kicked + '.';
             }
 
             #endregion
@@ -926,7 +880,7 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                return ": " + this.Inviter + " has invited you to join their room.";
+                return "(" + this.Inviter + ") has invited you to join their room.";
             }
 
             #endregion
@@ -1012,7 +966,7 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                return ": is now " + (this.IsOpen ? "open" : "InviteOnly") + '.';
+                return "is now " + (this.IsOpen ? "open" : "InviteOnly") + '.';
             }
 
             #endregion

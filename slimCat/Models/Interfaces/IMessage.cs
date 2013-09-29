@@ -5,7 +5,7 @@
     /// <summary>
     ///     The Message interface.
     /// </summary>
-    public interface IMessage : IDisposable
+    public interface IMessage : IDisposable, IViewableObject
     {
         #region Public Properties
 

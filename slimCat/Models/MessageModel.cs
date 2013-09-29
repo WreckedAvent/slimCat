@@ -29,6 +29,10 @@
 
 namespace Slimcat.Models
 {
+    using System.Windows.Documents;
+
+    using Slimcat.Views;
+
     /// <summary>
     ///     A model to hold data on messages
     /// </summary>
@@ -79,6 +83,17 @@ namespace Slimcat.Models
         ///     Gets the type.
         /// </summary>
         public MessageType Type { get; private set; }
+
+        /// <summary>
+        ///     Gets the view associated with messages.
+        /// </summary>
+        public Block View
+        {
+            get
+            {
+                return new MessageView { DataContext = this };
+            }
+        }
 
         #endregion
 

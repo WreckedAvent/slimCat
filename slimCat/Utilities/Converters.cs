@@ -149,6 +149,22 @@ namespace Slimcat.Utilities
             return toReturn;
         }
 
+        internal static Inline MakeChannelLink(ChannelModel channel)
+        {
+            var toReturn = 
+                new InlineUIContainer
+                {
+                    Child = new ContentControl
+                    {
+                        ContentTemplate = (DataTemplate)Application.Current.FindResource("ChannelTemplate"),
+                        Content = channel
+                    },
+                    BaselineAlignment = BaselineAlignment.TextBottom
+                };
+
+            return toReturn;
+        }
+
         /// <summary>
         /// Converts a string to richly-formatted inline elements.
         /// </summary>
@@ -356,32 +372,23 @@ namespace Slimcat.Utilities
             {
                 var channel = StripBeforeType(y);
 
-                return
-                    new InlineUIContainer(
-                        new Button
-                        {
-                            Content = x,
-                            Style = (Style)Application.Current.FindResource("ChannelInterfaceButton"),
-                            CommandParameter = channel
-                        })
-                    {
-                        BaselineAlignment = BaselineAlignment.TextBottom
-                    };
+                return MakeChannelLink(this.ChatModel.FindChannel(channel));
             }
 
             if (y.StartsWith("color") && ApplicationSettings.AllowColors)
             {
                 var colorString = StripBeforeType(y);
 
-                var converted = ColorConverter.ConvertFromString(colorString);
-                if (converted != null)
+                try
                 {
-                    var color = (Color)converted;
+                    var color = (Color)ColorConverter.ConvertFromString(colorString);
                     var brush = new SolidColorBrush(color);
                     return new Span(x) { Foreground = brush };
                 }
-
-                return new Span(x);
+                catch
+                {
+                    return new Span(x);
+                }
             }
 
             return new Span(x);
@@ -629,7 +636,7 @@ namespace Slimcat.Utilities
                 return null;
             }
 
-            var text = (string)value; // this is the beef of the message
+            var text = value as string ?? value.ToString(); // this is the beef of the message
             text = HttpUtility.HtmlDecode(text); // translate the HTML characters
 
             if (text.StartsWith("/me"))
@@ -697,12 +704,7 @@ namespace Slimcat.Utilities
                 return null;
             }
 
-            var text = value as string;
-
-            if (text == null)
-            {
-                return null;
-            }
+            var text = value as string ?? value.ToString();
 
             text = HttpUtility.HtmlDecode(text);
 

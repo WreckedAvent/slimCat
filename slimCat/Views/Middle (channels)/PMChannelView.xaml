@@ -57,27 +57,7 @@
                 </WrapPanel>
             </Grid>
         </Border>
-
-        <!-- old
-        <ScrollViewer x:Name="messages"
-                      Grid.Row="1">
-            <Grid x:Name="PopupAnchor"
-                  Margin="0,10,0,5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                </Grid.RowDefinitions>
-                <ItemsControl ItemsSource="{Binding Path=Model.History, Mode=OneWay}"
-                              ItemTemplate="{StaticResource HistoryView}"
-                              Foreground="{StaticResource ForegroundBrush}"
-                              x:Name="history" />
-                <ItemsControl ItemsSource="{Binding Path=Model.Messages, Mode=OneWay}"
-                              ItemTemplate="{StaticResource MessageView}"
-                              Loaded="OnMessagesLoaded"
-                              x:Name="current"
-                              Grid.Row="1" />
-            </Grid>
-        </ScrollViewer> -->
+        
         <FlowDocumentScrollViewer Grid.Row="1"
                                   x:Name="PopupAnchor"
                                   HorizontalAlignment="Stretch"

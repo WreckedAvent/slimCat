@@ -11,7 +11,7 @@
     {
         #region Fields
 
-        internal readonly DateTimeOffset posted;
+        private readonly DateTimeOffset posted;
 
         #endregion
 

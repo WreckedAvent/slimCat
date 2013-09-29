@@ -31,6 +31,8 @@ namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Collections.Specialized;
     using System.Linq;
     using System.Windows.Input;
 
@@ -58,6 +60,8 @@ namespace Slimcat.ViewModels
         #endregion
 
         #region Fields
+
+        private readonly ObservableCollection<IViewableObject> currentNotifications = new ObservableCollection<IViewableObject>();
 
         private RelayCommand clearNoti;
 
@@ -92,12 +96,11 @@ namespace Slimcat.ViewModels
         {
             this.Container.RegisterType<object, NotificationsTabView>(NotificationsTabView);
 
-            this.ChatModel.Notifications.CollectionChanged += (s, e) =>
-                {
-                    this.OnPropertyChanged("NeedsAttention");
-                    this.OnPropertyChanged("SortedNotifications");
-                    this.OnPropertyChanged("HasNoNotifications");
-                };
+            this.ChatModel.Notifications.CollectionChanged += this.OnDisplayChanged;
+
+            this.ChatModel.Notifications
+                .Cast<IViewableObject>()
+                .Each(x => this.currentNotifications.Add(x));
         }
 
         #endregion
@@ -125,7 +128,7 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                return this.ChatModel.Notifications.Count == 0;
+                return this.currentNotifications.Count == 0;
             }
         }
 
@@ -174,43 +177,18 @@ namespace Slimcat.ViewModels
             {
                 this.search = value;
                 this.OnPropertyChanged("SearchString");
-                this.OnPropertyChanged("SortedNotifications");
+                this.RebuildNotifications();
             }
         }
 
         /// <summary>
         ///     Gets the sorted notifications.
         /// </summary>
-        public IEnumerable<NotificationModel> SortedNotifications
+        public ObservableCollection<IViewableObject> CurrentNotifications
         {
             get
             {
-                if (this.search == string.Empty)
-                {
-                    return this.ChatModel.Notifications;
-                }
-
-                Func<NotificationModel, bool> MeetsString = args =>
-                    {
-                        var arguments = args.ToString().ToLower();
-                        if (args is CharacterUpdateModel)
-                        {
-                            var characterName = ((CharacterUpdateModel)args).TargetCharacter.Name;
-                            return arguments.ContainsOrdinal(this.SearchString, true)
-                                   || characterName.ContainsOrdinal(this.SearchString, true);
-                        }
-
-                        if (args is ChannelUpdateModel)
-                        {
-                            var channelName = ((ChannelUpdateModel)args).ChannelTitle;
-                            return arguments.ContainsOrdinal(this.SearchString, true)
-                                   || channelName.ContainsOrdinal(this.SearchString, true);
-                        }
-
-                        return arguments.Contains(this.SearchString);
-                    };
-
-                return this.ChatModel.Notifications.Where(MeetsString);
+                return this.currentNotifications;
             }
         }
 
@@ -226,15 +204,51 @@ namespace Slimcat.ViewModels
         /// </param>
         public void RemoveNotification(object args)
         {
-            if (!(args is NotificationModel))
+            var model = args as NotificationModel;
+            if (model != null)
             {
-                return;
+                this.ChatModel.Notifications.Remove(model);
             }
-
-            var toRemove = args as NotificationModel;
-            this.ChatModel.Notifications.Remove(toRemove);
         }
 
+        #endregion
+
+        #region Methods
+        private void OnDisplayChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            this.OnPropertyChanged("NeedsAttention");
+
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    e.NewItems
+                     .Cast<NotificationModel>()
+                     .Where(item => item.ToString().ContainsOrdinal(this.search))
+                     .Each(item => this.currentNotifications.Add(item));
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    this.currentNotifications.Clear();
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    if (e.OldStartingIndex == -1)
+                    {
+                        return;
+                    }
+
+                    this.currentNotifications.RemoveAt(e.OldStartingIndex);
+                    break;
+            }
+
+            this.OnPropertyChanged("HasNoNotifications");
+        }
+
+        private void RebuildNotifications()
+        {
+            this.currentNotifications.Clear();
+            this.ChatModel.Notifications
+                .Where(item => item.ToString().ContainsOrdinal(this.search))
+                .Each(item => this.currentNotifications.Add(item));
+        }
         #endregion
     }
 }

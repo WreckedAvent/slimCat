@@ -104,6 +104,34 @@ namespace Slimcat.Utilities
         {
             return string.Format(toFormat, args);
         }
+
+        public static void RemoveAt(this BlockCollection collection, int index)
+        {
+            if (index == -1 || collection.Count == 0)
+            {
+                return;
+            }
+
+            collection.Remove(collection.ElementAt(index));
+        }
+
+        public static void AddAt(this BlockCollection collection, int index, Block item)
+        {
+            if (index == -1)
+            {
+                return;
+            } 
+
+            if (collection.Count == 0)
+            {
+                collection.Add(item);
+                return;
+            }
+
+            index = Math.Min(index, collection.Count - 1);
+
+            collection.InsertAfter(collection.ElementAt(index), item);
+        }
         #endregion
     }
 

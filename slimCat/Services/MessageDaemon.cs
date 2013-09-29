@@ -662,19 +662,19 @@ namespace Slimcat.Services
             }
 
             var doStuffWith = stuffWith;
-            var newChannel = this.model.AllChannels.FirstByIdOrDefault(doStuffWith.ChannelId);
+            var newChannel = this.model.AllChannels.FirstByIdOrDefault(doStuffWith.TargetChannel.Id);
 
             if (newChannel == null)
             {
                 // if it's null, then we've got an invite to a new channel
-                var toSend = new { channel = doStuffWith.ChannelId };
+                var toSend = new { channel = doStuffWith.TargetChannel.Id };
                 this.connection.SendMessage(toSend, "JCH");
                 this.Dispatcher.Invoke((Action)ShowWindow);
                 return;
             }
 
             var chanType = newChannel.Type;
-            this.JoinChannel(chanType, doStuffWith.ChannelId);
+            this.JoinChannel(chanType, doStuffWith.TargetChannel.Id);
             this.Dispatcher.Invoke((Action)ShowWindow);
         }
 
