@@ -36,12 +36,6 @@ namespace Slimcat.Views
     /// </summary>
     public partial class ChannelbarView
     {
-        #region Fields
-
-        private readonly ChannelbarViewModel vm;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
@@ -53,32 +47,16 @@ namespace Slimcat.Views
         public ChannelbarView(ChannelbarViewModel vm)
         {
             this.InitializeComponent();
-            this.vm = vm;
 
-            this.DataContext = this.vm;
+            this.DataContext = vm;
 
-            this.vm.OnJumpToNotifications += (s, e) =>
+            vm.OnJumpToNotifications += (s, e) =>
                 {
                     if (this.NotificationButton.IsChecked == false)
                     {
                         this.NotificationButton.IsChecked = true;
                     }
                 };
-        }
-
-        #endregion
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets the vm.
-        /// </summary>
-        public ChannelbarViewModel Vm
-        {
-            get
-            {
-                return this.vm;
-            }
         }
 
         #endregion

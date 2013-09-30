@@ -120,11 +120,13 @@
 
             set
             {
-                if (this.showBookmarks != value)
+                if (this.showBookmarks == value)
                 {
-                    this.showBookmarks = value;
-                    this.CallUpdate();
+                    return;
                 }
+
+                this.showBookmarks = value;
+                this.CallUpdate();
             }
         }
 

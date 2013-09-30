@@ -1,11 +1,18 @@
 ﻿namespace Slimcat.Models
 {
+    using System.Windows.Media.Imaging;
+
     /// <summary>
     ///     For everything that interacts directly with character data
     /// </summary>
     public interface ICharacter
     {
         #region Public Properties
+
+        /// <summary>
+        ///     Gets or sets the character's avatar.
+        /// </summary>
+        BitmapImage Avatar { get; set; }
 
         /// <summary>
         ///     Gets or sets the gender.

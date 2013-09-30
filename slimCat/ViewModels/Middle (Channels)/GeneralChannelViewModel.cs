@@ -368,7 +368,7 @@ namespace Slimcat.ViewModels
 
                 this.isDisplayingChat = value;
 
-                string temp = this.Message;
+                var temp = this.Message;
                 this.Message = this.adMessage;
                 this.adMessage = temp;
 

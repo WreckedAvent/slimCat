@@ -79,7 +79,7 @@
         /// <returns>
         ///     The <see cref="double" />.
         /// </returns>
-        public double Average()
+        private double Average()
         {
             return this.oldCounts.Average();
         }
@@ -142,7 +142,7 @@
         /// </returns>
         public double StabilityIndex()
         {
-            double threshold = this.Average() / 10; // standard deviations above this are considered unstable
+            var threshold = this.Average() / 10; // standard deviations above this are considered unstable
 
             // in this case, an average distance of 20% from our average is considered high
             return Math.Max(Math.Min(Math.Log10(threshold / this.StdDev()) * 100, 100), 0);

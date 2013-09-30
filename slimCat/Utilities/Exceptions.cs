@@ -44,7 +44,7 @@ namespace Slimcat.Utilities
         /// <summary>
         ///     The defaul t_ message.
         /// </summary>
-        public const string DefaultMessage =
+        private const string DefaultMessage =
             "Oops! Looks like the application done goofed itself."
             + "Please submit the Stacktrace.log file for inspection." + "\n\nApplication will now exit.";
 

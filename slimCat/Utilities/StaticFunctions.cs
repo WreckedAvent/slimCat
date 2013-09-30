@@ -52,7 +52,7 @@
         /// </returns>
         public static bool ContainsOrdinal(this string fullString, string checkterm, bool ignoreCase = true)
         {
-            StringComparison comparer = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+            var comparer = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
             return fullString.IndexOf(checkterm, comparer) >= 0;
         }
 
@@ -71,9 +71,9 @@
         /// </returns>
         public static Tuple<string, string> FirstMatch(this string fullString, string checkAgainst)
         {
-            int startIndex = fullString.IndexOf(checkAgainst, StringComparison.OrdinalIgnoreCase);
+            var startIndex = fullString.IndexOf(checkAgainst, StringComparison.OrdinalIgnoreCase);
 
-            bool hasMatch = false;
+            var hasMatch = false;
 
             if (startIndex != -1)
             {
@@ -81,7 +81,7 @@
                 if (startIndex != 0)
                 {
                     // this weeds out matches such as 'big man' from matching 'i'
-                    char prevChar = fullString[startIndex - 1];
+                    var prevChar = fullString[startIndex - 1];
                     hasMatch = char.IsWhiteSpace(prevChar) || char.IsPunctuation(prevChar) && !prevChar.Equals('\'');
 
                     if (!hasMatch)
@@ -95,8 +95,8 @@
                 if (startIndex + checkAgainst.Length < fullString.Length)
                 {
                     // this weeds out matches such as 'its' from matching 'i'
-                    int nextIndex = startIndex + checkAgainst.Length;
-                    char nextChar = fullString[nextIndex];
+                    var nextIndex = startIndex + checkAgainst.Length;
+                    var nextChar = fullString[nextIndex];
                     hasMatch = char.IsWhiteSpace(nextChar) || char.IsPunctuation(nextChar);
 
                     // we only want the ' to match sometimes, such as <match word>'s
@@ -194,7 +194,7 @@
         public static bool IsDingMessage(
             this IMessage message, ChannelSettingsModel settings, IEnumerable<string> dingTerms)
         {
-            string safeMessage = HttpUtility.HtmlDecode(message.Message);
+            var safeMessage = HttpUtility.HtmlDecode(message.Message);
 
             if (settings.NotifyIncludesCharacterNames)
             {
@@ -204,12 +204,7 @@
                 }
             }
 
-            if (safeMessage.HasDingTermMatch(dingTerms))
-            {
-                return true;
-            }
-
-            return false;
+            return safeMessage.HasDingTermMatch(dingTerms);
         }
 
         /// <summary>
@@ -229,7 +224,7 @@
         /// </returns>
         public static string MakeSafeFolderPath(string character, string title, string id)
         {
-            string basePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var basePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string folderName;
 
             if (!title.Equals(id))

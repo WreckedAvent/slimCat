@@ -2,7 +2,6 @@
 // <copyright file="App.xaml.cs" company="Justin Kadrovach">
 //   Copyright (c) 2013, Justin Kadrovach
 //   All rights reserved.
-//   
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //       * Redistributions of source code must retain the above copyright
@@ -10,7 +9,6 @@
 //       * Redistributions in binary form must reproduce the above copyright
 //         notice, this list of conditions and the following disclaimer in the
 //         documentation and/or other materials provided with the distribution.
-//   
 //   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 //   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 //   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -26,14 +24,9 @@
 //   Interaction logic for App.xaml
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Slimcat
 {
-    using System;
-    using System.IO;
-    using System.Reflection;
     using System.Windows;
-    using System.Windows.Markup;
 
     using Slimcat.Utilities;
 
@@ -54,65 +47,12 @@ namespace Slimcat
 
         #endregion
 
-        #region Methods
-
-        /// <summary>
-        /// The on startup.
-        /// </summary>
-        /// <param name="e">
-        /// The e.
-        /// </param>
         protected override void OnStartup(StartupEventArgs e)
         {
-            try
-            {
-                {
-                    // load external colors
-                    string exeFilePath = Assembly.GetExecutingAssembly().GetName().CodeBase;
-                    string exeDirPath = Path.GetDirectoryName(exeFilePath);
-                    const string TargetFile = "Theme\\Colors.xaml";
-                    string pathToXamlDictionary = new Uri(Path.Combine(exeDirPath, TargetFile)).LocalPath;
-                    string strXaml = File.ReadAllText(pathToXamlDictionary);
-                    var resourceDictionary = (ResourceDictionary)XamlReader.Parse(strXaml);
-                    Current.Resources.MergedDictionaries.Add(resourceDictionary);
-                }
+            base.OnStartup(e);
 
-                {
-                    // load external theme
-                    string exeFilePath = Assembly.GetExecutingAssembly().GetName().CodeBase;
-                    string exeDirPath = Path.GetDirectoryName(exeFilePath);
-                    const string TargetFile = "Theme\\Theme.xaml";
-                    string pathToXamlDictionary = new Uri(Path.Combine(exeDirPath, TargetFile)).LocalPath;
-                    string strXaml = File.ReadAllText(pathToXamlDictionary);
-                    var resourceDictionary = (ResourceDictionary)XamlReader.Parse(strXaml);
-                    Current.Resources.MergedDictionaries.Add(resourceDictionary);
-                }
-
-                {
-                    // load internal theme
-                    var resources = new ResourceDictionary
-                                        {
-                                            Source =
-                                                new Uri(
-                                                "/slimCat;component/EmbeddedTheme.xaml",
-                                                UriKind.RelativeOrAbsolute)
-                                        };
-
-                    Current.Resources.MergedDictionaries.Add(resources);
-                }
-
-                base.OnStartup(e);
-
-                var bstrap = new Bootstrapper();
-                bstrap.Run();
-            }
-            catch (Exception ex)
-            {
-                ex.Source = "Start up";
-                Exceptions.HandleException(ex);
-            }
+            var bstrap = new Bootstrapper();
+            bstrap.Run();
         }
-
-        #endregion
     }
 }

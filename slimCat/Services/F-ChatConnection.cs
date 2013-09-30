@@ -57,7 +57,7 @@ namespace Slimcat.Services
         /// <summary>
         ///     The host.
         /// </summary>
-        public const string Host = "ws://chat.f-list.net:9722/";
+        private const string Host = "ws://chat.f-list.net:9722/";
 
         #endregion
 
@@ -142,7 +142,7 @@ namespace Slimcat.Services
                     throw new ArgumentOutOfRangeException("commandType", "Command type must be 3 characters long");
                 }
 
-                string ser = SimpleJson.SerializeObject(command);
+                var ser = SimpleJson.SerializeObject(command);
 
 #if (DEBUG)
 

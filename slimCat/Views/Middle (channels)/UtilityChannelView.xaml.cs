@@ -64,11 +64,13 @@ namespace Slimcat.Views
 
         protected override void Dispose(bool isManaged)
         {
-            if (isManaged)
+            if (!isManaged)
             {
-                this.DataContext = null;
-                this.vm = null;
+                return;
             }
+
+            this.DataContext = null;
+            this.vm = null;
         }
 
         #endregion

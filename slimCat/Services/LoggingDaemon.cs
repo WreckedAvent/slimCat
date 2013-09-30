@@ -192,7 +192,7 @@ namespace Slimcat.Services
         /// </param>
         public void LogSpecial(string title, string id, SpecialLogMessageKind kind, string specialTitle)
         {
-            using (StreamWriter writer = this.AccessLog(title, id))
+            using (var writer = this.AccessLog(title, id))
             {
                 switch (kind)
                 {
@@ -201,7 +201,7 @@ namespace Slimcat.Services
                         break;
                     case SpecialLogMessageKind.Header:
                         {
-                            string head = string.Empty;
+                            var head = string.Empty;
                             while (head.Length < specialTitle.Length + 4)
                             {
                                 head += "=";
@@ -218,7 +218,7 @@ namespace Slimcat.Services
 
                     case SpecialLogMessageKind.Section:
                         {
-                            string head = string.Empty;
+                            var head = string.Empty;
                             while (head.Length < specialTitle.Length + 4)
                             {
                                 head += "-";
@@ -295,9 +295,9 @@ namespace Slimcat.Services
         /// </returns>
         private StreamWriter AccessLog(string title, string id)
         {
-            string loggingPath = StaticFunctions.MakeSafeFolderPath(this.currentCharacter, title, id);
+            var loggingPath = StaticFunctions.MakeSafeFolderPath(this.currentCharacter, title, id);
 
-            string fileName = DateToFileName();
+            var fileName = DateToFileName();
 
             if (!Directory.Exists(loggingPath))
             {
@@ -309,11 +309,11 @@ namespace Slimcat.Services
 
         private static string DateToFileName()
         {
-            DateTime time = DateTimeOffset.Now.Date;
+            var time = DateTimeOffset.Now.Date;
 
-            int month = time.Month;
-            int year = time.Year;
-            int day = time.Day;
+            var month = time.Month;
+            var year = time.Year;
+            var day = time.Day;
 
             return month.ToString() + "-" + day.ToString() + "-" + year.ToString() + ".txt";
         }

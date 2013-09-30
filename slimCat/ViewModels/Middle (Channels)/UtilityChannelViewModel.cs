@@ -119,17 +119,21 @@ namespace Slimcat.ViewModels
                 this.Events.GetEvent<NewUpdateEvent>().Subscribe(
                     param =>
                         {
-                            if (param is CharacterUpdateModel)
+                            if (!(param is CharacterUpdateModel))
                             {
-                                var temp = param as CharacterUpdateModel;
-                                if (temp.Arguments is CharacterUpdateModel.LoginStateChangedEventArgs)
-                                {
-                                    this.OnPropertyChanged("OnlineCount");
-                                    this.OnPropertyChanged("OnlineFriendsCount");
-                                    this.OnPropertyChanged("OnlineBookmarksCount");
-                                    this.OnPropertyChanged("OnlineCountChange");
-                                }
+                                return;
                             }
+
+                            var temp = param as CharacterUpdateModel;
+                            if (!(temp.Arguments is CharacterUpdateModel.LoginStateChangedEventArgs))
+                            {
+                                return;
+                            }
+
+                            this.OnPropertyChanged("OnlineCount");
+                            this.OnPropertyChanged("OnlineFriendsCount");
+                            this.OnPropertyChanged("OnlineBookmarksCount");
+                            this.OnPropertyChanged("OnlineCountChange");
                         });
 
                 this.Events.GetEvent<LoginAuthenticatedEvent>().Subscribe(this.LoggedInEvent);
@@ -521,19 +525,21 @@ namespace Slimcat.ViewModels
         /// </param>
         public void UpdateConnectText(object sender, EventArgs e)
         {
-            if (!this.ChatModel.IsAuthenticated)
+            if (this.ChatModel.IsAuthenticated)
             {
-                this.ConnectTime++;
-
-                if (this.connectDotDot.Length >= 3)
-                {
-                    this.connectDotDot.Clear();
-                }
-
-                this.connectDotDot.Append('.');
-
-                this.OnPropertyChanged("ConnectFlavorText");
+                return;
             }
+
+            this.ConnectTime++;
+
+            if (this.connectDotDot.Length >= 3)
+            {
+                this.connectDotDot.Clear();
+            }
+
+            this.connectDotDot.Append('.');
+
+            this.OnPropertyChanged("ConnectFlavorText");
         }
 
         #endregion

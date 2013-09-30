@@ -57,7 +57,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     The login view name.
         /// </summary>
-        public const string LoginViewName = "LoginView";
+        internal const string LoginViewName = "LoginView";
 
         #endregion
 

@@ -40,23 +40,6 @@
         void LogMessage(string title, string id, IMessage message);
 
         /// <summary>
-        /// Prints a special message to the log, such as a header
-        /// </summary>
-        /// <param name="title">
-        /// The title.
-        /// </param>
-        /// <param name="id">
-        /// The ID.
-        /// </param>
-        /// <param name="type">
-        /// The type of special message
-        /// </param>
-        /// <param name="specialTitle">
-        /// The title for the special message
-        /// </param>
-        void LogSpecial(string title, string id, SpecialLogMessageKind type, string specialTitle);
-
-        /// <summary>
         /// Opens the log in the default text editor
         /// </summary>
         /// <param name="isFolder">

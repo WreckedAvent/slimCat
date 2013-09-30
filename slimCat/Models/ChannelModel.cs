@@ -2,7 +2,6 @@
 // <copyright file="ChannelModel.cs" company="Justin Kadrovach">
 //   Copyright (c) 2013, Justin Kadrovach
 //   All rights reserved.
-//   
 //   Redistribution and use in source and binary forms, with or without
 //   modification, are permitted provided that the following conditions are met:
 //       * Redistributions of source code must retain the above copyright
@@ -10,7 +9,6 @@
 //       * Redistributions in binary form must reproduce the above copyright
 //         notice, this list of conditions and the following disclaimer in the
 //         documentation and/or other materials provided with the distribution.
-//   
 //   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 //   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 //   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -26,7 +24,6 @@
 //   The channel model is used as a base for channels and conversations
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Slimcat.Models
 {
     using System;
@@ -44,17 +41,17 @@ namespace Slimcat.Models
 
         private readonly ObservableCollection<IMessage> ads = new ObservableCollection<IMessage>();
 
-        private readonly ObservableCollection<IMessage> messages = new ObservableCollection<IMessage>();
-
         private readonly string identity;
 
-        private bool isSelected;
+        private readonly ObservableCollection<IMessage> messages = new ObservableCollection<IMessage>();
 
-        private ChannelSettingsModel settings;
+        private bool isSelected;
 
         private int lastRead;
 
         private ChannelMode mode;
+
+        private ChannelSettingsModel settings;
 
         private string title;
 
@@ -65,17 +62,17 @@ namespace Slimcat.Models
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChannelModel"/> class.
+        ///     Initializes a new instance of the <see cref="ChannelModel" /> class.
         ///     Creates a new Channel data model
         /// </summary>
         /// <param name="identity">
-        /// Name of the channel (or character, for PMs)
+        ///     Name of the channel (or character, for PMs)
         /// </param>
         /// <param name="kind">
-        /// Type of the channel
+        ///     Type of the channel
         /// </param>
         /// <param name="mode">
-        /// The rules associated with the channel (only Ads, only posts, or both)
+        ///     The rules associated with the channel (only Ads, only posts, or both)
         /// </param>
         protected ChannelModel(string identity, ChannelType kind, ChannelMode mode = ChannelMode.Both)
         {
@@ -118,15 +115,6 @@ namespace Slimcat.Models
                 return this.IsSelected;
             }
         }
-
-        /// <summary>
-        ///     A number displayed on the UI along with the rest of the channel data
-        /// </summary>
-        public abstract int DisplayNumber { get; }
-
-        public bool UnreadContainsInteresting { get; protected set; }
-
-        public bool NeedsAttentionOverride { get; protected set; }
 
         /// <summary>
         ///     An ID is used to unambigiously identify the channel or character's name
@@ -276,16 +264,9 @@ namespace Slimcat.Models
             }
         }
 
-        /// <summary>
-        ///     Number of messages we haven't read
-        /// </summary>
-        protected int Unread
-        {
-            get
-            {
-                return this.Messages.Count - this.LastReadCount;
-            }
-        }
+        #endregion
+
+        #region Properties
 
         /// <summary>
         ///     The number of messages we've read up to
@@ -309,18 +290,33 @@ namespace Slimcat.Models
             }
         }
 
+        protected bool NeedsAttentionOverride { get; private set; }
+
+        /// <summary>
+        ///     Number of messages we haven't read
+        /// </summary>
+        protected int Unread
+        {
+            get
+            {
+                return this.Messages.Count - this.LastReadCount;
+            }
+        }
+
+        protected bool UnreadContainsInteresting { private get; set; }
+
         #endregion
 
         #region Public Methods and Operators
 
         /// <summary>
-        /// The add message.
+        ///     The add message.
         /// </summary>
         /// <param name="message">
-        /// The message.
+        ///     The message.
         /// </param>
         /// <param name="isOfInterest">
-        /// The is of interest.
+        ///     The is of interest.
         /// </param>
         public virtual void AddMessage(IMessage message, bool isOfInterest = false)
         {
@@ -368,10 +364,10 @@ namespace Slimcat.Models
         #region Methods
 
         /// <summary>
-        /// The dispose.
+        ///     The dispose.
         /// </summary>
         /// <param name="isManaged">
-        /// The is managed.
+        ///     The is managed.
         /// </param>
         protected virtual void Dispose(bool isManaged)
         {

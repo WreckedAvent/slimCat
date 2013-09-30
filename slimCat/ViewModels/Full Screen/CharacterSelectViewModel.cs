@@ -57,7 +57,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     The character select view name.
         /// </summary>
-        public const string CharacterSelectViewName = "CharacterSelectView";
+        internal const string CharacterSelectViewName = "CharacterSelectView";
 
         #endregion
 

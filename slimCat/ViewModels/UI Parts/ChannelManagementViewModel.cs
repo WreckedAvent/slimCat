@@ -180,11 +180,13 @@ namespace Slimcat.ViewModels
 
             set
             {
-                if (this.model.Mode != value)
+                if (this.model.Mode == value)
                 {
-                    this.model.Mode = value;
-                    this.OnRoomModeChanged(null);
+                    return;
                 }
+
+                this.model.Mode = value;
+                this.OnRoomModeChanged(null);
             }
         }
 

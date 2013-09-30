@@ -48,7 +48,7 @@
 
         public bool IsFiltering
         {
-            get
+            private get
             {
                 return this.isFiltering;
             }
@@ -120,8 +120,8 @@
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    IEnumerable<T> items = e.NewItems.Cast<T>();
-                    if (this.isFiltering)
+                    var items = e.NewItems.Cast<T>();
+                    if (this.IsFiltering)
                     {
                         items = items.Where(this.meetsFilter);
                     }

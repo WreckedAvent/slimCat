@@ -58,7 +58,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     The userbar view.
         /// </summary>
-        public const string UserbarView = "UserbarView";
+        internal const string UserbarView = "UserbarView";
 
         #endregion
 
@@ -519,7 +519,7 @@ namespace Slimcat.ViewModels
 
         private void TabCloseEvent(object args)
         {
-            IDictionary<string, object> toSend =
+            var toSend =
                 CommandDefinitions.CreateCommand("close", null, args as string).ToDictionary();
 
             this.Events.GetEvent<UserCommandEvent>().Publish(toSend);
@@ -540,7 +540,7 @@ namespace Slimcat.ViewModels
 
         private void SendStatusChangedCommand()
         {
-            IDictionary<string, object> torSend =
+            var torSend =
                 CommandDefinitions.CreateCommand(
                     "status", 
                     new List<string>

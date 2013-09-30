@@ -53,9 +53,9 @@
                 new Action(
                     () =>
                         {
-                            Rectangle workingArea = Screen.PrimaryScreen.WorkingArea;
-                            Matrix transform = PresentationSource.FromVisual(this).CompositionTarget.TransformFromDevice;
-                            Point corner = transform.Transform(new Point(workingArea.Right, workingArea.Bottom));
+                            var workingArea = Screen.PrimaryScreen.WorkingArea;
+                            var transform = PresentationSource.FromVisual(this).CompositionTarget.TransformFromDevice;
+                            var corner = transform.Transform(new Point(workingArea.Right, workingArea.Bottom));
 
                             this.Left = corner.X - this.ActualWidth;
                             this.Top = corner.Y - this.ActualHeight;

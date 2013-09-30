@@ -1,7 +1,14 @@
 ﻿<UserControl x:Class="Slimcat.Views.UsersTabView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:v="clr-namespace:Slimcat.Views" xmlns:models="clr-namespace:Slimcat.Models">
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:vm="clr-namespace:Slimcat.ViewModels" 
+             xmlns:models="clr-namespace:Slimcat.Models"
+             xmlns:v="clr-namespace:Slimcat.Views"
+             
+             d:DataContext="{d:DesignInstance vm:UsersTabViewModel}">
 
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type models:CharacterModel}">

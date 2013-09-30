@@ -192,7 +192,7 @@ namespace Slimcat.Models
         /// <summary>
         ///     Gets the display number.
         /// </summary>
-        public override int DisplayNumber
+        public int DisplayNumber
         {
             get
             {

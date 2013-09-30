@@ -48,7 +48,7 @@ namespace Slimcat.Views
         #region Properties
         public ObservableCollection<IViewableObject> MessageSource
         {
-            get
+            private get
             {
                 return (ObservableCollection<IViewableObject>)GetValue(MessageSourceProperty);
             }
@@ -61,7 +61,7 @@ namespace Slimcat.Views
 
         public bool LoadInReverse
         {
-            get
+            private get
             {
                 return (bool)GetValue(LoadInReverseProperty);
             }

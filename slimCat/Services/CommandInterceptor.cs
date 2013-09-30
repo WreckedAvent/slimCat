@@ -470,7 +470,7 @@ namespace Slimcat.Services
             else
             {
                 // this makes unignore actually work
-                string toRemove =
+                var toRemove =
                     this.ChatModel.Ignored.FirstOrDefault(
                         ignore => ignore.Equals(command["character"] as string, StringComparison.OrdinalIgnoreCase));
                 if (toRemove != null)
@@ -816,7 +816,7 @@ namespace Slimcat.Services
                 // someone else handling a report
                 var handlerName = command["moderator"] as string;
                 var handled = command["character"] as string;
-                ICharacter handler = this.ChatModel.FindCharacter(handlerName);
+                var handler = this.ChatModel.FindCharacter(handlerName);
 
                 this.Events.GetEvent<NewUpdateEvent>()
                     .Publish(

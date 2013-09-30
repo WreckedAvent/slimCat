@@ -327,7 +327,7 @@ namespace Slimcat.Services
         /// </param>
         public static void UpdateSettingsFile(object newSettingsModel, string currentCharacter, string title, string id)
         {
-            string workingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
+            var workingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
             workingPath = Path.Combine(workingPath, SettingsFileName);
 
             SerializeObjectToXml(newSettingsModel, workingPath);
@@ -339,14 +339,14 @@ namespace Slimcat.Services
 
         private static void MakeGlobalSettingsFileIfNotExist(string currentCharacter)
         {
-            string path = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
+            var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
 
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
 
-            string workingPath = Path.Combine(path, SettingsFileName);
+            var workingPath = Path.Combine(path, SettingsFileName);
 
             if (!File.Exists(workingPath))
             {

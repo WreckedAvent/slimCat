@@ -370,7 +370,7 @@ namespace Slimcat.ViewModels
 
         private void updateRightClickMenu(ICharacter newTarget)
         {
-            string name = newTarget.Name;
+            var name = newTarget.Name;
             this.RightClickMenuViewModel.SetNewTarget(
                 newTarget, this.CanIgnore(name), this.CanUnIgnore(name), this.CanHandleReport(name));
             this.RightClickMenuViewModel.IsOpen = true;

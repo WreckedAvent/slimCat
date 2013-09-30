@@ -98,16 +98,18 @@ namespace Slimcat.Libraries
         private static void OnInlineListPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             var tb = obj as TextBlock;
-            if (tb != null)
+            if (tb == null)
             {
-                tb.Inlines.Clear();
+                return;
+            }
 
-                // add new inlines
-                var inlines = e.NewValue as List<Inline>;
-                if (inlines != null)
-                {
-                    inlines.ForEach(inl => tb.Inlines.Add(inl));
-                }
+            tb.Inlines.Clear();
+
+            // add new inlines
+            var inlines = e.NewValue as List<Inline>;
+            if (inlines != null)
+            {
+                inlines.ForEach(inl => tb.Inlines.Add(inl));
             }
         }
 
@@ -170,13 +172,15 @@ namespace Slimcat.Libraries
         private static void OnInlineChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var span = d as Span;
-            IEnumerable<Inline> inlines = GetInlineSource(span);
-            if (inlines != null)
+            var inlines = GetInlineSource(span);
+            if (inlines == null)
             {
-                foreach (Inline inline in inlines)
-                {
-                    span.Inlines.Add(inline);
-                }
+                return;
+            }
+
+            foreach (var inline in inlines)
+            {
+                span.Inlines.Add(inline);
             }
         }
 

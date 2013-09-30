@@ -175,7 +175,7 @@ namespace Slimcat.Utilities
 
         private static bool ContainsUrl(string args)
         {
-            string match = args.Split(' ').FirstOrDefault(StartsWithValidTerm);
+            var match = args.Split(' ').FirstOrDefault(StartsWithValidTerm);
 
             // see if it starts with something useful
             if (match == null)
@@ -276,7 +276,7 @@ namespace Slimcat.Utilities
 
         private static string MarkUpUrlWithBbCode(string args)
         {
-            string toShow = GetUrlDisplay(args);
+            var toShow = GetUrlDisplay(args);
             return "[url=" + args + "]" + toShow + "[/url]"; // mark the bitch up
         }
 
@@ -444,7 +444,7 @@ namespace Slimcat.Utilities
             {
                 startType += "=";
 
-                string content = endIndex != -1 ? roughString.Substring(0, endIndex) : roughString;
+                var content = endIndex != -1 ? roughString.Substring(0, endIndex) : roughString;
 
                 startType += content;
             }
@@ -860,7 +860,7 @@ namespace Slimcat.Utilities
         {
             var toParse = (int)value;
             var notificationType = parameter as string;
-            string verboseNotificationKind = "• A notification";
+            var verboseNotificationKind = "• A notification";
 
             if (notificationType != null && notificationType.Equals("flash"))
             {
@@ -1083,7 +1083,7 @@ namespace Slimcat.Utilities
         public static string DateTimeInFutureToRough(DateTimeOffset futureTime)
         {
             var temp = new StringBuilder();
-            TimeSpan rough = futureTime - DateTimeOffset.Now;
+            var rough = futureTime - DateTimeOffset.Now;
 
             if (rough.Days > 0)
             {
@@ -1119,8 +1119,8 @@ namespace Slimcat.Utilities
         public static string DateTimeToRough(DateTimeOffset original, bool returnSeconds = false, bool appendAgo = true)
         {
             var temp = new StringBuilder();
-            TimeSpan rough = DateTimeOffset.Now - original;
-            int tolerance = returnSeconds ? 1 : 60;
+            var rough = DateTimeOffset.Now - original;
+            var tolerance = returnSeconds ? 1 : 60;
 
             if (rough.TotalSeconds < tolerance)
             {

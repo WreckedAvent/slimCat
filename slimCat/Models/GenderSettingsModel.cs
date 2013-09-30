@@ -50,7 +50,7 @@
         /// <summary>
         ///     Gets the gender filter.
         /// </summary>
-        public IDictionary<Gender, bool> GenderFilter
+        private IDictionary<Gender, bool> GenderFilter
         {
             get
             {
@@ -70,11 +70,13 @@
 
             set
             {
-                if (this.genderFilter[Gender.Cuntboy] != value)
+                if (this.genderFilter[Gender.Cuntboy] == value)
                 {
-                    this.genderFilter[Gender.Cuntboy] = value;
-                    this.CallUpdate();
+                    return;
                 }
+
+                this.genderFilter[Gender.Cuntboy] = value;
+                this.CallUpdate();
             }
         }
 
@@ -90,11 +92,13 @@
 
             set
             {
-                if (this.genderFilter[Gender.HermF] != value)
+                if (this.genderFilter[Gender.HermF] == value)
                 {
-                    this.genderFilter[Gender.HermF] = value;
-                    this.CallUpdate();
+                    return;
                 }
+
+                this.genderFilter[Gender.HermF] = value;
+                this.CallUpdate();
             }
         }
 
@@ -110,11 +114,13 @@
 
             set
             {
-                if (this.genderFilter[Gender.Female] != value)
+                if (this.genderFilter[Gender.Female] == value)
                 {
-                    this.genderFilter[Gender.Female] = value;
-                    this.CallUpdate();
+                    return;
                 }
+
+                this.genderFilter[Gender.Female] = value;
+                this.CallUpdate();
             }
         }
 
@@ -130,11 +136,13 @@
 
             set
             {
-                if (this.genderFilter[Gender.HermM] != value)
+                if (this.genderFilter[Gender.HermM] == value)
                 {
-                    this.genderFilter[Gender.HermM] = value;
-                    this.CallUpdate();
+                    return;
                 }
+
+                this.genderFilter[Gender.HermM] = value;
+                this.CallUpdate();
             }
         }
 
@@ -150,11 +158,13 @@
 
             set
             {
-                if (this.genderFilter[Gender.Male] != value)
+                if (this.genderFilter[Gender.Male] == value)
                 {
-                    this.genderFilter[Gender.Male] = value;
-                    this.CallUpdate();
+                    return;
                 }
+
+                this.genderFilter[Gender.Male] = value;
+                this.CallUpdate();
             }
         }
 
@@ -170,11 +180,13 @@
 
             set
             {
-                if (this.genderFilter[Gender.None] != value)
+                if (this.genderFilter[Gender.None] == value)
                 {
-                    this.genderFilter[Gender.None] = value;
-                    this.CallUpdate();
+                    return;
                 }
+
+                this.genderFilter[Gender.None] = value;
+                this.CallUpdate();
             }
         }
 
@@ -190,11 +202,13 @@
 
             set
             {
-                if (this.genderFilter[Gender.Shemale] != value)
+                if (this.genderFilter[Gender.Shemale] == value)
                 {
-                    this.genderFilter[Gender.Shemale] = value;
-                    this.CallUpdate();
+                    return;
                 }
+
+                this.genderFilter[Gender.Shemale] = value;
+                this.CallUpdate();
             }
         }
 
@@ -210,11 +224,13 @@
 
             set
             {
-                if (this.genderFilter[Gender.Transgender] != value)
+                if (this.genderFilter[Gender.Transgender] == value)
                 {
-                    this.genderFilter[Gender.Transgender] = value;
-                    this.Updated(this, new EventArgs());
+                    return;
                 }
+
+                this.genderFilter[Gender.Transgender] = value;
+                this.Updated(this, new EventArgs());
             }
         }
 

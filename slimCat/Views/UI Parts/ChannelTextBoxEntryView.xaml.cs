@@ -96,7 +96,7 @@ namespace Slimcat.Views
             // this defines shortcuts when the textbox has focus --- in particular, ones which modify the content of the textbox
             if (e.Key == Key.Return && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
-                int caretIndex = this.Entry.CaretIndex;
+                var caretIndex = this.Entry.CaretIndex;
                 this.Entry.Text = this.Entry.Text.Insert(caretIndex, "\r");
                 this.Entry.CaretIndex = caretIndex + 1;
             }
@@ -111,14 +111,14 @@ namespace Slimcat.Views
             {
                 e.Handled = true;
 
-                Tuple<string, bool> tupleData = AcceptedKeys[e.Key];
+                var tupleData = AcceptedKeys[e.Key];
 
-                string bbtag = tupleData.Item1;
-                bool useArgs = tupleData.Item2;
+                var bbtag = tupleData.Item1;
+                var useArgs = tupleData.Item2;
 
                 if (!string.IsNullOrWhiteSpace(this.Entry.SelectedText))
                 {
-                    string selected = this.Entry.SelectedText;
+                    var selected = this.Entry.SelectedText;
 
                     if (!useArgs)
                     {
@@ -126,8 +126,8 @@ namespace Slimcat.Views
                     }
                     else
                     {
-                        string toEnter = string.Format("[{0}={1}]", bbtag, selected);
-                        int caretIndex = this.Entry.CaretIndex;
+                        var toEnter = string.Format("[{0}={1}]", bbtag, selected);
+                        var caretIndex = this.Entry.CaretIndex;
 
                         this.Entry.SelectedText = string.Format("{0}[/{1}]", toEnter, bbtag);
                         this.Entry.CaretIndex = caretIndex + toEnter.Length;
@@ -135,7 +135,7 @@ namespace Slimcat.Views
                 }
                 else
                 {
-                    int caretIndex = this.Entry.CaretIndex;
+                    var caretIndex = this.Entry.CaretIndex;
 
                     this.Entry.Text = this.Entry.Text.Insert(caretIndex, string.Format("[{0}][/{0}]", bbtag));
                     this.Entry.CaretIndex = caretIndex + bbtag.Length + 2;

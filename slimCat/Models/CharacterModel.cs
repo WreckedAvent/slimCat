@@ -224,7 +224,7 @@ namespace Slimcat.Models
                         webClient.CachePolicy = new RequestCachePolicy(RequestCacheLevel.Default);
                         try
                         {
-                            byte[] imageBytes = webClient.DownloadData(uri);
+                            var imageBytes = webClient.DownloadData(uri);
 
                             if (imageBytes == null)
                             {

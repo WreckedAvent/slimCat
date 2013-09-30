@@ -305,7 +305,7 @@ namespace Slimcat.Services
             // now we check to see if we should notify because of settings
             if (channel.Settings.MessageNotifyLevel > (int)ChannelSettingsModel.NotifyLevel.NotificationOnly)
             {
-                bool shouldDing = channel.Settings.MessageNotifyLevel
+                var shouldDing = channel.Settings.MessageNotifyLevel
                                 > (int)ChannelSettingsModel.NotifyLevel.NotificationAndToast;
 
                 if ((channel.Settings.MessageNotifyOnlyForInteresting && this.cm.IsOfInterest(message.Poster.Name))
@@ -348,7 +348,7 @@ namespace Slimcat.Services
 
             {
                 // Now our character's name is always added
-                string name = this.cm.CurrentCharacter.Name.ToLower();
+                var name = this.cm.CurrentCharacter.Name.ToLower();
 
                 temp.Add(name); // fixes an issue where a user's name would ding constantly
                 if (name.Last() != 's' && name.Last() != 'z')
@@ -458,10 +458,10 @@ namespace Slimcat.Services
                 else if (args is CharacterUpdateModel.JoinLeaveEventArgs)
                 {
                     // special check for this as it has settings per channel
-                    string target = ((CharacterUpdateModel.JoinLeaveEventArgs)args).TargetChannelID;
+                    var target = ((CharacterUpdateModel.JoinLeaveEventArgs)args).TargetChannelID;
 
                     // find by ID, not name
-                    GeneralChannelModel channel = this.cm.CurrentChannels.FirstByIdOrDefault(target);
+                    var channel = this.cm.CurrentChannels.FirstByIdOrDefault(target);
 
                     if (channel == null)
                     {
@@ -484,7 +484,7 @@ namespace Slimcat.Services
                 {
                     this.AddNotification(model);
 
-                    string link = args is CharacterUpdateModel.NoteEventArgs
+                    var link = args is CharacterUpdateModel.NoteEventArgs
                                       ? ((CharacterUpdateModel.NoteEventArgs)args).Link
                                       : ((CharacterUpdateModel.CommentEventArgs)args).Link;
 
@@ -596,7 +596,7 @@ namespace Slimcat.Services
 
         private void ToggleSound(object sender, EventArgs e)
         {
-            double temp = ApplicationSettings.Volume;
+            var temp = ApplicationSettings.Volume;
             ApplicationSettings.Volume = this.soundSaveVolume;
             this.soundSaveVolume = temp;
 

@@ -50,7 +50,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     The chat wrapper view.
         /// </summary>
-        public const string ChatWrapperView = "ChatWrapperView";
+        private const string ChatWrapperView = "ChatWrapperView";
 
         #endregion
 

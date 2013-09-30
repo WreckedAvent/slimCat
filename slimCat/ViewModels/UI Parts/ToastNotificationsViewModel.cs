@@ -96,7 +96,7 @@ namespace Slimcat.ViewModels
                 return this.content;
             }
 
-            set
+            private set
             {
                 if (value.Length < CutoffLength)
                 {
@@ -104,7 +104,7 @@ namespace Slimcat.ViewModels
                 }
                 else
                 {
-                    string brevity = value.Substring(0, CutoffLength);
+                    var brevity = value.Substring(0, CutoffLength);
                     brevity += " ...";
                     this.content = brevity;
                 }
@@ -178,7 +178,7 @@ namespace Slimcat.ViewModels
         /// </param>
         public void OnSnapToLatestEvent(object args)
         {
-            IDictionary<string, object> toSend = CommandDefinitions.CreateCommand("lastupdate").ToDictionary();
+            var toSend = CommandDefinitions.CreateCommand("lastupdate").ToDictionary();
 
             if (this.Target != null)
             {

@@ -54,7 +54,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     The channelbar view.
         /// </summary>
-        public const string ChannelbarView = "ChannelbarView";
+        internal const string ChannelbarView = "ChannelbarView";
 
         private const string TabViewRegion = "TabViewRegion";
 

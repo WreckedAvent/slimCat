@@ -146,11 +146,13 @@
 
             set
             {
-                if (this.shouldFlashInterval != value || value < 1)
+                if (this.shouldFlashInterval == value && value >= 1)
                 {
-                    this.shouldFlashInterval = value;
-                    this.CallUpdate();
+                    return;
                 }
+
+                this.shouldFlashInterval = value;
+                this.CallUpdate();
             }
         }
 
@@ -166,11 +168,13 @@
 
             set
             {
-                if (this.isChangingSettings != value)
+                if (this.isChangingSettings == value)
                 {
-                    this.isChangingSettings = value;
-                    this.CallUpdate();
+                    return;
                 }
+
+                this.isChangingSettings = value;
+                this.CallUpdate();
             }
         }
 
@@ -292,11 +296,13 @@
 
             set
             {
-                if (this.notifyOnTheseTerms != value)
+                if (this.notifyOnTheseTerms == value)
                 {
-                    this.notifyOnTheseTerms = value;
-                    this.CallUpdate();
+                    return;
                 }
+
+                this.notifyOnTheseTerms = value;
+                this.CallUpdate();
             }
         }
 

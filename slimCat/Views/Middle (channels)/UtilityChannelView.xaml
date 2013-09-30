@@ -1,7 +1,13 @@
 ﻿<v:DisposableView x:Class="Slimcat.Views.UtilityChannelView"
                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                  xmlns:v="clr-namespace:Slimcat.Views">
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  mc:Ignorable="d"
+                  xmlns:vm="clr-namespace:Slimcat.ViewModels"
+                  xmlns:v="clr-namespace:Slimcat.Views"
+
+                  d:DataContext="{d:DesignInstance vm:UtilityChannelViewModel}">
 
     <Grid TextBlock.FontSize="16">
         <Border HorizontalAlignment="Center"
@@ -91,13 +97,13 @@
                                   Margin="0,5">
                             Allow Logging
                         </CheckBox>
-                        
+
                         <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
                                   VerticalAlignment="Center"
                                   Margin="0,5">
                             Friends are account wide
                         </CheckBox>
-                        
+
                         <CheckBox IsChecked="{Binding AllowColors}"
                                   VerticalAlignment="Center"
                                   Margin="0,5">

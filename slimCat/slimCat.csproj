@@ -311,9 +311,6 @@
     <Compile Include="Views\UI Parts\Buttons\EditButtonView.xaml.cs">
       <DependentUpon>EditButtonView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\UI Parts\ExpandoStringControl.xaml.cs">
-      <DependentUpon>ExpandoStringControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\UI Parts\Buttons\FileButtonView.xaml.cs">
       <DependentUpon>FileButtonView.xaml</DependentUpon>
     </Compile>
@@ -371,11 +368,12 @@
     <Compile Include="Views\Middle %28channels%29\UtilityChannelView.xaml.cs">
       <DependentUpon>UtilityChannelView.xaml</DependentUpon>
     </Compile>
-    <Page Include="Colors.xaml">
+    <Content Include="Theme\Colors.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="EmbeddedTheme.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Page Include="Theme\EmbeddedTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -479,10 +477,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\UI Parts\ExpandoStringControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\UI Parts\Buttons\FileButtonView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -563,10 +557,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Resource Include="Theme.xaml">
+    <Content Include="Theme\Theme.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Resource>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Page Include="Views\Full Screen\CharacterSelectView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

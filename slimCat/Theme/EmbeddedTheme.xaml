@@ -118,7 +118,8 @@
         </Style.Triggers>
     </Style>
 
-    <ControlTemplate x:Key="GenderCheckBoxes" TargetType="ContentControl">
+    <ControlTemplate x:Key="GenderCheckBoxes" TargetType="ContentControl"
+                     d:DataContext="{d:DesignInstance models:GenderSettingsModel}">
         <StackPanel Orientation="Vertical">
             <TextBlock Foreground="{StaticResource ForegroundBrush}"
                        Text="Show ..."
@@ -134,7 +135,8 @@
         </StackPanel>
     </ControlTemplate>
 
-    <ControlTemplate x:Key="GeneralFilterCheckBoxes" TargetType="ContentControl">
+    <ControlTemplate x:Key="GeneralFilterCheckBoxes" TargetType="ContentControl"
+                     d:DataContext="{d:DesignInstance models:GenericSearchSettingsModel}">
         <StackPanel Orientation="Vertical">
             <TextBlock Foreground="{StaticResource ForegroundBrush}"
                        Text="Who are ..."

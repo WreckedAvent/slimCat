@@ -54,23 +54,12 @@ namespace Slimcat.Libraries
         /// <param name="execute">
         /// The execute.
         /// </param>
-        public RelayCommand(Action<object> execute)
-            : this(execute, null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RelayCommand"/> class.
-        /// </summary>
-        /// <param name="execute">
-        /// The execute.
-        /// </param>
         /// <param name="canExecute">
         /// The can execute.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// </exception>
-        public RelayCommand(Action<object> execute, Predicate<object> canExecute)
+        public RelayCommand(Action<object> execute, Predicate<object> canExecute = null)
         {
             if (execute == null)
             {

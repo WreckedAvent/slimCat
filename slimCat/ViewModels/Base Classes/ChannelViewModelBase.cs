@@ -60,11 +60,6 @@ namespace Slimcat.ViewModels
 
         #region Fields
 
-        /// <summary>
-        ///     The on line break event.
-        /// </summary>
-        public EventHandler OnLineBreakEvent;
-
         private RelayCommand clear;
 
         private RelayCommand clearLog;
@@ -338,7 +333,7 @@ namespace Slimcat.ViewModels
         /// </param>
         public void OpenLogEvent(object args, bool isFolder)
         {
-            IDictionary<string, object> toSend =
+            var toSend =
                 CommandDefinitions.CreateCommand(isFolder ? "openlogfolder" : "openlog").ToDictionary();
 
             this.Events.GetEvent<UserCommandEvent>().Publish(toSend);
@@ -361,7 +356,6 @@ namespace Slimcat.ViewModels
                 this.PropertyChanged -= this.OnThisPropertyChanged;
                 this.Model.PropertyChanged -= this.OnModelPropertyChanged;
                 this.model = null;
-                this.OnLineBreakEvent = null;
             }
 
             base.Dispose(isManaged);

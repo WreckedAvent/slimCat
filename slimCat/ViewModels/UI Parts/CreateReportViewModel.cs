@@ -209,17 +209,19 @@ namespace Slimcat.ViewModels
 
         private void Dispose(bool isManaged)
         {
-            if (isManaged)
+            if (!isManaged)
             {
-                this.cm = null;
-                this.complaint = null;
-                this.events = null;
+                return;
             }
+
+            this.cm = null;
+            this.complaint = null;
+            this.events = null;
         }
 
         private void OnSendReport(object args)
         {
-            IDictionary<string, object> command =
+            var command =
                 CommandDefinitions.CreateCommand(
                     "report", new List<string> { this.Target, this.Complaint }, this.CurrentTab).ToDictionary();
 

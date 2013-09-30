@@ -230,19 +230,21 @@ namespace Slimcat.Services
                 this.events.GetEvent<LoginCompleteEvent>().Publish(true);
 
                 // login to F-list for our cookies, so that we can post logs
-                if (!hasError)
+                if (hasError)
                 {
-                    loginCredentials = new Dictionary<string, object>
-                                           {
-                                               {
-                                                   "username", 
-                                                   this.model.AccountName.ToLower()
-                                               }, 
-                                               { "password", this.model.Password }, 
-                                           };
-
-                    this.GetResponse(Constants.UrlConstants.Login, loginCredentials, true);
+                    return;
                 }
+
+                loginCredentials = new Dictionary<string, object>
+                                       {
+                                           {
+                                               "username", 
+                                               this.model.AccountName.ToLower()
+                                           }, 
+                                           { "password", this.model.Password }, 
+                                       };
+
+                this.GetResponse(Constants.UrlConstants.Login, loginCredentials, true);
             }
             catch (Exception ex)
             {

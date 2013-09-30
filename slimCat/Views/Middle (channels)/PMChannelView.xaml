@@ -1,8 +1,14 @@
 ﻿<v:DisposableView x:Class="Slimcat.Views.PMChannelView"
                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                  xmlns:v="clr-namespace:Slimcat.Views"
-                  xmlns:lib="clr-namespace:Slimcat.Libraries">
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  mc:Ignorable="d"
+                  xmlns:vm="clr-namespace:Slimcat.ViewModels"
+                  xmlns:v="clr-namespace:Slimcat.Views" 
+                  xmlns:lib="clr-namespace:Slimcat.Libraries"
+                  
+                  d:DataContext="{d:DesignInstance vm:PMChannelViewModel}">
     <Grid Margin="10"
           TextBlock.FontSize="16">
         <Grid.RowDefinitions>
@@ -57,13 +63,13 @@
                 </WrapPanel>
             </Grid>
         </Border>
-        
-        <v:ObservingFlowDocumentReader 
+
+        <v:ObservingFlowDocumentReader
             Grid.Row="1"
             x:Name="PopupAnchor"
             LoadInReverse="True"
-            MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}"/>
-        
+            MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}" />
+
         <v:ChannelSettingsView />
 
         <StackPanel Grid.Row="2"

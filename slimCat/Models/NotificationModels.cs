@@ -108,11 +108,13 @@ namespace Slimcat.Models
 
         protected override void Dispose(bool isManaged)
         {
-            if (isManaged)
+            if (!isManaged)
             {
-                this.TargetCharacter = null;
-                this.Arguments = null;
+                return;
             }
+
+            this.TargetCharacter = null;
+            this.Arguments = null;
         }
 
         #endregion
