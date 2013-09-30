@@ -72,7 +72,7 @@ namespace Slimcat.Utilities
                 this.hasCommand = false;
             }
 
-            string type;
+            string parsedType;
 
             if (!this.HasCommand)
             {
@@ -83,15 +83,14 @@ namespace Slimcat.Utilities
             {
                 this.type = rawInput.Trim().Substring(1);
             }
-
             else
             {
                 var firstSpace = rawInput.Substring(1).IndexOf(' ');
-                type = rawInput.Substring(1, firstSpace);
+                parsedType = rawInput.Substring(1, firstSpace);
 
                 var arguments = rawInput.Substring(firstSpace + 2);
 
-                if (type.Equals("status", StringComparison.OrdinalIgnoreCase))
+                if (parsedType.Equals("status", StringComparison.OrdinalIgnoreCase))
                 {
                     if (!arguments.Contains(' '))
                     {
@@ -99,17 +98,17 @@ namespace Slimcat.Utilities
                     }
                     else
                     {
-                        type = arguments.Substring(0, arguments.IndexOf(' '));
+                        parsedType = arguments.Substring(0, arguments.IndexOf(' '));
                         arguments = arguments.Substring(arguments.IndexOf(' ') + 1);
                     }
                 }
 
-                if (type.Contains('_'))
+                if (parsedType.Contains('_'))
                 {
                     this.isInvalid = true;
                 }
 
-                this.type = type;
+                this.type = parsedType;
                 this.args = arguments;
             }
 

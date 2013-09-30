@@ -31,10 +31,10 @@
         /// <param name="command">
         /// The command.
         /// </param>
-        /// <param name="command_type">
+        /// <param name="commandType">
         /// The command_type.
         /// </param>
-        void SendMessage(object command, string command_type);
+        void SendMessage(object command, string commandType);
 
         /// <summary>
         /// The send message.

@@ -29,12 +29,10 @@
 
 namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     The global button view.
     /// </summary>
-    public partial class GlobalButtonView : RadioButton
+    public partial class GlobalButtonView
     {
         #region Constructors and Destructors
 

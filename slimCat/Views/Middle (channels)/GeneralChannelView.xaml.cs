@@ -30,13 +30,7 @@
 namespace Slimcat.Views
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.Linq;
-    using System.Windows.Documents;
-    using System.Windows.Threading;
 
-    using Slimcat.Models;
     using Slimcat.Utilities;
     using Slimcat.ViewModels;
 

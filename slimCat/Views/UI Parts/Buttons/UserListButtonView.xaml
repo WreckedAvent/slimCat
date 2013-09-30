@@ -1,5 +1,5 @@
 ﻿<RadioButton x:Class="Slimcat.Views.UserlistButtonView"
-             x:Name="userlistButton"
+             x:Name="UserlistButton"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              ToolTip="View this channel's userlist"
@@ -11,7 +11,7 @@
     </RadioButton.Style>
 
     <RadioButton.Content>
-        <Rectangle Fill="{Binding ElementName=userlistButton, Path=Foreground}"
+        <Rectangle Fill="{Binding ElementName=UserlistButton, Path=Foreground}"
                    Height="12"
                    Width="15">
             <Rectangle.OpacityMask>

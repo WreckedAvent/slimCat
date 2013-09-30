@@ -1,5 +1,5 @@
 ﻿<RadioButton x:Class="Slimcat.Views.ChannelsButtonView"
-             x:Name="channelsButton"
+             x:Name="ChannelsButton"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              ToolTip="View available channels"
@@ -10,7 +10,7 @@
     </RadioButton.Style>
 
     <RadioButton.Content>
-        <Rectangle Fill="{Binding ElementName=channelsButton, Path=Foreground}"
+        <Rectangle Fill="{Binding ElementName=ChannelsButton, Path=Foreground}"
                    Height="15"
                    Width="15">
             <Rectangle.OpacityMask>

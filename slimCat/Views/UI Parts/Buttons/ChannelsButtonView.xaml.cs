@@ -29,12 +29,10 @@
 
 namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     The channels button view.
     /// </summary>
-    public partial class ChannelsButtonView : RadioButton
+    public partial class ChannelsButtonView
     {
         #region Constructors and Destructors
 

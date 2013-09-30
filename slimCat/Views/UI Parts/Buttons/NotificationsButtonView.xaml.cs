@@ -29,12 +29,10 @@
 
 namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     The notifications button view.
     /// </summary>
-    public partial class NotificationsButtonView : RadioButton
+    public partial class NotificationsButtonView
     {
         #region Constructors and Destructors
 

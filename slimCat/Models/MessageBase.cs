@@ -20,7 +20,7 @@
         /// <summary>
         ///     Initializes a new instance of the <see cref="MessageBase" /> class.
         /// </summary>
-        public MessageBase()
+        protected MessageBase()
         {
             this.posted = DateTimeOffset.Now;
         }
@@ -67,7 +67,7 @@
 
         #region Methods
 
-        internal abstract void Dispose(bool isManaged);
+        protected abstract void Dispose(bool isManaged);
 
         #endregion
     }

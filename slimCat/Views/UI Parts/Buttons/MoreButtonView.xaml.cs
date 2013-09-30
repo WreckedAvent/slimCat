@@ -29,12 +29,10 @@
 
 namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     The more button view.
     /// </summary>
-    public partial class MoreButtonView : Button
+    public partial class MoreButtonView
     {
         #region Constructors and Destructors
 

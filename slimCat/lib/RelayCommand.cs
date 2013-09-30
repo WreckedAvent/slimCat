@@ -40,9 +40,9 @@ namespace Slimcat.Libraries
     {
         #region Fields
 
-        private readonly Predicate<object> _canExecute;
+        private readonly Predicate<object> canExecute;
 
-        private readonly Action<object> _execute;
+        private readonly Action<object> execute;
 
         #endregion
 
@@ -77,8 +77,8 @@ namespace Slimcat.Libraries
                 throw new ArgumentNullException("execute");
             }
 
-            this._execute = execute;
-            this._canExecute = canExecute;
+            this.execute = execute;
+            this.canExecute = canExecute;
         }
 
         #endregion
@@ -117,7 +117,7 @@ namespace Slimcat.Libraries
         [DebuggerStepThrough]
         public bool CanExecute(object parameter)
         {
-            return this._canExecute == null || this._canExecute(parameter);
+            return this.canExecute == null || this.canExecute(parameter);
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace Slimcat.Libraries
         /// </param>
         public void Execute(object parameter)
         {
-            this._execute(parameter);
+            this.execute(parameter);
         }
 
         #endregion

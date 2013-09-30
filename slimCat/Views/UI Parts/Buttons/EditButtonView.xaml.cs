@@ -29,12 +29,10 @@
 
 namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     Interaction logic for EditButtonView.xaml
     /// </summary>
-    public partial class EditButtonView : Button
+    public partial class EditButtonView
     {
         #region Constructors and Destructors
 

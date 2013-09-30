@@ -29,7 +29,6 @@
 
 namespace Slimcat.Models
 {
-    using System;
     using System.Windows.Documents;
 
     using Slimcat.Views;
@@ -119,7 +118,7 @@ namespace Slimcat.Models
 
         #region Methods
 
-        internal override void Dispose(bool isManaged)
+        protected override void Dispose(bool isManaged)
         {
             if (!isManaged)
             {

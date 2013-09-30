@@ -29,14 +29,13 @@
 
 namespace Slimcat.Models
 {
-    using System;
     using System.Text;
     using System.Timers;
 
     /// <summary>
     ///     Used for Private-Message communication between users
     /// </summary>
-    public sealed class PMChannelModel : ChannelModel, IDisposable
+    public sealed class PMChannelModel : ChannelModel
     {
         #region Fields
 

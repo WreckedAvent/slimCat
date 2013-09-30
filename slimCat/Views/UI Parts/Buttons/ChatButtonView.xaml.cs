@@ -29,12 +29,10 @@
 
 namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     The chat button view.
     /// </summary>
-    public partial class ChatButtonView : Button
+    public partial class ChatButtonView
     {
         #region Constructors and Destructors
 

@@ -52,7 +52,7 @@ namespace Slimcat.ViewModels
     /// <summary>
     ///     The general channel view model. This manages bindings for general channels, e.g anything that isn't a PM or the 'home' tab.
     /// </summary>
-    public class GeneralChannelViewModel : ChannelViewModelBase, IDisposable
+    public class GeneralChannelViewModel : ChannelViewModelBase
     {
         #region Fields
         private readonly IList<string> thisDingTerms = new List<string>();
@@ -145,14 +145,12 @@ namespace Slimcat.ViewModels
 
                 this.genderSettings.Updated += (s, e) =>
                     {
-                        this.OnPropertyChanged("CurrentMessages");
                         this.OnPropertyChanged("GenderSettings");
                     };
 
                 this.SearchSettings.Updated += (s, e) =>
                     {
                         this.OnPropertyChanged("SearchSettings");
-                        this.OnPropertyChanged("CurrentMessages");
                     };
 
                 this.messageFlood.Elapsed += (s, e) =>
@@ -379,7 +377,6 @@ namespace Slimcat.ViewModels
                 this.OnPropertyChanged("IsDisplayingChat");
                 this.OnPropertyChanged("IsDisplayingAds");
                 this.OnPropertyChanged("ChatContentString");
-                this.OnPropertyChanged("CurrentMessages");
                 this.OnPropertyChanged("MessageMax");
                 this.OnPropertyChanged("CanPost");
                 this.OnPropertyChanged("CannotPost");
@@ -576,7 +573,6 @@ namespace Slimcat.ViewModels
                 return this.switchSearch ?? (this.switchSearch = new RelayCommand(
                                                                      delegate
                                                                          {
-                                                                             this.OnPropertyChanged("CurrentMessages");
                                                                              this.IsSearching = !this.IsSearching;
                                                                          }));
             }
@@ -716,6 +712,7 @@ namespace Slimcat.ViewModels
                 this.Model.Ads.CollectionChanged -= this.OnAdsChanged;
                 this.PropertyChanged -= this.OnPropertyChanged;
                 this.messageManager.Dispose();
+                this.messageManager = null;
 
                 (this.Model as GeneralChannelModel).Description = null;
                 (this.Model as GeneralChannelModel).Moderators.Clear();

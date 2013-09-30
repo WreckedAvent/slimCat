@@ -99,7 +99,7 @@ namespace Slimcat.ViewModels
         /// <param name="cm">
         /// The cm.
         /// </param>
-        public ViewModelBase(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
+        protected ViewModelBase(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
         {
             try
             {

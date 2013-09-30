@@ -1,64 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Slimcat.Utilities
+﻿namespace Slimcat.Utilities
 {
+    using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Collections.Specialized;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
 
     using Slimcat.ViewModels;
 
     /// <summary>
-    /// A filtered observable collection which syncronizes with another collection
+    ///     A filtered observable collection which syncronizes with another collection
     /// </summary>
     /// <typeparam name="T">The type of collection to filter</typeparam>
-    /// <typeparam name="R">The type of collection to return</typeparam>
-    public class FilteredCollection<T, R> : SysProp, IDisposable
-        where T : R
+    /// <typeparam name="TR">The type of collection to return</typeparam>
+    public class FilteredCollection<T, TR> : SysProp, IDisposable
+        where T : TR
     {
         #region Fields
-        private Func<T, bool> meetsFilter;
 
         private bool isFiltering;
+
+        private Func<T, bool> meetsFilter;
 
         private ObservableCollection<T> originalCollection;
 
         #endregion
 
-        #region Constructors
+        #region Constructors and Destructors
+
         public FilteredCollection(ObservableCollection<T> toWatch, Func<T, bool> meetsFilter, bool isFiltering = false)
         {
             this.originalCollection = toWatch;
             this.meetsFilter = meetsFilter;
-            this.Collection = new ObservableCollection<R>();
+            this.Collection = new ObservableCollection<TR>();
 
             this.originalCollection.CollectionChanged += this.OnCollectionChanged;
             this.isFiltering = isFiltering;
             this.RebuildItems();
         }
+
         #endregion
 
-        #region Properties
+        #region Public Properties
 
-        public ObservableCollection<R> Collection { get; private set; }
-
-        public ObservableCollection<T> OriginalCollection
-        {
-            get
-            {
-                return this.originalCollection;
-            }
-            set
-            {
-                this.originalCollection.CollectionChanged -= this.OnCollectionChanged;
-                this.originalCollection.Clear();
-                this.originalCollection = value;
-                this.originalCollection.CollectionChanged += this.OnCollectionChanged;
-                this.RebuildItems();
-            }
-        }
+        public ObservableCollection<TR> Collection { get; private set; }
 
         public bool IsFiltering
         {
@@ -75,9 +61,26 @@ namespace Slimcat.Utilities
             }
         }
 
+        public ObservableCollection<T> OriginalCollection
+        {
+            get
+            {
+                return this.originalCollection;
+            }
+
+            set
+            {
+                this.originalCollection.CollectionChanged -= this.OnCollectionChanged;
+                this.originalCollection = value;
+                this.originalCollection.CollectionChanged += this.OnCollectionChanged;
+                this.RebuildItems();
+            }
+        }
+
         #endregion
 
-        #region Public Methods
+        #region Public Methods and Operators
+
         public void Dispose()
         {
             this.Dispose(true);
@@ -95,16 +98,30 @@ namespace Slimcat.Utilities
 
             items.Each(item => this.Collection.Add(item));
         }
+
         #endregion
 
         #region Methods
+
+        private void Dispose(bool isManaged)
+        {
+            if (!isManaged)
+            {
+                return;
+            }
+
+            this.originalCollection = null;
+            this.meetsFilter = null;
+            this.Collection = null;
+        }
+
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    var items = e.NewItems.Cast<T>();
-                    if (this.isFiltering) 
+                    IEnumerable<T> items = e.NewItems.Cast<T>();
+                    if (this.isFiltering)
                     {
                         items = items.Where(this.meetsFilter);
                     }
@@ -127,33 +144,25 @@ namespace Slimcat.Utilities
             }
         }
 
-        private void Dispose(bool isManaged)
-        {
-            if (!isManaged)
-            {
-                return;
-            }
-
-            this.originalCollection = null;
-            this.meetsFilter = null;
-            this.Collection = null;
-        }
-
         #endregion
     }
 
     /// <summary>
-    /// A filtered observable collection which syncronizes with another collection
+    ///     A filtered observable collection which syncronizes with another collection
     /// </summary>
     /// <typeparam name="T">The type of collection to filter and return</typeparam>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Same type as other class, only less specific.")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", 
+        Justification = "Same type as other class, only less specific.")]
     public class FilteredCollection<T> : FilteredCollection<T, T>
         where T : class
     {
+        #region Constructors and Destructors
+
         public FilteredCollection(ObservableCollection<T> toWatch, Func<T, bool> meetsFilter, bool isFiltering = false)
             : base(toWatch, meetsFilter, isFiltering)
         {
-            
-        } 
+        }
+
+        #endregion
     }
 }

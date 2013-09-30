@@ -337,7 +337,7 @@ namespace Slimcat.ViewModels
             {
                 currentList = characterNames
                     .Select(characterName => this.ChatModel.FindCharacter(characterName))
-                    .Where(toAdd => toAdd.Status != StatusType.offline || this.showOffline)
+                    .Where(toAdd => toAdd.Status != StatusType.Offline || this.showOffline)
                     .Where(this.MeetsFilter).ToList();
             }
 

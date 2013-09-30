@@ -104,7 +104,7 @@ namespace Slimcat.ViewModels
         /// <param name="cm">
         /// The cm.
         /// </param>
-        public ChannelViewModelBase(
+        protected ChannelViewModelBase(
             IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
             : base(contain, regman, events, cm)
         {
@@ -393,47 +393,46 @@ namespace Slimcat.ViewModels
         {
         }
 
-        /// <summary>
-        ///     Parsing behavior
-        /// </summary>
-        protected virtual void ParseAndSend()
+        private void ParseAndSend()
         {
-            if (this.Message != null)
+            if (this.Message == null)
             {
-                if (CommandParser.HasNonCommand(this.Message))
+                return;
+            }
+
+            if (CommandParser.HasNonCommand(this.Message))
+            {
+                this.SendMessage();
+                return;
+            }
+
+            try
+            {
+                var messageToCommand = new CommandParser(this.Message, this.model.Id);
+
+                if (!messageToCommand.HasCommand)
                 {
                     this.SendMessage();
-                    return;
                 }
-
-                try
+                else if ((messageToCommand.RequiresMod && !this.HasPermissions)
+                         || (messageToCommand.Type.Equals("warn") && !this.HasPermissions))
                 {
-                    var messageToCommand = new CommandParser(this.Message, this.model.Id);
-
-                    if (!messageToCommand.HasCommand)
-                    {
-                        this.SendMessage();
-                    }
-                    else if ((messageToCommand.RequiresMod && !this.HasPermissions)
-                             || (messageToCommand.Type.Equals("warn") && !this.HasPermissions))
-                    {
-                        this.UpdateError(
-                            string.Format(
-                                "I'm sorry Dave, I can't let you do the {0} command.", messageToCommand.Type));
-                    }
-                    else if (messageToCommand.IsValid)
-                    {
-                        this.SendCommand(messageToCommand.ToDictionary());
-                    }
-                    else
-                    {
-                        this.UpdateError(string.Format("I don't know the {0} command.", messageToCommand.Type));
-                    }
+                    this.UpdateError(
+                        string.Format(
+                            "I'm sorry Dave, I can't let you do the {0} command.", messageToCommand.Type));
                 }
-                catch (InvalidOperationException ex)
+                else if (messageToCommand.IsValid)
                 {
-                    this.UpdateError(ex.Message);
+                    this.SendCommand(messageToCommand.ToDictionary());
                 }
+                else
+                {
+                    this.UpdateError(string.Format("I don't know the {0} command.", messageToCommand.Type));
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                this.UpdateError(ex.Message);
             }
         }
 
@@ -443,7 +442,7 @@ namespace Slimcat.ViewModels
         /// <param name="command">
         /// The command.
         /// </param>
-        protected virtual void SendCommand(IDictionary<string, object> command)
+        protected void SendCommand(IDictionary<string, object> command)
         {
             this.Error = null;
 

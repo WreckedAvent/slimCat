@@ -44,7 +44,7 @@ namespace Slimcat.ViewModels
     /// <summary>
     ///     A light-weight viewmodel for toastnofications
     /// </summary>
-    public class ToastNotificationsViewModel : SysProp, IDisposable
+    public sealed class ToastNotificationsViewModel : SysProp, IDisposable
     {
         #region Constants
 
@@ -232,7 +232,7 @@ namespace Slimcat.ViewModels
         /// <param name="isManagedDispose">
         /// The is managed dispose.
         /// </param>
-        protected virtual void Dispose(bool isManagedDispose)
+        private void Dispose(bool isManagedDispose)
         {
             if (!isManagedDispose)
             {

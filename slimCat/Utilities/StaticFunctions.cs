@@ -7,7 +7,6 @@
     using System.Linq;
     using System.Web;
     using System.Windows;
-    using System.Windows.Controls;
     using System.Windows.Media;
 
     using Slimcat.Models;
@@ -222,18 +221,18 @@
         /// <param name="title">
         ///     The title.
         /// </param>
-        /// <param name="ID">
+        /// <param name="id">
         ///     The ID.
         /// </param>
         /// <returns>
         ///     The <see cref="string" />.
         /// </returns>
-        public static string MakeSafeFolderPath(string character, string title, string ID)
+        public static string MakeSafeFolderPath(string character, string title, string id)
         {
             string basePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string folderName;
 
-            if (!title.Equals(ID))
+            if (!title.Equals(id))
             {
                 var safeTitle = Path.GetInvalidPathChars()
                                     .Union(new List<char> { ':' })
@@ -244,14 +243,14 @@
                     safeTitle = safeTitle.Remove(0, 1);
                 }
 
-                folderName = string.Format("{0} ({1})", safeTitle, ID);
+                folderName = string.Format("{0} ({1})", safeTitle, id);
             }
             else
             {
-                folderName = ID;
+                folderName = id;
             }
 
-            if (folderName.ContainsOrdinal(@"/", true) || folderName.ContainsOrdinal(@"\", true))
+            if (folderName.ContainsOrdinal(@"/") || folderName.ContainsOrdinal(@"\"))
             {
                 folderName = folderName.Replace('/', '-');
                 folderName = folderName.Replace('\\', '-');
@@ -388,7 +387,7 @@
             GeneralChannelModel channel)
         {
             if (!message.Poster.NameContains(search.SearchString)
-                && !message.Message.ContainsOrdinal(search.SearchString, true))
+                && !message.Message.ContainsOrdinal(search.SearchString))
             {
                 return false;
             }
@@ -491,14 +490,14 @@
             // then sort then by status
             switch (character.Status)
             {
-                case StatusType.looking:
+                case StatusType.Looking:
                     return "e"; // People we want to bone!
-                case StatusType.busy:
+                case StatusType.Busy:
                     return "f"; // Not the most available, but still possible to play with
-                case StatusType.idle:
-                case StatusType.away:
+                case StatusType.Idle:
+                case StatusType.Away:
                     return "g"; // probably not going to play with, lower on list
-                case StatusType.dnd:
+                case StatusType.Dnd:
                     return "h"; // most likely not going to play with, lowest aside ignored
                 default:
                     return "e";

@@ -1,12 +1,12 @@
 ﻿<Button x:Class="Slimcat.Views.SearchButtonView"
-        x:Name="searchButton"
+        x:Name="SearchButton"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource ImageContentButton}"
         ToolTip="Switch to searching mode"
         Margin="2,10,2,0">
     <Button.Content>
-        <Rectangle Fill="{Binding ElementName=searchButton, Path=Foreground}"
+        <Rectangle Fill="{Binding ElementName=SearchButton, Path=Foreground}"
                    Height="15"
                    Width="15">
             <Rectangle.OpacityMask>

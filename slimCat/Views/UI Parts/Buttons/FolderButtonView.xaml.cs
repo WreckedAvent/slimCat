@@ -29,12 +29,10 @@
 
 namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     Interaction logic for FolderButtonView.xaml
     /// </summary>
-    public partial class FolderButtonView : Button
+    public partial class FolderButtonView
     {
         #region Constructors and Destructors
 

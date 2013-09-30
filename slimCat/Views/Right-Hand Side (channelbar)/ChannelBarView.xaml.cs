@@ -73,7 +73,7 @@ namespace Slimcat.Views
         /// <summary>
         ///     Gets the vm.
         /// </summary>
-        public ChannelbarViewModel VM
+        public ChannelbarViewModel Vm
         {
             get
             {

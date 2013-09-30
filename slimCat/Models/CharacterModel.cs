@@ -41,7 +41,7 @@ namespace Slimcat.Models
     /// <summary>
     ///     A character model which stores data related to characters
     /// </summary>
-    public class CharacterModel : SysProp, ICharacter, IDisposable
+    public sealed class CharacterModel : SysProp, ICharacter, IDisposable
     {
         #region Fields
 
@@ -275,8 +275,13 @@ namespace Slimcat.Models
         /// <param name="isManaged">
         /// The is managed.
         /// </param>
-        protected virtual void Dispose(bool isManaged)
+        private void Dispose(bool isManaged)
         {
+            if (!isManaged)
+            {
+                return;
+            }
+
             this.Name = null;
             this.StatusMessage = null;
             this.Avatar.StreamSource.Dispose();

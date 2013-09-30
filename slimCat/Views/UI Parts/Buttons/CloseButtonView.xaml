@@ -1,5 +1,5 @@
 ﻿<Button x:Class="Slimcat.Views.CloseButtonView"
-        x:Name="closeButton"
+        x:Name="CloseButton"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource ImageContentButton}"
@@ -9,7 +9,7 @@
         ToolTip="Close this tab"
         Margin="3,0">
     <Button.Content>
-        <Rectangle Fill="{Binding ElementName=closeButton, Path=Foreground}"
+        <Rectangle Fill="{Binding ElementName=CloseButton, Path=Foreground}"
                    Height="11"
                    Width="15">
             <Rectangle.OpacityMask>

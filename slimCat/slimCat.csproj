@@ -184,9 +184,7 @@
     <Compile Include="Services\Interfaces\IChatConnection.cs" />
     <Compile Include="Services\Interfaces\IListConnection.cs" />
     <Compile Include="Services\Interfaces\ILogger.cs" />
-    <Compile Include="Services\Interfaces\IStateManager.cs" />
     <Compile Include="Services\SettingsDaemon.cs" />
-    <Compile Include="Services\StateManager.cs" />
     <Compile Include="Utilities\CacheCount.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\KeepToCurrentScrollViewer.cs" />

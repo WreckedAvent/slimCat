@@ -168,10 +168,10 @@ namespace Slimcat.Services
             {
                 // manually determine some really annoyingly-named genders
                 case "Male-Herm":
-                    return Gender.Herm_M;
+                    return Gender.HermM;
 
                 case "Herm":
-                    return Gender.Herm_F;
+                    return Gender.HermF;
 
                 case "Cunt-boy":
                     return Gender.Cuntboy;
@@ -1103,7 +1103,7 @@ namespace Slimcat.Services
                                NewStatusType =
                                    statusChanged
                                        ? status
-                                       : StatusType.offline, 
+                                       : StatusType.Offline, 
                                NewStatusMessage =
                                    statusMessageChanged
                                        ? statusMessage
@@ -1169,7 +1169,7 @@ namespace Slimcat.Services
         private void GetCharacter(string character)
         {
             this.Events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(this.GetCharacter);
-            this.ChatModel.CurrentCharacter = new CharacterModel { Name = character, Status = StatusType.online };
+            this.ChatModel.CurrentCharacter = new CharacterModel { Name = character, Status = StatusType.Online };
             this.ChatModel.CurrentCharacter.GetAvatar();
 
             this.Dispatcher.Invoke(

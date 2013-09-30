@@ -63,7 +63,7 @@ namespace Slimcat.ViewModels
         /// <param name="cm">
         /// The cm.
         /// </param>
-        public ChannelbarViewModelCommon(
+        protected ChannelbarViewModelCommon(
             IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
             : base(contain, regman, events, cm)
         {

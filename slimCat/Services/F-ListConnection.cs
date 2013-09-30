@@ -32,7 +32,6 @@ namespace Slimcat.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -275,7 +274,6 @@ namespace Slimcat.Services
             }
         }
 
-        [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         private string GetResponse(string host, IEnumerable<KeyValuePair<string, object>> arguments, bool useCookies = false)
         {
             const string ContentType = "application/x-www-form-urlencoded";

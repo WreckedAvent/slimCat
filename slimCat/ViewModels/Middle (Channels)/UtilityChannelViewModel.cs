@@ -189,6 +189,7 @@ namespace Slimcat.ViewModels
             {
                 return ApplicationSettings.AllowColors;
             }
+
             set
             {
                 ApplicationSettings.AllowColors = value;
@@ -222,6 +223,7 @@ namespace Slimcat.ViewModels
             {
                 return ApplicationSettings.FriendsAreAccountWide;
             }
+
             set
             {
                 ApplicationSettings.FriendsAreAccountWide = value;

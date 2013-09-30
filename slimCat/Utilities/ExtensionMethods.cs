@@ -46,7 +46,7 @@ namespace Slimcat.Utilities
         /// <param name="model">
         ///     The model.
         /// </param>
-        /// <param name="ID">
+        /// <param name="id">
         ///     The id.
         /// </param>
         /// <typeparam name="T">
@@ -54,9 +54,9 @@ namespace Slimcat.Utilities
         /// <returns>
         ///     The <see cref="T" />.
         /// </returns>
-        public static T FirstByIdOrDefault<T>(this ICollection<T> model, string ID) where T : ChannelModel
+        public static T FirstByIdOrDefault<T>(this ICollection<T> model, string id) where T : ChannelModel
         {
-            return model.FirstOrDefault(param => param.Id.Equals(ID, StringComparison.OrdinalIgnoreCase));
+            return model.FirstOrDefault(param => param.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>

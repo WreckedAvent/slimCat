@@ -29,12 +29,10 @@
 
 namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     Interaction logic for FileButton.xaml
     /// </summary>
-    public partial class FileButtonView : Button
+    public partial class FileButtonView
     {
         #region Constructors and Destructors
 

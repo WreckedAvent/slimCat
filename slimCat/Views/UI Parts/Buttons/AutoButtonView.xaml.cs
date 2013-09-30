@@ -29,12 +29,10 @@
 
 namespace Slimcat.Views
 {
-    using System.Windows.Controls.Primitives;
-
     /// <summary>
     ///     The auto button view.
     /// </summary>
-    public partial class AutoButtonView : ToggleButton
+    public partial class AutoButtonView
     {
         #region Constructors and Destructors
 

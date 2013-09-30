@@ -1,12 +1,12 @@
 ﻿<Button x:Class="Slimcat.Views.FileButtonView"
-        x:Name="fileButton"
+        x:Name="FileButton"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource ImageContentButton}"
         Margin="2,10,2,0"
         ToolTip="Open Latest log file">
     <Button.Content>
-        <Rectangle Fill="{Binding ElementName=fileButton, Path=Foreground}"
+        <Rectangle Fill="{Binding ElementName=FileButton, Path=Foreground}"
                    Height="15"
                    Width="15">
             <Rectangle.OpacityMask>

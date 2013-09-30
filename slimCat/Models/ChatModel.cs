@@ -436,7 +436,7 @@ namespace Slimcat.Models
             }
 
             Console.WriteLine("Unknown character: " + name);
-            return new CharacterModel { Name = name, Status = StatusType.offline };
+            return new CharacterModel { Name = name, Status = StatusType.Offline };
         }
 
         public ChannelModel FindChannel(string id, string title = null)

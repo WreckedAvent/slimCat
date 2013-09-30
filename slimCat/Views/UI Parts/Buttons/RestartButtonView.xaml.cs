@@ -29,12 +29,10 @@
 
 namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     Interaction logic for RestartButtonView.xaml
     /// </summary>
-    public partial class RestartButtonView : Button
+    public partial class RestartButtonView
     {
         #region Constructors and Destructors
 

@@ -29,12 +29,10 @@
 
 namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     The search button view.
     /// </summary>
-    public partial class SearchButtonView : Button
+    public partial class SearchButtonView
     {
         #region Constructors and Destructors
 

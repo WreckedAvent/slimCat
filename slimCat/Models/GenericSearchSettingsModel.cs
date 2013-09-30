@@ -335,19 +335,19 @@
         {
             switch (character.Status)
             {
-                case StatusType.idle:
-                case StatusType.away:
-                case StatusType.busy:
+                case StatusType.Idle:
+                case StatusType.Away:
+                case StatusType.Busy:
                     return this.showBusyAway;
 
-                case StatusType.dnd:
+                case StatusType.Dnd:
                     return this.showDnd;
 
-                case StatusType.looking:
+                case StatusType.Looking:
                     return this.showLooking;
 
-                case StatusType.crown:
-                case StatusType.online:
+                case StatusType.Crown:
+                case StatusType.Online:
                     return this.showNormal;
 
                 default:

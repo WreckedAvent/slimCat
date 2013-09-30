@@ -18,11 +18,11 @@
         <Button Command="{Binding OpenSearchSettingsCommand}"
                 HorizontalAlignment="Center"
                 Grid.Column="1"
-                x:Name="filterButton"
+                x:Name="FilterButton"
                 ToolTip="Open filter settings"
                 Style="{StaticResource ImageContentButton}">
             <Button.Content>
-                <Rectangle Fill="{Binding ElementName=filterButton, Path=Foreground}"
+                <Rectangle Fill="{Binding ElementName=FilterButton, Path=Foreground}"
                            Height="20"
                            Width="14"
                            Margin="4,0">

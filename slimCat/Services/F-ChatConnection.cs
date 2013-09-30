@@ -57,7 +57,7 @@ namespace Slimcat.Services
         /// <summary>
         ///     The host.
         /// </summary>
-        public const string host = "ws://chat.f-list.net:9722/";
+        public const string Host = "ws://chat.f-list.net:9722/";
 
         #endregion
 
@@ -65,11 +65,10 @@ namespace Slimcat.Services
 
         private readonly IEventAggregator events;
 
-        private WebSocket socket;
-
-        #if (DEBUG)
+#if (DEBUG)
         private readonly StreamWriter logger;
-        #endif
+#endif
+        private WebSocket socket;
 
         private Timer staggerTimer;
 
@@ -131,16 +130,16 @@ namespace Slimcat.Services
         /// <param name="command">
         /// non-serialized data to be sent
         /// </param>
-        /// <param name="command_type">
+        /// <param name="commandType">
         /// The command_type.
         /// </param>
-        public void SendMessage(object command, string command_type)
+        public void SendMessage(object command, string commandType)
         {
             try
             {
-                if (command_type.Length > 3 || command_type.Length < 3)
+                if (commandType.Length > 3 || commandType.Length < 3)
                 {
-                    throw new ArgumentOutOfRangeException("command_type", "Command type must be 3 characters long");
+                    throw new ArgumentOutOfRangeException("commandType", "Command type must be 3 characters long");
                 }
 
                 string ser = SimpleJson.SerializeObject(command);
@@ -148,13 +147,13 @@ namespace Slimcat.Services
 #if (DEBUG)
 
                 // debug information
-                this.logger.WriteLine("->> Command: " + command_type);
+                this.logger.WriteLine("->> Command: " + commandType);
                 this.logger.WriteLine("Data: " + ser);
                 this.logger.WriteLine();
                 this.logger.Flush();
 #endif
 
-                this.socket.Send(command_type + " " + ser);
+                this.socket.Send(commandType + " " + ser);
             }
             catch (Exception ex)
             {
@@ -269,7 +268,7 @@ namespace Slimcat.Services
 
                 this.events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(this.ConnectToChat);
 
-                this.socket = new WebSocket(host);
+                this.socket = new WebSocket(Host);
 
                 // define socket behavior
                 this.socket.Opened += this.ConnectionOpened;

@@ -13,9 +13,9 @@
 
         private readonly ScrollViewer scroller;
 
-        private double lastValue = 0.0;
+        private double lastValue;
 
-        private double lastHeight = 0.0;
+        private double lastHeight;
 
         private bool hookedToBottom = true;
 
@@ -41,7 +41,7 @@
             var difference = Math.Abs(this.scroller.ScrollableHeight - this.lastHeight);
             this.lastHeight = this.scroller.ScrollableHeight;
 
-            if (difference != 0)
+            if (Math.Abs(difference - 0) > 0.01)
             {
                 if (this.hookedToBottom)
                 {

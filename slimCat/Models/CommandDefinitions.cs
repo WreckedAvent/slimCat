@@ -39,7 +39,8 @@
         /// <summary>
         ///     The command aliases.
         /// </summary>
-        private static readonly IDictionary<string, string> CommandAliases = new Dictionary<string, string>
+        private static readonly IDictionary<string, string> CommandAliases =
+            new Dictionary<string, string>
         {
             { "pm", "priv" }, 
             { "tell", "priv" }, 

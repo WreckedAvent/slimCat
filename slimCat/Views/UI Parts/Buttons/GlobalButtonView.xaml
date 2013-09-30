@@ -1,5 +1,5 @@
 ﻿<RadioButton x:Class="Slimcat.Views.GlobalButtonView"
-             x:Name="globalButton"
+             x:Name="GlobalButton"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              ToolTip="View global userlist"
@@ -10,7 +10,7 @@
     </RadioButton.Style>
 
     <RadioButton.Content>
-        <Rectangle Fill="{Binding ElementName=globalButton, Path=Foreground}"
+        <Rectangle Fill="{Binding ElementName=GlobalButton, Path=Foreground}"
                    Height="15"
                    Width="15">
             <Rectangle.OpacityMask>

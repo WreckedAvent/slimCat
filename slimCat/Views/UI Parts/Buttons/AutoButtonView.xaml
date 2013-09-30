@@ -1,12 +1,12 @@
 ﻿<ToggleButton x:Class="Slimcat.Views.AutoButtonView"
-              x:Name="autoButton"
+              x:Name="AutoButton"
               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
               Style="{StaticResource ImageContentToggleButton}"
               ToolTip="Automatically repost Ads every 10 minutes"
               Margin="2,10,2,0">
     <ToggleButton.Content>
-        <Rectangle Fill="{Binding ElementName=autoButton, Path=Foreground}"
+        <Rectangle Fill="{Binding ElementName=AutoButton, Path=Foreground}"
                    Height="15"
                    Width="15">
             <Rectangle.OpacityMask>

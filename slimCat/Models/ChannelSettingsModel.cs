@@ -105,7 +105,7 @@
             ///     The notification and sound.
             /// </summary>
             NotificationAndSound
-        };
+        }
 
         #endregion
 

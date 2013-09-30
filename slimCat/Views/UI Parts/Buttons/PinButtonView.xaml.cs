@@ -29,12 +29,10 @@
 
 namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     The pin button view.
     /// </summary>
-    public partial class PinButtonView : Button
+    public partial class PinButtonView
     {
         #region Constructors and Destructors
 

@@ -78,7 +78,7 @@ namespace Slimcat.ViewModels
             try
             {
                 this.Events.GetEvent<CharacterSelectedLoginEvent>()
-                    .Subscribe(this.handleCurrentCharacter, ThreadOption.UIThread, true);
+                    .Subscribe(this.HandleCurrentCharacter, ThreadOption.UIThread, true);
             }
             catch (Exception ex)
             {
@@ -111,13 +111,13 @@ namespace Slimcat.ViewModels
 
         #region Methods
 
-        private void handleCurrentCharacter(string chara)
+        private void HandleCurrentCharacter(string chara)
         {
             this.RegionManager.RequestNavigate(
-                Shell.MainRegion, new Uri(ChatWrapperView, UriKind.Relative), this.navigationCompleted);
+                Shell.MainRegion, new Uri(ChatWrapperView, UriKind.Relative), this.NavigationCompleted);
         }
 
-        private void navigationCompleted(NavigationResult result)
+        private void NavigationCompleted(NavigationResult result)
         {
             if (result.Result == true)
             {

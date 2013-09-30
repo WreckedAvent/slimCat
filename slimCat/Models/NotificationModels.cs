@@ -106,7 +106,7 @@ namespace Slimcat.Models
 
         #region Methods
 
-        internal override void Dispose(bool isManaged)
+        protected override void Dispose(bool isManaged)
         {
             if (isManaged)
             {
@@ -385,8 +385,6 @@ namespace Slimcat.Models
                                       ? this.ListArgument.ToString()
                                       : "not interested";
 
-                var isTemp = this.IsTemporary;
-
                 return "has been " + (this.IsAdded ? "added to" : "removed from") + " your " + listKind + " list"
                        + (this.IsTemporary ? " until this character logs out" : string.Empty) + '.';
             }
@@ -658,7 +656,7 @@ namespace Slimcat.Models
             {
                 get
                 {
-                    return this.NewStatusType != StatusType.offline;
+                    return this.NewStatusType != StatusType.Offline;
                 }
             }
 
@@ -782,7 +780,7 @@ namespace Slimcat.Models
 
         #region Methods
 
-        internal override void Dispose(bool isManaged)
+        protected override void Dispose(bool isManaged)
         {
             if (!isManaged)
             {

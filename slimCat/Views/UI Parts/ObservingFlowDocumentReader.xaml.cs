@@ -65,6 +65,7 @@ namespace Slimcat.Views
             {
                 return (bool)GetValue(LoadInReverseProperty);
             }
+
             set
             {
                 SetValue(LoadInReverseProperty, value);

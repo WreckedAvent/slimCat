@@ -1,12 +1,12 @@
 ﻿<Button x:Class="Slimcat.Views.FolderButtonView"
-        x:Name="folderButton"
+        x:Name="FolderButton"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource ImageContentButton}"
         Margin="2,12,2,0"
         ToolTip="Open logs and settings folder">
     <Button.Content>
-        <Rectangle Fill="{Binding ElementName=folderButton, Path=Foreground}"
+        <Rectangle Fill="{Binding ElementName=FolderButton, Path=Foreground}"
                    Height="13"
                    Width="15">
             <Rectangle.OpacityMask>

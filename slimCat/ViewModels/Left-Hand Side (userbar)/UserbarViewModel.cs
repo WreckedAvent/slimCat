@@ -69,27 +69,27 @@ namespace Slimcat.ViewModels
             {
                 "Online",  
                 StatusType
-                .online
+                .Online
             }, 
             {
                 "Busy", 
                 StatusType
-                .busy
+                .Busy
             }, 
             {
                 "Do not Disturb",  
                 StatusType
-                .dnd
+                .Dnd
             }, 
             {
                 "Looking For Play",  
                 StatusType
-                .looking
+                .Looking
             }, 
             {
                 "Away", 
                 StatusType
-                .away
+                .Away
             }
         };
 

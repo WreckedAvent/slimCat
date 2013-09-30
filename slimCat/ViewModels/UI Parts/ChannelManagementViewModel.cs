@@ -256,12 +256,12 @@ namespace Slimcat.ViewModels
         /// <summary>
         /// The dispose.
         /// </summary>
-        /// <param name="IsManaged">
+        /// <param name="isManaged">
         /// The is managed.
         /// </param>
-        public void Dispose(bool IsManaged)
+        public void Dispose(bool isManaged)
         {
-            if (!IsManaged)
+            if (!isManaged)
             {
                 return;
             }

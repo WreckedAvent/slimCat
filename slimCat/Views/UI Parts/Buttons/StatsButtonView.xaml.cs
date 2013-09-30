@@ -29,12 +29,10 @@
 
 namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     The stats button view.
     /// </summary>
-    public partial class StatsButtonView : Button
+    public partial class StatsButtonView
     {
         #region Constructors and Destructors
 

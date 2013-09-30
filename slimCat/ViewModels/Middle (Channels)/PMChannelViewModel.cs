@@ -1,31 +1,7 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PMChannelViewModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   Used for most communications between users.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-namespace Slimcat.ViewModels
+﻿namespace Slimcat.ViewModels
 {
+    #region
+
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -36,16 +12,17 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat;
     using Slimcat.Models;
     using Slimcat.Services;
     using Slimcat.Utilities;
     using Slimcat.Views;
 
+    #endregion
+
     /// <summary>
     ///     Used for most communications between users.
     /// </summary>
-    public class PMChannelViewModel : ChannelViewModelBase, IDisposable
+    public class PMChannelViewModel : ChannelViewModelBase
     {
         #region Fields
 
@@ -57,33 +34,31 @@ namespace Slimcat.ViewModels
 
         private bool isTyping;
 
+        private FilteredCollection<IMessage, IViewableObject> messageManager;
+
         private int typingLengthCache;
-
-        private FilteredCollection<IMessage, IViewableObject> messageManager; 
-
-        public event EventHandler StatusChanged;
 
         #endregion
 
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PMChannelViewModel"/> class.
+        ///     Initializes a new instance of the <see cref="PMChannelViewModel" /> class.
         /// </summary>
         /// <param name="name">
-        /// The name.
+        ///     The name.
         /// </param>
         /// <param name="contain">
-        /// The contain.
+        ///     The contain.
         /// </param>
         /// <param name="regman">
-        /// The regman.
+        ///     The regman.
         /// </param>
         /// <param name="events">
-        /// The events.
+        ///     The events.
         /// </param>
         /// <param name="cm">
-        /// The cm.
+        ///     The cm.
         /// </param>
         public PMChannelViewModel(
             string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
@@ -141,7 +116,8 @@ namespace Slimcat.ViewModels
                         }
                     };
 
-                this.messageManager = new FilteredCollection<IMessage, IViewableObject>(this.Model.Messages, message => true);
+                this.messageManager = new FilteredCollection<IMessage, IViewableObject>(
+                    this.Model.Messages, message => true);
             }
             catch (Exception ex)
             {
@@ -149,6 +125,12 @@ namespace Slimcat.ViewModels
                 Exceptions.HandleException(ex);
             }
         }
+
+        #endregion
+
+        #region Public Events
+
+        public event EventHandler StatusChanged;
 
         #endregion
 
@@ -172,7 +154,17 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                return this.ChatModel.IsOnline(this.Model.Id) ? this.ChatModel.FindCharacter(this.Model.Id) : new CharacterModel { Name = this.Model.Id };
+                return this.ChatModel.IsOnline(this.Model.Id)
+                           ? this.ChatModel.FindCharacter(this.Model.Id)
+                           : new CharacterModel { Name = this.Model.Id };
+            }
+        }
+
+        public ObservableCollection<IViewableObject> CurrentMessages
+        {
+            get
+            {
+                return this.messageManager.Collection;
             }
         }
 
@@ -251,19 +243,19 @@ namespace Slimcat.ViewModels
 
                 switch (this.ConversationWith.Status)
                 {
-                    case StatusType.away:
+                    case StatusType.Away:
                         return string.Format("Warning: {0} is currently away.", this.Model.Id);
-                    case StatusType.busy:
+                    case StatusType.Busy:
                         return string.Format("Warning: {0} is currently busy.", this.Model.Id);
-                    case StatusType.idle:
+                    case StatusType.Idle:
                         return string.Format("Warning: {0} is currently idle.", this.Model.Id);
-                    case StatusType.looking:
+                    case StatusType.Looking:
                         return string.Format("{0} is looking for roleplay.", this.Model.Id);
-                    case StatusType.dnd:
+                    case StatusType.Dnd:
                         return string.Format("Warning: {0} does not wish to be disturbed.", this.Model.Id);
-                    case StatusType.online:
+                    case StatusType.Online:
                         return string.Format("{0} is online.", this.Model.Id);
-                    case StatusType.crown:
+                    case StatusType.Crown:
                         return string.Format(
                             "{0} has been a good person and has been rewarded with a crown!", this.Model.Id);
                 }
@@ -279,43 +271,35 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                var PM = (PMChannelModel)this.Model;
+                var pm = (PMChannelModel)this.Model;
 
                 if (!this.ChatModel.IsOnline(this.Model.Id))
                 {
                     // visual indicator to help the user know when the other has gone offline
-                    return string.Format("{0} is not online!", PM.Id);
+                    return string.Format("{0} is not online!", pm.Id);
                 }
 
-                switch (PM.TypingStatus)
+                switch (pm.TypingStatus)
                 {
                     case TypingStatus.Typing:
-                        return string.Format("{0} is typing " + PM.TypingString, PM.Id);
+                        return string.Format("{0} is typing " + pm.TypingString, pm.Id);
                     case TypingStatus.Paused:
-                        return string.Format("{0} has entered text.", PM.Id);
+                        return string.Format("{0} has entered text.", pm.Id);
                     default:
                         return string.Empty;
                 }
             }
         }
 
-
-        public ObservableCollection<IViewableObject> CurrentMessages 
-        {
-            get
-            {
-                return this.messageManager.Collection;
-            }
-        } 
         #endregion
 
         #region Methods
 
         /// <summary>
-        /// The dispose.
+        ///     The dispose.
         /// </summary>
         /// <param name="isManaged">
-        /// The is managed.
+        ///     The is managed.
         /// </param>
         protected override void Dispose(bool isManaged)
         {
@@ -328,19 +312,22 @@ namespace Slimcat.ViewModels
 
                 this.StatusChanged = null;
                 this.Events.GetEvent<NewUpdateEvent>().Unsubscribe(this.OnNewUpdateEvent);
+
+                this.messageManager.Dispose();
+                this.messageManager = null;
             }
 
             base.Dispose(isManaged);
         }
 
         /// <summary>
-        /// The on model property changed.
+        ///     The on model property changed.
         /// </summary>
         /// <param name="sender">
-        /// The sender.
+        ///     The sender.
         /// </param>
         /// <param name="e">
-        /// The e.
+        ///     The e.
         /// </param>
         protected override void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -351,13 +338,13 @@ namespace Slimcat.ViewModels
         }
 
         /// <summary>
-        /// The on this property changed.
+        ///     The on this property changed.
         /// </summary>
         /// <param name="sender">
-        /// The sender.
+        ///     The sender.
         /// </param>
         /// <param name="e">
-        /// The e.
+        ///     The e.
         /// </param>
         protected override void OnThisPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -446,13 +433,13 @@ namespace Slimcat.ViewModels
         }
 
         /// <summary>
-        /// If the update is applicable to our PM tab
+        ///     If the update is applicable to our PM tab
         /// </summary>
         /// <param name="param">
-        /// The param.
+        ///     The param.
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         private bool UpdateIsOurCharacter(NotificationModel param)
         {

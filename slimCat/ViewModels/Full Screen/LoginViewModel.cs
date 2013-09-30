@@ -256,12 +256,12 @@ namespace Slimcat.ViewModels
             this.RelayMessage = "Great! Logging in ...";
             this.RequestSent = true;
             this.Events.GetEvent<LoginEvent>().Publish(true);
-            this.Events.GetEvent<LoginCompleteEvent>().Subscribe(this.handleLogin, ThreadOption.UIThread);
+            this.Events.GetEvent<LoginCompleteEvent>().Subscribe(this.HandleLogin, ThreadOption.UIThread);
         }
 
-        private void handleLogin(bool gotTicket)
+        private void HandleLogin(bool gotTicket)
         {
-            this.Events.GetEvent<LoginCompleteEvent>().Unsubscribe(this.handleLogin);
+            this.Events.GetEvent<LoginCompleteEvent>().Unsubscribe(this.HandleLogin);
 
             if (!gotTicket)
             {

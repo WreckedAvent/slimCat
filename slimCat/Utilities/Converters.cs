@@ -755,9 +755,9 @@ namespace Slimcat.Utilities
 
                 switch (gender)
                 {
-                    case Gender.Herm_F:
+                    case Gender.HermF:
                         return new LinearGradientBrush(new GradientStopCollection(stops), 0);
-                    case Gender.Herm_M:
+                    case Gender.HermM:
                         return new LinearGradientBrush(new GradientStopCollection(stops));
 
                     case Gender.Cuntboy:
@@ -797,12 +797,12 @@ namespace Slimcat.Utilities
 
                 switch (gender)
                 {
-                    case Gender.Herm_M:
+                    case Gender.HermM:
                     case Gender.Cuntboy:
                     case Gender.Male:
                         uri = new Uri("pack://application:,,,/icons/male.png");
                         break;
-                    case Gender.Herm_F:
+                    case Gender.HermF:
                     case Gender.Female:
                     case Gender.Shemale:
                         uri = new Uri("pack://application:,,,/icons/female.png");
@@ -1061,7 +1061,7 @@ namespace Slimcat.Utilities
                 brush = (SolidColorBrush)Application.Current.TryFindResource("ContrastBrush");
             }
 
-            return brush ?? (brush = (SolidColorBrush)Application.Current.FindResource("HighlightBrush"));
+            return brush ?? (SolidColorBrush)Application.Current.FindResource("HighlightBrush");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

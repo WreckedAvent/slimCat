@@ -29,12 +29,10 @@
 
 namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     The manage button view.
     /// </summary>
-    public partial class ManageButtonView : RadioButton
+    public partial class ManageButtonView
     {
         #region Constructors and Destructors
 

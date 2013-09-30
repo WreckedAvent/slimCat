@@ -116,13 +116,13 @@
 
             if (this.oldCounts.Count > 0)
             {
-                if (this.Average() != 0)
+                if (Math.Abs(this.Average() - 0) > 0.01)
                 {
                     toReturn.Append(" μ=");
                     toReturn.Append(string.Format("{0:0}", this.Average()));
                 }
 
-                if (this.StdDev() != 0)
+                if (Math.Abs(this.StdDev() - 0) > 0.01)
                 {
                     toReturn.Append(" σ=");
                     toReturn.Append(string.Format("{0:0.##}", this.StdDev()));

@@ -1,12 +1,12 @@
 ﻿<Button x:Class="Slimcat.Views.PinButtonView"
-        x:Name="pinButton"
+        x:Name="PinButton"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource ImageContentButton}"
         ToolTip="Save current channels"
         Margin="2">
     <Button.Content>
-        <Rectangle Fill="{Binding ElementName=pinButton, Path=Foreground}"
+        <Rectangle Fill="{Binding ElementName=PinButton, Path=Foreground}"
                    Height="15"
                    Width="15">
             <Rectangle.OpacityMask>

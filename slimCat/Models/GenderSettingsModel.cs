@@ -15,8 +15,8 @@
         {
             { Gender.Male, true }, 
             { Gender.Female, true }, 
-            { Gender.Herm_F, true }, 
-            { Gender.Herm_M, true }, 
+            { Gender.HermF, true }, 
+            { Gender.HermM, true }, 
             { Gender.Cuntboy, true }, 
             { Gender.Shemale, true }, 
             { Gender.None, true }, 
@@ -85,14 +85,14 @@
         {
             get
             {
-                return this.genderFilter[Gender.Herm_F];
+                return this.genderFilter[Gender.HermF];
             }
 
             set
             {
-                if (this.genderFilter[Gender.Herm_F] != value)
+                if (this.genderFilter[Gender.HermF] != value)
                 {
-                    this.genderFilter[Gender.Herm_F] = value;
+                    this.genderFilter[Gender.HermF] = value;
                     this.CallUpdate();
                 }
             }
@@ -125,14 +125,14 @@
         {
             get
             {
-                return this.genderFilter[Gender.Herm_M];
+                return this.genderFilter[Gender.HermM];
             }
 
             set
             {
-                if (this.genderFilter[Gender.Herm_M] != value)
+                if (this.genderFilter[Gender.HermM] != value)
                 {
-                    this.genderFilter[Gender.Herm_M] = value;
+                    this.genderFilter[Gender.HermM] = value;
                     this.CallUpdate();
                 }
             }

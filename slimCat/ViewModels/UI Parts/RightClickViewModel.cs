@@ -190,9 +190,9 @@ namespace Slimcat.ViewModels
                 {
                     switch (this.Target.Gender)
                     {
-                        case Gender.Herm_F:
+                        case Gender.HermF:
                             return "Feminine Herm";
-                        case Gender.Herm_M:
+                        case Gender.HermM:
                             return "Masculine Herm";
                         default:
                             return this.Target.Gender.ToString();
@@ -214,9 +214,9 @@ namespace Slimcat.ViewModels
                 {
                     switch (this.Target.Status)
                     {
-                        case StatusType.dnd:
+                        case StatusType.Dnd:
                             return "Do Not Disturb";
-                        case StatusType.looking:
+                        case StatusType.Looking:
                             return "Looking For Play";
                         default: // we just need to capitalize the first letter
                             return char.ToUpper(this.Target.Status.ToString()[0])

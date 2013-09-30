@@ -8,41 +8,41 @@
         /// <summary>
         ///     The offline.
         /// </summary>
-        offline, 
+        Offline, 
 
         /// <summary>
         ///     The online.
         /// </summary>
-        online, 
+        Online, 
 
         /// <summary>
         ///     The away.
         /// </summary>
-        away, 
+        Away, 
 
         /// <summary>
         ///     The busy.
         /// </summary>
-        busy, 
+        Busy, 
 
         /// <summary>
         ///     The looking.
         /// </summary>
-        looking, 
+        Looking, 
 
         /// <summary>
         ///     The idle.
         /// </summary>
-        idle, 
+        Idle, 
 
         /// <summary>
         ///     The dnd.
         /// </summary>
-        dnd, 
+        Dnd, 
 
         /// <summary>
         ///     The crown.
         /// </summary>
-        crown, 
+        Crown, 
     }
 }

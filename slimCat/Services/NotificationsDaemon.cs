@@ -263,7 +263,7 @@ namespace Slimcat.Services
             this.ResetDingLing();
             this.dingLing.Volume = ApplicationSettings.Volume;
 
-            if (this.dingLing.Volume == 0.0)
+            if (Math.Abs(this.dingLing.Volume - 0.0) < 0.001)
             {
                 return;
             }
@@ -305,13 +305,13 @@ namespace Slimcat.Services
             // now we check to see if we should notify because of settings
             if (channel.Settings.MessageNotifyLevel > (int)ChannelSettingsModel.NotifyLevel.NotificationOnly)
             {
-                bool dingLing = channel.Settings.MessageNotifyLevel
+                bool shouldDing = channel.Settings.MessageNotifyLevel
                                 > (int)ChannelSettingsModel.NotifyLevel.NotificationAndToast;
 
                 if ((channel.Settings.MessageNotifyOnlyForInteresting && this.cm.IsOfInterest(message.Poster.Name))
                     || !channel.Settings.MessageNotifyOnlyForInteresting)
                 {
-                    this.NotifyUser(dingLing, dingLing, message.Poster.Name + '\n' + cleanMessageText, channel.Id);
+                    this.NotifyUser(shouldDing, shouldDing, message.Poster.Name + '\n' + cleanMessageText, channel.Id);
                     return; // and if we do, there is no need to evalutae further
                 }
             }
@@ -531,8 +531,7 @@ namespace Slimcat.Services
                 // the only other kind of update model is a channel update model
             else
             {
-                string channelID = ((ChannelUpdateModel)notification).TargetChannel.Id;
-                ChannelUpdateModel.ChannelUpdateEventArgs args = ((ChannelUpdateModel)notification).Arguments;
+                var channelID = ((ChannelUpdateModel)notification).TargetChannel.Id;
 
                 this.AddNotification(notification);
                 this.NotifyUser(false, false, notification.ToString(), channelID);

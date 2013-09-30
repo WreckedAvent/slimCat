@@ -1,12 +1,12 @@
 ﻿<Button x:Class="Slimcat.Views.StatsButtonView"
-        x:Name="statsButton"
+        x:Name="StatsButton"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource ImageContentButton}"
         ToolTip="View channel statistics"
         Margin="2,10,2,0">
     <Button.Content>
-        <Rectangle Fill="{Binding ElementName=statsButton, Path=Foreground}"
+        <Rectangle Fill="{Binding ElementName=StatsButton, Path=Foreground}"
                    Height="15"
                    Width="15">
             <Rectangle.OpacityMask>

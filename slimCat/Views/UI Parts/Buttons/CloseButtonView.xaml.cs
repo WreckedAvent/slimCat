@@ -29,12 +29,10 @@
 
 namespace Slimcat.Views
 {
-    using System.Windows.Controls;
-
     /// <summary>
     ///     The close button view.
     /// </summary>
-    public partial class CloseButtonView : Button
+    public partial class CloseButtonView
     {
         #region Constructors and Destructors
 

@@ -1,12 +1,12 @@
 ﻿<Button x:Class="Slimcat.Views.ChatButtonView"
-        x:Name="chatButton"
+        x:Name="ChatButton"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource ImageContentButton}"
         ToolTip="Switch to chatting mode"
         Margin="2,12,2,0">
     <Button.Content>
-        <Rectangle Fill="{Binding ElementName=chatButton, Path=Foreground}"
+        <Rectangle Fill="{Binding ElementName=ChatButton, Path=Foreground}"
                    Height="12"
                    Width="15">
             <Rectangle.OpacityMask>

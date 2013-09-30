@@ -29,15 +29,7 @@
 
 namespace Slimcat.Views
 {
-    using System;
-    using System.Collections.Specialized;
-    using System.Windows.Documents;
-
-    using Slimcat.Models;
-    using Slimcat.Utilities;
     using Slimcat.ViewModels;
-
-    using System.Linq;
 
     /// <summary>
     ///     Interaction logic for ChannelbarNotificationsTabView.xaml
