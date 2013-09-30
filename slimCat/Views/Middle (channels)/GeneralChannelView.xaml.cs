@@ -47,17 +47,7 @@ namespace Slimcat.Views
     {
         #region Fields
 
-        private bool historyLoaded;
-
-        private bool historyInitialized;
-
-        private bool loaded;
-
         private GeneralChannelViewModel vm;
-
-        private KeepToCurrentScrollViewer scroller;
-
-        private int loadedCount;
 
         #endregion
 
@@ -77,7 +67,6 @@ namespace Slimcat.Views
                 this.vm = vm.ThrowIfNull("vm");
 
                 this.DataContext = this.vm;
-                this.vm.CurrentMessages.CollectionChanged += this.OnDisplayChanged;
             }
             catch (Exception ex)
             {
@@ -97,147 +86,10 @@ namespace Slimcat.Views
                 return;
             }
 
-            this.vm.CurrentMessages.CollectionChanged -= this.OnDisplayChanged;
             this.vm = null;
             this.DataContext = null;
-            this.scroller = null;
         }
 
-        private void OnDisplayChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (!this.loaded)
-            {
-                return; // sometimes we will get a collection changed before our UI has finished loading
-            }
-
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    {
-                        e.NewItems
-                            .Cast<IMessage>()
-                            .Select(item => new MessageView { DataContext = item })
-                            .Each(t => this.AddAtPositionAsync(t, e.NewStartingIndex));
-
-                        while (this.loadedCount > ApplicationSettings.BackLogMax)
-                        {
-                            this.Messages.Blocks.Remove(this.Messages.Blocks.FirstBlock);
-                            this.loadedCount--;
-                        }
-                    }
-
-                    break;
-
-                case NotifyCollectionChangedAction.Reset:
-                    {
-                        this.Messages.Blocks.Clear();
-                        this.loadedCount = 0;
-
-                        this.GetHistory()
-                            .Select(item => new HistoryView { DataContext = item })
-                            .Each(this.AddAsync);
-                        break;
-                    }
-
-                case NotifyCollectionChangedAction.Remove:
-                    {
-                        this.scroller.Stick();
-
-                        this.Messages.Blocks.Remove(
-                            e.OldStartingIndex != -1
-                                ? this.Messages.Blocks.ElementAt(e.OldStartingIndex)
-                                : this.Messages.Blocks.FirstBlock);
-
-                        this.PopupAnchor.UpdateLayout();
-                        this.scroller.ScrollToStick();
-
-                        this.loadedCount--;
-                    }
-
-                    break;
-            }
-        }
-
-        private void OnLoad(object s, EventArgs e)
-        {
-            lock (this.vm.CurrentMessages)
-            lock (this.Messages)
-            {
-                this.scroller = new KeepToCurrentScrollViewer(PopupAnchor);
-
-                this.vm.CurrentMessages
-                    .Reverse()
-                    .Select(item => new MessageView { DataContext = item })
-                    .Each(this.AddAsync);
-                this.loaded = true;
-
-                if (this.historyInitialized)
-                {
-                    return;
-                }
-
-                this.GetHistory()
-                    .Reverse()
-                    .Select(item => new HistoryView { DataContext = item })
-                    .Each(this.AddAsync);
-
-                this.historyLoaded = true;
-                this.historyInitialized = true;
-            }
-        }
-
-        private IEnumerable<string> GetHistory()
-        {
-            var history = this.vm.Model.History;
-            Func<string, bool> isChatMessage = s => s.StartsWith("[", StringComparison.OrdinalIgnoreCase);
-
-            return this.vm.IsDisplayingChat ? history.Where(isChatMessage) : history.Where(s => !isChatMessage(s));
-        }
-
-        private void AddAsync(Block item)
-        {
-            this.loadedCount++;
-
-            var priority = this.loadedCount < 25 ? DispatcherPriority.Normal : DispatcherPriority.DataBind;
-            if (this.loadedCount > ApplicationSettings.BackLogMax)
-            {
-                return;
-            }
-
-            Dispatcher.BeginInvoke(
-                priority,
-                (Action)(() =>
-                    {
-                        var last = this.Messages.Blocks.LastBlock;
-                        if (last != null)
-                        {
-                            this.Messages.Blocks.InsertBefore(this.Messages.Blocks.FirstBlock, item);
-                        }
-                        else
-                        {
-                            this.Messages.Blocks.Add(item);
-                        }
-                }));
-        }
-
-        private void AddAtPositionAsync(Block item, int index)
-        {
-            this.loadedCount++;
-
-            var offset = this.historyLoaded ? index + this.GetHistory().Count() : index;
-            offset--;
-            offset = Math.Min(offset, this.Messages.Blocks.Count() - 1);
-
-            if (offset > 0)
-            {
-                var block = this.Messages.Blocks.ElementAt(offset);
-                this.Dispatcher.BeginInvoke((Action)(() => this.Messages.Blocks.InsertAfter(block, item)));
-            }
-            else
-            {
-                this.Dispatcher.BeginInvoke((Action)(() => this.Messages.Blocks.Add(item)));
-            }
-        }
         #endregion
     }
 }

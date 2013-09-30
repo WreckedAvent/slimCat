@@ -30,12 +30,7 @@
 namespace Slimcat.Views
 {
     using System;
-    using System.Collections.Specialized;
-    using System.Linq;
-    using System.Windows.Documents;
-    using System.Windows.Threading;
 
-    using Slimcat.Models;
     using Slimcat.Utilities;
     using Slimcat.ViewModels;
 
@@ -46,13 +41,7 @@ namespace Slimcat.Views
     {
         #region Fields
 
-        private bool historyLoaded;
-
-        private bool historyInitialized;
-
         private PMChannelViewModel vm;
-
-        private KeepToCurrentScrollViewer scroll;
 
         #endregion
 
@@ -73,7 +62,6 @@ namespace Slimcat.Views
 
                 this.DataContext = this.vm;
 
-                this.vm.Model.Messages.CollectionChanged += this.OnDisplayChanged;
                 this.vm.StatusChanged += this.OnStatusChanged;
             }
             catch (Exception ex)
@@ -86,97 +74,6 @@ namespace Slimcat.Views
         #endregion
 
         #region Methods
-        private void OnDisplayChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    {
-                        var items = e.NewItems.Cast<IMessage>();
-                        foreach (var template in items.Select(item => new MessageView { DataContext = item }))
-                        {
-                            this.Messages.Blocks.Add(template);
-                        }
-                    }
-
-                    break;
-
-                case NotifyCollectionChangedAction.Reset:
-                    this.Messages.Blocks.Clear();
-                    break;
-
-                case NotifyCollectionChangedAction.Remove:
-                    {
-                        this.scroll.Stick();
-                        if (this.historyLoaded)
-                        {
-                            for (var i = 0; i < this.vm.Model.History.Count; i++)
-                            {
-                                this.Messages.Blocks.Remove(this.Messages.Blocks.FirstBlock);
-                            }
-
-                            this.historyLoaded = false;
-                        }
-
-
-                        this.Messages.Blocks.Remove(this.Messages.Blocks.FirstBlock);
-                        this.PopupAnchor.UpdateLayout();
-                        this.scroll.ScrollToStick();
-                    }
-
-                    break;
-            }
-        }
-
-        private void OnLoad(object s, EventArgs e)
-        {
-            var loadedCount = 0;
-            this.scroll = this.scroll ?? new KeepToCurrentScrollViewer(PopupAnchor);
-
-            foreach (var template in this.vm.Model.Messages.Reverse().Select(item => new MessageView { DataContext = item }))
-            {
-                this.AddAsync(template, ref loadedCount);
-            }
-
-            if (this.historyInitialized)
-            {
-                return;
-            }
-
-            foreach (var template in this.vm.Model.History.Reverse().Select(item => new HistoryView { DataContext = item }))
-            {
-                this.AddAsync(template, ref loadedCount);
-            }
-
-            this.historyLoaded = true;
-            this.historyInitialized = true;
-        }
-
-        private void AddAsync(Block item, ref int count)
-        {
-            count++;
-
-            var priority = count < 25 ? DispatcherPriority.Normal : DispatcherPriority.DataBind;
-            if (count > 25)
-            {
-                return;
-            }
-
-            Dispatcher.BeginInvoke(
-                priority,
-                (Action)delegate
-                    {
-                        var last = this.Messages.Blocks.LastBlock;
-                    if (last != null)
-                    {
-                        this.Messages.Blocks.InsertBefore(this.Messages.Blocks.FirstBlock, item);
-                    }
-                    else
-                    {
-                        this.Messages.Blocks.Add(item);
-                    }
-                });
-        }
 
         protected override void Dispose(bool isManaged)
         {
@@ -186,7 +83,6 @@ namespace Slimcat.Views
             }
 
             this.vm.StatusChanged -= this.OnStatusChanged;
-            this.vm.Model.Messages.CollectionChanged -= this.OnDisplayChanged;
             this.DataContext = null;
             this.vm = null;
         }

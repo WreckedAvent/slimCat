@@ -28,6 +28,7 @@ namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Timers;
 
@@ -57,6 +58,8 @@ namespace Slimcat.ViewModels
         private bool isTyping;
 
         private int typingLengthCache;
+
+        private FilteredCollection<IMessage, IViewableObject> messageManager; 
 
         public event EventHandler StatusChanged;
 
@@ -137,6 +140,8 @@ namespace Slimcat.ViewModels
                                 this.ChannelSettings, cm.CurrentCharacter.Name, this.Model.Title, this.Model.Id);
                         }
                     };
+
+                this.messageManager = new FilteredCollection<IMessage, IViewableObject>(this.Model.Messages, message => true);
             }
             catch (Exception ex)
             {
@@ -294,6 +299,14 @@ namespace Slimcat.ViewModels
             }
         }
 
+
+        public ObservableCollection<IViewableObject> CurrentMessages 
+        {
+            get
+            {
+                return this.messageManager.Collection;
+            }
+        } 
         #endregion
 
         #region Methods

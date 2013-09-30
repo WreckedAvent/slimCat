@@ -1,26 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Slimcat.Views
 {
     using System.Collections.ObjectModel;
     using System.Collections.Specialized;
 
+    using System.Linq;
+
     using Slimcat.Models;
     using Slimcat.Utilities;
-
-    using System.Linq;
 
     /// <summary>
     /// Interaction logic for ObservingFlowDocumentReader.xaml
@@ -41,6 +32,13 @@ namespace Slimcat.Views
                 typeof(IEnumerable<string>),
                 typeof(ObservingFlowDocumentReader),
                 new PropertyMetadata(default(IEnumerable<string>)));
+
+        public static readonly DependencyProperty LoadInReverseProperty =
+                DependencyProperty.Register(
+                "LoadInReverse", 
+                typeof(bool), 
+                typeof(ObservingFlowDocumentReader), 
+                new PropertyMetadata(default(bool)));
 
         private KeepToCurrentScrollViewer scroller;
 
@@ -82,6 +80,18 @@ namespace Slimcat.Views
                 this.SetValue(HistorySourceProperty, value);
             }
         }
+
+        public bool LoadInReverse
+        {
+            get
+            {
+                return (bool)GetValue(LoadInReverseProperty);
+            }
+            set
+            {
+                SetValue(LoadInReverseProperty, value);
+            }
+        }
         #endregion
 
         #region Methods
@@ -106,16 +116,40 @@ namespace Slimcat.Views
         private void OnLoad(object sender, EventArgs e)
         {
             this.scroller = this.scroller ?? new KeepToCurrentScrollViewer(Root);
+            var historySource = this.HistorySource ?? new List<string>();
+            IEnumerable<IViewableObject> messageSource = this.MessageSource;
 
-            if (this.HistorySource != null)
+            if (this.LoadInReverse)
             {
-                this.HistorySource.Select(x => new HistoryView { DataContext = x }).Each(this.AddAsync);
+                messageSource
+                    .Reverse()
+                    .Select(x => x.View)
+                    .Each(this.AddInReverseAsync);
+
+                historySource
+                    .Reverse()
+                    .Select(x => new HistoryView { DataContext = x })
+                    .Each(x =>
+                    {
+                        this.historyCount++;
+                        this.AddInReverseAsync(x);
+                    });
+
+                this.loaded = true;
+                return;
             }
 
-            if (this.MessageSource != null)
-            {
-                this.MessageSource.Select(x => x.View).Each(this.AddAsync);
-            }
+            historySource
+                .Select(x => new HistoryView { DataContext = x })
+                .Each(x =>
+                {
+                    this.historyCount++;
+                    this.AddAsync(x);
+                });
+
+            messageSource
+                .Select(x => x.View)
+                .Each(this.AddAsync);
 
             this.loaded = true;
         }
@@ -132,17 +166,37 @@ namespace Slimcat.Views
                 case NotifyCollectionChangedAction.Add:
                     e.NewItems.Cast<IViewableObject>()
                         .Select(x => x.View)
-                        .Each(x => this.AddAtAsync(e.NewStartingIndex, x));
+                        .Each(x => this.AddAtAsync(e.NewStartingIndex + this.historyCount, x));
                     break;
 
                 case NotifyCollectionChangedAction.Reset:
                     this.Messages.Blocks.Clear();
+                    this.historyCount = 0;
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
+                    this.scroller.Stick();
                     this.Messages.Blocks.RemoveAt(e.OldStartingIndex + this.historyCount);
+                    this.scroller.ScrollToStick();
                     break;
             }
+        }
+
+        private void AddInReverseAsync(Block item)
+        {
+            Dispatcher.BeginInvoke(
+            (Action)delegate
+            {
+                var last = this.Messages.Blocks.LastBlock;
+                if (last != null)
+                {
+                    this.Messages.Blocks.InsertBefore(this.Messages.Blocks.FirstBlock, item);
+                }
+                else
+                {
+                    this.Messages.Blocks.Add(item);
+                }
+            });
         }
 
         private void AddAsync(Block item)

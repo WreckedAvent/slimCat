@@ -187,7 +187,11 @@
     <Compile Include="Services\Interfaces\IStateManager.cs" />
     <Compile Include="Services\SettingsDaemon.cs" />
     <Compile Include="Services\StateManager.cs" />
+    <Compile Include="Utilities\CacheCount.cs" />
     <Compile Include="Utilities\Constants.cs" />
+    <Compile Include="Utilities\KeepToCurrentScrollViewer.cs" />
+    <Compile Include="Utilities\StaticFunctions.cs" />
+    <Compile Include="Utilities\FilteredCollection.cs" />
     <Compile Include="ViewModels\Right-Hand side %28channelBar%29\GlobalTabViewModel.cs" />
     <Compile Include="ViewModels\Right-Hand side %28channelBar%29\ManageListsViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\ChannelManagementViewModel.cs" />
@@ -210,8 +214,7 @@
     <Compile Include="lib\RelayCommand.cs" />
     <Compile Include="Services\F-ListConnection.cs" />
     <Compile Include="Utilities\Exceptions.cs" />
-    <Compile Include="Utilities\Helpers.cs" />
-    <Compile Include="Utilities\SnapToBottomManager.cs" />
+    <Compile Include="Utilities\ExtensionMethods.cs" />
     <Compile Include="ViewModels\Base Classes\SysProp.cs" />
     <Compile Include="ViewModels\Right-Hand side %28channelBar%29\ChannelBarViewModel.cs" />
     <Compile Include="ViewModels\Right-Hand side %28channelBar%29\ChannelBarViewModelCommon.cs" />

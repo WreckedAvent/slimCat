@@ -58,20 +58,12 @@
             </Grid>
         </Border>
         
-        <FlowDocumentScrollViewer Grid.Row="1"
-                                  x:Name="PopupAnchor"
-                                  HorizontalAlignment="Stretch"
-                                  UseLayoutRounding="True"
-                                  Foreground="{StaticResource HighlightBrush}"
-                                  Background="Transparent"
-                                  VerticalScrollBarVisibility="Auto"
-                                   >
-            <FlowDocument PagePadding="2,5"
-                          IsOptimalParagraphEnabled="True"
-                          IsHyphenationEnabled="True"
-                          Loaded="OnLoad"
-                          x:Name="Messages" />
-        </FlowDocumentScrollViewer>
+        <v:ObservingFlowDocumentReader 
+            Grid.Row="1"
+            x:Name="PopupAnchor"
+            LoadInReverse="True"
+            MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}"
+            HistorySource="{Binding Path=Model.History, Mode=OneWay}"/>
         
         <v:ChannelSettingsView />
 

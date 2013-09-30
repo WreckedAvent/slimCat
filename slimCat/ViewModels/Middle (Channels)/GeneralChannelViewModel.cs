@@ -55,14 +55,8 @@ namespace Slimcat.ViewModels
     public class GeneralChannelViewModel : ChannelViewModelBase, IDisposable
     {
         #region Fields
-
-        private readonly ChannelManagementViewModel channelManagementViewModel;
-
-        private readonly ObservableCollection<IMessage> currentMessages = new ObservableCollection<IMessage>();
-
         private readonly IList<string> thisDingTerms = new List<string>();
 
-        // this is a combination of all relevant ding terms 
         private Timer adFlood = new Timer(602000);
 
         private string adMessage = string.Empty;
@@ -85,8 +79,6 @@ namespace Slimcat.ViewModels
 
         private Timer messageFlood = new Timer(500);
 
-        private GenericSearchSettingsModel searchSettings = new GenericSearchSettingsModel();
-
         private RelayCommand @switch;
 
         private RelayCommand switchSearch;
@@ -95,6 +87,9 @@ namespace Slimcat.ViewModels
 
         private Timer update = new Timer(1000);
 
+        private FilteredCollection<IMessage, IViewableObject> messageManager;
+
+        private GenericSearchSettingsModel searchSettings = new GenericSearchSettingsModel();
         #endregion
 
         #region Constructors and Destructors
@@ -133,12 +128,20 @@ namespace Slimcat.ViewModels
 
                 this.isDisplayingChat = this.ShouldDisplayChat;
 
-                this.channelManagementViewModel = new ChannelManagementViewModel(this.Events, this.Model as GeneralChannelModel);
+                this.ChannelManagementViewModel = new ChannelManagementViewModel(this.Events, this.Model as GeneralChannelModel);
 
                 // instance our management vm
                 this.Model.Messages.CollectionChanged += this.OnMessagesChanged;
                 this.Model.Ads.CollectionChanged += this.OnAdsChanged;
                 this.Model.PropertyChanged += this.OnModelPropertyChanged;
+
+                this.messageManager = 
+                    new FilteredCollection<IMessage, IViewableObject>(
+                        this.isDisplayingChat 
+                            ? this.Model.Messages 
+                            : this.Model.Ads, 
+                        this.MeetsFilter, 
+                        this.IsDisplayingAds);
 
                 this.genderSettings.Updated += (s, e) =>
                     {
@@ -146,7 +149,7 @@ namespace Slimcat.ViewModels
                         this.OnPropertyChanged("GenderSettings");
                     };
 
-                this.searchSettings.Updated += (s, e) =>
+                this.SearchSettings.Updated += (s, e) =>
                     {
                         this.OnPropertyChanged("SearchSettings");
                         this.OnPropertyChanged("CurrentMessages");
@@ -187,7 +190,7 @@ namespace Slimcat.ViewModels
                         this.OnPropertyChanged("StatusString");
                     };
 
-                this.channelManagementViewModel.PropertyChanged += (s, e) => this.OnPropertyChanged("ChannelManagementViewModel");
+                this.ChannelManagementViewModel.PropertyChanged += (s, e) => this.OnPropertyChanged("ChannelManagementViewModel");
 
                 this.update.Enabled = true;
 
@@ -280,13 +283,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the channel management view model.
         /// </summary>
-        public ChannelManagementViewModel ChannelManagementViewModel
-        {
-            get
-            {
-                return this.channelManagementViewModel;
-            }
-        }
+        public ChannelManagementViewModel ChannelManagementViewModel { get; private set; }
 
         /// <summary>
         ///     Gets the chat content string.
@@ -302,11 +299,11 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the current messages.
         /// </summary>
-        public ObservableCollection<IMessage> CurrentMessages
+        public ObservableCollection<IViewableObject> CurrentMessages
         {
             get
             {
-                return this.currentMessages;
+                return this.messageManager.Collection;
             }
         }
 
@@ -376,6 +373,8 @@ namespace Slimcat.ViewModels
                 string temp = this.Message;
                 this.Message = this.adMessage;
                 this.adMessage = temp;
+
+                this.messageManager.OriginalCollection = value ? this.Model.Messages : this.Model.Ads;
 
                 this.OnPropertyChanged("IsDisplayingChat");
                 this.OnPropertyChanged("IsDisplayingAds");
@@ -716,6 +715,7 @@ namespace Slimcat.ViewModels
                 this.Model.Messages.CollectionChanged -= this.OnMessagesChanged;
                 this.Model.Ads.CollectionChanged -= this.OnAdsChanged;
                 this.PropertyChanged -= this.OnPropertyChanged;
+                this.messageManager.Dispose();
 
                 (this.Model as GeneralChannelModel).Description = null;
                 (this.Model as GeneralChannelModel).Moderators.Clear();
@@ -835,12 +835,18 @@ namespace Slimcat.ViewModels
 
         private void OnAdsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            this.HandleCollectionChanged(e, true);
+            if (this.IsDisplayingChat)
+            {
+                this.OtherTabHasMessages = true;
+            }
         }
 
         private void OnMessagesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            this.HandleCollectionChanged(e, false);
+            if (this.IsDisplayingAds)
+            {
+                this.OtherTabHasMessages = e.NewItems.Cast<IMessage>().Where(this.MeetsFilter).Any();
+            }
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -853,21 +859,16 @@ namespace Slimcat.ViewModels
                 case "SearchSettings":
                 case "IsDisplayingChat":
                     {
-                        this.RebuildCurrentMessages();
+                        this.messageManager.IsFiltering = this.IsDisplayingAds || this.isSearching;
+                        this.messageManager.RebuildItems();
                     }
 
                     break;
 
                 case "IsSearching":
                     {
-                        if (this.isSearching)
-                        {
-                            this.RemoveUnwanted();
-                        }
-                        else
-                        {
-                            this.AddInWanted();
-                        }
+                        this.messageManager.IsFiltering = this.IsDisplayingAds || this.isSearching;
+                        this.messageManager.RebuildItems();
                     }
 
                     break;
@@ -888,107 +889,7 @@ namespace Slimcat.ViewModels
                 return;
             }
 
-            if (args.IsAdded)
-            {
-                this.RemoveUnwanted();
-            }
-            else
-            {
-                this.AddInWanted();
-            }
-        }
-
-        private IEnumerable<IMessage> BuildCurrentMessages()
-        {
-            IEnumerable<IMessage> toReturn = this.IsDisplayingChat ? this.Model.Messages : this.Model.Ads;
-
-            if (this.IsSearching || this.IsDisplayingAds)
-            {
-                toReturn = toReturn.Where(this.MeetsFilter);
-            }
-
-            return toReturn;
-        }
-
-        private void RebuildCurrentMessages()
-        {
-            this.currentMessages.Clear();
-            foreach (var message in this.BuildCurrentMessages())
-            {
-                this.currentMessages.Add(message);
-            }
-        }
-
-        private void RemoveUnwanted()
-        {
-            lock (this.currentMessages)
-            {
-                if (!this.isSearching && this.isDisplayingChat)
-                {
-                    return;
-                }
-
-                var toRemove = this.currentMessages.Where(m => !this.MeetsFilter(m)).ToList();
-
-                foreach (var message in toRemove)
-                {
-                    this.currentMessages.Remove(message);
-                }
-            }
-        }
-
-        private void AddInWanted()
-        {
-            lock (this.currentMessages)
-            {
-                var total = this.BuildCurrentMessages().ToList();
-                var toAdd = new List<Tuple<IMessage, int>>();
-                for (var i = 0; i < total.Count; i++)
-                {
-                    var item = total[i];
-                    if (!this.currentMessages.Contains(item))
-                    {
-                        toAdd.Add(new Tuple<IMessage, int>(item, i));
-                    }
-                }
-
-                toAdd.Each(item => this.currentMessages.Insert(item.Item2, item.Item1));
-            }
-        }
-
-        private void HandleCollectionChanged(NotifyCollectionChangedEventArgs e, bool isAds)
-        {
-            if (isAds != this.IsDisplayingAds)
-            {
-                var predicate = isAds ? this.Model.Ads.Where(this.MeetsFilter) : this.Model.Messages;
-                this.OtherTabHasMessages = predicate.Any();
-                return;
-            }
-
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    {
-                        var messages = e.NewItems.Cast<IMessage>();
-                        if (this.IsSearching || isAds)
-                        {
-                            messages = messages.Where(this.MeetsFilter);
-                        }
-
-                        foreach (var message in messages)
-                        {
-                            this.currentMessages.Add(message);
-                        }
-                    }
-
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    this.currentMessages.Clear();
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    this.currentMessages.RemoveAt(0);
-                    break;
-            }
+            this.messageManager.RebuildItems();
         }
 
         #endregion
