@@ -44,8 +44,6 @@ namespace Slimcat.Models
 
         private readonly ObservableCollection<IMessage> ads = new ObservableCollection<IMessage>();
 
-        private readonly ObservableCollection<string> history = new ObservableCollection<string>();
-
         private readonly ObservableCollection<IMessage> messages = new ObservableCollection<IMessage>();
 
         private readonly string identity;
@@ -129,17 +127,6 @@ namespace Slimcat.Models
         public bool UnreadContainsInteresting { get; protected set; }
 
         public bool NeedsAttentionOverride { get; protected set; }
-
-        /// <summary>
-        ///     Gets the history.
-        /// </summary>
-        public ObservableCollection<string> History
-        {
-            get
-            {
-                return this.history;
-            }
-        }
 
         /// <summary>
         ///     An ID is used to unambigiously identify the channel or character's name

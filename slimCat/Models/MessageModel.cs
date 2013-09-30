@@ -29,6 +29,7 @@
 
 namespace Slimcat.Models
 {
+    using System;
     using System.Windows.Documents;
 
     using Slimcat.Views;
@@ -38,16 +39,10 @@ namespace Slimcat.Models
     /// </summary>
     public class MessageModel : MessageBase, IMessage
     {
-        // Messages cannot be modified whence sent, safe to make these readonly
-        #region Fields
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageModel"/> class.
-        ///     Creates a new message model
         /// </summary>
         /// <param name="poster">
         /// The character which posted the message
@@ -63,6 +58,23 @@ namespace Slimcat.Models
             this.Poster = poster;
             this.Message = message;
             this.Type = type;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessageModel"/> class.
+        /// </summary>
+        /// <param name="message">
+        /// The message posted at a previous date
+        /// </param>
+        public MessageModel(string message)
+        {
+            this.Poster = new CharacterModel { Name = string.Empty };
+            this.IsHistoryMessage = true;
+            this.Type = message.StartsWith("[") 
+                ? MessageType.Normal 
+                : MessageType.Ad;
+
+            this.Message = message;
         }
 
         #endregion
@@ -84,6 +96,9 @@ namespace Slimcat.Models
         /// </summary>
         public MessageType Type { get; private set; }
 
+
+        public bool IsHistoryMessage { get; private set; }
+
         /// <summary>
         ///     Gets the view associated with messages.
         /// </summary>
@@ -91,6 +106,11 @@ namespace Slimcat.Models
         {
             get
             {
+                if (this.IsHistoryMessage)
+                {
+                    return new HistoryView { DataContext = this.Message };
+                }
+
                 return new MessageView { DataContext = this };
             }
         }

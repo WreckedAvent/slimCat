@@ -53,6 +53,7 @@ namespace Slimcat.Utilities
             set
             {
                 this.originalCollection.CollectionChanged -= this.OnCollectionChanged;
+                this.originalCollection.Clear();
                 this.originalCollection = value;
                 this.originalCollection.CollectionChanged += this.OnCollectionChanged;
                 this.RebuildItems();
@@ -84,10 +85,7 @@ namespace Slimcat.Utilities
 
         public void RebuildItems()
         {
-            if (this.Collection.Count > 0)
-            {
-                this.Collection.Clear();
-            }
+            this.Collection.Clear();
 
             IEnumerable<T> items = this.originalCollection;
             if (this.isFiltering)

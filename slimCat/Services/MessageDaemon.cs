@@ -336,14 +336,18 @@ namespace Slimcat.Services
             if (history.Any())
             {
                 this.Dispatcher.BeginInvoke(
-                    (Action)delegate
-                        {
-                            toJoin.History.Clear();
-                            foreach (var item in history)
+                    (Action)(() => history.Select(item => new MessageModel(item)).Each(
+                        item =>
                             {
-                                toJoin.History.Add(item);
-                            }
-                        });
+                                if (item.Type != MessageType.Normal)
+                                {
+                                    toJoin.Ads.Add(item);
+                                }
+                                else
+                                {
+                                    toJoin.Messages.Add(item);
+                                }
+                            })));
             }
 
             this.RequestNavigate(id);
@@ -408,7 +412,6 @@ namespace Slimcat.Services
                 item.Dispose();
             }
 
-            channel.History.Clear();
             channel.Messages.Clear();
             channel.Ads.Clear();
         }

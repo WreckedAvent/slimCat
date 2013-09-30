@@ -34,6 +34,10 @@
         /// </summary>
         MessageType Type { get; }
 
+        /// <summary>
+        ///     Gets if the message is a history message.
+        /// </summary>
+        bool IsHistoryMessage { get; }
         #endregion
     }
 }

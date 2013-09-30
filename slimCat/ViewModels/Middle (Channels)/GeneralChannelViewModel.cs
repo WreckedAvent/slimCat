@@ -837,7 +837,7 @@ namespace Slimcat.ViewModels
         {
             if (this.IsDisplayingChat)
             {
-                this.OtherTabHasMessages = true;
+                this.OtherTabHasMessages = e.Action != NotifyCollectionChangedAction.Reset;
             }
         }
 
@@ -845,7 +845,8 @@ namespace Slimcat.ViewModels
         {
             if (this.IsDisplayingAds)
             {
-                this.OtherTabHasMessages = e.NewItems.Cast<IMessage>().Where(this.MeetsFilter).Any();
+                this.OtherTabHasMessages = e.Action != NotifyCollectionChangedAction.Reset 
+                    && e.NewItems.Cast<IMessage>().Where(this.MeetsFilter).Any();
             }
         }
 

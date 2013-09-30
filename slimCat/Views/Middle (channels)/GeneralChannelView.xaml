@@ -58,8 +58,7 @@
             Grid.Row="1"
             x:Name="PopupAnchor"
             LoadInReverse="True"
-            MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}"
-            HistorySource="{Binding Path=Model.History, Mode=OneWay}"/>
+            MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}"/>
 
         <Popup PlacementTarget="{Binding ElementName=PopupAnchor}"
                Placement="Center"

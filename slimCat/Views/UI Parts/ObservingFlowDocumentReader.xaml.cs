@@ -26,13 +26,6 @@ namespace Slimcat.Views
                 typeof(ObservingFlowDocumentReader), 
                 new PropertyMetadata(default(ObservableCollection<object>), OnMessageSourceChanged));
 
-        public static readonly DependencyProperty HistorySourceProperty =
-            DependencyProperty.Register(
-                "HistorySource",
-                typeof(IEnumerable<string>),
-                typeof(ObservingFlowDocumentReader),
-                new PropertyMetadata(default(IEnumerable<string>)));
-
         public static readonly DependencyProperty LoadInReverseProperty =
                 DependencyProperty.Register(
                 "LoadInReverse", 
@@ -43,8 +36,6 @@ namespace Slimcat.Views
         private KeepToCurrentScrollViewer scroller;
 
         private bool loaded;
-
-        private int historyCount = 0;
         #endregion
 
         #region Constructors
@@ -68,19 +59,6 @@ namespace Slimcat.Views
             }
         }
 
-        public IEnumerable<string> HistorySource
-        {
-            get
-            {
-                return (IEnumerable<string>)GetValue(HistorySourceProperty);
-            }
-
-            set
-            {
-                this.SetValue(HistorySourceProperty, value);
-            }
-        }
-
         public bool LoadInReverse
         {
             get
@@ -99,6 +77,8 @@ namespace Slimcat.Views
         {
             var @this = (ObservingFlowDocumentReader)o;
 
+            @this.Messages.Blocks.Clear();
+
             var old = e.OldValue as ObservableCollection<IViewableObject>;
             var @new = e.NewValue as ObservableCollection<IViewableObject>;
 
@@ -116,7 +96,6 @@ namespace Slimcat.Views
         private void OnLoad(object sender, EventArgs e)
         {
             this.scroller = this.scroller ?? new KeepToCurrentScrollViewer(Root);
-            var historySource = this.HistorySource ?? new List<string>();
             IEnumerable<IViewableObject> messageSource = this.MessageSource;
 
             if (this.LoadInReverse)
@@ -126,26 +105,9 @@ namespace Slimcat.Views
                     .Select(x => x.View)
                     .Each(this.AddInReverseAsync);
 
-                historySource
-                    .Reverse()
-                    .Select(x => new HistoryView { DataContext = x })
-                    .Each(x =>
-                    {
-                        this.historyCount++;
-                        this.AddInReverseAsync(x);
-                    });
-
                 this.loaded = true;
                 return;
             }
-
-            historySource
-                .Select(x => new HistoryView { DataContext = x })
-                .Each(x =>
-                {
-                    this.historyCount++;
-                    this.AddAsync(x);
-                });
 
             messageSource
                 .Select(x => x.View)
@@ -166,17 +128,16 @@ namespace Slimcat.Views
                 case NotifyCollectionChangedAction.Add:
                     e.NewItems.Cast<IViewableObject>()
                         .Select(x => x.View)
-                        .Each(x => this.AddAtAsync(e.NewStartingIndex + this.historyCount, x));
+                        .Each(x => this.AddAtAsync(e.NewStartingIndex, x));
                     break;
 
                 case NotifyCollectionChangedAction.Reset:
                     this.Messages.Blocks.Clear();
-                    this.historyCount = 0;
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
                     this.scroller.Stick();
-                    this.Messages.Blocks.RemoveAt(e.OldStartingIndex + this.historyCount);
+                    this.Messages.Blocks.RemoveAt(e.OldStartingIndex);
                     this.scroller.ScrollToStick();
                     break;
             }
