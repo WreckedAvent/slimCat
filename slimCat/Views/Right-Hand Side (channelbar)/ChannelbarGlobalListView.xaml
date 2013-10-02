@@ -10,17 +10,6 @@
              
              d:DataContext="{d:DesignInstance vm:GlobalTabViewModel}">
 
-    <UserControl.Resources>
-        <DataTemplate DataType="{x:Type models:CharacterModel}">
-            <ContentControl Margin="0"
-                            Content="{Binding IsAsync=True}"
-                            ContentTemplate="{StaticResource UsernameTemplate}"
-                            HorizontalAlignment="Left"
-                            TextBlock.TextAlignment="Left">
-            </ContentControl>
-        </DataTemplate>
-    </UserControl.Resources>
-
     <Grid TextBlock.Foreground="{StaticResource ForegroundBrush}"
           TextBlock.FontSize="14">
 
@@ -66,6 +55,7 @@
 
             <ListBox ItemsSource="{Binding Path=SortedUsers, Mode=OneWay}"
                      Style="{StaticResource ContentListBox}"
+                     ItemTemplate="{StaticResource UsernameTemplate}"
                      x:Name="PopupAnchor" />
         </DockPanel>
     </Grid>

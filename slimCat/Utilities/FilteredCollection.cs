@@ -70,8 +70,18 @@
 
             set
             {
-                this.originalCollection.CollectionChanged -= this.OnCollectionChanged;
+                if (this.originalCollection != null)
+                {
+                    this.originalCollection.CollectionChanged -= this.OnCollectionChanged;
+                }
+
                 this.originalCollection = value;
+
+                if (this.originalCollection == null)
+                {
+                    return;
+                }
+
                 this.originalCollection.CollectionChanged += this.OnCollectionChanged;
                 this.RebuildItems();
             }
@@ -117,6 +127,11 @@
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            if (this.Collection == null)
+            {
+                return;
+            }
+
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:

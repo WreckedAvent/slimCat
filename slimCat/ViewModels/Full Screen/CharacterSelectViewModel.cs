@@ -33,6 +33,7 @@ namespace Slimcat.ViewModels
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Windows.Input;
 
     using Microsoft.Practices.Prism.Events;
@@ -63,14 +64,13 @@ namespace Slimcat.ViewModels
 
         #region Fields
 
-        private readonly IAccount model; // the model to interact with
+        private readonly IAccount model;
 
         private bool isConnecting;
 
         private string relayMessage = "Next, Select a Character ...";
 
-        // bound message used to relay information to the information
-        private string selectedCharacter; // character we have selected
+        private ICharacter selectedCharacter = new CharacterModel();
 
         private RelayCommand @select;
 
@@ -121,11 +121,17 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the characters.
         /// </summary>
-        public IEnumerable<string> Characters
+        public IEnumerable<ICharacter> Characters
         {
             get
             {
-                return this.model.Characters;
+                return this.model.Characters.Select(
+                    c =>
+                        {
+                            var temp = new CharacterModel { Name = c };
+                            temp.GetAvatar();
+                            return temp;
+                        });
             }
         }
 
@@ -180,7 +186,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets or sets the selected character.
         /// </summary>
-        public string CurrentCharacter
+        public ICharacter CurrentCharacter
         {
             get
             {
@@ -220,14 +226,14 @@ namespace Slimcat.ViewModels
 
         private bool CanSendCharacterSelectEvent()
         {
-            return !string.IsNullOrWhiteSpace(this.CurrentCharacter);
+            return !string.IsNullOrWhiteSpace(this.CurrentCharacter.Name);
         }
 
         private void SendCharacterSelectEvent()
         {
             this.RelayMessage = "Awesome! Connecting to F-Chat ...";
             this.IsConnecting = true;
-            this.Events.GetEvent<CharacterSelectedLoginEvent>().Publish(this.CurrentCharacter);
+            this.Events.GetEvent<CharacterSelectedLoginEvent>().Publish(this.CurrentCharacter.Name);
         }
 
         private void HandleLoginComplete(bool should)

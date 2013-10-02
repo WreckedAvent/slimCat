@@ -852,17 +852,9 @@ namespace Slimcat.ViewModels
                     break;
                 case "SearchSettings":
                 case "IsDisplayingChat":
-                    {
-                        this.messageManager.IsFiltering = this.IsDisplayingAds || this.isSearching;
-                        this.messageManager.RebuildItems();
-                    }
-
-                    break;
-
                 case "IsSearching":
                     {
                         this.messageManager.IsFiltering = this.IsDisplayingAds || this.isSearching;
-                        this.messageManager.RebuildItems();
                     }
 
                     break;

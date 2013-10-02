@@ -44,9 +44,8 @@ namespace Slimcat.Utilities
         /// <summary>
         ///     The defaul t_ message.
         /// </summary>
-        private const string DefaultMessage =
-            "Oops! Looks like the application done goofed itself."
-            + "Please submit the Stacktrace.log file for inspection." + "\n\nApplication will now exit.";
+        private const string DefaultMessage = "Uh-oh! Something bad happened."
+            + "\nPlease submit stacktrace.log found in your slimCat installation folder for debugging purposes.";
 
         #endregion
 
@@ -94,11 +93,9 @@ namespace Slimcat.Utilities
                     var dis = Application.Current.Dispatcher;
 
                     MessageBox.Show(message, "An error has occured!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    dis.BeginInvoke((Action)(() => Application.Current.Shutdown()));
                 }
             }
-            catch (InvalidOperationException)
+            catch (IOException)
             {
             }
         }

@@ -4,48 +4,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             xmlns:vm="clr-namespace:Slimcat.ViewModels" 
-             xmlns:models="clr-namespace:Slimcat.Models"
+             xmlns:vm="clr-namespace:Slimcat.ViewModels"
              xmlns:v="clr-namespace:Slimcat.Views"
+             MaxWidth="300"
              
              d:DataContext="{d:DesignInstance vm:ChannelsTabViewModel}">
-    <UserControl.Resources>
-        <DataTemplate DataType="{x:Type models:GeneralChannelModel}">
-            <Button
-                Command="{Binding Path=DataContext.JoinChannelCommand,
-                    RelativeSource={RelativeSource Mode=FindAncestor,
-                    AncestorType={x:Type Grid}, AncestorLevel=2} }"
-                CommandParameter="{Binding Path=Id, Mode=OneWay}"
-
-                HorizontalContentAlignment="Stretch"
-                BorderThickness="1,0,0,1"
-                BorderBrush="{StaticResource DepressedBrush}"
-                HorizontalAlignment="Stretch"
-                Margin="0,4"
-                Padding="4,2">
-                <Grid HorizontalAlignment="Stretch">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Text="{Binding Path=Title, Mode=OneWay}"
-                               TextAlignment="Left"
-                               HorizontalAlignment="Left"
-                               VerticalAlignment="Center"
-                               TextWrapping="Wrap" />
-                    <TextBlock Text="{Binding Path=DisplayNumber, Mode=OneWay}"
-                               Grid.Column="1"
-                               TextAlignment="Right"
-                               HorizontalAlignment="Right"
-                               VerticalAlignment="Center"
-                               Margin="5,0,0,0" />
-                </Grid>
-            </Button>
-
-        </DataTemplate>
-    </UserControl.Resources>
-
     <DockPanel>
         <Popup PlacementTarget="{Binding ElementName=PopupAnchor}"
                Placement="Center"
@@ -87,7 +50,8 @@
                          DataContext="{Binding SearchSettings}" />
 
         <ListBox ItemsSource="{Binding Path=SortedChannels, Mode=OneWay, IsAsync=True}"
+                 ItemTemplate="{StaticResource ChannelTemplate}"
                  x:Name="PopupAnchor"
-                 Style="{StaticResource ContentListBox}" />
+                 Style="{StaticResource ContentListBox}"/>
     </DockPanel>
 </UserControl>

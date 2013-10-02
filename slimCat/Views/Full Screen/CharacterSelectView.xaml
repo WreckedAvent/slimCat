@@ -4,10 +4,49 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             xmlns:vm="clr-namespace:Slimcat.ViewModels"
-             
-             d:DataContext="{d:DesignInstance vm:CharacterSelectViewModel}">
+             xmlns:vm="clr-namespace:Slimcat.ViewModels" 
+             xmlns:models="clr-namespace:Slimcat.Models"
 
+             d:DataContext="{d:DesignInstance vm:CharacterSelectViewModel}">
+    
+    <UserControl.Resources>
+        <Style TargetType="{x:Type ListBox}">
+            
+            <Setter Property="BorderThickness" Value="0"/>
+            
+            <Setter Property="Background" Value="Transparent"/>
+            
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+            
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate DataType="models:ICharacter">
+                        <StackPanel>
+                            <Border BorderThickness="0,0,0,2"
+                                    BorderBrush="{StaticResource DepressedBrush}">
+                                <Image Source="{Binding Path=Avatar}"
+                                        Height="75"
+                                        Width="75"/>
+                            </Border>
+                            
+                            <TextBlock Text="{Binding Path=Name}"
+                                        Padding="6"
+                                        FontSize="20"
+                                        Foreground="{StaticResource ForegroundBrush}"
+                                        HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>    
+    </UserControl.Resources>
+    
     <Grid IsEnabled="{Binding Path=IsConnecting, Converter={StaticResource BoolConverter}}"
           TextBlock.FontSize="20"
           TextBlock.Foreground="{StaticResource ForegroundBrush}"
@@ -22,12 +61,11 @@
         <TextBlock Text="{Binding RelayMessage, Mode=OneWay}"
                    HorizontalAlignment="Center"
                    Margin="20" />
-        <ScrollViewer
-            Grid.Row="1"
-            MinWidth="200">
-            <ListBox ItemsSource="{Binding Characters}"
-                     SelectedItem="{Binding Path=CurrentCharacter, Mode=TwoWay}" />
-        </ScrollViewer>
+        
+        <ListBox Grid.Row="1"
+                 ItemsSource="{Binding Characters}"
+                 HorizontalAlignment="Center"
+                 SelectedItem="{Binding Path=CurrentCharacter, Mode=TwoWay}"/>
 
         <Button Content="Login"
                 Margin="20"
