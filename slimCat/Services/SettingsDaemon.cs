@@ -167,7 +167,7 @@ namespace Slimcat.Services
                     }
                 }
             }
-            catch
+            catch (InvalidOperationException)
             {
             }
         }

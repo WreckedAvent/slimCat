@@ -46,7 +46,9 @@ namespace Slimcat.ViewModels
     /// <summary>
     ///     On the channel bar (right-hand side) the 'users' tab, only it shows only the users in the current channel
     /// </summary>
+// ReSharper disable ClassNeverInstantiated.Global
     public class UsersTabViewModel : ChannelbarViewModelCommon
+// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Constants
 

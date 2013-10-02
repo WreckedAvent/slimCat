@@ -31,8 +31,6 @@ namespace Slimcat.Services
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
     using System.Timers;
 
     using Microsoft.Practices.Prism.Events;
@@ -50,7 +48,9 @@ namespace Slimcat.Services
     /// <summary>
     ///     Maintains the connection to F-Chat's server. Used to send/receive commands.
     /// </summary>
+// ReSharper disable ClassNeverInstantiated.Global
     public class ChatConnection : IChatConnection, IDisposable
+// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Constants
 
@@ -73,20 +73,6 @@ namespace Slimcat.Services
         private Timer staggerTimer;
 
         private bool isAuthenticated;
-
-        #endregion
-
-        #region Properties
-
-        /// <summary>
-        ///     Gets the account.
-        /// </summary>
-        public IAccount Account { get; private set; }
-
-        /// <summary>
-        ///     Gets the character.
-        /// </summary>
-        public string Character { get; private set; }
 
         #endregion
 
@@ -119,6 +105,20 @@ namespace Slimcat.Services
             this.logger = new StreamWriter(@"Debug\Rawchat " + DateTime.Now.Ticks + ".log", true);
             #endif
         }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        ///     Gets the account.
+        /// </summary>
+        public IAccount Account { get; private set; }
+
+        /// <summary>
+        ///     Gets the character.
+        /// </summary>
+        public string Character { get; private set; }
 
         #endregion
 

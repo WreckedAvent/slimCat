@@ -40,6 +40,27 @@ namespace Slimcat.Services
     using Slimcat.Utilities;
 
     /// <summary>
+    ///     The special log message kind.
+    /// </summary>
+    public enum SpecialLogMessageKind
+    {
+        /// <summary>
+        ///     The header.
+        /// </summary>
+        Header,
+
+        /// <summary>
+        ///     The section.
+        /// </summary>
+        Section,
+
+        /// <summary>
+        ///     The line break.
+        /// </summary>
+        LineBreak
+    }
+
+    /// <summary>
     ///     The logging daemon.
     /// </summary>
     public class LoggingDaemon : ILogger
@@ -280,6 +301,16 @@ namespace Slimcat.Services
         #endregion
 
         #region Methods
+        private static string DateToFileName()
+        {
+            var time = DateTimeOffset.Now.Date;
+
+            var month = time.Month;
+            var year = time.Year;
+            var day = time.Day;
+
+            return month + "-" + day + "-" + year + ".txt";
+        }
 
         /// <summary>
         /// Provides a streamwriter, given certain paramters
@@ -307,38 +338,6 @@ namespace Slimcat.Services
             return new StreamWriter(Path.Combine(loggingPath, fileName), true);
         }
 
-        private static string DateToFileName()
-        {
-            var time = DateTimeOffset.Now.Date;
-
-            var month = time.Month;
-            var year = time.Year;
-            var day = time.Day;
-
-            return month.ToString() + "-" + day.ToString() + "-" + year.ToString() + ".txt";
-        }
-
         #endregion
-    }
-
-    /// <summary>
-    ///     The special log message kind.
-    /// </summary>
-    public enum SpecialLogMessageKind
-    {
-        /// <summary>
-        ///     The header.
-        /// </summary>
-        Header, 
-
-        /// <summary>
-        ///     The section.
-        /// </summary>
-        Section, 
-
-        /// <summary>
-        ///     The line break.
-        /// </summary>
-        LineBreak
     }
 }

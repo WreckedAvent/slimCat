@@ -505,7 +505,9 @@ namespace Slimcat.Utilities
     /// <summary>
     /// Converts active messages into textblock inlines.
     /// </summary>
+// ReSharper disable ClassNeverInstantiated.Global
     public sealed class BBCodePostConverter : BBCodeBaseConverter, IMultiValueConverter
+// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Constructors
         public BBCodePostConverter(IChatModel chatModel)
@@ -616,7 +618,9 @@ namespace Slimcat.Utilities
     /// <summary>
     /// Converts active messages into flow document inlines.
     /// </summary>
+// ReSharper disable ClassNeverInstantiated.Global
     public sealed class BBFlowConverter : BBCodeBaseConverter, IValueConverter
+// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Constructors
         public BBFlowConverter(IChatModel chatModel)
@@ -686,7 +690,9 @@ namespace Slimcat.Utilities
     /// <summary>
     ///  Converts history messages into document inlines.
     /// </summary>
+// ReSharper disable ClassNeverInstantiated.Global
     public sealed class BBCodeConverter : BBCodeBaseConverter, IValueConverter
+// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Constructors
         public BBCodeConverter(IChatModel chatModel)

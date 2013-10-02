@@ -82,7 +82,7 @@
                 {
                     // this weeds out matches such as 'big man' from matching 'i'
                     var prevChar = fullString[startIndex - 1];
-                    hasMatch = char.IsWhiteSpace(prevChar) || char.IsPunctuation(prevChar) && !prevChar.Equals('\'');
+                    hasMatch = char.IsWhiteSpace(prevChar) || (char.IsPunctuation(prevChar) && !prevChar.Equals('\''));
 
                     if (!hasMatch)
                     {

@@ -32,7 +32,7 @@
 namespace Slimcat.ViewModels
 {
     using System;
-    using System.Collections.ObjectModel;
+    using System.Collections.Generic;
     using System.Windows.Input;
 
     using Microsoft.Practices.Prism.Events;
@@ -121,7 +121,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the characters.
         /// </summary>
-        public ObservableCollection<string> Characters
+        public IEnumerable<string> Characters
         {
             get
             {

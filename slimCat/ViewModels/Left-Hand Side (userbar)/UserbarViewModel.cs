@@ -147,12 +147,12 @@ namespace Slimcat.ViewModels
         {
             try
             {
-                this.ChatModel.CurrentPMs.CollectionChanged += (s, e) => this.OnPropertyChanged("HasPMs");
+                this.ChatModel.CurrentPms.CollectionChanged += (s, e) => this.OnPropertyChanged("HasPms");
 
-                // this checks if we need to hide/show the PM tab
+                // this checks if we need to hide/show the Pm tab
                 this.Events.GetEvent<ChatOnDisplayEvent>().Subscribe(this.RequestNavigate, ThreadOption.UIThread, true);
 
-                this.Events.GetEvent<NewPMEvent>()
+                this.Events.GetEvent<NewPmEvent>()
                     .Subscribe(param => this.UpdateFlashingTabs(), ThreadOption.UIThread, true);
 
                 this.Events.GetEvent<NewMessageEvent>()
@@ -292,7 +292,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets or sets a value indicating whether has new PrivateMessage.
         /// </summary>
-        public bool HasNewPM
+        public bool HasNewPm
         {
             get
             {
@@ -302,7 +302,7 @@ namespace Slimcat.ViewModels
             set
             {
                 this.hasNewPm = value;
-                this.OnPropertyChanged("HasNewPM");
+                this.OnPropertyChanged("HasNewPm");
                 this.OnPropertyChanged("HasUpdate");
                 this.OnPropertyChanged("ExpandString");
             }
@@ -311,11 +311,11 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets a value indicating whether has p ms.
         /// </summary>
-        public bool HasPMs
+        public bool HasPms
         {
             get
             {
-                return this.ChatModel.CurrentPMs.Count > 0;
+                return this.ChatModel.CurrentPms.Count > 0;
             }
         }
 
@@ -381,7 +381,7 @@ namespace Slimcat.ViewModels
             }
         }
 
-        // this links the PM and Channel boxes so they act as one
+        // this links the Pm and Channel boxes so they act as one
 
         /// <summary>
         ///     Gets or sets the p m_ selected.
@@ -403,9 +403,9 @@ namespace Slimcat.ViewModels
                 this.selPmIndex = value;
                 this.OnPropertyChanged("PmSelected");
 
-                if (value != -1 && this.ChatModel.CurrentChannel != this.ChatModel.CurrentPMs[value])
+                if (value != -1 && this.ChatModel.CurrentChannel != this.ChatModel.CurrentPms[value])
                 {
-                    this.Events.GetEvent<RequestChangeTabEvent>().Publish(this.ChatModel.CurrentPMs[value].Id);
+                    this.Events.GetEvent<RequestChangeTabEvent>().Publish(this.ChatModel.CurrentPms[value].Id);
                 }
 
                 if (this.PmSelected != -1)
@@ -418,7 +418,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets or sets a value indicating whether p ms are expanded.
         /// </summary>
-        public bool PMsAreExpanded
+        public bool PmsAreExpanded
         {
             get
             {
@@ -428,7 +428,7 @@ namespace Slimcat.ViewModels
             set
             {
                 this.pmsExpanded = value;
-                this.OnPropertyChanged("PMsAreExpanded");
+                this.OnPropertyChanged("PmsAreExpanded");
             }
         }
 
@@ -527,7 +527,7 @@ namespace Slimcat.ViewModels
 
         private void OnExpanded(object args = null)
         {
-            this.PMsAreExpanded = this.PMsAreExpanded || this.HasNewPM;
+            this.PmsAreExpanded = this.PmsAreExpanded || this.HasNewPm;
             this.ChannelsAreExpanded = this.ChannelsAreExpanded || this.HasNewMessage;
             this.IsExpanded = !this.IsExpanded;
         }
@@ -589,16 +589,16 @@ namespace Slimcat.ViewModels
 
         private void UpdateFlashingTabs()
         {
-            if (this.ChatModel.CurrentChannel is PMChannelModel)
+            if (this.ChatModel.CurrentChannel is PmChannelModel)
             {
-                this.PmSelected = this.ChatModel.CurrentPMs.IndexOf(this.ChatModel.CurrentChannel as PMChannelModel);
+                this.PmSelected = this.ChatModel.CurrentPms.IndexOf(this.ChatModel.CurrentChannel as PmChannelModel);
             }
             else
             {
                 this.ChannelSelected = this.ChatModel.CurrentChannels.IndexOf(this.ChatModel.CurrentChannel as GeneralChannelModel);
             }
 
-            this.hasNewPm = this.ChatModel.CurrentPMs.Cast<ChannelModel>().Any(cm => cm.NeedsAttention);
+            this.hasNewPm = this.ChatModel.CurrentPms.Cast<ChannelModel>().Any(cm => cm.NeedsAttention);
             this.HasNewMessage = this.ChatModel.CurrentChannels.Cast<ChannelModel>().Any(cm => cm.NeedsAttention);
         }
 

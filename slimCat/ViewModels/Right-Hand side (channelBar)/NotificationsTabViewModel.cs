@@ -44,7 +44,9 @@ namespace Slimcat.ViewModels
     /// <summary>
     ///     This is the tab labled "notifications" in the channel bar, or the bar on the right-hand side
     /// </summary>
+// ReSharper disable ClassNeverInstantiated.Global
     public class NotificationsTabViewModel : ChannelbarViewModelCommon
+// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Constants
 

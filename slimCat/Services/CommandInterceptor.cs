@@ -54,7 +54,9 @@ namespace Slimcat.Services
     ///     It also coordinates them to prevent collisions.
     ///     This intercepts just about every single command that the server sends.
     /// </summary>
+// ReSharper disable ClassNeverInstantiated.Global
     internal class CommandInterceptor : ViewModelBase
+// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Fields
 
@@ -391,7 +393,7 @@ namespace Slimcat.Services
                 }
             }
 
-            var characterChannel = this.ChatModel.CurrentPMs.FirstByIdOrDefault(characterName);
+            var characterChannel = this.ChatModel.CurrentPms.FirstByIdOrDefault(characterName);
             if (characterChannel != null)
             {
                 characterChannel.TypingStatus = TypingStatus.Clear;
@@ -861,14 +863,14 @@ namespace Slimcat.Services
             var sender = (string)command["character"];
             if (!this.ChatModel.Ignored.Contains(sender, StringComparer.OrdinalIgnoreCase))
             {
-                if (this.ChatModel.CurrentPMs.FirstByIdOrDefault(sender) == null)
+                if (this.ChatModel.CurrentPms.FirstByIdOrDefault(sender) == null)
                 {
                     this.manager.AddChannel(ChannelType.PrivateMessage, sender);
                 }
 
                 this.manager.AddMessage(command["message"] as string, sender, sender);
 
-                var temp = this.ChatModel.CurrentPMs.FirstByIdOrDefault(sender);
+                var temp = this.ChatModel.CurrentPms.FirstByIdOrDefault(sender);
                 if (temp == null)
                 {
                     return;
@@ -1117,7 +1119,7 @@ namespace Slimcat.Services
         {
             var sender = (string)command["character"];
 
-            var channel = this.ChatModel.CurrentPMs.FirstByIdOrDefault(sender);
+            var channel = this.ChatModel.CurrentPms.FirstByIdOrDefault(sender);
             if (channel == null)
             {
                 return;

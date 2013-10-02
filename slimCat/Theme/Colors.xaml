@@ -27,7 +27,7 @@
 
     <SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource ForegroundColor}" />
     <SolidColorBrush x:Key="HighlightBrush" Color="{StaticResource HighlightColor}" />
-    <SolidColorBrush x:Key="ContrastBrush" Color="{StaticResource ContrastColor}"></SolidColorBrush>
+    <SolidColorBrush x:Key="ContrastBrush" Color="{StaticResource ContrastColor}"/>
     <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
     <SolidColorBrush x:Key="DepressedBrush" Color="{StaticResource DepressedColor}" />
     <SolidColorBrush x:Key="BrightBackgroundBrush" Color="{StaticResource BrightBackgroundColor}" />

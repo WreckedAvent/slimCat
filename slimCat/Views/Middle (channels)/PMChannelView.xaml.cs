@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PMChannelView.xaml.cs" company="Justin Kadrovach">
+// <copyright file="PmChannelView.xaml.cs" company="Justin Kadrovach">
 //   Copyright (c) 2013, Justin Kadrovach
 //   All rights reserved.
 //   
@@ -23,7 +23,7 @@
 //   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // </copyright>
 // <summary>
-//   Interaction logic for PMChannelView.xaml
+//   Interaction logic for PmChannelView.xaml
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -35,25 +35,25 @@ namespace Slimcat.Views
     using Slimcat.ViewModels;
 
     /// <summary>
-    ///     Interaction logic for PMChannelView.xaml
+    ///     Interaction logic for PmChannelView.xaml
     /// </summary>
-    public partial class PMChannelView
+    public partial class PmChannelView
     {
         #region Fields
 
-        private PMChannelViewModel vm;
+        private PmChannelViewModel vm;
 
         #endregion
 
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PMChannelView"/> class.
+        /// Initializes a new instance of the <see cref="PmChannelView"/> class.
         /// </summary>
         /// <param name="vm">
         /// The vm.
         /// </param>
-        public PMChannelView(PMChannelViewModel vm)
+        public PmChannelView(PmChannelViewModel vm)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace Slimcat.Views
             }
             catch (Exception ex)
             {
-                ex.Source = "PMChannel View, init";
+                ex.Source = "PmChannel View, init";
                 Exceptions.HandleException(ex);
             }
         }

@@ -62,35 +62,19 @@ namespace Slimcat.Utilities
             {
                 base.ConfigureContainer();
 
-                // Note: These are manually added and not utilized as modules
+                // create singletons
+                this.Container.RegisterType<IAccount, AccountModel>(new ContainerControlledLifetimeManager());
+                this.Container.RegisterType<IListConnection, ListConnection>(new ContainerControlledLifetimeManager());
+                this.Container.RegisterType<IChatConnection, ChatConnection>(new ContainerControlledLifetimeManager());
+                this.Container.RegisterType<IChatModel, ChatModel>(new ContainerControlledLifetimeManager());
+                this.Container.RegisterType<IChannelManager, MessageDaemon>(new ContainerControlledLifetimeManager());
+                this.Container.RegisterType<EventAggregator>(new ContainerControlledLifetimeManager());
 
-                // Create singleton instance of our account information, register
-                var account = new AccountModel();
-                this.Container.RegisterInstance<IAccount>(account);
-
-                // Create singleton instance of our connection service, register
-                var connection = this.Container.Resolve<ListConnection>();
-                this.Container.RegisterInstance<IListConnection>(connection);
-
-                // Create singleton instance of our F-chat connection service, register
-                var chatConnection = this.Container.Resolve<ChatConnection>();
-                this.Container.RegisterInstance<IChatConnection>(chatConnection);
-
-                // Create a singleton instance of our Chat data model, register
-                var model = this.Container.Resolve<ChatModel>();
-                this.Container.RegisterInstance<IChatModel>(model);
-
-                // Create a singleton instance of our Message Daemon, register
-                var daemon = this.Container.Resolve<MessageDaemon>();
-                this.Container.RegisterInstance<IChannelManager>(daemon);
-
+                // these are services that are not directly used by our singletons or modules
                 this.Container.Resolve<NotificationsDaemon>();
-
-                // create singleton instance
                 this.Container.Resolve<CommandInterceptor>();
 
-                this.Container.Resolve<EventAggregator>();
-
+                // some resources that are dependant on our singletons
                 Application.Current.Resources.Add("BBCodeConverter", this.Container.Resolve<BBCodeConverter>());
                 Application.Current.Resources.Add("BBFlowConverter", this.Container.Resolve<BBFlowConverter>());
                 Application.Current.Resources.Add("BBPostConverter", this.Container.Resolve<BBCodePostConverter>());
@@ -112,33 +96,14 @@ namespace Slimcat.Utilities
             {
                 base.ConfigureModuleCatalog();
 
-                var loginVm = typeof(LoginViewModel);
-                this.ModuleCatalog.AddModule(
-                    new ModuleInfo { ModuleName = loginVm.Name, ModuleType = loginVm.AssemblyQualifiedName, });
+                // modules 
+                this.AddModule(typeof(LoginViewModel));
+                this.AddModule(typeof(CharacterSelectViewModel));
 
-                var characterSelVm = typeof(CharacterSelectViewModel);
-                this.ModuleCatalog.AddModule(
-                    new ModuleInfo
-                        {
-                            ModuleName = characterSelVm.Name, 
-                            ModuleType = characterSelVm.AssemblyQualifiedName, 
-                        });
+                this.AddModule(typeof(ChatWrapperViewModel));
 
-                var chatWrapperVm = typeof(ChatWrapperViewModel);
-                this.ModuleCatalog.AddModule(
-                    new ModuleInfo
-                        {
-                            ModuleName = chatWrapperVm.Name, 
-                            ModuleType = chatWrapperVm.AssemblyQualifiedName, 
-                        });
-
-                var userBarVm = typeof(UserbarViewModel);
-                this.ModuleCatalog.AddModule(
-                    new ModuleInfo { ModuleName = userBarVm.Name, ModuleType = userBarVm.AssemblyQualifiedName, });
-
-                var channelBarVm = typeof(ChannelbarViewModel);
-                this.ModuleCatalog.AddModule(
-                    new ModuleInfo { ModuleName = channelBarVm.Name, ModuleType = channelBarVm.AssemblyQualifiedName, });
+                this.AddModule(typeof(UserbarViewModel));
+                this.AddModule(typeof(ChannelbarViewModel));
             }
             catch (Exception ex)
             {
@@ -165,6 +130,16 @@ namespace Slimcat.Utilities
         {
             Application.Current.MainWindow = (Window)this.Shell;
             Application.Current.MainWindow.Show();
+        }
+
+        private void AddModule(Type moduleType)
+        {
+            this.ModuleCatalog.AddModule(
+                new ModuleInfo
+                    {
+                        ModuleName = moduleType.Name,
+                        ModuleType = moduleType.AssemblyQualifiedName
+                    });
         }
 
         #endregion

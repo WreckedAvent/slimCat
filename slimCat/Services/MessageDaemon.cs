@@ -195,11 +195,11 @@ namespace Slimcat.Services
                 this.model.FindCharacter(id).GetAvatar(); // make sure we have their picture
 
                 // model doesn't have a reference to PrivateMessage channels, build it manually
-                var temp = new PMChannelModel(this.model.FindCharacter(id));
+                var temp = new PmChannelModel(this.model.FindCharacter(id));
                 this.container.RegisterInstance(temp.Id, temp);
-                this.container.Resolve<PMChannelViewModel>(new ParameterOverride("name", temp.Id));
+                this.container.Resolve<PmChannelViewModel>(new ParameterOverride("name", temp.Id));
 
-                this.Dispatcher.Invoke((Action)(() => this.model.CurrentPMs.Add(temp)));
+                this.Dispatcher.Invoke((Action)(() => this.model.CurrentPms.Add(temp)));
 
                 // then add it to the model's data
             }
@@ -259,7 +259,7 @@ namespace Slimcat.Services
                                     : this.model.FindCharacter(this.model.CurrentCharacter.Name);
 
             var channel = this.model.CurrentChannels.FirstByIdOrDefault(channelName)
-                                   ?? (ChannelModel)this.model.CurrentPMs.FirstByIdOrDefault(channelName);
+                                   ?? (ChannelModel)this.model.CurrentPms.FirstByIdOrDefault(channelName);
 
             if (channel == null)
             {
@@ -297,7 +297,7 @@ namespace Slimcat.Services
                         }
                         else
                         {
-                            this.events.GetEvent<NewPMEvent>().Publish(thisMessage);
+                            this.events.GetEvent<NewPmEvent>().Publish(thisMessage);
                         }
                     });
         }
@@ -322,14 +322,14 @@ namespace Slimcat.Services
                 history = this.Logger.GetLogs(string.IsNullOrWhiteSpace(name) ? id : name, id);
             }
 
-            var toJoin = this.model.CurrentPMs.FirstByIdOrDefault(id)
+            var toJoin = this.model.CurrentPms.FirstByIdOrDefault(id)
                          ?? (ChannelModel)this.model.CurrentChannels.FirstByIdOrDefault(id);
 
             if (toJoin == null)
             {
                 this.AddChannel(type, id, name);
 
-                toJoin = this.model.CurrentPMs.FirstByIdOrDefault(id)
+                toJoin = this.model.CurrentPms.FirstByIdOrDefault(id)
                          ?? (ChannelModel)this.model.CurrentChannels.FirstByIdOrDefault(id);
             }
 
@@ -382,14 +382,14 @@ namespace Slimcat.Services
                 object toSend = new { channel = name };
                 this.connection.SendMessage(toSend, "LCH");
             }
-            else if (this.model.CurrentPMs.Any(param => param.Id == name))
+            else if (this.model.CurrentPms.Any(param => param.Id == name))
             {
-                var temp = this.model.CurrentPMs.First(param => param.Id == name);
+                var temp = this.model.CurrentPms.First(param => param.Id == name);
 
-                var vm = this.container.Resolve<PMChannelViewModel>(new ParameterOverride("name", temp.Id));
+                var vm = this.container.Resolve<PmChannelViewModel>(new ParameterOverride("name", temp.Id));
                 vm.Dispose();
 
-                this.model.CurrentPMs.Remove(temp);
+                this.model.CurrentPms.Remove(temp);
                 temp.Dispose();
             }
             else
@@ -556,7 +556,7 @@ namespace Slimcat.Services
         {
             this.model.CurrentChannels
                 .Cast<ChannelModel>()
-                .Union(this.model.CurrentPMs)
+                .Union(this.model.CurrentPms)
                 .Each(ClearChannel);
         }
 
@@ -629,7 +629,7 @@ namespace Slimcat.Services
                     this.OnHandleLatestReportByUserRequested(command);
                 }
 
-                var channel = (ChannelModel)this.model.CurrentPMs.FirstByIdOrDefault(target)
+                var channel = (ChannelModel)this.model.CurrentPms.FirstByIdOrDefault(target)
                               ?? this.model.CurrentChannels.FirstByIdOrDefault(target);
 
                 if (channel != null)
@@ -651,7 +651,7 @@ namespace Slimcat.Services
             var newCharacterUpdate = latest as CharacterUpdateModel;
             if (newCharacterUpdate != null)
             {
-                // so tell our system to join the PM Tab
+                // so tell our system to join the Pm Tab
                 this.JoinChannel(ChannelType.PrivateMessage, newCharacterUpdate.TargetCharacter.Name);
 
                 this.Dispatcher.Invoke((Action)ShowWindow);
@@ -790,7 +790,7 @@ namespace Slimcat.Services
                 ChannelModel channel;
                 if (channelText == command["name"] as string)
                 {
-                    channel = this.model.CurrentPMs.FirstByIdOrDefault(channelText);
+                    channel = this.model.CurrentPms.FirstByIdOrDefault(channelText);
                 }
                 else
                 {
@@ -953,7 +953,7 @@ namespace Slimcat.Services
                     (Action)delegate
                     {
                         var toUpdate = this.model.CurrentChannels.FirstByIdOrDefault(this.lastSelected.Id)
-                                       ?? (ChannelModel)this.model.CurrentPMs.FirstByIdOrDefault(this.lastSelected.Id);
+                                       ?? (ChannelModel)this.model.CurrentPms.FirstByIdOrDefault(this.lastSelected.Id);
 
                         if (toUpdate == null)
                         {
@@ -965,7 +965,7 @@ namespace Slimcat.Services
             }
 
             var channelModel = this.model.CurrentChannels.FirstByIdOrDefault(channelId)
-                               ?? (ChannelModel)this.model.CurrentPMs.FirstByIdOrDefault(channelId);
+                               ?? (ChannelModel)this.model.CurrentPms.FirstByIdOrDefault(channelId);
 
             if (channelModel == null)
             {

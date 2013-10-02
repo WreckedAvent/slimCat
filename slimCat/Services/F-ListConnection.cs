@@ -50,7 +50,9 @@ namespace Slimcat.Services
     ///     F-list connection is used to authenticate the user's details and then get the API ticket.
     ///     Responds to LoginEvent, fires off LoginCompleteEvent
     /// </summary>
+// ReSharper disable ClassNeverInstantiated.Global
     internal class ListConnection : IListConnection
+// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Fields
 
@@ -228,12 +230,6 @@ namespace Slimcat.Services
                 }
 
                 this.events.GetEvent<LoginCompleteEvent>().Publish(true);
-
-                // login to F-list for our cookies, so that we can post logs
-                if (hasError)
-                {
-                    return;
-                }
 
                 loginCredentials = new Dictionary<string, object>
                                        {

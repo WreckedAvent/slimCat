@@ -45,7 +45,9 @@ namespace Slimcat.ViewModels
     /// <summary>
     ///     The manage lists view model.
     /// </summary>
+// ReSharper disable ClassNeverInstantiated.Global
     public class ManageListsViewModel : ChannelbarViewModelCommon
+// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Constants
 
@@ -187,7 +189,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the banned.
         /// </summary>
-        public IList<ICharacter> Banned
+        public IEnumerable<ICharacter> Banned
         {
             get
             {
@@ -198,7 +200,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the bookmarks.
         /// </summary>
-        public IList<ICharacter> Bookmarks
+        public IEnumerable<ICharacter> Bookmarks
         {
             get
             {
@@ -210,7 +212,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the friends.
         /// </summary>
-        public IList<ICharacter> Friends
+        public IEnumerable<ICharacter> Friends
         {
             get
             {
@@ -244,7 +246,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the ignored.
         /// </summary>
-        public IList<ICharacter> Ignored
+        public IEnumerable<ICharacter> Ignored
         {
             get
             {
@@ -256,7 +258,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the interested.
         /// </summary>
-        public IList<ICharacter> Interested
+        public IEnumerable<ICharacter> Interested
         {
             get
             {
@@ -268,7 +270,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the moderators.
         /// </summary>
-        public IList<ICharacter> Moderators
+        public IEnumerable<ICharacter> Moderators
         {
             get
             {
@@ -279,7 +281,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the not interested.
         /// </summary>
-        public IList<ICharacter> NotInterested
+        public IEnumerable<ICharacter> NotInterested
         {
             get
             {

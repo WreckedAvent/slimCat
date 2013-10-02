@@ -25,7 +25,7 @@
 // <summary>
 //   This handles pushing and creating all notifications. This means it plays all sounds, creates all toast notifications,
 //   and is responsible for managing the little tray icon. Additionally, it manages the singleton instance of the notifications class.
-//   It responds to NewMessageEvent, NewPMEvent, NewUpdateEvent
+//   It responds to NewMessageEvent, NewPmEvent, NewUpdateEvent
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -56,9 +56,11 @@ namespace Slimcat.Services
     /// <summary>
     ///     This handles pushing and creating all notifications. This means it plays all sounds, creates all toast notifications,
     ///     and is responsible for managing the little tray icon. Additionally, it manages the singleton instance of the notifications class.
-    ///     It responds to NewMessageEvent, NewPMEvent, NewUpdateEvent
+    ///     It responds to NewMessageEvent, NewPmEvent, NewUpdateEvent
     /// </summary>
+// ReSharper disable ClassNeverInstantiated.Global
     public class NotificationsDaemon : DispatcherObject, IDisposable
+// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Fields
 
@@ -104,7 +106,7 @@ namespace Slimcat.Services
             this.toast = new ToastNotificationsViewModel(this.events);
 
             this.events.GetEvent<NewMessageEvent>().Subscribe(this.HandleNewChannelMessage, true);
-            this.events.GetEvent<NewPMEvent>().Subscribe(this.HandleNewMessage, true);
+            this.events.GetEvent<NewPmEvent>().Subscribe(this.HandleNewMessage, true);
             this.events.GetEvent<NewUpdateEvent>().Subscribe(this.HandleNotification, true);
 
             this.events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(
@@ -139,9 +141,10 @@ namespace Slimcat.Services
                                     Constants.ClientID,
                                     Constants.ClientName,
                                     Constants.ClientVer,
-                                    args)) {
-                                               Enabled = false 
-                                           });
+                                    args)) 
+                                    {
+                                        Enabled = false 
+                                    });
                         iconMenu.MenuItems.Add(new MenuItem("-"));
 
                         iconMenu.MenuItems.Add(
@@ -383,7 +386,7 @@ namespace Slimcat.Services
         }
 
         /// <summary>
-        /// Notification logic for new PM messages
+        /// Notification logic for new Pm messages
         /// </summary>
         /// <param name="message">
         /// The Message.
@@ -391,7 +394,7 @@ namespace Slimcat.Services
         private void HandleNewMessage(IMessage message)
         {
             var poster = message.Poster;
-            var channel = this.cm.CurrentPMs.FirstByIdOrDefault(message.Poster.Name);
+            var channel = this.cm.CurrentPms.FirstByIdOrDefault(message.Poster.Name);
             if (channel == null)
             {
                 return;
@@ -453,8 +456,6 @@ namespace Slimcat.Services
                     this.ConvertNotificationLevelToAction(
                         channel.Settings.PromoteDemoteNotifyLevel, channelID, model);
                 }
-
-                    // handle if the notification involves a character joining or leaving
                 else if (args is CharacterUpdateModel.JoinLeaveEventArgs)
                 {
                     // special check for this as it has settings per channel
@@ -478,8 +479,6 @@ namespace Slimcat.Services
 
                     this.ConvertNotificationLevelToAction(channel.Settings.JoinLeaveNotifyLevel, target, model);
                 }
-
-                    // handle if the notification is an RTB event like a note or a new comment reply
                 else if (args is CharacterUpdateModel.NoteEventArgs || args is CharacterUpdateModel.CommentEventArgs)
                 {
                     this.AddNotification(model);
@@ -489,16 +488,12 @@ namespace Slimcat.Services
                                       : ((CharacterUpdateModel.CommentEventArgs)args).Link;
 
                     this.NotifyUser(false, false, notification.ToString(), link);
-                }
-
-                    // handle if the notification is something like them being added to our interested/not list
+                } 
                 else if (args is CharacterUpdateModel.ListChangedEventArgs)
                 {
                     this.AddNotification(model);
                     this.NotifyUser(false, false, notification.ToString(), targetCharacter);
                 }
-
-                    // handle moderator events
                 else if (args is CharacterUpdateModel.ReportHandledEventArgs)
                 {
                     this.AddNotification(model);
@@ -509,15 +504,13 @@ namespace Slimcat.Services
                     this.AddNotification(model);
                     this.NotifyUser(true, true, notification.ToString(), targetCharacter, "report");
                 }
-
-                    // finally, if nothing else, add their update if we're interested in them in some way
                 else if (this.cm.IsOfInterest(targetCharacter))
                 {
                     this.AddNotification(model);
 
-                    if (this.cm.CurrentChannel is PMChannelModel)
+                    if (this.cm.CurrentChannel is PmChannelModel)
                     {
-                        if ((this.cm.CurrentChannel as PMChannelModel).Id.Equals(
+                        if ((this.cm.CurrentChannel as PmChannelModel).Id.Equals(
                             targetCharacter, StringComparison.OrdinalIgnoreCase))
                         {
                             return; // don't make a toast if we have their tab focused as it is redundant
@@ -527,8 +520,6 @@ namespace Slimcat.Services
                     this.NotifyUser(false, false, notification.ToString(), targetCharacter);
                 }
             }
-
-                // the only other kind of update model is a channel update model
             else
             {
                 var channelID = ((ChannelUpdateModel)notification).TargetChannel.Id;
@@ -547,8 +538,7 @@ namespace Slimcat.Services
                 this.icon.ShowBalloonTip(
                     5, 
                     "slimCat", 
-                    "slimCat is still running in the background."
-                    + "\nClick on this to silence this notification (forever and ever).", 
+                    "slimCat is still running in the background." + "\nClick on this to silence this notification (forever and ever).", 
                     ToolTipIcon.Info);
             }
         }

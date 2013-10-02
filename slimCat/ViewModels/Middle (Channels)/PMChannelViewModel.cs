@@ -22,7 +22,9 @@
     /// <summary>
     ///     Used for most communications between users.
     /// </summary>
-    public class PMChannelViewModel : ChannelViewModelBase
+    // ReSharper disable ClassNeverInstantiated.Global
+    public class PmChannelViewModel : ChannelViewModelBase
+    // ReSharper restore ClassNeverInstantiated.Global
     {
         #region Fields
 
@@ -43,7 +45,7 @@
         #region Constructors and Destructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PMChannelViewModel" /> class.
+        ///     Initializes a new instance of the <see cref="PmChannelViewModel" /> class.
         /// </summary>
         /// <param name="name">
         ///     The name.
@@ -60,18 +62,18 @@
         /// <param name="cm">
         ///     The cm.
         /// </param>
-        public PMChannelViewModel(
+        public PmChannelViewModel(
             string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
             : base(contain, regman, events, cm)
         {
             try
             {
-                var temp = this.Container.Resolve<PMChannelModel>(name);
+                var temp = this.Container.Resolve<PmChannelModel>(name);
                 this.Model = temp;
 
                 this.Model.PropertyChanged += this.OnModelPropertyChanged;
 
-                this.Container.RegisterType<object, PMChannelView>(
+                this.Container.RegisterType<object, PmChannelView>(
                     HelperConverter.EscapeSpaces(this.Model.Id), new InjectionConstructor(this));
                 this.Events.GetEvent<NewUpdateEvent>()
                     .Subscribe(this.OnNewUpdateEvent, ThreadOption.PublisherThread, true, this.UpdateIsOurCharacter);
@@ -271,7 +273,7 @@
         {
             get
             {
-                var pm = (PMChannelModel)this.Model;
+                var pm = (PmChannelModel)this.Model;
 
                 if (!this.ChatModel.IsOnline(this.Model.Id))
                 {
@@ -433,7 +435,7 @@
         }
 
         /// <summary>
-        ///     If the update is applicable to our PM tab
+        ///     If the update is applicable to our Pm tab
         /// </summary>
         /// <param name="param">
         ///     The param.

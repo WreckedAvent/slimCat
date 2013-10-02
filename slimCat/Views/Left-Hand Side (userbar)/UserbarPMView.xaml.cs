@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="UserbarPMView.xaml.cs" company="Justin Kadrovach">
+// <copyright file="UserbarPmView.xaml.cs" company="Justin Kadrovach">
 //   Copyright (c) 2013, Justin Kadrovach
 //   All rights reserved.
 //   
@@ -23,23 +23,23 @@
 //   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // </copyright>
 // <summary>
-//   Interaction logic for PMSelectView.xaml
+//   Interaction logic for PmSelectView.xaml
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Slimcat.Views
 {
     /// <summary>
-    ///     Interaction logic for PMSelectView.xaml
+    ///     Interaction logic for PmSelectView.xaml
     /// </summary>
-    public partial class PMSelectView
+    public partial class PmSelectView
     {
         #region Constructors and Destructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PMSelectView" /> class.
+        ///     Initializes a new instance of the <see cref="PmSelectView" /> class.
         /// </summary>
-        public PMSelectView()
+        public PmSelectView()
         {
             this.InitializeComponent();
         }

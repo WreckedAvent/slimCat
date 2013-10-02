@@ -63,7 +63,6 @@ namespace Slimcat.Models
 
         public CharacterUpdateModel()
         {
-                
         }
         #endregion
 
@@ -688,7 +687,7 @@ namespace Slimcat.Models
 
                 if (this.IsStatusTypeChanged)
                 {
-                    toReturn.Append("is now " + this.NewStatusType.ToString());
+                    toReturn.Append("is now " + this.NewStatusType);
                 }
 
                 if (this.IsStatusMessageChanged)
@@ -741,7 +740,6 @@ namespace Slimcat.Models
 
         public ChannelUpdateModel()
         {
-                
         }
 
         #endregion
@@ -912,7 +910,7 @@ namespace Slimcat.Models
             {
                 if (this.NewMode != ChannelMode.Both)
                 {
-                    return "now only allows " + this.NewMode.ToString() + '.';
+                    return "now only allows " + this.NewMode + '.';
                 }
 
                 return "now allows Ads and chatting.";

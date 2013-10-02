@@ -72,8 +72,6 @@ namespace Slimcat.Utilities
                 this.hasCommand = false;
             }
 
-            string parsedType;
-
             if (!this.HasCommand)
             {
                 return;
@@ -86,7 +84,7 @@ namespace Slimcat.Utilities
             else
             {
                 var firstSpace = rawInput.Substring(1).IndexOf(' ');
-                parsedType = rawInput.Substring(1, firstSpace);
+                var parsedType = rawInput.Substring(1, firstSpace);
 
                 var arguments = rawInput.Substring(firstSpace + 2);
 

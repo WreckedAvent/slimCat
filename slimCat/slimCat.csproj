@@ -155,7 +155,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="lib\FlashWindowHelper.cs" />
-    <Compile Include="lib\ListboxSelected.cs" />
     <Compile Include="lib\TextBlockHelper.cs" />
     <Compile Include="Models\Enums\ChannelMode.cs" />
     <Compile Include="Models\ChannelModel.cs" />
@@ -368,11 +367,11 @@
     <Compile Include="Views\Middle %28channels%29\UtilityChannelView.xaml.cs">
       <DependentUpon>UtilityChannelView.xaml</DependentUpon>
     </Compile>
-    <Content Include="Theme\Colors.xaml">
+    <Page Include="Theme\Colors.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Page>
     <Page Include="Theme\EmbeddedTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -557,11 +556,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Content Include="Theme\Theme.xaml">
+    <Page Include="Theme\Theme.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Page>
     <Page Include="Views\Full Screen\CharacterSelectView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -713,8 +712,8 @@
 cmd /x /c mkdir "$(TargetDir)lib"
 cmd /x /c mkdir "$(TargetDir)sounds"
 cmd /x /c mkdir "$(TargetDir)icons"
-xcopy "$(ProjectDir)Theme.xaml" "$(TargetDir)Theme" /c /i /d /y
-xcopy "$(ProjectDir)Colors.xaml" "$(TargetDir)Theme"  /c /i /d /y
+xcopy "$(ProjectDir)Theme\Theme.xaml" "$(TargetDir)Theme" /c /i /d /y
+xcopy "$(ProjectDir)Theme\Colors.xaml" "$(TargetDir)Theme"  /c /i /d /y
 xcopy "$(ProjectDir)lib\*.dll" "$(TargetDir)lib" /c /i /d /y
 xcopy "$(ProjectDir)Logs.lnk" "$(TargetDir)" /c /i /d /y
 xcopy "$(ProjectDir)catIcon.ico" "$(TargetDir)icons" /c /i /d /y

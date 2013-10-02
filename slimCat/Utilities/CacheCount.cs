@@ -74,17 +74,6 @@
         #region Public Methods and Operators
 
         /// <summary>
-        ///     returns the average of the cached values
-        /// </summary>
-        /// <returns>
-        ///     The <see cref="double" />.
-        /// </returns>
-        private double Average()
-        {
-            return this.oldCounts.Average();
-        }
-
-        /// <summary>
         ///     The dispose.
         /// </summary>
         public void Dispose()
@@ -200,6 +189,17 @@
         #endregion
 
         #region Methods
+
+        /// <summary>
+        ///     returns the average of the cached values
+        /// </summary>
+        /// <returns>
+        ///     The <see cref="double" />.
+        /// </returns>
+        private double Average()
+        {
+            return this.oldCounts.Average();
+        }
 
         /// <summary>
         ///     The dispose.

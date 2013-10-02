@@ -1,10 +1,8 @@
 ﻿namespace Slimcat.Views
 {
     using System;
-    using System.Drawing;
     using System.Windows;
     using System.Windows.Forms;
-    using System.Windows.Media;
     using System.Windows.Media.Animation;
     using System.Windows.Threading;
 
@@ -68,6 +66,12 @@
         public void OnHideCommand()
         {
             var fadeOut = this.FindResource("FadeOutAnimation") as Storyboard;
+            if (fadeOut == null)
+            {
+                this.Hide();
+                return;
+            }
+
             fadeOut = fadeOut.Clone();
             fadeOut.Completed += (s, e) => this.Hide();
 

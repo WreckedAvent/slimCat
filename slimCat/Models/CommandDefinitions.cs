@@ -37,109 +37,6 @@
         #region Static Fields
 
         /// <summary>
-        ///     The command aliases.
-        /// </summary>
-        private static readonly IDictionary<string, string> CommandAliases =
-            new Dictionary<string, string>
-        {
-            { "pm", "priv" }, 
-            { "tell", "priv" }, 
-            { "msg", "priv" }, 
-            {
-                // user commands
-                "online", 
-                "status"
-            }, 
-            { "away", "status" }, 
-            { "busy", "status" }, 
-            {
-                "looking", 
-                "status"
-            }, 
-            { "dnd", "status" }, 
-            {
-                // channel mod
-                "cop", "promote"
-            }, 
-            {
-                "cdeop", "demote"
-            }, 
-            {
-                // admin - global mod
-                "op", 
-                "chatpromote"
-            }, 
-            {
-                "deop", 
-                "chatdemote"
-            }, 
-            {
-                "gkick", 
-                "chatkick"
-            }, 
-            {
-                "createchannel", 
-                "makechannel"
-            }, 
-            {
-                "accountban", 
-                "chatban"
-            }, 
-            {
-                "hr", 
-                "handlereport"
-            }, 
-            {
-                "r", 
-                "handlelatest"
-            }, 
-        };
-
-        /// <summary>
-        ///     The command overrides.
-        /// </summary>
-        private static readonly IDictionary<string, CommandOverride> CommandOverrides = new Dictionary<string, CommandOverride>
-        {
-            { // format ->
-                // commmand to override, command parameter to override, value to override with
-                "online", new CommandOverride("status", "online")
-            }, 
-            {
-                "busy", new CommandOverride("status", "busy")
-            }, 
-            {
-                "looking", new CommandOverride("status", "looking")
-            }, 
-            {
-                "away", new CommandOverride("status", "away")
-            }, 
-            {
-                "dnd", new CommandOverride("status", "dnd")
-            }, 
-            {
-                "ignore", new CommandOverride("action", "add")
-            }, 
-            {
-                "unignore", new CommandOverride("action", "delete")
-            }, 
-            {
-                "openroom", new CommandOverride("status", "public")
-            }, 
-            {
-                "closeroom", new CommandOverride("status", "private")
-            }, 
-            {
-                "bottle", new CommandOverride("dice", "bottle")
-            }, 
-            {
-                "report", new CommandOverride("action", "report")
-            }, 
-            {
-                "handlereport", new CommandOverride("action", "confirm")
-            }, 
-        };
-
-        /// <summary>
         ///     The commands.
         /// </summary>
         public static readonly IDictionary<string, CommandModel> Commands = new Dictionary<string, CommandModel>
@@ -426,11 +323,113 @@
         /// <summary>
         ///     The non command commands.
         /// </summary>
-        public static string[] NonCommandCommands = new[] 
+        public static readonly string[] NonCommandCommands = new[] 
         { // prevents long ugly checking in our viewmodels for these
             "/me", "/warn", "/post" 
         };
 
+        /// <summary>
+        ///     The command aliases.
+        /// </summary>
+        private static readonly IDictionary<string, string> CommandAliases =
+            new Dictionary<string, string>
+        {
+            { "pm", "priv" }, 
+            { "tell", "priv" }, 
+            { "msg", "priv" }, 
+            {
+                // user commands
+                "online", 
+                "status"
+            }, 
+            { "away", "status" }, 
+            { "busy", "status" }, 
+            {
+                "looking", 
+                "status"
+            }, 
+            { "dnd", "status" }, 
+            {
+                // channel mod
+                "cop", "promote"
+            }, 
+            {
+                "cdeop", "demote"
+            }, 
+            {
+                // admin - global mod
+                "op", 
+                "chatpromote"
+            }, 
+            {
+                "deop", 
+                "chatdemote"
+            }, 
+            {
+                "gkick", 
+                "chatkick"
+            }, 
+            {
+                "createchannel", 
+                "makechannel"
+            }, 
+            {
+                "accountban", 
+                "chatban"
+            }, 
+            {
+                "hr", 
+                "handlereport"
+            }, 
+            {
+                "r", 
+                "handlelatest"
+            }, 
+        };
+
+        /// <summary>
+        ///     The command overrides.
+        /// </summary>
+        private static readonly IDictionary<string, CommandOverride> CommandOverrides = new Dictionary<string, CommandOverride>
+        {
+            { // format ->
+                // commmand to override, command parameter to override, value to override with
+                "online", new CommandOverride("status", "online")
+            }, 
+            {
+                "busy", new CommandOverride("status", "busy")
+            }, 
+            {
+                "looking", new CommandOverride("status", "looking")
+            }, 
+            {
+                "away", new CommandOverride("status", "away")
+            }, 
+            {
+                "dnd", new CommandOverride("status", "dnd")
+            }, 
+            {
+                "ignore", new CommandOverride("action", "add")
+            }, 
+            {
+                "unignore", new CommandOverride("action", "delete")
+            }, 
+            {
+                "openroom", new CommandOverride("status", "public")
+            }, 
+            {
+                "closeroom", new CommandOverride("status", "private")
+            }, 
+            {
+                "bottle", new CommandOverride("dice", "bottle")
+            }, 
+            {
+                "report", new CommandOverride("action", "report")
+            }, 
+            {
+                "handlereport", new CommandOverride("action", "confirm")
+            }, 
+        };
         #endregion
 
         #region Public Methods and Operators

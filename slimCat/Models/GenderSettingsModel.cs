@@ -48,17 +48,6 @@
         }
 
         /// <summary>
-        ///     Gets the gender filter.
-        /// </summary>
-        private IDictionary<Gender, bool> GenderFilter
-        {
-            get
-            {
-                return this.genderFilter;
-            }
-        }
-
-        /// <summary>
         ///     Gets or sets a value indicating whether show cuntboys.
         /// </summary>
         public bool ShowCuntboys
@@ -236,16 +225,31 @@
 
         #endregion
 
+        #region Properties
+
+        /// <summary>
+        ///     Gets the gender filter.
+        /// </summary>
+        private IDictionary<Gender, bool> GenderFilter
+        {
+            get
+            {
+                return this.genderFilter;
+            }
+        }
+
+        #endregion
+
         #region Public Methods and Operators
 
         /// <summary>
-        /// The meets gender filter.
+        ///     The meets gender filter.
         /// </summary>
         /// <param name="character">
-        /// The character.
+        ///     The character.
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         public bool MeetsGenderFilter(ICharacter character)
         {

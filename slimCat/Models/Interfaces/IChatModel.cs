@@ -44,9 +44,9 @@
         ObservableCollection<GeneralChannelModel> CurrentChannels { get; }
 
         /// <summary>
-        ///     A collection of all opened PMs
+        ///     A collection of all opened Pms
         /// </summary>
-        ObservableCollection<PMChannelModel> CurrentPMs { get; }
+        ObservableCollection<PmChannelModel> CurrentPms { get; }
 
         /// <summary>
         ///     Gets the friends.

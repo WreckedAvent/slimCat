@@ -40,7 +40,6 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat;
     using Slimcat.Libraries;
     using Slimcat.Models;
     using Slimcat.Utilities;
@@ -85,19 +84,19 @@ namespace Slimcat.ViewModels
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChannelViewModelBase"/> class.
+        ///     Initializes a new instance of the <see cref="ChannelViewModelBase" /> class.
         /// </summary>
         /// <param name="contain">
-        /// The contain.
+        ///     The contain.
         /// </param>
         /// <param name="regman">
-        /// The regman.
+        ///     The regman.
         /// </param>
         /// <param name="events">
-        /// The events.
+        ///     The events.
         /// </param>
         /// <param name="cm">
-        /// The cm.
+        ///     The cm.
         /// </param>
         protected ChannelViewModelBase(
             IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
@@ -154,8 +153,9 @@ namespace Slimcat.ViewModels
                 return this.clearLog
                        ?? (this.clearLog =
                            new RelayCommand(
-                               args => this.Events.GetEvent<UserCommandEvent>()
-                                           .Publish(CommandDefinitions.CreateCommand("clear").ToDictionary())));
+                               args =>
+                               this.Events.GetEvent<UserCommandEvent>()
+                                   .Publish(CommandDefinitions.CreateCommand("clear").ToDictionary())));
             }
         }
 
@@ -301,10 +301,10 @@ namespace Slimcat.ViewModels
         }
 
         /// <summary>
-        /// The on open log event.
+        ///     The on open log event.
         /// </summary>
         /// <param name="args">
-        /// The args.
+        ///     The args.
         /// </param>
         public void OnOpenLogEvent(object args)
         {
@@ -312,10 +312,10 @@ namespace Slimcat.ViewModels
         }
 
         /// <summary>
-        /// The on open log folder event.
+        ///     The on open log folder event.
         /// </summary>
         /// <param name="args">
-        /// The args.
+        ///     The args.
         /// </param>
         public void OnOpenLogFolderEvent(object args)
         {
@@ -323,13 +323,13 @@ namespace Slimcat.ViewModels
         }
 
         /// <summary>
-        /// The open log event.
+        ///     The open log event.
         /// </summary>
         /// <param name="args">
-        /// The args.
+        ///     The args.
         /// </param>
         /// <param name="isFolder">
-        /// The is folder.
+        ///     The is folder.
         /// </param>
         public void OpenLogEvent(object args, bool isFolder)
         {
@@ -344,10 +344,10 @@ namespace Slimcat.ViewModels
         #region Methods
 
         /// <summary>
-        /// The dispose.
+        ///     The dispose.
         /// </summary>
         /// <param name="isManaged">
-        /// The is managed.
+        ///     The is managed.
         /// </param>
         protected override void Dispose(bool isManaged)
         {
@@ -362,29 +362,87 @@ namespace Slimcat.ViewModels
         }
 
         /// <summary>
-        /// When properties change on the model
+        ///     When properties change on the model
         /// </summary>
         /// <param name="sender">
-        /// The sender.
+        ///     The sender.
         /// </param>
         /// <param name="e">
-        /// The e.
+        ///     The e.
         /// </param>
         protected virtual void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
         }
 
         /// <summary>
-        /// When properties on this class change
+        ///     When properties on this class change
         /// </summary>
         /// <param name="sender">
-        /// The sender.
+        ///     The sender.
         /// </param>
         /// <param name="e">
-        /// The e.
+        ///     The e.
         /// </param>
         protected virtual void OnThisPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+        }
+
+        /// <summary>
+        ///     Command sending behavior
+        /// </summary>
+        /// <param name="command">
+        ///     The command.
+        /// </param>
+        protected void SendCommand(IDictionary<string, object> command)
+        {
+            this.Error = null;
+
+            this.Message = null;
+            this.Events.GetEvent<UserCommandEvent>().Publish(command);
+        }
+
+        /// <summary>
+        ///     Message sending behavior
+        /// </summary>
+        protected abstract void SendMessage();
+
+        /// <summary>
+        ///     Error handling behavior
+        /// </summary>
+        /// <param name="error">
+        ///     The error.
+        /// </param>
+        protected void UpdateError(string error)
+        {
+            if (errorRemoveTimer != null)
+            {
+                errorRemoveTimer.Stop();
+            }
+
+            this.Error = error;
+            errorRemoveTimer.Start();
+        }
+
+        private void NavigateStub(bool getTop, bool fromPms)
+        {
+            if (fromPms)
+            {
+                var collection = this.ChatModel.CurrentPms;
+                if (!collection.Any())
+                {
+                    this.NavigateStub(false, false);
+                    return;
+                }
+
+                var target = (getTop ? collection.First() : collection.Last()).Id;
+                this.RequestPmEvent(target);
+            }
+            else
+            {
+                var collection = this.ChatModel.CurrentChannels;
+                var target = (getTop ? collection.First() : collection.Last()).Id;
+                this.RequestChannelJoinEvent(target);
+            }
         }
 
         private void ParseAndSend()
@@ -412,8 +470,7 @@ namespace Slimcat.ViewModels
                          || (messageToCommand.Type.Equals("warn") && !this.HasPermissions))
                 {
                     this.UpdateError(
-                        string.Format(
-                            "I'm sorry Dave, I can't let you do the {0} command.", messageToCommand.Type));
+                        string.Format("I'm sorry Dave, I can't let you do the {0} command.", messageToCommand.Type));
                 }
                 else if (messageToCommand.IsValid)
                 {
@@ -430,61 +487,25 @@ namespace Slimcat.ViewModels
             }
         }
 
-        /// <summary>
-        /// Command sending behavior
-        /// </summary>
-        /// <param name="command">
-        /// The command.
-        /// </param>
-        protected void SendCommand(IDictionary<string, object> command)
-        {
-            this.Error = null;
-
-            this.Message = null;
-            this.Events.GetEvent<UserCommandEvent>().Publish(command);
-        }
-
-        /// <summary>
-        ///     Message sending behavior
-        /// </summary>
-        protected abstract void SendMessage();
-
-        /// <summary>
-        /// Error handling behavior
-        /// </summary>
-        /// <param name="error">
-        /// The error.
-        /// </param>
-        protected void UpdateError(string error)
-        {
-            if (errorRemoveTimer != null)
-            {
-                errorRemoveTimer.Stop();
-            }
-
-            this.Error = error;
-            errorRemoveTimer.Start();
-        }
-
         private void RequestNavigateDirectionalEvent(bool isUp)
         {
-            if (this.ChatModel.CurrentChannel is PMChannelModel)
+            if (this.ChatModel.CurrentChannel is PmChannelModel)
             {
-                var index = this.ChatModel.CurrentPMs.IndexOf(this.ChatModel.CurrentChannel as PMChannelModel);
+                var index = this.ChatModel.CurrentPms.IndexOf(this.ChatModel.CurrentChannel as PmChannelModel);
                 if (index == 0 && isUp)
                 {
                     this.NavigateStub(false, false);
                     return;
                 }
 
-                if (index + 1 == this.ChatModel.CurrentPMs.Count() && !isUp)
+                if (index + 1 == this.ChatModel.CurrentPms.Count() && !isUp)
                 {
                     this.NavigateStub(true, false);
                     return;
                 }
 
                 index += isUp ? -1 : 1;
-                this.RequestPmEvent(this.ChatModel.CurrentPMs[index].Id);
+                this.RequestPmEvent(this.ChatModel.CurrentPms[index].Id);
             }
             else
             {
@@ -503,28 +524,6 @@ namespace Slimcat.ViewModels
 
                 index += isUp ? -1 : 1;
                 this.RequestChannelJoinEvent(this.ChatModel.CurrentChannels[index].Id);
-            }
-        }
-
-        private void NavigateStub(bool getTop, bool fromPMs)
-        {
-            if (fromPMs)
-            {
-                var collection = this.ChatModel.CurrentPMs;
-                if (!collection.Any())
-                {
-                    this.NavigateStub(false, false);
-                    return;
-                }
-
-                var target = (getTop ? collection.First() : collection.Last()).Id;
-                this.RequestPmEvent(target);
-            }
-            else
-            {
-                var collection = this.ChatModel.CurrentChannels;
-                var target = (getTop ? collection.First() : collection.Last()).Id;
-                this.RequestChannelJoinEvent(target);
             }
         }
 

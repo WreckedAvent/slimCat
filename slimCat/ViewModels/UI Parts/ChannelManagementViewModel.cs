@@ -133,7 +133,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the mode types.
         /// </summary>
-        public string[] ModeTypes
+        public IEnumerable<string> ModeTypes
         {
             get
             {

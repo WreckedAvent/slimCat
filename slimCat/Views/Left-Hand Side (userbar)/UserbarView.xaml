@@ -127,15 +127,15 @@
                           CanContentScroll="False">
                 <StackPanel>
                     <Expander Header="Conversations"
-                              IsExpanded="{Binding Path=PMsAreExpanded}"
-                              Visibility="{Binding Path=HasPMs, Converter={StaticResource BoolConverter}}"
+                              IsExpanded="{Binding Path=PmsAreExpanded}"
+                              Visibility="{Binding Path=HasPms, Converter={StaticResource BoolConverter}}"
                               Grid.Row="1">
-                        <ListBox ItemsSource="{Binding Path=ChatModel.CurrentPMs, Mode=OneWay}"
+                        <ListBox ItemsSource="{Binding Path=ChatModel.CurrentPms, Mode=OneWay}"
                                  HorizontalContentAlignment="Stretch"
                                  SelectedIndex="{Binding Path=PmSelected, Mode=TwoWay}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <v:PMSelectView />
+                                    <v:PmSelectView />
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>

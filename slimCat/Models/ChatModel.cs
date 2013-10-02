@@ -61,7 +61,7 @@ namespace Slimcat.Models
         private readonly ObservableCollection<GeneralChannelModel> ourChannels =
             new ObservableCollection<GeneralChannelModel>();
 
-        private readonly ObservableCollection<PMChannelModel> pms = new ObservableCollection<PMChannelModel>();
+        private readonly ObservableCollection<PmChannelModel> pms = new ObservableCollection<PmChannelModel>();
 
         private IAccount account;
 
@@ -136,7 +136,7 @@ namespace Slimcat.Models
         /// <summary>
         ///     Gets the current private messages.
         /// </summary>
-        public ObservableCollection<PMChannelModel> CurrentPMs
+        public ObservableCollection<PmChannelModel> CurrentPms
         {
             get
             {
@@ -460,7 +460,7 @@ namespace Slimcat.Models
             return (this.Bookmarks.Any(bookmark => bookmark.Equals(character, StringComparison.OrdinalIgnoreCase))
                     || this.Friends.Any(friend => friend.Equals(character, StringComparison.OrdinalIgnoreCase))
                     || this.Interested.Any(interest => interest.Equals(character, StringComparison.OrdinalIgnoreCase)))
-                   || this.CurrentPMs.Any(pm => pm.Id.Equals(character, StringComparison.OrdinalIgnoreCase));
+                   || this.CurrentPms.Any(pm => pm.Id.Equals(character, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>

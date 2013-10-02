@@ -80,18 +80,9 @@ namespace Slimcat.Views
 
         #endregion
 
-        #region Public Methods and Operators
+        #region Methods
 
-        /// <summary>
-        /// The on key up.
-        /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
-        public void OnKeyUp(object sender, KeyEventArgs e)
+        private void OnKeyUp(object sender, KeyEventArgs e)
         {
             // this defines shortcuts when the textbox has focus --- in particular, ones which modify the content of the textbox
             if (e.Key == Key.Return && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
@@ -104,9 +95,6 @@ namespace Slimcat.Views
             {
                 e.Handled = true; // don't do the funny business with inserting a new line
             }
-                
-
-                #region BBCode shortcuts
             else if (AcceptedKeys.ContainsKey(e.Key) && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
                 e.Handled = true;
@@ -143,8 +131,6 @@ namespace Slimcat.Views
                     // 2 is a magic number representing the brackets around the BBCode
                 }
             }
-
-            #endregion
         }
 
         #endregion

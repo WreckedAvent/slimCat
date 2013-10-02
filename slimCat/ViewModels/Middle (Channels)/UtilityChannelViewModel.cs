@@ -49,7 +49,9 @@ namespace Slimcat.ViewModels
     /// <summary>
     ///     Used for a few channels which are not treated normally and cannot receive/send messages.
     /// </summary>
+// ReSharper disable ClassNeverInstantiated.Global
     public class UtilityChannelViewModel : ChannelViewModelBase
+// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Constants
 
@@ -172,7 +174,7 @@ namespace Slimcat.ViewModels
                     this.OnPropertyChanged("UpdateLink");
                     this.OnPropertyChanged("UpdateBuildTime");
                 }
-                catch
+                catch(WebException)
                 {
                 }
             }

@@ -42,15 +42,9 @@ namespace Slimcat.ViewModels
 
         private readonly bool isModerator;
 
-        private bool canIgnore;
-
-        private bool canUnignore;
-
         private bool hasReports;
 
         private bool isOpen;
-
-        private ICharacter target;
 
         #endregion
 
@@ -74,24 +68,12 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets a value indicating whether can ignore.
         /// </summary>
-        public bool CanIgnore
-        {
-            get
-            {
-                return this.canIgnore;
-            }
-        }
+        public bool CanIgnore { get; private set; }
 
         /// <summary>
         ///     Gets a value indicating whether can unignore.
         /// </summary>
-        public bool CanUnignore
-        {
-            get
-            {
-                return this.canUnignore;
-            }
-        }
+        public bool CanUnignore { get; private set; }
 
         /// <summary>
         ///     Gets a value indicating whether has report.
@@ -111,10 +93,11 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (this.target != null)
+                if (this.Target != null)
                 {
-                    return this.target.StatusMessage.Length > 0;
+                    return this.Target.StatusMessage.Length > 0;
                 }
+
                 return false;
             }
         }
@@ -171,13 +154,7 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the target.
         /// </summary>
-        public ICharacter Target
-        {
-            get
-            {
-                return this.target;
-            }
-        }
+        public ICharacter Target { get; private set; }
 
         /// <summary>
         ///     Gets the target gender.
@@ -257,11 +234,11 @@ namespace Slimcat.ViewModels
         /// </param>
         public void SetNewTarget(ICharacter newTarget, bool canIgnore, bool canUnignore, bool hasReports)
         {
-            this.target = newTarget;
-            this.target.GetAvatar();
+            this.Target = newTarget;
+            this.Target.GetAvatar();
 
-            this.canIgnore = canIgnore;
-            this.canUnignore = canUnignore;
+            this.CanIgnore = canIgnore;
+            this.CanUnignore = canUnignore;
             this.hasReports = hasReports;
 
             this.OnPropertyChanged("Target");
@@ -279,7 +256,7 @@ namespace Slimcat.ViewModels
 
         private void Dipose(bool isManaged)
         {
-            this.target = null;
+            this.Target = null;
         }
 
         #endregion

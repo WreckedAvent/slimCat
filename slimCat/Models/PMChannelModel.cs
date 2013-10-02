@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PMChannelModel.cs" company="Justin Kadrovach">
+// <copyright file="PmChannelModel.cs" company="Justin Kadrovach">
 //   Copyright (c) 2013, Justin Kadrovach
 //   All rights reserved.
 //   
@@ -35,7 +35,7 @@ namespace Slimcat.Models
     /// <summary>
     ///     Used for Private-Message communication between users
     /// </summary>
-    public sealed class PMChannelModel : ChannelModel
+    public sealed class PmChannelModel : ChannelModel
     {
         #region Fields
 
@@ -52,13 +52,13 @@ namespace Slimcat.Models
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PMChannelModel"/> class.
-        ///     Creates a new Channel data model which will always be a PM
+        /// Initializes a new instance of the <see cref="PmChannelModel"/> class.
+        ///     Creates a new Channel data model which will always be a Pm
         /// </summary>
         /// <param name="character">
         /// The character that sent the message
         /// </param>
-        public PMChannelModel(ICharacter character)
+        public PmChannelModel(ICharacter character)
             : base(character.Name, ChannelType.PrivateMessage)
         {
             this.TargetCharacter = character;

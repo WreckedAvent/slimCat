@@ -92,9 +92,9 @@ namespace Slimcat
     }
 
     /// <summary>
-    ///     This event is fired when we have a new PM in a non-focused channel
+    ///     This event is fired when we have a new Pm in a non-focused channel
     /// </summary>
-    public class NewPMEvent : CompositePresentationEvent<IMessage>
+    public class NewPmEvent : CompositePresentationEvent<IMessage>
     {
     }
 

@@ -23,7 +23,7 @@
 //   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // </copyright>
 // <summary>
-//   The general channel view model. This manages bindings for general channels, e.g anything that isn't a PM or the 'home' tab.
+//   The general channel view model. This manages bindings for general channels, e.g anything that isn't a Pm or the 'home' tab.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -50,9 +50,11 @@ namespace Slimcat.ViewModels
     using Slimcat.Views;
 
     /// <summary>
-    ///     The general channel view model. This manages bindings for general channels, e.g anything that isn't a PM or the 'home' tab.
+    ///     The general channel view model. This manages bindings for general channels, e.g anything that isn't a Pm or the 'home' tab.
     /// </summary>
+// ReSharper disable ClassNeverInstantiated.Global
     public class GeneralChannelViewModel : ChannelViewModelBase
+// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Fields
         private readonly IList<string> thisDingTerms = new List<string>();
@@ -143,15 +145,9 @@ namespace Slimcat.ViewModels
                         this.MeetsFilter, 
                         this.IsDisplayingAds);
 
-                this.genderSettings.Updated += (s, e) =>
-                    {
-                        this.OnPropertyChanged("GenderSettings");
-                    };
+                this.genderSettings.Updated += (s, e) => this.OnPropertyChanged("GenderSettings");
 
-                this.SearchSettings.Updated += (s, e) =>
-                    {
-                        this.OnPropertyChanged("SearchSettings");
-                    };
+                this.SearchSettings.Updated += (s, e) => this.OnPropertyChanged("SearchSettings");
 
                 this.messageFlood.Elapsed += (s, e) =>
                     {

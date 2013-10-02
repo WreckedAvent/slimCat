@@ -295,11 +295,11 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the request PrivateMessage command.
         /// </summary>
-        public ICommand RequestPMCommand
+        public ICommand RequestPmCommand
         {
             get
             {
-                return this.openPm ?? (this.openPm = new RelayCommand(this.RequestPmEvent, this.CanRequestPM));
+                return this.openPm ?? (this.openPm = new RelayCommand(this.RequestPmEvent, this.CanRequestPm));
             }
         }
 
@@ -440,7 +440,7 @@ namespace Slimcat.ViewModels
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        private bool CanRequestPM(object args)
+        private bool CanRequestPm(object args)
         {
             return true;
         }
@@ -671,7 +671,7 @@ namespace Slimcat.ViewModels
         protected void RequestPmEvent(object args)
         {
             var tabName = (string)args;
-            if (this.ChatModel.CurrentPMs.Any(param => param.Id.Equals(tabName, StringComparison.OrdinalIgnoreCase)))
+            if (this.ChatModel.CurrentPms.Any(param => param.Id.Equals(tabName, StringComparison.OrdinalIgnoreCase)))
             {
                 this.Events.GetEvent<RequestChangeTabEvent>().Publish(tabName);
                 return;

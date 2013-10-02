@@ -77,7 +77,7 @@
                         </Style.Triggers>
                     </Style>
                 </StackPanel.Resources>
-                <Button Command="{Binding RequestPMCommand}"
+                <Button Command="{Binding RequestPmCommand}"
                         Content="Message" />
                 <Button Command="{Binding FindLogCommand}"
                         Content="View Logs" />

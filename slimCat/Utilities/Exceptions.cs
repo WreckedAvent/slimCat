@@ -65,7 +65,6 @@ namespace Slimcat.Utilities
         {
             try
             {
-
                 using (var file = new StreamWriter(@"Stacktrace.log", true))
                 {
                     file.WriteLine();
@@ -99,7 +98,7 @@ namespace Slimcat.Utilities
                     dis.BeginInvoke((Action)(() => Application.Current.Shutdown()));
                 }
             }
-            catch
+            catch (InvalidOperationException)
             {
             }
         }

@@ -50,7 +50,9 @@
         ///     Initializes a new instance of the <see cref="ChannelSettingsModel" /> class.
         /// </summary>
         public ChannelSettingsModel()
+            // ReSharper disable RedundantArgumentDefaultValue
             : this(false)
+            // ReSharper restore RedundantArgumentDefaultValue
         {
         }
 

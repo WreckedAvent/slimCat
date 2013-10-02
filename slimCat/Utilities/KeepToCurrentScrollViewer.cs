@@ -5,7 +5,7 @@
     using System.Windows.Controls;
 
     /// <summary>
-    /// This handles scroll management for async loading objects.
+    ///     This handles scroll management for async loading objects.
     /// </summary>
     public class KeepToCurrentScrollViewer
     {
@@ -13,11 +13,11 @@
 
         private readonly ScrollViewer scroller;
 
-        private double lastValue;
+        private bool hookedToBottom = true;
 
         private double lastHeight;
 
-        private bool hookedToBottom = true;
+        private double lastValue;
 
         #endregion
 
@@ -35,6 +35,25 @@
 
             this.scroller.ScrollChanged += this.OnScrollChanged;
         }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public void ScrollToStick()
+        {
+            var change = this.scroller.ScrollableHeight - this.lastValue;
+            this.scroller.ScrollToVerticalOffset(this.scroller.VerticalOffset + change);
+        }
+
+        public void Stick()
+        {
+            this.lastValue = this.scroller.ScrollableHeight;
+        }
+
+        #endregion
+
+        #region Methods
 
         private void OnScrollChanged(object sender, ScrollChangedEventArgs e)
         {
@@ -56,21 +75,6 @@
             {
                 this.hookedToBottom = false;
             }
-        }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public void Stick()
-        {
-            this.lastValue = this.scroller.ScrollableHeight;
-        }
-
-        public void ScrollToStick()
-        {
-            var change = this.scroller.ScrollableHeight - this.lastValue;
-            this.scroller.ScrollToVerticalOffset(this.scroller.VerticalOffset + change);
         }
 
         #endregion
