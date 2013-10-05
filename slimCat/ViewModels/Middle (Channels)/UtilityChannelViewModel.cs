@@ -30,6 +30,7 @@
 namespace Slimcat.ViewModels
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -189,6 +190,35 @@ namespace Slimcat.ViewModels
 
         #region Public Properties
 
+        /// <summary>
+        ///     Gets the client id string.
+        /// </summary>
+        public static string ClientIDString
+        {
+            get
+            {
+                return string.Format("{0} {1} ({2})", Constants.ClientID, Constants.ClientName, Constants.ClientVer);
+            }
+        }
+
+        /// <summary>
+        ///     Gets the language display names for a given culture name
+        /// </summary>
+        public static IEnumerable<KeyValuePair<string, string>> LanguageNames
+        {
+            get
+            {
+                return new Dictionary<string, string>
+                {
+                    { "American English", "en-US" },
+                    { "British English", "en-GB" },
+                    { "French", "fr" },
+                    { "German", "de" },
+                    { "Spanish", "es" }
+                };
+            }
+        }
+
         public bool AllowColors
         {
             get
@@ -256,17 +286,6 @@ namespace Slimcat.ViewModels
                 }
 
                 SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
-            }
-        }
-
-        /// <summary>
-        ///     Gets the client id string.
-        /// </summary>
-        public string ClientIDString
-        {
-            get
-            {
-                return string.Format("{0} {1} ({2})", Constants.ClientID, Constants.ClientName, Constants.ClientVer);
             }
         }
 

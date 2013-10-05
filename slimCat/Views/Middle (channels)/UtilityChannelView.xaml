@@ -117,11 +117,11 @@
 
                         <StackPanel Margin="0,15,0,5" Visibility="{Binding SpellCheckEnabled, Converter={StaticResource BoolConverter}}">
                             <TextBlock Text="Spell check language"/>
-                            <ComboBox ItemsSource="{Binding Path=Languages}"
-                                      SelectedItem="{Binding Path=Language}"
-                                      Background="{StaticResource ForegroundBrush}"
-                                      Foreground="{StaticResource BackgroundBrush}"
-                                      />
+                            <ComboBox ItemsSource="{Binding Path=LanguageNames}"
+                                      SelectedValue="{Binding Path=Language}"
+                                      
+                                      DisplayMemberPath="Key"
+                                      SelectedValuePath="Value"/>
                         </StackPanel>
                         
                         <WrapPanel Margin="0,15,0,0">
