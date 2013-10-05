@@ -481,6 +481,7 @@ namespace Slimcat.Services
 
             this.model.CurrentCharacter.Status = status;
             this.model.CurrentCharacter.StatusMessage = statusmsg;
+            this.connection.SendMessage(command);
         }
 
         private void OnCloseRequested(IDictionary<string, object> command)

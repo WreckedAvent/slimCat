@@ -346,14 +346,6 @@ namespace Slimcat.Models
         }
 
         /// <summary>
-        ///     The dispose.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-        }
-
-        /// <summary>
         ///     The flash tab.
         /// </summary>
         public void FlashTab()
@@ -366,22 +358,16 @@ namespace Slimcat.Models
 
         #region Methods
 
-        /// <summary>
-        ///     The dispose.
-        /// </summary>
-        /// <param name="isManaged">
-        ///     The is managed.
-        /// </param>
-        protected virtual void Dispose(bool isManaged)
+        protected override void Dispose(bool isManaged)
         {
-            if (!isManaged)
+            if (isManaged)
             {
-                return;
+                this.messages.Clear();
+                this.ads.Clear();
+                this.settings = new ChannelSettingsModel();
             }
 
-            this.messages.Clear();
-            this.ads.Clear();
-            this.settings = new ChannelSettingsModel();
+            base.Dispose(isManaged);
         }
 
         /// <summary>

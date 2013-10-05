@@ -73,7 +73,7 @@
             <StackPanel Grid.Row="1">
                 <Expander Header="Settings">
                     <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
-                        <StackPanel Margin="0,5">
+                        <StackPanel Margin="0,5,0,10">
                             <TextBlock Text="Notifications Volume" Margin="5,0,0,0" />
                             <Slider Value="{Binding Volume}"
                                     LargeChange=".20"
@@ -98,27 +98,41 @@
                             Allow Logging
                         </CheckBox>
 
+                        <CheckBox IsChecked="{Binding AllowColors}"
+                                  VerticalAlignment="Center"
+                                  Margin="0,5">
+                            Allow Colors
+                        </CheckBox>
+                        
                         <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
                                   VerticalAlignment="Center"
                                   Margin="0,5">
                             Friends are account wide
                         </CheckBox>
-
-                        <CheckBox IsChecked="{Binding AllowColors}"
+                        <CheckBox IsChecked="{Binding SpellCheckEnabled}"
                                   VerticalAlignment="Center"
                                   Margin="0,5">
-                            Colors allowed
+                            Allow Spell Check
                         </CheckBox>
 
-                        <WrapPanel Margin="0,5">
+                        <StackPanel Margin="0,15,0,5" Visibility="{Binding SpellCheckEnabled, Converter={StaticResource BoolConverter}}">
+                            <TextBlock Text="Spell check language"/>
+                            <ComboBox ItemsSource="{Binding Path=Languages}"
+                                      SelectedItem="{Binding Path=Language}"
+                                      Background="{StaticResource ForegroundBrush}"
+                                      Foreground="{StaticResource BackgroundBrush}"
+                                      />
+                        </StackPanel>
+                        
+                        <WrapPanel Margin="0,15,0,0">
                             <TextBlock Margin="0,0,5,0">Keep</TextBlock>
                             <TextBox Text="{Binding Path=BackLogMax, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                      VerticalAlignment="Center"
                                      FontSize="12" />
                             <TextBlock Margin="5,0,0,0">Messages in channel backlogs</TextBlock>
                         </WrapPanel>
-
-                        <TextBlock Text="Global Notify Words (seperate with commas)" />
+                        
+                        <TextBlock Text="Global Notify Words (seperate with commas)" Margin="0,15,0,0"/>
                         <TextBox
                             Text="{Binding Path=GlobalNotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             TextWrapping="Wrap"

@@ -193,30 +193,18 @@ namespace Slimcat.ViewModels
 
         #endregion
 
-        #region Public Methods and Operators
-
-        /// <summary>
-        ///     The dispose.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-        }
-
-        #endregion
-
         #region Methods
 
-        private void Dispose(bool isManaged)
+        protected override void Dispose(bool isManaged)
         {
-            if (!isManaged)
+            if (isManaged)
             {
-                return;
+                this.cm = null;
+                this.complaint = null;
+                this.events = null;
             }
 
-            this.cm = null;
-            this.complaint = null;
-            this.events = null;
+            base.Dispose(isManaged);
         }
 
         private void OnSendReport(object args)

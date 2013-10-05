@@ -36,7 +36,7 @@ namespace Slimcat.ViewModels
     /// <summary>
     ///     This is a master class which provides access to the Dispather and NotifyPropertyChanged
     /// </summary>
-    public class SysProp : DispatcherObject, INotifyPropertyChanged
+    public abstract class SysProp : DispatcherObject, IDisposable, INotifyPropertyChanged
     {
         #region Public Events
 
@@ -48,6 +48,11 @@ namespace Slimcat.ViewModels
         #endregion
 
         #region Public Methods and Operators
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+        }
 
         /// <summary>
         /// The verify property name.
@@ -93,6 +98,16 @@ namespace Slimcat.ViewModels
             handler(this, e);
         }
 
+
+        protected virtual void Dispose(bool isManaged)
+        {
+            if (!isManaged)
+            {
+                return;
+            }
+
+            this.PropertyChanged = null;
+        }
         #endregion
     }
 }

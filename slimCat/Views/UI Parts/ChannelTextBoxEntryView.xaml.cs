@@ -31,7 +31,12 @@ namespace Slimcat.Views
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Windows.Input;
+    using System.Windows.Markup;
+
+    using Slimcat.Models;
+    using Slimcat.ViewModels;
 
     /// <summary>
     ///     Interaction logic for ChannelTextBoxEntryView.xaml
@@ -60,6 +65,12 @@ namespace Slimcat.Views
 
         #endregion
 
+        #region Fields
+
+        private ViewModelBase vm;
+
+        #endregion
+
         #region Constructors and Destructors
 
         /// <summary>
@@ -76,6 +87,43 @@ namespace Slimcat.Views
                         this.Entry.Focus();
                     }
                 };
+
+            this.Entry.Language = XmlLanguage.GetLanguage(ApplicationSettings.Langauge);
+            this.vm = this.DataContext as ViewModelBase;
+
+            if (this.vm != null)
+            {
+                this.vm.PropertyChanged += this.PropertyChanged;
+            }
+
+            this.DataContextChanged += (sender, args) =>
+            { 
+                if (this.vm != null)
+                {
+                    this.vm.PropertyChanged -= PropertyChanged;
+                }
+
+                this.vm = this.DataContext as ViewModelBase;
+
+                if (this.vm != null)
+                {
+                    this.vm.PropertyChanged += this.PropertyChanged;
+                }
+            };
+        }
+
+        private void PropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            if (propertyChangedEventArgs.PropertyName != "Language")
+            {
+                return;
+            }
+
+            Dispatcher.BeginInvoke(
+            (Action)delegate
+                {
+                    this.Entry.Language = XmlLanguage.GetLanguage(ApplicationSettings.Langauge);
+                });
         }
 
         #endregion

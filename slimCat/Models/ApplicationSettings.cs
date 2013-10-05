@@ -30,7 +30,9 @@
 namespace Slimcat.Models
 {
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
+    using System.Threading;
 
     /// <summary>
     ///     Settings for the entire application
@@ -48,11 +50,19 @@ namespace Slimcat.Models
             ShowNotificationsGlobal = true;
             AllowLogging = true;
 
-            BackLogMax = 300;
+            BackLogMax = 125;
             GlobalNotifyTerms = string.Empty;
             SavedChannels = new List<string>();
             Interested = new List<string>();
             NotInterested = new List<string>();
+
+            Langauge = Thread.CurrentThread.CurrentCulture.Name;
+            if (!LanguageList.Contains(Langauge))
+            {
+                Langauge = "en";
+            }
+
+            SpellCheckEnabled = true;
         }
 
         #endregion
@@ -116,6 +126,27 @@ namespace Slimcat.Models
         ///     Gets the list of characters not interesting to this user.
         /// </summary>
         public static IList<string> NotInterested { get; private set; }
+
+        // Localization
+
+        /// <summary>
+        ///     Gets or sets a value indicate whether to spell check the users' input.
+        /// </summary>
+        public static bool SpellCheckEnabled { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating the users' language.
+        /// </summary>
+        public static string Langauge { get; set; }
+
+        public static IEnumerable<string> LanguageList
+        {
+            get
+            {
+                return new[] { "en-US", "en-GB", "de", "es", "fr" };
+            }
+        }
+
         #endregion
     }
 }

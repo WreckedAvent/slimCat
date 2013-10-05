@@ -210,14 +210,6 @@ namespace Slimcat.ViewModels
         #region Public Methods and Operators
 
         /// <summary>
-        ///     The dispose.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dipose(true);
-        }
-
-        /// <summary>
         /// The set new target.
         /// </summary>
         /// <param name="newTarget">

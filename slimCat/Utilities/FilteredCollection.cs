@@ -91,11 +91,6 @@
 
         #region Public Methods and Operators
 
-        public void Dispose()
-        {
-            this.Dispose(true);
-        }
-
         public void RebuildItems()
         {
             this.Collection.Clear();
@@ -113,16 +108,16 @@
 
         #region Methods
 
-        private void Dispose(bool isManaged)
+        protected override void Dispose(bool isManaged)
         {
-            if (!isManaged)
+            if (isManaged)
             {
-                return;
+                this.originalCollection = null;
+                this.meetsFilter = null;
+                this.Collection = null;
             }
 
-            this.originalCollection = null;
-            this.meetsFilter = null;
-            this.Collection = null;
+            base.Dispose(isManaged);
         }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

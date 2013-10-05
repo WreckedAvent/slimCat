@@ -253,28 +253,6 @@ namespace Slimcat.ViewModels
 
         #endregion
 
-        #region Public Methods and Operators
-
-        /// <summary>
-        /// The dispose.
-        /// </summary>
-        /// <param name="isManaged">
-        /// The is managed.
-        /// </param>
-        public void Dispose(bool isManaged)
-        {
-            if (!isManaged)
-            {
-                return;
-            }
-
-            this.model.PropertyChanged -= this.UpdateDescription;
-            this.events = null;
-            this.model = null;
-        }
-
-        #endregion
-
         #region Explicit Interface Methods
 
         void IDisposable.Dispose()
@@ -285,6 +263,19 @@ namespace Slimcat.ViewModels
         #endregion
 
         #region Methods
+
+        protected override void Dispose(bool isManaged)
+        {
+            if (!isManaged)
+            {
+
+                this.model.PropertyChanged -= this.UpdateDescription;
+                this.events = null;
+                this.model = null;
+            }
+
+            base.Dispose(isManaged);
+        }
 
         private bool CanToggleRoomType(object args)
         {

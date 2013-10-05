@@ -149,14 +149,6 @@ namespace Slimcat.ViewModels
         #region Public Methods and Operators
 
         /// <summary>
-        ///     The dispose.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-        }
-
-        /// <summary>
         ///     The hide notifications.
         /// </summary>
         public void HideNotifications()
@@ -225,22 +217,16 @@ namespace Slimcat.ViewModels
 
         #region Methods
 
-        /// <summary>
-        /// The dispose.
-        /// </summary>
-        /// <param name="isManagedDispose">
-        /// The is managed dispose.
-        /// </param>
-        private void Dispose(bool isManagedDispose)
+        protected override void Dispose(bool isManaged)
         {
-            if (!isManagedDispose)
+            if (!isManaged)
             {
-                return;
+                this.hideDelay.Dispose();
+                this.view.Close();
+                this.view = null;
             }
 
-            this.hideDelay.Dispose();
-            this.view.Close();
-            this.view = null;
+            base.Dispose(isManaged);
         }
 
         #endregion

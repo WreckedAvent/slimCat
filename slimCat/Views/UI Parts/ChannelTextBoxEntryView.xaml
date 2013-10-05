@@ -15,7 +15,7 @@
                  KeyUp="OnKeyUp"
                  ScrollViewer.CanContentScroll="True"
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
-                 SpellCheck.IsEnabled="True"
+                 SpellCheck.IsEnabled="{Binding SpellCheckEnabled, Mode=OneWay}"
                  x:Name="Entry">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}" />

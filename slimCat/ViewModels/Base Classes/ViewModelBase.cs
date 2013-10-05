@@ -44,12 +44,13 @@ namespace Slimcat.ViewModels
     using Slimcat;
     using Slimcat.Libraries;
     using Slimcat.Models;
+    using Slimcat.Services;
     using Slimcat.Utilities;
 
     /// <summary>
     ///     The view model base.
     /// </summary>
-    public abstract class ViewModelBase : SysProp, IModule, IDisposable
+    public abstract class ViewModelBase : SysProp, IModule
     {
         #region Fields
         private RelayCommand ban;
@@ -124,6 +125,41 @@ namespace Slimcat.ViewModels
         #endregion
 
         #region Public Properties
+        public bool SpellCheckEnabled
+        {
+            get
+            {
+                return ApplicationSettings.SpellCheckEnabled;
+            }
+            set
+            {
+                ApplicationSettings.SpellCheckEnabled = value;
+                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
+                this.OnPropertyChanged("SpellCheckEnabled");
+            }
+        }
+
+        public string Language
+        {
+            get
+            {
+                return ApplicationSettings.Langauge;
+            }
+            set
+            {
+                ApplicationSettings.Langauge = value;
+                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
+                this.OnPropertyChanged("Language");
+            }
+        }
+
+        public static IEnumerable<string> Languages
+        {
+            get
+            {
+                return ApplicationSettings.LanguageList;
+            }
+        }
 
         /// <summary>
         ///     Gets the ban command.
@@ -348,14 +384,6 @@ namespace Slimcat.ViewModels
         }
 
         /// <summary>
-        ///     The dispose.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-        }
-
-        /// <summary>
         ///     The initialize.
         /// </summary>
         public abstract void Initialize();
@@ -366,6 +394,24 @@ namespace Slimcat.ViewModels
 
         protected virtual void InvertButton(object arguments)
         {
+        }
+
+        protected override void Dispose(bool isManaged)
+        {
+            if (isManaged)
+            {
+
+                this.ChatModel.SelectedChannelChanged -= this.OnSelectedChannelChanged;
+                this.Events.GetEvent<NewUpdateEvent>().Unsubscribe(this.UpdateRightClickMenu);
+                this.Container = null;
+                this.RegionManager = null;
+                this.ChatModel = null;
+                this.Events = null;
+                this.RightClickMenuViewModel.Dispose();
+                this.RightClickMenuViewModel = null;
+            }
+
+            base.Dispose(isManaged);
         }
 
         private void updateRightClickMenu(ICharacter newTarget)
@@ -457,29 +503,6 @@ namespace Slimcat.ViewModels
         private bool CanUnIgnore(object args)
         {
             return !this.CanIgnore(args);
-        }
-
-        /// <summary>
-        /// The dispose.
-        /// </summary>
-        /// <param name="isManaged">
-        /// The is managed.
-        /// </param>
-        protected virtual void Dispose(bool isManaged)
-        {
-            if (!isManaged)
-            {
-                return;
-            }
-
-            this.ChatModel.SelectedChannelChanged -= this.OnSelectedChannelChanged;
-            this.Events.GetEvent<NewUpdateEvent>().Unsubscribe(this.UpdateRightClickMenu);
-            this.Container = null;
-            this.RegionManager = null;
-            this.ChatModel = null;
-            this.Events = null;
-            this.RightClickMenuViewModel.Dispose();
-            this.RightClickMenuViewModel = null;
         }
 
         /// <summary>

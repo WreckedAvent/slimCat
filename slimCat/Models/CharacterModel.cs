@@ -196,14 +196,6 @@ namespace Slimcat.Models
         #region Public Methods and Operators
 
         /// <summary>
-        ///     The dispose.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-        }
-
-        /// <summary>
         ///     The get avatar.
         /// </summary>
         public void GetAvatar()
@@ -268,24 +260,17 @@ namespace Slimcat.Models
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// The dispose.
-        /// </summary>
-        /// <param name="isManaged">
-        /// The is managed.
-        /// </param>
-        private void Dispose(bool isManaged)
+        protected override void Dispose(bool isManaged)
         {
-            if (!isManaged)
+            if (isManaged)
             {
-                return;
+                this.Name = null;
+                this.StatusMessage = null;
+                this.Avatar.StreamSource.Dispose();
+                this.lastReport.Dispose();
             }
 
-            this.Name = null;
-            this.StatusMessage = null;
-            this.Avatar.StreamSource.Dispose();
-            this.lastReport.Dispose();
+            base.Dispose(isManaged);
         }
 
         #endregion

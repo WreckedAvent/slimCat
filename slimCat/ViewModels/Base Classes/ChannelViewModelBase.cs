@@ -343,12 +343,6 @@ namespace Slimcat.ViewModels
 
         #region Methods
 
-        /// <summary>
-        ///     The dispose.
-        /// </summary>
-        /// <param name="isManaged">
-        ///     The is managed.
-        /// </param>
         protected override void Dispose(bool isManaged)
         {
             if (isManaged)
