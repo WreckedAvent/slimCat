@@ -203,14 +203,7 @@ namespace Slimcat.Services
         /// </summary>
         public void ShowWindow()
         {
-            // this will ensure the window is showed no matter of its state.
-            Application.Current.MainWindow.Show();
-            if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
-            {
-                Application.Current.MainWindow.WindowState = WindowState.Normal;
-            }
-
-            Application.Current.MainWindow.Focus();
+            Application.Current.MainWindow.Activate();
         }
 
         /// <summary>
