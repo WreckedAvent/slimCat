@@ -376,14 +376,19 @@
             if (this.Message.Length > 50000)
             {
                 this.UpdateError("I can't let you post that. That's way too big. Try again, buddy.");
+                return;
             }
-            else if (this.isInCoolDown)
+
+            if (this.isInCoolDown)
             {
                 this.UpdateError("Where's the fire, son? Slow it down.");
+                return;
             }
-            else if (string.IsNullOrWhiteSpace(this.Message))
+
+            if (string.IsNullOrWhiteSpace(this.Message))
             {
                 this.UpdateError("Hmm. Did you ... did you write anything?");
+                return;
             }
 
             var toSend =

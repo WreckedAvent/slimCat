@@ -19,7 +19,7 @@
             <Setter Property="ItemsPanel">
                 <Setter.Value>
                     <ItemsPanelTemplate>
-                        <WrapPanel/>
+                        <WrapPanel Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}"/>
                     </ItemsPanelTemplate>
                 </Setter.Value>
             </Setter>
@@ -46,30 +46,32 @@
             </Setter>
         </Style>    
     </UserControl.Resources>
-    
+
     <Grid IsEnabled="{Binding Path=IsConnecting, Converter={StaticResource BoolConverter}}"
-          TextBlock.FontSize="20"
-          TextBlock.Foreground="{StaticResource ForegroundBrush}"
-          Margin="20"
-          VerticalAlignment="Center">
+                TextBlock.FontSize="20"
+                TextBlock.Foreground="{StaticResource ForegroundBrush}"
+                Margin="20"
+                VerticalAlignment="Center">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition />
-            <RowDefinition Height="auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <TextBlock Text="{Binding RelayMessage, Mode=OneWay}"
                    HorizontalAlignment="Center"
                    Margin="20" />
+        <TextBlock Text="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=StackPanel}}"></TextBlock>
         
-        <ListBox Grid.Row="1"
-                 ItemsSource="{Binding Characters}"
-                 HorizontalAlignment="Center"
-                 SelectedItem="{Binding Path=CurrentCharacter, Mode=TwoWay}"/>
-
-        <Button Content="Login"
+        <ScrollViewer Grid.Row="1">
+            <ListBox ItemsSource="{Binding Characters}"
+                     HorizontalAlignment="Stretch"
+                     SelectedItem="{Binding Path=CurrentCharacter, Mode=TwoWay}"/>
+        </ScrollViewer>
+        
+        <Button Grid.Row="2"
+                Content="Login"
                 Margin="20"
-                Grid.Row="2"
                 HorizontalAlignment="Center"
                 Command="{Binding SelectCharacterCommand}" />
     </Grid>

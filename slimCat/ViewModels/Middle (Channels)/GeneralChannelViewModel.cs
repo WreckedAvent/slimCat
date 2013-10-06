@@ -838,8 +838,16 @@ namespace Slimcat.ViewModels
         {
             if (this.IsDisplayingAds)
             {
-                this.OtherTabHasMessages = e.Action != NotifyCollectionChangedAction.Reset 
-                    && e.NewItems.Cast<IMessage>().Where(this.MeetsFilter).Any();
+                this.OtherTabHasMessages = 
+                    e.Action != NotifyCollectionChangedAction.Reset 
+                    && 
+                    e.Action != NotifyCollectionChangedAction.Remove
+                    &&
+                    e.NewItems
+                        .Cast<IMessage>()
+                        .Where(m => m != null)
+                        .Where(this.MeetsFilter)
+                        .Any();
             }
         }
 
@@ -851,7 +859,6 @@ namespace Slimcat.ViewModels
                     this.OnPropertyChanged("StatusString"); // keep the counter updated
                     break;
                 case "SearchSettings":
-                case "IsDisplayingChat":
                 case "IsSearching":
                     {
                         this.messageManager.IsFiltering = this.IsDisplayingAds || this.isSearching;
