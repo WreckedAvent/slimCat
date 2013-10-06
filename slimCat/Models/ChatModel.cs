@@ -556,6 +556,22 @@ namespace Slimcat.Models
             this.OnPropertyChanged("Friends");
             this.OnPropertyChanged("OnlineFriends");
         }
+
+        public void Wipe()
+        {
+            Dispatcher.Invoke(
+                (Action)delegate
+                    {
+                        this.onlineCharactersCache = null;
+
+                        this.channels.Clear();
+                        this.onlineCharacters.Clear();
+
+                        this.onlineModsCache = null;
+                        this.onlineBookmarkCache = null;
+                        this.onlineFriendCache = null;
+                    });
+        }
         #endregion
 
         #region Methods

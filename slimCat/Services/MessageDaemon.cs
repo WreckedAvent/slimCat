@@ -416,17 +416,6 @@ namespace Slimcat.Services
             channel.Ads.Clear();
         }
 
-        private static void ShowWindow()
-        {
-            Application.Current.MainWindow.Show();
-            if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
-            {
-                Application.Current.MainWindow.WindowState = WindowState.Normal;
-            }
-
-            Application.Current.MainWindow.Focus();
-        }
-
         private void BuildHomeChannel(bool? payload)
         {
             this.events.GetEvent<ChatOnDisplayEvent>().Unsubscribe(this.BuildHomeChannel);
@@ -636,7 +625,7 @@ namespace Slimcat.Services
                 if (channel != null)
                 {
                     this.RequestNavigate(target);
-                    this.Dispatcher.Invoke((Action)ShowWindow);
+                    this.Dispatcher.Invoke((Action)NotificationsDaemon.ShowWindow);
                     return;
                 }
             }
@@ -655,7 +644,7 @@ namespace Slimcat.Services
                 // so tell our system to join the Pm Tab
                 this.JoinChannel(ChannelType.PrivateMessage, newCharacterUpdate.TargetCharacter.Name);
 
-                this.Dispatcher.Invoke((Action)ShowWindow);
+                this.Dispatcher.Invoke((Action)NotificationsDaemon.ShowWindow);
                 return;
             }
 
@@ -673,13 +662,13 @@ namespace Slimcat.Services
                 // if it's null, then we've got an invite to a new channel
                 var toSend = new { channel = doStuffWith.TargetChannel.Id };
                 this.connection.SendMessage(toSend, "JCH");
-                this.Dispatcher.Invoke((Action)ShowWindow);
+                this.Dispatcher.Invoke((Action)NotificationsDaemon.ShowWindow);
                 return;
             }
 
             var chanType = newChannel.Type;
             this.JoinChannel(chanType, doStuffWith.TargetChannel.Id);
-            this.Dispatcher.Invoke((Action)ShowWindow);
+            this.Dispatcher.Invoke((Action)NotificationsDaemon.ShowWindow);
         }
 
         private void OnInviteToChannelRequested(IDictionary<string, object> command)

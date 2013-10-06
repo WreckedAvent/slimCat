@@ -213,5 +213,7 @@
         #endregion
 
         void FriendsChanged();
+
+        void Wipe();
     }
 }

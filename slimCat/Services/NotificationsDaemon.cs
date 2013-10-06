@@ -124,7 +124,7 @@ namespace Slimcat.Services
                         this.cm.SelectedChannelChanged += (s, e) => this.events.GetEvent<ErrorEvent>().Publish(null);
 
                         this.icon.Icon = new Icon(Environment.CurrentDirectory + @"\icons\catIcon.ico");
-                        this.icon.DoubleClick += (s, e) => this.ShowWindow();
+                        this.icon.DoubleClick += (s, e) => ShowWindow();
 
                         this.icon.BalloonTipClicked += (s, e) =>
                             {
@@ -162,7 +162,7 @@ namespace Slimcat.Services
                                 });
                         iconMenu.MenuItems.Add(new MenuItem("-"));
 
-                        iconMenu.MenuItems.Add("Show", (s, e) => this.ShowWindow());
+                        iconMenu.MenuItems.Add("Show", (s, e) => ShowWindow());
                         iconMenu.MenuItems.Add("Exit", (s, e) => this.ShutDown());
 
                         this.icon.Text = string.Format("{0} - {1}", Constants.ClientID, args);
@@ -189,6 +189,19 @@ namespace Slimcat.Services
         #endregion
 
         #region Public Methods and Operators
+        /// <summary>
+        ///     The show window.
+        /// </summary>
+        public static void ShowWindow()
+        {
+            Application.Current.MainWindow.Show();
+            if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
+            {
+                Application.Current.MainWindow.WindowState = WindowState.Normal;
+            }
+
+            Application.Current.MainWindow.Activate();
+        }
 
         /// <summary>
         ///     The dispose.
@@ -196,14 +209,6 @@ namespace Slimcat.Services
         public void Dispose()
         {
             this.Dispose(true);
-        }
-
-        /// <summary>
-        ///     The show window.
-        /// </summary>
-        public void ShowWindow()
-        {
-            Application.Current.MainWindow.Activate();
         }
 
         /// <summary>

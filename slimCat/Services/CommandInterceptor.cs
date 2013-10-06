@@ -106,6 +106,7 @@ namespace Slimcat.Services
             this.Events.GetEvent<CharacterSelectedLoginEvent>()
                 .Subscribe(this.GetCharacter, ThreadOption.BackgroundThread, true);
             this.Events.GetEvent<ChatCommandEvent>().Subscribe(this.EnqueAction, ThreadOption.BackgroundThread, true);
+            this.Events.GetEvent<ConnectionClosedEvent>().Subscribe(this.WipeState, ThreadOption.PublisherThread, true);
 
             this.ChatModel.CurrentAccount = this.connection.Account;
         }
@@ -511,12 +512,12 @@ namespace Slimcat.Services
 
         private CommandDelegate InterpretCommand(IDictionary<string, object> command)
         {
+            this.ChatModel.LastMessageReceived = DateTimeOffset.Now;
+
             if (command == null || string.IsNullOrWhiteSpace(command["command"] as string))
             {
                 return null;
             }
-
-            this.ChatModel.LastMessageReceived = DateTimeOffset.Now;
 
             switch ((string)command["command"])
             {
@@ -1183,6 +1184,10 @@ namespace Slimcat.Services
                     });
         }
 
+        private void WipeState(string message)
+        {
+            this.ChatModel.Wipe();
+        }
         #endregion
     }
 }

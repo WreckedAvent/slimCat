@@ -304,14 +304,8 @@ namespace Slimcat.Services
                 return;
             }
 
-            // todo: reconnect 
-            Exceptions.HandleException(
-                new Exception("Connection to the server was closed"),
-                "The connection to the server was closed.\n\nApplication will now exit.");
-
-#if (DEBUG)
-            this.logger.Close();
-#endif
+            this.events.GetEvent<ConnectionClosedEvent>().Publish(string.Empty);
+            this.AttemptReconnect();
         }
 
         /// <summary>
@@ -381,6 +375,7 @@ namespace Slimcat.Services
                 {
                     case "PIN":
                         this.SendMessage("PIN"); // auto-respond to pings
+                        this.events.GetEvent<ChatCommandEvent>().Publish(null);
                         break;
                     case "LRP":
                         break;
@@ -427,6 +422,12 @@ namespace Slimcat.Services
                 };
 
             this.SendMessage(idn, "IDN");
+
+            if (this.staggerTimer != null)
+            {
+                this.staggerTimer.Dispose();
+                this.staggerTimer = null;
+            }
         }
 
         /// <summary>
