@@ -543,32 +543,28 @@ namespace Slimcat.Services
             string target = null, 
             string kind = null)
         {
-            if (!ApplicationSettings.ShowNotificationsGlobal)
+            Action notify = () =>
             {
-                return;
-            }
+                if (flashWindow && !this.WindowIsFocused)
+                {
+                    Application.Current.MainWindow.FlashWindow();
+                }
 
-            this.Dispatcher.Invoke(
-                (Action)delegate
-                    {
-                        if (flashWindow && !this.WindowIsFocused)
-                        {
-                            Application.Current.MainWindow.FlashWindow();
-                        }
+                if (bingLing)
+                {
+                    this.DingTheCrapOutOfTheUser();
+                }
 
-                        if (bingLing)
-                        {
-                            this.DingTheCrapOutOfTheUser();
-                        }
+                if (message != null && ApplicationSettings.ShowNotificationsGlobal)
+                {
+                    this.toast.UpdateNotification(message);
+                }
 
-                        if (message != null)
-                        {
-                            this.toast.UpdateNotification(message);
-                        }
+                this.toast.Target = target;
+                this.toast.Kind = kind;
+            };
 
-                        this.toast.Target = target;
-                        this.toast.Kind = kind;
-                    });
+            this.Dispatcher.Invoke(notify);
         }
 
         private void ResetDingLing()

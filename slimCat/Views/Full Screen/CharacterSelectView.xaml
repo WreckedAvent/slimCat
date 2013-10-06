@@ -61,7 +61,6 @@
         <TextBlock Text="{Binding RelayMessage, Mode=OneWay}"
                    HorizontalAlignment="Center"
                    Margin="20" />
-        <TextBlock Text="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=StackPanel}}"></TextBlock>
         
         <ScrollViewer Grid.Row="1">
             <ListBox ItemsSource="{Binding Characters}"

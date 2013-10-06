@@ -91,6 +91,23 @@ namespace Slimcat.Utilities
         #endregion
     }
 
+    public class GreaterThanZeroConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var parsed = (int)value;
+
+            return parsed > 0 
+                ? Visibility.Visible 
+                : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public abstract class BBCodeBaseConverter
     {
         #region Static Fields
@@ -843,25 +860,6 @@ namespace Slimcat.Utilities
     public sealed class NotifyLevelConverter : IValueConverter
     {
         #region Public Methods and Operators
-
-        /// <summary>
-        /// The convert.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var toParse = (int)value;
@@ -873,40 +871,37 @@ namespace Slimcat.Utilities
                 verboseNotificationKind = "• A tab flash";
             }
 
-            switch ((ChannelSettingsModel.NotifyLevel)toParse)
+            var parsed = (ChannelSettingsModel.NotifyLevel)toParse;
+            if (parsed >= ChannelSettingsModel.NotifyLevel.NotificationAndToast && ApplicationSettings.ShowNotificationsGlobal)
             {
-                case ChannelSettingsModel.NotifyLevel.NotificationOnly:
-                    return verboseNotificationKind;
-                case ChannelSettingsModel.NotifyLevel.NotificationAndToast:
-                    return verboseNotificationKind + "\n• A toast";
-                case ChannelSettingsModel.NotifyLevel.NotificationAndSound:
-                    return verboseNotificationKind + "\n• A toast with sound\n• 5 Window Flashes";
-
-                default:
-                    return "Nothing!";
+                verboseNotificationKind += "\n• A toast";
             }
+
+            if (parsed >= ChannelSettingsModel.NotifyLevel.NotificationAndSound)
+            {
+                if (ApplicationSettings.Volume > 0.0)
+                {
+                    if (ApplicationSettings.ShowNotificationsGlobal)
+                    {
+                        verboseNotificationKind += " with sound";
+                    }
+                    else
+                    {
+                        verboseNotificationKind += "\n• An audible alert";
+                    }
+                }
+
+                verboseNotificationKind += "\n• 5 Window Flashes";
+            }
+
+            if (parsed == ChannelSettingsModel.NotifyLevel.NoNotification)
+            {
+                return "Nothing!";
+            }
+
+            return verboseNotificationKind;
         }
 
-        /// <summary>
-        /// The convert back.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
-        /// <exception cref="NotImplementedException">
-        /// </exception>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
@@ -921,25 +916,6 @@ namespace Slimcat.Utilities
     public sealed class InterestedOnlyBoolConverter : IValueConverter
     {
         #region Public Methods and Operators
-
-        /// <summary>
-        /// The convert.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is bool))
@@ -952,26 +928,6 @@ namespace Slimcat.Utilities
             return v ? "only for people of interest." : "for everyone.";
         }
 
-        /// <summary>
-        /// The convert back.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
-        /// <exception cref="NotImplementedException">
-        /// </exception>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
@@ -986,25 +942,6 @@ namespace Slimcat.Utilities
     public sealed class ChannelTypeToImageConverter : IValueConverter
     {
         #region Public Methods and Operators
-
-        /// <summary>
-        /// The convert.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var args = (ChannelType)value;
@@ -1028,26 +965,6 @@ namespace Slimcat.Utilities
             return new BitmapImage(uri);
         }
 
-        /// <summary>
-        /// The convert back.
-        /// </summary>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="targetType">
-        /// The target type.
-        /// </param>
-        /// <param name="parameter">
-        /// The parameter.
-        /// </param>
-        /// <param name="culture">
-        /// The culture.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
-        /// <exception cref="NotImplementedException">
-        /// </exception>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
@@ -1056,6 +973,9 @@ namespace Slimcat.Utilities
         #endregion
     }
 
+    /// <summary>
+    /// Converts a character's interested level to a nameplate color
+    /// </summary>
     public sealed class NameplateColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

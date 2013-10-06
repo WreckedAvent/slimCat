@@ -14,7 +14,8 @@
     <utilities:GenderImageConverter x:Key="GenderImageConverter" />
     <utilities:ChannelTypeToImageConverter x:Key="ChannelTypeToImageConverter" />
     <utilities:NameplateColorConverter x:Key="NameplateColorConverter"/>
-
+    <utilities:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter"/>
+    
     <MouseBinding x:Key="RightClickOpenMenu"
                   MouseAction="RightClick"
                   Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
