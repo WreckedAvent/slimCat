@@ -976,21 +976,48 @@ namespace Slimcat.Utilities
     /// <summary>
     /// Converts a character's interested level to a nameplate color
     /// </summary>
-    public sealed class NameplateColorConverter : IValueConverter
+    public sealed class NameplateColorConverter : IMultiValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            var v = (bool)value;
-            SolidColorBrush brush = null;
-            if (v)
+            var gender = (Gender)values[0];
+            var interesting = (bool)values[1];
+            if (interesting)
             {
-                brush = (SolidColorBrush)Application.Current.TryFindResource("ContrastBrush");
+                return (SolidColorBrush)Application.Current.FindResource("ContrastBrush");
             }
-
-            return brush ?? (SolidColorBrush)Application.Current.FindResource("HighlightBrush");
+            SolidColorBrush brush = null;
+            switch (gender)
+            {
+                case Gender.HermM:
+                    brush = (SolidColorBrush)Application.Current.FindResource("MaleHermBrush");
+                    break;
+                case Gender.Cuntboy:
+                    brush = (SolidColorBrush)Application.Current.FindResource("CuntBrush");
+                    break;
+                case Gender.Male:
+                    brush = (SolidColorBrush)Application.Current.FindResource("MaleBrush");
+                    break;
+                case Gender.HermF:
+                    brush = (SolidColorBrush)Application.Current.FindResource("HermBrush");
+                    break;
+                case Gender.Female:
+                    brush = (SolidColorBrush)Application.Current.FindResource("FemaleBrush");
+                    break;
+                case Gender.Shemale:
+                    brush = (SolidColorBrush)Application.Current.FindResource("ShemaleBrush");
+                    break;
+                case Gender.Transgender:
+                    brush = (SolidColorBrush)Application.Current.FindResource("TransgenderBrush");
+                    break;
+                default:
+                    brush = (SolidColorBrush)Application.Current.FindResource("HighlightBrush");
+                    break;
+            }
+            return brush;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object[] ConvertBack(object values, Type[] targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

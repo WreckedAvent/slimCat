@@ -21,6 +21,14 @@
 
     <!-- Bright background is used for some odds and ends, most notably the 'expand' bars on either side of the screen. -->
     <Color x:Key="BrightBackgroundColor">#00133b</Color>
+	
+	<Color x:Key="MaleColor">#6699FF</Color>
+	<Color x:Key="FemaleColor">#FF6699</Color>
+	<Color x:Key="CuntColor">#00CC66</Color>
+	<Color x:Key="MaleHermColor">#007FFF</Color>
+	<Color x:Key="TransgenderColor">#EE8822</Color>
+	<Color x:Key="ShemaleColor">#CC66FF</Color>
+	<Color x:Key="HermColor">#9B30FF</Color>
 
 
     <!-- Do not modify below this line unless you know what you are doing. -->
@@ -31,4 +39,12 @@
     <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
     <SolidColorBrush x:Key="DepressedBrush" Color="{StaticResource DepressedColor}" />
     <SolidColorBrush x:Key="BrightBackgroundBrush" Color="{StaticResource BrightBackgroundColor}" />
+	
+	<SolidColorBrush x:Key="MaleBrush" Color="{StaticResource MaleColor}" />
+	<SolidColorBrush x:Key="FemaleBrush" Color="{StaticResource FemaleColor}" />
+	<SolidColorBrush x:Key="HermBrush" Color="{StaticResource HermColor}" />
+	<SolidColorBrush x:Key="MaleHermBrush" Color="{StaticResource MaleHermColor}" />
+	<SolidColorBrush x:Key="TransgenderBrush" Color="{StaticResource TransgenderColor}" />
+	<SolidColorBrush x:Key="CuntBrush" Color="{StaticResource CuntColor}" />
+	<SolidColorBrush x:Key="ShemaleBrush" Color="{StaticResource ShemaleColor}" />
 </ResourceDictionary>

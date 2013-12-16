@@ -366,7 +366,7 @@ namespace Slimcat.Services
 
             {
                 // check the message content
-                var match = checkAgainst.Select(cleanMessageText.FirstMatch)
+                var match = checkAgainst.Select(dingWord => cleanMessageText.FirstMatch(dingWord))
                     .FirstOrDefault(attemptedMatch => !string.IsNullOrWhiteSpace(attemptedMatch.Item1));
 
                 if (match != null)
