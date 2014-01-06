@@ -65,7 +65,7 @@ namespace Slimcat.Utilities
             /// <summary>
             ///     The url for f-list.
             /// </summary>
-            public const string Domain = @"http://www.f-list.net";
+            public const string Domain = @"https://www.f-list.net";
 
             /// <summary>
             ///     The url for the ticket get script.

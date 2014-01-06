@@ -42,17 +42,15 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Unity;
 
     using Slimcat;
-    using Slimcat.Models;
-    using Slimcat.Services;
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    using Models;
+    using Services;
+    using Utilities;
+    using Views;
 
     /// <summary>
     ///     Used for a few channels which are not treated normally and cannot receive/send messages.
     /// </summary>
-// ReSharper disable ClassNeverInstantiated.Global
     public class UtilityChannelViewModel : ChannelViewModelBase
-// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Constants
 
@@ -143,14 +141,14 @@ namespace Slimcat.ViewModels
                 this.Events.GetEvent<LoginFailedEvent>().Subscribe(this.LoginFailedEvent);
                 this.Events.GetEvent<ReconnectingEvent>().Subscribe(this.LoginReconnectingEvent);
 
-                SettingsDaemon.ReadApplicationSettingsFromXml(cm.CurrentCharacter.Name);
+                SettingsDaemon.ReadApplicationSettingsFromXml(ChatModel.CurrentCharacter.Name);
 
                 try
                 {
                     string[] args;
                     using (var client = new WebClient())
                     {
-                        using (var stream = client.OpenRead("https://dl.dropbox.com/u/29984849/slimCat/latest.csv"))
+                        using (var stream = client.OpenRead(NewVersionLink))
                         {
                             using (var reader = new StreamReader(stream))
                             {

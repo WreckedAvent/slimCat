@@ -34,7 +34,7 @@
                     x:Name="PopupAnchor"
                     HorizontalAlignment="Stretch">
                 <DockPanel>
-                    <Image Source="{Binding Path=ChatModel.CurrentCharacter.Avatar}"
+                    <Image Source="{Binding Path=ChatModel.CurrentCharacter.Avatar, Mode=OneWay}"
                            Height="75"
                            Width="75" />
                     <Grid Margin="5,-5,0,0"
@@ -47,14 +47,14 @@
                             <RowDefinition Height="20" />
                         </Grid.RowDefinitions>
 
-                        <TextBlock Text="{Binding Path=ChatModel.CurrentCharacter.Name}"
+                        <TextBlock Text="{Binding Path=ChatModel.CurrentCharacter.Name, Mode=OneWay}"
                                    HorizontalAlignment="Right"
                                    TextAlignment="Right"
                                    MaxWidth="100"
                                    TextWrapping="Wrap"
                                    FontSize="20" />
 
-                        <Button Content="{Binding Path=ChatModel.CurrentCharacter.Status}"
+                        <Button Content="{Binding Path=ChatModel.CurrentCharacter.Status, Mode=OneWay}"
                                 Grid.Row="1"
                                 VerticalAlignment="Top"
                                 HorizontalAlignment="Right"
@@ -109,7 +109,7 @@
                                   FontSize="12" />
 
                         <TextBox
-                            Text="{Binding Path=ChatModel.CurrentCharacter.StatusMessage, UpdateSourceTrigger=PropertyChanged}"
+                            Text="{Binding Path=ChatModel.CurrentCharacter.StatusMessage, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                             FontSize="12"
                             TextWrapping="Wrap"
                             MaxWidth="200"

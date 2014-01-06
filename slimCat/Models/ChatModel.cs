@@ -35,9 +35,9 @@ namespace Slimcat.Models
     using System.Collections.ObjectModel;
     using System.Linq;
 
-    using Slimcat.Services;
-    using Slimcat.Utilities;
-    using Slimcat.ViewModels;
+    using Services;
+    using Utilities;
+    using ViewModels;
 
     /// <summary>
     ///     Contains most chat data which spans channels. Channel-wide UI binds to this.

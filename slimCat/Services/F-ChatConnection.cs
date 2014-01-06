@@ -57,7 +57,7 @@ namespace Slimcat.Services
         /// <summary>
         ///     The host.
         /// </summary>
-        private const string Host = "ws://chat.f-list.net:9722/";
+        private const string Host = "wss://chat.f-list.net:9799/";
 
         #endregion
 

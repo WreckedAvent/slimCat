@@ -254,7 +254,7 @@ namespace Slimcat.Models
                     worker.Dispose();
                 };
 
-            worker.RunWorkerAsync("http://static.f-list.net/images/avatar/" + this.Name.ToLower() + ".png");
+            worker.RunWorkerAsync("https://static.f-list.net/images/avatar/" + this.Name.ToLower() + ".png");
         }
 
         #endregion
