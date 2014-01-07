@@ -383,6 +383,14 @@ namespace Slimcat.Services
             #endregion
         }
 
+        private void FlashWindow()
+        {
+            if (!this.WindowIsFocused)
+            {
+                Application.Current.MainWindow.FlashWindow();
+            }
+        }
+
         /// <summary>
         /// Notification logic for new Pm messages
         /// </summary>
@@ -416,6 +424,7 @@ namespace Slimcat.Services
                     return;
 
                 default:
+                    this.FlashWindow();
                     return;
             }
         }
@@ -550,9 +559,9 @@ namespace Slimcat.Services
         {
             Action notify = () =>
             {
-                if (flashWindow && !this.WindowIsFocused)
+                if (flashWindow)
                 {
-                    Application.Current.MainWindow.FlashWindow();
+                    this.FlashWindow();
                 }
 
                 if (bingLing)
