@@ -133,6 +133,10 @@ namespace Slimcat.Libraries
         private static void HandlePasswordChanged(object sender, RoutedEventArgs e)
         {
             var box = sender as PasswordBox;
+            if (box == null)
+            {
+                return;
+            }
 
             // set a flag to indicate that we're updating the password
             SetUpdatingPassword(box, true);
@@ -173,7 +177,7 @@ namespace Slimcat.Libraries
 
             // only handle this event when the property is attached to a PasswordBox
             // and when the BindPassword attached property has been set to true
-            if (d == null || !GetBindPassword(d))
+            if (d == null || !GetBindPassword(d) || box == null)
             {
                 return;
             }

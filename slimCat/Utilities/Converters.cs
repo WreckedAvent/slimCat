@@ -108,7 +108,7 @@ namespace Slimcat.Utilities
         }
     }
 
-    public abstract class BBCodeBaseConverter
+    public abstract class BbCodeBaseConverter
     {
         #region Static Fields
         private static readonly IList<string> BbType = new List<string>
@@ -132,11 +132,11 @@ namespace Slimcat.Utilities
 
         private static readonly IList<string> SpecialBbCases = new List<string> { "url", "channel", "user", "icon", "color" };
 
-        private static readonly string[] ValidStartTerms = new[] { "http://", "https://", "ftp://" };
+        private static readonly string[] ValidStartTerms = { "http://", "https://", "ftp://" };
         #endregion
 
         #region Constructors
-        protected BBCodeBaseConverter(IChatModel chatModel)
+        protected BbCodeBaseConverter(IChatModel chatModel)
         {
             this.ChatModel = chatModel;
         }
@@ -250,6 +250,11 @@ namespace Slimcat.Utilities
         private static string GetUrlDisplay(string args)
         {
             var match = ValidStartTerms.FirstOrDefault(args.StartsWith);
+            if (match == null)
+            {
+                return args;
+            }
+
             var stripped = args.Substring(match.Length);
 
             if (stripped.Contains('/'))
@@ -392,20 +397,22 @@ namespace Slimcat.Utilities
                 return MakeChannelLink(this.ChatModel.FindChannel(channel));
             }
 
-            if (y.StartsWith("color") && ApplicationSettings.AllowColors)
-            {
-                var colorString = StripBeforeType(y);
+            if (!y.StartsWith("color") || !ApplicationSettings.AllowColors) return new Span(x);
+            var colorString = StripBeforeType(y);
 
-                try
+            try
+            {
+                var convertFromString = ColorConverter.ConvertFromString(colorString);
+                if (convertFromString != null)
                 {
-                    var color = (Color)ColorConverter.ConvertFromString(colorString);
+                    var color = (Color)convertFromString;
                     var brush = new SolidColorBrush(color);
                     return new Span(x) { Foreground = brush };
                 }
-                catch
-                {
-                    return new Span(x);
-                }
+            }
+            catch // the color might be invalid, so ignore if it is
+            {
+                return new Span(x);
             }
 
             return new Span(x);
@@ -456,7 +463,7 @@ namespace Slimcat.Utilities
             var endIndex = roughString.IndexOf("[/" + endType + "]", StringComparison.Ordinal);
             var endLength = ("[/" + endType + "]").Length;
 
-            // for BBCode with arguments, we must do this
+            // for BbCode with arguments, we must do this
             if (SpecialBbCases.Any(bbcase => startType.Equals(bbcase)))
             {
                 startType += "=";
@@ -522,12 +529,10 @@ namespace Slimcat.Utilities
     /// <summary>
     /// Converts active messages into textblock inlines.
     /// </summary>
-// ReSharper disable ClassNeverInstantiated.Global
-    public sealed class BBCodePostConverter : BBCodeBaseConverter, IMultiValueConverter
-// ReSharper restore ClassNeverInstantiated.Global
+    public sealed class BbCodePostConverter : BbCodeBaseConverter, IMultiValueConverter
     {
         #region Constructors
-        public BBCodePostConverter(IChatModel chatModel)
+        public BbCodePostConverter(IChatModel chatModel)
             : base(chatModel)
         {
         }
@@ -635,12 +640,10 @@ namespace Slimcat.Utilities
     /// <summary>
     /// Converts active messages into flow document inlines.
     /// </summary>
-// ReSharper disable ClassNeverInstantiated.Global
-    public sealed class BBFlowConverter : BBCodeBaseConverter, IValueConverter
-// ReSharper restore ClassNeverInstantiated.Global
+    public sealed class BbFlowConverter : BbCodeBaseConverter, IValueConverter
     {
         #region Constructors
-        public BBFlowConverter(IChatModel chatModel)
+        public BbFlowConverter(IChatModel chatModel)
             : base(chatModel)
         {
         }
@@ -707,12 +710,10 @@ namespace Slimcat.Utilities
     /// <summary>
     ///  Converts history messages into document inlines.
     /// </summary>
-// ReSharper disable ClassNeverInstantiated.Global
-    public sealed class BBCodeConverter : BBCodeBaseConverter, IValueConverter
-// ReSharper restore ClassNeverInstantiated.Global
+    public sealed class BbCodeConverter : BbCodeBaseConverter, IValueConverter
     {
         #region Constructors
-        public BBCodeConverter(IChatModel chatModel)
+        public BbCodeConverter(IChatModel chatModel)
             : base(chatModel)
         {
         }
@@ -757,43 +758,49 @@ namespace Slimcat.Utilities
             try
             {
                 var gender = (Gender)values[0];
-                var paleColor = (Color)Application.Current.FindResource("ForegroundColor");
-                Color brightColor;
-                if (values.Length > 1 && (bool)values[1])
+                var findResource = Application.Current.FindResource("ForegroundColor");
+                if (findResource != null)
                 {
-                    brightColor = (Color)Application.Current.TryFindResource("ContrastColor");
-                }
-                else
-                {
-                    brightColor = (Color)Application.Current.FindResource("HighlightColor");
-                }
+                    var paleColor = (Color)findResource;
+                    Color brightColor;
+                    if (values.Length > 1 && (bool)values[1])
+                    {
+                        brightColor = (Color)Application.Current.TryFindResource("ContrastColor");
+                    }
+                    else
+                    {
+                        brightColor = (Color)Application.Current.TryFindResource("HighlightColor");
+                    }
 
-                var stops = new List<GradientStop>
-                                {
-                                    new GradientStop(paleColor, 0.0),
-                                    new GradientStop(paleColor, 0.5),
-                                    new GradientStop(brightColor, 0.5),
-                                    new GradientStop(brightColor, 1.0)
-                                };
+                    var stops = new List<GradientStop>
+                    {
+                        new GradientStop(paleColor, 0.0),
+                        new GradientStop(paleColor, 0.5),
+                        new GradientStop(brightColor, 0.5),
+                        new GradientStop(brightColor, 1.0)
+                    };
 
-                switch (gender)
-                {
-                    case Gender.HermF:
-                        return new LinearGradientBrush(new GradientStopCollection(stops), 0);
-                    case Gender.HermM:
-                        return new LinearGradientBrush(new GradientStopCollection(stops));
+                    switch (gender)
+                    {
+                        case Gender.HermF:
+                            return new LinearGradientBrush(new GradientStopCollection(stops), 0);
+                        case Gender.HermM:
+                            return new LinearGradientBrush(new GradientStopCollection(stops));
 
-                    case Gender.Cuntboy:
-                    case Gender.Shemale:
-                        return Application.Current.FindResource("ForegroundBrush");
-                    default:
-                        return new SolidColorBrush(brightColor);
+                        case Gender.Cuntboy:
+                        case Gender.Shemale:
+                            return Application.Current.FindResource("ForegroundBrush");
+                        default:
+                            return new SolidColorBrush(brightColor);
+                    }
                 }
             }
             catch
             {
                 return new SolidColorBrush();
             }
+
+            return new SolidColorBrush();
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

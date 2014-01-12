@@ -3,7 +3,8 @@
            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
            xmlns:lib="clr-namespace:Slimcat.Libraries" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-           xmlns:models="clr-namespace:Slimcat.Models" mc:Ignorable="d"
+           xmlns:models="clr-namespace:Slimcat.Models"
+           mc:Ignorable="d"
            Margin="0,2"
            Padding="0"
            Foreground="{StaticResource ForegroundBrush}"
@@ -43,5 +44,5 @@
         </Hyperlink.InputBindings>
     </Hyperlink>
 
-    <Span lib:SpanHelper.InlineSource="{Binding Message, Mode=OneTime, Converter={StaticResource BBFlowConverter}, IsAsync=True}"/>
+    <Span lib:SpanHelper.InlineSource="{Binding Message, Mode=OneTime, Converter={StaticResource BbFlowConverter}, IsAsync=True}"/>
 </Paragraph>

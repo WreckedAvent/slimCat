@@ -12,19 +12,17 @@
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat.Models;
-    using Slimcat.Services;
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    using Models;
+    using Services;
+    using Utilities;
+    using Views;
 
     #endregion
 
     /// <summary>
     ///     Used for most communications between users.
     /// </summary>
-    // ReSharper disable ClassNeverInstantiated.Global
     public class PmChannelViewModel : ChannelViewModelBase
-    // ReSharper restore ClassNeverInstantiated.Global
     {
         #region Fields
 

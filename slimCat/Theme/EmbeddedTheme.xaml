@@ -3,7 +3,8 @@
                     xmlns:utilities="clr-namespace:Slimcat.Utilities"
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                    xmlns:models="clr-namespace:Slimcat.Models" mc:Ignorable="d">
+                    xmlns:models="clr-namespace:Slimcat.Models"
+                    mc:Ignorable="d">
 
     <SolidColorBrush Color="{StaticResource ForegroundColor}" Opacity="0.9" x:Key="HistoryBrush" />
 

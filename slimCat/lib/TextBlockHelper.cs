@@ -173,7 +173,7 @@ namespace Slimcat.Libraries
         {
             var span = d as Span;
             var inlines = GetInlineSource(span);
-            if (inlines == null)
+            if (inlines == null || span == null)
             {
                 return;
             }

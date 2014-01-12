@@ -29,22 +29,13 @@
 
 namespace Slimcat.Views
 {
-    using System;
-
-    using Slimcat.Utilities;
-    using Slimcat.ViewModels;
+    using ViewModels;
 
     /// <summary>
     ///     Interaction logic for CharacterSelectView.xaml
     /// </summary>
     public partial class CharacterSelectView
     {
-        #region Fields
-
-        private readonly ViewModelBase vm;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
@@ -55,18 +46,8 @@ namespace Slimcat.Views
         /// </param>
         public CharacterSelectView(CharacterSelectViewModel vm)
         {
-            try
-            {
-                this.InitializeComponent();
-                this.vm = vm.ThrowIfNull("vm");
-
-                this.DataContext = this.vm;
-            }
-            catch (Exception ex)
-            {
-                ex.Source = "Character select view, init";
-                Exceptions.HandleException(ex);
-            }
+            this.InitializeComponent();
+            this.DataContext = vm;
         }
 
         #endregion

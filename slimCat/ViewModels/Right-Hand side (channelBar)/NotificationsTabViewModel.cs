@@ -36,17 +36,15 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat.Libraries;
-    using Slimcat.Models;
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    using Libraries;
+    using Models;
+    using Utilities;
+    using Views;
 
     /// <summary>
     ///     This is the tab labled "notifications" in the channel bar, or the bar on the right-hand side
     /// </summary>
-// ReSharper disable ClassNeverInstantiated.Global
     public class NotificationsTabViewModel : ChannelbarViewModelCommon
-// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Constants
 

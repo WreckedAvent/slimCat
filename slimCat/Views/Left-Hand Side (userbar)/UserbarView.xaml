@@ -60,7 +60,6 @@
                                 HorizontalAlignment="Right"
                                 Style="{StaticResource ImageContentButton}"
                                 Command="{Binding ToggleStatusWindowCommand}"
-                                Padding="0"
                                 FontSize="16" />
 
                         <WrapPanel HorizontalAlignment="Right"
@@ -90,6 +89,7 @@
 
             <Popup IsOpen="{Binding Path=IsChangingStatus, Mode=OneWay}"
                    PlacementTarget="{Binding ElementName=PopupAnchor}"
+                   Grid.Row="0"
                    Placement="Center">
                 <Border BorderBrush="{StaticResource HighlightBrush}"
                         BorderThickness="1">
@@ -128,8 +128,7 @@
                 <StackPanel>
                     <Expander Header="Conversations"
                               IsExpanded="{Binding Path=PmsAreExpanded}"
-                              Visibility="{Binding Path=HasPms, Converter={StaticResource BoolConverter}}"
-                              Grid.Row="1">
+                              Visibility="{Binding Path=HasPms, Converter={StaticResource BoolConverter}}">
                         <ListBox ItemsSource="{Binding Path=ChatModel.CurrentPms, Mode=OneWay}"
                                  HorizontalContentAlignment="Stretch"
                                  SelectedIndex="{Binding Path=PmSelected, Mode=TwoWay}">
@@ -141,8 +140,7 @@
                         </ListBox>
                     </Expander>
                     <Expander Header="Channels"
-                              IsExpanded="{Binding Path=ChannelsAreExpanded}"
-                              Grid.Row="2">
+                              IsExpanded="{Binding Path=ChannelsAreExpanded}">
                         <ListBox ItemsSource="{Binding Path=ChatModel.CurrentChannels, Mode=OneWay}"
                                  HorizontalContentAlignment="Stretch"
                                  SelectedIndex="{Binding Path=ChannelSelected, Mode=TwoWay}">

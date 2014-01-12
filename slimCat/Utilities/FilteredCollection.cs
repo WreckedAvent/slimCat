@@ -7,14 +7,14 @@
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
-    using Slimcat.ViewModels;
+    using ViewModels;
 
     /// <summary>
     ///     A filtered observable collection which syncronizes with another collection
     /// </summary>
     /// <typeparam name="T">The type of collection to filter</typeparam>
     /// <typeparam name="TR">The type of collection to return</typeparam>
-    public class FilteredCollection<T, TR> : SysProp, IDisposable
+    public class FilteredCollection<T, TR> : SysProp
         where T : TR
     {
         #region Fields

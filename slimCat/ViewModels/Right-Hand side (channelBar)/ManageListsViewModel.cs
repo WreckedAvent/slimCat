@@ -22,9 +22,6 @@
 //   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 //   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // </copyright>
-// <summary>
-//   The manage lists view model.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Slimcat.ViewModels
@@ -37,17 +34,14 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat;
-    using Slimcat.Models;
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    using Models;
+    using Utilities;
+    using Views;
 
     /// <summary>
     ///     The manage lists view model.
     /// </summary>
-// ReSharper disable ClassNeverInstantiated.Global
     public class ManageListsViewModel : ChannelbarViewModelCommon
-// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Constants
 

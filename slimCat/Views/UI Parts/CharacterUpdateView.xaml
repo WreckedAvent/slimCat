@@ -42,42 +42,13 @@
         </Hyperlink.InputBindings>
     </Hyperlink>
 
-    <Span lib:SpanHelper.InlineSource="{Binding Path=Arguments, Mode=OneTime, Converter={StaticResource BBCodeConverter}, IsAsync=True}"/>
+    <Span lib:SpanHelper.InlineSource="{Binding Path=Arguments, Mode=OneTime, Converter={StaticResource BbCodeConverter}, IsAsync=True}"/>
     
     <InlineUIContainer>
         <v:CloseButtonView VerticalAlignment="Top"
-                               Command="{Binding Path=DataContext.RemoveNotificationCommand,
-                               RelativeSource={RelativeSource Mode=FindAncestor,
-                               AncestorType={x:Type FlowDocument}} }"
-                               CommandParameter="{Binding}" />
+                            Command="{Binding Path=DataContext.RemoveNotificationCommand,
+                            RelativeSource={RelativeSource Mode=FindAncestor,
+                            AncestorType={x:Type FlowDocument}} }"
+                            CommandParameter="{Binding}" />
     </InlineUIContainer>
 </Paragraph>
-
-<!--<DataTemplate x:Key="CharacterUpdateTemplate" 
-                  DataType="models:CharacterUpdateModel">
-            <Grid ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="auto" />
-                </Grid.ColumnDefinitions>
-                
-                <TextBlock Foreground="{StaticResource ForegroundBrush}"
-                       TextAlignment="Left"
-                       TextWrapping="Wrap">
-                    <lib:TextBlockHelper.InlineList>
-                        <MultiBinding Converter="{StaticResource BBPostConverter}">
-                            <Binding Path="."
-                                     Mode="OneTime" />
-                        </MultiBinding>
-                    </lib:TextBlockHelper.InlineList>
-                </TextBlock>
-
-                <v:CloseButtonView Grid.Column="1"
-                               VerticalAlignment="Top"
-                              Command="{Binding Path=DataContext.RemoveNotificationCommand,
-                               RelativeSource={RelativeSource Mode=FindAncestor,
-                               AncestorType={x:Type Grid}, AncestorLevel=2} }"
-                               CommandParameter="{Binding}" />
-            </Grid>
-        </DataTemplate>
--->

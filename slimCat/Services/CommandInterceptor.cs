@@ -53,9 +53,7 @@ namespace Slimcat.Services
     ///     It also coordinates them to prevent collisions.
     ///     This intercepts just about every single command that the server sends.
     /// </summary>
-// ReSharper disable ClassNeverInstantiated.Global
     internal class CommandInterceptor : ViewModelBase
-// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Fields
 
@@ -600,7 +598,7 @@ namespace Slimcat.Services
             this.Events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(this.ChatModel.FindChannel(id, title), args));
         }
 
-        private new void JoinChannelCommand(IDictionary<string, object> command)
+        private void JoinChannelCommand(IDictionary<string, object> command)
         {
             var title = (string)command["title"];
             var channelName = (string)command["channel"];
@@ -634,13 +632,13 @@ namespace Slimcat.Services
                                     {
                                         Joined = true, 
                                         TargetChannel = channel.Title, 
-                                        TargetChannelID = channel.Id
+                                        TargetChannelId = channel.Id
                                     }));
                 }
             }
         }
 
-        private new void KickCommand(IDictionary<string, object> command)
+        private void KickCommand(IDictionary<string, object> command)
         {
             var kicker = (string)command["operator"];
             var channelId = (string)command["channel"];
@@ -693,7 +691,7 @@ namespace Slimcat.Services
                                 {
                                     Joined = false, 
                                     TargetChannel = channel.Title, 
-                                    TargetChannelID = channel.Id
+                                    TargetChannelId = channel.Id
                                 }));
             }
         }
@@ -890,12 +888,12 @@ namespace Slimcat.Services
             }
         }
 
-        private void PromoteOrDemote(string character, bool isPromote, string channelID = null)
+        private void PromoteOrDemote(string character, bool isPromote, string channelId = null)
         {
             string title = null;
-            if (channelID != null)
+            if (channelId != null)
             {
-                var channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelID);
+                var channel = this.ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
                 if (channel != null)
                 {
                     title = channel.Title;
@@ -913,7 +911,7 @@ namespace Slimcat.Services
                             target, 
                             new CharacterUpdateModel.PromoteDemoteEventArgs
                                 {
-                                    TargetChannelID = channelID, 
+                                    TargetChannelId = channelId, 
                                     TargetChannel = title, 
                                     IsPromote = isPromote, 
                                 }));
@@ -964,7 +962,7 @@ namespace Slimcat.Services
                 this.Events.GetEvent<NewUpdateEvent>()
                     .Publish(
                         new CharacterUpdateModel(
-                            sender, new CharacterUpdateModel.NoteEventArgs { Subject = subject, NoteID = id }));
+                            sender, new CharacterUpdateModel.NoteEventArgs { Subject = subject, NoteId = id }));
             }
             else if (type != null && type.Equals("comment"))
             {
@@ -989,10 +987,10 @@ namespace Slimcat.Services
                             character, 
                             new CharacterUpdateModel.CommentEventArgs
                                 {
-                                    CommentID = commentId, 
+                                    CommentId = commentId, 
                                     CommentType = commentType, 
-                                    ParentID = parentId, 
-                                    TargetID = targetId, 
+                                    ParentId = parentId, 
+                                    TargetId = targetId, 
                                     Title = title
                                 }));
             }
@@ -1179,7 +1177,7 @@ namespace Slimcat.Services
                 delegate
                     {
                         Application.Current.MainWindow.Title = string.Format(
-                            "{0} {1} ({2})", Constants.ClientID, Constants.ClientName, character);
+                            "{0} {1} ({2})", Constants.ClientId, Constants.ClientName, character);
                     });
         }
 

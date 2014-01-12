@@ -35,10 +35,9 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat;
-    using Slimcat.Models;
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    using Models;
+    using Utilities;
+    using Views;
 
     /// <summary>
     ///     A specific viewmodel for the chat wrapper itself

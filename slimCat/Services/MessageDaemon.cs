@@ -35,7 +35,6 @@ namespace Slimcat.Services
     using System.Linq;
     using System.Windows;
     using System.Windows.Threading;
-
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
@@ -848,7 +847,7 @@ namespace Slimcat.Services
             var args = latest.Arguments as CharacterUpdateModel.ReportFiledEventArgs;
 
             command.Add("type", "SFC");
-            command.Add("callid", args.CallId);
+            if (args != null) command.Add("callid", args.CallId);
             command.Add("action", "confirm");
 
             this.JoinChannel(ChannelType.PrivateMessage, latest.TargetCharacter.Name);
@@ -909,6 +908,11 @@ namespace Slimcat.Services
         private void CommandRecieved(IDictionary<string, object> command)
         {
             var type = command["type"] as string;
+
+            if (type == null)
+            {
+                return;
+            }
 
             try
             {

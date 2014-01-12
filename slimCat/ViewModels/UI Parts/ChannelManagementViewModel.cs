@@ -36,9 +36,8 @@ namespace Slimcat.ViewModels
 
     using Microsoft.Practices.Prism.Events;
 
-    using Slimcat;
-    using Slimcat.Libraries;
-    using Slimcat.Models;
+    using Libraries;
+    using Models;
 
     /// <summary>
     ///     The channel management view model.

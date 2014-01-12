@@ -2,7 +2,7 @@
 {
     using System;
 
-    using Slimcat.Utilities;
+    using Utilities;
 
     /// <summary>
     ///     The message base.

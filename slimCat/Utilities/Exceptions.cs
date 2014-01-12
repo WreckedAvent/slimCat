@@ -34,7 +34,6 @@ namespace Slimcat.Utilities
     using System.Windows.Forms;
     using System.Windows.Threading;
 
-    using Application = System.Windows.Application;
     using MessageBox = System.Windows.Forms.MessageBox;
 
     internal static class Exceptions
@@ -72,6 +71,7 @@ namespace Slimcat.Utilities
                     file.WriteLine(DateTime.UtcNow);
                     file.WriteLine("====================================");
                     file.WriteLine();
+                    file.WriteLine("Version: {0}", Constants.FriendlyName);
                     file.WriteLine("Exception: {0}", ex.Message);
                     file.WriteLine("Occured at: {0}", ex.Source);
                     file.WriteLine();
@@ -89,8 +89,6 @@ namespace Slimcat.Utilities
                     file.WriteLine("END EXCEPTION REPORT");
                     file.WriteLine("====================================");
                     file.Flush();
-
-                    var dis = Application.Current.Dispatcher;
 
                     MessageBox.Show(message, "An error has occured!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }

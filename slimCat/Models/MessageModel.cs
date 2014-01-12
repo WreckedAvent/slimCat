@@ -30,8 +30,7 @@
 namespace Slimcat.Models
 {
     using System.Windows.Documents;
-
-    using Slimcat.Views;
+    using Views;
 
     /// <summary>
     ///     A model to hold data on messages

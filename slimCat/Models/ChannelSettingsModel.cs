@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Windows.Input;
 
-    using Slimcat.Libraries;
+    using Libraries;
 
     /// <summary>
     ///     Channel settings specific to each channel

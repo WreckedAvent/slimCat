@@ -29,19 +29,13 @@
 
 namespace Slimcat.Views
 {
-    using Slimcat.ViewModels;
+    using ViewModels;
 
     /// <summary>
     ///     The actual view for the tab on the right-hand side labeled 'global'
     /// </summary>
     public partial class GlobalTabView
     {
-        #region Fields
-
-        private readonly GlobalTabViewModel vm;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
@@ -53,9 +47,7 @@ namespace Slimcat.Views
         public GlobalTabView(GlobalTabViewModel vm)
         {
             this.InitializeComponent();
-            this.vm = vm;
-
-            this.DataContext = this.vm;
+            this.DataContext = vm;
         }
 
         #endregion

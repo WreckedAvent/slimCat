@@ -41,7 +41,6 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat;
     using Models;
     using Services;
     using Utilities;
@@ -156,11 +155,11 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the client id string.
         /// </summary>
-        public static string ClientIDString
+        public static string ClientIdString
         {
             get
             {
-                return string.Format("{0} {1} ({2})", Constants.ClientID, Constants.ClientName, Constants.ClientVer);
+                return string.Format("{0} {1} ({2})", Constants.ClientId, Constants.ClientName, Constants.ClientVer);
             }
         }
 
@@ -453,6 +452,11 @@ namespace Slimcat.ViewModels
                 {
                     using (var stream = client.OpenRead(NewVersionLink))
                     {
+                        if (stream == null)
+                        {
+                            return;
+                        }
+
                         using (var reader = new StreamReader(stream))
                         {
                             args = reader.ReadToEnd().Split(',');

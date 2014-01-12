@@ -36,12 +36,12 @@ namespace Slimcat.Models
     using System.Net.Cache;
     using System.Windows.Media.Imaging;
 
-    using Slimcat.ViewModels;
+    using ViewModels;
 
     /// <summary>
     ///     A character model which stores data related to characters
     /// </summary>
-    public sealed class CharacterModel : SysProp, ICharacter, IDisposable
+    public sealed class CharacterModel : SysProp, ICharacter
     {
         #region Fields
 

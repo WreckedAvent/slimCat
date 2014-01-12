@@ -35,8 +35,8 @@ namespace Slimcat.Views
     using System.Windows.Input;
     using System.Windows.Markup;
 
-    using Slimcat.Models;
-    using Slimcat.ViewModels;
+    using Models;
+    using ViewModels;
 
     /// <summary>
     ///     Interaction logic for ChannelTextBoxEntryView.xaml
@@ -176,7 +176,7 @@ namespace Slimcat.Views
                     this.Entry.Text = this.Entry.Text.Insert(caretIndex, string.Format("[{0}][/{0}]", bbtag));
                     this.Entry.CaretIndex = caretIndex + bbtag.Length + 2;
 
-                    // 2 is a magic number representing the brackets around the BBCode
+                    // 2 is a magic number representing the brackets around the BbCode
                 }
             }
         }

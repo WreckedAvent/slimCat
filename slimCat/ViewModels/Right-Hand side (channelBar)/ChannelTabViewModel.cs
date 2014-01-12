@@ -37,8 +37,8 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat.Models;
-    using Slimcat.Views;
+    using Models;
+    using Views;
 
     /// <summary>
     ///     The channels tab view model.

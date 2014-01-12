@@ -29,20 +29,18 @@
 
 namespace Slimcat.ViewModels
 {
-    using System;
     using System.Collections.Generic;
     using System.Windows.Input;
 
     using Microsoft.Practices.Prism.Events;
 
-    using Slimcat;
-    using Slimcat.Libraries;
-    using Slimcat.Models;
+    using Libraries;
+    using Models;
 
     /// <summary>
     ///     The create report view model.
     /// </summary>
-    public sealed class CreateReportViewModel : SysProp, IDisposable
+    public sealed class CreateReportViewModel : SysProp
     {
         #region Fields
 

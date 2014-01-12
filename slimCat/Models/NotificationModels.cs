@@ -34,8 +34,8 @@ namespace Slimcat.Models
     using System.Text;
     using System.Windows.Documents;
 
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    using Utilities;
+    using Views;
 
     /// <summary>
     ///     The notification model.
@@ -185,7 +185,7 @@ namespace Slimcat.Models
             /// <summary>
             ///     Gets or sets the comment id.
             /// </summary>
-            public long CommentID { get; set; }
+            public long CommentId { get; set; }
 
             /// <summary>
             ///     Gets or sets the comment type.
@@ -205,26 +205,26 @@ namespace Slimcat.Models
                             return string.Format(
                                 "{0}/newspost/{1}/#Comment{2}", 
                                 Constants.UrlConstants.Domain, 
-                                this.TargetID, 
-                                this.CommentID);
+                                this.TargetId, 
+                                this.CommentId);
                         case CommentTypes.BugReport:
                             return string.Format(
                                 "{0}/view_bugreport.php?id={1}#Comment{2}", 
                                 Constants.UrlConstants.Domain, 
-                                this.TargetID, 
-                                this.CommentID);
+                                this.TargetId, 
+                                this.CommentId);
                         case CommentTypes.ChangeLog:
                             return string.Format(
                                 "{0}/log.php?id={1}#Comment{2}", 
                                 Constants.UrlConstants.Domain, 
-                                this.TargetID, 
-                                this.CommentID);
+                                this.TargetId, 
+                                this.CommentId);
                         case CommentTypes.Feature:
                             return string.Format(
                                 "{0}/vote.php?fid={1}#Comment{2}", 
                                 Constants.UrlConstants.Domain, 
-                                this.TargetID, 
-                                this.CommentID);
+                                this.TargetId, 
+                                this.CommentId);
                         default:
                             return string.Empty;
                     }
@@ -234,12 +234,12 @@ namespace Slimcat.Models
             /// <summary>
             ///     Gets or sets the parent id.
             /// </summary>
-            public long ParentID { get; set; }
+            public long ParentId { get; set; }
 
             /// <summary>
             ///     Gets or sets the target id. This is the parent of whatever we were replied to.
             /// </summary>
-            public long TargetID { get; set; }
+            public long TargetId { get; set; }
 
             /// <summary>
             ///     Gets or sets the title.
@@ -258,7 +258,7 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                if (this.ParentID == 0)
+                if (this.ParentId == 0)
                 {
                     // not a comment, but a suggestion, newspost, etc.
                     return "has replied to your " + CommentTypeToString(this.CommentType) + ", "
@@ -307,7 +307,7 @@ namespace Slimcat.Models
             /// <summary>
             ///     Gets or sets the target channel id.
             /// </summary>
-            public string TargetChannelID { get; set; }
+            public string TargetChannelId { get; set; }
 
             #endregion
 
@@ -437,14 +437,14 @@ namespace Slimcat.Models
             {
                 get
                 {
-                    return Constants.UrlConstants.ViewNote + this.NoteID;
+                    return Constants.UrlConstants.ViewNote + this.NoteId;
                 }
             }
 
             /// <summary>
             ///     Gets or sets the note id.
             /// </summary>
-            public long NoteID { get; set; }
+            public long NoteId { get; set; }
 
             /// <summary>
             ///     Gets or sets the subject.
@@ -489,7 +489,7 @@ namespace Slimcat.Models
             /// <summary>
             ///     Gets or sets the target channel id.
             /// </summary>
-            public string TargetChannelID { get; set; }
+            public string TargetChannelId { get; set; }
 
             #endregion
 

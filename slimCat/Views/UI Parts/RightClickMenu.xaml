@@ -53,7 +53,7 @@
                                MaxWidth="200"
                                Margin="5,0">
                         <lib:TextBlockHelper.InlineList>
-                            <Binding Converter="{StaticResource BBCodeConverter}"
+                            <Binding Converter="{StaticResource BbCodeConverter}"
                                      Path="RightClickMenuViewModel.Target.StatusMessage" />
                         </lib:TextBlockHelper.InlineList>
                     </TextBlock>

@@ -40,10 +40,8 @@ namespace Slimcat.Utilities
     using Microsoft.Practices.Unity;
 
     using Models;
-
-    using Slimcat.Services;
-
-    using Slimcat.ViewModels;
+    using Services;
+    using ViewModels;
 
     /// <summary>
     ///     Bootstrapper responsible for starting the application,
@@ -75,9 +73,9 @@ namespace Slimcat.Utilities
                 this.Container.Resolve<CommandInterceptor>();
 
                 // some resources that are dependant on our singletons
-                Application.Current.Resources.Add("BBCodeConverter", this.Container.Resolve<BBCodeConverter>());
-                Application.Current.Resources.Add("BBFlowConverter", this.Container.Resolve<BBFlowConverter>());
-                Application.Current.Resources.Add("BBPostConverter", this.Container.Resolve<BBCodePostConverter>());
+                Application.Current.Resources.Add("BbCodeConverter", this.Container.Resolve<BbCodeConverter>());
+                Application.Current.Resources.Add("BbFlowConverter", this.Container.Resolve<BbFlowConverter>());
+                Application.Current.Resources.Add("BbPostConverter", this.Container.Resolve<BbCodePostConverter>());
 
             }
             catch (Exception ex)

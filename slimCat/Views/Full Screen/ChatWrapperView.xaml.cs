@@ -29,10 +29,7 @@
 
 namespace Slimcat.Views
 {
-    using System;
-
-    using Slimcat.Utilities;
-    using Slimcat.ViewModels;
+    using ViewModels;
 
     /// <summary>
     ///     Interaction logic for ChatWrapperView.xaml
@@ -58,12 +55,6 @@ namespace Slimcat.Views
 
         #endregion
 
-        #region Fields
-
-        private readonly ViewModelBase vm;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
@@ -74,19 +65,8 @@ namespace Slimcat.Views
         /// </param>
         public ChatWrapperView(ChatWrapperViewModel vm)
         {
-            try
-            {
-                this.InitializeComponent();
-
-                this.vm = vm.ThrowIfNull("vm");
-
-                this.DataContext = this.vm;
-            }
-            catch (Exception ex)
-            {
-                ex.Source = "Chat Wrapper View, init";
-                Exceptions.HandleException(ex);
-            }
+            this.InitializeComponent();
+            this.DataContext = vm;
         }
 
         #endregion

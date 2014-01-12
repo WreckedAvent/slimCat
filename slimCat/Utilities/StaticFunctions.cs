@@ -9,7 +9,7 @@
     using System.Windows;
     using System.Windows.Media;
 
-    using Slimcat.Models;
+    using Models;
 
     /// <summary>
     ///     The static functions.
@@ -75,36 +75,36 @@
 
             var hasMatch = false;
 
-            if (startIndex != -1)
+            if (startIndex == -1)
+                return new Tuple<string, string>(string.Empty, string.Empty);
+
+            // this checks for if the match is a whole word
+            if (startIndex != 0)
             {
-                // this checks for if the match is a whole word
-                if (startIndex != 0)
+                // this weeds out matches such as 'big man' from matching 'i'
+                var prevChar = fullString[startIndex - 1];
+                hasMatch = char.IsWhiteSpace(prevChar) || (char.IsPunctuation(prevChar) && !prevChar.Equals('\''));
+
+                if (!hasMatch)
                 {
-                    // this weeds out matches such as 'big man' from matching 'i'
-                    var prevChar = fullString[startIndex - 1];
-                    hasMatch = char.IsWhiteSpace(prevChar) || (char.IsPunctuation(prevChar) && !prevChar.Equals('\''));
+                    return new Tuple<string, string>(string.Empty, string.Empty);
 
-                    if (!hasMatch)
-                    {
-                        return new Tuple<string, string>(string.Empty, string.Empty);
-
-                        // don't need to evaluate further if this failed
-                    }
+                    // don't need to evaluate further if this failed
                 }
+            }
 
-                if (startIndex + checkAgainst.Length < fullString.Length)
+            if (startIndex + checkAgainst.Length < fullString.Length)
+            {
+                // this weeds out matches such as 'its' from matching 'i'
+                var nextIndex = startIndex + checkAgainst.Length;
+                var nextChar = fullString[nextIndex];
+                hasMatch = char.IsWhiteSpace(nextChar) || char.IsPunctuation(nextChar);
+
+                // we only want the ' to match sometimes, such as <match word>'s
+                if (nextChar == '\'' && fullString.Length >= nextIndex++)
                 {
-                    // this weeds out matches such as 'its' from matching 'i'
-                    var nextIndex = startIndex + checkAgainst.Length;
-                    var nextChar = fullString[nextIndex];
-                    hasMatch = char.IsWhiteSpace(nextChar) || char.IsPunctuation(nextChar);
-
-                    // we only want the ' to match sometimes, such as <match word>'s
-                    if (nextChar == '\'' && fullString.Length >= nextIndex++)
-                    {
-                        nextChar = fullString[nextIndex];
-                        hasMatch = char.ToLower(nextChar) == 's';
-                    }
+                    nextChar = fullString[nextIndex];
+                    hasMatch = char.ToLower(nextChar) == 's';
                 }
             }
 
@@ -127,11 +127,11 @@
         /// </returns>
         public static string GetStringContext(string fullContent, string specificWord)
         {
-            const int MaxDistance = 150;
+            const int maxDistance = 150;
             var needle = fullContent.ToLower().IndexOf(specificWord.ToLower(), StringComparison.Ordinal);
 
-            var start = Math.Max(0, needle - MaxDistance);
-            var end = Math.Min(fullContent.Length, needle + MaxDistance);
+            var start = Math.Max(0, needle - maxDistance);
+            var end = Math.Min(fullContent.Length, needle + maxDistance);
 
             Func<int, int> findStartOfWord = suspectIndex =>
                 {
@@ -196,15 +196,11 @@
         {
             var safeMessage = HttpUtility.HtmlDecode(message.Message);
 
-            if (settings.NotifyIncludesCharacterNames)
-            {
-                if (message.Poster.Name.HasDingTermMatch(dingTerms))
-                {
-                    return true;
-                }
-            }
+            if (!settings.NotifyIncludesCharacterNames) return safeMessage.HasDingTermMatch(dingTerms);
 
-            return safeMessage.HasDingTermMatch(dingTerms);
+            var enumeratedDingTerm = dingTerms as string[] ?? dingTerms.ToArray();
+            return message.Poster.Name.HasDingTermMatch(enumeratedDingTerm) 
+                || safeMessage.HasDingTermMatch(enumeratedDingTerm);
         }
 
         /// <summary>

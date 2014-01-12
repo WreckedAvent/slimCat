@@ -37,11 +37,10 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat;
-    using Slimcat.Libraries;
-    using Slimcat.Models;
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    using Libraries;
+    using Models;
+    using Utilities;
+    using Views;
 
     /// <summary>
     ///     The ChannebarViewModel is a wrapper to hold the other viewmodels which form the gist of the interaction network.

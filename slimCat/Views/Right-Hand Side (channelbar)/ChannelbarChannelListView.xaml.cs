@@ -29,19 +29,13 @@
 
 namespace Slimcat.Views
 {
-    using Slimcat.ViewModels;
+    using ViewModels;
 
     /// <summary>
     ///     Interaction logic for ChanneListView.xaml
     /// </summary>
     public partial class ChannelTabView
     {
-        #region Fields
-
-        private readonly ChannelsTabViewModel vm;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
@@ -53,9 +47,7 @@ namespace Slimcat.Views
         public ChannelTabView(ChannelsTabViewModel vm)
         {
             this.InitializeComponent();
-            this.vm = vm;
-
-            this.DataContext = this.vm;
+            this.DataContext = vm;
         }
 
         #endregion

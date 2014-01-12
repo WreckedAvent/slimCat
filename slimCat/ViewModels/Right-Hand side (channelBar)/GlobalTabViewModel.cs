@@ -38,10 +38,9 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat;
-    using Slimcat.Models;
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    using Models;
+    using Utilities;
+    using Views;
 
     /// <summary>
     ///     On the channel bar (right-hand side) the 'users' tab, only it shows the entire list

@@ -3,8 +3,8 @@
     using System;
     using System.Windows.Input;
 
-    using Slimcat.Libraries;
-    using Slimcat.Utilities;
+    using Libraries;
+    using Utilities;
 
     /// <summary>
     ///     Search settings to be used with a search text box tool cahin

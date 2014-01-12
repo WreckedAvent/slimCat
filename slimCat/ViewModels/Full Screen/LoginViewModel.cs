@@ -38,12 +38,11 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat;
-    using Slimcat.Libraries;
-    using Slimcat.Models;
-    using Slimcat.Properties;
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    using Libraries;
+    using Models;
+    using Properties;
+    using Utilities;
+    using Views;
 
     /// <summary>
     ///     The LoginViewModel is responsible for displaying login details to the user.

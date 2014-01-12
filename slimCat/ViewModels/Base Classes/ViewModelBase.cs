@@ -41,11 +41,10 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat;
-    using Slimcat.Libraries;
-    using Slimcat.Models;
-    using Slimcat.Services;
-    using Slimcat.Utilities;
+    using Libraries;
+    using Models;
+    using Services;
+    using Utilities;
 
     /// <summary>
     ///     The view model base.
@@ -458,7 +457,7 @@ namespace Slimcat.ViewModels
         /// </returns>
         private bool CanIgnore(object args)
         {
-            return !this.ChatModel.Ignored.Contains(args as string, StringComparer.OrdinalIgnoreCase);
+            return args is string && !this.ChatModel.Ignored.Contains(args as string, StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -714,7 +713,7 @@ namespace Slimcat.ViewModels
         private void StartLinkInDefaultBrowser(object link)
         {
             var interpret = link as string;
-            if (!interpret.Contains(".") || interpret.Contains(" "))
+            if (interpret != null && (!interpret.Contains(".") || interpret.Contains(" ")))
             {
                 interpret = "http://www.f-list.net/c/" + HttpUtility.UrlEncode(interpret);
             }

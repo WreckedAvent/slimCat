@@ -40,9 +40,9 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat.Libraries;
-    using Slimcat.Models;
-    using Slimcat.Utilities;
+    using Libraries;
+    using Models;
+    using Utilities;
 
     /// <summary>
     ///     This holds most of the logic for channel view models. Changing behaviors between channels should be done by overriding methods.

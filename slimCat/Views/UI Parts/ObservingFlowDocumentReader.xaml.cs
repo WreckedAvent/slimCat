@@ -9,9 +9,8 @@ namespace Slimcat.Views
     using System.Collections.Specialized;
 
     using System.Linq;
-
-    using Slimcat.Models;
-    using Slimcat.Utilities;
+    using Models;
+    using Utilities;
 
     /// <summary>
     /// Interaction logic for ObservingFlowDocumentReader.xaml

@@ -1,8 +1,7 @@
 ﻿namespace Slimcat.Services
 {
     using System.Collections.Generic;
-
-    using Slimcat.Models;
+    using Models;
 
     /// <summary>
     ///     The ChatConnection interface.

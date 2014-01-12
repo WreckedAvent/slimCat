@@ -323,7 +323,7 @@
         /// <summary>
         ///     The non command commands.
         /// </summary>
-        public static readonly string[] NonCommandCommands = new[] 
+        public static readonly string[] NonCommandCommands =
         { // prevents long ugly checking in our viewmodels for these
             "/me", "/warn", "/post" 
         };

@@ -33,7 +33,7 @@ namespace Slimcat.Models
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
 
-    using Slimcat.Properties;
+    using Properties;
 
     /// <summary>
     ///     A model which stores information relevant to accessing an F-list account,

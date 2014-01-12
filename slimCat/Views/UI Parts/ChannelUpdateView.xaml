@@ -28,7 +28,7 @@
         <Run Text="{Binding Path=TargetChannel.Title, Mode=OneTime}" />
     </Hyperlink>
 
-    <Span lib:SpanHelper.InlineSource="{Binding Path=Arguments, Mode=OneTime, Converter={StaticResource BBCodeConverter}, IsAsync=True}"/>
+    <Span lib:SpanHelper.InlineSource="{Binding Path=Arguments, Mode=OneTime, Converter={StaticResource BbCodeConverter}, IsAsync=True}"/>
     
     <InlineUIContainer>
         <v:CloseButtonView VerticalAlignment="Top"

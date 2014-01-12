@@ -35,7 +35,7 @@ namespace Slimcat.Models
     using System.Collections.Specialized;
     using System.Linq;
 
-    using Slimcat.Utilities;
+    using Utilities;
 
     /// <summary>
     ///     The general channel model.

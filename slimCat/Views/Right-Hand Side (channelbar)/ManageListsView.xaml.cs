@@ -29,19 +29,13 @@
 
 namespace Slimcat.Views
 {
-    using Slimcat.ViewModels;
+    using ViewModels;
 
     /// <summary>
     ///     The actual view for the tab on the right-hand side labeled 'users'
     /// </summary>
     public partial class ManageListsTabView
     {
-        #region Fields
-
-        private readonly ManageListsViewModel vm;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
@@ -53,9 +47,7 @@ namespace Slimcat.Views
         public ManageListsTabView(ManageListsViewModel vm)
         {
             this.InitializeComponent();
-            this.vm = vm;
-
-            this.DataContext = this.vm;
+            this.DataContext = vm;
         }
 
         #endregion

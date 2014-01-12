@@ -12,8 +12,7 @@
     <Grid TextBlock.Foreground="{StaticResource ForegroundBrush}"
           TextBlock.FontSize="14">
 
-        <DockPanel Grid.Row="1"
-                   LastChildFill="True">
+        <DockPanel LastChildFill="True">
             <Popup PlacementTarget="{Binding ElementName=PopupAnchor}"
                    Placement="Center"
                    IsOpen="{Binding Path=SearchSettings.IsChangingSettings}"

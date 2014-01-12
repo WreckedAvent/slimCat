@@ -6,7 +6,7 @@
     using System.Windows.Media.Animation;
     using System.Windows.Threading;
 
-    using Slimcat.ViewModels;
+    using ViewModels;
 
     using Point = System.Windows.Point;
 
@@ -15,12 +15,6 @@
     /// </summary>
     public partial class NotificationsView
     {
-        #region Fields
-
-        private readonly ToastNotificationsViewModel vm;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
@@ -32,9 +26,7 @@
         public NotificationsView(ToastNotificationsViewModel vm)
         {
             this.InitializeComponent();
-
-            this.vm = vm;
-            this.DataContext = this.vm;
+            this.DataContext = vm;
         }
 
         #endregion
@@ -52,7 +44,14 @@
                     () =>
                         {
                             var workingArea = Screen.PrimaryScreen.WorkingArea;
-                            var transform = PresentationSource.FromVisual(this).CompositionTarget.TransformFromDevice;
+                            var presentationSource = PresentationSource.FromVisual(this);
+                            if (presentationSource == null
+                                || presentationSource.CompositionTarget == null)
+                            {
+                                return;
+                            }
+
+                            var transform = presentationSource.CompositionTarget.TransformFromDevice;
                             var corner = transform.Transform(new Point(workingArea.Right, workingArea.Bottom));
 
                             this.Left = corner.X - this.ActualWidth;
@@ -85,7 +84,11 @@
         {
             this.Show();
             var fadeIn = this.FindResource("FadeInAnimation") as Storyboard;
-            fadeIn.Begin(this);
+
+            if (fadeIn != null)
+            {
+                fadeIn.Begin(this);
+            }
         }
 
         #endregion

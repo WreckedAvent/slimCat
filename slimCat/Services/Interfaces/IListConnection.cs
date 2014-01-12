@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    using Slimcat.Models;
+    using Models;
 
     /// <summary>
     ///     Used for connectivity to F-list

@@ -29,14 +29,12 @@
 
 namespace Slimcat.ViewModels
 {
-    using System;
-
     using Models;
 
     /// <summary>
     ///     The right click menu view model.
     /// </summary>
-    public sealed class RightClickMenuViewModel : SysProp, IDisposable
+    public sealed class RightClickMenuViewModel : SysProp
     {
         #region Fields
 
@@ -246,9 +244,10 @@ namespace Slimcat.ViewModels
 
         #region Methods
 
-        private void Dipose(bool isManaged)
+        protected override void Dispose(bool isManaged)
         {
             this.Target = null;
+            base.Dispose(isManaged);
         }
 
         #endregion

@@ -31,19 +31,14 @@ namespace Slimcat.Views
 {
     using System;
 
-    using Slimcat.Utilities;
-    using Slimcat.ViewModels;
+    using Utilities;
+    using ViewModels;
 
     /// <summary>
     ///     Interaction logic for LoginView.xaml
     /// </summary>
     public partial class LoginView
     {
-        #region Fields
-
-        private readonly ViewModelBase vm;
-
-        #endregion
 
         #region Constructors and Destructors
 
@@ -58,9 +53,7 @@ namespace Slimcat.Views
             try
             {
                 this.InitializeComponent();
-                this.vm = vm.ThrowIfNull("vm");
-
-                this.DataContext = this.vm;
+                this.DataContext = vm;
             }
             catch (Exception ex)
             {

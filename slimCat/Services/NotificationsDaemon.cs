@@ -42,7 +42,6 @@ namespace Slimcat.Services
     using System.Windows.Threading;
 
     using Microsoft.Practices.Prism.Events;
-    using Microsoft.Practices.Unity;
 
     using Libraries;
     using Models;
@@ -71,8 +70,6 @@ namespace Slimcat.Services
 
         private MediaPlayer dingLing = new MediaPlayer();
 
-        private IUnityContainer container;
-
         private DateTime lastDingLinged;
 
         private double soundSaveVolume;
@@ -86,18 +83,14 @@ namespace Slimcat.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationsDaemon"/> class.
         /// </summary>
-        /// <param name="container">
-        /// The contain.
-        /// </param>
         /// <param name="eventagg">
         /// The eventagg.
         /// </param>
         /// <param name="cm">
         /// The cm.
         /// </param>
-        public NotificationsDaemon(IUnityContainer container, IEventAggregator eventagg, IChatModel cm)
+        public NotificationsDaemon(IEventAggregator eventagg, IChatModel cm)
         {
-            this.container = container;
             this.events = eventagg;
             this.cm = cm;
             this.toast = new ToastNotificationsViewModel(this.events);
@@ -135,7 +128,7 @@ namespace Slimcat.Services
                             new MenuItem(
                                 string.Format(
                                     "{0} {1} ({2}) - {3}",
-                                    Constants.ClientID,
+                                    Constants.ClientId,
                                     Constants.ClientName,
                                     Constants.ClientVer,
                                     args)) 
@@ -162,7 +155,7 @@ namespace Slimcat.Services
                         iconMenu.MenuItems.Add("Show", (s, e) => ShowWindow());
                         iconMenu.MenuItems.Add("Exit", (s, e) => this.ShutDown());
 
-                        this.icon.Text = string.Format("{0} - {1}", Constants.ClientID, args);
+                        this.icon.Text = string.Format("{0} - {1}", Constants.ClientId, args);
                         this.icon.ContextMenu = iconMenu;
                         this.icon.Visible = true;
                     });
@@ -280,6 +273,9 @@ namespace Slimcat.Services
         {
             var channel = update["channel"] as GeneralChannelModel;
             var message = update["message"] as IMessage;
+
+            if (message == null || channel == null) return;
+
             var cleanMessageText = HttpUtility.HtmlDecode(message.Message);
 
             var temp = new List<string>(channel.Settings.EnumerableTerms);
@@ -439,10 +435,10 @@ namespace Slimcat.Services
                 var eventArgs = args as CharacterUpdateModel.PromoteDemoteEventArgs;
                 if (eventArgs != null)
                 {
-                    var channelID = eventArgs.TargetChannelID;
+                    var channelId = eventArgs.TargetChannelId;
 
                     // find by ID, not name
-                    var channel = this.cm.CurrentChannels.FirstByIdOrDefault(channelID);
+                    var channel = this.cm.CurrentChannels.FirstByIdOrDefault(channelId);
 
                     if (channel == null)
                     {
@@ -458,12 +454,12 @@ namespace Slimcat.Services
                     }
 
                     this.ConvertNotificationLevelToAction(
-                        channel.Settings.PromoteDemoteNotifyLevel, channelID, model);
+                        channel.Settings.PromoteDemoteNotifyLevel, channelId, model);
                 }
                 else if (args is CharacterUpdateModel.JoinLeaveEventArgs)
                 {
                     // special check for this as it has settings per channel
-                    var target = ((CharacterUpdateModel.JoinLeaveEventArgs)args).TargetChannelID;
+                    var target = ((CharacterUpdateModel.JoinLeaveEventArgs)args).TargetChannelId;
 
                     // find by ID, not name
                     var channel = this.cm.CurrentChannels.FirstByIdOrDefault(target);
@@ -526,10 +522,10 @@ namespace Slimcat.Services
             }
             else
             {
-                var channelID = ((ChannelUpdateModel)notification).TargetChannel.Id;
+                var channelId = ((ChannelUpdateModel)notification).TargetChannel.Id;
 
                 this.AddNotification(notification);
-                this.NotifyUser(false, false, notification.ToString(), channelID);
+                this.NotifyUser(false, false, notification.ToString(), channelId);
             }
         }
 

@@ -31,7 +31,7 @@ namespace Slimcat
 {
     using System.Windows;
 
-    using Slimcat.Utilities;
+    using Utilities;
 
     /// <summary>
     ///     Interaction logic for App.xaml

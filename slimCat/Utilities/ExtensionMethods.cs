@@ -75,7 +75,7 @@ namespace Slimcat.Utilities
         /// </returns>
         /// <exception cref="ArgumentNullException">
         /// </exception>
-        public static T ThrowIfNull<T>(this T x, string name)
+        public static T ThrowIfNull<T>(this T x, string name) where T : class 
         {
             if (x == null)
             {

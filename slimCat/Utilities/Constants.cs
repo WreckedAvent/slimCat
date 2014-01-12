@@ -36,7 +36,7 @@ namespace Slimcat.Utilities
     {
         #region Constants
 
-        public const string ClientID = "slimCat";
+        public const string ClientId = "slimCat";
 
         public const string ClientName = "Ocelot";
 
@@ -46,7 +46,7 @@ namespace Slimcat.Utilities
 
         #region Static Fields
 
-        public static readonly string FriendlyName = ClientID + ' ' + ClientName + ' ' + ClientVer;
+        public static readonly string FriendlyName = ClientId + ' ' + ClientName + ' ' + ClientVer;
 
         #endregion
 

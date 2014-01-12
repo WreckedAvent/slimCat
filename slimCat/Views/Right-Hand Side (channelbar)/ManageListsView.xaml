@@ -62,8 +62,8 @@
                              DataContext="{Binding SearchSettings}" />
 
             <ScrollViewer CanContentScroll="False">
-                <StackPanel Grid.Row="1"
-                            x:Name="PopupAnchor">
+                <StackPanel
+                    x:Name="PopupAnchor">
 
                     <v:RightClickMenu />
                     <v:CreateReportView />

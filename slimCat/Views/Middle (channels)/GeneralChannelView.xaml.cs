@@ -31,8 +31,8 @@ namespace Slimcat.Views
 {
     using System;
 
-    using Slimcat.Utilities;
-    using Slimcat.ViewModels;
+    using Utilities;
+    using ViewModels;
 
     /// <summary>
     ///     Interaction logic for GeneralChannelView.xaml

@@ -37,11 +37,9 @@ namespace Slimcat.Services
     using System.Timers;
 
     using Microsoft.Practices.Prism.Events;
-
+    using Models;
     using SimpleJson;
 
-    using Slimcat;
-    using Models;
     using Utilities;
 
     using WebSocket4Net;
@@ -419,7 +417,7 @@ namespace Slimcat.Services
                     method = "ticket",
                     account = this.Account.AccountName,
                     character = this.Character,
-                    cname = Constants.ClientID,
+                    cname = Constants.ClientId,
                     cversion = string.Format("{0} {1}", Constants.ClientName, Constants.ClientVer)
                 };
 

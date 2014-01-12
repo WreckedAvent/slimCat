@@ -243,10 +243,13 @@ namespace Slimcat.Services
                 }
                 else
                 {
-                    if (!property.Name.ToLower().Contains("list"))
-                    {
-                        var toAdd = new XElement(property.Name);
-                        foreach (var item in property.GetValue(null, null) as IList<string>)
+                    if (property.Name.ToLower().Contains("list")) continue;
+
+                    var toAdd = new XElement(property.Name);
+                    var items = property.GetValue(null, null) as IList<string>;
+
+                    if (items != null)
+                        foreach (var item in items)
                         {
                             var label = "item";
                             if (property.Name.ToLower().Contains("channel"))
@@ -261,8 +264,7 @@ namespace Slimcat.Services
                             toAdd.Add(new XElement(label, item));
                         }
 
-                        root.Add(toAdd);
-                    }
+                    root.Add(toAdd);
                 }
             }
 

@@ -37,9 +37,7 @@ namespace Slimcat.Services
     using System.Net;
     using System.Text;
     using System.Web;
-
     using Microsoft.Practices.Prism.Events;
-
     using SimpleJson;
 
     using Models;
@@ -271,8 +269,8 @@ namespace Slimcat.Services
 
         private string GetResponse(string host, IEnumerable<KeyValuePair<string, object>> arguments, bool useCookies = false)
         {
-            const string ContentType = "application/x-www-form-urlencoded";
-            const string RequestType = "POST";
+            const string contentType = "application/x-www-form-urlencoded";
+            const string requestType = "POST";
 
             var isFirst = true;
 
@@ -296,8 +294,8 @@ namespace Slimcat.Services
             var toPost = Encoding.ASCII.GetBytes(totalRequest.ToString());
 
             var req = (HttpWebRequest)WebRequest.Create(host);
-            req.Method = RequestType;
-            req.ContentType = ContentType;
+            req.Method = requestType;
+            req.ContentType = contentType;
             req.ContentLength = toPost.Length;
             if (useCookies)
             {
@@ -311,8 +309,12 @@ namespace Slimcat.Services
 
             using (var rep = (HttpWebResponse)req.GetResponse())
             {
-                using (var answerStream = rep.GetResponseStream()) 
+                using (var answerStream = rep.GetResponseStream())
                 {
+                    if (answerStream == null)
+                    {
+                        return null;
+                    }
                     using (var answerReader = new StreamReader(answerStream))
                     {
                         return answerReader.ReadToEnd(); // read our response

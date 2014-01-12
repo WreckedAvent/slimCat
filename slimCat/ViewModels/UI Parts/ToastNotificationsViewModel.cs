@@ -35,15 +35,14 @@ namespace Slimcat.ViewModels
 
     using Microsoft.Practices.Prism.Events;
 
-    using Slimcat;
-    using Slimcat.Libraries;
-    using Slimcat.Models;
-    using Slimcat.Views;
+    using Libraries;
+    using Models;
+    using Views;
 
     /// <summary>
     ///     A light-weight viewmodel for toastnofications
     /// </summary>
-    public sealed class ToastNotificationsViewModel : SysProp, IDisposable
+    public sealed class ToastNotificationsViewModel : SysProp
     {
         #region Constants
 

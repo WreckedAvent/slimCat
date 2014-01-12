@@ -40,12 +40,11 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat;
-    using Slimcat.Libraries;
-    using Slimcat.Models;
-    using Slimcat.Services;
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    using Libraries;
+    using Models;
+    using Services;
+    using Utilities;
+    using Views;
 
     /// <summary>
     ///     The UserbarViewCM allows the user to navigate the current conversations they have open.

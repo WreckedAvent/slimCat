@@ -29,7 +29,7 @@
 
 namespace Slimcat.Views
 {
-    using Slimcat.ViewModels;
+    using ViewModels;
 
     /// <summary>
     ///     Interaction logic for ChannelBarView.xaml

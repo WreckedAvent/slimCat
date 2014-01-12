@@ -40,11 +40,10 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat;
-    using Slimcat.Libraries;
-    using Slimcat.Models;
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    using Libraries;
+    using Models;
+    using Utilities;
+    using Views;
 
     /// <summary>
     ///     This View model only serves to allow a user to select a character.

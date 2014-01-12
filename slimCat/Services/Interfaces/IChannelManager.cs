@@ -1,6 +1,6 @@
 ﻿namespace Slimcat.Services
 {
-    using Slimcat.Models;
+    using Models;
 
     /// <summary>
     ///     The ChannelManager interface.

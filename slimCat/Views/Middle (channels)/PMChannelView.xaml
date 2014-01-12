@@ -39,7 +39,7 @@
                                    TextWrapping="Wrap"
                                    Visibility="{Binding Path=HasStatus, Converter={StaticResource BoolConverter}}">
                             <lib:TextBlockHelper.InlineList>
-                                <Binding Converter="{StaticResource BBCodeConverter}"
+                                <Binding Converter="{StaticResource BbCodeConverter}"
                                          Path="ConversationWith.StatusMessage" />
                             </lib:TextBlockHelper.InlineList>
                         </TextBlock>
@@ -47,7 +47,7 @@
                                    TextWrapping="Wrap"
                                    Visibility="{Binding Path=ConversationWith.HasReport, Converter={StaticResource BoolConverter}}">
                             <lib:TextBlockHelper.InlineList>
-                                <Binding Converter="{StaticResource BBCodeConverter}"
+                                <Binding Converter="{StaticResource BbCodeConverter}"
                                          Path="ConversationWith.LastReport.Complaint" />
                             </lib:TextBlockHelper.InlineList>
                         </TextBlock>
@@ -70,7 +70,7 @@
             LoadInReverse="True"
             MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}" />
 
-        <v:ChannelSettingsView />
+        <v:ChannelSettingsView Grid.Row="1" />
 
         <StackPanel Grid.Row="2"
                     Orientation="Vertical">

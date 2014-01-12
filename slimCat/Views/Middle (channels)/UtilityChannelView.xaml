@@ -38,7 +38,7 @@
                     <TextBlock Foreground="{StaticResource ForegroundBrush}"
                                TextWrapping="Wrap">
 
-                        <Run Text="{Binding Path=ClientIDString, Mode=OneWay}" />
+                        <Run Text="{Binding Path=ClientIdString, Mode=OneWay}" />
                         <LineBreak />
 
                         <Run Text="Users: " />
@@ -159,7 +159,7 @@
                 </Expander>
             </StackPanel>
 
-            <v:RightClickMenu />
+            <v:RightClickMenu Grid.Row="1" />
             <v:ChannelTextBoxEntryView Grid.Row="2"
                                        Margin="0,0,0,10" />
         </Grid>

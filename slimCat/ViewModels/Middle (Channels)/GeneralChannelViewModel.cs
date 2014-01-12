@@ -42,19 +42,16 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat;
-    using Slimcat.Libraries;
-    using Slimcat.Models;
-    using Slimcat.Services;
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    using Libraries;
+    using Models;
+    using Services;
+    using Utilities;
+    using Views;
 
     /// <summary>
     ///     The general channel view model. This manages bindings for general channels, e.g anything that isn't a Pm or the 'home' tab.
     /// </summary>
-// ReSharper disable ClassNeverInstantiated.Global
     public class GeneralChannelViewModel : ChannelViewModelBase
-// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Fields
         private readonly IList<string> thisDingTerms = new List<string>();
@@ -593,10 +590,10 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                const int CharacterNameOffset = 2; // how many ding terms we have to offset for the character's name
+                const int characterNameOffset = 2; // how many ding terms we have to offset for the character's name
                 var count = this.thisDingTerms.Count;
                 var shouldBe = ApplicationSettings.GlobalNotifyTermsList.Count()
-                               + this.Model.Settings.EnumerableTerms.Count() + CharacterNameOffset;
+                               + this.Model.Settings.EnumerableTerms.Count() + characterNameOffset;
 
                 if (count != shouldBe)
                 {
@@ -710,8 +707,9 @@ namespace Slimcat.ViewModels
                 this.messageManager.Dispose();
                 this.messageManager = null;
 
-                (this.Model as GeneralChannelModel).Description = null;
-                (this.Model as GeneralChannelModel).Moderators.Clear();
+                var model = (GeneralChannelModel) this.Model;
+                model.Description = null;
+                model.Moderators.Clear();
             }
 
             base.Dispose(isManaged);

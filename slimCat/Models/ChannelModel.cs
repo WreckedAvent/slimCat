@@ -32,13 +32,13 @@ namespace Slimcat.Models
     using System;
     using System.Collections.ObjectModel;
 
-    using Slimcat.Utilities;
-    using Slimcat.ViewModels;
+    using Utilities;
+    using ViewModels;
 
     /// <summary>
     ///     The channel model is used as a base for channels and conversations
     /// </summary>
-    public abstract class ChannelModel : SysProp, IDisposable
+    public abstract class ChannelModel : SysProp
     {
         #region Fields
 
