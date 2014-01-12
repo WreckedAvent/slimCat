@@ -40,11 +40,10 @@ namespace Slimcat.Services
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
 
-    using Slimcat;
-    using Slimcat.Models;
-    using Slimcat.Utilities;
-    using Slimcat.ViewModels;
-    using Slimcat.Views;
+    using Models;
+    using Utilities;
+    using ViewModels;
+    using Views;
 
     /// <summary>
     ///     The message daemon is the service layer responsible for managing what the user sees and the commands the user sends.

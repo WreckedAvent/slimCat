@@ -27,6 +27,9 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.IO;
+using System.Linq;
+
 namespace Slimcat.Services
 {
     using System;
@@ -38,8 +41,8 @@ namespace Slimcat.Services
     using SimpleJson;
 
     using Slimcat;
-    using Slimcat.Models;
-    using Slimcat.Utilities;
+    using Models;
+    using Utilities;
 
     using WebSocket4Net;
 
@@ -48,9 +51,7 @@ namespace Slimcat.Services
     /// <summary>
     ///     Maintains the connection to F-Chat's server. Used to send/receive commands.
     /// </summary>
-// ReSharper disable ClassNeverInstantiated.Global
     public class ChatConnection : IChatConnection, IDisposable
-// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Constants
 
@@ -322,6 +323,7 @@ namespace Slimcat.Services
             if (!this.isAuthenticated)
             {
                 this.isAuthenticated = true;
+                this.events.GetEvent<LoginAuthenticatedEvent>().Publish(null);
             }
 
             var commandType = e.Message.Substring(0, 3); // type of command sent

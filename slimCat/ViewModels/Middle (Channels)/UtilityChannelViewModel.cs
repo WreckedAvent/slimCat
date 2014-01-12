@@ -104,78 +104,43 @@ namespace Slimcat.ViewModels
                 this.connectDotDot = new StringBuilder();
 
                 this.Container.RegisterType<object, UtilityChannelView>(this.Model.Id, new InjectionConstructor(this));
-                this.minuteOnlineCount = new CacheCount(this.OnlineCountPrime, 15, 1000 * 15);
+                this.minuteOnlineCount = new CacheCount(this.OnlineCountPrime, 15, 1000*15);
 
                 this.updateTimer.Enabled = true;
                 this.updateTimer.Elapsed += (s, e) =>
-                    {
-                        this.OnPropertyChanged("RoughServerUpTime");
-                        this.OnPropertyChanged("RoughClientUpTime");
-                        this.OnPropertyChanged("LastMessageReceived");
-                        this.OnPropertyChanged("IsConnecting");
-                    };
+                {
+                    this.OnPropertyChanged("RoughServerUpTime");
+                    this.OnPropertyChanged("RoughClientUpTime");
+                    this.OnPropertyChanged("LastMessageReceived");
+                    this.OnPropertyChanged("IsConnecting");
+                };
 
                 this.updateTimer.Elapsed += this.UpdateConnectText;
 
                 this.Events.GetEvent<NewUpdateEvent>().Subscribe(
                     param =>
+                    {
+                        if (!(param is CharacterUpdateModel))
                         {
-                            if (!(param is CharacterUpdateModel))
-                            {
-                                return;
-                            }
+                            return;
+                        }
 
-                            var temp = param as CharacterUpdateModel;
-                            if (!(temp.Arguments is CharacterUpdateModel.LoginStateChangedEventArgs))
-                            {
-                                return;
-                            }
+                        var temp = param as CharacterUpdateModel;
+                        if (!(temp.Arguments is CharacterUpdateModel.LoginStateChangedEventArgs))
+                        {
+                            return;
+                        }
 
-                            this.OnPropertyChanged("OnlineCount");
-                            this.OnPropertyChanged("OnlineFriendsCount");
-                            this.OnPropertyChanged("OnlineBookmarksCount");
-                            this.OnPropertyChanged("OnlineCountChange");
-                        });
+                        this.OnPropertyChanged("OnlineCount");
+                        this.OnPropertyChanged("OnlineFriendsCount");
+                        this.OnPropertyChanged("OnlineBookmarksCount");
+                        this.OnPropertyChanged("OnlineCountChange");
+                    });
 
                 this.Events.GetEvent<LoginAuthenticatedEvent>().Subscribe(this.LoggedInEvent);
                 this.Events.GetEvent<LoginFailedEvent>().Subscribe(this.LoginFailedEvent);
                 this.Events.GetEvent<ReconnectingEvent>().Subscribe(this.LoginReconnectingEvent);
 
-                SettingsDaemon.ReadApplicationSettingsFromXml(ChatModel.CurrentCharacter.Name);
-
-                try
-                {
-                    string[] args;
-                    using (var client = new WebClient())
-                    {
-                        using (var stream = client.OpenRead(NewVersionLink))
-                        {
-                            using (var reader = new StreamReader(stream))
-                            {
-                                args = reader.ReadToEnd().Split(',');
-                            }
-                        }
-                    }
-
-                    if (args[0] == Constants.FriendlyName)
-                    {
-                        return;
-                    }
-
-                    this.HasNewUpdate = true;
-
-                    this.UpdateName = args[0];
-                    this.UpdateLink = args[1];
-                    this.UpdateBuildTime = args[2];
-
-                    this.OnPropertyChanged("HasNewUpdate");
-                    this.OnPropertyChanged("UpdateName");
-                    this.OnPropertyChanged("UpdateLink");
-                    this.OnPropertyChanged("UpdateBuildTime");
-                }
-                catch(WebException)
-                {
-                }
             }
             catch (Exception ex)
             {
@@ -477,6 +442,43 @@ namespace Slimcat.ViewModels
         {
             this.updateTimer.Elapsed -= this.UpdateConnectText;
             this.OnPropertyChanged("IsConnecting");
+
+
+            SettingsDaemon.ReadApplicationSettingsFromXml(ChatModel.CurrentCharacter.Name);
+
+            try
+            {
+                string[] args;
+                using (var client = new WebClient())
+                {
+                    using (var stream = client.OpenRead(NewVersionLink))
+                    {
+                        using (var reader = new StreamReader(stream))
+                        {
+                            args = reader.ReadToEnd().Split(',');
+                        }
+                    }
+                }
+
+                if (args[0] == Constants.FriendlyName)
+                {
+                    return;
+                }
+
+                this.HasNewUpdate = true;
+
+                this.UpdateName = args[0];
+                this.UpdateLink = args[1];
+                this.UpdateBuildTime = args[2];
+
+                this.OnPropertyChanged("HasNewUpdate");
+                this.OnPropertyChanged("UpdateName");
+                this.OnPropertyChanged("UpdateLink");
+                this.OnPropertyChanged("UpdateBuildTime");
+            }
+            catch (WebException)
+            {
+            }
         }
 
         /// <summary>

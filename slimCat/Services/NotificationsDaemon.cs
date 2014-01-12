@@ -44,12 +44,11 @@ namespace Slimcat.Services
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Unity;
 
-    using Slimcat;
-    using Slimcat.Libraries;
-    using Slimcat.Models;
-    using Slimcat.Properties;
-    using Slimcat.Utilities;
-    using Slimcat.ViewModels;
+    using Libraries;
+    using Models;
+    using Properties;
+    using Utilities;
+    using ViewModels;
 
     using Application = System.Windows.Application;
 
@@ -58,9 +57,7 @@ namespace Slimcat.Services
     ///     and is responsible for managing the little tray icon. Additionally, it manages the singleton instance of the notifications class.
     ///     It responds to NewMessageEvent, NewPmEvent, NewUpdateEvent
     /// </summary>
-// ReSharper disable ClassNeverInstantiated.Global
     public class NotificationsDaemon : DispatcherObject, IDisposable
-// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Fields
 

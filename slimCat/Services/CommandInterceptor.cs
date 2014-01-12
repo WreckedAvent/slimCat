@@ -44,10 +44,9 @@ namespace Slimcat.Services
 
     using SimpleJson;
 
-    using Slimcat;
-    using Slimcat.Models;
-    using Slimcat.Utilities;
-    using Slimcat.ViewModels;
+    using Models;
+    using Utilities;
+    using ViewModels;
 
     /// <summary>
     ///     This interprets the commands and translates them to methods that our various other services can use.

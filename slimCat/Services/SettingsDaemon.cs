@@ -35,8 +35,8 @@ namespace Slimcat.Services
     using System.Linq;
     using System.Xml.Linq;
 
-    using Slimcat.Models;
-    using Slimcat.Utilities;
+    using Models;
+    using Utilities;
 
     /// <summary>
     ///     The settings daemon.

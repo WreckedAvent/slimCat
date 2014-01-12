@@ -36,8 +36,8 @@ namespace Slimcat.Services
     using System.Linq;
     using System.Web;
 
-    using Slimcat.Models;
-    using Slimcat.Utilities;
+    using Models;
+    using Utilities;
 
     /// <summary>
     ///     The special log message kind.
