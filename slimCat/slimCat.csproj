@@ -88,12 +88,6 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.Practices.Prism.Interactivity, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Microsoft.Practices.Prism.Interactivity.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.Practices.Prism.UnityExtensions">
       <HintPath>lib\Microsoft.Practices.Prism.UnityExtensions.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
@@ -115,29 +109,18 @@
       <HintPath>lib\SimpleJson.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SuperSocket.ClientEngine.Common">
-      <HintPath>lib\SuperSocket.ClientEngine.Common.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="SuperSocket.ClientEngine.Core">
       <HintPath>lib\SuperSocket.ClientEngine.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SuperSocket.ClientEngine.Protocol">
-      <HintPath>lib\SuperSocket.ClientEngine.Protocol.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>

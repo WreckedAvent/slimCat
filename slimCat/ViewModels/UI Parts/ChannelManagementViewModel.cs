@@ -1,43 +1,35 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ChannelManagementViewModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   The channel management view model.
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ChannelManagementViewModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.ViewModels
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Windows.Input;
-
-    using Microsoft.Practices.Prism.Events;
-
     using Libraries;
+    using Microsoft.Practices.Prism.Events;
     using Models;
+
+    #endregion
 
     /// <summary>
     ///     The channel management view model.
@@ -51,13 +43,13 @@ namespace Slimcat.ViewModels
         /// </summary>
         private readonly string[] modeTypes;
 
+        private string description = string.Empty;
+
         private IEventAggregator events;
 
         private bool isOpen;
 
         private GeneralChannelModel model;
-
-        private string description = string.Empty;
 
         private RelayCommand open;
 
@@ -68,22 +60,22 @@ namespace Slimcat.ViewModels
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChannelManagementViewModel"/> class.
+        ///     Initializes a new instance of the <see cref="ChannelManagementViewModel" /> class.
         /// </summary>
         /// <param name="eventagg">
-        /// The eventagg.
+        ///     The eventagg.
         /// </param>
         /// <param name="model">
-        /// The model.
+        ///     The model.
         /// </param>
         public ChannelManagementViewModel(IEventAggregator eventagg, GeneralChannelModel model)
         {
             this.model = model;
-            this.description = this.model.Description;
-            this.events = eventagg;
-            this.model.PropertyChanged += this.UpdateDescription;
+            description = this.model.Description;
+            events = eventagg;
+            this.model.PropertyChanged += UpdateDescription;
 
-            this.modeTypes = new[] { "Ads", "chat", "both" };
+            modeTypes = new[] {"Ads", "chat", "both"};
         }
 
         #endregion
@@ -95,20 +87,15 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool IsManaging
         {
-            get
-            {
-                return this.isOpen;
-            }
+            get { return isOpen; }
 
             set
             {
-                this.isOpen = value;
-                this.OnPropertyChanged("IsManaging");
+                isOpen = value;
+                OnPropertyChanged("IsManaging");
 
-                if (!value && this.Description != this.model.Description)
-                {
-                    this.UpdateDescription();
-                }
+                if (!value && Description != model.Description)
+                    UpdateDescription();
             }
         }
 
@@ -117,15 +104,12 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string Description
         {
-            get
-            {
-                return this.description;
-            }
+            get { return description; }
 
             set
             {
-                this.description = value;
-                this.OnPropertyChanged("Description");
+                description = value;
+                OnPropertyChanged("Description");
             }
         }
 
@@ -134,10 +118,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<string> ModeTypes
         {
-            get
-            {
-                return this.modeTypes;
-            }
+            get { return modeTypes; }
         }
 
         /// <summary>
@@ -145,10 +126,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICommand OpenChannelManagementCommand
         {
-            get
-            {
-                return this.open ?? (this.open = new RelayCommand(args => this.IsManaging = !this.IsManaging));
-            }
+            get { return open ?? (open = new RelayCommand(args => IsManaging = !IsManaging)); }
         }
 
         /// <summary>
@@ -158,12 +136,10 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (this.model.Mode == ChannelMode.Ads)
-                {
+                if (model.Mode == ChannelMode.Ads)
                     return "allows only Ads.";
-                }
 
-                return this.model.Mode == ChannelMode.Chat ? "allows only chatting." : "allows Ads and chatting.";
+                return model.Mode == ChannelMode.Chat ? "allows only chatting." : "allows Ads and chatting.";
             }
         }
 
@@ -172,20 +148,15 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ChannelMode RoomModeType
         {
-            get
-            {
-                return this.model.Mode;
-            }
+            get { return model.Mode; }
 
             set
             {
-                if (this.model.Mode == value)
-                {
+                if (model.Mode == value)
                     return;
-                }
 
-                this.model.Mode = value;
-                this.OnRoomModeChanged(null);
+                model.Mode = value;
+                OnRoomModeChanged(null);
             }
         }
 
@@ -196,12 +167,10 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (this.model.Type == ChannelType.InviteOnly)
-                {
+                if (model.Type == ChannelType.InviteOnly)
                     return "Closed Private Channel";
-                }
 
-                return this.model.Type == ChannelType.Private ? "Open Private Channel" : "Public Channel";
+                return model.Type == ChannelType.Private ? "Open Private Channel" : "Public Channel";
             }
         }
 
@@ -212,13 +181,15 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (this.model.Type == ChannelType.InviteOnly)
+                if (model.Type == ChannelType.InviteOnly)
                 {
                     return
                         "The room is currently closed and requires an invite to join. Click to declare the room open, which will allow anyone to join it.";
                 }
 
-                return this.model.Type == ChannelType.Private ? "The room is currently open and does not require an invite to join. Click to declare the room closed, which will only allow those with an invite to join it." : "The room is currently a public room and cannot be closed.";
+                return model.Type == ChannelType.Private
+                    ? "The room is currently open and does not require an invite to join. Click to declare the room closed, which will only allow those with an invite to join it."
+                    : "The room is currently a public room and cannot be closed.";
             }
         }
 
@@ -229,8 +200,8 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                return this.toggleType
-                       ?? (this.toggleType = new RelayCommand(this.OnToggleRoomType, this.CanToggleRoomType));
+                return toggleType
+                       ?? (toggleType = new RelayCommand(OnToggleRoomType, CanToggleRoomType));
             }
         }
 
@@ -241,12 +212,10 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (this.model.Type == ChannelType.InviteOnly)
-                {
+                if (model.Type == ChannelType.InviteOnly)
                     return "Open this channel";
-                }
 
-                return this.model.Type == ChannelType.Private ? "Close this channel" : "Cannot close channel";
+                return model.Type == ChannelType.Private ? "Close this channel" : "Cannot close channel";
             }
         }
 
@@ -256,7 +225,7 @@ namespace Slimcat.ViewModels
 
         void IDisposable.Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
         }
 
         #endregion
@@ -267,10 +236,9 @@ namespace Slimcat.ViewModels
         {
             if (!isManaged)
             {
-
-                this.model.PropertyChanged -= this.UpdateDescription;
-                this.events = null;
-                this.model = null;
+                model.PropertyChanged -= UpdateDescription;
+                events = null;
+                model = null;
             }
 
             base.Dispose(isManaged);
@@ -278,24 +246,24 @@ namespace Slimcat.ViewModels
 
         private bool CanToggleRoomType(object args)
         {
-            return this.model.Type != ChannelType.Public;
+            return model.Type != ChannelType.Public;
         }
 
         private void OnRoomModeChanged(object args)
         {
-            this.events.GetEvent<UserCommandEvent>()
+            events.GetEvent<UserCommandEvent>()
                 .Publish(
-                    CommandDefinitions.CreateCommand("setmode", new[] { this.model.Mode.ToString() }, this.model.Id)
-                                      .ToDictionary());
+                    CommandDefinitions.CreateCommand("setmode", new[] {model.Mode.ToString()}, model.Id)
+                        .ToDictionary());
         }
 
         private void OnToggleRoomType(object args)
         {
-            this.events.GetEvent<UserCommandEvent>()
+            events.GetEvent<UserCommandEvent>()
                 .Publish(
-                    this.model.Type == ChannelType.InviteOnly
-                        ? CommandDefinitions.CreateCommand("openroom", new List<string>(), this.model.Id).ToDictionary()
-                        : CommandDefinitions.CreateCommand("closeroom", null, this.model.Id).ToDictionary());
+                    model.Type == ChannelType.InviteOnly
+                        ? CommandDefinitions.CreateCommand("openroom", new List<string>(), model.Id).ToDictionary()
+                        : CommandDefinitions.CreateCommand("closeroom", null, model.Id).ToDictionary());
         }
 
         private void UpdateDescription(object sender = null, PropertyChangedEventArgs e = null)
@@ -306,26 +274,26 @@ namespace Slimcat.ViewModels
                 switch (e.PropertyName)
                 {
                     case "Description":
-                        this.description = this.model.Description;
-                        this.OnPropertyChanged("Description");
+                        description = model.Description;
+                        OnPropertyChanged("Description");
                         break;
                     case "Type":
-                        this.OnPropertyChanged("ToggleRoomTip");
-                        this.OnPropertyChanged("ToggleRoomTypeString");
-                        this.OnPropertyChanged("RoomTypeString");
+                        OnPropertyChanged("ToggleRoomTip");
+                        OnPropertyChanged("ToggleRoomTypeString");
+                        OnPropertyChanged("RoomTypeString");
                         break;
                     case "Mode":
-                        this.OnPropertyChanged("RoomModeString");
+                        OnPropertyChanged("RoomModeString");
                         break;
                 }
             }
             else
             {
                 // if its us updating it
-                this.events.GetEvent<UserCommandEvent>()
+                events.GetEvent<UserCommandEvent>()
                     .Publish(
-                        CommandDefinitions.CreateCommand("setdescription", new[] { this.description }, this.model.Id)
-                                          .ToDictionary());
+                        CommandDefinitions.CreateCommand("setdescription", new[] {description}, model.Id)
+                            .ToDictionary());
             }
         }
 

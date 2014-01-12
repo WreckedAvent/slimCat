@@ -5,19 +5,20 @@
            xmlns:lib="clr-namespace:Slimcat.Libraries"
            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-           xmlns:models="clr-namespace:Slimcat.Models" 
+           xmlns:models="clr-namespace:Slimcat.Models"
            mc:Ignorable="d"
            d:DataContext="{d:DesignInstance Type=models:ChannelUpdateModel}"
            Margin="0,2"
            Padding="0"
            Foreground="{StaticResource ForegroundBrush}"
            FontFamily="Segoe UI, Verdanda"
-           FontSize="13" 
+           FontSize="13"
            ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
     <InlineUIContainer BaselineAlignment="Bottom">
         <Rectangle Height="15" Width="15" Fill="{StaticResource HighlightBrush}">
             <Rectangle.OpacityMask>
-                <ImageBrush ImageSource="{Binding Path=TargetChannel.Type, Mode=OneTime, Converter={StaticResource ChannelTypeToImageConverter}}" />
+                <ImageBrush
+                    ImageSource="{Binding Path=TargetChannel.Type, Mode=OneTime, Converter={StaticResource ChannelTypeToImageConverter}}" />
             </Rectangle.OpacityMask>
         </Rectangle>
     </InlineUIContainer>
@@ -28,14 +29,15 @@
         <Run Text="{Binding Path=TargetChannel.Title, Mode=OneTime}" />
     </Hyperlink>
 
-    <Span lib:SpanHelper.InlineSource="{Binding Path=Arguments, Mode=OneTime, Converter={StaticResource BbCodeConverter}, IsAsync=True}"/>
-    
+    <Span
+        lib:SpanHelper.InlineSource="{Binding Path=Arguments, Mode=OneTime, Converter={StaticResource BbCodeConverter}, IsAsync=True}" />
+
     <InlineUIContainer>
         <v:CloseButtonView VerticalAlignment="Top"
-                               Command="{Binding Path=DataContext.RemoveNotificationCommand,
+                           Command="{Binding Path=DataContext.RemoveNotificationCommand,
                                RelativeSource={RelativeSource Mode=FindAncestor,
                                AncestorType={x:Type FlowDocument}} }"
-                               CommandParameter="{Binding}" />
+                           CommandParameter="{Binding}" />
     </InlineUIContainer>
 </Paragraph>
 

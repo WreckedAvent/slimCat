@@ -10,7 +10,7 @@
        Placement="Center"
        StaysOpen="False"
        IsOpen="{Binding Path=ChannelManagementViewModel.IsManaging, Mode=OneWay}"
-       
+
        d:DataContext="{d:DesignInstance vm:GeneralChannelViewModel}">
 
     <Border BorderBrush="{StaticResource HighlightBrush}"

@@ -1,46 +1,38 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="UsersTabViewModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   On the channel bar (right-hand side) the 'users' tab, only it shows only the users in the current channel
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="UsersTabViewModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.ViewModels
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Timers;
-
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
-
     using Models;
     using Utilities;
     using Views;
+
+    #endregion
 
     /// <summary>
     ///     On the channel bar (right-hand side) the 'users' tab, only it shows only the users in the current channel
@@ -69,63 +61,59 @@ namespace Slimcat.ViewModels
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UsersTabViewModel"/> class.
+        ///     Initializes a new instance of the <see cref="UsersTabViewModel" /> class.
         /// </summary>
         /// <param name="cm">
-        /// The cm.
+        ///     The cm.
         /// </param>
         /// <param name="contain">
-        /// The contain.
+        ///     The contain.
         /// </param>
         /// <param name="regman">
-        /// The regman.
+        ///     The regman.
         /// </param>
         /// <param name="eventagg">
-        /// The eventagg.
+        ///     The eventagg.
         /// </param>
         public UsersTabViewModel(
             IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
             : base(contain, regman, eventagg, cm)
         {
-            this.Container.RegisterType<object, UsersTabView>(UsersTabView);
-            this.genderSettings = new GenderSettingsModel();
+            Container.RegisterType<object, UsersTabView>(UsersTabView);
+            genderSettings = new GenderSettingsModel();
 
-            this.SearchSettings.Updated += (s, e) =>
+            SearchSettings.Updated += (s, e) =>
                 {
-                    this.OnPropertyChanged("SortedUsers");
-                    this.OnPropertyChanged("SearchSettings");
+                    OnPropertyChanged("SortedUsers");
+                    OnPropertyChanged("SearchSettings");
                 };
 
-            this.GenderSettings.Updated += (s, e) =>
+            GenderSettings.Updated += (s, e) =>
                 {
-                    this.OnPropertyChanged("GenderSettings");
-                    this.OnPropertyChanged("SortedUsers");
+                    OnPropertyChanged("GenderSettings");
+                    OnPropertyChanged("SortedUsers");
                 };
 
-            this.ChatModel.SelectedChannelChanged += (s, e) =>
+            ChatModel.SelectedChannelChanged += (s, e) =>
                 {
-                    this.currentChan = null;
-                    this.OnPropertyChanged("SortContentString");
-                    this.OnPropertyChanged("SortedUsers");
+                    currentChan = null;
+                    OnPropertyChanged("SortContentString");
+                    OnPropertyChanged("SortedUsers");
                 };
 
-            this.Events.GetEvent<NewUpdateEvent>().Subscribe(
+            Events.GetEvent<NewUpdateEvent>().Subscribe(
                 args =>
                     {
                         var thisNotification = args as CharacterUpdateModel;
                         if (thisNotification == null)
-                        {
                             return;
-                        }
 
                         if (thisNotification.Arguments is CharacterUpdateModel.PromoteDemoteEventArgs)
-                        {
-                            this.OnPropertyChanged("HasPermissions");
-                        }
+                            OnPropertyChanged("HasPermissions");
                     });
 
-            this.updateTick.Elapsed += this.OnChannelListUpdated;
-            this.updateTick.Start();
+            updateTick.Elapsed += OnChannelListUpdated;
+            updateTick.Start();
         }
 
         #endregion
@@ -137,10 +125,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public GenderSettingsModel GenderSettings
         {
-            get
-            {
-                return this.genderSettings;
-            }
+            get { return genderSettings; }
         }
 
         /// <summary>
@@ -148,10 +133,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public GeneralChannelModel SelectedChan
         {
-            get
-            {
-                return this.currentChan ?? this.ChatModel.CurrentChannel as GeneralChannelModel;
-            }
+            get { return currentChan ?? ChatModel.CurrentChannel as GeneralChannelModel; }
         }
 
         /// <summary>
@@ -159,10 +141,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string SortContentString
         {
-            get
-            {
-                return this.HasUsers ? this.SelectedChan.Title : null;
-            }
+            get { return HasUsers ? SelectedChan.Title : null; }
         }
 
         /// <summary>
@@ -172,13 +151,13 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (this.HasUsers)
+                if (HasUsers)
                 {
-                    lock (this.SelectedChan.Users)
+                    lock (SelectedChan.Users)
                     {
                         return
-                            this.SelectedChan.Users.Where(this.MeetsFilter)
-                                .OrderBy(this.RelationshipToUser)
+                            SelectedChan.Users.Where(MeetsFilter)
+                                .OrderBy(RelationshipToUser)
                                 .ThenBy(x => x.Name);
                     }
                 }
@@ -193,20 +172,18 @@ namespace Slimcat.ViewModels
         private bool MeetsFilter(ICharacter character)
         {
             return character.MeetsFilters(
-                this.GenderSettings, this.SearchSettings, this.ChatModel, this.ChatModel.CurrentChannel as GeneralChannelModel);
+                GenderSettings, SearchSettings, ChatModel, ChatModel.CurrentChannel as GeneralChannelModel);
         }
 
         private void OnChannelListUpdated(object sender, EventArgs e)
         {
-            if (this.SelectedChan != null)
-            {
-                this.OnPropertyChanged("SortedUsers");
-            }
+            if (SelectedChan != null)
+                OnPropertyChanged("SortedUsers");
         }
 
         private string RelationshipToUser(ICharacter character)
         {
-            return character.RelationshipToUser(this.ChatModel, this.ChatModel.CurrentChannel as GeneralChannelModel);
+            return character.RelationshipToUser(ChatModel, ChatModel.CurrentChannel as GeneralChannelModel);
         }
 
         #endregion

@@ -1,44 +1,36 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ChannelTabViewModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   The channels tab view model.
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ChannelTabViewModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.ViewModels
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
-
     using Models;
     using Views;
+
+    #endregion
 
     /// <summary>
     ///     The channels tab view model.
@@ -74,30 +66,30 @@ namespace Slimcat.ViewModels
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChannelsTabViewModel"/> class.
+        ///     Initializes a new instance of the <see cref="ChannelsTabViewModel" /> class.
         /// </summary>
         /// <param name="cm">
-        /// The cm.
+        ///     The cm.
         /// </param>
         /// <param name="contain">
-        /// The contain.
+        ///     The contain.
         /// </param>
         /// <param name="reggman">
-        /// The reggman.
+        ///     The reggman.
         /// </param>
         /// <param name="events">
-        /// The events.
+        ///     The events.
         /// </param>
         public ChannelsTabViewModel(
             IChatModel cm, IUnityContainer contain, IRegionManager reggman, IEventAggregator events)
             : base(contain, reggman, events, cm)
         {
-            this.Container.RegisterType<object, ChannelTabView>(ChannelsTabView);
+            Container.RegisterType<object, ChannelTabView>(ChannelsTabView);
 
-            this.SearchSettings.Updated += (s, e) =>
+            SearchSettings.Updated += (s, e) =>
                 {
-                    this.OnPropertyChanged("SearchSettings");
-                    this.OnPropertyChanged("SortedChannels");
+                    OnPropertyChanged("SearchSettings");
+                    OnPropertyChanged("SortedChannels");
                 };
         }
 
@@ -110,20 +102,15 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool ShowPrivateRooms
         {
-            get
-            {
-                return this.showPrivate;
-            }
+            get { return showPrivate; }
 
             set
             {
-                if (this.showPrivate == value)
-                {
+                if (showPrivate == value)
                     return;
-                }
 
-                this.showPrivate = value;
-                this.OnPropertyChanged("SortedChannels");
+                showPrivate = value;
+                OnPropertyChanged("SortedChannels");
             }
         }
 
@@ -132,20 +119,15 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool ShowPublicRooms
         {
-            get
-            {
-                return this.showPublic;
-            }
+            get { return showPublic; }
 
             set
             {
-                if (this.showPublic == value)
-                {
+                if (showPublic == value)
                     return;
-                }
 
-                this.showPublic = value;
-                this.OnPropertyChanged("SortedChannels");
+                showPublic = value;
+                OnPropertyChanged("SortedChannels");
             }
         }
 
@@ -154,20 +136,15 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool SortByName
         {
-            get
-            {
-                return this.sortByName;
-            }
+            get { return sortByName; }
 
             set
             {
-                if (this.sortByName == value)
-                {
+                if (sortByName == value)
                     return;
-                }
 
-                this.sortByName = value;
-                this.OnPropertyChanged("SortedChannels");
+                sortByName = value;
+                OnPropertyChanged("SortedChannels");
             }
         }
 
@@ -180,23 +157,23 @@ namespace Slimcat.ViewModels
             {
                 Func<GeneralChannelModel, bool> containsSearchString =
                     channel =>
-                    channel.Id.ToLower().Contains(this.SearchSettings.SearchString)
-                    || channel.Title.ToLower().Contains(this.SearchSettings.SearchString);
+                        channel.Id.ToLower().Contains(SearchSettings.SearchString)
+                        || channel.Title.ToLower().Contains(SearchSettings.SearchString);
 
-                Func<GeneralChannelModel, bool> meetsThreshold = channel => channel.UserCount >= this.Threshold;
+                Func<GeneralChannelModel, bool> meetsThreshold = channel => channel.UserCount >= Threshold;
 
                 Func<GeneralChannelModel, bool> meetsTypeFilter =
                     channel =>
-                    ((channel.Type == ChannelType.Public) && this.showPublic)
-                    || ((channel.Type == ChannelType.Private) && this.showPrivate);
+                        ((channel.Type == ChannelType.Public) && showPublic)
+                        || ((channel.Type == ChannelType.Private) && showPrivate);
 
 
                 Func<GeneralChannelModel, bool> meetsFilter =
                     channel => containsSearchString(channel) && meetsTypeFilter(channel) && meetsThreshold(channel);
 
-                return this.SortByName 
-                    ? this.ChatModel.AllChannels.Where(meetsFilter).OrderBy(channel => channel.Title) 
-                    : this.ChatModel.AllChannels.Where(meetsFilter).OrderByDescending(channel => channel.UserCount);
+                return SortByName
+                    ? ChatModel.AllChannels.Where(meetsFilter).OrderBy(channel => channel.Title)
+                    : ChatModel.AllChannels.Where(meetsFilter).OrderByDescending(channel => channel.UserCount);
             }
         }
 
@@ -205,20 +182,15 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int Threshold
         {
-            get
-            {
-                return this.thresh;
-            }
+            get { return thresh; }
 
             set
             {
-                if (this.thresh == value || value <= 0 || value >= 1000)
-                {
+                if (thresh == value || value <= 0 || value >= 1000)
                     return;
-                }
 
-                this.thresh = value;
-                this.OnPropertyChanged("SortedChannels");
+                thresh = value;
+                OnPropertyChanged("SortedChannels");
             }
         }
 

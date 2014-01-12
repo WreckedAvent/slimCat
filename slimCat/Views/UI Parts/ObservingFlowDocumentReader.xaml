@@ -1,13 +1,13 @@
-﻿<FlowDocumentScrollViewer 
-            x:Name="Root"
-            x:Class="Slimcat.Views.ObservingFlowDocumentReader"
-            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            HorizontalAlignment="Stretch"
-            UseLayoutRounding="True"
-            Foreground="{StaticResource HighlightBrush}"
-            Background="Transparent"
-            VerticalScrollBarVisibility="Auto">
+﻿<FlowDocumentScrollViewer
+    x:Name="Root"
+    x:Class="Slimcat.Views.ObservingFlowDocumentReader"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    HorizontalAlignment="Stretch"
+    UseLayoutRounding="True"
+    Foreground="{StaticResource HighlightBrush}"
+    Background="Transparent"
+    VerticalScrollBarVisibility="Auto">
     <FlowDocument PagePadding="2,5"
                   IsOptimalParagraphEnabled="True"
                   IsHyphenationEnabled="True"

@@ -1,35 +1,29 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RightClickViewModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   The right click menu view model.
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RightClickViewModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.ViewModels
 {
+    #region Usings
+
     using Models;
+
+    #endregion
 
     /// <summary>
     ///     The right click menu view model.
@@ -49,10 +43,10 @@ namespace Slimcat.ViewModels
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RightClickMenuViewModel"/> class.
+        ///     Initializes a new instance of the <see cref="RightClickMenuViewModel" /> class.
         /// </summary>
         /// <param name="isModerator">
-        /// The is moderator.
+        ///     The is moderator.
         /// </param>
         public RightClickMenuViewModel(bool isModerator)
         {
@@ -78,10 +72,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool HasReport
         {
-            get
-            {
-                return this.isModerator && this.hasReports;
-            }
+            get { return isModerator && hasReports; }
         }
 
         /// <summary>
@@ -91,10 +82,8 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (this.Target != null)
-                {
-                    return this.Target.StatusMessage.Length > 0;
-                }
+                if (Target != null)
+                    return Target.StatusMessage.Length > 0;
 
                 return false;
             }
@@ -105,15 +94,12 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool IsOpen
         {
-            get
-            {
-                return this.isOpen;
-            }
+            get { return isOpen; }
 
             set
             {
-                this.isOpen = value;
-                this.OnPropertyChanged("IsOpen");
+                isOpen = value;
+                OnPropertyChanged("IsOpen");
             }
         }
 
@@ -124,9 +110,11 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (this.Target != null)
+                if (Target != null)
                 {
-                    return ApplicationSettings.Interested.Contains(this.Target.Name) ? "Remove interested mark" : "Add interested mark";
+                    return ApplicationSettings.Interested.Contains(Target.Name)
+                        ? "Remove interested mark"
+                        : "Add interested mark";
                 }
 
                 return string.Empty;
@@ -140,9 +128,11 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (this.Target != null)
+                if (Target != null)
                 {
-                    return ApplicationSettings.NotInterested.Contains(this.Target.Name) ? "Remove not interested mark" : "Add not interested mark";
+                    return ApplicationSettings.NotInterested.Contains(Target.Name)
+                        ? "Remove not interested mark"
+                        : "Add not interested mark";
                 }
 
                 return string.Empty;
@@ -161,16 +151,16 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (this.Target != null)
+                if (Target != null)
                 {
-                    switch (this.Target.Gender)
+                    switch (Target.Gender)
                     {
                         case Gender.HermF:
                             return "Feminine Herm";
                         case Gender.HermM:
                             return "Masculine Herm";
                         default:
-                            return this.Target.Gender.ToString();
+                            return Target.Gender.ToString();
                     }
                 }
 
@@ -185,17 +175,17 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (this.Target != null)
+                if (Target != null)
                 {
-                    switch (this.Target.Status)
+                    switch (Target.Status)
                     {
                         case StatusType.Dnd:
                             return "Do Not Disturb";
                         case StatusType.Looking:
                             return "Looking For Play";
                         default: // we just need to capitalize the first letter
-                            return char.ToUpper(this.Target.Status.ToString()[0])
-                                   + this.Target.Status.ToString().Substring(1);
+                            return char.ToUpper(Target.Status.ToString()[0])
+                                   + Target.Status.ToString().Substring(1);
                     }
                 }
 
@@ -208,36 +198,36 @@ namespace Slimcat.ViewModels
         #region Public Methods and Operators
 
         /// <summary>
-        /// The set new target.
+        ///     The set new target.
         /// </summary>
         /// <param name="newTarget">
-        /// The target.
+        ///     The target.
         /// </param>
         /// <param name="canIgnore">
-        /// The can ignore.
+        ///     The can ignore.
         /// </param>
         /// <param name="canUnignore">
-        /// The can unignore.
+        ///     The can unignore.
         /// </param>
         /// <param name="hasReports">
-        /// The has reports.
+        ///     The has reports.
         /// </param>
         public void SetNewTarget(ICharacter newTarget, bool canIgnore, bool canUnignore, bool hasReports)
         {
-            this.Target = newTarget;
-            this.Target.GetAvatar();
+            Target = newTarget;
+            Target.GetAvatar();
 
-            this.CanIgnore = canIgnore;
-            this.CanUnignore = canUnignore;
+            CanIgnore = canIgnore;
+            CanUnignore = canUnignore;
             this.hasReports = hasReports;
 
-            this.OnPropertyChanged("Target");
-            this.OnPropertyChanged("CanIgnore");
-            this.OnPropertyChanged("CanUnignore");
-            this.OnPropertyChanged("TargetGender");
-            this.OnPropertyChanged("TargetStatus");
-            this.OnPropertyChanged("HasStatus");
-            this.OnPropertyChanged("HasReport");
+            OnPropertyChanged("Target");
+            OnPropertyChanged("CanIgnore");
+            OnPropertyChanged("CanUnignore");
+            OnPropertyChanged("TargetGender");
+            OnPropertyChanged("TargetStatus");
+            OnPropertyChanged("HasStatus");
+            OnPropertyChanged("HasReport");
         }
 
         #endregion
@@ -246,7 +236,7 @@ namespace Slimcat.ViewModels
 
         protected override void Dispose(bool isManaged)
         {
-            this.Target = null;
+            Target = null;
             base.Dispose(isManaged);
         }
 

@@ -1,5 +1,26 @@
-﻿namespace Slimcat.Utilities
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="StaticFunctions.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace Slimcat.Utilities
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -8,8 +29,9 @@
     using System.Web;
     using System.Windows;
     using System.Windows.Media;
-
     using Models;
+
+    #endregion
 
     /// <summary>
     ///     The static functions.
@@ -108,9 +130,9 @@
                 }
             }
 
-            return hasMatch 
-                       ? new Tuple<string, string>(checkAgainst, GetStringContext(fullString, checkAgainst)) 
-                       : new Tuple<string, string>(string.Empty, string.Empty);
+            return hasMatch
+                ? new Tuple<string, string>(checkAgainst, GetStringContext(fullString, checkAgainst))
+                : new Tuple<string, string>(string.Empty, string.Empty);
         }
 
         /// <summary>
@@ -141,9 +163,7 @@
                     }
 
                     if (suspectIndex != 0)
-                    {
                         suspectIndex++; // skip past space
-                    }
 
                     return suspectIndex;
                 };
@@ -151,9 +171,7 @@
             start = findStartOfWord(start);
 
             if (end != fullContent.Length)
-            {
                 end = findStartOfWord(end);
-            }
 
             return (start > 0 ? "... " : string.Empty) + fullContent.Substring(start, end - start)
                    + (end != fullContent.Length ? " ..." : string.Empty);
@@ -199,8 +217,8 @@
             if (!settings.NotifyIncludesCharacterNames) return safeMessage.HasDingTermMatch(dingTerms);
 
             var enumeratedDingTerm = dingTerms as string[] ?? dingTerms.ToArray();
-            return message.Poster.Name.HasDingTermMatch(enumeratedDingTerm) 
-                || safeMessage.HasDingTermMatch(enumeratedDingTerm);
+            return message.Poster.Name.HasDingTermMatch(enumeratedDingTerm)
+                   || safeMessage.HasDingTermMatch(enumeratedDingTerm);
         }
 
         /// <summary>
@@ -226,20 +244,17 @@
             if (!title.Equals(id))
             {
                 var safeTitle = Path.GetInvalidPathChars()
-                                    .Union(new List<char> { ':' })
-                                    .Aggregate(title, (current, c) => current.Replace(c.ToString(CultureInfo.InvariantCulture), string.Empty));
+                    .Union(new List<char> {':'})
+                    .Aggregate(title,
+                        (current, c) => current.Replace(c.ToString(CultureInfo.InvariantCulture), string.Empty));
 
                 if (safeTitle[0].Equals('.'))
-                {
                     safeTitle = safeTitle.Remove(0, 1);
-                }
 
                 folderName = string.Format("{0} ({1})", safeTitle, id);
             }
             else
-            {
                 folderName = id;
-            }
 
             if (folderName.ContainsOrdinal(@"/") || folderName.ContainsOrdinal(@"\"))
             {
@@ -273,37 +288,25 @@
         {
             // notice the toListing, this is an attempt to fix EnumerationChanged errors
             if (cm.Ignored.ToList().Contains(character.Name))
-            {
                 return search.ShowIgnored;
-            }
 
             if (cm.NotInterested.ToList().Contains(character.Name))
-            {
                 return search.ShowNotInterested;
-            }
 
             if (cm.Mods.ToList().Contains(character.Name))
-            {
                 return search.ShowMods;
-            }
 
             if (channel != null)
             {
                 if (channel.Moderators.ToList().Contains(character.Name))
-                {
                     return search.ShowMods;
-                }
             }
 
             if (cm.Friends.ToList().Contains(character.Name))
-            {
                 return search.ShowFriends;
-            }
 
             if (cm.Bookmarks.ToList().Contains(character.Name))
-            {
                 return search.ShowBookmarks;
-            }
 
             return search.MeetsStatusFilter(character);
         }
@@ -330,21 +333,17 @@
         ///     The <see cref="bool" />.
         /// </returns>
         public static bool MeetsFilters(
-            this ICharacter character, 
-            GenderSettingsModel genders, 
-            GenericSearchSettingsModel search, 
-            IChatModel cm, 
+            this ICharacter character,
+            GenderSettingsModel genders,
+            GenericSearchSettingsModel search,
+            IChatModel cm,
             GeneralChannelModel channel)
         {
             if (!character.NameContains(search.SearchString))
-            {
                 return false;
-            }
 
             if (!genders.MeetsGenderFilter(character))
-            {
                 return false;
-            }
 
             return character.MeetsChatModelLists(search, cm, channel);
         }
@@ -371,22 +370,18 @@
         ///     The <see cref="bool" />.
         /// </returns>
         public static bool MeetsFilters(
-            this IMessage message, 
-            GenderSettingsModel genders, 
-            GenericSearchSettingsModel search, 
-            IChatModel cm, 
+            this IMessage message,
+            GenderSettingsModel genders,
+            GenericSearchSettingsModel search,
+            IChatModel cm,
             GeneralChannelModel channel)
         {
             if (!message.Poster.NameContains(search.SearchString)
                 && !message.Message.ContainsOrdinal(search.SearchString))
-            {
                 return false;
-            }
 
             if (!genders.MeetsGenderFilter(message.Poster))
-            {
                 return false;
-            }
 
             return message.Poster.MeetsChatModelLists(search, cm, channel);
         }
@@ -444,39 +439,25 @@
         {
             // first, push friends, bookmarks, and moderators to the top of the list
             if (cm.OnlineFriends.Contains(character))
-            {
                 return "a"; // Really important people!
-            }
 
             if (cm.OnlineBookmarks.Contains(character))
-            {
                 return "b"; // Important people!
-            }
 
             if (cm.Interested.Contains(character.Name))
-            {
                 return "c"; // interesting people!
-            }
 
             if (cm.OnlineGlobalMods.Contains(character))
-            {
                 return "d"; // Useful people!
-            }
 
             if (channel != null && channel.Moderators.Contains(character.Name))
-            {
                 return "d";
-            }
 
             if (cm.Ignored.Contains(character.Name))
-            {
                 return "z"; // "I don't want to see this person"
-            }
 
             if (cm.NotInterested.Contains(character.Name))
-            {
                 return "z"; // I also do not wish to see this person
-            }
 
             // then sort then by status
             switch (character.Status)
@@ -508,9 +489,7 @@
         public static string StripPunctationAtEnd(this string fullString)
         {
             if (string.IsNullOrWhiteSpace(fullString) || fullString.Length <= 1)
-            {
                 return fullString;
-            }
 
             var index = fullString.Length - 1;
 
@@ -530,16 +509,12 @@
                 var child = VisualTreeHelper.GetChild(parent, i);
 
                 if (child is T)
-                {
                     return child as T;
-                }
 
                 var grandchild = FindChild<T>(child);
 
                 if (grandchild != null)
-                {
                     return grandchild;
-                }
             }
 
             return default(T);

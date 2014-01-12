@@ -14,9 +14,9 @@
     <utilities:GenderColorConverter x:Key="GenderColorConverter" />
     <utilities:GenderImageConverter x:Key="GenderImageConverter" />
     <utilities:ChannelTypeToImageConverter x:Key="ChannelTypeToImageConverter" />
-    <utilities:NameplateColorConverter x:Key="NameplateColorConverter"/>
-    <utilities:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter"/>
-    
+    <utilities:NameplateColorConverter x:Key="NameplateColorConverter" />
+    <utilities:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter" />
+
     <MouseBinding x:Key="RightClickOpenMenu"
                   MouseAction="RightClick"
                   Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
@@ -29,7 +29,7 @@
                     AncestorType={x:Type Grid}, AncestorLevel=2} }" />
         <Setter Property="TextDecorations" Value="{x:Null}" />
         <Setter Property="TextBlock.FontWeight" Value="SemiBold" />
-        
+
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="True">
                 <Setter Property="Cursor" Value="Hand" />
@@ -38,7 +38,7 @@
             <Trigger Property="IsMouseOver" Value="False">
                 <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
             </Trigger>
-            
+
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
             </Trigger>
@@ -69,7 +69,8 @@
 
             <Rectangle Height="15" Width="15" Fill="{StaticResource HighlightBrush}">
                 <Rectangle.OpacityMask>
-                    <ImageBrush ImageSource="{Binding Path=Type, Mode=OneTime, Converter={StaticResource ChannelTypeToImageConverter}}" />
+                    <ImageBrush
+                        ImageSource="{Binding Path=Type, Mode=OneTime, Converter={StaticResource ChannelTypeToImageConverter}}" />
                 </Rectangle.OpacityMask>
             </Rectangle>
 
@@ -79,7 +80,7 @@
                 <Hyperlink CommandParameter="{Binding Path=Id, Mode=OneTime}"
                            Style="{StaticResource ChannelStyle}">
                     <Run Text="{Binding Path=Title, Mode=OneTime}" />
-                    <Run Text="{Binding Path=DisplayNumber, Mode=OneWay}"/>
+                    <Run Text="{Binding Path=DisplayNumber, Mode=OneWay}" />
                 </Hyperlink>
             </TextBlock>
         </Grid>
@@ -96,12 +97,13 @@
             <Rectangle Height="15" Width="15">
                 <Rectangle.Fill>
                     <MultiBinding Converter="{StaticResource GenderColorConverter}" Mode="OneWay">
-                        <Binding Path="Gender"/>
-                        <Binding Path="IsInteresting"/>
+                        <Binding Path="Gender" />
+                        <Binding Path="IsInteresting" />
                     </MultiBinding>
                 </Rectangle.Fill>
                 <Rectangle.OpacityMask>
-                    <ImageBrush ImageSource="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
+                    <ImageBrush
+                        ImageSource="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
                 </Rectangle.OpacityMask>
             </Rectangle>
 

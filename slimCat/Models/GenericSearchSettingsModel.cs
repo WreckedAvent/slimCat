@@ -1,17 +1,38 @@
-﻿namespace Slimcat.Models
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="GenericSearchSettingsModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace Slimcat.Models
 {
+    #region Usings
+
     using System;
     using System.Windows.Input;
-
     using Libraries;
     using Utilities;
+
+    #endregion
 
     /// <summary>
     ///     Search settings to be used with a search text box tool cahin
     /// </summary>
     public class GenericSearchSettingsModel
     {
-        // dev note: I haven't really found a better way to do a lot of properties like this. UI can't access dictionaries.
         #region Fields
 
         private RelayCommand expandSearch;
@@ -56,20 +77,15 @@
         /// </summary>
         public bool IsChangingSettings
         {
-            get
-            {
-                return this.isChangingSettings;
-            }
+            get { return isChangingSettings; }
 
             set
             {
-                if (this.isChangingSettings == value)
-                {
+                if (isChangingSettings == value)
                     return;
-                }
 
-                this.isChangingSettings = value;
-                this.CallUpdate();
+                isChangingSettings = value;
+                CallUpdate();
             }
         }
 
@@ -80,9 +96,9 @@
         {
             get
             {
-                return this.expandSearch
-                       ?? (this.expandSearch =
-                           new RelayCommand(param => this.IsChangingSettings = !this.IsChangingSettings));
+                return expandSearch
+                       ?? (expandSearch =
+                           new RelayCommand(param => IsChangingSettings = !IsChangingSettings));
             }
         }
 
@@ -91,20 +107,15 @@
         /// </summary>
         public string SearchString
         {
-            get
-            {
-                return this.search == null ? this.search : this.search.ToLower();
-            }
+            get { return search == null ? search : search.ToLower(); }
 
             set
             {
-                if (this.search == value)
-                {
+                if (search == value)
                     return;
-                }
 
-                this.search = value;
-                this.CallUpdate();
+                search = value;
+                CallUpdate();
             }
         }
 
@@ -113,20 +124,15 @@
         /// </summary>
         public bool ShowBookmarks
         {
-            get
-            {
-                return this.showBookmarks;
-            }
+            get { return showBookmarks; }
 
             set
             {
-                if (this.showBookmarks == value)
-                {
+                if (showBookmarks == value)
                     return;
-                }
 
-                this.showBookmarks = value;
-                this.CallUpdate();
+                showBookmarks = value;
+                CallUpdate();
             }
         }
 
@@ -135,20 +141,15 @@
         /// </summary>
         public bool ShowBusyAway
         {
-            get
-            {
-                return this.showBusyAway;
-            }
+            get { return showBusyAway; }
 
             set
             {
-                if (this.showBusyAway == value)
-                {
+                if (showBusyAway == value)
                     return;
-                }
 
-                this.showBusyAway = value;
-                this.CallUpdate();
+                showBusyAway = value;
+                CallUpdate();
             }
         }
 
@@ -157,20 +158,15 @@
         /// </summary>
         public bool ShowDnd
         {
-            get
-            {
-                return this.showDnd;
-            }
+            get { return showDnd; }
 
             set
             {
-                if (this.showDnd == value)
-                {
+                if (showDnd == value)
                     return;
-                }
 
-                this.showDnd = value;
-                this.CallUpdate();
+                showDnd = value;
+                CallUpdate();
             }
         }
 
@@ -179,20 +175,15 @@
         /// </summary>
         public bool ShowFriends
         {
-            get
-            {
-                return this.showFriends;
-            }
+            get { return showFriends; }
 
             set
             {
-                if (this.showFriends == value)
-                {
+                if (showFriends == value)
                     return;
-                }
 
-                this.showFriends = value;
-                this.CallUpdate();
+                showFriends = value;
+                CallUpdate();
             }
         }
 
@@ -201,20 +192,15 @@
         /// </summary>
         public bool ShowIgnored
         {
-            get
-            {
-                return this.showIgnored;
-            }
+            get { return showIgnored; }
 
             set
             {
-                if (this.showIgnored == value)
-                {
+                if (showIgnored == value)
                     return;
-                }
 
-                this.showIgnored = value;
-                this.CallUpdate();
+                showIgnored = value;
+                CallUpdate();
             }
         }
 
@@ -223,20 +209,15 @@
         /// </summary>
         public bool ShowLooking
         {
-            get
-            {
-                return this.showLooking;
-            }
+            get { return showLooking; }
 
             set
             {
-                if (this.showLooking == value)
-                {
+                if (showLooking == value)
                     return;
-                }
 
-                this.showLooking = value;
-                this.CallUpdate();
+                showLooking = value;
+                CallUpdate();
             }
         }
 
@@ -245,20 +226,15 @@
         /// </summary>
         public bool ShowMods
         {
-            get
-            {
-                return this.showMods;
-            }
+            get { return showMods; }
 
             set
             {
-                if (this.showMods == value)
-                {
+                if (showMods == value)
                     return;
-                }
 
-                this.showMods = value;
-                this.CallUpdate();
+                showMods = value;
+                CallUpdate();
             }
         }
 
@@ -267,20 +243,15 @@
         /// </summary>
         public bool ShowNormal
         {
-            get
-            {
-                return this.showNormal;
-            }
+            get { return showNormal; }
 
             set
             {
-                if (this.showNormal == value)
-                {
+                if (showNormal == value)
                     return;
-                }
 
-                this.showNormal = value;
-                this.CallUpdate();
+                showNormal = value;
+                CallUpdate();
             }
         }
 
@@ -289,20 +260,15 @@
         /// </summary>
         public bool ShowNotInterested
         {
-            get
-            {
-                return this.showNotInterested;
-            }
+            get { return showNotInterested; }
 
             set
             {
-                if (this.showNotInterested == value)
-                {
+                if (showNotInterested == value)
                     return;
-                }
 
-                this.showNotInterested = value;
-                this.CallUpdate();
+                showNotInterested = value;
+                CallUpdate();
             }
         }
 
@@ -311,27 +277,27 @@
         #region Public Methods and Operators
 
         /// <summary>
-        /// The meets search string.
+        ///     The meets search string.
         /// </summary>
         /// <param name="character">
-        /// The character.
+        ///     The character.
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         public bool MeetsSearchString(ICharacter character)
         {
-            return character.NameContains(this.SearchString);
+            return character.NameContains(SearchString);
         }
 
         /// <summary>
-        /// The meets status filter.
+        ///     The meets status filter.
         /// </summary>
         /// <param name="character">
-        /// The character.
+        ///     The character.
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         public bool MeetsStatusFilter(ICharacter character)
         {
@@ -340,17 +306,17 @@
                 case StatusType.Idle:
                 case StatusType.Away:
                 case StatusType.Busy:
-                    return this.showBusyAway;
+                    return showBusyAway;
 
                 case StatusType.Dnd:
-                    return this.showDnd;
+                    return showDnd;
 
                 case StatusType.Looking:
-                    return this.showLooking;
+                    return showLooking;
 
                 case StatusType.Crown:
                 case StatusType.Online:
-                    return this.showNormal;
+                    return showNormal;
 
                 default:
                     return false;
@@ -363,12 +329,12 @@
 
         private void CallUpdate()
         {
-            if (this.Updated != null)
-            {
-                this.Updated(this, new EventArgs());
-            }
+            if (Updated != null)
+                Updated(this, new EventArgs());
         }
 
         #endregion
+
+        // dev note: I haven't really found a better way to do a lot of properties like this. UI can't access dictionaries.
     }
 }

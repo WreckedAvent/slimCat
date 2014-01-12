@@ -1,43 +1,35 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ChatWrapperViewModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   A specific viewmodel for the chat wrapper itself
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ChatWrapperViewModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.ViewModels
 {
-    using System;
+    #region Usings
 
+    using System;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
-
     using Models;
     using Utilities;
     using Views;
+
+    #endregion
 
     /// <summary>
     ///     A specific viewmodel for the chat wrapper itself
@@ -56,19 +48,19 @@ namespace Slimcat.ViewModels
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChatWrapperViewModel"/> class.
+        ///     Initializes a new instance of the <see cref="ChatWrapperViewModel" /> class.
         /// </summary>
         /// <param name="contain">
-        /// The contain.
+        ///     The contain.
         /// </param>
         /// <param name="regman">
-        /// The regman.
+        ///     The regman.
         /// </param>
         /// <param name="events">
-        /// The events.
+        ///     The events.
         /// </param>
         /// <param name="cm">
-        /// The cm.
+        ///     The cm.
         /// </param>
         public ChatWrapperViewModel(
             IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
@@ -76,8 +68,8 @@ namespace Slimcat.ViewModels
         {
             try
             {
-                this.Events.GetEvent<CharacterSelectedLoginEvent>()
-                    .Subscribe(this.HandleCurrentCharacter, ThreadOption.UIThread, true);
+                Events.GetEvent<CharacterSelectedLoginEvent>()
+                    .Subscribe(HandleCurrentCharacter, ThreadOption.UIThread, true);
             }
             catch (Exception ex)
             {
@@ -97,7 +89,7 @@ namespace Slimcat.ViewModels
         {
             try
             {
-                this.Container.RegisterType<object, ChatWrapperView>(ChatWrapperView);
+                Container.RegisterType<object, ChatWrapperView>(ChatWrapperView);
             }
             catch (Exception ex)
             {
@@ -112,16 +104,14 @@ namespace Slimcat.ViewModels
 
         private void HandleCurrentCharacter(string chara)
         {
-            this.RegionManager.RequestNavigate(
-                Shell.MainRegion, new Uri(ChatWrapperView, UriKind.Relative), this.NavigationCompleted);
+            RegionManager.RequestNavigate(
+                Shell.MainRegion, new Uri(ChatWrapperView, UriKind.Relative), NavigationCompleted);
         }
 
         private void NavigationCompleted(NavigationResult result)
         {
             if (result.Result == true)
-            {
-                this.Events.GetEvent<ChatOnDisplayEvent>().Publish(null);
-            }
+                Events.GetEvent<ChatOnDisplayEvent>().Publish(null);
         }
 
         #endregion

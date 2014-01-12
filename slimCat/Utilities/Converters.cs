@@ -1,34 +1,26 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Converters.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   Returns the opposite boolean value
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Converters.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.Utilities
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -41,8 +33,9 @@ namespace Slimcat.Utilities
     using System.Windows.Documents;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
-
     using Models;
+
+    #endregion
 
     /// <summary>
     ///     Returns the opposite boolean value
@@ -53,7 +46,7 @@ namespace Slimcat.Utilities
 
         public object Convert(object value, Type targetType, object paramater, CultureInfo culture)
         {
-            var v = (bool)value;
+            var v = (bool) value;
             return !v;
         }
 
@@ -74,11 +67,9 @@ namespace Slimcat.Utilities
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var v = (bool)value;
+            var v = (bool) value;
             if (v)
-            {
                 return Application.Current.FindResource("HighlightBrush") as SolidColorBrush;
-            }
 
             return Application.Current.FindResource("BrightBackgroundBrush") as SolidColorBrush;
         }
@@ -95,10 +86,10 @@ namespace Slimcat.Utilities
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var parsed = (int)value;
+            var parsed = (int) value;
 
-            return parsed > 0 
-                ? Visibility.Visible 
+            return parsed > 0
+                ? Visibility.Visible
                 : Visibility.Collapsed;
         }
 
@@ -111,83 +102,97 @@ namespace Slimcat.Utilities
     public abstract class BbCodeBaseConverter
     {
         #region Static Fields
+
         private static readonly IList<string> BbType = new List<string>
-        {
-            "b", 
-            "s", 
-            "u", 
-            "i", 
-            "url", 
-            "color", 
-            "channel", 
-            "session", 
-            "user", 
-            "noparse", 
-            "icon", 
-            "sub", 
-            "sup", 
-            "small", 
-            "big"
-        };
+            {
+                "b",
+                "s",
+                "u",
+                "i",
+                "url",
+                "color",
+                "channel",
+                "session",
+                "user",
+                "noparse",
+                "icon",
+                "sub",
+                "sup",
+                "small",
+                "big"
+            };
 
-        private static readonly IList<string> SpecialBbCases = new List<string> { "url", "channel", "user", "icon", "color" };
+        private static readonly IList<string> SpecialBbCases = new List<string>
+            {
+                "url",
+                "channel",
+                "user",
+                "icon",
+                "color"
+            };
 
-        private static readonly string[] ValidStartTerms = { "http://", "https://", "ftp://" };
+        private static readonly string[] ValidStartTerms = {"http://", "https://", "ftp://"};
+
         #endregion
 
         #region Constructors
+
         protected BbCodeBaseConverter(IChatModel chatModel)
         {
-            this.ChatModel = chatModel;
+            ChatModel = chatModel;
         }
+
         #endregion
 
         #region Properties
+
         private IChatModel ChatModel { get; set; }
+
         #endregion
 
         #region Methods
+
         /// <summary>
-        /// Converts an Icharacter into a username 'button'.
+        ///     Converts an Icharacter into a username 'button'.
         /// </summary>
         internal static Inline MakeUsernameLink(ICharacter target)
         {
             var toReturn =
                 new InlineUIContainer
-                {
-                    Child = new ContentControl
                     {
-                        ContentTemplate = (DataTemplate)Application.Current.FindResource("UsernameTemplate"),
-                        Content = target
-                    },
-                    BaselineAlignment = BaselineAlignment.TextBottom,
-                };
+                        Child = new ContentControl
+                            {
+                                ContentTemplate = (DataTemplate) Application.Current.FindResource("UsernameTemplate"),
+                                Content = target
+                            },
+                        BaselineAlignment = BaselineAlignment.TextBottom,
+                    };
 
             return toReturn;
         }
 
         internal static Inline MakeChannelLink(ChannelModel channel)
         {
-            var toReturn = 
+            var toReturn =
                 new InlineUIContainer
-                {
-                    Child = new ContentControl
                     {
-                        ContentTemplate = (DataTemplate)Application.Current.FindResource("ChannelTemplate"),
-                        Content = channel
-                    },
-                    BaselineAlignment = BaselineAlignment.TextBottom
-                };
+                        Child = new ContentControl
+                            {
+                                ContentTemplate = (DataTemplate) Application.Current.FindResource("ChannelTemplate"),
+                                Content = channel
+                            },
+                        BaselineAlignment = BaselineAlignment.TextBottom
+                    };
 
             return toReturn;
         }
 
         /// <summary>
-        /// Converts a string to richly-formatted inline elements.
+        ///     Converts a string to richly-formatted inline elements.
         /// </summary>
         internal Inline Parse(string text)
         {
-            return this.BbcodeToInline(PreProcessBbCode(text));
+            return BbcodeToInline(PreProcessBbCode(text));
         }
 
         private static bool ContainsUrl(string args)
@@ -196,9 +201,7 @@ namespace Slimcat.Utilities
 
             // see if it starts with something useful
             if (match == null)
-            {
                 return false;
-            }
 
             var starter = ValidStartTerms.First(match.StartsWith);
             return args.Trim().Length > starter.Length;
@@ -208,20 +211,14 @@ namespace Slimcat.Utilities
         {
             var root = x.IndexOf('[');
             if (root == -1 || x.Length < 4)
-            {
                 return "n";
-            }
 
             var end = x.IndexOf(']', root);
             if (end == -1)
-            {
                 return "n";
-            }
 
             if (x[root + 1] != '/')
-            {
                 return FindEndType(x.Substring(end + 1));
-            }
 
             var type = x.Substring(root + 2, end - (root + 2));
 
@@ -232,15 +229,11 @@ namespace Slimcat.Utilities
         {
             var root = x.IndexOf('[');
             if (root == -1 || x.Length < 3)
-            {
                 return "n";
-            }
 
             var end = x.IndexOf(']', root);
             if (end == -1)
-            {
                 return "n";
-            }
 
             var type = x.Substring(root + 1, end - root - 1);
 
@@ -251,9 +244,7 @@ namespace Slimcat.Utilities
         {
             var match = ValidStartTerms.FirstOrDefault(args.StartsWith);
             if (match == null)
-            {
                 return args;
-            }
 
             var stripped = args.Substring(match.Length);
 
@@ -276,20 +267,14 @@ namespace Slimcat.Utilities
         {
             var root = x.IndexOf('[');
             if (root == -1 || x.Length < 3)
-            {
                 return false;
-            }
 
             var end = x.IndexOf(']', root);
             if (end == -1)
-            {
                 return false;
-            }
 
             if (x[root + 1] == '/')
-            {
                 HasOpenTag(x.Substring(end));
-            }
 
             var type = x.Substring(root + 1, end - root - 1);
 
@@ -337,13 +322,11 @@ namespace Slimcat.Utilities
         private static string PreProcessBbCode(string text)
         {
             if (!ContainsUrl(text))
-            {
                 return text; // if there's no url in it, we don't have a link to mark up
-            }
 
             var matches = from word in text.Split(' ')
-                          where StartsWithValidTerm(word)
-                          select new Tuple<string, string>(word, MarkUpUrlWithBbCode(word));
+                where StartsWithValidTerm(word)
+                select new Tuple<string, string>(word, MarkUpUrlWithBbCode(word));
 
             return matches.Aggregate(text, (current, toReplace) => current.Replace(toReplace.Item1, toReplace.Item2));
         }
@@ -355,19 +338,19 @@ namespace Slimcat.Utilities
                 case "b":
                     return new Bold(x);
                 case "u":
-                    return new Span(x) { TextDecorations = TextDecorations.Underline };
+                    return new Span(x) {TextDecorations = TextDecorations.Underline};
                 case "i":
                     return new Italic(x);
                 case "s":
-                    return new Span(x) { TextDecorations = TextDecorations.Strikethrough };
+                    return new Span(x) {TextDecorations = TextDecorations.Strikethrough};
                 case "sub":
-                    return new Span(x) { BaselineAlignment = BaselineAlignment.Subscript, FontSize = 10 };
+                    return new Span(x) {BaselineAlignment = BaselineAlignment.Subscript, FontSize = 10};
                 case "sup":
-                    return new Span(x) { BaselineAlignment = BaselineAlignment.Top, FontSize = 10 };
+                    return new Span(x) {BaselineAlignment = BaselineAlignment.Top, FontSize = 10};
                 case "small":
-                    return new Span(x) { FontSize = 9 };
+                    return new Span(x) {FontSize = 9};
                 case "big":
-                    return new Span(x) { FontSize = 16 };
+                    return new Span(x) {FontSize = 16};
             }
 
             if (y.StartsWith("url"))
@@ -375,11 +358,11 @@ namespace Slimcat.Utilities
                 var url = StripBeforeType(y);
 
                 var toReturn = new Hyperlink(x)
-                {
-                    CommandParameter = url,
-                    ToolTip = url,
-                    Style = (Style)Application.Current.FindResource("Hyperlink")
-                };
+                    {
+                        CommandParameter = url,
+                        ToolTip = url,
+                        Style = (Style) Application.Current.FindResource("Hyperlink")
+                    };
 
                 return toReturn;
             }
@@ -387,14 +370,14 @@ namespace Slimcat.Utilities
             if (y.StartsWith("user") || y.StartsWith("icon"))
             {
                 var target = StripBeforeType(y);
-                return MakeUsernameLink(this.ChatModel.FindCharacter(target));
+                return MakeUsernameLink(ChatModel.FindCharacter(target));
             }
 
             if (y.StartsWith("channel") || y.StartsWith("session"))
             {
                 var channel = StripBeforeType(y);
 
-                return MakeChannelLink(this.ChatModel.FindChannel(channel));
+                return MakeChannelLink(ChatModel.FindChannel(channel));
             }
 
             if (!y.StartsWith("color") || !ApplicationSettings.AllowColors) return new Span(x);
@@ -405,9 +388,9 @@ namespace Slimcat.Utilities
                 var convertFromString = ColorConverter.ConvertFromString(colorString);
                 if (convertFromString != null)
                 {
-                    var color = (Color)convertFromString;
+                    var color = (Color) convertFromString;
                     var brush = new SolidColorBrush(color);
-                    return new Span(x) { Foreground = brush };
+                    return new Span(x) {Foreground = brush};
                 }
             }
             catch // the color might be invalid, so ignore if it is
@@ -421,9 +404,7 @@ namespace Slimcat.Utilities
         private Inline BbcodeToInline(string x)
         {
             if (!HasOpenTag(x))
-            {
                 return new Run(x);
-            }
 
             var toReturn = new Span();
 
@@ -431,9 +412,7 @@ namespace Slimcat.Utilities
             var startIndex = x.IndexOf("[" + startType + "]", StringComparison.Ordinal);
 
             if (startIndex > 0)
-            {
                 toReturn.Inlines.Add(new Run(x.Substring(0, startIndex)));
-            }
 
             if (startType.StartsWith("session"))
             {
@@ -480,12 +459,10 @@ namespace Slimcat.Utilities
                 var skipthis = roughString.Substring(0, endIndex);
 
                 toReturn.Inlines.Add(new Run(skipthis));
-                toReturn.Inlines.Add(this.BbcodeToInline(restofString));
+                toReturn.Inlines.Add(BbcodeToInline(restofString));
             }
             else if (endType == "n" || endIndex == -1)
-            {
-                toReturn.Inlines.Add(this.TypeToInline(new Run(roughString), startType));
-            }
+                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType));
             else if (endType != startType)
             {
                 var properEnd = "[/" + StripAfterType(startType) + "]";
@@ -495,20 +472,20 @@ namespace Slimcat.Utilities
                     var toMarkUp = roughString.Substring(0, properIndex);
                     var restOfString = roughString.Substring(properIndex + properEnd.Length);
 
-                    toReturn.Inlines.Add(this.TypeToInline(this.BbcodeToInline(toMarkUp), startType));
+                    toReturn.Inlines.Add(TypeToInline(BbcodeToInline(toMarkUp), startType));
 
-                    toReturn.Inlines.Add(this.BbcodeToInline(restOfString));
+                    toReturn.Inlines.Add(BbcodeToInline(restOfString));
                 }
                 else
                 {
                     toReturn.Inlines.Add(
-                        this.TypeToInline(this.BbcodeToInline(roughString), startType));
+                        TypeToInline(BbcodeToInline(roughString), startType));
                 }
             }
             else if (endIndex + endLength == roughString.Length)
             {
                 roughString = roughString.Remove(endIndex, endLength);
-                toReturn.Inlines.Add(this.TypeToInline(new Run(roughString), startType));
+                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType));
             }
             else
             {
@@ -516,29 +493,33 @@ namespace Slimcat.Utilities
 
                 roughString = roughString.Substring(0, endIndex);
 
-                toReturn.Inlines.Add(this.TypeToInline(new Run(roughString), startType));
+                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType));
 
-                toReturn.Inlines.Add(this.BbcodeToInline(restOfString));
+                toReturn.Inlines.Add(BbcodeToInline(restOfString));
             }
 
             return toReturn;
         }
+
         #endregion
     }
 
     /// <summary>
-    /// Converts active messages into textblock inlines.
+    ///     Converts active messages into textblock inlines.
     /// </summary>
     public sealed class BbCodePostConverter : BbCodeBaseConverter, IMultiValueConverter
     {
         #region Constructors
+
         public BbCodePostConverter(IChatModel chatModel)
             : base(chatModel)
         {
         }
+
         #endregion
 
         #region Public Methods and Operators
+
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             var inlines = new List<Inline>();
@@ -546,14 +527,14 @@ namespace Slimcat.Utilities
             {
                 inlines.Clear(); // simple insurance that there's no junk
 
-                var text = (string)values[0]; // this is the beef of the message
+                var text = (string) values[0]; // this is the beef of the message
                 text = HttpUtility.HtmlDecode(text); // translate the HTML characters
-                var user = (ICharacter)values[1]; // this is our poster's name
-                var type = (MessageType)values[2]; // what kind of type our message is
+                var user = (ICharacter) values[1]; // this is our poster's name
+                var type = (MessageType) values[2]; // what kind of type our message is
 
                 if (type == MessageType.Roll)
                 {
-                    inlines.Add(this.Parse(text));
+                    inlines.Add(Parse(text));
                     return inlines;
                 }
 
@@ -568,7 +549,7 @@ namespace Slimcat.Utilities
                         // if the post is a /me "command"
                         text = text.Substring("/me".Length);
                         inlines.Insert(0, new Run("*")); // push the name button to the second slot
-                        inlines.Add(new Italic(this.Parse(text)));
+                        inlines.Add(new Italic(Parse(text)));
                         inlines.Add(new Run("*"));
                         return inlines;
                     }
@@ -578,7 +559,7 @@ namespace Slimcat.Utilities
                         // or a post "command"
                         text = text.Substring("/post ".Length);
 
-                        inlines.Insert(0, this.Parse(text));
+                        inlines.Insert(0, Parse(text));
                         inlines.Insert(1, new Run(" ~"));
                         return inlines;
                     }
@@ -588,9 +569,9 @@ namespace Slimcat.Utilities
                         // or a warn "command"
                         text = text.Substring("/warn ".Length);
                         inlines.Add(new Run(" warns, "));
-                        var toAdd = this.Parse(text);
+                        var toAdd = Parse(text);
 
-                        toAdd.Foreground = (Brush)Application.Current.FindResource("HighlightBrush");
+                        toAdd.Foreground = (Brush) Application.Current.FindResource("HighlightBrush");
                         toAdd.FontWeight = FontWeights.ExtraBold;
                         inlines.Add(toAdd);
 
@@ -598,7 +579,7 @@ namespace Slimcat.Utilities
                     }
 
                     inlines.Add(new Run(": "));
-                    inlines.Add(this.Parse(text));
+                    inlines.Add(Parse(text));
                     return inlines;
                 }
 
@@ -619,13 +600,11 @@ namespace Slimcat.Utilities
 
                     inlines.Add(nameLink);
                     inlines.Add(new Run(" "));
-                    inlines.Add(this.Parse(text));
+                    inlines.Add(Parse(text));
                 }
             }
             else
-            {
                 inlines.Clear();
-            }
 
             return inlines;
         }
@@ -634,19 +613,22 @@ namespace Slimcat.Utilities
         {
             throw new NotImplementedException();
         }
+
         #endregion
     }
 
     /// <summary>
-    /// Converts active messages into flow document inlines.
+    ///     Converts active messages into flow document inlines.
     /// </summary>
     public sealed class BbFlowConverter : BbCodeBaseConverter, IValueConverter
     {
         #region Constructors
+
         public BbFlowConverter(IChatModel chatModel)
             : base(chatModel)
         {
         }
+
         #endregion
 
         #region Public Methods and Operators
@@ -656,9 +638,7 @@ namespace Slimcat.Utilities
             var inlines = new List<Inline>();
 
             if (value == null)
-            {
                 return null;
-            }
 
             var text = value as string ?? value.ToString(); // this is the beef of the message
             text = HttpUtility.HtmlDecode(text); // translate the HTML characters
@@ -667,7 +647,7 @@ namespace Slimcat.Utilities
             {
                 // if the post is a /me "command"
                 text = text.Substring("/me".Length);
-                inlines.Add(new Italic(this.Parse(text)));
+                inlines.Add(new Italic(Parse(text)));
                 inlines.Add(new Run("*"));
             }
             else if (text.StartsWith("/post"))
@@ -675,7 +655,7 @@ namespace Slimcat.Utilities
                 // or a post "command"
                 text = text.Substring("/post ".Length);
 
-                inlines.Insert(0, this.Parse(text));
+                inlines.Insert(0, Parse(text));
                 inlines.Insert(1, new Run(" ~"));
             }
             else if (text.StartsWith("/warn"))
@@ -684,16 +664,16 @@ namespace Slimcat.Utilities
                 text = text.Substring("/warn ".Length);
                 inlines.Add(new Run(" warns, "));
 
-                var toAdd = this.Parse(text);
-                toAdd.Foreground = (Brush)Application.Current.FindResource("HighlightBrush");
+                var toAdd = Parse(text);
+                toAdd.Foreground = (Brush) Application.Current.FindResource("HighlightBrush");
                 toAdd.FontWeight = FontWeights.ExtraBold;
 
-                inlines.Add(this.Parse(text));
+                inlines.Add(Parse(text));
             }
             else
             {
                 inlines.Add(new Run(": "));
-                inlines.Add(this.Parse(text));
+                inlines.Add(Parse(text));
             }
 
             return inlines;
@@ -708,15 +688,17 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    ///  Converts history messages into document inlines.
+    ///     Converts history messages into document inlines.
     /// </summary>
     public sealed class BbCodeConverter : BbCodeBaseConverter, IValueConverter
     {
         #region Constructors
+
         public BbCodeConverter(IChatModel chatModel)
             : base(chatModel)
         {
         }
+
         #endregion
 
         #region Explicit Interface Methods
@@ -724,16 +706,14 @@ namespace Slimcat.Utilities
         object IValueConverter.Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null)
-            {
                 return null;
-            }
 
             var text = value as string ?? value.ToString();
 
             text = HttpUtility.HtmlDecode(text);
 
             IList<Inline> toReturn = new List<Inline>();
-            toReturn.Add(this.Parse(text));
+            toReturn.Add(Parse(text));
 
             return toReturn;
         }
@@ -747,7 +727,7 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    /// Converts gender string into gender color.
+    ///     Converts gender string into gender color.
     /// </summary>
     public sealed class GenderColorConverter : IMultiValueConverter
     {
@@ -757,28 +737,24 @@ namespace Slimcat.Utilities
         {
             try
             {
-                var gender = (Gender)values[0];
+                var gender = (Gender) values[0];
                 var findResource = Application.Current.FindResource("ForegroundColor");
                 if (findResource != null)
                 {
-                    var paleColor = (Color)findResource;
+                    var paleColor = (Color) findResource;
                     Color brightColor;
-                    if (values.Length > 1 && (bool)values[1])
-                    {
-                        brightColor = (Color)Application.Current.TryFindResource("ContrastColor");
-                    }
+                    if (values.Length > 1 && (bool) values[1])
+                        brightColor = (Color) Application.Current.TryFindResource("ContrastColor");
                     else
-                    {
-                        brightColor = (Color)Application.Current.TryFindResource("HighlightColor");
-                    }
+                        brightColor = (Color) Application.Current.TryFindResource("HighlightColor");
 
                     var stops = new List<GradientStop>
-                    {
-                        new GradientStop(paleColor, 0.0),
-                        new GradientStop(paleColor, 0.5),
-                        new GradientStop(brightColor, 0.5),
-                        new GradientStop(brightColor, 1.0)
-                    };
+                        {
+                            new GradientStop(paleColor, 0.0),
+                            new GradientStop(paleColor, 0.5),
+                            new GradientStop(brightColor, 0.5),
+                            new GradientStop(brightColor, 1.0)
+                        };
 
                     switch (gender)
                     {
@@ -812,7 +788,7 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    /// Converts gender string into a gender image.
+    ///     Converts gender string into a gender image.
     /// </summary>
     public sealed class GenderImageConverter : IValueConverter
     {
@@ -822,7 +798,7 @@ namespace Slimcat.Utilities
         {
             try
             {
-                var gender = (Gender)value;
+                var gender = (Gender) value;
                 Uri uri;
 
                 switch (gender)
@@ -862,49 +838,41 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    /// Converts notify level into strings.
+    ///     Converts notify level into strings.
     /// </summary>
     public sealed class NotifyLevelConverter : IValueConverter
     {
         #region Public Methods and Operators
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var toParse = (int)value;
+            var toParse = (int) value;
             var notificationType = parameter as string;
             var verboseNotificationKind = "• A notification";
 
             if (notificationType != null && notificationType.Equals("flash"))
-            {
                 verboseNotificationKind = "• A tab flash";
-            }
 
-            var parsed = (ChannelSettingsModel.NotifyLevel)toParse;
-            if (parsed >= ChannelSettingsModel.NotifyLevel.NotificationAndToast && ApplicationSettings.ShowNotificationsGlobal)
-            {
+            var parsed = (ChannelSettingsModel.NotifyLevel) toParse;
+            if (parsed >= ChannelSettingsModel.NotifyLevel.NotificationAndToast &&
+                ApplicationSettings.ShowNotificationsGlobal)
                 verboseNotificationKind += "\n• A toast";
-            }
 
             if (parsed >= ChannelSettingsModel.NotifyLevel.NotificationAndSound)
             {
                 if (ApplicationSettings.Volume > 0.0)
                 {
                     if (ApplicationSettings.ShowNotificationsGlobal)
-                    {
                         verboseNotificationKind += " with sound";
-                    }
                     else
-                    {
                         verboseNotificationKind += "\n• An audible alert";
-                    }
                 }
 
                 verboseNotificationKind += "\n• 5 Window Flashes";
             }
 
             if (parsed == ChannelSettingsModel.NotifyLevel.NoNotification)
-            {
                 return "Nothing!";
-            }
 
             return verboseNotificationKind;
         }
@@ -918,19 +886,18 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    /// Converts Interested-only data into strings
+    ///     Converts Interested-only data into strings
     /// </summary>
     public sealed class InterestedOnlyBoolConverter : IValueConverter
     {
         #region Public Methods and Operators
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is bool))
-            {
                 return null;
-            }
 
-            var v = (bool)value;
+            var v = (bool) value;
 
             return v ? "only for people of interest." : "for everyone.";
         }
@@ -944,14 +911,15 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    /// Converts a channel type enum into a channel type image representation.
+    ///     Converts a channel type enum into a channel type image representation.
     /// </summary>
     public sealed class ChannelTypeToImageConverter : IValueConverter
     {
         #region Public Methods and Operators
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var args = (ChannelType)value;
+            var args = (ChannelType) value;
             var uri = new Uri("pack://application:,,,/icons/chat.png");
             switch (args)
             {
@@ -981,20 +949,18 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    /// Converts a character's interested level to a nameplate color
+    ///     Converts a character's interested level to a nameplate color
     /// </summary>
     public sealed class NameplateColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var v = (bool)value;
+            var v = (bool) value;
             SolidColorBrush brush = null;
             if (v)
-            {
-                brush = (SolidColorBrush)Application.Current.TryFindResource("ContrastBrush");
-            }
+                brush = (SolidColorBrush) Application.Current.TryFindResource("ContrastBrush");
 
-            return brush ?? (SolidColorBrush)Application.Current.FindResource("HighlightBrush");
+            return brush ?? (SolidColorBrush) Application.Current.FindResource("HighlightBrush");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -1011,7 +977,7 @@ namespace Slimcat.Utilities
         #region Public Methods and Operators
 
         /// <summary>
-        /// Like above, but works for dates in the time
+        ///     Like above, but works for dates in the time
         /// </summary>
         public static string DateTimeInFutureToRough(DateTimeOffset futureTime)
         {
@@ -1019,35 +985,25 @@ namespace Slimcat.Utilities
             var rough = futureTime - DateTimeOffset.Now;
 
             if (rough.Days > 0)
-            {
                 temp.Append(rough.Days + "d ");
-            }
 
             if (rough.Hours > 0)
-            {
                 temp.Append(rough.Hours + "h ");
-            }
 
             if (rough.Minutes > 0)
-            {
                 temp.Append(rough.Minutes + "m ");
-            }
 
             if (rough.Seconds > 0)
-            {
                 temp.Append(rough.Seconds + "s ");
-            }
 
             if (temp.Length < 2)
-            {
                 temp.Append("0s ");
-            }
 
             return temp.ToString();
         }
 
         /// <summary>
-        /// Converts a datetimeoffset to a "x h x m x s ago" format
+        ///     Converts a datetimeoffset to a "x h x m x s ago" format
         /// </summary>
         public static string DateTimeToRough(DateTimeOffset original, bool returnSeconds = false, bool appendAgo = true)
         {
@@ -1056,43 +1012,31 @@ namespace Slimcat.Utilities
             var tolerance = returnSeconds ? 1 : 60;
 
             if (rough.TotalSeconds < tolerance)
-            {
                 return "<1s ";
-            }
 
             if (rough.Days > 0)
-            {
                 temp.Append(rough.Days + "d ");
-            }
 
             if (rough.Hours > 0)
-            {
                 temp.Append(rough.Hours + "h ");
-            }
 
             if (rough.Minutes > 0)
-            {
                 temp.Append(rough.Minutes + "m ");
-            }
 
             if (returnSeconds)
             {
                 if (rough.Seconds > 0)
-                {
                     temp.Append(rough.Seconds + "s ");
-                }
             }
 
             if (appendAgo)
-            {
                 temp.Append("ago");
-            }
 
             return temp.ToString();
         }
 
         /// <summary>
-        /// Used for shitty shit channel names with spaces
+        ///     Used for shitty shit channel names with spaces
         /// </summary>
         public static string EscapeSpaces(string text)
         {
@@ -1100,7 +1044,7 @@ namespace Slimcat.Utilities
         }
 
         /// <summary>
-        /// Turns a datetime to a timestamp (hh:mm)
+        ///     Turns a datetime to a timestamp (hh:mm)
         /// </summary>
         public static string ToTimeStamp(this DateTimeOffset time)
         {
@@ -1111,7 +1055,7 @@ namespace Slimcat.Utilities
         }
 
         /// <summary>
-        /// Converts a POSIX/UNIX timecode to a datetime
+        ///     Converts a POSIX/UNIX timecode to a datetime
         /// </summary>
         public static DateTimeOffset UnixTimeToDateTime(long time)
         {

@@ -456,8 +456,7 @@
                           RelativeSource={RelativeSource TemplatedParent}}"
                           OverridesDefaultStyle="True"
                           Padding="1"
-                          Margin="{TemplateBinding Property=Margin}">
-            </ToggleButton>
+                          Margin="{TemplateBinding Property=Margin}" />
 
             <ContentPresenter x:Name="ExpanderContent"
                               DockPanel.Dock="Bottom"

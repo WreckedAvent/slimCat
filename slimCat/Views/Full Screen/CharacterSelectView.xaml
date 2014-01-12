@@ -8,22 +8,23 @@
              xmlns:models="clr-namespace:Slimcat.Models"
 
              d:DataContext="{d:DesignInstance vm:CharacterSelectViewModel}">
-    
+
     <UserControl.Resources>
         <Style TargetType="{x:Type ListBox}">
-            
-            <Setter Property="BorderThickness" Value="0"/>
-            
-            <Setter Property="Background" Value="Transparent"/>
-            
+
+            <Setter Property="BorderThickness" Value="0" />
+
+            <Setter Property="Background" Value="Transparent" />
+
             <Setter Property="ItemsPanel">
                 <Setter.Value>
                     <ItemsPanelTemplate>
-                        <WrapPanel Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}"/>
+                        <WrapPanel
+                            Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" />
                     </ItemsPanelTemplate>
                 </Setter.Value>
             </Setter>
-            
+
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate DataType="models:ICharacter">
@@ -31,43 +32,43 @@
                             <Border BorderThickness="0,0,0,2"
                                     BorderBrush="{StaticResource DepressedBrush}">
                                 <Image Source="{Binding Path=Avatar}"
-                                        Height="75"
-                                        Width="75"/>
+                                       Height="75"
+                                       Width="75" />
                             </Border>
-                            
+
                             <TextBlock Text="{Binding Path=Name}"
-                                        Padding="6"
-                                        FontSize="20"
-                                        Foreground="{StaticResource ForegroundBrush}"
-                                        HorizontalAlignment="Center"/>
+                                       Padding="6"
+                                       FontSize="20"
+                                       Foreground="{StaticResource ForegroundBrush}"
+                                       HorizontalAlignment="Center" />
                         </StackPanel>
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
-        </Style>    
+        </Style>
     </UserControl.Resources>
 
     <Grid IsEnabled="{Binding Path=IsConnecting, Converter={StaticResource BoolConverter}}"
-                TextBlock.FontSize="20"
-                TextBlock.Foreground="{StaticResource ForegroundBrush}"
-                Margin="20"
-                VerticalAlignment="Center">
+          TextBlock.FontSize="20"
+          TextBlock.Foreground="{StaticResource ForegroundBrush}"
+          Margin="20"
+          VerticalAlignment="Center">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <TextBlock Text="{Binding RelayMessage, Mode=OneWay}"
                    HorizontalAlignment="Center"
                    Margin="20" />
-        
+
         <ScrollViewer Grid.Row="1">
             <ListBox ItemsSource="{Binding Characters}"
                      HorizontalAlignment="Stretch"
-                     SelectedItem="{Binding Path=CurrentCharacter, Mode=TwoWay}"/>
+                     SelectedItem="{Binding Path=CurrentCharacter, Mode=TwoWay}" />
         </ScrollViewer>
-        
+
         <Button Grid.Row="2"
                 Content="Login"
                 Margin="20"

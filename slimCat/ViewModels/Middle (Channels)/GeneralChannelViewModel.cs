@@ -1,34 +1,26 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="GeneralChannelViewModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   The general channel view model. This manages bindings for general channels, e.g anything that isn't a Pm or the 'home' tab.
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="GeneralChannelViewModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.ViewModels
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -37,23 +29,25 @@ namespace Slimcat.ViewModels
     using System.Linq;
     using System.Timers;
     using System.Windows.Input;
-
+    using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
-
-    using Libraries;
     using Models;
     using Services;
     using Utilities;
     using Views;
 
+    #endregion
+
     /// <summary>
-    ///     The general channel view model. This manages bindings for general channels, e.g anything that isn't a Pm or the 'home' tab.
+    ///     The general channel view model. This manages bindings for general channels, e.g anything that isn't a Pm or the
+    ///     'home' tab.
     /// </summary>
     public class GeneralChannelViewModel : ChannelViewModelBase
     {
         #region Fields
+
         private readonly IList<string> thisDingTerms = new List<string>();
 
         private Timer adFlood = new Timer(602000);
@@ -77,6 +71,9 @@ namespace Slimcat.ViewModels
         private bool isSearching;
 
         private Timer messageFlood = new Timer(500);
+        private FilteredCollection<IMessage, IViewableObject> messageManager;
+
+        private GenericSearchSettingsModel searchSettings = new GenericSearchSettingsModel();
 
         private RelayCommand @switch;
 
@@ -86,30 +83,27 @@ namespace Slimcat.ViewModels
 
         private Timer update = new Timer(1000);
 
-        private FilteredCollection<IMessage, IViewableObject> messageManager;
-
-        private GenericSearchSettingsModel searchSettings = new GenericSearchSettingsModel();
         #endregion
 
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GeneralChannelViewModel"/> class.
+        ///     Initializes a new instance of the <see cref="GeneralChannelViewModel" /> class.
         /// </summary>
         /// <param name="name">
-        /// The name.
+        ///     The name.
         /// </param>
         /// <param name="contain">
-        /// The contain.
+        ///     The contain.
         /// </param>
         /// <param name="regman">
-        /// The regman.
+        ///     The regman.
         /// </param>
         /// <param name="events">
-        /// The events.
+        ///     The events.
         /// </param>
         /// <param name="cm">
-        /// The cm.
+        ///     The cm.
         /// </param>
         public GeneralChannelViewModel(
             string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
@@ -117,92 +111,86 @@ namespace Slimcat.ViewModels
         {
             try
             {
-                this.Model = this.ChatModel.CurrentChannels.FirstOrDefault(chan => chan.Id == name)
-                             ?? this.ChatModel.AllChannels.First(chan => chan.Id == name);
-                this.Model.ThrowIfNull("this.Model");
+                Model = ChatModel.CurrentChannels.FirstOrDefault(chan => chan.Id == name)
+                        ?? ChatModel.AllChannels.First(chan => chan.Id == name);
+                Model.ThrowIfNull("this.Model");
 
                 var safeName = HelperConverter.EscapeSpaces(name);
 
-                this.Container.RegisterType<object, GeneralChannelView>(safeName, new InjectionConstructor(this));
+                Container.RegisterType<object, GeneralChannelView>(safeName, new InjectionConstructor(this));
 
-                this.isDisplayingChat = this.ShouldDisplayChat;
+                isDisplayingChat = ShouldDisplayChat;
 
-                this.ChannelManagementViewModel = new ChannelManagementViewModel(this.Events, this.Model as GeneralChannelModel);
+                ChannelManagementViewModel = new ChannelManagementViewModel(Events, Model as GeneralChannelModel);
 
                 // instance our management vm
-                this.Model.Messages.CollectionChanged += this.OnMessagesChanged;
-                this.Model.Ads.CollectionChanged += this.OnAdsChanged;
-                this.Model.PropertyChanged += this.OnModelPropertyChanged;
+                Model.Messages.CollectionChanged += OnMessagesChanged;
+                Model.Ads.CollectionChanged += OnAdsChanged;
+                Model.PropertyChanged += OnModelPropertyChanged;
 
-                this.messageManager = 
+                messageManager =
                     new FilteredCollection<IMessage, IViewableObject>(
-                        this.isDisplayingChat 
-                            ? this.Model.Messages 
-                            : this.Model.Ads, 
-                        this.MeetsFilter, 
-                        this.IsDisplayingAds);
+                        isDisplayingChat
+                            ? Model.Messages
+                            : Model.Ads,
+                        MeetsFilter,
+                        IsDisplayingAds);
 
-                this.genderSettings.Updated += (s, e) => this.OnPropertyChanged("GenderSettings");
+                genderSettings.Updated += (s, e) => OnPropertyChanged("GenderSettings");
 
-                this.SearchSettings.Updated += (s, e) => this.OnPropertyChanged("SearchSettings");
+                SearchSettings.Updated += (s, e) => OnPropertyChanged("SearchSettings");
 
-                this.messageFlood.Elapsed += (s, e) =>
+                messageFlood.Elapsed += (s, e) =>
                     {
-                        this.isInCoolDownMessage = false;
-                        this.messageFlood.Enabled = false;
-                        this.OnPropertyChanged("CanPost");
+                        isInCoolDownMessage = false;
+                        messageFlood.Enabled = false;
+                        OnPropertyChanged("CanPost");
                     };
 
-                this.adFlood.Elapsed += (s, e) =>
+                adFlood.Elapsed += (s, e) =>
                     {
-                        this.isInCoolDownAd = false;
-                        this.adFlood.Enabled = false;
-                        this.OnPropertyChanged("CanPost");
-                        this.OnPropertyChanged("CannotPost");
-                        this.OnPropertyChanged("ShouldShowAutoPost");
-                        if (this.autoPostAds)
-                        {
-                            this.SendAutoAd();
-                        }
+                        isInCoolDownAd = false;
+                        adFlood.Enabled = false;
+                        OnPropertyChanged("CanPost");
+                        OnPropertyChanged("CannotPost");
+                        OnPropertyChanged("ShouldShowAutoPost");
+                        if (autoPostAds)
+                            SendAutoAd();
                     };
 
-                this.update.Elapsed += (s, e) =>
+                update.Elapsed += (s, e) =>
                     {
-                        if (!this.Model.IsSelected)
-                        {
+                        if (!Model.IsSelected)
                             return;
-                        }
 
-                        if (this.CannotPost)
-                        {
-                            this.OnPropertyChanged("TimeLeft");
-                        }
+                        if (CannotPost)
+                            OnPropertyChanged("TimeLeft");
 
-                        this.OnPropertyChanged("StatusString");
+                        OnPropertyChanged("StatusString");
                     };
 
-                this.ChannelManagementViewModel.PropertyChanged += (s, e) => this.OnPropertyChanged("ChannelManagementViewModel");
+                ChannelManagementViewModel.PropertyChanged += (s, e) => OnPropertyChanged("ChannelManagementViewModel");
 
-                this.update.Enabled = true;
+                update.Enabled = true;
 
                 var newSettings = SettingsDaemon.GetChannelSettings(
-                    cm.CurrentCharacter.Name, this.Model.Title, this.Model.Id, this.Model.Type);
-                this.Model.Settings = newSettings;
+                    cm.CurrentCharacter.Name, Model.Title, Model.Id, Model.Type);
+                Model.Settings = newSettings;
 
-                this.ChannelSettings.Updated += (s, e) =>
+                ChannelSettings.Updated += (s, e) =>
                     {
-                        this.OnPropertyChanged("ChannelSettings");
-                        this.OnPropertyChanged("HasNotifyTerms");
-                        if (!this.ChannelSettings.IsChangingSettings)
+                        OnPropertyChanged("ChannelSettings");
+                        OnPropertyChanged("HasNotifyTerms");
+                        if (!ChannelSettings.IsChangingSettings)
                         {
                             SettingsDaemon.UpdateSettingsFile(
-                                this.ChannelSettings, cm.CurrentCharacter.Name, this.Model.Title, this.Model.Id);
+                                ChannelSettings, cm.CurrentCharacter.Name, Model.Title, Model.Id);
                         }
                     };
 
-                this.PropertyChanged += this.OnPropertyChanged;
+                PropertyChanged += OnPropertyChanged;
 
-                this.Events.GetEvent<NewUpdateEvent>().Subscribe(this.UpdateChat);
+                Events.GetEvent<NewUpdateEvent>().Subscribe(UpdateChat);
             }
             catch (Exception ex)
             {
@@ -220,15 +208,12 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool AutoPost
         {
-            get
-            {
-                return this.autoPostAds;
-            }
+            get { return autoPostAds; }
 
             set
             {
-                this.autoPostAds = value;
-                this.OnPropertyChanged("AutoPost");
+                autoPostAds = value;
+                OnPropertyChanged("AutoPost");
             }
         }
 
@@ -239,8 +224,8 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                return (this.IsDisplayingChat && !this.isInCoolDownMessage)
-                       || (this.IsDisplayingAds && !this.isInCoolDownAd);
+                return (IsDisplayingChat && !isInCoolDownMessage)
+                       || (IsDisplayingAds && !isInCoolDownAd);
             }
         }
 
@@ -251,12 +236,10 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (this.IsDisplayingChat && this.ShouldDisplayAds)
-                {
+                if (IsDisplayingChat && ShouldDisplayAds)
                     return true;
-                }
 
-                return !this.IsDisplayingChat && this.ShouldDisplayChat;
+                return !IsDisplayingChat && ShouldDisplayChat;
             }
         }
 
@@ -265,10 +248,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool CannotPost
         {
-            get
-            {
-                return !this.CanPost;
-            }
+            get { return !CanPost; }
         }
 
         /// <summary>
@@ -281,10 +261,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string ChatContentString
         {
-            get
-            {
-                return this.IsDisplayingChat ? "Chat" : "Ads";
-            }
+            get { return IsDisplayingChat ? "Chat" : "Ads"; }
         }
 
         /// <summary>
@@ -292,10 +269,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ObservableCollection<IViewableObject> CurrentMessages
         {
-            get
-            {
-                return this.messageManager.Collection;
-            }
+            get { return messageManager.Collection; }
         }
 
         /// <summary>
@@ -303,10 +277,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public GenderSettingsModel GenderSettings
         {
-            get
-            {
-                return this.genderSettings;
-            }
+            get { return genderSettings; }
         }
 
         /// <summary>
@@ -314,10 +285,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool HasNotifyTerms
         {
-            get
-            {
-                return !string.IsNullOrEmpty(this.ChannelSettings.NotifyTerms);
-            }
+            get { return !string.IsNullOrEmpty(ChannelSettings.NotifyTerms); }
         }
 
         /// <summary>
@@ -325,10 +293,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool IsChatting
         {
-            get
-            {
-                return !this.IsSearching;
-            }
+            get { return !IsSearching; }
         }
 
         /// <summary>
@@ -336,10 +301,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool IsDisplayingAds
         {
-            get
-            {
-                return !this.IsDisplayingChat;
-            }
+            get { return !IsDisplayingChat; }
         }
 
         /// <summary>
@@ -347,35 +309,30 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool IsDisplayingChat
         {
-            get
-            {
-                return this.isDisplayingChat;
-            }
+            get { return isDisplayingChat; }
 
             set
             {
-                if (this.isDisplayingChat == value)
-                {
+                if (isDisplayingChat == value)
                     return;
-                }
 
-                this.isDisplayingChat = value;
+                isDisplayingChat = value;
 
-                var temp = this.Message;
-                this.Message = this.adMessage;
-                this.adMessage = temp;
+                var temp = Message;
+                Message = adMessage;
+                adMessage = temp;
 
-                this.messageManager.OriginalCollection = value ? this.Model.Messages : this.Model.Ads;
+                messageManager.OriginalCollection = value ? Model.Messages : Model.Ads;
 
-                this.OnPropertyChanged("IsDisplayingChat");
-                this.OnPropertyChanged("IsDisplayingAds");
-                this.OnPropertyChanged("ChatContentString");
-                this.OnPropertyChanged("MessageMax");
-                this.OnPropertyChanged("CanPost");
-                this.OnPropertyChanged("CannotPost");
-                this.OnPropertyChanged("ShouldShowAutoPost");
-                this.OnPropertyChanged("SwitchChannelTypeString");
-                this.OtherTabHasMessages = false;
+                OnPropertyChanged("IsDisplayingChat");
+                OnPropertyChanged("IsDisplayingAds");
+                OnPropertyChanged("ChatContentString");
+                OnPropertyChanged("MessageMax");
+                OnPropertyChanged("CanPost");
+                OnPropertyChanged("CannotPost");
+                OnPropertyChanged("ShouldShowAutoPost");
+                OnPropertyChanged("SwitchChannelTypeString");
+                OtherTabHasMessages = false;
             }
         }
 
@@ -384,10 +341,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool IsNotSearching
         {
-            get
-            {
-                return !this.IsSearching;
-            }
+            get { return !IsSearching; }
         }
 
         /// <summary>
@@ -395,23 +349,18 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool IsSearching
         {
-            get
-            {
-                return this.isSearching;
-            }
+            get { return isSearching; }
 
             set
             {
-                if (this.isSearching == value)
-                {
+                if (isSearching == value)
                     return;
-                }
 
-                this.isSearching = value;
-                this.OnPropertyChanged("IsSearching");
-                this.OnPropertyChanged("SearchSwitchMessageString");
-                this.OnPropertyChanged("IsChatting");
-                this.OnPropertyChanged("IsNotSearching");
+                isSearching = value;
+                OnPropertyChanged("IsSearching");
+                OnPropertyChanged("SearchSwitchMessageString");
+                OnPropertyChanged("IsChatting");
+                OnPropertyChanged("IsNotSearching");
             }
         }
 
@@ -420,10 +369,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string Description
         {
-            get
-            {
-                return ((GeneralChannelModel)this.Model).Description;
-            }
+            get { return ((GeneralChannelModel) Model).Description; }
         }
 
         /// <summary>
@@ -431,24 +377,17 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool OtherTabHasMessages
         {
-            get
-            {
-                return this.IsDisplayingChat ? this.hasNewAds : this.hasNewMessages;
-            }
+            get { return IsDisplayingChat ? hasNewAds : hasNewMessages; }
 
             set
             {
-                if (this.IsDisplayingAds)
-                {
-                    this.hasNewMessages = value;
-                }
+                if (IsDisplayingAds)
+                    hasNewMessages = value;
                 else
-                {
-                    this.hasNewAds = value;
-                }
+                    hasNewAds = value;
 
-                this.OnPropertyChanged("OtherTabHasMessages");
-                this.OnPropertyChanged("StatusString");
+                OnPropertyChanged("OtherTabHasMessages");
+                OnPropertyChanged("StatusString");
             }
         }
 
@@ -457,10 +396,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public GenericSearchSettingsModel SearchSettings
         {
-            get
-            {
-                return this.searchSettings;
-            }
+            get { return searchSettings; }
         }
 
         /// <summary>
@@ -468,10 +404,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool ShouldDisplayAds
         {
-            get
-            {
-                return (this.Model.Mode == ChannelMode.Both) || (this.Model.Mode == ChannelMode.Ads);
-            }
+            get { return (Model.Mode == ChannelMode.Both) || (Model.Mode == ChannelMode.Ads); }
         }
 
         /// <summary>
@@ -479,10 +412,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool ShouldDisplayChat
         {
-            get
-            {
-                return (this.Model.Mode == ChannelMode.Both) || (this.Model.Mode == ChannelMode.Chat);
-            }
+            get { return (Model.Mode == ChannelMode.Both) || (Model.Mode == ChannelMode.Chat); }
         }
 
         /// <summary>
@@ -492,12 +422,10 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (!this.isInCoolDownAd)
-                {
-                    return this.IsDisplayingAds;
-                }
+                if (!isInCoolDownAd)
+                    return IsDisplayingAds;
 
-                return this.IsDisplayingAds && !string.IsNullOrEmpty(this.Message);
+                return IsDisplayingAds && !string.IsNullOrEmpty(Message);
             }
         }
 
@@ -506,10 +434,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool ShowAllSettings
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         /// <summary>
@@ -519,26 +444,20 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (this.IsDisplayingAds && this.AutoPost && this.isInCoolDownAd)
-                {
+                if (IsDisplayingAds && AutoPost && isInCoolDownAd)
                     return "Auto post Ads enabled";
-                }
 
-                if (!string.IsNullOrEmpty(this.Message))
+                if (!string.IsNullOrEmpty(Message))
                 {
                     return string.Format(
-                        "{0} / {1} characters", this.Message.Length, this.IsDisplayingChat ? "4,096" : "50,000");
+                        "{0} / {1} characters", Message.Length, IsDisplayingChat ? "4,096" : "50,000");
                 }
 
-                if (this.hasNewAds && this.IsDisplayingChat)
-                {
+                if (hasNewAds && IsDisplayingChat)
                     return "This channel has new ad(s).";
-                }
 
-                if (this.hasNewMessages && this.IsDisplayingAds)
-                {
+                if (hasNewMessages && IsDisplayingAds)
                     return "This channel has new message(s).";
-                }
 
                 return string.Empty;
             }
@@ -551,8 +470,8 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                return this.@switch
-                       ?? (this.@switch = new RelayCommand(param => this.IsDisplayingChat = !this.IsDisplayingChat));
+                return @switch
+                       ?? (@switch = new RelayCommand(param => IsDisplayingChat = !IsDisplayingChat));
             }
         }
 
@@ -563,11 +482,8 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                return this.switchSearch ?? (this.switchSearch = new RelayCommand(
-                                                                     delegate
-                                                                         {
-                                                                             this.IsSearching = !this.IsSearching;
-                                                                         }));
+                return switchSearch ?? (switchSearch = new RelayCommand(
+                    delegate { IsSearching = !IsSearching; }));
             }
         }
 
@@ -576,10 +492,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string TimeLeft
         {
-            get
-            {
-                return HelperConverter.DateTimeInFutureToRough(this.timeLeftAd) + "left";
-            }
+            get { return HelperConverter.DateTimeInFutureToRough(timeLeftAd) + "left"; }
         }
 
         #endregion
@@ -591,58 +504,53 @@ namespace Slimcat.ViewModels
             get
             {
                 const int characterNameOffset = 2; // how many ding terms we have to offset for the character's name
-                var count = this.thisDingTerms.Count;
+                var count = thisDingTerms.Count;
                 var shouldBe = ApplicationSettings.GlobalNotifyTermsList.Count()
-                               + this.Model.Settings.EnumerableTerms.Count() + characterNameOffset;
+                               + Model.Settings.EnumerableTerms.Count() + characterNameOffset;
 
                 if (count != shouldBe)
                 {
-                    this.thisDingTerms.Clear();
+                    thisDingTerms.Clear();
 
                     foreach (var term in ApplicationSettings.GlobalNotifyTermsList)
-                    {
-                        this.thisDingTerms.Add(term);
-                    }
+                        thisDingTerms.Add(term);
 
-                    foreach (var term in this.Model.Settings.EnumerableTerms)
-                    {
-                        this.thisDingTerms.Add(term);
-                    }
+                    foreach (var term in Model.Settings.EnumerableTerms)
+                        thisDingTerms.Add(term);
 
-                    this.thisDingTerms.Add(this.ChatModel.CurrentCharacter.Name);
-                    this.thisDingTerms.Add(this.ChatModel.CurrentCharacter.Name + "'s");
+                    thisDingTerms.Add(ChatModel.CurrentCharacter.Name);
+                    thisDingTerms.Add(ChatModel.CurrentCharacter.Name + "'s");
                 }
 
-                return this.thisDingTerms.Distinct().Where(term => !string.IsNullOrWhiteSpace(term));
+                return thisDingTerms.Distinct().Where(term => !string.IsNullOrWhiteSpace(term));
             }
         }
 
         #endregion
 
         #region Public Methods and Operators
+
         /// <summary>
         ///     The send auto ad.
         /// </summary>
         public void SendAutoAd()
         {
-            var messageToSend = this.IsDisplayingChat ? this.adMessage : this.Message;
+            var messageToSend = IsDisplayingChat ? adMessage : Message;
             if (messageToSend == null)
-            {
-                this.UpdateError("There is no ad to auto-post!");
-            }
+                UpdateError("There is no ad to auto-post!");
 
             var toSend =
                 CommandDefinitions.CreateCommand(
-                    CommandDefinitions.ClientSendChannelAd, new List<string> { messageToSend }, this.Model.Id)
-                                  .ToDictionary();
+                    CommandDefinitions.ClientSendChannelAd, new List<string> {messageToSend}, Model.Id)
+                    .ToDictionary();
 
-            this.Events.GetEvent<UserCommandEvent>().Publish(toSend);
-            this.timeLeftAd = DateTimeOffset.Now.AddMinutes(10).AddSeconds(2);
+            Events.GetEvent<UserCommandEvent>().Publish(toSend);
+            timeLeftAd = DateTimeOffset.Now.AddMinutes(10).AddSeconds(2);
 
-            this.isInCoolDownAd = true;
-            this.adFlood.Start();
-            this.OnPropertyChanged("CanPost");
-            this.OnPropertyChanged("CannotPost");
+            isInCoolDownAd = true;
+            adFlood.Start();
+            OnPropertyChanged("CanPost");
+            OnPropertyChanged("CannotPost");
         }
 
         #endregion
@@ -653,61 +561,59 @@ namespace Slimcat.ViewModels
         {
             var args = arguments as string;
             if (args == null)
-            {
                 return;
-            }
 
             if (args.Equals("Messages"))
             {
-                this.ChannelSettings.MessageNotifyOnlyForInteresting =
-                    !this.ChannelSettings.MessageNotifyOnlyForInteresting;
+                ChannelSettings.MessageNotifyOnlyForInteresting =
+                    !ChannelSettings.MessageNotifyOnlyForInteresting;
             }
 
             if (args.Equals("PromoteDemote"))
             {
-                this.ChannelSettings.PromoteDemoteNotifyOnlyForInteresting =
-                    !this.ChannelSettings.PromoteDemoteNotifyOnlyForInteresting;
+                ChannelSettings.PromoteDemoteNotifyOnlyForInteresting =
+                    !ChannelSettings.PromoteDemoteNotifyOnlyForInteresting;
             }
 
             if (args.Equals("JoinLeave"))
             {
-                this.ChannelSettings.JoinLeaveNotifyOnlyForInteresting =
-                    !this.ChannelSettings.JoinLeaveNotifyOnlyForInteresting;
+                ChannelSettings.JoinLeaveNotifyOnlyForInteresting =
+                    !ChannelSettings.JoinLeaveNotifyOnlyForInteresting;
             }
 
-            this.OnPropertyChanged("ChannelSettings");
+            OnPropertyChanged("ChannelSettings");
         }
 
         /// <summary>
-        /// The dispose.
+        ///     The dispose.
         /// </summary>
         /// <param name="isManaged">
-        /// The is Managed.
+        ///     The is Managed.
         /// </param>
         protected override void Dispose(bool isManaged)
         {
             if (isManaged)
             {
-                this.update.Dispose();
-                this.update = null;
+                update.Dispose();
+                update = null;
 
-                this.adFlood.Dispose();
-                this.adFlood = null;
+                adFlood.Dispose();
+                adFlood = null;
 
-                this.messageFlood.Dispose();
-                this.messageFlood = null;
+                messageFlood.Dispose();
+                messageFlood = null;
 
-                this.searchSettings = null;
-                this.genderSettings = null;
+                searchSettings = null;
+                genderSettings = null;
 
-                this.Events.GetEvent<NewUpdateEvent>().Unsubscribe(this.UpdateChat);
-                this.Model.Messages.CollectionChanged -= this.OnMessagesChanged;
-                this.Model.Ads.CollectionChanged -= this.OnAdsChanged;
-                this.PropertyChanged -= this.OnPropertyChanged;
-                this.messageManager.Dispose();
-                this.messageManager = null;
+                Events.GetEvent<NewUpdateEvent>().Unsubscribe(UpdateChat);
+                Model.Messages.CollectionChanged -= OnMessagesChanged;
+                Model.Ads.CollectionChanged -= OnAdsChanged;
+                PropertyChanged -= OnPropertyChanged;
+                messageManager.Dispose();
+                messageManager = null;
 
-                var model = (GeneralChannelModel) this.Model;
+                var model = (GeneralChannelModel) Model;
                 model.Description = null;
                 model.Moderators.Clear();
             }
@@ -716,39 +622,35 @@ namespace Slimcat.ViewModels
         }
 
         /// <summary>
-        /// The on model property changed.
+        ///     The on model property changed.
         /// </summary>
         /// <param name="sender">
-        /// The sender.
+        ///     The sender.
         /// </param>
         /// <param name="e">
-        /// The e.
+        ///     The e.
         /// </param>
         protected override void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
                 case "Description":
-                    this.OnPropertyChanged("Description");
+                    OnPropertyChanged("Description");
                     break;
                 case "Type":
-                    this.OnPropertyChanged("ChannelTypeString"); // fixes laggy room type change
+                    OnPropertyChanged("ChannelTypeString"); // fixes laggy room type change
                     break;
                 case "Moderators":
-                    this.OnPropertyChanged("HasPermissions"); // fixes laggy permissions
+                    OnPropertyChanged("HasPermissions"); // fixes laggy permissions
                     break;
                 case "Mode":
-                    if (this.Model.Mode == ChannelMode.Ads && this.IsDisplayingChat)
-                    {
-                        this.IsDisplayingChat = false;
-                    }
+                    if (Model.Mode == ChannelMode.Ads && IsDisplayingChat)
+                        IsDisplayingChat = false;
 
-                    if (this.Model.Mode == ChannelMode.Chat && this.IsDisplayingAds)
-                    {
-                        this.IsDisplayingChat = true;
-                    }
+                    if (Model.Mode == ChannelMode.Chat && IsDisplayingAds)
+                        IsDisplayingChat = true;
 
-                    this.OnPropertyChanged("CanSwitch");
+                    OnPropertyChanged("CanSwitch");
                     break;
             }
         }
@@ -758,93 +660,87 @@ namespace Slimcat.ViewModels
         /// </summary>
         protected override void SendMessage()
         {
-            if (this.IsSearching)
-            {
+            if (IsSearching)
                 return;
-            }
 
             // if we're not searching, treat this input normal
-            if ((this.IsDisplayingChat && this.Message.Length > 4096)
-                || (this.IsDisplayingAds && this.Message.Length > 50000))
+            if ((IsDisplayingChat && Message.Length > 4096)
+                || (IsDisplayingAds && Message.Length > 50000))
             {
-                this.UpdateError("You expect me to post all of that?! How about you post less, huh?");
+                UpdateError("You expect me to post all of that?! How about you post less, huh?");
                 return;
             }
 
-            if ((this.isInCoolDownAd && this.IsDisplayingAds) || (this.isInCoolDownMessage && this.IsDisplayingChat))
+            if ((isInCoolDownAd && IsDisplayingAds) || (isInCoolDownMessage && IsDisplayingChat))
             {
-                this.UpdateError("Cool your engines. Wait a little before you post again.");
+                UpdateError("Cool your engines. Wait a little before you post again.");
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(this.Message))
+            if (string.IsNullOrWhiteSpace(Message))
             {
-                this.UpdateError("I'm sure you didn't mean to do that.");
+                UpdateError("I'm sure you didn't mean to do that.");
                 return;
             }
 
-            var command = this.IsDisplayingChat
-                                 ? CommandDefinitions.ClientSendChannelMessage
-                                 : CommandDefinitions.ClientSendChannelAd;
+            var command = IsDisplayingChat
+                ? CommandDefinitions.ClientSendChannelMessage
+                : CommandDefinitions.ClientSendChannelAd;
 
             var toSend =
-                CommandDefinitions.CreateCommand(command, new List<string> { this.Message }, this.Model.Id)
-                                  .ToDictionary();
+                CommandDefinitions.CreateCommand(command, new List<string> {Message}, Model.Id)
+                    .ToDictionary();
 
-            this.Events.GetEvent<UserCommandEvent>().Publish(toSend);
+            Events.GetEvent<UserCommandEvent>().Publish(toSend);
 
-            if (!this.autoPostAds || this.IsDisplayingChat)
+            if (!autoPostAds || IsDisplayingChat)
+                Message = null;
+
+            if (IsDisplayingChat)
             {
-                this.Message = null;
-            }
+                isInCoolDownMessage = true;
+                OnPropertyChanged("CanPost");
 
-            if (this.IsDisplayingChat)
-            {
-                this.isInCoolDownMessage = true;
-                this.OnPropertyChanged("CanPost");
-
-                this.messageFlood.Enabled = true;
+                messageFlood.Enabled = true;
             }
             else
             {
-                this.timeLeftAd = DateTime.Now.AddMinutes(10).AddSeconds(2);
+                timeLeftAd = DateTime.Now.AddMinutes(10).AddSeconds(2);
 
-                this.isInCoolDownAd = true;
-                this.OnPropertyChanged("CanPost");
-                this.OnPropertyChanged("CannotPost");
-                this.OnPropertyChanged("ShouldShowAutoPost");
+                isInCoolDownAd = true;
+                OnPropertyChanged("CanPost");
+                OnPropertyChanged("CannotPost");
+                OnPropertyChanged("ShouldShowAutoPost");
 
-                this.adFlood.Enabled = true;
+                adFlood.Enabled = true;
             }
         }
 
         private bool MeetsFilter(IMessage message)
         {
             return message.MeetsFilters(
-                this.GenderSettings, this.SearchSettings, this.ChatModel, this.ChatModel.CurrentChannel as GeneralChannelModel);
+                GenderSettings, SearchSettings, ChatModel, ChatModel.CurrentChannel as GeneralChannelModel);
         }
 
         private void OnAdsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (this.IsDisplayingChat)
-            {
-                this.OtherTabHasMessages = e.Action != NotifyCollectionChangedAction.Reset;
-            }
+            if (IsDisplayingChat)
+                OtherTabHasMessages = e.Action != NotifyCollectionChangedAction.Reset;
         }
 
         private void OnMessagesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (this.IsDisplayingAds)
+            if (IsDisplayingAds)
             {
-                this.OtherTabHasMessages = 
-                    e.Action != NotifyCollectionChangedAction.Reset 
-                    && 
+                OtherTabHasMessages =
+                    e.Action != NotifyCollectionChangedAction.Reset
+                    &&
                     e.Action != NotifyCollectionChangedAction.Remove
                     &&
                     e.NewItems
                         .Cast<IMessage>()
                         .Where(m => m != null)
-                        .Where(this.MeetsFilter)
+                        .Where(MeetsFilter)
                         .Any();
             }
         }
@@ -854,13 +750,13 @@ namespace Slimcat.ViewModels
             switch (e.PropertyName)
             {
                 case "Message":
-                    this.OnPropertyChanged("StatusString"); // keep the counter updated
+                    OnPropertyChanged("StatusString"); // keep the counter updated
                     break;
                 case "SearchSettings":
                 case "IsSearching":
-                    {
-                        this.messageManager.IsFiltering = this.IsDisplayingAds || this.isSearching;
-                    }
+                {
+                    messageManager.IsFiltering = IsDisplayingAds || isSearching;
+                }
 
                     break;
             }
@@ -870,17 +766,13 @@ namespace Slimcat.ViewModels
         {
             var updateModel = newUpdate as CharacterUpdateModel;
             if (updateModel == null)
-            {
                 return;
-            }
 
             var args = updateModel.Arguments as CharacterUpdateModel.ListChangedEventArgs;
             if (args == null)
-            {
                 return;
-            }
 
-            this.messageManager.RebuildItems();
+            messageManager.RebuildItems();
         }
 
         #endregion

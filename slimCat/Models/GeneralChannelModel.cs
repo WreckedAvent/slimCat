@@ -1,41 +1,34 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="GeneralChannelModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   The general channel model.
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="GeneralChannelModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.Models
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Collections.Specialized;
     using System.Linq;
-
     using Utilities;
+
+    #endregion
 
     /// <summary>
     ///     The general channel model.
@@ -86,46 +79,38 @@ namespace Slimcat.Models
             try
             {
                 if (users < 0)
-                {
                     throw new ArgumentOutOfRangeException("users", "Users cannot be a negative number");
-                }
 
-                this.UserCount = users;
+                UserCount = users;
 
                 this.users = new ObservableCollection<ICharacter>();
-                this.mods = new List<string>();
-                this.banned = new List<string>();
-                this.Settings = new ChannelSettingsModel();
+                mods = new List<string>();
+                banned = new List<string>();
+                Settings = new ChannelSettingsModel();
 
-                this.Users.CollectionChanged += (s, e) =>
+                Users.CollectionChanged += (s, e) =>
                     {
                         if (e.Action != NotifyCollectionChangedAction.Reset)
-                        {
-                            this.UpdateBindings();
-                        }
+                            UpdateBindings();
                     };
 
                 // the message count now faces the user, so when we reset it it now requires a UI update
-                this.Messages.CollectionChanged += (s, e) =>
+                Messages.CollectionChanged += (s, e) =>
                     {
                         if (e.Action != NotifyCollectionChangedAction.Reset)
-                        {
                             return;
-                        }
 
-                        this.LastReadCount = this.Messages.Count;
-                        this.UpdateBindings();
+                        LastReadCount = Messages.Count;
+                        UpdateBindings();
                     };
 
-                this.Ads.CollectionChanged += (s, e) =>
+                Ads.CollectionChanged += (s, e) =>
                     {
                         if (e.Action != NotifyCollectionChangedAction.Reset)
-                        {
                             return;
-                        }
 
-                        this.LastReadAdCount = this.Ads.Count;
-                        this.UpdateBindings();
+                        LastReadAdCount = Ads.Count;
+                        UpdateBindings();
                     };
             }
             catch (Exception ex)
@@ -144,10 +129,7 @@ namespace Slimcat.Models
         /// </summary>
         public IList<string> Banned
         {
-            get
-            {
-                return this.banned;
-            }
+            get { return banned; }
         }
 
         /// <summary>
@@ -155,10 +137,7 @@ namespace Slimcat.Models
         /// </summary>
         public override bool CanClose
         {
-            get
-            {
-                return (this.Id != "Home") && this.IsSelected;
-            }
+            get { return (Id != "Home") && IsSelected; }
         }
 
         /// <summary>
@@ -166,10 +145,7 @@ namespace Slimcat.Models
         /// </summary>
         public int CompositeUnreadCount
         {
-            get
-            {
-                return this.Unread + this.UnreadAds;
-            }
+            get { return Unread + UnreadAds; }
         }
 
         /// <summary>
@@ -177,15 +153,12 @@ namespace Slimcat.Models
         /// </summary>
         public string Description
         {
-            get
-            {
-                return this.description;
-            }
+            get { return description; }
 
             set
             {
-                this.description = value;
-                this.OnPropertyChanged("Description");
+                description = value;
+                OnPropertyChanged("Description");
             }
         }
 
@@ -194,10 +167,7 @@ namespace Slimcat.Models
         /// </summary>
         public int DisplayNumber
         {
-            get
-            {
-                return this.UserCount;
-            }
+            get { return UserCount; }
         }
 
         /// <summary>
@@ -205,18 +175,13 @@ namespace Slimcat.Models
         /// </summary>
         public override bool IsSelected
         {
-            get
-            {
-                return base.IsSelected;
-            }
+            get { return base.IsSelected; }
 
             set
             {
                 base.IsSelected = value;
                 if (value)
-                {
-                    this.LastReadAdCount = this.Ads.Count;
-                }
+                    LastReadAdCount = Ads.Count;
             }
         }
 
@@ -225,20 +190,15 @@ namespace Slimcat.Models
         /// </summary>
         public int LastReadAdCount
         {
-            get
-            {
-                return this.lastAdCount;
-            }
+            get { return lastAdCount; }
 
             set
             {
-                if (this.lastAdCount == value)
-                {
+                if (lastAdCount == value)
                     return;
-                }
 
-                this.lastAdCount = value;
-                this.UpdateBindings();
+                lastAdCount = value;
+                UpdateBindings();
             }
         }
 
@@ -247,10 +207,7 @@ namespace Slimcat.Models
         /// </summary>
         public IList<string> Moderators
         {
-            get
-            {
-                return this.mods;
-            }
+            get { return mods; }
         }
 
         /// <summary>
@@ -260,22 +217,16 @@ namespace Slimcat.Models
         {
             get
             {
-                if (!this.IsSelected && this.NeedsAttentionOverride)
-                {
+                if (!IsSelected && NeedsAttentionOverride)
                     return true; // flash for ding words
-                }
 
-                if (this.Settings.MessageNotifyLevel == 0)
-                {
+                if (Settings.MessageNotifyLevel == 0)
                     return false; // terminate early upon user request
-                }
 
-                if (this.Settings.MessageNotifyOnlyForInteresting)
-                {
+                if (Settings.MessageNotifyOnlyForInteresting)
                     return base.NeedsAttention;
-                }
 
-                return base.NeedsAttention || (this.UnreadAds >= this.Settings.FlashInterval);
+                return base.NeedsAttention || (UnreadAds >= Settings.FlashInterval);
             }
         }
 
@@ -284,10 +235,7 @@ namespace Slimcat.Models
         /// </summary>
         public string Owner
         {
-            get
-            {
-                return this.mods != null ? this.mods[0] : null;
-            }
+            get { return mods != null ? mods[0] : null; }
         }
 
         /// <summary>
@@ -295,10 +243,7 @@ namespace Slimcat.Models
         /// </summary>
         public int UnreadAds
         {
-            get
-            {
-                return this.Ads.Count - this.lastAdCount;
-            }
+            get { return Ads.Count - lastAdCount; }
         }
 
         /// <summary>
@@ -306,15 +251,12 @@ namespace Slimcat.Models
         /// </summary>
         public int UserCount
         {
-            get
-            {
-                return this.Users.Count == 0 ? this.userCount : this.Users.Count();
-            }
+            get { return Users.Count == 0 ? userCount : Users.Count(); }
 
             set
             {
-                this.userCount = value;
-                this.UpdateBindings();
+                userCount = value;
+                UpdateBindings();
             }
         }
 
@@ -323,10 +265,7 @@ namespace Slimcat.Models
         /// </summary>
         public ObservableCollection<ICharacter> Users
         {
-            get
-            {
-                return this.users;
-            }
+            get { return users; }
         }
 
         #endregion
@@ -344,13 +283,11 @@ namespace Slimcat.Models
         /// </returns>
         public bool AddCharacter(ICharacter toAdd)
         {
-            if (this.users.Contains(toAdd))
-            {
+            if (users.Contains(toAdd))
                 return false;
-            }
 
-            this.users.Add(toAdd);
-            this.CallListChanged();
+            users.Add(toAdd);
+            CallListChanged();
             return true;
         }
 
@@ -365,7 +302,7 @@ namespace Slimcat.Models
         /// </param>
         public override void AddMessage(IMessage message, bool isOfInterest = false)
         {
-            var messageCollection = message.Type == MessageType.Ad ? this.Ads : this.Messages;
+            var messageCollection = message.Type == MessageType.Ad ? Ads : Messages;
 
             while (messageCollection.Count >= ApplicationSettings.BackLogMax)
             {
@@ -375,34 +312,24 @@ namespace Slimcat.Models
 
             messageCollection.Add(message);
 
-            if (this.IsSelected)
+            if (IsSelected)
             {
                 if (message.Type == MessageType.Normal)
-                {
-                    this.LastReadCount = messageCollection.Count;
-                }
+                    LastReadCount = messageCollection.Count;
                 else
-                {
-                    this.LastReadAdCount = messageCollection.Count;
-                }
+                    LastReadAdCount = messageCollection.Count;
             }
             else if (messageCollection.Count >= ApplicationSettings.BackLogMax)
             {
                 if (message.Type == MessageType.Normal)
-                {
-                    this.LastReadCount--;
-                }
+                    LastReadCount--;
                 else
-                {
-                    this.LastReadAdCount--;
-                }
+                    LastReadAdCount--;
             }
-            else if (!this.IsSelected)
-            {
-                this.UnreadContainsInteresting = isOfInterest;
-            }
+            else if (!IsSelected)
+                UnreadContainsInteresting = isOfInterest;
 
-            this.UpdateBindings();
+            UpdateBindings();
         }
 
         /// <summary>
@@ -410,17 +337,15 @@ namespace Slimcat.Models
         /// </summary>
         public void CallListChanged()
         {
-            if (this.lastUpdate.AddSeconds(3) >= DateTime.Now)
-            {
+            if (lastUpdate.AddSeconds(3) >= DateTime.Now)
                 return;
-            }
 
-            this.OnPropertyChanged("Moderators");
-            this.OnPropertyChanged("Owner");
-            this.OnPropertyChanged("Banned");
-            this.OnPropertyChanged("Users");
-            this.OnPropertyChanged("UsersCount");
-            this.lastUpdate = DateTime.Now;
+            OnPropertyChanged("Moderators");
+            OnPropertyChanged("Owner");
+            OnPropertyChanged("Banned");
+            OnPropertyChanged("Users");
+            OnPropertyChanged("UsersCount");
+            lastUpdate = DateTime.Now;
         }
 
         /// <summary>
@@ -434,23 +359,22 @@ namespace Slimcat.Models
         /// </returns>
         public bool RemoveCharacter(string name)
         {
-            var toRemove = this.users.FirstOrDefault(c => c.NameEquals(name));
+            var toRemove = users.FirstOrDefault(c => c.NameEquals(name));
             if (toRemove == null)
-            {
                 return false;
-            }
 
-            this.users.Remove(toRemove);
-            this.CallListChanged();
+            users.Remove(toRemove);
+            CallListChanged();
             return true;
         }
 
         #endregion
 
         #region Methods
+
         protected override void Dispose(bool isManaged)
         {
-            this.Settings = new ChannelSettingsModel();
+            Settings = new ChannelSettingsModel();
             base.Dispose(isManaged);
         }
 
@@ -460,7 +384,7 @@ namespace Slimcat.Models
         protected override void UpdateBindings()
         {
             base.UpdateBindings();
-            this.OnPropertyChanged("CompositeUnreadCount");
+            OnPropertyChanged("CompositeUnreadCount");
         }
 
         #endregion

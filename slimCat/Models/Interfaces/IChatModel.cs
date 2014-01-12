@@ -1,9 +1,32 @@
-﻿namespace Slimcat.Models
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="IChatModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace Slimcat.Models
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
+
+    #endregion
 
     /// <summary>
     ///     The ChatModel interface.
@@ -138,26 +161,26 @@
         #region Public Methods and Operators
 
         /// <summary>
-        /// The add character.
+        ///     The add character.
         /// </summary>
         /// <param name="character">
-        /// The character.
+        ///     The character.
         /// </param>
         void AddCharacter(ICharacter character);
 
         /// <summary>
-        /// Returns the ICharacter value of a given string, if online
+        ///     Returns the ICharacter value of a given string, if online
         /// </summary>
         /// <param name="name">
-        /// The name.
+        ///     The name.
         /// </param>
         /// <returns>
-        /// The <see cref="ICharacter"/>.
+        ///     The <see cref="ICharacter" />.
         /// </returns>
         ICharacter FindCharacter(string name);
 
         /// <summary>
-        /// Returns the ChannelModel for a given id/title, if it exists
+        ///     Returns the ChannelModel for a given id/title, if it exists
         /// </summary>
         /// <param name="id">ID of the channel to find</param>
         /// <param name="title">Title of the channel used to create if not existant</param>
@@ -165,48 +188,48 @@
         ChannelModel FindChannel(string id, string title = null);
 
         /// <summary>
-        /// The is of interest.
+        ///     The is of interest.
         /// </summary>
         /// <param name="name">
-        /// The name.
+        ///     The name.
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         bool IsOfInterest(string name);
 
         /// <summary>
-        /// Checks if a given user is online
+        ///     Checks if a given user is online
         /// </summary>
         /// <param name="name">
-        /// The name.
+        ///     The name.
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         bool IsOnline(string name);
 
         /// <summary>
-        /// The remove character.
+        ///     The remove character.
         /// </summary>
         /// <param name="name">
-        /// The name.
+        ///     The name.
         /// </param>
         void RemoveCharacter(string name);
 
         /// <summary>
-        /// Toggle our interest in a character
+        ///     Toggle our interest in a character
         /// </summary>
         /// <param name="name">
-        /// The name.
+        ///     The name.
         /// </param>
         void ToggleInterestedMark(string name);
 
         /// <summary>
-        /// Toggle our disinterested in a character
+        ///     Toggle our disinterested in a character
         /// </summary>
         /// <param name="name">
-        /// The name.
+        ///     The name.
         /// </param>
         void ToggleNotInterestedMark(string name);
 

@@ -7,7 +7,7 @@
              xmlns:vm="clr-namespace:Slimcat.ViewModels"
              xmlns:v="clr-namespace:Slimcat.Views"
              MaxWidth="300"
-             
+
              d:DataContext="{d:DesignInstance vm:ChannelsTabViewModel}">
     <DockPanel>
         <Popup PlacementTarget="{Binding ElementName=PopupAnchor}"
@@ -52,6 +52,6 @@
         <ListBox ItemsSource="{Binding Path=SortedChannels, Mode=OneWay, IsAsync=True}"
                  ItemTemplate="{StaticResource ChannelTemplate}"
                  x:Name="PopupAnchor"
-                 Style="{StaticResource ContentListBox}"/>
+                 Style="{StaticResource ContentListBox}" />
     </DockPanel>
 </UserControl>

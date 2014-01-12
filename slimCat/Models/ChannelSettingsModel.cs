@@ -1,11 +1,33 @@
-﻿namespace Slimcat.Models
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ChannelSettingsModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace Slimcat.Models
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows.Input;
-
     using Libraries;
+
+    #endregion
 
     /// <summary>
     ///     Channel settings specific to each channel
@@ -20,11 +42,11 @@
 
         private bool isChangingSettings;
 
-        private int joinLeaveLevel = (int)NotifyLevel.NotificationOnly;
+        private int joinLeaveLevel = (int) NotifyLevel.NotificationOnly;
 
         private bool joinLeaveNotifyOnlyForInteresting = true;
 
-        private int messageLevel = (int)NotifyLevel.NotificationOnly;
+        private int messageLevel = (int) NotifyLevel.NotificationOnly;
 
         private bool messageOnlyForInteresting;
 
@@ -36,7 +58,7 @@
 
         private bool notifyTermsChanged;
 
-        private int promoteDemoteLevel = (int)NotifyLevel.NotificationAndToast;
+        private int promoteDemoteLevel = (int) NotifyLevel.NotificationAndToast;
 
         private bool promoteDemoteNotifyOnlyForInteresting;
 
@@ -57,17 +79,15 @@
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChannelSettingsModel"/> class.
+        ///     Initializes a new instance of the <see cref="ChannelSettingsModel" /> class.
         /// </summary>
         /// <param name="isPm">
-        /// The is PrivateMessage.
+        ///     The is PrivateMessage.
         /// </param>
         public ChannelSettingsModel(bool isPm = false)
         {
             if (isPm)
-            {
-                this.MessageNotifyLevel = (int)NotifyLevel.NotificationAndSound;
-            }
+                MessageNotifyLevel = (int) NotifyLevel.NotificationAndSound;
         }
 
         #endregion
@@ -91,17 +111,17 @@
             /// <summary>
             ///     The no notification.
             /// </summary>
-            NoNotification, 
+            NoNotification,
 
             /// <summary>
             ///     The notification only.
             /// </summary>
-            NotificationOnly, 
+            NotificationOnly,
 
             /// <summary>
             ///     The notification and toast.
             /// </summary>
-            NotificationAndToast, 
+            NotificationAndToast,
 
             /// <summary>
             ///     The notification and sound.
@@ -120,19 +140,19 @@
         {
             get
             {
-                if (!this.notifyTermsChanged || this.notifyEnumerable != null)
+                if (!notifyTermsChanged || notifyEnumerable != null)
                 {
-                    this.notifyTermsChanged = false;
+                    notifyTermsChanged = false;
 
-                    this.notifyEnumerable =
-                        this.notifyOnTheseTerms.Split(',')
+                    notifyEnumerable =
+                        notifyOnTheseTerms.Split(',')
                             .Select(word => word.Trim())
                             .Where(word => !string.IsNullOrWhiteSpace(word));
 
                     // tokenizes our terms
                 }
 
-                return this.notifyEnumerable;
+                return notifyEnumerable;
             }
         }
 
@@ -141,20 +161,15 @@
         /// </summary>
         public int FlashInterval
         {
-            get
-            {
-                return this.shouldFlashInterval;
-            }
+            get { return shouldFlashInterval; }
 
             set
             {
-                if (this.shouldFlashInterval == value && value >= 1)
-                {
+                if (shouldFlashInterval == value && value >= 1)
                     return;
-                }
 
-                this.shouldFlashInterval = value;
-                this.CallUpdate();
+                shouldFlashInterval = value;
+                CallUpdate();
             }
         }
 
@@ -163,20 +178,15 @@
         /// </summary>
         public bool IsChangingSettings
         {
-            get
-            {
-                return this.isChangingSettings;
-            }
+            get { return isChangingSettings; }
 
             set
             {
-                if (this.isChangingSettings == value)
-                {
+                if (isChangingSettings == value)
                     return;
-                }
 
-                this.isChangingSettings = value;
-                this.CallUpdate();
+                isChangingSettings = value;
+                CallUpdate();
             }
         }
 
@@ -185,15 +195,12 @@
         /// </summary>
         public int JoinLeaveNotifyLevel
         {
-            get
-            {
-                return this.joinLeaveLevel;
-            }
+            get { return joinLeaveLevel; }
 
             set
             {
-                this.joinLeaveLevel = value;
-                this.CallUpdate();
+                joinLeaveLevel = value;
+                CallUpdate();
             }
         }
 
@@ -202,15 +209,12 @@
         /// </summary>
         public bool JoinLeaveNotifyOnlyForInteresting
         {
-            get
-            {
-                return this.joinLeaveNotifyOnlyForInteresting;
-            }
+            get { return joinLeaveNotifyOnlyForInteresting; }
 
             set
             {
-                this.joinLeaveNotifyOnlyForInteresting = value;
-                this.CallUpdate();
+                joinLeaveNotifyOnlyForInteresting = value;
+                CallUpdate();
             }
         }
 
@@ -219,15 +223,12 @@
         /// </summary>
         public bool LoggingEnabled
         {
-            get
-            {
-                return this.enableLogging;
-            }
+            get { return enableLogging; }
 
             set
             {
-                this.enableLogging = value;
-                this.CallUpdate();
+                enableLogging = value;
+                CallUpdate();
             }
         }
 
@@ -240,15 +241,12 @@
         /// </summary>
         public int MessageNotifyLevel
         {
-            get
-            {
-                return this.messageLevel;
-            }
+            get { return messageLevel; }
 
             set
             {
-                this.messageLevel = value;
-                this.CallUpdate();
+                messageLevel = value;
+                CallUpdate();
             }
         }
 
@@ -257,15 +255,12 @@
         /// </summary>
         public bool MessageNotifyOnlyForInteresting
         {
-            get
-            {
-                return this.messageOnlyForInteresting;
-            }
+            get { return messageOnlyForInteresting; }
 
             set
             {
-                this.messageOnlyForInteresting = value;
-                this.CallUpdate();
+                messageOnlyForInteresting = value;
+                CallUpdate();
             }
         }
 
@@ -274,15 +269,12 @@
         /// </summary>
         public bool NotifyIncludesCharacterNames
         {
-            get
-            {
-                return this.notifyIncludesCharacterNames;
-            }
+            get { return notifyIncludesCharacterNames; }
 
             set
             {
-                this.notifyIncludesCharacterNames = value;
-                this.CallUpdate();
+                notifyIncludesCharacterNames = value;
+                CallUpdate();
             }
         }
 
@@ -291,20 +283,15 @@
         /// </summary>
         public string NotifyTerms
         {
-            get
-            {
-                return this.notifyOnTheseTerms.Trim().ToLower();
-            }
+            get { return notifyOnTheseTerms.Trim().ToLower(); }
 
             set
             {
-                if (this.notifyOnTheseTerms == value)
-                {
+                if (notifyOnTheseTerms == value)
                     return;
-                }
 
-                this.notifyOnTheseTerms = value;
-                this.CallUpdate();
+                notifyOnTheseTerms = value;
+                CallUpdate();
             }
         }
 
@@ -315,9 +302,9 @@
         {
             get
             {
-                return this.expandSettings
-                       ?? (this.expandSettings =
-                           new RelayCommand(param => this.IsChangingSettings = !this.IsChangingSettings));
+                return expandSettings
+                       ?? (expandSettings =
+                           new RelayCommand(param => IsChangingSettings = !IsChangingSettings));
             }
         }
 
@@ -326,15 +313,12 @@
         /// </summary>
         public int PromoteDemoteNotifyLevel
         {
-            get
-            {
-                return this.promoteDemoteLevel;
-            }
+            get { return promoteDemoteLevel; }
 
             set
             {
-                this.promoteDemoteLevel = value;
-                this.CallUpdate();
+                promoteDemoteLevel = value;
+                CallUpdate();
             }
         }
 
@@ -343,15 +327,12 @@
         /// </summary>
         public bool PromoteDemoteNotifyOnlyForInteresting
         {
-            get
-            {
-                return this.promoteDemoteNotifyOnlyForInteresting;
-            }
+            get { return promoteDemoteNotifyOnlyForInteresting; }
 
             set
             {
-                this.promoteDemoteNotifyOnlyForInteresting = value;
-                this.CallUpdate();
+                promoteDemoteNotifyOnlyForInteresting = value;
+                CallUpdate();
             }
         }
 
@@ -361,10 +342,8 @@
 
         private void CallUpdate()
         {
-            if (this.Updated != null)
-            {
-                this.Updated(this, new EventArgs());
-            }
+            if (Updated != null)
+                Updated(this, new EventArgs());
         }
 
         #endregion

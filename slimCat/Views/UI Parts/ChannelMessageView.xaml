@@ -9,10 +9,10 @@
            Padding="0"
            Foreground="{StaticResource ForegroundBrush}"
            FontFamily="Segoe UI, Verdanda"
-           FontSize="13" 
+           FontSize="13"
            d:DataContext="{models:IMessage}">
-    
-    <Run Text="{Binding TimeStamp, Mode=OneTime}" 
+
+    <Run Text="{Binding TimeStamp, Mode=OneTime}"
          Foreground="{Binding Path=Poster.IsInteresting, Mode=OneWay, Converter={StaticResource NameplateColorConverter}}"
          FontSize="12" />
 
@@ -20,8 +20,8 @@
         <Rectangle Height="15" Width="15" Margin="0">
             <Rectangle.Fill>
                 <MultiBinding Converter="{StaticResource GenderColorConverter}" Mode="OneWay">
-                    <Binding Path="Poster.Gender"/>
-                    <Binding Path="Poster.IsInteresting"/>
+                    <Binding Path="Poster.Gender" />
+                    <Binding Path="Poster.IsInteresting" />
                 </MultiBinding>
             </Rectangle.Fill>
             <Rectangle.OpacityMask>
@@ -44,5 +44,6 @@
         </Hyperlink.InputBindings>
     </Hyperlink>
 
-    <Span lib:SpanHelper.InlineSource="{Binding Message, Mode=OneTime, Converter={StaticResource BbFlowConverter}, IsAsync=True}"/>
+    <Span
+        lib:SpanHelper.InlineSource="{Binding Message, Mode=OneTime, Converter={StaticResource BbFlowConverter}, IsAsync=True}" />
 </Paragraph>

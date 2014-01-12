@@ -58,14 +58,14 @@
                 </WrapPanel>
             </Grid>
         </Border>
-        
-        <v:ObservingFlowDocumentReader 
+
+        <v:ObservingFlowDocumentReader
             Grid.Row="1"
             x:Name="PopupAnchor"
             LoadInReverse="True"
-            MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}"/>
+            MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}" />
 
-        <Popup Grid.Row="1" 
+        <Popup Grid.Row="1"
                PlacementTarget="{Binding ElementName=PopupAnchor}"
                Placement="Center"
                StaysOpen="False"

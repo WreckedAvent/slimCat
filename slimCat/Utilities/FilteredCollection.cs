@@ -1,13 +1,35 @@
-﻿namespace Slimcat.Utilities
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="FilteredCollection.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace Slimcat.Utilities
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Collections.Specialized;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-
     using ViewModels;
+
+    #endregion
 
     /// <summary>
     ///     A filtered observable collection which syncronizes with another collection
@@ -31,13 +53,13 @@
 
         public FilteredCollection(ObservableCollection<T> toWatch, Func<T, bool> meetsFilter, bool isFiltering = false)
         {
-            this.originalCollection = toWatch;
+            originalCollection = toWatch;
             this.meetsFilter = meetsFilter;
-            this.Collection = new ObservableCollection<TR>();
+            Collection = new ObservableCollection<TR>();
 
-            this.originalCollection.CollectionChanged += this.OnCollectionChanged;
+            originalCollection.CollectionChanged += OnCollectionChanged;
             this.isFiltering = isFiltering;
-            this.RebuildItems();
+            RebuildItems();
         }
 
         #endregion
@@ -48,42 +70,32 @@
 
         public bool IsFiltering
         {
-            private get
-            {
-                return this.isFiltering;
-            }
+            private get { return isFiltering; }
 
             set
             {
-                this.isFiltering = value;
-                this.OnPropertyChanged("IsFiltering");
-                this.RebuildItems();
+                isFiltering = value;
+                OnPropertyChanged("IsFiltering");
+                RebuildItems();
             }
         }
 
         public ObservableCollection<T> OriginalCollection
         {
-            get
-            {
-                return this.originalCollection;
-            }
+            get { return originalCollection; }
 
             set
             {
-                if (this.originalCollection != null)
-                {
-                    this.originalCollection.CollectionChanged -= this.OnCollectionChanged;
-                }
+                if (originalCollection != null)
+                    originalCollection.CollectionChanged -= OnCollectionChanged;
 
-                this.originalCollection = value;
+                originalCollection = value;
 
-                if (this.originalCollection == null)
-                {
+                if (originalCollection == null)
                     return;
-                }
 
-                this.originalCollection.CollectionChanged += this.OnCollectionChanged;
-                this.RebuildItems();
+                originalCollection.CollectionChanged += OnCollectionChanged;
+                RebuildItems();
             }
         }
 
@@ -93,15 +105,13 @@
 
         public void RebuildItems()
         {
-            this.Collection.Clear();
+            Collection.Clear();
 
-            IEnumerable<T> items = this.originalCollection;
-            if (this.isFiltering)
-            {
-                items = items.Where(this.meetsFilter);
-            }
+            IEnumerable<T> items = originalCollection;
+            if (isFiltering)
+                items = items.Where(meetsFilter);
 
-            items.Each(item => this.Collection.Add(item));
+            items.Each(item => Collection.Add(item));
         }
 
         #endregion
@@ -112,9 +122,9 @@
         {
             if (isManaged)
             {
-                this.originalCollection = null;
-                this.meetsFilter = null;
-                this.Collection = null;
+                originalCollection = null;
+                meetsFilter = null;
+                Collection = null;
             }
 
             base.Dispose(isManaged);
@@ -122,34 +132,28 @@
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (this.Collection == null)
-            {
+            if (Collection == null)
                 return;
-            }
 
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
                     var items = e.NewItems.Cast<T>();
-                    if (this.IsFiltering)
-                    {
-                        items = items.Where(this.meetsFilter);
-                    }
+                    if (IsFiltering)
+                        items = items.Where(meetsFilter);
 
-                    items.Each(item => this.Collection.Add(item));
+                    items.Each(item => Collection.Add(item));
                     break;
 
                 case NotifyCollectionChangedAction.Reset:
-                    this.Collection.Clear();
+                    Collection.Clear();
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
                     if (e.OldStartingIndex == -1)
-                    {
                         return;
-                    }
 
-                    this.Collection.RemoveAt(e.OldStartingIndex);
+                    Collection.RemoveAt(e.OldStartingIndex);
                     break;
             }
         }
@@ -161,7 +165,7 @@
     ///     A filtered observable collection which syncronizes with another collection
     /// </summary>
     /// <typeparam name="T">The type of collection to filter and return</typeparam>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", 
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass",
         Justification = "Same type as other class, only less specific.")]
     public class FilteredCollection<T> : FilteredCollection<T, T>
         where T : class

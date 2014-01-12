@@ -3,24 +3,24 @@
            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
            xmlns:v="clr-namespace:Slimcat.Views"
            xmlns:lib="clr-namespace:Slimcat.Libraries"
-            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-           xmlns:models="clr-namespace:Slimcat.Models" 
+           xmlns:models="clr-namespace:Slimcat.Models"
            mc:Ignorable="d"
            d:DataContext="{d:DesignInstance Type=models:CharacterUpdateModel}"
            Margin="0,2"
            Padding="0"
            Foreground="{StaticResource ForegroundBrush}"
            FontFamily="Segoe UI, Verdanda"
-           FontSize="13" 
+           FontSize="13"
            ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
-    
+
     <InlineUIContainer BaselineAlignment="Bottom">
         <Rectangle Height="15" Width="15" Margin="0">
             <Rectangle.Fill>
                 <MultiBinding Converter="{StaticResource GenderColorConverter}" Mode="OneWay">
-                    <Binding Path="TargetCharacter.Gender"/>
-                    <Binding Path="TargetCharacter.IsInteresting"/>
+                    <Binding Path="TargetCharacter.Gender" />
+                    <Binding Path="TargetCharacter.IsInteresting" />
                 </MultiBinding>
             </Rectangle.Fill>
             <Rectangle.OpacityMask>
@@ -42,13 +42,14 @@
         </Hyperlink.InputBindings>
     </Hyperlink>
 
-    <Span lib:SpanHelper.InlineSource="{Binding Path=Arguments, Mode=OneTime, Converter={StaticResource BbCodeConverter}, IsAsync=True}"/>
-    
+    <Span
+        lib:SpanHelper.InlineSource="{Binding Path=Arguments, Mode=OneTime, Converter={StaticResource BbCodeConverter}, IsAsync=True}" />
+
     <InlineUIContainer>
         <v:CloseButtonView VerticalAlignment="Top"
-                            Command="{Binding Path=DataContext.RemoveNotificationCommand,
+                           Command="{Binding Path=DataContext.RemoveNotificationCommand,
                             RelativeSource={RelativeSource Mode=FindAncestor,
                             AncestorType={x:Type FlowDocument}} }"
-                            CommandParameter="{Binding}" />
+                           CommandParameter="{Binding}" />
     </InlineUIContainer>
 </Paragraph>

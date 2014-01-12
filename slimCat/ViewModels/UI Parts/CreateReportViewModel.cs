@@ -1,41 +1,33 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CreateReportViewModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   The create report view model.
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CreateReportViewModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.ViewModels
 {
+    #region Usings
+
     using System.Collections.Generic;
     using System.Windows.Input;
-
-    using Microsoft.Practices.Prism.Events;
-
     using Libraries;
+    using Microsoft.Practices.Prism.Events;
     using Models;
+
+    #endregion
 
     /// <summary>
     ///     The create report view model.
@@ -65,17 +57,17 @@ namespace Slimcat.ViewModels
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CreateReportViewModel"/> class.
+        ///     Initializes a new instance of the <see cref="CreateReportViewModel" /> class.
         /// </summary>
         /// <param name="eventagg">
-        /// The eventagg.
+        ///     The eventagg.
         /// </param>
         /// <param name="cm">
-        /// The cm.
+        ///     The cm.
         /// </param>
         public CreateReportViewModel(IEventAggregator eventagg, IChatModel cm)
         {
-            this.events = eventagg;
+            events = eventagg;
             this.cm = cm;
         }
 
@@ -88,10 +80,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICommand CloseCommand
         {
-            get
-            {
-                return this.cancel ?? (this.cancel = new RelayCommand(param => this.IsOpen = !this.isOpen));
-            }
+            get { return cancel ?? (cancel = new RelayCommand(param => IsOpen = !isOpen)); }
         }
 
         /// <summary>
@@ -99,15 +88,12 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string Complaint
         {
-            get
-            {
-                return this.complaint;
-            }
+            get { return complaint; }
 
             set
             {
-                this.complaint = value;
-                this.OnPropertyChanged("Complaint");
+                complaint = value;
+                OnPropertyChanged("Complaint");
             }
         }
 
@@ -116,10 +102,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string CurrentTab
         {
-            get
-            {
-                return this.cm.CurrentChannel.Id == "Home" ? "None" : this.cm.CurrentChannel.Id;
-            }
+            get { return cm.CurrentChannel.Id == "Home" ? "None" : cm.CurrentChannel.Id; }
         }
 
         /// <summary>
@@ -127,20 +110,15 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool IsOpen
         {
-            get
-            {
-                return this.isOpen;
-            }
+            get { return isOpen; }
 
             set
             {
-                this.isOpen = value;
+                isOpen = value;
                 if (!value)
-                {
-                    this.Complaint = null;
-                }
+                    Complaint = null;
 
-                this.OnPropertyChanged("IsOpen");
+                OnPropertyChanged("IsOpen");
             }
         }
 
@@ -149,10 +127,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICommand SendReportCommand
         {
-            get
-            {
-                return this.send ?? (this.send = new RelayCommand(this.OnSendReport));
-            }
+            get { return send ?? (send = new RelayCommand(OnSendReport)); }
         }
 
         /// <summary>
@@ -160,15 +135,12 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool ShouldUploadLogs
         {
-            get
-            {
-                return this.shouldUploadLogs;
-            }
+            get { return shouldUploadLogs; }
 
             set
             {
-                this.shouldUploadLogs = value;
-                this.OnPropertyChanged("ShouldUploadLogs");
+                shouldUploadLogs = value;
+                OnPropertyChanged("ShouldUploadLogs");
             }
         }
 
@@ -177,15 +149,12 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string Target
         {
-            get
-            {
-                return this.target;
-            }
+            get { return target; }
 
             set
             {
-                this.target = value;
-                this.OnPropertyChanged("Target");
+                target = value;
+                OnPropertyChanged("Target");
             }
         }
 
@@ -197,9 +166,9 @@ namespace Slimcat.ViewModels
         {
             if (isManaged)
             {
-                this.cm = null;
-                this.complaint = null;
-                this.events = null;
+                cm = null;
+                complaint = null;
+                events = null;
             }
 
             base.Dispose(isManaged);
@@ -209,12 +178,12 @@ namespace Slimcat.ViewModels
         {
             var command =
                 CommandDefinitions.CreateCommand(
-                    "report", new List<string> { this.Target, this.Complaint }, this.CurrentTab).ToDictionary();
+                    "report", new List<string> {Target, Complaint}, CurrentTab).ToDictionary();
 
-            this.events.GetEvent<UserCommandEvent>().Publish(command);
-            this.IsOpen = !this.IsOpen;
-            this.target = null;
-            this.Complaint = null;
+            events.GetEvent<UserCommandEvent>().Publish(command);
+            IsOpen = !IsOpen;
+            target = null;
+            Complaint = null;
         }
 
         #endregion

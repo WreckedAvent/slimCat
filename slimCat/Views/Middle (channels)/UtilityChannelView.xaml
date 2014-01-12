@@ -103,7 +103,7 @@
                                   Margin="0,5">
                             Allow Colors
                         </CheckBox>
-                        
+
                         <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
                                   VerticalAlignment="Center"
                                   Margin="0,5">
@@ -115,15 +115,16 @@
                             Allow Spell Check
                         </CheckBox>
 
-                        <StackPanel Margin="0,15,0,5" Visibility="{Binding SpellCheckEnabled, Converter={StaticResource BoolConverter}}">
-                            <TextBlock Text="Spell check language"/>
+                        <StackPanel Margin="0,15,0,5"
+                                    Visibility="{Binding SpellCheckEnabled, Converter={StaticResource BoolConverter}}">
+                            <TextBlock Text="Spell check language" />
                             <ComboBox ItemsSource="{Binding Path=LanguageNames}"
                                       SelectedValue="{Binding Path=Language}"
-                                      
+
                                       DisplayMemberPath="Key"
-                                      SelectedValuePath="Value"/>
+                                      SelectedValuePath="Value" />
                         </StackPanel>
-                        
+
                         <WrapPanel Margin="0,15,0,0">
                             <TextBlock Margin="0,0,5,0">Keep</TextBlock>
                             <TextBox Text="{Binding Path=BackLogMax, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -131,8 +132,8 @@
                                      FontSize="12" />
                             <TextBlock Margin="5,0,0,0">Messages in channel backlogs</TextBlock>
                         </WrapPanel>
-                        
-                        <TextBlock Text="Global Notify Words (seperate with commas)" Margin="0,15,0,0"/>
+
+                        <TextBlock Text="Global Notify Words (seperate with commas)" Margin="0,15,0,0" />
                         <TextBox
                             Text="{Binding Path=GlobalNotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             TextWrapping="Wrap"

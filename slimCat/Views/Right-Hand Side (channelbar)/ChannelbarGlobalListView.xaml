@@ -6,7 +6,7 @@
              mc:Ignorable="d"
              xmlns:vm="clr-namespace:Slimcat.ViewModels"
              xmlns:v="clr-namespace:Slimcat.Views"
-             
+
              d:DataContext="{d:DesignInstance vm:GlobalTabViewModel}">
 
     <Grid TextBlock.Foreground="{StaticResource ForegroundBrush}"
