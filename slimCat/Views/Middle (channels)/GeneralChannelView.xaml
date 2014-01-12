@@ -34,11 +34,11 @@
                     </Expander.Header>
                     <ScrollViewer MaxHeight="100">
                         <TextBlock Margin="0"
-                                   TextBlock.FontSize="12"
+                                   FontSize="12"
                                    Foreground="{StaticResource ForegroundBrush}"
                                    TextWrapping="Wrap">
                             <lib:TextBlockHelper.InlineList>
-                                <Binding Converter="{StaticResource BBCodeConverter}"
+                                <Binding Converter="{StaticResource BbCodeConverter}"
                                          IsAsync="True"
                                          Mode="OneWay"
                                          Path="Description" />
@@ -58,14 +58,15 @@
                 </WrapPanel>
             </Grid>
         </Border>
-        
-        <v:ObservingFlowDocumentReader 
+
+        <v:ObservingFlowDocumentReader
             Grid.Row="1"
             x:Name="PopupAnchor"
             LoadInReverse="True"
-            MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}"/>
+            MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}" />
 
-        <Popup PlacementTarget="{Binding ElementName=PopupAnchor}"
+        <Popup Grid.Row="1"
+               PlacementTarget="{Binding ElementName=PopupAnchor}"
                Placement="Center"
                StaysOpen="False"
                IsOpen="{Binding Path=SearchSettings.IsChangingSettings}">
@@ -97,7 +98,7 @@
             </Border>
         </Popup>
 
-        <v:ChannelSettingsView />
+        <v:ChannelSettingsView Grid.Row="1" />
 
         <StackPanel Grid.Row="2">
             <Grid>

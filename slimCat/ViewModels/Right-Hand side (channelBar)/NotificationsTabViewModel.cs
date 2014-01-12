@@ -1,52 +1,42 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="NotificationsTabViewModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   This is the tab labled "notifications" in the channel bar, or the bar on the right-hand side
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="NotificationsTabViewModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.ViewModels
 {
+    #region Usings
+
     using System.Collections.ObjectModel;
     using System.Windows.Input;
-
+    using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
+    using Models;
+    using Utilities;
+    using Views;
 
-    using Slimcat.Libraries;
-    using Slimcat.Models;
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    #endregion
 
     /// <summary>
     ///     This is the tab labled "notifications" in the channel bar, or the bar on the right-hand side
     /// </summary>
-// ReSharper disable ClassNeverInstantiated.Global
     public class NotificationsTabViewModel : ChannelbarViewModelCommon
-// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Constants
 
@@ -58,7 +48,8 @@ namespace Slimcat.ViewModels
         #endregion
 
         #region Fields
-        private readonly FilteredCollection<NotificationModel, IViewableObject> notificationManager; 
+
+        private readonly FilteredCollection<NotificationModel, IViewableObject> notificationManager;
 
         private RelayCommand clearNoti;
 
@@ -73,35 +64,35 @@ namespace Slimcat.ViewModels
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotificationsTabViewModel"/> class.
+        ///     Initializes a new instance of the <see cref="NotificationsTabViewModel" /> class.
         /// </summary>
         /// <param name="cm">
-        /// The cm.
+        ///     The cm.
         /// </param>
         /// <param name="contain">
-        /// The contain.
+        ///     The contain.
         /// </param>
         /// <param name="regman">
-        /// The regman.
+        ///     The regman.
         /// </param>
         /// <param name="eventagg">
-        /// The eventagg.
+        ///     The eventagg.
         /// </param>
         public NotificationsTabViewModel(
             IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
             : base(contain, regman, eventagg, cm)
         {
-            this.Container.RegisterType<object, NotificationsTabView>(NotificationsTabView);
+            Container.RegisterType<object, NotificationsTabView>(NotificationsTabView);
 
-            this.notificationManager =
+            notificationManager =
                 new FilteredCollection<NotificationModel, IViewableObject>(
-                    this.ChatModel.Notifications, this.MeetsFilter, true);
+                    ChatModel.Notifications, MeetsFilter, true);
 
-            this.notificationManager.Collection.CollectionChanged += (sender, args) => 
-            { 
-                this.OnPropertyChanged("HasNoNotifications");
-                this.OnPropertyChanged("NeedsAttention");
-            };
+            notificationManager.Collection.CollectionChanged += (sender, args) =>
+                {
+                    OnPropertyChanged("HasNoNotifications");
+                    OnPropertyChanged("NeedsAttention");
+                };
         }
 
         #endregion
@@ -115,8 +106,8 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                return this.clearNoti
-                       ?? (this.clearNoti = new RelayCommand(args => this.ChatModel.Notifications.Clear()));
+                return clearNoti
+                       ?? (clearNoti = new RelayCommand(args => ChatModel.Notifications.Clear()));
             }
         }
 
@@ -127,10 +118,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool HasNoNotifications
         {
-            get
-            {
-                return this.notificationManager.Collection.Count == 0;
-            }
+            get { return notificationManager.Collection.Count == 0; }
         }
 
         /// <summary>
@@ -138,20 +126,15 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool IsSelected
         {
-            get
-            {
-                return this.isSelected;
-            }
+            get { return isSelected; }
 
             set
             {
-                if (this.isSelected == value)
-                {
+                if (isSelected == value)
                     return;
-                }
 
-                this.isSelected = value;
-                this.OnPropertyChanged("NeedsAttention");
+                isSelected = value;
+                OnPropertyChanged("NeedsAttention");
             }
         }
 
@@ -160,10 +143,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICommand RemoveNotificationCommand
         {
-            get
-            {
-                return this.killNoti ?? (this.killNoti = new RelayCommand(this.RemoveNotification));
-            }
+            get { return killNoti ?? (killNoti = new RelayCommand(RemoveNotification)); }
         }
 
         /// <summary>
@@ -171,16 +151,13 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string SearchString
         {
-            get
-            {
-                return this.search.ToLower();
-            }
+            get { return search.ToLower(); }
 
             set
             {
-                this.search = value;
-                this.OnPropertyChanged("SearchString");
-                this.notificationManager.RebuildItems();
+                search = value;
+                OnPropertyChanged("SearchString");
+                notificationManager.RebuildItems();
             }
         }
 
@@ -189,10 +166,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ObservableCollection<IViewableObject> CurrentNotifications
         {
-            get
-            {
-                return this.notificationManager.Collection;
-            }
+            get { return notificationManager.Collection; }
         }
 
         #endregion
@@ -200,27 +174,27 @@ namespace Slimcat.ViewModels
         #region Public Methods and Operators
 
         /// <summary>
-        /// The remove notification.
+        ///     The remove notification.
         /// </summary>
         /// <param name="args">
-        /// The args.
+        ///     The args.
         /// </param>
         public void RemoveNotification(object args)
         {
             var model = args as NotificationModel;
             if (model != null)
-            {
-                this.ChatModel.Notifications.Remove(model);
-            }
+                ChatModel.Notifications.Remove(model);
         }
 
         #endregion
 
         #region Methods
+
         private bool MeetsFilter(NotificationModel item)
         {
-            return item.ToString().ContainsOrdinal(this.search);
+            return item.ToString().ContainsOrdinal(search);
         }
+
         #endregion
     }
 }

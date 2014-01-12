@@ -49,14 +49,14 @@
                 <WrapPanel>
                     <TextBlock
                         Text="{Binding ChannelSettings.MessageNotifyLevel, Converter={StaticResource NotifyLevelConverter}, ConverterParameter=flash}" />
-                    <Grid 
+                    <Grid
                         Visibility="{Binding ShowAllSettings, Converter={StaticResource BoolConverter}}">
                         <Button
                             Content="{Binding ChannelSettings.MessageNotifyOnlyForInteresting, Converter={StaticResource InterestedOnlyBoolConverter}}"
                             Command="{Binding InvertCommand}"
                             CommandParameter="Messages"
                             Style="{StaticResource ImageContentButton}"
-                            Visibility="{Binding ChannelSettings.MessageNotifyLevel, Converter={StaticResource GreaterThanZeroConverter}}"/>
+                            Visibility="{Binding ChannelSettings.MessageNotifyLevel, Converter={StaticResource GreaterThanZeroConverter}}" />
                     </Grid>
                 </WrapPanel>
 
@@ -79,7 +79,7 @@
                             Command="{Binding InvertCommand}"
                             CommandParameter="JoinLeave"
                             Style="{StaticResource ImageContentButton}"
-                            Visibility="{Binding ChannelSettings.JoinLeaveNotifyLevel, Converter={StaticResource GreaterThanZeroConverter}}"/>
+                            Visibility="{Binding ChannelSettings.JoinLeaveNotifyLevel, Converter={StaticResource GreaterThanZeroConverter}}" />
                     </WrapPanel>
 
                     <TextBlock Text="Mod promotion/demotion"
@@ -100,7 +100,7 @@
                             Command="{Binding InvertCommand}"
                             CommandParameter="PromoteDemote"
                             Style="{StaticResource ImageContentButton}"
-                            Visibility="{Binding ChannelSettings.PromoteDemoteNotifyLevel, Converter={StaticResource GreaterThanZeroConverter}}"/>
+                            Visibility="{Binding ChannelSettings.PromoteDemoteNotifyLevel, Converter={StaticResource GreaterThanZeroConverter}}" />
                     </WrapPanel>
                 </StackPanel>
 

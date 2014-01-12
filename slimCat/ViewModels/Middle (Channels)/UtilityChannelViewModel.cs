@@ -1,34 +1,26 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="UtilityChannelViewModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   Used for a few channels which are not treated normally and cannot receive/send messages.
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="UtilityChannelViewModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.ViewModels
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -36,23 +28,20 @@ namespace Slimcat.ViewModels
     using System.Net;
     using System.Text;
     using System.Timers;
-
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
+    using Models;
+    using Services;
+    using Utilities;
+    using Views;
 
-    using Slimcat;
-    using Slimcat.Models;
-    using Slimcat.Services;
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    #endregion
 
     /// <summary>
     ///     Used for a few channels which are not treated normally and cannot receive/send messages.
     /// </summary>
-// ReSharper disable ClassNeverInstantiated.Global
     public class UtilityChannelViewModel : ChannelViewModelBase
-// ReSharper restore ClassNeverInstantiated.Global
     {
         #region Constants
 
@@ -62,11 +51,10 @@ namespace Slimcat.ViewModels
 
         #region Fields
 
-        private readonly Timer updateTimer = new Timer(1000); // every second
-
         private readonly StringBuilder connectDotDot;
 
         private readonly CacheCount minuteOnlineCount;
+        private readonly Timer updateTimer = new Timer(1000); // every second
 
         private StringBuilder flavorText;
 
@@ -77,22 +65,22 @@ namespace Slimcat.ViewModels
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UtilityChannelViewModel"/> class.
+        ///     Initializes a new instance of the <see cref="UtilityChannelViewModel" /> class.
         /// </summary>
         /// <param name="name">
-        /// The name.
+        ///     The name.
         /// </param>
         /// <param name="contain">
-        /// The contain.
+        ///     The contain.
         /// </param>
         /// <param name="regman">
-        /// The regman.
+        ///     The regman.
         /// </param>
         /// <param name="events">
-        /// The events.
+        ///     The events.
         /// </param>
         /// <param name="cm">
-        /// The cm.
+        ///     The cm.
         /// </param>
         public UtilityChannelViewModel(
             string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
@@ -100,84 +88,44 @@ namespace Slimcat.ViewModels
         {
             try
             {
-                this.Model = this.Container.Resolve<GeneralChannelModel>(name);
-                this.ConnectTime = 0;
-                this.flavorText = new StringBuilder("Connecting");
-                this.connectDotDot = new StringBuilder();
+                Model = Container.Resolve<GeneralChannelModel>(name);
+                ConnectTime = 0;
+                flavorText = new StringBuilder("Connecting");
+                connectDotDot = new StringBuilder();
 
-                this.Container.RegisterType<object, UtilityChannelView>(this.Model.Id, new InjectionConstructor(this));
-                this.minuteOnlineCount = new CacheCount(this.OnlineCountPrime, 15, 1000 * 15);
+                Container.RegisterType<object, UtilityChannelView>(Model.Id, new InjectionConstructor(this));
+                minuteOnlineCount = new CacheCount(OnlineCountPrime, 15, 1000*15);
 
-                this.updateTimer.Enabled = true;
-                this.updateTimer.Elapsed += (s, e) =>
+                updateTimer.Enabled = true;
+                updateTimer.Elapsed += (s, e) =>
                     {
-                        this.OnPropertyChanged("RoughServerUpTime");
-                        this.OnPropertyChanged("RoughClientUpTime");
-                        this.OnPropertyChanged("LastMessageReceived");
-                        this.OnPropertyChanged("IsConnecting");
+                        OnPropertyChanged("RoughServerUpTime");
+                        OnPropertyChanged("RoughClientUpTime");
+                        OnPropertyChanged("LastMessageReceived");
+                        OnPropertyChanged("IsConnecting");
                     };
 
-                this.updateTimer.Elapsed += this.UpdateConnectText;
+                updateTimer.Elapsed += UpdateConnectText;
 
-                this.Events.GetEvent<NewUpdateEvent>().Subscribe(
+                Events.GetEvent<NewUpdateEvent>().Subscribe(
                     param =>
                         {
                             if (!(param is CharacterUpdateModel))
-                            {
                                 return;
-                            }
 
                             var temp = param as CharacterUpdateModel;
                             if (!(temp.Arguments is CharacterUpdateModel.LoginStateChangedEventArgs))
-                            {
                                 return;
-                            }
 
-                            this.OnPropertyChanged("OnlineCount");
-                            this.OnPropertyChanged("OnlineFriendsCount");
-                            this.OnPropertyChanged("OnlineBookmarksCount");
-                            this.OnPropertyChanged("OnlineCountChange");
+                            OnPropertyChanged("OnlineCount");
+                            OnPropertyChanged("OnlineFriendsCount");
+                            OnPropertyChanged("OnlineBookmarksCount");
+                            OnPropertyChanged("OnlineCountChange");
                         });
 
-                this.Events.GetEvent<LoginAuthenticatedEvent>().Subscribe(this.LoggedInEvent);
-                this.Events.GetEvent<LoginFailedEvent>().Subscribe(this.LoginFailedEvent);
-                this.Events.GetEvent<ReconnectingEvent>().Subscribe(this.LoginReconnectingEvent);
-
-                SettingsDaemon.ReadApplicationSettingsFromXml(cm.CurrentCharacter.Name);
-
-                try
-                {
-                    string[] args;
-                    using (var client = new WebClient())
-                    {
-                        using (var stream = client.OpenRead("https://dl.dropbox.com/u/29984849/slimCat/latest.csv"))
-                        {
-                            using (var reader = new StreamReader(stream))
-                            {
-                                args = reader.ReadToEnd().Split(',');
-                            }
-                        }
-                    }
-
-                    if (args[0] == Constants.FriendlyName)
-                    {
-                        return;
-                    }
-
-                    this.HasNewUpdate = true;
-
-                    this.UpdateName = args[0];
-                    this.UpdateLink = args[1];
-                    this.UpdateBuildTime = args[2];
-
-                    this.OnPropertyChanged("HasNewUpdate");
-                    this.OnPropertyChanged("UpdateName");
-                    this.OnPropertyChanged("UpdateLink");
-                    this.OnPropertyChanged("UpdateBuildTime");
-                }
-                catch(WebException)
-                {
-                }
+                Events.GetEvent<LoginAuthenticatedEvent>().Subscribe(LoggedInEvent);
+                Events.GetEvent<LoginFailedEvent>().Subscribe(LoginFailedEvent);
+                Events.GetEvent<ReconnectingEvent>().Subscribe(LoginReconnectingEvent);
             }
             catch (Exception ex)
             {
@@ -193,11 +141,11 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the client id string.
         /// </summary>
-        public static string ClientIDString
+        public static string ClientIdString
         {
             get
             {
-                return string.Format("{0} {1} ({2})", Constants.ClientID, Constants.ClientName, Constants.ClientVer);
+                return string.Format("{0} {1} ({2})", Constants.ClientId, Constants.ClientName, Constants.ClientVer);
             }
         }
 
@@ -209,27 +157,24 @@ namespace Slimcat.ViewModels
             get
             {
                 return new Dictionary<string, string>
-                {
-                    { "American English", "en-US" },
-                    { "British English", "en-GB" },
-                    { "French", "fr" },
-                    { "German", "de" },
-                    { "Spanish", "es" }
-                };
+                    {
+                        {"American English", "en-US"},
+                        {"British English", "en-GB"},
+                        {"French", "fr"},
+                        {"German", "de"},
+                        {"Spanish", "es"}
+                    };
             }
         }
 
         public bool AllowColors
         {
-            get
-            {
-                return ApplicationSettings.AllowColors;
-            }
+            get { return ApplicationSettings.AllowColors; }
 
             set
             {
                 ApplicationSettings.AllowColors = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
+                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
             }
         }
 
@@ -238,15 +183,12 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool AllowLogging
         {
-            get
-            {
-                return ApplicationSettings.AllowLogging;
-            }
+            get { return ApplicationSettings.AllowLogging; }
 
             set
             {
                 ApplicationSettings.AllowLogging = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
+                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
             }
         }
 
@@ -255,16 +197,13 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool FriendsAreAccountWide
         {
-            get
-            {
-                return ApplicationSettings.FriendsAreAccountWide;
-            }
+            get { return ApplicationSettings.FriendsAreAccountWide; }
 
             set
             {
                 ApplicationSettings.FriendsAreAccountWide = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
-                this.ChatModel.FriendsChanged();
+                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+                ChatModel.FriendsChanged();
             }
         }
 
@@ -273,19 +212,14 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int BackLogMax
         {
-            get
-            {
-                return ApplicationSettings.BackLogMax;
-            }
+            get { return ApplicationSettings.BackLogMax; }
 
             set
             {
                 if (value < 25000 || value > 10)
-                {
                     ApplicationSettings.BackLogMax = value;
-                }
 
-                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
+                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
             }
         }
 
@@ -296,8 +230,8 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                return this.flavorText + this.connectDotDot.ToString()
-                       + (!this.inStagger ? "\nRequest sent " + this.ConnectTime + " seconds ago" : string.Empty);
+                return flavorText + connectDotDot.ToString()
+                       + (!inStagger ? "\nRequest sent " + ConnectTime + " seconds ago" : string.Empty);
             }
         }
 
@@ -311,15 +245,12 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string GlobalNotifyTerms
         {
-            get
-            {
-                return ApplicationSettings.GlobalNotifyTerms;
-            }
+            get { return ApplicationSettings.GlobalNotifyTerms; }
 
             set
             {
                 ApplicationSettings.GlobalNotifyTerms = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
+                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
             }
         }
 
@@ -333,10 +264,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool IsConnecting
         {
-            get
-            {
-                return !this.ChatModel.IsAuthenticated;
-            }
+            get { return !ChatModel.IsAuthenticated; }
         }
 
         /// <summary>
@@ -344,10 +272,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string LastMessageReceived
         {
-            get
-            {
-                return HelperConverter.DateTimeToRough(this.ChatModel.LastMessageReceived, true, false);
-            }
+            get { return HelperConverter.DateTimeToRough(ChatModel.LastMessageReceived, true, false); }
         }
 
         /// <summary>
@@ -355,10 +280,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int OnlineBookmarksCount
         {
-            get
-            {
-                return this.ChatModel.OnlineBookmarks == null ? 0 : this.ChatModel.OnlineBookmarks.Count();
-            }
+            get { return ChatModel.OnlineBookmarks == null ? 0 : ChatModel.OnlineBookmarks.Count(); }
         }
 
         /// <summary>
@@ -366,10 +288,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int OnlineCount
         {
-            get
-            {
-                return this.ChatModel.OnlineCharacters.Count();
-            }
+            get { return ChatModel.OnlineCharacters.Count(); }
         }
 
         /// <summary>
@@ -377,10 +296,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string OnlineCountChange
         {
-            get
-            {
-                return this.minuteOnlineCount.GetDisplayString();
-            }
+            get { return minuteOnlineCount.GetDisplayString(); }
         }
 
         /// <summary>
@@ -388,10 +304,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int OnlineFriendsCount
         {
-            get
-            {
-                return this.ChatModel.OnlineFriends == null ? 0 : this.ChatModel.OnlineFriends.Count();
-            }
+            get { return ChatModel.OnlineFriends == null ? 0 : ChatModel.OnlineFriends.Count(); }
         }
 
         /// <summary>
@@ -399,10 +312,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string RoughClientUpTime
         {
-            get
-            {
-                return HelperConverter.DateTimeToRough(this.ChatModel.ClientUptime, true, false);
-            }
+            get { return HelperConverter.DateTimeToRough(ChatModel.ClientUptime, true, false); }
         }
 
         /// <summary>
@@ -410,10 +320,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string RoughServerUpTime
         {
-            get
-            {
-                return HelperConverter.DateTimeToRough(this.ChatModel.ServerUpTime, true, false);
-            }
+            get { return HelperConverter.DateTimeToRough(ChatModel.ServerUpTime, true, false); }
         }
 
         /// <summary>
@@ -421,15 +328,12 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool ShowNotifications
         {
-            get
-            {
-                return ApplicationSettings.ShowNotificationsGlobal;
-            }
+            get { return ApplicationSettings.ShowNotificationsGlobal; }
 
             set
             {
                 ApplicationSettings.ShowNotificationsGlobal = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
+                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
             }
         }
 
@@ -453,15 +357,12 @@ namespace Slimcat.ViewModels
         /// </summary>
         public double Volume
         {
-            get
-            {
-                return ApplicationSettings.Volume;
-            }
+            get { return ApplicationSettings.Volume; }
 
             set
             {
                 ApplicationSettings.Volume = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
+                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
             }
         }
 
@@ -470,58 +371,92 @@ namespace Slimcat.ViewModels
         #region Public Methods and Operators
 
         /// <summary>
-        /// The logged in event.
+        ///     The logged in event.
         /// </summary>
         /// <param name="payload">
-        /// The payload.
+        ///     The payload.
         /// </param>
         public void LoggedInEvent(bool? payload)
         {
-            this.updateTimer.Elapsed -= this.UpdateConnectText;
-            this.OnPropertyChanged("IsConnecting");
+            updateTimer.Elapsed -= UpdateConnectText;
+            OnPropertyChanged("IsConnecting");
+
+
+            SettingsDaemon.ReadApplicationSettingsFromXml(ChatModel.CurrentCharacter.Name);
+
+            try
+            {
+                string[] args;
+                using (var client = new WebClient())
+                using (var stream = client.OpenRead(NewVersionLink))
+                {
+                    if (stream == null)
+                        return;
+
+                    using (var reader = new StreamReader(stream))
+                        args = reader.ReadToEnd().Split(',');
+                }
+
+                if (args[0] == Constants.FriendlyName)
+                    return;
+
+                HasNewUpdate = true;
+
+                UpdateName = args[0];
+                UpdateLink = args[1];
+                UpdateBuildTime = args[2];
+
+                OnPropertyChanged("HasNewUpdate");
+                OnPropertyChanged("UpdateName");
+                OnPropertyChanged("UpdateLink");
+                OnPropertyChanged("UpdateBuildTime");
+            }
+            catch (WebException)
+            {
+            }
         }
 
         /// <summary>
-        /// The login failed event.
+        ///     The login failed event.
         /// </summary>
         /// <param name="error">
-        /// The error.
+        ///     The error.
         /// </param>
         public void LoginFailedEvent(string error)
         {
-            if (this.ChatModel.IsAuthenticated)
+            if (ChatModel.IsAuthenticated)
             {
-                this.updateTimer.Elapsed += this.UpdateConnectText;
-                this.ChatModel.IsAuthenticated = false;
+                updateTimer.Elapsed += UpdateConnectText;
+                ChatModel.IsAuthenticated = false;
             }
 
-            this.inStagger = true;
-            this.flavorText = new StringBuilder(error);
+            inStagger = true;
+            flavorText = new StringBuilder(error);
 
-            this.flavorText.Append("\nStaggering connection");
-            this.ConnectTime = 0;
+            flavorText.Append("\nStaggering connection");
+            ConnectTime = 0;
 
-            this.OnPropertyChanged("IsConnecting");
+            OnPropertyChanged("IsConnecting");
         }
 
         /// <summary>
-        /// The login reconnecting event.
+        ///     The login reconnecting event.
         /// </summary>
         /// <param name="payload">
-        /// The payload.
+        ///     The payload.
         /// </param>
         public void LoginReconnectingEvent(string payload)
         {
-            this.inStagger = false;
-            if (this.ChatModel.IsAuthenticated)
+            inStagger = false;
+            if (ChatModel.IsAuthenticated)
             {
-                this.updateTimer.Elapsed += this.UpdateConnectText;
-                this.ChatModel.IsAuthenticated = false;
+                updateTimer.Elapsed += UpdateConnectText;
+                ChatModel.IsAuthenticated = false;
             }
 
-            this.flavorText = new StringBuilder("Attempting reconnect");
-            this.ConnectTime = 0;
-            this.OnPropertyChanged("IsConnecting");
+            flavorText = new StringBuilder("Attempting reconnect");
+            ConnectTime = 0;
+            OnPropertyChanged("IsConnecting");
         }
 
         /// <summary>
@@ -532,35 +467,31 @@ namespace Slimcat.ViewModels
         /// </returns>
         public int OnlineCountPrime()
         {
-            return this.ChatModel.OnlineCharacters.Count();
+            return ChatModel.OnlineCharacters.Count();
         }
 
         /// <summary>
-        /// The update connect text.
+        ///     The update connect text.
         /// </summary>
         /// <param name="sender">
-        /// The sender.
+        ///     The sender.
         /// </param>
         /// <param name="e">
-        /// The e.
+        ///     The e.
         /// </param>
         public void UpdateConnectText(object sender, EventArgs e)
         {
-            if (this.ChatModel.IsAuthenticated)
-            {
+            if (ChatModel.IsAuthenticated)
                 return;
-            }
 
-            this.ConnectTime++;
+            ConnectTime++;
 
-            if (this.connectDotDot.Length >= 3)
-            {
-                this.connectDotDot.Clear();
-            }
+            if (connectDotDot.Length >= 3)
+                connectDotDot.Clear();
 
-            this.connectDotDot.Append('.');
+            connectDotDot.Append('.');
 
-            this.OnPropertyChanged("ConnectFlavorText");
+            OnPropertyChanged("ConnectFlavorText");
         }
 
         #endregion
@@ -568,23 +499,21 @@ namespace Slimcat.ViewModels
         #region Methods
 
         /// <summary>
-        /// The dispose.
+        ///     The dispose.
         /// </summary>
         /// <param name="isManaged">
-        /// The is managed dispose.
+        ///     The is managed dispose.
         /// </param>
         protected override void Dispose(bool isManaged)
         {
-            this.Dispose();
+            Dispose();
 
             if (!isManaged)
-            {
                 return;
-            }
 
-            this.updateTimer.Dispose();
-            this.minuteOnlineCount.Dispose();
-            this.Model = null;
+            updateTimer.Dispose();
+            minuteOnlineCount.Dispose();
+            Model = null;
         }
 
         /// <summary>
@@ -592,7 +521,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         protected override void SendMessage()
         {
-            this.UpdateError("Cannot send messages to this channel!");
+            UpdateError("Cannot send messages to this channel!");
         }
 
         #endregion

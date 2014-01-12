@@ -1,49 +1,40 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ToastNotificationsViewModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   A light-weight viewmodel for toastnofications
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ToastNotificationsViewModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.ViewModels
 {
+    #region Usings
+
     using System;
     using System.Timers;
     using System.Windows.Input;
-
+    using Libraries;
     using Microsoft.Practices.Prism.Events;
+    using Models;
+    using Views;
 
-    using Slimcat;
-    using Slimcat.Libraries;
-    using Slimcat.Models;
-    using Slimcat.Views;
+    #endregion
 
     /// <summary>
     ///     A light-weight viewmodel for toastnofications
     /// </summary>
-    public sealed class ToastNotificationsViewModel : SysProp, IDisposable
+    public sealed class ToastNotificationsViewModel : SysProp
     {
         #region Constants
 
@@ -70,15 +61,15 @@ namespace Slimcat.ViewModels
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ToastNotificationsViewModel"/> class.
+        ///     Initializes a new instance of the <see cref="ToastNotificationsViewModel" /> class.
         /// </summary>
         /// <param name="eventAgg">
-        /// The _event agg.
+        ///     The _event agg.
         /// </param>
         public ToastNotificationsViewModel(IEventAggregator eventAgg)
         {
-            this.hideDelay.Elapsed += (s, e) => this.HideNotifications();
-            this.events = eventAgg;
+            hideDelay.Elapsed += (s, e) => HideNotifications();
+            events = eventAgg;
         }
 
         #endregion
@@ -90,25 +81,20 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string Content
         {
-            get
-            {
-                return this.content;
-            }
+            get { return content; }
 
             private set
             {
                 if (value.Length < CutoffLength)
-                {
-                    this.content = value;
-                }
+                    content = value;
                 else
                 {
                     var brevity = value.Substring(0, CutoffLength);
                     brevity += " ...";
-                    this.content = brevity;
+                    content = brevity;
                 }
 
-                this.OnPropertyChanged("Content");
+                OnPropertyChanged("Content");
             }
         }
 
@@ -117,10 +103,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICommand HideCommand
         {
-            get
-            {
-                return this.hide ?? (this.hide = new RelayCommand(args => this.HideNotifications()));
-            }
+            get { return hide ?? (hide = new RelayCommand(args => HideNotifications())); }
         }
 
         /// <summary>
@@ -133,10 +116,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICommand SnapToLatestCommand
         {
-            get
-            {
-                return this.snap ?? (this.snap = new RelayCommand(this.OnSnapToLatestEvent));
-            }
+            get { return snap ?? (snap = new RelayCommand(OnSnapToLatestEvent)); }
         }
 
         /// <summary>
@@ -153,36 +133,32 @@ namespace Slimcat.ViewModels
         /// </summary>
         public void HideNotifications()
         {
-            this.Dispatcher.Invoke(
-                (Action)delegate
+            Dispatcher.Invoke(
+                (Action) delegate
                     {
-                        this.view.OnHideCommand();
-                        this.hideDelay.Stop();
+                        view.OnHideCommand();
+                        hideDelay.Stop();
                     });
         }
 
         /// <summary>
-        /// The on snap to latest event.
+        ///     The on snap to latest event.
         /// </summary>
         /// <param name="args">
-        /// The args.
+        ///     The args.
         /// </param>
         public void OnSnapToLatestEvent(object args)
         {
             var toSend = CommandDefinitions.CreateCommand("lastupdate").ToDictionary();
 
-            if (this.Target != null)
-            {
-                toSend.Add("target", this.Target);
-            }
+            if (Target != null)
+                toSend.Add("target", Target);
 
-            if (this.Kind != null)
-            {
-                toSend.Add("kind", this.Kind);
-            }
+            if (Kind != null)
+                toSend.Add("kind", Kind);
 
-            this.HideNotifications();
-            this.events.GetEvent<UserCommandEvent>().Publish(toSend);
+            HideNotifications();
+            events.GetEvent<UserCommandEvent>().Publish(toSend);
         }
 
         /// <summary>
@@ -190,27 +166,25 @@ namespace Slimcat.ViewModels
         /// </summary>
         public void ShowNotifications()
         {
-            this.hideDelay.Stop();
-            if (this.view == null)
-            {
-                this.view = new NotificationsView(this);
-            }
+            hideDelay.Stop();
+            if (view == null)
+                view = new NotificationsView(this);
 
-            this.Dispatcher.Invoke((Action)(() => this.view.OnShowCommand()));
-            this.hideDelay.Start();
+            Dispatcher.Invoke((Action) (() => view.OnShowCommand()));
+            hideDelay.Start();
         }
 
         /// <summary>
-        /// The update notification.
+        ///     The update notification.
         /// </summary>
         /// <param name="newContent">
-        /// The content.
+        ///     The content.
         /// </param>
         public void UpdateNotification(string newContent)
         {
-            this.Content = newContent;
-            this.ShowNotifications();
-            this.view.OnContentChanged();
+            Content = newContent;
+            ShowNotifications();
+            view.OnContentChanged();
         }
 
         #endregion
@@ -221,9 +195,9 @@ namespace Slimcat.ViewModels
         {
             if (!isManaged)
             {
-                this.hideDelay.Dispose();
-                this.view.Close();
-                this.view = null;
+                hideDelay.Dispose();
+                view.Close();
+                view = null;
             }
 
             base.Dispose(isManaged);

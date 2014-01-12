@@ -1,37 +1,30 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MessageModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   The message base.
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MessageModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.Models
 {
-    using System.Windows.Documents;
+    #region Usings
 
-    using Slimcat.Views;
+    using System.Windows.Documents;
+    using Views;
+
+    #endregion
 
     /// <summary>
     ///     A model to hold data on messages
@@ -41,39 +34,39 @@ namespace Slimcat.Models
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MessageModel"/> class.
+        ///     Initializes a new instance of the <see cref="MessageModel" /> class.
         /// </summary>
         /// <param name="poster">
-        /// The character which posted the message
+        ///     The character which posted the message
         /// </param>
         /// <param name="message">
-        /// The message posted
+        ///     The message posted
         /// </param>
         /// <param name="type">
-        /// The type of message posted
+        ///     The type of message posted
         /// </param>
         public MessageModel(ICharacter poster, string message, MessageType type = MessageType.Normal)
         {
-            this.Poster = poster;
-            this.Message = message;
-            this.Type = type;
+            Poster = poster;
+            Message = message;
+            Type = type;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MessageModel"/> class.
+        ///     Initializes a new instance of the <see cref="MessageModel" /> class.
         /// </summary>
         /// <param name="message">
-        /// The message posted at a previous date
+        ///     The message posted at a previous date
         /// </param>
         public MessageModel(string message)
         {
-            this.Poster = new CharacterModel { Name = string.Empty };
-            this.IsHistoryMessage = true;
-            this.Type = message.StartsWith("[") 
-                ? MessageType.Normal 
+            Poster = new CharacterModel {Name = string.Empty};
+            IsHistoryMessage = true;
+            Type = message.StartsWith("[")
+                ? MessageType.Normal
                 : MessageType.Ad;
 
-            this.Message = message;
+            Message = message;
         }
 
         #endregion
@@ -105,12 +98,10 @@ namespace Slimcat.Models
         {
             get
             {
-                if (this.IsHistoryMessage)
-                {
-                    return new HistoryView { DataContext = this.Message };
-                }
+                if (IsHistoryMessage)
+                    return new HistoryView {DataContext = Message};
 
-                return new MessageView { DataContext = this };
+                return new MessageView {DataContext = this};
             }
         }
 
@@ -121,11 +112,9 @@ namespace Slimcat.Models
         protected override void Dispose(bool isManaged)
         {
             if (!isManaged)
-            {
                 return;
-            }
 
-            this.Poster = null;
+            Poster = null;
         }
 
         #endregion

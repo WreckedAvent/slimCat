@@ -3,14 +3,14 @@
            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
            xmlns:lib="clr-namespace:Slimcat.Libraries" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-           xmlns:models="clr-namespace:Slimcat.Models" mc:Ignorable="d"
+           xmlns:models="clr-namespace:Slimcat.Models"
+           mc:Ignorable="d"
            Margin="0,2"
            Padding="0"
            Foreground="{StaticResource ForegroundBrush}"
            FontFamily="Segoe UI, Verdanda"
-           FontSize="13" 
+           FontSize="13"
            d:DataContext="{models:IMessage}">
-    
     <Run Text="{Binding TimeStamp, Mode=OneTime}" 
          Foreground="{StaticResource HighlightBrush}"
          FontSize="12" />
@@ -19,8 +19,8 @@
         <Rectangle Height="15" Width="15" Margin="0">
             <Rectangle.Fill>
                 <MultiBinding Converter="{StaticResource GenderColorConverter}" Mode="OneWay">
-                    <Binding Path="Poster.Gender"/>
-                    <Binding Path="Poster.IsInteresting"/>
+                    <Binding Path="Poster.Gender" />
+                    <Binding Path="Poster.IsInteresting" />
                 </MultiBinding>
             </Rectangle.Fill>
             <Rectangle.OpacityMask>
@@ -48,5 +48,6 @@
         </Hyperlink.InputBindings>
     </Hyperlink>
 
-    <Span lib:SpanHelper.InlineSource="{Binding Message, Mode=OneTime, Converter={StaticResource BBFlowConverter}, IsAsync=True}"/>
+    <Span
+        lib:SpanHelper.InlineSource="{Binding Message, Mode=OneTime, Converter={StaticResource BbFlowConverter}, IsAsync=True}" />
 </Paragraph>

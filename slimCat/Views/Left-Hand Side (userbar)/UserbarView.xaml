@@ -4,7 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             xmlns:vm="clr-namespace:Slimcat.ViewModels" 
+             xmlns:vm="clr-namespace:Slimcat.ViewModels"
              xmlns:v="clr-namespace:Slimcat.Views"
 
              d:DataContext="{d:DesignInstance vm:UserbarViewModel}">
@@ -34,7 +34,7 @@
                     x:Name="PopupAnchor"
                     HorizontalAlignment="Stretch">
                 <DockPanel>
-                    <Image Source="{Binding Path=ChatModel.CurrentCharacter.Avatar}"
+                    <Image Source="{Binding Path=ChatModel.CurrentCharacter.Avatar, Mode=OneWay}"
                            Height="75"
                            Width="75" />
                     <Grid Margin="5,-5,0,0"
@@ -47,20 +47,19 @@
                             <RowDefinition Height="20" />
                         </Grid.RowDefinitions>
 
-                        <TextBlock Text="{Binding Path=ChatModel.CurrentCharacter.Name}"
+                        <TextBlock Text="{Binding Path=ChatModel.CurrentCharacter.Name, Mode=OneWay}"
                                    HorizontalAlignment="Right"
                                    TextAlignment="Right"
                                    MaxWidth="100"
                                    TextWrapping="Wrap"
                                    FontSize="20" />
 
-                        <Button Content="{Binding Path=ChatModel.CurrentCharacter.Status}"
+                        <Button Content="{Binding Path=ChatModel.CurrentCharacter.Status, Mode=OneWay}"
                                 Grid.Row="1"
                                 VerticalAlignment="Top"
                                 HorizontalAlignment="Right"
                                 Style="{StaticResource ImageContentButton}"
                                 Command="{Binding ToggleStatusWindowCommand}"
-                                Padding="0"
                                 FontSize="16" />
 
                         <WrapPanel HorizontalAlignment="Right"
@@ -90,6 +89,7 @@
 
             <Popup IsOpen="{Binding Path=IsChangingStatus, Mode=OneWay}"
                    PlacementTarget="{Binding ElementName=PopupAnchor}"
+                   Grid.Row="0"
                    Placement="Center">
                 <Border BorderBrush="{StaticResource HighlightBrush}"
                         BorderThickness="1">
@@ -109,7 +109,7 @@
                                   FontSize="12" />
 
                         <TextBox
-                            Text="{Binding Path=ChatModel.CurrentCharacter.StatusMessage, UpdateSourceTrigger=PropertyChanged}"
+                            Text="{Binding Path=ChatModel.CurrentCharacter.StatusMessage, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                             FontSize="12"
                             TextWrapping="Wrap"
                             MaxWidth="200"
@@ -128,8 +128,7 @@
                 <StackPanel>
                     <Expander Header="Conversations"
                               IsExpanded="{Binding Path=PmsAreExpanded}"
-                              Visibility="{Binding Path=HasPms, Converter={StaticResource BoolConverter}}"
-                              Grid.Row="1">
+                              Visibility="{Binding Path=HasPms, Converter={StaticResource BoolConverter}}">
                         <ListBox ItemsSource="{Binding Path=ChatModel.CurrentPms, Mode=OneWay}"
                                  HorizontalContentAlignment="Stretch"
                                  SelectedIndex="{Binding Path=PmSelected, Mode=TwoWay}">
@@ -141,8 +140,7 @@
                         </ListBox>
                     </Expander>
                     <Expander Header="Channels"
-                              IsExpanded="{Binding Path=ChannelsAreExpanded}"
-                              Grid.Row="2">
+                              IsExpanded="{Binding Path=ChannelsAreExpanded}">
                         <ListBox ItemsSource="{Binding Path=ChatModel.CurrentChannels, Mode=OneWay}"
                                  HorizontalContentAlignment="Stretch"
                                  SelectedIndex="{Binding Path=ChannelSelected, Mode=TwoWay}">

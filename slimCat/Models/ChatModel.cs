@@ -1,43 +1,36 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ChatModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   Contains most chat data which spans channels. Channel-wide UI binds to this.
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ChatModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.Models
 {
+    #region Usings
+
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using Services;
+    using Utilities;
+    using ViewModels;
 
-    using Slimcat.Services;
-    using Slimcat.Utilities;
-    using Slimcat.ViewModels;
+    #endregion
 
     /// <summary>
     ///     Contains most chat data which spans channels. Channel-wide UI binds to this.
@@ -56,7 +49,8 @@ namespace Slimcat.Models
         private readonly ObservableCollection<NotificationModel> notifications =
             new ObservableCollection<NotificationModel>();
 
-        private readonly IDictionary<string, ICharacter> onlineCharacters = new ConcurrentDictionary<string, ICharacter>(StringComparer.OrdinalIgnoreCase);
+        private readonly IDictionary<string, ICharacter> onlineCharacters =
+            new ConcurrentDictionary<string, ICharacter>(StringComparer.OrdinalIgnoreCase);
 
         private readonly ObservableCollection<GeneralChannelModel> ourChannels =
             new ObservableCollection<GeneralChannelModel>();
@@ -64,6 +58,9 @@ namespace Slimcat.Models
         private readonly ObservableCollection<PmChannelModel> pms = new ObservableCollection<PmChannelModel>();
 
         private IAccount account;
+        private ChannelModel currentChannel;
+
+        private ICharacter currentCharacter;
 
         private bool isAuthenticated;
 
@@ -77,10 +74,6 @@ namespace Slimcat.Models
         private IList<ICharacter> onlineFriendCache;
 
         private IList<ICharacter> onlineModsCache;
-
-        private ChannelModel currentChannel;
-
-        private ICharacter currentCharacter;
 
         #endregion
 
@@ -96,14 +89,19 @@ namespace Slimcat.Models
         #region Public Properties
 
         /// <summary>
+        ///     Gets the online characters dictionary.
+        /// </summary>
+        private IDictionary<string, ICharacter> OnlineCharactersDictionary
+        {
+            get { return onlineCharacters; }
+        }
+
+        /// <summary>
         ///     Gets the all channels.
         /// </summary>
         public ObservableCollection<GeneralChannelModel> AllChannels
         {
-            get
-            {
-                return this.channels;
-            }
+            get { return channels; }
         }
 
         /// <summary>
@@ -111,10 +109,7 @@ namespace Slimcat.Models
         /// </summary>
         public IList<string> Bookmarks
         {
-            get
-            {
-                return this.CurrentAccount.Bookmarks;
-            }
+            get { return CurrentAccount.Bookmarks; }
         }
 
         /// <summary>
@@ -127,10 +122,7 @@ namespace Slimcat.Models
         /// </summary>
         public ObservableCollection<GeneralChannelModel> CurrentChannels
         {
-            get
-            {
-                return this.ourChannels;
-            }
+            get { return ourChannels; }
         }
 
         /// <summary>
@@ -138,10 +130,7 @@ namespace Slimcat.Models
         /// </summary>
         public ObservableCollection<PmChannelModel> CurrentPms
         {
-            get
-            {
-                return this.pms;
-            }
+            get { return pms; }
         }
 
         /// <summary>
@@ -153,15 +142,15 @@ namespace Slimcat.Models
             {
                 if (ApplicationSettings.FriendsAreAccountWide)
                 {
-                    return this.CurrentAccount.AllFriends
+                    return CurrentAccount.AllFriends
                         .Select(pair => pair.Key)
                         .Distinct()
                         .ToList();
                 }
 
                 return
-                    this.CurrentAccount.AllFriends
-                        .Where(pair => pair.Value.Contains(this.CurrentCharacter.Name))
+                    CurrentAccount.AllFriends
+                        .Where(pair => pair.Value.Contains(CurrentCharacter.Name))
                         .Select(pair => pair.Key)
                         .ToList();
             }
@@ -172,10 +161,7 @@ namespace Slimcat.Models
         /// </summary>
         public IList<string> Ignored
         {
-            get
-            {
-                return this.ignored;
-            }
+            get { return ignored; }
         }
 
         /// <summary>
@@ -183,10 +169,7 @@ namespace Slimcat.Models
         /// </summary>
         public IList<string> Interested
         {
-            get
-            {
-                return ApplicationSettings.Interested;
-            }
+            get { return ApplicationSettings.Interested; }
         }
 
         /// <summary>
@@ -194,15 +177,12 @@ namespace Slimcat.Models
         /// </summary>
         public bool IsAuthenticated
         {
-            get
-            {
-                return this.isAuthenticated;
-            }
+            get { return isAuthenticated; }
 
             set
             {
-                this.isAuthenticated = value;
-                this.OnPropertyChanged("IsAuthenticated");
+                isAuthenticated = value;
+                OnPropertyChanged("IsAuthenticated");
             }
         }
 
@@ -221,10 +201,7 @@ namespace Slimcat.Models
         /// </summary>
         public IList<string> Mods
         {
-            get
-            {
-                return this.globalMods;
-            }
+            get { return globalMods; }
         }
 
         /// <summary>
@@ -232,10 +209,7 @@ namespace Slimcat.Models
         /// </summary>
         public IList<string> NotInterested
         {
-            get
-            {
-                return ApplicationSettings.NotInterested;
-            }
+            get { return ApplicationSettings.NotInterested; }
         }
 
         /// <summary>
@@ -243,10 +217,7 @@ namespace Slimcat.Models
         /// </summary>
         public ObservableCollection<NotificationModel> Notifications
         {
-            get
-            {
-                return this.notifications;
-            }
+            get { return notifications; }
         }
 
         /// <summary>
@@ -256,14 +227,15 @@ namespace Slimcat.Models
         {
             get
             {
-                return this.onlineBookmarkCache
-                       ?? (this.onlineBookmarkCache =
-                           this.OnlineCharacters.Where(
+                return onlineBookmarkCache
+                       ?? (onlineBookmarkCache =
+                           OnlineCharacters.Where(
                                character =>
-                               this.Bookmarks.Any(
-                                   bookmark =>
-                                   (character != null
-                                    && character.Name.Equals(bookmark, StringComparison.OrdinalIgnoreCase)))).ToList());
+                                   Bookmarks.Any(
+                                       bookmark =>
+                                           (character != null
+                                            && character.Name.Equals(bookmark, StringComparison.OrdinalIgnoreCase))))
+                               .ToList());
             }
         }
 
@@ -274,8 +246,8 @@ namespace Slimcat.Models
         {
             get
             {
-                return this.onlineCharactersCache
-                       ?? (this.onlineCharactersCache = this.OnlineCharactersDictionary.Values.ToList());
+                return onlineCharactersCache
+                       ?? (onlineCharactersCache = OnlineCharactersDictionary.Values.ToList());
             }
         }
 
@@ -286,17 +258,17 @@ namespace Slimcat.Models
         {
             get
             {
-                if (this.onlineFriendCache == null && this.Friends != null)
+                if (onlineFriendCache == null && Friends != null)
                 {
-                    this.onlineFriendCache =
-                        this.OnlineCharacters.Where(
+                    onlineFriendCache =
+                        OnlineCharacters.Where(
                             character =>
-                            this.Friends.Any(
-                                friend => character.Name.Equals(friend, StringComparison.OrdinalIgnoreCase)))
+                                Friends.Any(
+                                    friend => character.Name.Equals(friend, StringComparison.OrdinalIgnoreCase)))
                             .ToList();
                 }
 
-                return this.onlineFriendCache;
+                return onlineFriendCache;
             }
         }
 
@@ -307,13 +279,14 @@ namespace Slimcat.Models
         {
             get
             {
-                return this.onlineModsCache
-                       ?? (this.onlineModsCache =
-                           this.OnlineCharacters.Where(
+                return onlineModsCache
+                       ?? (onlineModsCache =
+                           OnlineCharacters.Where(
                                character =>
-                               (character != null
-                                && this.globalMods.Any(
-                                    mod => mod.Equals(character.Name, StringComparison.OrdinalIgnoreCase)))).ToList());
+                                   (character != null
+                                    && globalMods.Any(
+                                        mod => mod.Equals(character.Name, StringComparison.OrdinalIgnoreCase))))
+                               .ToList());
             }
         }
 
@@ -322,15 +295,12 @@ namespace Slimcat.Models
         /// </summary>
         public IAccount CurrentAccount
         {
-            get
-            {
-                return this.account;
-            }
+            get { return account; }
 
             set
             {
-                this.account = value;
-                this.OnPropertyChanged("OurAccount");
+                account = value;
+                OnPropertyChanged("OurAccount");
             }
         }
 
@@ -339,26 +309,19 @@ namespace Slimcat.Models
         /// </summary>
         public ChannelModel CurrentChannel
         {
-            get
-            {
-                return this.currentChannel;
-            }
+            get { return currentChannel; }
 
             set
             {
-                if (this.currentChannel == value || value == null)
-                {
+                if (currentChannel == value || value == null)
                     return;
-                }
 
-                this.currentChannel = value;
+                currentChannel = value;
 
-                if (this.SelectedChannelChanged != null)
-                {
-                    this.SelectedChannelChanged(this, new EventArgs());
-                }
+                if (SelectedChannelChanged != null)
+                    SelectedChannelChanged(this, new EventArgs());
 
-                this.OnPropertyChanged("CurrentChannel");
+                OnPropertyChanged("CurrentChannel");
             }
         }
 
@@ -367,15 +330,12 @@ namespace Slimcat.Models
         /// </summary>
         public ICharacter CurrentCharacter
         {
-            get
-            {
-                return this.currentCharacter;
-            }
+            get { return currentCharacter; }
 
             set
             {
-                this.currentCharacter = value;
-                this.OnPropertyChanged("CurrentCharacter");
+                currentCharacter = value;
+                OnPropertyChanged("CurrentCharacter");
             }
         }
 
@@ -384,34 +344,24 @@ namespace Slimcat.Models
         /// </summary>
         public DateTimeOffset ServerUpTime { get; set; }
 
-        /// <summary>
-        ///     Gets the online characters dictionary.
-        /// </summary>
-        private IDictionary<string, ICharacter> OnlineCharactersDictionary
-        {
-            get
-            {
-                return this.onlineCharacters;
-            }
-        }
         #endregion
 
         #region Public Methods and Operators
 
         /// <summary>
-        /// The add character.
+        ///     The add character.
         /// </summary>
         /// <param name="character">
-        /// The character.
+        ///     The character.
         /// </param>
         public void AddCharacter(ICharacter character)
         {
             try
             {
-                character.IsInteresting = this.IsOfInterest(character.Name);
-                this.OnlineCharactersDictionary.Add(character.Name, character);
-                this.UpdateCharacterList(this.IsOfInterest(character.Name));
-                this.UpdateBindings(character.Name);
+                character.IsInteresting = IsOfInterest(character.Name);
+                OnlineCharactersDictionary.Add(character.Name, character);
+                UpdateCharacterList(IsOfInterest(character.Name));
+                UpdateBindings(character.Name);
             }
             catch
             {
@@ -420,76 +370,74 @@ namespace Slimcat.Models
         }
 
         /// <summary>
-        /// The find character.
+        ///     The find character.
         /// </summary>
         /// <param name="name">
-        /// The name.
+        ///     The name.
         /// </param>
         /// <returns>
-        /// The <see cref="ICharacter"/>.
+        ///     The <see cref="ICharacter" />.
         /// </returns>
         public ICharacter FindCharacter(string name)
         {
-            if (this.IsOnline(name))
-            {
-                return this.OnlineCharactersDictionary[name];
-            }
+            if (IsOnline(name))
+                return OnlineCharactersDictionary[name];
 
             Console.WriteLine("Unknown character: " + name);
-            return new CharacterModel { Name = name, Status = StatusType.Offline };
+            return new CharacterModel {Name = name, Status = StatusType.Offline};
         }
 
         public ChannelModel FindChannel(string id, string title = null)
         {
-            var channel = this.AllChannels.FirstByIdOrDefault(id);
+            var channel = AllChannels.FirstByIdOrDefault(id);
 
-            return channel ?? new GeneralChannelModel(id, ChannelType.InviteOnly) { Title = title };
+            return channel ?? new GeneralChannelModel(id, ChannelType.InviteOnly) {Title = title};
         }
 
         /// <summary>
-        /// The is of interest.
+        ///     The is of interest.
         /// </summary>
         /// <param name="character">
-        /// The character.
+        ///     The character.
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         public bool IsOfInterest(string character)
         {
-            return (this.Bookmarks.Any(bookmark => bookmark.Equals(character, StringComparison.OrdinalIgnoreCase))
-                    || this.Friends.Any(friend => friend.Equals(character, StringComparison.OrdinalIgnoreCase))
-                    || this.Interested.Any(interest => interest.Equals(character, StringComparison.OrdinalIgnoreCase)))
-                   || this.CurrentPms.Any(pm => pm.Id.Equals(character, StringComparison.OrdinalIgnoreCase));
+            return (Bookmarks.Any(bookmark => bookmark.Equals(character, StringComparison.OrdinalIgnoreCase))
+                    || Friends.Any(friend => friend.Equals(character, StringComparison.OrdinalIgnoreCase))
+                    || Interested.Any(interest => interest.Equals(character, StringComparison.OrdinalIgnoreCase)))
+                   || CurrentPms.Any(pm => pm.Id.Equals(character, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
-        /// The is online.
+        ///     The is online.
         /// </summary>
         /// <param name="name">
-        /// The name.
+        ///     The name.
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         public bool IsOnline(string name)
         {
-            return name != null && this.OnlineCharactersDictionary.ContainsKey(name);
+            return name != null && OnlineCharactersDictionary.ContainsKey(name);
         }
 
         /// <summary>
-        /// The remove character.
+        ///     The remove character.
         /// </summary>
         /// <param name="character">
-        /// The character.
+        ///     The character.
         /// </param>
         public void RemoveCharacter(string character)
         {
             try
             {
-                this.OnlineCharactersDictionary.Remove(character);
-                this.UpdateCharacterList(this.IsOfInterest(character));
-                this.UpdateBindings(character);
+                OnlineCharactersDictionary.Remove(character);
+                UpdateCharacterList(IsOfInterest(character));
+                UpdateBindings(character);
             }
             catch
             {
@@ -498,117 +446,112 @@ namespace Slimcat.Models
         }
 
         /// <summary>
-        /// The toggle interested mark.
+        ///     The toggle interested mark.
         /// </summary>
         /// <param name="character">
-        /// The character.
+        ///     The character.
         /// </param>
         public void ToggleInterestedMark(string character)
         {
-            var target = this.FindCharacter(character);
-            if (!this.Interested.Contains(character))
+            var target = FindCharacter(character);
+            if (!Interested.Contains(character))
             {
-                this.Interested.Add(character);
+                Interested.Add(character);
                 target.IsInteresting = true;
-                if (this.NotInterested.Contains(character))
-                {
-                    this.NotInterested.Remove(character);
-                }
+                if (NotInterested.Contains(character))
+                    NotInterested.Remove(character);
             }
             else
             {
-                this.Interested.Remove(character);
-                target.IsInteresting = this.IsOfInterest(character);
+                Interested.Remove(character);
+                target.IsInteresting = IsOfInterest(character);
             }
 
-            SettingsDaemon.SaveApplicationSettingsToXml(this.CurrentCharacter.Name);
+            SettingsDaemon.SaveApplicationSettingsToXml(CurrentCharacter.Name);
         }
 
         /// <summary>
-        /// The toggle not interested mark.
+        ///     The toggle not interested mark.
         /// </summary>
         /// <param name="character">
-        /// The character.
+        ///     The character.
         /// </param>
         public void ToggleNotInterestedMark(string character)
         {
-            if (!this.NotInterested.Contains(character))
+            if (!NotInterested.Contains(character))
             {
-                this.NotInterested.Add(character);
-                if (this.Interested.Contains(character))
+                NotInterested.Add(character);
+                if (Interested.Contains(character))
                 {
-                    this.Interested.Remove(character);
-                    this.FindCharacter(character).IsInteresting = this.IsOfInterest(character);
+                    Interested.Remove(character);
+                    FindCharacter(character).IsInteresting = IsOfInterest(character);
                 }
             }
             else
             {
-                this.NotInterested.Remove(character);
-                this.FindCharacter(character).IsInteresting = this.IsOfInterest(character);
+                NotInterested.Remove(character);
+                FindCharacter(character).IsInteresting = IsOfInterest(character);
             }
 
-            SettingsDaemon.SaveApplicationSettingsToXml(this.CurrentCharacter.Name);
+            SettingsDaemon.SaveApplicationSettingsToXml(CurrentCharacter.Name);
         }
 
         public void FriendsChanged()
         {
-            this.onlineFriendCache = null;
-            this.OnPropertyChanged("Friends");
-            this.OnPropertyChanged("OnlineFriends");
+            onlineFriendCache = null;
+            OnPropertyChanged("Friends");
+            OnPropertyChanged("OnlineFriends");
         }
 
         public void Wipe()
         {
             Dispatcher.Invoke(
-                (Action)delegate
+                (Action) delegate
                     {
-                        this.onlineCharactersCache = null;
+                        onlineCharactersCache = null;
 
-                        this.channels.Clear();
-                        this.onlineCharacters.Clear();
+                        channels.Clear();
+                        onlineCharacters.Clear();
 
-                        this.onlineModsCache = null;
-                        this.onlineBookmarkCache = null;
-                        this.onlineFriendCache = null;
+                        onlineModsCache = null;
+                        onlineBookmarkCache = null;
+                        onlineFriendCache = null;
                     });
         }
+
         #endregion
 
         #region Methods
 
         private void UpdateBindings(string name)
         {
-            if (this.Bookmarks.Contains(name))
+            if (Bookmarks.Contains(name))
             {
-                this.onlineBookmarkCache = null;
-                this.OnPropertyChanged("OnlineBookmarks");
+                onlineBookmarkCache = null;
+                OnPropertyChanged("OnlineBookmarks");
             }
 
-            if (this.Friends.Contains(name))
+            if (Friends.Contains(name))
             {
-                this.onlineFriendCache = null;
-                this.OnPropertyChanged("OnlineFriends");
+                onlineFriendCache = null;
+                OnPropertyChanged("OnlineFriends");
             }
 
-            if (!this.Mods.Contains(name))
-            {
+            if (!Mods.Contains(name))
                 return;
-            }
 
-            this.onlineModsCache = null;
-            this.OnPropertyChanged("OnlineGlobalMods");
+            onlineModsCache = null;
+            OnPropertyChanged("OnlineGlobalMods");
         }
 
         private void UpdateCharacterList(bool force)
         {
-            if (!force && this.lastCharacterListCache.AddSeconds(15) >= DateTime.Now)
-            {
+            if (!force && lastCharacterListCache.AddSeconds(15) >= DateTime.Now)
                 return;
-            }
 
-            this.onlineCharactersCache = this.onlineCharacters.Values.ToList();
-            this.lastCharacterListCache = DateTime.Now;
-            this.OnPropertyChanged("OnlineCharacters");
+            onlineCharactersCache = onlineCharacters.Values.ToList();
+            lastCharacterListCache = DateTime.Now;
+            OnPropertyChanged("OnlineCharacters");
         }
 
         #endregion

@@ -40,7 +40,7 @@
                     <lib:TextBlockHelper.InlineList>
                         <Binding Path="Content"
                                  Mode="OneWay"
-                                 Converter="{StaticResource BBCodeConverter}" />
+                                 Converter="{StaticResource BbCodeConverter}" />
                     </lib:TextBlockHelper.InlineList>
                 </TextBlock>
             </StackPanel>

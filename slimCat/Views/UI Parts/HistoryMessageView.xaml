@@ -7,5 +7,6 @@
            Foreground="{StaticResource HistoryBrush}"
            FontFamily="Segoe UI, Verdanda"
            FontSize="13">
-    <Span lib:SpanHelper.InlineSource="{Binding Mode=OneTime, Converter={StaticResource BBCodeConverter}, IsAsync=True}"/>
+    <Span
+        lib:SpanHelper.InlineSource="{Binding Mode=OneTime, Converter={StaticResource BbCodeConverter}, IsAsync=True}" />
 </Paragraph>

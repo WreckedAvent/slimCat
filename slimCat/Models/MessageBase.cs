@@ -1,8 +1,30 @@
-﻿namespace Slimcat.Models
-{
-    using System;
+﻿#region Copyright
 
-    using Slimcat.Utilities;
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MessageBase.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace Slimcat.Models
+{
+    #region Usings
+
+    using System;
+    using Utilities;
+
+    #endregion
 
     /// <summary>
     ///     The message base.
@@ -22,7 +44,7 @@
         /// </summary>
         protected MessageBase()
         {
-            this.posted = DateTimeOffset.Now;
+            posted = DateTimeOffset.Now;
         }
 
         #endregion
@@ -34,10 +56,7 @@
         /// </summary>
         public DateTimeOffset PostedTime
         {
-            get
-            {
-                return this.posted;
-            }
+            get { return posted; }
         }
 
         /// <summary>
@@ -45,10 +64,7 @@
         /// </summary>
         public string TimeStamp
         {
-            get
-            {
-                return this.posted.ToTimeStamp();
-            }
+            get { return posted.ToTimeStamp(); }
         }
 
         #endregion
@@ -60,7 +76,7 @@
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
         }
 
         #endregion

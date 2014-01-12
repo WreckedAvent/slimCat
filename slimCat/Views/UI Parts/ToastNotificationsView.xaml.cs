@@ -1,40 +1,52 @@
-﻿namespace Slimcat.Views
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ToastNotificationsView.xaml.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace Slimcat.Views
 {
+    #region Usings
+
     using System;
     using System.Windows;
     using System.Windows.Forms;
     using System.Windows.Media.Animation;
     using System.Windows.Threading;
+    using ViewModels;
 
-    using Slimcat.ViewModels;
-
-    using Point = System.Windows.Point;
+    #endregion
 
     /// <summary>
     ///     Interaction logic for NotificationsView.xaml
     /// </summary>
     public partial class NotificationsView
     {
-        #region Fields
-
-        private readonly ToastNotificationsViewModel vm;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotificationsView"/> class.
+        ///     Initializes a new instance of the <see cref="NotificationsView" /> class.
         /// </summary>
         /// <param name="vm">
-        /// The vm.
+        ///     The vm.
         /// </param>
         public NotificationsView(ToastNotificationsViewModel vm)
         {
-            this.InitializeComponent();
-
-            this.vm = vm;
-            this.DataContext = this.vm;
+            InitializeComponent();
+            DataContext = vm;
         }
 
         #endregion
@@ -46,17 +58,22 @@
         /// </summary>
         public void OnContentChanged()
         {
-            this.Dispatcher.BeginInvoke(
-                DispatcherPriority.ApplicationIdle, 
+            Dispatcher.BeginInvoke(
+                DispatcherPriority.ApplicationIdle,
                 new Action(
                     () =>
                         {
                             var workingArea = Screen.PrimaryScreen.WorkingArea;
-                            var transform = PresentationSource.FromVisual(this).CompositionTarget.TransformFromDevice;
+                            var presentationSource = PresentationSource.FromVisual(this);
+                            if (presentationSource == null
+                                || presentationSource.CompositionTarget == null)
+                                return;
+
+                            var transform = presentationSource.CompositionTarget.TransformFromDevice;
                             var corner = transform.Transform(new Point(workingArea.Right, workingArea.Bottom));
 
-                            this.Left = corner.X - this.ActualWidth;
-                            this.Top = corner.Y - this.ActualHeight;
+                            Left = corner.X - ActualWidth;
+                            Top = corner.Y - ActualHeight;
                         }));
         }
 
@@ -65,15 +82,15 @@
         /// </summary>
         public void OnHideCommand()
         {
-            var fadeOut = this.FindResource("FadeOutAnimation") as Storyboard;
+            var fadeOut = FindResource("FadeOutAnimation") as Storyboard;
             if (fadeOut == null)
             {
-                this.Hide();
+                Hide();
                 return;
             }
 
             fadeOut = fadeOut.Clone();
-            fadeOut.Completed += (s, e) => this.Hide();
+            fadeOut.Completed += (s, e) => Hide();
 
             fadeOut.Begin(this);
         }
@@ -83,9 +100,11 @@
         /// </summary>
         public void OnShowCommand()
         {
-            this.Show();
-            var fadeIn = this.FindResource("FadeInAnimation") as Storyboard;
-            fadeIn.Begin(this);
+            Show();
+            var fadeIn = FindResource("FadeInAnimation") as Storyboard;
+
+            if (fadeIn != null)
+                fadeIn.Begin(this);
         }
 
         #endregion

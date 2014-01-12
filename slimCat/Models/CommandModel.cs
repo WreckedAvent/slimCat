@@ -1,35 +1,29 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CommandModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   Represents metadata about a command
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CommandModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.Models
 {
+    #region Usings
+
     using System.Collections.Generic;
+
+    #endregion
 
     /// <summary>
     ///     Represents metadata about a command
@@ -53,36 +47,36 @@ namespace Slimcat.Models
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandModel"/> class.
+        ///     Initializes a new instance of the <see cref="CommandModel" /> class.
         /// </summary>
         /// <param name="familarName">
-        /// The familar name.
+        ///     The familar name.
         /// </param>
         /// <param name="serverName">
-        /// The server name.
+        ///     The server name.
         /// </param>
         /// <param name="paramaterNames">
-        /// The paramater names.
+        ///     The paramater names.
         /// </param>
         /// <param name="typeOfCommand">
-        /// The type of command.
+        ///     The type of command.
         /// </param>
         /// <param name="permissionLevel">
-        /// The permission level.
+        ///     The permission level.
         /// </param>
         public CommandModel(
-            string familarName, 
-            string serverName, 
-            IList<string> paramaterNames = null, 
-            CommandTypes typeOfCommand = CommandTypes.SingleSentence, 
+            string familarName,
+            string serverName,
+            IList<string> paramaterNames = null,
+            CommandTypes typeOfCommand = CommandTypes.SingleSentence,
             PermissionLevel permissionLevel = PermissionLevel.User)
         {
-            this.familiarName = familarName;
+            familiarName = familarName;
             this.serverName = serverName;
-            this.type = typeOfCommand;
-            this.permissions = permissionLevel;
+            type = typeOfCommand;
+            permissions = permissionLevel;
 
-            this.argumentNames = paramaterNames;
+            argumentNames = paramaterNames;
         }
 
         #endregion
@@ -95,39 +89,39 @@ namespace Slimcat.Models
         public enum CommandTypes
         {
             /// <summary>
-            /// Commands without any arguments.
+            ///     Commands without any arguments.
             /// </summary>
-            NoArgs, 
+            NoArgs,
 
             /// <summary>
-            /// Commands with only one-word arguments.
+            ///     Commands with only one-word arguments.
             /// </summary>
-            SingleWord, 
+            SingleWord,
 
             /// <summary>
-            /// Commands with only one argument about the length of a sentence.
+            ///     Commands with only one argument about the length of a sentence.
             /// </summary>
-            SingleSentence, 
+            SingleSentence,
 
             /// <summary>
-            /// Commands with a one-word argument which apply to a channel.
+            ///     Commands with a one-word argument which apply to a channel.
             /// </summary>
-            SingleArgsAndChannel, 
+            SingleArgsAndChannel,
 
             /// <summary>
-            /// Commands with no arguments which apply to a channel.
+            ///     Commands with no arguments which apply to a channel.
             /// </summary>
-            OnlyChannel, 
+            OnlyChannel,
 
             /// <summary>
-            /// Commands with two single-word arguments.
+            ///     Commands with two single-word arguments.
             /// </summary>
-            TwoArgs, 
+            TwoArgs,
 
             /// <summary>
-            /// Commands with two single-word arguments which apply to a channel.
+            ///     Commands with two single-word arguments which apply to a channel.
             /// </summary>
-            TwoArgsAndChannel, 
+            TwoArgsAndChannel,
         }
 
         /// <summary>
@@ -136,24 +130,24 @@ namespace Slimcat.Models
         public enum PermissionLevel
         {
             /// <summary>
-            /// Anyone can use the command (default).
+            ///     Anyone can use the command (default).
             /// </summary>
-            User, 
+            User,
 
             /// <summary>
-            /// Moderators and above can use the command.
+            ///     Moderators and above can use the command.
             /// </summary>
-            Moderator, 
+            Moderator,
 
             /// <summary>
-            /// Global moderators and above can use the command.
+            ///     Global moderators and above can use the command.
             /// </summary>
-            GlobalMod, 
+            GlobalMod,
 
             /// <summary>
-            /// Only admins can use the command.
+            ///     Only admins can use the command.
             /// </summary>
-            Admin, 
+            Admin,
         }
 
         #endregion
@@ -165,10 +159,7 @@ namespace Slimcat.Models
         /// </summary>
         public IList<string> ArgumentNames
         {
-            get
-            {
-                return this.argumentNames;
-            }
+            get { return argumentNames; }
         }
 
         /// <summary>
@@ -176,10 +167,7 @@ namespace Slimcat.Models
         /// </summary>
         public CommandTypes CommandType
         {
-            get
-            {
-                return this.type;
-            }
+            get { return type; }
         }
 
         /// <summary>
@@ -187,10 +175,7 @@ namespace Slimcat.Models
         /// </summary>
         public PermissionLevel PermissionsLevel
         {
-            get
-            {
-                return this.permissions;
-            }
+            get { return permissions; }
         }
 
         /// <summary>
@@ -198,21 +183,19 @@ namespace Slimcat.Models
         /// </summary>
         public string ServerName
         {
-            get
-            {
-                return this.serverName;
-            }
+            get { return serverName; }
         }
 
         #endregion
     }
 
     /// <summary>
-    /// Represents a command with its meta data
+    ///     Represents a command with its meta data
     /// </summary>
     public class CommandDataModel
     {
         #region Fields
+
         private readonly IList<string> arguments;
 
         private readonly string channelName;
@@ -224,21 +207,21 @@ namespace Slimcat.Models
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandDataModel"/> struct.
+        ///     Initializes a new instance of the <see cref="CommandDataModel" /> struct.
         /// </summary>
         /// <param name="info">
-        /// The info.
+        ///     The info.
         /// </param>
         /// <param name="args">
-        /// The args.
+        ///     The args.
         /// </param>
         /// <param name="channelName">
-        /// The channel name.
+        ///     The channel name.
         /// </param>
         public CommandDataModel(CommandModel info, IList<string> args, string channelName)
         {
-            this.commandInformation = info;
-            this.arguments = args;
+            commandInformation = info;
+            arguments = args;
             this.channelName = channelName;
         }
 
@@ -250,35 +233,34 @@ namespace Slimcat.Models
         ///     The to dictionary.
         /// </summary>
         /// <returns>
-        ///     The <see>
-        ///             <cref>IDictionary</cref>
-        ///         </see>
+        ///     The
+        ///     <see>
+        ///         <cref>IDictionary</cref>
+        ///     </see>
         ///     .
         /// </returns>
         public IDictionary<string, object> ToDictionary()
         {
-            var toSend = new Dictionary<string, object> { { "type", this.commandInformation.ServerName }, };
+            var toSend = new Dictionary<string, object> {{"type", commandInformation.ServerName},};
 
-            if (this.arguments != null && this.arguments[0] != null)
+            if (arguments != null && arguments[0] != null)
             {
                 var count = 0;
-                foreach (var argumentName in this.commandInformation.ArgumentNames)
+                foreach (var argumentName in commandInformation.ArgumentNames)
                 {
-                    toSend.Add(argumentName, this.arguments[count]);
+                    toSend.Add(argumentName, arguments[count]);
                     count++;
                 }
             }
 
-            var isChannelCommand = this.commandInformation.CommandType
-                                    == CommandModel.CommandTypes.SingleArgsAndChannel
-                                    || this.commandInformation.CommandType == CommandModel.CommandTypes.OnlyChannel
-                                    || this.commandInformation.CommandType
-                                    == CommandModel.CommandTypes.TwoArgsAndChannel;
+            var isChannelCommand = commandInformation.CommandType
+                                   == CommandModel.CommandTypes.SingleArgsAndChannel
+                                   || commandInformation.CommandType == CommandModel.CommandTypes.OnlyChannel
+                                   || commandInformation.CommandType
+                                   == CommandModel.CommandTypes.TwoArgsAndChannel;
 
-            if (this.channelName != null && isChannelCommand)
-            {
-                toSend.Add("channel", this.channelName);
-            }
+            if (channelName != null && isChannelCommand)
+                toSend.Add("channel", channelName);
 
             return toSend;
         }

@@ -1,51 +1,44 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ChannelViewModelBase.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   This holds most of the logic for channel view models. Changing behaviors between channels should be done by overriding methods.
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ChannelViewModelBase.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.ViewModels
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
     using System.Timers;
     using System.Windows.Input;
-
+    using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
+    using Models;
+    using Utilities;
 
-    using Slimcat.Libraries;
-    using Slimcat.Models;
-    using Slimcat.Utilities;
+    #endregion
 
     /// <summary>
-    ///     This holds most of the logic for channel view models. Changing behaviors between channels should be done by overriding methods.
+    ///     This holds most of the logic for channel view models. Changing behaviors between channels should be done by
+    ///     overriding methods.
     /// </summary>
     public abstract class ChannelViewModelBase : ViewModelBase
     {
@@ -102,17 +95,15 @@ namespace Slimcat.ViewModels
             IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
             : base(contain, regman, events, cm)
         {
-            this.Events.GetEvent<ErrorEvent>().Subscribe(this.UpdateError);
+            Events.GetEvent<ErrorEvent>().Subscribe(UpdateError);
 
-            this.PropertyChanged += this.OnThisPropertyChanged;
+            PropertyChanged += OnThisPropertyChanged;
 
             if (errorRemoveTimer != null)
-            {
                 return;
-            }
 
             errorRemoveTimer = new Timer(5000);
-            errorRemoveTimer.Elapsed += (s, e) => { this.Error = null; };
+            errorRemoveTimer.Elapsed += (s, e) => { Error = null; };
 
             errorRemoveTimer.AutoReset = false;
         }
@@ -126,10 +117,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ChannelSettingsModel ChannelSettings
         {
-            get
-            {
-                return this.model.Settings;
-            }
+            get { return model.Settings; }
         }
 
         /// <summary>
@@ -137,10 +125,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICommand ClearErrorCommand
         {
-            get
-            {
-                return this.clear ?? (this.clear = new RelayCommand(delegate { this.Error = null; }));
-            }
+            get { return clear ?? (clear = new RelayCommand(delegate { Error = null; })); }
         }
 
         /// <summary>
@@ -150,12 +135,12 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                return this.clearLog
-                       ?? (this.clearLog =
+                return clearLog
+                       ?? (clearLog =
                            new RelayCommand(
                                args =>
-                               this.Events.GetEvent<UserCommandEvent>()
-                                   .Publish(CommandDefinitions.CreateCommand("clear").ToDictionary())));
+                                   Events.GetEvent<UserCommandEvent>()
+                                       .Publish(CommandDefinitions.CreateCommand("clear").ToDictionary())));
             }
         }
 
@@ -164,16 +149,13 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string Error
         {
-            get
-            {
-                return error;
-            }
+            get { return error; }
 
             set
             {
                 error = value;
-                this.OnPropertyChanged("Error");
-                this.OnPropertyChanged("HasError");
+                OnPropertyChanged("Error");
+                OnPropertyChanged("HasError");
             }
         }
 
@@ -182,10 +164,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool HasError
         {
-            get
-            {
-                return !string.IsNullOrWhiteSpace(this.Error);
-            }
+            get { return !string.IsNullOrWhiteSpace(Error); }
         }
 
         /// <summary>
@@ -193,10 +172,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICommand InsertLineBreakCommand
         {
-            get
-            {
-                return this.linebreak ?? (this.linebreak = new RelayCommand(args => this.Message = this.Message + '\n'));
-            }
+            get { return linebreak ?? (linebreak = new RelayCommand(args => Message = Message + '\n')); }
         }
 
         /// <summary>
@@ -204,15 +180,12 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string Message
         {
-            get
-            {
-                return this.message;
-            }
+            get { return message; }
 
             set
             {
-                this.message = value;
-                this.OnPropertyChanged("Message");
+                message = value;
+                OnPropertyChanged("Message");
             }
         }
 
@@ -221,15 +194,12 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ChannelModel Model
         {
-            get
-            {
-                return this.model;
-            }
+            get { return model; }
 
             set
             {
-                this.model = value;
-                this.OnPropertyChanged("Model");
+                model = value;
+                OnPropertyChanged("Model");
             }
         }
 
@@ -240,8 +210,8 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                return this.navDown
-                       ?? (this.navDown = new RelayCommand(args => this.RequestNavigateDirectionalEvent(false)));
+                return navDown
+                       ?? (navDown = new RelayCommand(args => RequestNavigateDirectionalEvent(false)));
             }
         }
 
@@ -250,10 +220,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICommand NavigateUpCommand
         {
-            get
-            {
-                return this.navUp ?? (this.navUp = new RelayCommand(args => this.RequestNavigateDirectionalEvent(true)));
-            }
+            get { return navUp ?? (navUp = new RelayCommand(args => RequestNavigateDirectionalEvent(true))); }
         }
 
         /// <summary>
@@ -261,10 +228,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICommand OpenLogCommand
         {
-            get
-            {
-                return this.openLog ?? (this.openLog = new RelayCommand(this.OnOpenLogEvent));
-            }
+            get { return openLog ?? (openLog = new RelayCommand(OnOpenLogEvent)); }
         }
 
         /// <summary>
@@ -272,10 +236,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICommand OpenLogFolderCommand
         {
-            get
-            {
-                return this.openLogFolder ?? (this.openLogFolder = new RelayCommand(this.OnOpenLogFolderEvent));
-            }
+            get { return openLogFolder ?? (openLogFolder = new RelayCommand(OnOpenLogFolderEvent)); }
         }
 
         /// <summary>
@@ -283,10 +244,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICommand SendMessageCommand
         {
-            get
-            {
-                return this.sendText ?? (this.sendText = new RelayCommand(param => this.ParseAndSend()));
-            }
+            get { return sendText ?? (sendText = new RelayCommand(param => ParseAndSend())); }
         }
 
         #endregion
@@ -308,7 +266,7 @@ namespace Slimcat.ViewModels
         /// </param>
         public void OnOpenLogEvent(object args)
         {
-            this.OpenLogEvent(args, false);
+            OpenLogEvent(args, false);
         }
 
         /// <summary>
@@ -319,7 +277,7 @@ namespace Slimcat.ViewModels
         /// </param>
         public void OnOpenLogFolderEvent(object args)
         {
-            this.OpenLogEvent(args, true);
+            OpenLogEvent(args, true);
         }
 
         /// <summary>
@@ -336,7 +294,7 @@ namespace Slimcat.ViewModels
             var toSend =
                 CommandDefinitions.CreateCommand(isFolder ? "openlogfolder" : "openlog").ToDictionary();
 
-            this.Events.GetEvent<UserCommandEvent>().Publish(toSend);
+            Events.GetEvent<UserCommandEvent>().Publish(toSend);
         }
 
         #endregion
@@ -347,9 +305,9 @@ namespace Slimcat.ViewModels
         {
             if (isManaged)
             {
-                this.PropertyChanged -= this.OnThisPropertyChanged;
-                this.Model.PropertyChanged -= this.OnModelPropertyChanged;
-                this.model = null;
+                PropertyChanged -= OnThisPropertyChanged;
+                Model.PropertyChanged -= OnModelPropertyChanged;
+                model = null;
             }
 
             base.Dispose(isManaged);
@@ -389,10 +347,10 @@ namespace Slimcat.ViewModels
         /// </param>
         protected void SendCommand(IDictionary<string, object> command)
         {
-            this.Error = null;
+            Error = null;
 
-            this.Message = null;
-            this.Events.GetEvent<UserCommandEvent>().Publish(command);
+            Message = null;
+            Events.GetEvent<UserCommandEvent>().Publish(command);
         }
 
         /// <summary>
@@ -409,11 +367,9 @@ namespace Slimcat.ViewModels
         protected void UpdateError(string error)
         {
             if (errorRemoveTimer != null)
-            {
                 errorRemoveTimer.Stop();
-            }
 
-            this.Error = error;
+            Error = error;
             errorRemoveTimer.Start();
         }
 
@@ -421,103 +377,95 @@ namespace Slimcat.ViewModels
         {
             if (fromPms)
             {
-                var collection = this.ChatModel.CurrentPms;
+                var collection = ChatModel.CurrentPms;
                 if (!collection.Any())
                 {
-                    this.NavigateStub(false, false);
+                    NavigateStub(false, false);
                     return;
                 }
 
                 var target = (getTop ? collection.First() : collection.Last()).Id;
-                this.RequestPmEvent(target);
+                RequestPmEvent(target);
             }
             else
             {
-                var collection = this.ChatModel.CurrentChannels;
+                var collection = ChatModel.CurrentChannels;
                 var target = (getTop ? collection.First() : collection.Last()).Id;
-                this.RequestChannelJoinEvent(target);
+                RequestChannelJoinEvent(target);
             }
         }
 
         private void ParseAndSend()
         {
-            if (this.Message == null)
-            {
+            if (Message == null)
                 return;
-            }
 
-            if (CommandParser.HasNonCommand(this.Message))
+            if (CommandParser.HasNonCommand(Message))
             {
-                this.SendMessage();
+                SendMessage();
                 return;
             }
 
             try
             {
-                var messageToCommand = new CommandParser(this.Message, this.model.Id);
+                var messageToCommand = new CommandParser(Message, model.Id);
 
                 if (!messageToCommand.HasCommand)
+                    SendMessage();
+                else if ((messageToCommand.RequiresMod && !HasPermissions)
+                         || (messageToCommand.Type.Equals("warn") && !HasPermissions))
                 {
-                    this.SendMessage();
-                }
-                else if ((messageToCommand.RequiresMod && !this.HasPermissions)
-                         || (messageToCommand.Type.Equals("warn") && !this.HasPermissions))
-                {
-                    this.UpdateError(
+                    UpdateError(
                         string.Format("I'm sorry Dave, I can't let you do the {0} command.", messageToCommand.Type));
                 }
                 else if (messageToCommand.IsValid)
-                {
-                    this.SendCommand(messageToCommand.ToDictionary());
-                }
+                    SendCommand(messageToCommand.ToDictionary());
                 else
-                {
-                    this.UpdateError(string.Format("I don't know the {0} command.", messageToCommand.Type));
-                }
+                    UpdateError(string.Format("I don't know the {0} command.", messageToCommand.Type));
             }
             catch (InvalidOperationException ex)
             {
-                this.UpdateError(ex.Message);
+                UpdateError(ex.Message);
             }
         }
 
         private void RequestNavigateDirectionalEvent(bool isUp)
         {
-            if (this.ChatModel.CurrentChannel is PmChannelModel)
+            if (ChatModel.CurrentChannel is PmChannelModel)
             {
-                var index = this.ChatModel.CurrentPms.IndexOf(this.ChatModel.CurrentChannel as PmChannelModel);
+                var index = ChatModel.CurrentPms.IndexOf(ChatModel.CurrentChannel as PmChannelModel);
                 if (index == 0 && isUp)
                 {
-                    this.NavigateStub(false, false);
+                    NavigateStub(false, false);
                     return;
                 }
 
-                if (index + 1 == this.ChatModel.CurrentPms.Count() && !isUp)
+                if (index + 1 == ChatModel.CurrentPms.Count() && !isUp)
                 {
-                    this.NavigateStub(true, false);
+                    NavigateStub(true, false);
                     return;
                 }
 
                 index += isUp ? -1 : 1;
-                this.RequestPmEvent(this.ChatModel.CurrentPms[index].Id);
+                RequestPmEvent(ChatModel.CurrentPms[index].Id);
             }
             else
             {
-                var index = this.ChatModel.CurrentChannels.IndexOf(this.ChatModel.CurrentChannel as GeneralChannelModel);
+                var index = ChatModel.CurrentChannels.IndexOf(ChatModel.CurrentChannel as GeneralChannelModel);
                 if (index == 0 && isUp)
                 {
-                    this.NavigateStub(false, true);
+                    NavigateStub(false, true);
                     return;
                 }
 
-                if (index + 1 == this.ChatModel.CurrentChannels.Count() && !isUp)
+                if (index + 1 == ChatModel.CurrentChannels.Count() && !isUp)
                 {
-                    this.NavigateStub(true, true);
+                    NavigateStub(true, true);
                     return;
                 }
 
                 index += isUp ? -1 : 1;
-                this.RequestChannelJoinEvent(this.ChatModel.CurrentChannels[index].Id);
+                RequestChannelJoinEvent(ChatModel.CurrentChannels[index].Id);
             }
         }
 

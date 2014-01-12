@@ -5,14 +5,12 @@
        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
        xmlns:vm="clr-namespace:Slimcat.ViewModels"
        mc:Ignorable="d"
-       
+
        PlacementTarget="{Binding ElementName=PopupAnchor}"
        Placement="Center"
        StaysOpen="False"
        IsOpen="{Binding Path=ChannelStats.IsViewingStats}"
-       
-       d:DataContext="{d:DesignInstance vm:GeneralChannelViewModel}">
-    <Grid>
 
-    </Grid>
+       d:DataContext="{d:DesignInstance vm:GeneralChannelViewModel}">
+    <Grid />
 </Popup>

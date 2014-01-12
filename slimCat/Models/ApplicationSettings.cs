@@ -1,38 +1,31 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="SettingsModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   Gender Settings Model provides basic settings for a gender filter
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ApplicationSettings.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.Models
 {
+    #region Usings
+
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using System.Threading;
+
+    #endregion
 
     /// <summary>
     ///     Settings for the entire application
@@ -58,9 +51,7 @@ namespace Slimcat.Models
 
             Langauge = Thread.CurrentThread.CurrentCulture.Name;
             if (!LanguageList.Contains(Langauge))
-            {
                 Langauge = "en";
-            }
 
             SpellCheckEnabled = true;
         }
@@ -94,10 +85,7 @@ namespace Slimcat.Models
         /// </summary>
         public static IEnumerable<string> GlobalNotifyTermsList
         {
-            get
-            {
-                return GlobalNotifyTerms.Split(',').Select(word => word.ToLower());
-            }
+            get { return GlobalNotifyTerms.Split(',').Select(word => word.ToLower()); }
         }
 
         public static bool FriendsAreAccountWide { get; set; }
@@ -141,10 +129,7 @@ namespace Slimcat.Models
 
         public static IEnumerable<string> LanguageList
         {
-            get
-            {
-                return new[] { "en-US", "en-GB", "de", "es", "fr" };
-            }
+            get { return new[] {"en-US", "en-GB", "de", "es", "fr"}; }
         }
 
         #endregion

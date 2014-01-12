@@ -1,51 +1,41 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="UserbarViewModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   The UserbarViewCM allows the user to navigate the current conversations they have open.
-//   It responds to the ChatOnDisplayEvent to paritally create the chat wrapper.
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="UserbarViewModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.ViewModels
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Timers;
     using System.Windows.Input;
-
+    using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
+    using Models;
+    using Services;
+    using Utilities;
+    using Views;
 
-    using Slimcat;
-    using Slimcat.Libraries;
-    using Slimcat.Models;
-    using Slimcat.Services;
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    #endregion
 
     /// <summary>
     ///     The UserbarViewCM allows the user to navigate the current conversations they have open.
@@ -65,33 +55,33 @@ namespace Slimcat.ViewModels
         #region Fields
 
         private readonly IDictionary<string, StatusType> statusKinds = new Dictionary<string, StatusType>
-        {
             {
-                "Online",  
-                StatusType
-                .Online
-            }, 
-            {
-                "Busy", 
-                StatusType
-                .Busy
-            }, 
-            {
-                "Do not Disturb",  
-                StatusType
-                .Dnd
-            }, 
-            {
-                "Looking For Play",  
-                StatusType
-                .Looking
-            }, 
-            {
-                "Away", 
-                StatusType
-                .Away
-            }
-        };
+                {
+                    "Online",
+                    StatusType
+                        .Online
+                },
+                {
+                    "Busy",
+                    StatusType
+                        .Busy
+                },
+                {
+                    "Do not Disturb",
+                    StatusType
+                        .Dnd
+                },
+                {
+                    "Looking For Play",
+                    StatusType
+                        .Looking
+                },
+                {
+                    "Away",
+                    StatusType
+                        .Away
+                }
+            };
 
         private readonly Timer updateTick = new Timer(2500);
 
@@ -128,40 +118,40 @@ namespace Slimcat.ViewModels
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserbarViewModel"/> class.
+        ///     Initializes a new instance of the <see cref="UserbarViewModel" /> class.
         /// </summary>
         /// <param name="contain">
-        /// The contain.
+        ///     The contain.
         /// </param>
         /// <param name="regman">
-        /// The regman.
+        ///     The regman.
         /// </param>
         /// <param name="events">
-        /// The events.
+        ///     The events.
         /// </param>
         /// <param name="cm">
-        /// The cm.
+        ///     The cm.
         /// </param>
         public UserbarViewModel(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
             : base(contain, regman, events, cm)
         {
             try
             {
-                this.ChatModel.CurrentPms.CollectionChanged += (s, e) => this.OnPropertyChanged("HasPms");
+                ChatModel.CurrentPms.CollectionChanged += (s, e) => OnPropertyChanged("HasPms");
 
                 // this checks if we need to hide/show the Pm tab
-                this.Events.GetEvent<ChatOnDisplayEvent>().Subscribe(this.RequestNavigate, ThreadOption.UIThread, true);
+                Events.GetEvent<ChatOnDisplayEvent>().Subscribe(RequestNavigate, ThreadOption.UIThread, true);
 
-                this.Events.GetEvent<NewPmEvent>()
-                    .Subscribe(param => this.UpdateFlashingTabs(), ThreadOption.UIThread, true);
+                Events.GetEvent<NewPmEvent>()
+                    .Subscribe(param => UpdateFlashingTabs(), ThreadOption.UIThread, true);
 
-                this.Events.GetEvent<NewMessageEvent>()
-                    .Subscribe(param => this.UpdateFlashingTabs(), ThreadOption.UIThread, true);
+                Events.GetEvent<NewMessageEvent>()
+                    .Subscribe(param => UpdateFlashingTabs(), ThreadOption.UIThread, true);
 
-                this.ChatModel.SelectedChannelChanged += (s, e) => this.UpdateFlashingTabs();
+                ChatModel.SelectedChannelChanged += (s, e) => UpdateFlashingTabs();
 
-                this.updateTick.Enabled = true;
-                this.updateTick.Elapsed += this.UpdateConnectionBars;
+                updateTick.Enabled = true;
+                updateTick.Elapsed += UpdateConnectionBars;
             }
             catch (Exception ex)
             {
@@ -179,30 +169,21 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int ChannelSelected
         {
-            get
-            {
-                return this.selChannelIndex;
-            }
+            get { return selChannelIndex; }
 
             set
             {
-                if (this.selChannelIndex == value)
-                {
+                if (selChannelIndex == value)
                     return;
-                }
 
-                this.selChannelIndex = value;
-                this.OnPropertyChanged("ChannelSelected");
+                selChannelIndex = value;
+                OnPropertyChanged("ChannelSelected");
 
-                if (value != -1 && this.ChatModel.CurrentChannel != this.ChatModel.CurrentChannels[value])
-                {
-                    this.Events.GetEvent<RequestChangeTabEvent>().Publish(this.ChatModel.CurrentChannels[value].Id);
-                }
+                if (value != -1 && ChatModel.CurrentChannel != ChatModel.CurrentChannels[value])
+                    Events.GetEvent<RequestChangeTabEvent>().Publish(ChatModel.CurrentChannels[value].Id);
 
-                if (this.ChannelSelected != -1)
-                {
-                    this.PmSelected = -1;
-                }
+                if (ChannelSelected != -1)
+                    PmSelected = -1;
             }
         }
 
@@ -211,15 +192,12 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool ChannelsAreExpanded
         {
-            get
-            {
-                return this.channelsExpanded;
-            }
+            get { return channelsExpanded; }
 
             set
             {
-                this.channelsExpanded = value;
-                this.OnPropertyChanged("ChannelsAreExpanded");
+                channelsExpanded = value;
+                OnPropertyChanged("ChannelsAreExpanded");
             }
         }
 
@@ -228,10 +206,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICommand CloseCommand
         {
-            get
-            {
-                return this.close ?? (this.close = new RelayCommand(this.TabCloseEvent));
-            }
+            get { return close ?? (close = new RelayCommand(TabCloseEvent)); }
         }
 
         /// <summary>
@@ -261,12 +236,10 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (this.HasUpdate && !this.IsExpanded)
-                {
+                if (HasUpdate && !IsExpanded)
                     return "!";
-                }
 
-                return this.IsExpanded ? "<" : ">";
+                return IsExpanded ? "<" : ">";
             }
         }
 
@@ -275,17 +248,14 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool HasNewMessage
         {
-            get
-            {
-                return this.hasNewChanMessage;
-            }
+            get { return hasNewChanMessage; }
 
             set
             {
-                this.hasNewChanMessage = value;
-                this.OnPropertyChanged("HasNewMessage");
-                this.OnPropertyChanged("HasUpdate");
-                this.OnPropertyChanged("ExpandString");
+                hasNewChanMessage = value;
+                OnPropertyChanged("HasNewMessage");
+                OnPropertyChanged("HasUpdate");
+                OnPropertyChanged("ExpandString");
             }
         }
 
@@ -294,17 +264,14 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool HasNewPm
         {
-            get
-            {
-                return this.hasNewPm;
-            }
+            get { return hasNewPm; }
 
             set
             {
-                this.hasNewPm = value;
-                this.OnPropertyChanged("HasNewPm");
-                this.OnPropertyChanged("HasUpdate");
-                this.OnPropertyChanged("ExpandString");
+                hasNewPm = value;
+                OnPropertyChanged("HasNewPm");
+                OnPropertyChanged("HasUpdate");
+                OnPropertyChanged("ExpandString");
             }
         }
 
@@ -313,10 +280,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool HasPms
         {
-            get
-            {
-                return this.ChatModel.CurrentPms.Count > 0;
-            }
+            get { return ChatModel.CurrentPms.Count > 0; }
         }
 
         /// <summary>
@@ -324,10 +288,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool HasUpdate
         {
-            get
-            {
-                return this.hasNewChanMessage || this.hasNewPm;
-            }
+            get { return hasNewChanMessage || hasNewPm; }
         }
 
         /// <summary>
@@ -335,31 +296,24 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool IsChangingStatus
         {
-            get
-            {
-                return this.isChangingStatus;
-            }
+            get { return isChangingStatus; }
 
             set
             {
-                if (this.isChangingStatus == value)
-                {
+                if (isChangingStatus == value)
                     return;
-                }
 
-                this.isChangingStatus = value;
-                this.OnPropertyChanged("IsChangingStatus");
+                isChangingStatus = value;
+                OnPropertyChanged("IsChangingStatus");
 
                 if (value
-                    || (this.statusCache == this.ChatModel.CurrentCharacter.StatusMessage
-                        && this.statusTypeCache == this.ChatModel.CurrentCharacter.Status))
-                {
+                    || (statusCache == ChatModel.CurrentCharacter.StatusMessage
+                        && statusTypeCache == ChatModel.CurrentCharacter.Status))
                     return;
-                }
 
-                this.SendStatusChangedCommand();
-                this.statusCache = this.ChatModel.CurrentCharacter.StatusMessage;
-                this.statusTypeCache = this.ChatModel.CurrentCharacter.Status;
+                SendStatusChangedCommand();
+                statusCache = ChatModel.CurrentCharacter.StatusMessage;
+                statusTypeCache = ChatModel.CurrentCharacter.Status;
             }
         }
 
@@ -368,16 +322,13 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool IsExpanded
         {
-            get
-            {
-                return this.isExpanded;
-            }
+            get { return isExpanded; }
 
             set
             {
-                this.isExpanded = value;
-                this.OnPropertyChanged("IsExpanded");
-                this.OnPropertyChanged("ExpandString");
+                isExpanded = value;
+                OnPropertyChanged("IsExpanded");
+                OnPropertyChanged("ExpandString");
             }
         }
 
@@ -388,30 +339,21 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int PmSelected
         {
-            get
-            {
-                return this.selPmIndex;
-            }
+            get { return selPmIndex; }
 
             set
             {
-                if (this.selPmIndex == value)
-                {
+                if (selPmIndex == value)
                     return;
-                }
 
-                this.selPmIndex = value;
-                this.OnPropertyChanged("PmSelected");
+                selPmIndex = value;
+                OnPropertyChanged("PmSelected");
 
-                if (value != -1 && this.ChatModel.CurrentChannel != this.ChatModel.CurrentPms[value])
-                {
-                    this.Events.GetEvent<RequestChangeTabEvent>().Publish(this.ChatModel.CurrentPms[value].Id);
-                }
+                if (value != -1 && ChatModel.CurrentChannel != ChatModel.CurrentPms[value])
+                    Events.GetEvent<RequestChangeTabEvent>().Publish(ChatModel.CurrentPms[value].Id);
 
-                if (this.PmSelected != -1)
-                {
-                    this.ChannelSelected = -1;
-                }
+                if (PmSelected != -1)
+                    ChannelSelected = -1;
             }
         }
 
@@ -420,15 +362,12 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool PmsAreExpanded
         {
-            get
-            {
-                return this.pmsExpanded;
-            }
+            get { return pmsExpanded; }
 
             set
             {
-                this.pmsExpanded = value;
-                this.OnPropertyChanged("PmsAreExpanded");
+                pmsExpanded = value;
+                OnPropertyChanged("PmsAreExpanded");
             }
         }
 
@@ -439,23 +378,21 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                return this.saveChannels ?? (this.saveChannels = new RelayCommand(
-                args =>
-                    {
-                        ApplicationSettings.SavedChannels.Clear();
-
-                        foreach (
-                            var channel in
-                                this.ChatModel.CurrentChannels.Where(
-                                    channel => !channel.Id.Equals("Home", StringComparison.OrdinalIgnoreCase)))
+                return saveChannels ?? (saveChannels = new RelayCommand(
+                    args =>
                         {
-                            ApplicationSettings.SavedChannels.Add(channel.Id);
-                        }
+                            ApplicationSettings.SavedChannels.Clear();
 
-                        SettingsDaemon.SaveApplicationSettingsToXml(this.ChatModel.CurrentCharacter.Name);
-                        this.Events.GetEvent<ErrorEvent>()
-                            .Publish("Channels saved.");
-                    }));
+                            foreach (
+                                var channel in
+                                    ChatModel.CurrentChannels.Where(
+                                        channel => !channel.Id.Equals("Home", StringComparison.OrdinalIgnoreCase)))
+                                ApplicationSettings.SavedChannels.Add(channel.Id);
+
+                            SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+                            Events.GetEvent<ErrorEvent>()
+                                .Publish("Channels saved.");
+                        }));
             }
         }
 
@@ -464,10 +401,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IDictionary<string, StatusType> StatusTypes
         {
-            get
-            {
-                return this.statusKinds;
-            }
+            get { return statusKinds; }
         }
 
         /// <summary>
@@ -475,10 +409,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICommand ToggleBarCommand
         {
-            get
-            {
-                return this.toggle ?? (this.toggle = new RelayCommand(this.OnExpanded));
-            }
+            get { return toggle ?? (toggle = new RelayCommand(OnExpanded)); }
         }
 
         /// <summary>
@@ -488,8 +419,8 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                return this.toggleStatus
-                       ?? (this.toggleStatus = new RelayCommand(args => this.IsChangingStatus = !this.IsChangingStatus));
+                return toggleStatus
+                       ?? (toggleStatus = new RelayCommand(args => IsChangingStatus = !IsChangingStatus));
             }
         }
 
@@ -504,7 +435,7 @@ namespace Slimcat.ViewModels
         {
             try
             {
-                this.Container.RegisterType<object, UserbarView>(UserbarView);
+                Container.RegisterType<object, UserbarView>(UserbarView);
             }
             catch (Exception ex)
             {
@@ -522,84 +453,72 @@ namespace Slimcat.ViewModels
             var toSend =
                 CommandDefinitions.CreateCommand("close", null, args as string).ToDictionary();
 
-            this.Events.GetEvent<UserCommandEvent>().Publish(toSend);
+            Events.GetEvent<UserCommandEvent>().Publish(toSend);
         }
 
         private void OnExpanded(object args = null)
         {
-            this.PmsAreExpanded = this.PmsAreExpanded || this.HasNewPm;
-            this.ChannelsAreExpanded = this.ChannelsAreExpanded || this.HasNewMessage;
-            this.IsExpanded = !this.IsExpanded;
+            PmsAreExpanded = PmsAreExpanded || HasNewPm;
+            ChannelsAreExpanded = ChannelsAreExpanded || HasNewMessage;
+            IsExpanded = !IsExpanded;
         }
 
         private void RequestNavigate(bool? payload)
         {
-            this.Events.GetEvent<ChatOnDisplayEvent>().Unsubscribe(this.RequestNavigate);
-            this.RegionManager.Regions[ChatWrapperView.UserbarRegion].Add(this.Container.Resolve<UserbarView>());
+            Events.GetEvent<ChatOnDisplayEvent>().Unsubscribe(RequestNavigate);
+            RegionManager.Regions[ChatWrapperView.UserbarRegion].Add(Container.Resolve<UserbarView>());
         }
 
         private void SendStatusChangedCommand()
         {
             var torSend =
                 CommandDefinitions.CreateCommand(
-                    "status", 
+                    "status",
                     new List<string>
                         {
-                            this.ChatModel.CurrentCharacter.Status.ToString(), 
-                            this.ChatModel.CurrentCharacter.StatusMessage
+                            ChatModel.CurrentCharacter.Status.ToString(),
+                            ChatModel.CurrentCharacter.StatusMessage
                         }).ToDictionary();
 
-            this.Events.GetEvent<UserCommandEvent>().Publish(torSend);
+            Events.GetEvent<UserCommandEvent>().Publish(torSend);
         }
 
         // this will update the connection bars to show the user about how good our connection is to the server
         private void UpdateConnectionBars(object sender, EventArgs e)
         {
-            var difference = DateTime.Now - this.ChatModel.LastMessageReceived;
-            this.ConnectionIsPerfect = true;
-            this.ConnectionIsGood = true;
-            this.ConnectionIsModerate = true;
-            this.ConnectionIsConnected = true;
+            var difference = DateTime.Now - ChatModel.LastMessageReceived;
+            ConnectionIsPerfect = true;
+            ConnectionIsGood = true;
+            ConnectionIsModerate = true;
+            ConnectionIsConnected = true;
 
             if (difference.TotalSeconds > 5)
-            {
-                this.ConnectionIsPerfect = false;
-            }
+                ConnectionIsPerfect = false;
 
             if (difference.TotalSeconds > 10)
-            {
-                this.ConnectionIsGood = false;
-            }
+                ConnectionIsGood = false;
 
             if (difference.TotalSeconds > 15)
-            {
-                this.ConnectionIsModerate = false;
-            }
+                ConnectionIsModerate = false;
 
             if (difference.TotalSeconds > 30)
-            {
-                this.ConnectionIsConnected = false;
-            }
+                ConnectionIsConnected = false;
 
-            this.OnPropertyChanged("ConnectionIsPerfect");
-            this.OnPropertyChanged("ConnectionIsGood");
-            this.OnPropertyChanged("ConnectionIsModerate");
-            this.OnPropertyChanged("ConnectionIsConnected");
+            OnPropertyChanged("ConnectionIsPerfect");
+            OnPropertyChanged("ConnectionIsGood");
+            OnPropertyChanged("ConnectionIsModerate");
+            OnPropertyChanged("ConnectionIsConnected");
         }
 
         private void UpdateFlashingTabs()
         {
-            if (this.ChatModel.CurrentChannel is PmChannelModel)
-            {
-                this.PmSelected = this.ChatModel.CurrentPms.IndexOf(this.ChatModel.CurrentChannel as PmChannelModel);
-            }
+            if (ChatModel.CurrentChannel is PmChannelModel)
+                PmSelected = ChatModel.CurrentPms.IndexOf(ChatModel.CurrentChannel as PmChannelModel);
             else
-            {
-                this.ChannelSelected = this.ChatModel.CurrentChannels.IndexOf(this.ChatModel.CurrentChannel as GeneralChannelModel);
-            }
+                ChannelSelected = ChatModel.CurrentChannels.IndexOf(ChatModel.CurrentChannel as GeneralChannelModel);
 
-            this.hasNewPm = this.ChatModel.CurrentPms.Cast<ChannelModel>().Any(cm => cm.NeedsAttention);
-            this.HasNewMessage = this.ChatModel.CurrentChannels.Cast<ChannelModel>().Any(cm => cm.NeedsAttention);
+            hasNewPm = ChatModel.CurrentPms.Cast<ChannelModel>().Any(cm => cm.NeedsAttention);
+            HasNewMessage = ChatModel.CurrentChannels.Cast<ChannelModel>().Any(cm => cm.NeedsAttention);
         }
 
         #endregion

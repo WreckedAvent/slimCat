@@ -456,8 +456,7 @@
                           RelativeSource={RelativeSource TemplatedParent}}"
                           OverridesDefaultStyle="True"
                           Padding="1"
-                          Margin="{TemplateBinding Property=Margin}">
-            </ToggleButton>
+                          Margin="{TemplateBinding Property=Margin}" />
 
             <ContentPresenter x:Name="ExpanderContent"
                               DockPanel.Dock="Bottom"
@@ -731,7 +730,7 @@
                            Background="Transparent" BorderBrush="{StaticResource DepressedBrush}" />
                 </Track.Thumb>
             </Track>
-            <RepeatButton Grid.Row="3" Style="{StaticResource ScrollBarLineButton}"
+            <RepeatButton Grid.Row="2" Style="{StaticResource ScrollBarLineButton}"
                           Height="18" Command="ScrollBar.LineDownCommand"
                           Content="M 0 0 L 4 4 L 8 0 Z" />
         </Grid>
@@ -754,7 +753,7 @@
                            Background="Transparent" BorderBrush="{StaticResource DepressedBrush}" />
                 </Track.Thumb>
             </Track>
-            <RepeatButton Grid.Column="3" Style="{StaticResource ScrollBarLineButton}"
+            <RepeatButton Grid.Column="2" Style="{StaticResource ScrollBarLineButton}"
                           Width="18" Command="ScrollBar.LineRightCommand"
                           Content="M 0 0 L 4 4 L 0 8 Z" />
         </Grid>

@@ -1,8 +1,30 @@
-﻿namespace Slimcat.Services
-{
-    using System.Collections.Generic;
+﻿#region Copyright
 
-    using Slimcat.Models;
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ILogger.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace Slimcat.Services
+{
+    #region Usings
+
+    using System.Collections.Generic;
+    using Models;
+
+    #endregion
 
     /// <summary>
     ///     The Logger interface.
@@ -12,44 +34,44 @@
         #region Public Methods and Operators
 
         /// <summary>
-        /// Returns the last few messages from a given channel
+        ///     Returns the last few messages from a given channel
         /// </summary>
         /// <param name="title">
-        /// The Title.
+        ///     The Title.
         /// </param>
         /// <param name="id">
-        /// The ID.
+        ///     The ID.
         /// </param>
         /// <returns>
-        /// The <see cref="IEnumerable{T}"/>.
+        ///     The <see cref="IEnumerable{T}" />.
         /// </returns>
         IEnumerable<string> GetLogs(string title, string id);
 
         /// <summary>
-        /// Logs a given message in a given channel
+        ///     Logs a given message in a given channel
         /// </summary>
         /// <param name="title">
-        /// The title.
+        ///     The title.
         /// </param>
         /// <param name="id">
-        /// The ID.
+        ///     The ID.
         /// </param>
         /// <param name="message">
-        /// The message.
+        ///     The message.
         /// </param>
         void LogMessage(string title, string id, IMessage message);
 
         /// <summary>
-        /// Opens the log in the default text editor
+        ///     Opens the log in the default text editor
         /// </summary>
         /// <param name="isFolder">
-        /// The is Folder.
+        ///     The is Folder.
         /// </param>
         /// <param name="title">
-        /// The Title.
+        ///     The Title.
         /// </param>
         /// <param name="id">
-        /// The ID.
+        ///     The ID.
         /// </param>
         void OpenLog(bool isFolder, string title = null, string id = null);
 

@@ -1,8 +1,31 @@
-﻿namespace Slimcat.Utilities
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="KeepToCurrentScrollViewer.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace Slimcat.Utilities
 {
+    #region Usings
+
     using System;
     using System.Windows;
     using System.Windows.Controls;
+
+    #endregion
 
     /// <summary>
     ///     This handles scroll management for async loading objects.
@@ -27,13 +50,11 @@
         {
             toManage.ThrowIfNull("toManage");
 
-            this.scroller = StaticFunctions.FindChild<ScrollViewer>(toManage);
-            if (this.scroller == null)
-            {
+            scroller = StaticFunctions.FindChild<ScrollViewer>(toManage);
+            if (scroller == null)
                 throw new ArgumentException("toManage");
-            }
 
-            this.scroller.ScrollChanged += this.OnScrollChanged;
+            scroller.ScrollChanged += OnScrollChanged;
         }
 
         #endregion
@@ -42,13 +63,13 @@
 
         public void ScrollToStick()
         {
-            var change = this.scroller.ScrollableHeight - this.lastValue;
-            this.scroller.ScrollToVerticalOffset(this.scroller.VerticalOffset + change);
+            var change = scroller.ScrollableHeight - lastValue;
+            scroller.ScrollToVerticalOffset(scroller.VerticalOffset + change);
         }
 
         public void Stick()
         {
-            this.lastValue = this.scroller.ScrollableHeight;
+            lastValue = scroller.ScrollableHeight;
         }
 
         #endregion
@@ -57,24 +78,18 @@
 
         private void OnScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            var difference = Math.Abs(this.scroller.ScrollableHeight - this.lastHeight);
-            this.lastHeight = this.scroller.ScrollableHeight;
+            var difference = Math.Abs(scroller.ScrollableHeight - lastHeight);
+            lastHeight = scroller.ScrollableHeight;
 
             if (Math.Abs(difference - 0) > 0.01)
             {
-                if (this.hookedToBottom)
-                {
-                    this.scroller.ScrollToBottom();
-                }
+                if (hookedToBottom)
+                    scroller.ScrollToBottom();
             }
-            else if (Math.Abs(e.VerticalOffset - this.scroller.ScrollableHeight) < 20)
-            {
-                this.hookedToBottom = true;
-            }
+            else if (Math.Abs(e.VerticalOffset - scroller.ScrollableHeight) < 20)
+                hookedToBottom = true;
             else
-            {
-                this.hookedToBottom = false;
-            }
+                hookedToBottom = false;
         }
 
         #endregion

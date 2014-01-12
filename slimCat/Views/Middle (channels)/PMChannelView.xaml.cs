@@ -1,38 +1,31 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PmChannelView.xaml.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   Interaction logic for PmChannelView.xaml
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="PMChannelView.xaml.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.Views
 {
-    using System;
+    #region Usings
 
-    using Slimcat.Utilities;
-    using Slimcat.ViewModels;
+    using System;
+    using Utilities;
+    using ViewModels;
+
+    #endregion
 
     /// <summary>
     ///     Interaction logic for PmChannelView.xaml
@@ -48,21 +41,21 @@ namespace Slimcat.Views
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PmChannelView"/> class.
+        ///     Initializes a new instance of the <see cref="PmChannelView" /> class.
         /// </summary>
         /// <param name="vm">
-        /// The vm.
+        ///     The vm.
         /// </param>
         public PmChannelView(PmChannelViewModel vm)
         {
             try
             {
-                this.InitializeComponent();
+                InitializeComponent();
                 this.vm = vm.ThrowIfNull("vm");
 
-                this.DataContext = this.vm;
+                DataContext = this.vm;
 
-                this.vm.StatusChanged += this.OnStatusChanged;
+                this.vm.StatusChanged += OnStatusChanged;
             }
             catch (Exception ex)
             {
@@ -78,24 +71,20 @@ namespace Slimcat.Views
         protected override void Dispose(bool isManaged)
         {
             if (!isManaged)
-            {
                 return;
-            }
 
-            this.vm.StatusChanged -= this.OnStatusChanged;
-            this.DataContext = null;
-            this.vm = null;
+            vm.StatusChanged -= OnStatusChanged;
+            DataContext = null;
+            vm = null;
         }
 
         private void OnStatusChanged(object sender, EventArgs e)
         {
-            this.Dispatcher.Invoke(
-                (Action)delegate
+            Dispatcher.Invoke(
+                (Action) delegate
                     {
-                        if (!this.CharacterStatusDisplayer.IsExpanded)
-                        {
-                            this.CharacterStatusDisplayer.IsExpanded = true;
-                        }
+                        if (!CharacterStatusDisplayer.IsExpanded)
+                            CharacterStatusDisplayer.IsExpanded = true;
                     });
         }
 

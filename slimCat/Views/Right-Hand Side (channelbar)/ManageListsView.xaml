@@ -4,10 +4,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             xmlns:vm="clr-namespace:Slimcat.ViewModels" 
+             xmlns:vm="clr-namespace:Slimcat.ViewModels"
              xmlns:models="clr-namespace:Slimcat.Models"
              xmlns:v="clr-namespace:Slimcat.Views"
-             
+
              d:DataContext="{d:DesignInstance vm:ManageListsViewModel}">
 
     <UserControl.Resources>
@@ -16,8 +16,7 @@
                             Content="{Binding}"
                             ContentTemplate="{StaticResource UsernameTemplate}"
                             HorizontalAlignment="Left"
-                            TextBlock.TextAlignment="Left">
-            </ContentControl>
+                            TextBlock.TextAlignment="Left" />
         </DataTemplate>
     </UserControl.Resources>
 
@@ -62,8 +61,8 @@
                              DataContext="{Binding SearchSettings}" />
 
             <ScrollViewer CanContentScroll="False">
-                <StackPanel Grid.Row="1"
-                            x:Name="PopupAnchor">
+                <StackPanel
+                    x:Name="PopupAnchor">
 
                     <v:RightClickMenu />
                     <v:CreateReportView />

@@ -12,7 +12,7 @@
              HorizontalAlignment="Stretch"
              Margin="0"
              Padding="4,2"
-             
+
              d:DataContext="{d:DesignInstance models:PmChannelModel}">
     <Grid>
         <Grid.ColumnDefinitions>

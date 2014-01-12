@@ -1,44 +1,37 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ChannelModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   The channel model is used as a base for channels and conversations
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ChannelModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.Models
 {
+    #region Usings
+
     using System;
     using System.Collections.ObjectModel;
+    using Utilities;
+    using ViewModels;
 
-    using Slimcat.Utilities;
-    using Slimcat.ViewModels;
+    #endregion
 
     /// <summary>
     ///     The channel model is used as a base for channels and conversations
     /// </summary>
-    public abstract class ChannelModel : SysProp, IDisposable
+    public abstract class ChannelModel : SysProp
     {
         #region Fields
 
@@ -82,9 +75,9 @@ namespace Slimcat.Models
             try
             {
                 this.identity = identity.ThrowIfNull("identity");
-                this.Type = kind;
-                this.Mode = mode;
-                this.LastReadCount = 0;
+                Type = kind;
+                Mode = mode;
+                LastReadCount = 0;
             }
             catch (Exception ex)
             {
@@ -102,10 +95,7 @@ namespace Slimcat.Models
         /// </summary>
         public ObservableCollection<IMessage> Ads
         {
-            get
-            {
-                return this.ads;
-            }
+            get { return ads; }
         }
 
         /// <summary>
@@ -113,10 +103,7 @@ namespace Slimcat.Models
         /// </summary>
         public virtual bool CanClose
         {
-            get
-            {
-                return this.IsSelected;
-            }
+            get { return IsSelected; }
         }
 
         /// <summary>
@@ -124,10 +111,7 @@ namespace Slimcat.Models
         /// </summary>
         public string Id
         {
-            get
-            {
-                return this.identity;
-            }
+            get { return identity; }
         }
 
         /// <summary>
@@ -135,30 +119,23 @@ namespace Slimcat.Models
         /// </summary>
         public virtual bool IsSelected
         {
-            get
-            {
-                return this.isSelected;
-            }
+            get { return isSelected; }
 
             set
             {
-                if (this.isSelected == value)
-                {
+                if (isSelected == value)
                     return;
-                }
 
-                this.isSelected = value;
+                isSelected = value;
 
                 if (value)
-                {
-                    this.LastReadCount = this.Messages.Count;
-                }
+                    LastReadCount = Messages.Count;
 
-                this.NeedsAttentionOverride = false;
-                this.UnreadContainsInteresting = false;
+                NeedsAttentionOverride = false;
+                UnreadContainsInteresting = false;
 
-                this.UpdateBindings();
-                this.OnPropertyChanged("IsSelected");
+                UpdateBindings();
+                OnPropertyChanged("IsSelected");
             }
         }
 
@@ -167,10 +144,7 @@ namespace Slimcat.Models
         /// </summary>
         public ObservableCollection<IMessage> Messages
         {
-            get
-            {
-                return this.messages;
-            }
+            get { return messages; }
         }
 
         /// <summary>
@@ -178,15 +152,12 @@ namespace Slimcat.Models
         /// </summary>
         public ChannelMode Mode
         {
-            get
-            {
-                return this.mode;
-            }
+            get { return mode; }
 
             set
             {
-                this.mode = value;
-                this.OnPropertyChanged("Mode");
+                mode = value;
+                OnPropertyChanged("Mode");
             }
         }
 
@@ -197,22 +168,16 @@ namespace Slimcat.Models
         {
             get
             {
-                if (!this.IsSelected && this.NeedsAttentionOverride)
-                {
+                if (!IsSelected && NeedsAttentionOverride)
                     return true; // flash if we have a ding word
-                }
 
-                if (this.Settings.MessageNotifyLevel == 0)
-                {
+                if (Settings.MessageNotifyLevel == 0)
                     return false; // if we don't want any flashes then terminate
-                }
 
-                if (this.Settings.MessageNotifyOnlyForInteresting)
-                {
-                    return this.UnreadContainsInteresting;
-                }
+                if (Settings.MessageNotifyOnlyForInteresting)
+                    return UnreadContainsInteresting;
 
-                return !this.IsSelected && (this.Unread >= this.Settings.FlashInterval);
+                return !IsSelected && (Unread >= Settings.FlashInterval);
             }
         }
 
@@ -221,15 +186,12 @@ namespace Slimcat.Models
         /// </summary>
         public ChannelSettingsModel Settings
         {
-            get
-            {
-                return this.settings;
-            }
+            get { return settings; }
 
             set
             {
-                this.settings = value;
-                this.UpdateBindings();
+                settings = value;
+                UpdateBindings();
             }
         }
 
@@ -238,15 +200,12 @@ namespace Slimcat.Models
         /// </summary>
         public string Title
         {
-            get
-            {
-                return this.title ?? this.Id;
-            }
+            get { return title ?? Id; }
 
             set
             {
-                this.title = value;
-                this.OnPropertyChanged("Title");
+                title = value;
+                OnPropertyChanged("Title");
             }
         }
 
@@ -255,15 +214,12 @@ namespace Slimcat.Models
         /// </summary>
         public ChannelType Type
         {
-            get
-            {
-                return this.type;
-            }
+            get { return type; }
 
             set
             {
-                this.type = value;
-                this.OnPropertyChanged("Type");
+                type = value;
+                OnPropertyChanged("Type");
             }
         }
 
@@ -276,20 +232,15 @@ namespace Slimcat.Models
         /// </summary>
         protected int LastReadCount
         {
-            get
-            {
-                return this.lastRead;
-            }
+            get { return lastRead; }
 
             set
             {
-                if (this.lastRead == value)
-                {
+                if (lastRead == value)
                     return;
-                }
 
-                this.lastRead = value;
-                this.UpdateBindings();
+                lastRead = value;
+                UpdateBindings();
             }
         }
 
@@ -300,10 +251,7 @@ namespace Slimcat.Models
         /// </summary>
         protected int Unread
         {
-            get
-            {
-                return this.Messages.Count - this.LastReadCount;
-            }
+            get { return Messages.Count - LastReadCount; }
         }
 
         protected bool UnreadContainsInteresting { private get; set; }
@@ -323,26 +271,24 @@ namespace Slimcat.Models
         /// </param>
         public virtual void AddMessage(IMessage message, bool isOfInterest = false)
         {
-            while (this.messages.Count >= ApplicationSettings.BackLogMax)
+            while (messages.Count >= ApplicationSettings.BackLogMax)
             {
-                this.messages[0].Dispose();
-                this.messages[0] = null;
-                this.messages.RemoveAt(0);
+                messages[0].Dispose();
+                messages[0] = null;
+                messages.RemoveAt(0);
             }
 
-            this.messages.Add(message);
+            messages.Add(message);
 
-            if (this.isSelected)
+            if (isSelected)
+                lastRead = messages.Count;
+            else if (messages.Count == ApplicationSettings.BackLogMax)
             {
-                this.lastRead = this.messages.Count;
-            }
-            else if (this.messages.Count == ApplicationSettings.BackLogMax)
-            {
-                this.UnreadContainsInteresting = this.UnreadContainsInteresting || isOfInterest;
-                this.lastRead--;
+                UnreadContainsInteresting = UnreadContainsInteresting || isOfInterest;
+                lastRead--;
             }
 
-            this.UpdateBindings();
+            UpdateBindings();
         }
 
         /// <summary>
@@ -350,8 +296,8 @@ namespace Slimcat.Models
         /// </summary>
         public void FlashTab()
         {
-            this.NeedsAttentionOverride = true;
-            this.UpdateBindings();
+            NeedsAttentionOverride = true;
+            UpdateBindings();
         }
 
         #endregion
@@ -362,9 +308,9 @@ namespace Slimcat.Models
         {
             if (isManaged)
             {
-                this.messages.Clear();
-                this.ads.Clear();
-                this.settings = new ChannelSettingsModel();
+                messages.Clear();
+                ads.Clear();
+                settings = new ChannelSettingsModel();
             }
 
             base.Dispose(isManaged);
@@ -375,10 +321,10 @@ namespace Slimcat.Models
         /// </summary>
         protected virtual void UpdateBindings()
         {
-            this.OnPropertyChanged("NeedsAttention");
-            this.OnPropertyChanged("DisplayNumber");
-            this.OnPropertyChanged("CanClose");
-            this.OnPropertyChanged("Settings");
+            OnPropertyChanged("NeedsAttention");
+            OnPropertyChanged("DisplayNumber");
+            OnPropertyChanged("CanClose");
+            OnPropertyChanged("Settings");
         }
 
         #endregion

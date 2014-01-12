@@ -6,9 +6,9 @@
              mc:Ignorable="d"
              xmlns:vm="clr-namespace:Slimcat.ViewModels"
              xmlns:v="clr-namespace:Slimcat.Views"
-             
+
              MaxWidth="175"
-             
+
              d:DataContext="{d:DesignInstance vm:NotificationsTabViewModel}">
 
     <DockPanel>
@@ -17,14 +17,15 @@
         <v:RestartButtonView Command="{Binding Path=ClearNotificationsCommand}"
                              ToolTip="Clear all notifications"
                              DockPanel.Dock="Top" />
-        
+
         <v:SearchBoxView DockPanel.Dock="Bottom" />
-        
+
         <TextBlock Text="No notifications ..."
                    TextWrapping="Wrap"
                    Visibility="{Binding Path=HasNoNotifications, Converter={StaticResource BoolConverter}}" />
-        
-        <v:ObservingFlowDocumentReader x:Name="PopupAnchor" MessageSource="{Binding Path=CurrentNotifications, Mode=OneWay}"/>
-        
+
+        <v:ObservingFlowDocumentReader x:Name="PopupAnchor"
+                                       MessageSource="{Binding Path=CurrentNotifications, Mode=OneWay}" />
+
     </DockPanel>
 </UserControl>

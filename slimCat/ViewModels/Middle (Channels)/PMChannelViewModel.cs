@@ -1,30 +1,45 @@
-﻿namespace Slimcat.ViewModels
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="PMChannelViewModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace Slimcat.ViewModels
 {
-    #region
+    #region Usings
 
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Timers;
-
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
-
-    using Slimcat.Models;
-    using Slimcat.Services;
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    using Models;
+    using Services;
+    using Utilities;
+    using Views;
 
     #endregion
 
     /// <summary>
     ///     Used for most communications between users.
     /// </summary>
-    // ReSharper disable ClassNeverInstantiated.Global
     public class PmChannelViewModel : ChannelViewModelBase
-    // ReSharper restore ClassNeverInstantiated.Global
     {
         #region Fields
 
@@ -68,58 +83,54 @@
         {
             try
             {
-                var temp = this.Container.Resolve<PmChannelModel>(name);
-                this.Model = temp;
+                var temp = Container.Resolve<PmChannelModel>(name);
+                Model = temp;
 
-                this.Model.PropertyChanged += this.OnModelPropertyChanged;
+                Model.PropertyChanged += OnModelPropertyChanged;
 
-                this.Container.RegisterType<object, PmChannelView>(
-                    HelperConverter.EscapeSpaces(this.Model.Id), new InjectionConstructor(this));
-                this.Events.GetEvent<NewUpdateEvent>()
-                    .Subscribe(this.OnNewUpdateEvent, ThreadOption.PublisherThread, true, this.UpdateIsOurCharacter);
+                Container.RegisterType<object, PmChannelView>(
+                    HelperConverter.EscapeSpaces(Model.Id), new InjectionConstructor(this));
+                Events.GetEvent<NewUpdateEvent>()
+                    .Subscribe(OnNewUpdateEvent, ThreadOption.PublisherThread, true, UpdateIsOurCharacter);
 
-                this.cooldownTimer.Elapsed += (s, e) =>
+                cooldownTimer.Elapsed += (s, e) =>
                     {
-                        this.isInCoolDown = false;
-                        this.cooldownTimer.Enabled = false;
-                        this.OnPropertyChanged("CanPost");
+                        isInCoolDown = false;
+                        cooldownTimer.Enabled = false;
+                        OnPropertyChanged("CanPost");
                     };
 
-                this.checkTick.Elapsed += (s, e) =>
+                checkTick.Elapsed += (s, e) =>
                     {
-                        if (!this.IsTyping)
+                        if (!IsTyping)
+                            checkTick.Enabled = false;
+
+                        if (Message != null && typingLengthCache == Message.Length)
                         {
-                            this.checkTick.Enabled = false;
+                            IsTyping = false;
+                            SendTypingNotification(TypingStatus.Paused);
+                            checkTick.Enabled = false;
                         }
 
-                        if (this.Message != null && this.typingLengthCache == this.Message.Length)
-                        {
-                            this.IsTyping = false;
-                            this.SendTypingNotification(TypingStatus.Paused);
-                            this.checkTick.Enabled = false;
-                        }
-
-                        if (this.IsTyping)
-                        {
-                            this.typingLengthCache = this.Message != null ? this.Message.Length : 0;
-                        }
+                        if (IsTyping)
+                            typingLengthCache = Message != null ? Message.Length : 0;
                     };
 
-                this.Model.Settings = SettingsDaemon.GetChannelSettings(
-                    cm.CurrentCharacter.Name, this.Model.Title, this.Model.Id, this.Model.Type);
+                Model.Settings = SettingsDaemon.GetChannelSettings(
+                    cm.CurrentCharacter.Name, Model.Title, Model.Id, Model.Type);
 
-                this.ChannelSettings.Updated += (s, e) =>
+                ChannelSettings.Updated += (s, e) =>
                     {
-                        this.OnPropertyChanged("ChannelSettings");
-                        if (!this.ChannelSettings.IsChangingSettings)
+                        OnPropertyChanged("ChannelSettings");
+                        if (!ChannelSettings.IsChangingSettings)
                         {
                             SettingsDaemon.UpdateSettingsFile(
-                                this.ChannelSettings, cm.CurrentCharacter.Name, this.Model.Title, this.Model.Id);
+                                ChannelSettings, cm.CurrentCharacter.Name, Model.Title, Model.Id);
                         }
                     };
 
-                this.messageManager = new FilteredCollection<IMessage, IViewableObject>(
-                    this.Model.Messages, message => true);
+                messageManager = new FilteredCollection<IMessage, IViewableObject>(
+                    Model.Messages, message => true);
             }
             catch (Exception ex)
             {
@@ -143,10 +154,7 @@
         /// </summary>
         public bool CanPost
         {
-            get
-            {
-                return !this.isInCoolDown;
-            }
+            get { return !isInCoolDown; }
         }
 
         /// <summary>
@@ -156,18 +164,15 @@
         {
             get
             {
-                return this.ChatModel.IsOnline(this.Model.Id)
-                           ? this.ChatModel.FindCharacter(this.Model.Id)
-                           : new CharacterModel { Name = this.Model.Id };
+                return ChatModel.IsOnline(Model.Id)
+                    ? ChatModel.FindCharacter(Model.Id)
+                    : new CharacterModel {Name = Model.Id};
             }
         }
 
         public ObservableCollection<IViewableObject> CurrentMessages
         {
-            get
-            {
-                return this.messageManager.Collection;
-            }
+            get { return messageManager.Collection; }
         }
 
         /// <summary>
@@ -175,10 +180,7 @@
         /// </summary>
         public bool HasNotifyTerms
         {
-            get
-            {
-                return !string.IsNullOrEmpty(this.ChannelSettings.NotifyTerms);
-            }
+            get { return !string.IsNullOrEmpty(ChannelSettings.NotifyTerms); }
         }
 
         /// <summary>
@@ -186,10 +188,7 @@
         /// </summary>
         public bool HasStatus
         {
-            get
-            {
-                return this.ConversationWith.StatusMessage.Length > 0;
-            }
+            get { return ConversationWith.StatusMessage.Length > 0; }
         }
 
         /// <summary>
@@ -197,15 +196,12 @@
         /// </summary>
         public bool IsTyping
         {
-            get
-            {
-                return this.isTyping;
-            }
+            get { return isTyping; }
 
             set
             {
-                this.isTyping = value;
-                this.OnPropertyChanged("ShouldShowPostLength");
+                isTyping = value;
+                OnPropertyChanged("ShouldShowPostLength");
             }
         }
 
@@ -214,10 +210,7 @@
         /// </summary>
         public bool ShouldShowPostLength
         {
-            get
-            {
-                return !string.IsNullOrEmpty(this.Message) && this.isTyping;
-            }
+            get { return !string.IsNullOrEmpty(Message) && isTyping; }
         }
 
         /// <summary>
@@ -225,10 +218,7 @@
         /// </summary>
         public bool ShowAllSettings
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         /// <summary>
@@ -238,31 +228,29 @@
         {
             get
             {
-                if (!this.ChatModel.IsOnline(this.Model.Id))
-                {
-                    return string.Format("Warning: {0} is not online.", this.Model.Id);
-                }
+                if (!ChatModel.IsOnline(Model.Id))
+                    return string.Format("Warning: {0} is not online.", Model.Id);
 
-                switch (this.ConversationWith.Status)
+                switch (ConversationWith.Status)
                 {
                     case StatusType.Away:
-                        return string.Format("Warning: {0} is currently away.", this.Model.Id);
+                        return string.Format("Warning: {0} is currently away.", Model.Id);
                     case StatusType.Busy:
-                        return string.Format("Warning: {0} is currently busy.", this.Model.Id);
+                        return string.Format("Warning: {0} is currently busy.", Model.Id);
                     case StatusType.Idle:
-                        return string.Format("Warning: {0} is currently idle.", this.Model.Id);
+                        return string.Format("Warning: {0} is currently idle.", Model.Id);
                     case StatusType.Looking:
-                        return string.Format("{0} is looking for roleplay.", this.Model.Id);
+                        return string.Format("{0} is looking for roleplay.", Model.Id);
                     case StatusType.Dnd:
-                        return string.Format("Warning: {0} does not wish to be disturbed.", this.Model.Id);
+                        return string.Format("Warning: {0} does not wish to be disturbed.", Model.Id);
                     case StatusType.Online:
-                        return string.Format("{0} is online.", this.Model.Id);
+                        return string.Format("{0} is online.", Model.Id);
                     case StatusType.Crown:
                         return string.Format(
-                            "{0} has been a good person and has been rewarded with a crown!", this.Model.Id);
+                            "{0} has been a good person and has been rewarded with a crown!", Model.Id);
                 }
 
-                return this.ConversationWith.Status.ToString();
+                return ConversationWith.Status.ToString();
             }
         }
 
@@ -273,9 +261,9 @@
         {
             get
             {
-                var pm = (PmChannelModel)this.Model;
+                var pm = (PmChannelModel) Model;
 
-                if (!this.ChatModel.IsOnline(this.Model.Id))
+                if (!ChatModel.IsOnline(Model.Id))
                 {
                     // visual indicator to help the user know when the other has gone offline
                     return string.Format("{0} is not online!", pm.Id);
@@ -307,16 +295,16 @@
         {
             if (isManaged)
             {
-                this.checkTick.Dispose();
-                this.cooldownTimer.Dispose();
-                this.checkTick = null;
-                this.cooldownTimer = null;
+                checkTick.Dispose();
+                cooldownTimer.Dispose();
+                checkTick = null;
+                cooldownTimer = null;
 
-                this.StatusChanged = null;
-                this.Events.GetEvent<NewUpdateEvent>().Unsubscribe(this.OnNewUpdateEvent);
+                StatusChanged = null;
+                Events.GetEvent<NewUpdateEvent>().Unsubscribe(OnNewUpdateEvent);
 
-                this.messageManager.Dispose();
-                this.messageManager = null;
+                messageManager.Dispose();
+                messageManager = null;
             }
 
             base.Dispose(isManaged);
@@ -334,9 +322,7 @@
         protected override void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "TypingStatus" || e.PropertyName == "TypingString")
-            {
-                this.OnPropertyChanged("TypingString");
-            }
+                OnPropertyChanged("TypingString");
         }
 
         /// <summary>
@@ -351,20 +337,18 @@
         protected override void OnThisPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName != "Message")
-            {
                 return;
-            }
 
-            if (string.IsNullOrEmpty(this.Message))
+            if (string.IsNullOrEmpty(Message))
             {
-                this.SendTypingNotification(TypingStatus.Clear);
-                this.IsTyping = false;
+                SendTypingNotification(TypingStatus.Clear);
+                IsTyping = false;
             }
-            else if (!this.IsTyping)
+            else if (!IsTyping)
             {
-                this.IsTyping = true;
-                this.SendTypingNotification(TypingStatus.Typing);
-                this.checkTick.Enabled = true;
+                IsTyping = true;
+                SendTypingNotification(TypingStatus.Typing);
+                checkTick.Enabled = true;
             }
         }
 
@@ -373,70 +357,66 @@
         /// </summary>
         protected override void SendMessage()
         {
-            if (this.Message.Length > 50000)
+            if (Message.Length > 50000)
             {
-                this.UpdateError("I can't let you post that. That's way too big. Try again, buddy.");
+                UpdateError("I can't let you post that. That's way too big. Try again, buddy.");
                 return;
             }
 
-            if (this.isInCoolDown)
+            if (isInCoolDown)
             {
-                this.UpdateError("Where's the fire, son? Slow it down.");
+                UpdateError("Where's the fire, son? Slow it down.");
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(this.Message))
+            if (string.IsNullOrWhiteSpace(Message))
             {
-                this.UpdateError("Hmm. Did you ... did you write anything?");
+                UpdateError("Hmm. Did you ... did you write anything?");
                 return;
             }
 
             var toSend =
                 CommandDefinitions.CreateCommand(
-                    CommandDefinitions.ClientSendPm, new List<string> { this.Message, this.ConversationWith.Name })
-                                  .ToDictionary();
+                    CommandDefinitions.ClientSendPm, new List<string> {Message, ConversationWith.Name})
+                    .ToDictionary();
 
-            this.Events.GetEvent<UserCommandEvent>().Publish(toSend);
-            this.Message = string.Empty;
+            Events.GetEvent<UserCommandEvent>().Publish(toSend);
+            Message = string.Empty;
 
-            this.isInCoolDown = true;
-            this.cooldownTimer.Enabled = true;
-            this.OnPropertyChanged("CanPost");
-            this.IsTyping = false;
-            this.checkTick.Enabled = false;
+            isInCoolDown = true;
+            cooldownTimer.Enabled = true;
+            OnPropertyChanged("CanPost");
+            IsTyping = false;
+            checkTick.Enabled = false;
         }
 
         private void OnNewUpdateEvent(NotificationModel param)
         {
-            this.OnPropertyChanged("ConversationWith");
-            this.OnPropertyChanged("StatusString");
-            this.OnPropertyChanged("HasStatus");
-            this.OnPropertyChanged("CanPost");
-            this.OnPropertyChanged("TypingString");
+            OnPropertyChanged("ConversationWith");
+            OnPropertyChanged("StatusString");
+            OnPropertyChanged("HasStatus");
+            OnPropertyChanged("CanPost");
+            OnPropertyChanged("TypingString");
 
-            var arguments = ((CharacterUpdateModel)param).Arguments;
+            var arguments = ((CharacterUpdateModel) param).Arguments;
             if (!(arguments is CharacterUpdateModel.PromoteDemoteEventArgs))
-            {
-                this.OnStatusChanged();
-            }
+                OnStatusChanged();
         }
 
         private void OnStatusChanged()
         {
-            if (this.StatusChanged != null)
-            {
-                this.StatusChanged(this, new EventArgs());
-            }
+            if (StatusChanged != null)
+                StatusChanged(this, new EventArgs());
         }
 
         private void SendTypingNotification(TypingStatus type)
         {
             var toSend =
                 CommandDefinitions.CreateCommand(
-                    CommandDefinitions.ClientSendTypingStatus, 
-                    new List<string> { type.ToString(), this.ConversationWith.Name }).ToDictionary();
+                    CommandDefinitions.ClientSendTypingStatus,
+                    new List<string> {type.ToString(), ConversationWith.Name}).ToDictionary();
 
-            this.Events.GetEvent<UserCommandEvent>().Publish(toSend);
+            Events.GetEvent<UserCommandEvent>().Publish(toSend);
         }
 
         /// <summary>
@@ -454,7 +434,7 @@
             if (updateModel != null)
             {
                 var args = updateModel.TargetCharacter;
-                return args.Name.Equals(this.ConversationWith.Name, StringComparison.OrdinalIgnoreCase);
+                return args.Name.Equals(ConversationWith.Name, StringComparison.OrdinalIgnoreCase);
             }
 
             return false;

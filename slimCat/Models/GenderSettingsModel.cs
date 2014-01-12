@@ -1,8 +1,31 @@
-﻿namespace Slimcat.Models
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="GenderSettingsModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace Slimcat.Models
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
+
+    #endregion
 
     /// <summary>
     ///     Gender Settings Model provides basic settings for a gender filter
@@ -12,16 +35,16 @@
         #region Fields
 
         private readonly IDictionary<Gender, bool> genderFilter = new Dictionary<Gender, bool>
-        {
-            { Gender.Male, true }, 
-            { Gender.Female, true }, 
-            { Gender.HermF, true }, 
-            { Gender.HermM, true }, 
-            { Gender.Cuntboy, true }, 
-            { Gender.Shemale, true }, 
-            { Gender.None, true }, 
-            { Gender.Transgender, true }, 
-        };
+            {
+                {Gender.Male, true},
+                {Gender.Female, true},
+                {Gender.HermF, true},
+                {Gender.HermM, true},
+                {Gender.Cuntboy, true},
+                {Gender.Shemale, true},
+                {Gender.None, true},
+                {Gender.Transgender, true},
+            };
 
         #endregion
 
@@ -41,10 +64,7 @@
         /// </summary>
         public IEnumerable<Gender> FilteredGenders
         {
-            get
-            {
-                return this.GenderFilter.Where(x => x.Value == false).Select(x => x.Key);
-            }
+            get { return GenderFilter.Where(x => x.Value == false).Select(x => x.Key); }
         }
 
         /// <summary>
@@ -52,20 +72,15 @@
         /// </summary>
         public bool ShowCuntboys
         {
-            get
-            {
-                return this.genderFilter[Gender.Cuntboy];
-            }
+            get { return genderFilter[Gender.Cuntboy]; }
 
             set
             {
-                if (this.genderFilter[Gender.Cuntboy] == value)
-                {
+                if (genderFilter[Gender.Cuntboy] == value)
                     return;
-                }
 
-                this.genderFilter[Gender.Cuntboy] = value;
-                this.CallUpdate();
+                genderFilter[Gender.Cuntboy] = value;
+                CallUpdate();
             }
         }
 
@@ -74,20 +89,15 @@
         /// </summary>
         public bool ShowFemaleHerms
         {
-            get
-            {
-                return this.genderFilter[Gender.HermF];
-            }
+            get { return genderFilter[Gender.HermF]; }
 
             set
             {
-                if (this.genderFilter[Gender.HermF] == value)
-                {
+                if (genderFilter[Gender.HermF] == value)
                     return;
-                }
 
-                this.genderFilter[Gender.HermF] = value;
-                this.CallUpdate();
+                genderFilter[Gender.HermF] = value;
+                CallUpdate();
             }
         }
 
@@ -96,20 +106,15 @@
         /// </summary>
         public bool ShowFemales
         {
-            get
-            {
-                return this.genderFilter[Gender.Female];
-            }
+            get { return genderFilter[Gender.Female]; }
 
             set
             {
-                if (this.genderFilter[Gender.Female] == value)
-                {
+                if (genderFilter[Gender.Female] == value)
                     return;
-                }
 
-                this.genderFilter[Gender.Female] = value;
-                this.CallUpdate();
+                genderFilter[Gender.Female] = value;
+                CallUpdate();
             }
         }
 
@@ -118,20 +123,15 @@
         /// </summary>
         public bool ShowMaleHerms
         {
-            get
-            {
-                return this.genderFilter[Gender.HermM];
-            }
+            get { return genderFilter[Gender.HermM]; }
 
             set
             {
-                if (this.genderFilter[Gender.HermM] == value)
-                {
+                if (genderFilter[Gender.HermM] == value)
                     return;
-                }
 
-                this.genderFilter[Gender.HermM] = value;
-                this.CallUpdate();
+                genderFilter[Gender.HermM] = value;
+                CallUpdate();
             }
         }
 
@@ -140,20 +140,15 @@
         /// </summary>
         public bool ShowMales
         {
-            get
-            {
-                return this.genderFilter[Gender.Male];
-            }
+            get { return genderFilter[Gender.Male]; }
 
             set
             {
-                if (this.genderFilter[Gender.Male] == value)
-                {
+                if (genderFilter[Gender.Male] == value)
                     return;
-                }
 
-                this.genderFilter[Gender.Male] = value;
-                this.CallUpdate();
+                genderFilter[Gender.Male] = value;
+                CallUpdate();
             }
         }
 
@@ -162,20 +157,15 @@
         /// </summary>
         public bool ShowNoGenders
         {
-            get
-            {
-                return this.genderFilter[Gender.None];
-            }
+            get { return genderFilter[Gender.None]; }
 
             set
             {
-                if (this.genderFilter[Gender.None] == value)
-                {
+                if (genderFilter[Gender.None] == value)
                     return;
-                }
 
-                this.genderFilter[Gender.None] = value;
-                this.CallUpdate();
+                genderFilter[Gender.None] = value;
+                CallUpdate();
             }
         }
 
@@ -184,20 +174,15 @@
         /// </summary>
         public bool ShowShemales
         {
-            get
-            {
-                return this.genderFilter[Gender.Shemale];
-            }
+            get { return genderFilter[Gender.Shemale]; }
 
             set
             {
-                if (this.genderFilter[Gender.Shemale] == value)
-                {
+                if (genderFilter[Gender.Shemale] == value)
                     return;
-                }
 
-                this.genderFilter[Gender.Shemale] = value;
-                this.CallUpdate();
+                genderFilter[Gender.Shemale] = value;
+                CallUpdate();
             }
         }
 
@@ -206,20 +191,15 @@
         /// </summary>
         public bool ShowTransgenders
         {
-            get
-            {
-                return this.genderFilter[Gender.Transgender];
-            }
+            get { return genderFilter[Gender.Transgender]; }
 
             set
             {
-                if (this.genderFilter[Gender.Transgender] == value)
-                {
+                if (genderFilter[Gender.Transgender] == value)
                     return;
-                }
 
-                this.genderFilter[Gender.Transgender] = value;
-                this.Updated(this, new EventArgs());
+                genderFilter[Gender.Transgender] = value;
+                Updated(this, new EventArgs());
             }
         }
 
@@ -232,10 +212,7 @@
         /// </summary>
         private IDictionary<Gender, bool> GenderFilter
         {
-            get
-            {
-                return this.genderFilter;
-            }
+            get { return genderFilter; }
         }
 
         #endregion
@@ -253,7 +230,7 @@
         /// </returns>
         public bool MeetsGenderFilter(ICharacter character)
         {
-            return this.genderFilter[character.Gender];
+            return genderFilter[character.Gender];
         }
 
         #endregion
@@ -262,10 +239,8 @@
 
         private void CallUpdate()
         {
-            if (this.Updated != null)
-            {
-                this.Updated(this, new EventArgs());
-            }
+            if (Updated != null)
+                Updated(this, new EventArgs());
         }
 
         #endregion

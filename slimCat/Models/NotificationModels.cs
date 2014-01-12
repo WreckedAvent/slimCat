@@ -1,41 +1,34 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="NotificationModels.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   The notification model.
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="NotificationModels.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.Models
 {
+    #region Usings
+
     using System;
     using System.Linq;
     using System.Text;
     using System.Windows.Documents;
+    using Utilities;
+    using Views;
 
-    using Slimcat.Utilities;
-    using Slimcat.Views;
+    #endregion
 
     /// <summary>
     ///     The notification model.
@@ -53,17 +46,18 @@ namespace Slimcat.Models
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CharacterUpdateModel"/> class.
+        ///     Initializes a new instance of the <see cref="CharacterUpdateModel" /> class.
         /// </summary>
         public CharacterUpdateModel(ICharacter target, CharacterUpdateEventArgs e)
         {
-            this.TargetCharacter = target;
-            this.Arguments = e;
+            TargetCharacter = target;
+            Arguments = e;
         }
 
         public CharacterUpdateModel()
         {
         }
+
         #endregion
 
         #region Public Properties
@@ -78,12 +72,9 @@ namespace Slimcat.Models
         /// </summary>
         public ICharacter TargetCharacter { get; private set; }
 
-        public override Block View 
+        public override Block View
         {
-            get
-            {
-                return new CharacterUpdateView { DataContext = this };
-            }
+            get { return new CharacterUpdateView {DataContext = this}; }
         }
 
         #endregion
@@ -98,7 +89,7 @@ namespace Slimcat.Models
         /// </returns>
         public override string ToString()
         {
-            return this.TargetCharacter.Name + " " + this.Arguments;
+            return TargetCharacter.Name + " " + Arguments;
         }
 
         #endregion
@@ -108,12 +99,10 @@ namespace Slimcat.Models
         protected override void Dispose(bool isManaged)
         {
             if (!isManaged)
-            {
                 return;
-            }
 
-            this.TargetCharacter = null;
-            this.Arguments = null;
+            TargetCharacter = null;
+            Arguments = null;
         }
 
         #endregion
@@ -142,7 +131,7 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                return "broadcasted " + this.Message + (char.IsPunctuation(this.Message.Last()) ? string.Empty : ".");
+                return "broadcasted " + Message + (char.IsPunctuation(Message.Last()) ? string.Empty : ".");
             }
 
             #endregion
@@ -167,13 +156,13 @@ namespace Slimcat.Models
             /// </summary>
             public enum CommentTypes
             {
-                Comment, 
+                Comment,
 
-                Newspost, 
+                Newspost,
 
-                BugReport, 
+                BugReport,
 
-                ChangeLog, 
+                ChangeLog,
 
                 Feature
             }
@@ -185,7 +174,7 @@ namespace Slimcat.Models
             /// <summary>
             ///     Gets or sets the comment id.
             /// </summary>
-            public long CommentID { get; set; }
+            public long CommentId { get; set; }
 
             /// <summary>
             ///     Gets or sets the comment type.
@@ -199,32 +188,32 @@ namespace Slimcat.Models
             {
                 get
                 {
-                    switch (this.CommentType)
+                    switch (CommentType)
                     {
                         case CommentTypes.Newspost:
                             return string.Format(
-                                "{0}/newspost/{1}/#Comment{2}", 
-                                Constants.UrlConstants.Domain, 
-                                this.TargetID, 
-                                this.CommentID);
+                                "{0}/newspost/{1}/#Comment{2}",
+                                Constants.UrlConstants.Domain,
+                                TargetId,
+                                CommentId);
                         case CommentTypes.BugReport:
                             return string.Format(
-                                "{0}/view_bugreport.php?id={1}#Comment{2}", 
-                                Constants.UrlConstants.Domain, 
-                                this.TargetID, 
-                                this.CommentID);
+                                "{0}/view_bugreport.php?id={1}#Comment{2}",
+                                Constants.UrlConstants.Domain,
+                                TargetId,
+                                CommentId);
                         case CommentTypes.ChangeLog:
                             return string.Format(
-                                "{0}/log.php?id={1}#Comment{2}", 
-                                Constants.UrlConstants.Domain, 
-                                this.TargetID, 
-                                this.CommentID);
+                                "{0}/log.php?id={1}#Comment{2}",
+                                Constants.UrlConstants.Domain,
+                                TargetId,
+                                CommentId);
                         case CommentTypes.Feature:
                             return string.Format(
-                                "{0}/vote.php?fid={1}#Comment{2}", 
-                                Constants.UrlConstants.Domain, 
-                                this.TargetID, 
-                                this.CommentID);
+                                "{0}/vote.php?fid={1}#Comment{2}",
+                                Constants.UrlConstants.Domain,
+                                TargetId,
+                                CommentId);
                         default:
                             return string.Empty;
                     }
@@ -234,12 +223,12 @@ namespace Slimcat.Models
             /// <summary>
             ///     Gets or sets the parent id.
             /// </summary>
-            public long ParentID { get; set; }
+            public long ParentId { get; set; }
 
             /// <summary>
             ///     Gets or sets the target id. This is the parent of whatever we were replied to.
             /// </summary>
-            public long TargetID { get; set; }
+            public long TargetId { get; set; }
 
             /// <summary>
             ///     Gets or sets the title.
@@ -258,16 +247,16 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                if (this.ParentID == 0)
+                if (ParentId == 0)
                 {
                     // not a comment, but a suggestion, newspost, etc.
-                    return "has replied to your " + CommentTypeToString(this.CommentType) + ", "
-                           + string.Format("[url={0}]{1}[/url]", this.Link, this.Title);
+                    return "has replied to your " + CommentTypeToString(CommentType) + ", "
+                           + string.Format("[url={0}]{1}[/url]", Link, Title);
                 }
 
                 // our comment *on* a suggestion, newspost, comment, etc.
-                return "has replied to your comment on the " + CommentTypeToString(this.CommentType) + ' '
-                       + string.Format("[url={0}]{1}[/url]", this.Link, this.Title);
+                return "has replied to your comment on the " + CommentTypeToString(CommentType) + ' '
+                       + string.Format("[url={0}]{1}[/url]", Link, Title);
             }
 
             #endregion
@@ -277,9 +266,7 @@ namespace Slimcat.Models
             private static string CommentTypeToString(CommentTypes argument)
             {
                 if (argument == CommentTypes.BugReport)
-                {
                     return "bug report";
-                }
 
                 return argument == CommentTypes.Feature ? "feature suggestion" : argument.ToString();
             }
@@ -307,11 +294,10 @@ namespace Slimcat.Models
             /// <summary>
             ///     Gets or sets the target channel id.
             /// </summary>
-            public string TargetChannelID { get; set; }
+            public string TargetChannelId { get; set; }
 
             #endregion
 
-            // used for other parts of the code to understand what channel
             #region Public Methods and Operators
 
             /// <summary>
@@ -322,10 +308,12 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                return "has " + (this.Joined ? "joined" : "left") + string.Format(" {0}.", this.TargetChannel);
+                return "has " + (Joined ? "joined" : "left") + string.Format(" {0}.", TargetChannel);
             }
 
             #endregion
+
+            // used for other parts of the code to understand what channel
         }
 
         /// <summary>
@@ -340,13 +328,13 @@ namespace Slimcat.Models
             /// </summary>
             public enum ListType
             {
-                Friends, 
+                Friends,
 
-                Bookmarks, 
+                Bookmarks,
 
-                Ignored, 
+                Ignored,
 
-                Interested, 
+                Interested,
 
                 NotInterested
             }
@@ -382,12 +370,12 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                var listKind = this.ListArgument != ListType.NotInterested
-                                      ? this.ListArgument.ToString()
-                                      : "not interested";
+                var listKind = ListArgument != ListType.NotInterested
+                    ? ListArgument.ToString()
+                    : "not interested";
 
-                return "has been " + (this.IsAdded ? "added to" : "removed from") + " your " + listKind + " list"
-                       + (this.IsTemporary ? " until this character logs out" : string.Empty) + '.';
+                return "has been " + (IsAdded ? "added to" : "removed from") + " your " + listKind + " list"
+                       + (IsTemporary ? " until this character logs out" : string.Empty) + '.';
             }
 
             #endregion
@@ -417,7 +405,7 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                return "has logged " + (this.IsLogIn ? "in." : "out.");
+                return "has logged " + (IsLogIn ? "in." : "out.");
             }
 
             #endregion
@@ -435,16 +423,13 @@ namespace Slimcat.Models
             /// </summary>
             public string Link
             {
-                get
-                {
-                    return Constants.UrlConstants.ViewNote + this.NoteID;
-                }
+                get { return Constants.UrlConstants.ViewNote + NoteId; }
             }
 
             /// <summary>
             ///     Gets or sets the note id.
             /// </summary>
-            public long NoteID { get; set; }
+            public long NoteId { get; set; }
 
             /// <summary>
             ///     Gets or sets the subject.
@@ -463,7 +448,7 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                return string.Format(@"has sent you a note: [url={0}]{1}[/url]", this.Link, this.Subject);
+                return string.Format(@"has sent you a note: [url={0}]{1}[/url]", Link, Subject);
             }
 
             #endregion
@@ -489,11 +474,10 @@ namespace Slimcat.Models
             /// <summary>
             ///     Gets or sets the target channel id.
             /// </summary>
-            public string TargetChannelID { get; set; }
+            public string TargetChannelId { get; set; }
 
             #endregion
 
-            // used for other parts of the code to understand what channel
             #region Public Methods and Operators
 
             /// <summary>
@@ -504,16 +488,16 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                if (this.TargetChannel == null)
-                {
-                    return "has been " + (this.IsPromote ? "promoted to" : "demoted from") + " global moderator.";
-                }
+                if (TargetChannel == null)
+                    return "has been " + (IsPromote ? "promoted to" : "demoted from") + " global moderator.";
 
-                return "has been " + (this.IsPromote ? "promoted to" : "demoted from") + " channel moderator in "
-                       + this.TargetChannel + ".";
+                return "has been " + (IsPromote ? "promoted to" : "demoted from") + " channel moderator in "
+                       + TargetChannel + ".";
             }
 
             #endregion
+
+            // used for other parts of the code to understand what channel
         }
 
         /// <summary>
@@ -545,11 +529,9 @@ namespace Slimcat.Models
             {
                 get
                 {
-                    var logId = this.LogId;
+                    var logId = LogId;
                     if (logId != null)
-                    {
                         return Constants.UrlConstants.ReadLog + logId.Value;
-                    }
 
                     return string.Empty;
                 }
@@ -578,23 +560,15 @@ namespace Slimcat.Models
             public override string ToString()
             {
                 string toReturn;
-                if (this.Reported == null && this.Tab == null)
-                {
+                if (Reported == null && Tab == null)
                     toReturn = "has requested staff assistance";
-                }
-                else if (this.Reported != this.Tab)
-                {
-                    toReturn = "has reported " + this.Reported + " in " + this.Tab;
-                }
+                else if (Reported != Tab)
+                    toReturn = "has reported " + Reported + " in " + Tab;
                 else
-                {
-                    toReturn = "has reported" + this.Reported;
-                }
+                    toReturn = "has reported" + Reported;
 
-                if (this.LogId != null)
-                {
-                    toReturn += string.Format(" [url={0}]view log[/url]", this.LogLink);
-                }
+                if (LogId != null)
+                    toReturn += string.Format(" [url={0}]view log[/url]", LogLink);
 
                 return toReturn;
             }
@@ -626,7 +600,7 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                return "has handled a report filed by " + this.Handled;
+                return "has handled a report filed by " + Handled;
             }
 
             #endregion
@@ -644,10 +618,7 @@ namespace Slimcat.Models
             /// </summary>
             public bool IsStatusMessageChanged
             {
-                get
-                {
-                    return this.NewStatusMessage != null;
-                }
+                get { return NewStatusMessage != null; }
             }
 
             /// <summary>
@@ -655,10 +626,7 @@ namespace Slimcat.Models
             /// </summary>
             public bool IsStatusTypeChanged
             {
-                get
-                {
-                    return this.NewStatusType != StatusType.Offline;
-                }
+                get { return NewStatusType != StatusType.Offline; }
             }
 
             /// <summary>
@@ -685,35 +653,23 @@ namespace Slimcat.Models
             {
                 var toReturn = new StringBuilder();
 
-                if (this.IsStatusTypeChanged)
-                {
-                    toReturn.Append("is now " + this.NewStatusType);
-                }
+                if (IsStatusTypeChanged)
+                    toReturn.Append("is now " + NewStatusType);
 
-                if (this.IsStatusMessageChanged)
+                if (IsStatusMessageChanged)
                 {
-                    if (this.IsStatusTypeChanged && this.NewStatusMessage.Length > 0)
-                    {
-                        toReturn.Append(": " + this.NewStatusMessage);
-                    }
-                    else if (this.NewStatusMessage.Length > 0)
-                    {
-                        toReturn.Append("has updated their status: " + this.NewStatusMessage);
-                    }
+                    if (IsStatusTypeChanged && NewStatusMessage.Length > 0)
+                        toReturn.Append(": " + NewStatusMessage);
+                    else if (NewStatusMessage.Length > 0)
+                        toReturn.Append("has updated their status: " + NewStatusMessage);
                     else if (toReturn.Length > 0)
-                    {
                         toReturn.Append(" and has blanked their status");
-                    }
                     else
-                    {
                         toReturn.Append("has blanked their status");
-                    }
                 }
 
                 if (!char.IsPunctuation(toReturn.ToString().Trim().Last()))
-                {
                     toReturn.Append('.'); // if the last non-whitespace character is not punctuation, add a period
-                }
 
                 return toReturn.ToString();
             }
@@ -730,12 +686,12 @@ namespace Slimcat.Models
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChannelUpdateModel"/> class.
+        ///     Initializes a new instance of the <see cref="ChannelUpdateModel" /> class.
         /// </summary>
         public ChannelUpdateModel(ChannelModel model, ChannelUpdateEventArgs e)
         {
-            this.TargetChannel = model;
-            this.Arguments = e;
+            TargetChannel = model;
+            Arguments = e;
         }
 
         public ChannelUpdateModel()
@@ -755,10 +711,7 @@ namespace Slimcat.Models
 
         public override Block View
         {
-            get
-            {
-                return new ChannelUpdateView { DataContext = this };
-            }
+            get { return new ChannelUpdateView {DataContext = this}; }
         }
 
         #endregion
@@ -773,7 +726,7 @@ namespace Slimcat.Models
         /// </returns>
         public override string ToString()
         {
-            return this.Arguments.ToString();
+            return Arguments.ToString();
         }
 
         #endregion
@@ -783,12 +736,10 @@ namespace Slimcat.Models
         protected override void Dispose(bool isManaged)
         {
             if (!isManaged)
-            {
                 return;
-            }
 
-            this.TargetChannel = null;
-            this.Arguments = null;
+            TargetChannel = null;
+            Arguments = null;
         }
 
         #endregion
@@ -848,7 +799,7 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                return "(" + this.Kicker + ") has " + (this.IsBan ? "banned " : "kicked ") + this.Kicked + '.';
+                return "(" + Kicker + ") has " + (IsBan ? "banned " : "kicked ") + Kicked + '.';
             }
 
             #endregion
@@ -878,7 +829,7 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                return "(" + this.Inviter + ") has invited you to join their room.";
+                return "(" + Inviter + ") has invited you to join their room.";
             }
 
             #endregion
@@ -908,10 +859,8 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                if (this.NewMode != ChannelMode.Both)
-                {
-                    return "now only allows " + this.NewMode + '.';
-                }
+                if (NewMode != ChannelMode.Both)
+                    return "now only allows " + NewMode + '.';
 
                 return "now allows Ads and chatting.";
             }
@@ -964,7 +913,7 @@ namespace Slimcat.Models
             /// </returns>
             public override string ToString()
             {
-                return "is now " + (this.IsOpen ? "open" : "InviteOnly") + '.';
+                return "is now " + (IsOpen ? "open" : "InviteOnly") + '.';
             }
 
             #endregion

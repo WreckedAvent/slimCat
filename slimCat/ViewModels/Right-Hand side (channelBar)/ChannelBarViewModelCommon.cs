@@ -1,39 +1,32 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ChannelBarViewModelCommon.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   Contains some things the channelbar viewmodels have in common
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ChannelBarViewModelCommon.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.ViewModels
 {
+    #region Usings
+
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
-
     using Models;
+
+    #endregion
 
     /// <summary>
     ///     Contains some things the channelbar viewmodels have in common
@@ -49,25 +42,25 @@ namespace Slimcat.ViewModels
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChannelbarViewModelCommon"/> class.
+        ///     Initializes a new instance of the <see cref="ChannelbarViewModelCommon" /> class.
         /// </summary>
         /// <param name="contain">
-        /// The contain.
+        ///     The contain.
         /// </param>
         /// <param name="regman">
-        /// The regman.
+        ///     The regman.
         /// </param>
         /// <param name="events">
-        /// The events.
+        ///     The events.
         /// </param>
         /// <param name="cm">
-        /// The cm.
+        ///     The cm.
         /// </param>
         protected ChannelbarViewModelCommon(
             IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
             : base(contain, regman, events, cm)
         {
-            cm.SelectedChannelChanged += (s, e) => this.OnPropertyChanged("HasUsers");
+            cm.SelectedChannelChanged += (s, e) => OnPropertyChanged("HasUsers");
         }
 
         #endregion
@@ -81,13 +74,11 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (this.ChatModel.CurrentChannel == null)
-                {
+                if (ChatModel.CurrentChannel == null)
                     return false;
-                }
 
-                return (this.ChatModel.CurrentChannel.Type != ChannelType.PrivateMessage)
-                       && this.ChatModel.CurrentChannel.Type != ChannelType.Utility;
+                return (ChatModel.CurrentChannel.Type != ChannelType.PrivateMessage)
+                       && ChatModel.CurrentChannel.Type != ChannelType.Utility;
             }
         }
 
@@ -96,10 +87,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public GenericSearchSettingsModel SearchSettings
         {
-            get
-            {
-                return this.searchSettings;
-            }
+            get { return searchSettings; }
         }
 
         #endregion

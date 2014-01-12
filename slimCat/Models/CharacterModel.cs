@@ -1,63 +1,54 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CharacterModel.cs" company="Justin Kadrovach">
-//   Copyright (c) 2013, Justin Kadrovach
-//   All rights reserved.
-//   
-//   Redistribution and use in source and binary forms, with or without
-//   modification, are permitted provided that the following conditions are met:
-//       * Redistributions of source code must retain the above copyright
-//         notice, this list of conditions and the following disclaimer.
-//       * Redistributions in binary form must reproduce the above copyright
-//         notice, this list of conditions and the following disclaimer in the
-//         documentation and/or other materials provided with the distribution.
-//   
-//   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-//   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-//   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-//   DISCLAIMED. IN NO EVENT SHALL JUSTIN KADROVACH BE LIABLE FOR ANY
-//   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-//   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-//   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-//   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// </copyright>
-// <summary>
-//   A character model which stores data related to characters
-// </summary>
+﻿#region Copyright
+
 // --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CharacterModel.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace Slimcat.Models
 {
+    #region Usings
+
     using System;
     using System.ComponentModel;
     using System.IO;
     using System.Net;
     using System.Net.Cache;
     using System.Windows.Media.Imaging;
+    using ViewModels;
 
-    using Slimcat.ViewModels;
+    #endregion
 
     /// <summary>
     ///     A character model which stores data related to characters
     /// </summary>
-    public sealed class CharacterModel : SysProp, ICharacter, IDisposable
+    public sealed class CharacterModel : SysProp, ICharacter
     {
         #region Fields
 
         private BitmapImage avatar;
 
         private Gender gender;
-
-        private string name = string.Empty;
+        private bool isInteresting;
 
         private ReportModel lastReport;
+        private string name = string.Empty;
 
         private StatusType status;
 
         private string statusMessage = string.Empty;
-
-        private bool isInteresting;
 
         #endregion
 
@@ -68,15 +59,12 @@ namespace Slimcat.Models
         /// </summary>
         public BitmapImage Avatar
         {
-            get
-            {
-                return this.avatar;
-            }
+            get { return avatar; }
 
             set
             {
-                this.avatar = value;
-                this.OnPropertyChanged("Avatar");
+                avatar = value;
+                OnPropertyChanged("Avatar");
             }
         }
 
@@ -85,15 +73,12 @@ namespace Slimcat.Models
         /// </summary>
         public Gender Gender
         {
-            get
-            {
-                return this.gender;
-            }
+            get { return gender; }
 
             set
             {
-                this.gender = value;
-                this.OnPropertyChanged("Gender");
+                gender = value;
+                OnPropertyChanged("Gender");
             }
         }
 
@@ -102,10 +87,7 @@ namespace Slimcat.Models
         /// </summary>
         public bool HasReport
         {
-            get
-            {
-                return this.lastReport != null;
-            }
+            get { return lastReport != null; }
         }
 
         /// <summary>
@@ -113,16 +95,13 @@ namespace Slimcat.Models
         /// </summary>
         public ReportModel LastReport
         {
-            get
-            {
-                return this.lastReport;
-            }
+            get { return lastReport; }
 
             set
             {
-                this.lastReport = value;
-                this.OnPropertyChanged("LastReport");
-                this.OnPropertyChanged("HasReport");
+                lastReport = value;
+                OnPropertyChanged("LastReport");
+                OnPropertyChanged("HasReport");
             }
         }
 
@@ -131,15 +110,12 @@ namespace Slimcat.Models
         /// </summary>
         public string Name
         {
-            get
-            {
-                return this.name;
-            }
+            get { return name; }
 
             set
             {
-                this.name = value;
-                this.OnPropertyChanged("Name");
+                name = value;
+                OnPropertyChanged("Name");
             }
         }
 
@@ -148,15 +124,12 @@ namespace Slimcat.Models
         /// </summary>
         public StatusType Status
         {
-            get
-            {
-                return this.status;
-            }
+            get { return status; }
 
             set
             {
-                this.status = value;
-                this.OnPropertyChanged("Status");
+                status = value;
+                OnPropertyChanged("Status");
             }
         }
 
@@ -165,29 +138,23 @@ namespace Slimcat.Models
         /// </summary>
         public string StatusMessage
         {
-            get
-            {
-                return this.statusMessage;
-            }
+            get { return statusMessage; }
 
             set
             {
-                this.statusMessage = value;
-                this.OnPropertyChanged("StatusMessage");
+                statusMessage = value;
+                OnPropertyChanged("StatusMessage");
             }
         }
 
         public bool IsInteresting
         {
-            get
-            {
-                return this.isInteresting;
-            }
+            get { return isInteresting; }
 
             set
             {
-                this.isInteresting = value;
-                this.OnPropertyChanged("IsInteresting");
+                isInteresting = value;
+                OnPropertyChanged("IsInteresting");
             }
         }
 
@@ -200,15 +167,13 @@ namespace Slimcat.Models
         /// </summary>
         public void GetAvatar()
         {
-            if (this.name == null)
-            {
+            if (name == null)
                 return;
-            }
 
             var worker = new BackgroundWorker();
             worker.DoWork += (s, e) =>
                 {
-                    var uri = new Uri((string)e.Argument, UriKind.Absolute);
+                    var uri = new Uri((string) e.Argument, UriKind.Absolute);
 
                     using (var webClient = new WebClient())
                     {
@@ -247,27 +212,26 @@ namespace Slimcat.Models
                 {
                     var bitmapImage = e.Result as BitmapImage;
                     if (bitmapImage != null)
-                    {
-                        this.Avatar = bitmapImage;
-                    }
+                        Avatar = bitmapImage;
 
                     worker.Dispose();
                 };
 
-            worker.RunWorkerAsync("http://static.f-list.net/images/avatar/" + this.Name.ToLower() + ".png");
+            worker.RunWorkerAsync("https://static.f-list.net/images/avatar/" + Name.ToLower() + ".png");
         }
 
         #endregion
 
         #region Methods
+
         protected override void Dispose(bool isManaged)
         {
             if (isManaged)
             {
-                this.Name = null;
-                this.StatusMessage = null;
-                this.Avatar.StreamSource.Dispose();
-                this.lastReport.Dispose();
+                Name = null;
+                StatusMessage = null;
+                Avatar.StreamSource.Dispose();
+                lastReport.Dispose();
             }
 
             base.Dispose(isManaged);
