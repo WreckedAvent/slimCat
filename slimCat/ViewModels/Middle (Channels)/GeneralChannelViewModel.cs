@@ -719,7 +719,7 @@ namespace Slimcat.ViewModels
         private bool MeetsFilter(IMessage message)
         {
             return message.MeetsFilters(
-                GenderSettings, SearchSettings, ChatModel, ChatModel.CurrentChannel as GeneralChannelModel);
+                GenderSettings, SearchSettings, CharacterManager, ChatModel.CurrentChannel as GeneralChannelModel);
         }
 
         private void OnAdsChanged(object sender, NotifyCollectionChangedEventArgs e)

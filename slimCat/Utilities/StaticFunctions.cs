@@ -29,6 +29,7 @@ namespace Slimcat.Utilities
     using System.Web;
     using System.Windows;
     using System.Windows.Media;
+    using System.Windows.Media.Imaging;
     using Models;
 
     #endregion
@@ -284,31 +285,30 @@ namespace Slimcat.Utilities
         ///     The <see cref="bool" />.
         /// </returns>
         public static bool MeetsChatModelLists(
-            this ICharacter character, GenericSearchSettingsModel search, IChatModel cm, GeneralChannelModel channel)
+            this ICharacter character, GenericSearchSettingsModel search, ICharacterManager cm, GeneralChannelModel channel)
         {
-            // notice the toListing, this is an attempt to fix EnumerationChanged errors
-            if (cm.Ignored.ToList().Contains(character.Name))
-                return search.ShowIgnored;
+            var name = character.Name;
 
-            if (cm.NotInterested.ToList().Contains(character.Name))
-                return search.ShowNotInterested;
+            var map = new HashSet<KeyValuePair<ListKind, bool>>
+                {
+                    new KeyValuePair<ListKind, bool>(ListKind.Ignored, search.ShowIgnored),
+                    new KeyValuePair<ListKind, bool>(ListKind.NotInterested, search.ShowNotInterested),
+                    new KeyValuePair<ListKind, bool>(ListKind.Moderator, search.ShowMods),
+                    new KeyValuePair<ListKind, bool>(ListKind.Friend, search.ShowFriends),
+                    new KeyValuePair<ListKind, bool>(ListKind.Bookmark, search.ShowBookmarks)
+                };
 
-            if (cm.Mods.ToList().Contains(character.Name))
-                return search.ShowMods;
-
-            if (channel != null)
+            // weee thread-safe functions
+            foreach (var pair in map.Where(pair => cm.IsOnList(name, pair.Key)))
             {
-                if (channel.Moderators.ToList().Contains(character.Name))
-                    return search.ShowMods;
+                return pair.Value;
             }
 
-            if (cm.Friends.ToList().Contains(character.Name))
-                return search.ShowFriends;
+            if (channel == null) return search.MeetsStatusFilter(character);
 
-            if (cm.Bookmarks.ToList().Contains(character.Name))
-                return search.ShowBookmarks;
-
-            return search.MeetsStatusFilter(character);
+            return channel.CharacterManager.IsOnList(name, ListKind.Moderator) 
+                ? search.ShowMods 
+                : search.MeetsStatusFilter(character);
         }
 
         /// <summary>
@@ -336,16 +336,14 @@ namespace Slimcat.Utilities
             this ICharacter character,
             GenderSettingsModel genders,
             GenericSearchSettingsModel search,
-            IChatModel cm,
+            ICharacterManager cm,
             GeneralChannelModel channel)
         {
             if (!character.NameContains(search.SearchString))
                 return false;
 
-            if (!genders.MeetsGenderFilter(character))
-                return false;
-
-            return character.MeetsChatModelLists(search, cm, channel);
+            return genders.MeetsGenderFilter(character) 
+                && character.MeetsChatModelLists(search, cm, channel);
         }
 
         /// <summary>
@@ -373,17 +371,15 @@ namespace Slimcat.Utilities
             this IMessage message,
             GenderSettingsModel genders,
             GenericSearchSettingsModel search,
-            IChatModel cm,
+            ICharacterManager cm,
             GeneralChannelModel channel)
         {
             if (!message.Poster.NameContains(search.SearchString)
                 && !message.Message.ContainsOrdinal(search.SearchString))
                 return false;
 
-            if (!genders.MeetsGenderFilter(message.Poster))
-                return false;
-
-            return message.Poster.MeetsChatModelLists(search, cm, channel);
+            return genders.MeetsGenderFilter(message.Poster) 
+                && message.Poster.MeetsChatModelLists(search, cm, channel);
         }
 
         /// <summary>
@@ -435,45 +431,39 @@ namespace Slimcat.Utilities
         /// <returns>
         ///     The <see cref="string" />.
         /// </returns>
-        public static string RelationshipToUser(this ICharacter character, IChatModel cm, GeneralChannelModel channel)
+        public static char RelationshipToUser(this ICharacter character, ICharacterManager cm, GeneralChannelModel channel)
         {
-            // first, push friends, bookmarks, and moderators to the top of the list
-            if (cm.OnlineFriends.Contains(character))
-                return "a"; // Really important people!
+            var map = new HashSet<KeyValuePair<ListKind, char>>
+                {
+                    new KeyValuePair<ListKind, char>(ListKind.Friend, 'a'),
+                    new KeyValuePair<ListKind, char>(ListKind.Bookmark, 'b'),
+                    new KeyValuePair<ListKind, char>(ListKind.Interested, 'c'),
+                    new KeyValuePair<ListKind, char>(ListKind.Moderator, 'd'),
+                    new KeyValuePair<ListKind, char>(ListKind.Ignored, 'z'),
+                    new KeyValuePair<ListKind, char>(ListKind.NotInterested, 'z'),
+                };
 
-            if (cm.OnlineBookmarks.Contains(character))
-                return "b"; // Important people!
+            var statusMap = new Dictionary<StatusType, char>
+                {
+                    {StatusType.Looking, 'e'},
+                    {StatusType.Busy, 'f'},
+                    {StatusType.Idle, 'g'},
+                    {StatusType.Away, 'g'},
+                    {StatusType.Dnd, 'h'}
+                };
 
-            if (cm.Interested.Contains(character.Name))
-                return "c"; // interesting people!
-
-            if (cm.OnlineGlobalMods.Contains(character))
-                return "d"; // Useful people!
-
-            if (channel != null && channel.Moderators.Contains(character.Name))
-                return "d";
-
-            if (cm.Ignored.Contains(character.Name))
-                return "z"; // "I don't want to see this person"
-
-            if (cm.NotInterested.Contains(character.Name))
-                return "z"; // I also do not wish to see this person
-
-            // then sort then by status
-            switch (character.Status)
+            foreach (var pair in map.Where(pair => cm.IsOnList(character.Name, pair.Key)))
             {
-                case StatusType.Looking:
-                    return "e"; // People we want to bone!
-                case StatusType.Busy:
-                    return "f"; // Not the most available, but still possible to play with
-                case StatusType.Idle:
-                case StatusType.Away:
-                    return "g"; // probably not going to play with, lower on list
-                case StatusType.Dnd:
-                    return "h"; // most likely not going to play with, lowest aside ignored
-                default:
-                    return "e";
+                return pair.Value;
             }
+
+            if (channel != null && channel.CharacterManager.IsOnList(character.Name, ListKind.Moderator))
+                return 'd';
+
+            char result;
+            return statusMap.TryGetValue(character.Status, out result) 
+                ? result 
+                : 'e';
         }
 
         /// <summary>

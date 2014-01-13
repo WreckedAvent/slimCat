@@ -150,7 +150,7 @@ namespace Slimcat.ViewModels
 
         private bool MeetsFilter(ICharacter character)
         {
-            return character.MeetsFilters(GenderSettings, SearchSettings, ChatModel, null);
+            return character.MeetsFilters(GenderSettings, SearchSettings, CharacterManager, null);
         }
 
         private void OnChannelListUpdated(object sender, EventArgs e)
@@ -159,9 +159,9 @@ namespace Slimcat.ViewModels
                 OnPropertyChanged("SortedUsers");
         }
 
-        private string RelationshipToUser(ICharacter character)
+        private char RelationshipToUser(ICharacter character)
         {
-            return character.RelationshipToUser(ChatModel, null);
+            return character.RelationshipToUser(CharacterManager, null);
         }
 
         #endregion

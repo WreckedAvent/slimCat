@@ -52,6 +52,7 @@ namespace Slimcat.Services
         #region Fields
 
         private readonly IChatModel cm;
+        private readonly ICharacterManager manager;
 
         private readonly IEventAggregator events;
 
@@ -80,10 +81,12 @@ namespace Slimcat.Services
         /// <param name="cm">
         ///     The cm.
         /// </param>
-        public NotificationsDaemon(IEventAggregator eventagg, IChatModel cm)
+        /// <param name="manager"></param>
+        public NotificationsDaemon(IEventAggregator eventagg, IChatModel cm, ICharacterManager manager)
         {
             events = eventagg;
             this.cm = cm;
+            this.manager = manager;
             toast = new ToastNotificationsViewModel(events);
 
             events.GetEvent<NewMessageEvent>().Subscribe(HandleNewChannelMessage, true);
@@ -281,7 +284,7 @@ namespace Slimcat.Services
                 var shouldDing = channel.Settings.MessageNotifyLevel
                                  > (int) ChannelSettingsModel.NotifyLevel.NotificationAndToast;
 
-                if ((channel.Settings.MessageNotifyOnlyForInteresting && cm.IsOfInterest(message.Poster.Name))
+                if ((channel.Settings.MessageNotifyOnlyForInteresting && manager.IsOfInterest(message.Poster.Name))
                     || !channel.Settings.MessageNotifyOnlyForInteresting)
                 {
                     NotifyUser(shouldDing, shouldDing, message.Poster.Name + '\n' + cleanMessageText, channel.Id);
@@ -412,7 +415,7 @@ namespace Slimcat.Services
 
                     if (channel.Settings.PromoteDemoteNotifyOnlyForInteresting)
                     {
-                        if (!cm.IsOfInterest(targetCharacter))
+                        if (!manager.IsOfInterest(targetCharacter))
                             return; // if we only want to know interesting people, no need to evalute further
                     }
 
@@ -432,7 +435,7 @@ namespace Slimcat.Services
 
                     if (channel.Settings.JoinLeaveNotifyOnlyForInteresting)
                     {
-                        if (!cm.IsOfInterest(targetCharacter))
+                        if (!manager.IsOfInterest(targetCharacter))
                             return;
                     }
 
@@ -463,7 +466,7 @@ namespace Slimcat.Services
                     AddNotification(model);
                     NotifyUser(true, true, notification.ToString(), targetCharacter, "report");
                 }
-                else if (cm.IsOfInterest(targetCharacter))
+                else if (manager.IsOfInterest(targetCharacter))
                 {
                     AddNotification(model);
 

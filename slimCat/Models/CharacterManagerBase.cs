@@ -3,6 +3,7 @@ namespace Slimcat.Models
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Linq;
     using Utilities;
 
     public abstract class CharacterManagerBase : ICharacterManager
@@ -42,47 +43,49 @@ namespace Slimcat.Models
                 : new CharacterModel{Name = name, Status = StatusType.Offline};
         }
 
-        public void Remove(string name, ListKind listKind)
-        {
-            lock (Locker)
-            {
-                ICharacter character;
-                if (characters.TryRemove(name, out character))
-                    Collections.Each(x => x.Remove(name));
-            }
-        }
-
-        public void Add(string name, ListKind listKind)
+        public bool Remove(string name, ListKind listKind)
         {
             lock (Locker)
             {
                 CollectionPair toModify;
-                if (CollectionDictionary.TryGetValue(listKind, out toModify))
-                    toModify.Add(name);
+                return CollectionDictionary.TryGetValue(listKind, out toModify) && toModify.Remove(name);
             }
         }
 
-        public void SignOn(ICharacter character)
+        public bool Add(string name, ListKind listKind)
+        {
+            lock (Locker)
+            {
+                CollectionPair toModify;
+                return CollectionDictionary.TryGetValue(listKind, out toModify) && toModify.Add(name);
+            }
+        }
+
+        public bool SignOn(ICharacter character)
         {
             lock (Locker)
             {
                 var name = character.Name;
-                if (characters.TryAdd(name, character))
-                    Collections.Each(x => x.SignOn(name));
+                if (!characters.TryAdd(name, character)) return false;
+
+                Collections.Each(x => x.SignOn(name));
+                return true;
             }
         }
 
-        public void SignOff(string name)
+        public bool SignOff(string name)
         {
             lock (Locker)
             {
                 ICharacter character;
-                if (characters.TryRemove(name, out character))
-                    Collections.Each(x => x.SignOff(name));
+                if (!characters.TryRemove(name, out character)) return false;
+
+                Collections.Each(x => x.SignOff(name));
+                return true;
             }
         }
 
-        public ICollection<string> Get(ListKind listKind, bool onlineOnly = true)
+        public ICollection<string> GetNames(ListKind listKind, bool onlineOnly = true)
         {
             lock (Locker)
             {
@@ -118,6 +121,15 @@ namespace Slimcat.Models
         }
 
         public abstract bool IsOfInterest(string name);
+
+        public ICollection<ICharacter> GetCharacters(ListKind listKind, bool isOnlineOnly = true)
+        {
+            lock (Locker)
+            {
+                var names = GetNames(listKind, isOnlineOnly);
+                return names.Select(x => characters[x]).ToList();
+            }
+        } 
 
         public void Dispose()
         {

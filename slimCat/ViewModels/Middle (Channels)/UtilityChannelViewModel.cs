@@ -279,7 +279,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int OnlineBookmarksCount
         {
-            get { return CharacterManager.Get(ListKind.Bookmark).Count; }
+            get { return CharacterManager.GetNames(ListKind.Bookmark).Count; }
         }
 
         /// <summary>
@@ -303,7 +303,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int OnlineFriendsCount
         {
-            get { return CharacterManager.Get(ListKind.Friend).Count; }
+            get { return CharacterManager.GetNames(ListKind.Friend).Count; }
         }
 
         /// <summary>

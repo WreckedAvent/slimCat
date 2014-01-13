@@ -14,10 +14,10 @@
         public HashSet<string> List { get; private set; }
         public HashSet<string> OnlineList { get; private set; }
 
-        public void Add(string name)
+        public bool Add(string name)
         {
-            List.Add(name);
             OnlineList.Add(name);
+            return List.Add(name);
         }
 
         public void Set(IEnumerable<string> collection)
@@ -26,21 +26,20 @@
             List.UnionWith(collection);
         }
 
-        public void SignOff(string name)
+        public bool SignOff(string name)
         {
-            OnlineList.Remove(name);
+            return OnlineList.Remove(name);
         }
 
-        public void SignOn(string name)
+        public bool SignOn(string name)
         {
-            if (List.Contains(name))
-                OnlineList.Add(name);
+            return List.Contains(name) && OnlineList.Add(name);
         }
 
-        public void Remove(string name)
+        public bool Remove(string name)
         {
-            List.Remove(name);
             OnlineList.Remove(name);
+            return List.Remove(name);
         }
     }
 }
