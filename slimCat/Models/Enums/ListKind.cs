@@ -8,6 +8,7 @@
         Moderator,
         Interested,
         NotInterested,
-        Ignored
+        Ignored,
+        Banned
     }
 }

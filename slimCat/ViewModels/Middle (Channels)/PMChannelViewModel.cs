@@ -80,8 +80,8 @@ namespace Slimcat.ViewModels
         ///     The cm.
         /// </param>
         public PmChannelViewModel(
-            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm, IOnlineCharacterLists lists)
-            : base(contain, regman, events, cm, lists)
+            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm, ICharacterManager manager)
+            : base(contain, regman, events, cm, manager)
         {
             try
             {
@@ -164,7 +164,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICharacter ConversationWith
         {
-            get { return conversationWith ?? (conversationWith = Lists.Find(Model.Id)); }
+            get { return conversationWith ?? (conversationWith = CharacterManager.Find(Model.Id)); }
         }
 
         public ObservableCollection<IViewableObject> CurrentMessages

@@ -58,7 +58,7 @@ namespace Slimcat.Utilities
                 Container.RegisterType<IChatModel, ChatModel>(new ContainerControlledLifetimeManager());
                 Container.RegisterType<IChannelManager, MessageDaemon>(new ContainerControlledLifetimeManager());
                 Container.RegisterType<EventAggregator>(new ContainerControlledLifetimeManager());
-                Container.RegisterType<IOnlineCharacterLists, OnlineCharacterLists>(
+                Container.RegisterType<ICharacterManager, GlobalCharacterManager>(
                     new ContainerControlledLifetimeManager());
 
                 // these are services that are not directly used by our singletons or modules

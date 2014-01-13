@@ -81,8 +81,8 @@ namespace Slimcat.ViewModels
         ///     The events.
         /// </param>
         public ChannelsTabViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager reggman, IEventAggregator events)
-            : base(contain, reggman, events, cm)
+            IChatModel cm, IUnityContainer contain, IRegionManager reggman, IEventAggregator events, ICharacterManager manager)
+            : base(contain, reggman, events, cm, manager)
         {
             Container.RegisterType<object, ChannelTabView>(ChannelsTabView);
 

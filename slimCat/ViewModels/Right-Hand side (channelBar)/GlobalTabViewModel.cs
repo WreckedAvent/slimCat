@@ -74,8 +74,8 @@ namespace Slimcat.ViewModels
         ///     The eventagg.
         /// </param>
         public GlobalTabViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
-            : base(contain, regman, eventagg, cm)
+            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg, ICharacterManager manager)
+            : base(contain, regman, eventagg, cm, manager)
         {
             Container.RegisterType<object, GlobalTabView>(GlobalTabView);
             genderSettings = new GenderSettingsModel();
@@ -139,16 +139,9 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the sorted users.
         /// </summary>
-        public IList<ICharacter> SortedUsers
+        public ICollection<ICharacter> SortedUsers
         {
-            get
-            {
-                return
-                    ChatModel.OnlineCharacters.Where(MeetsFilter)
-                        .OrderBy(RelationshipToUser)
-                        .ThenBy(x => x.Name)
-                        .ToList();
-            }
+            get { return CharacterManager.SortedCharacters; }
         }
 
         #endregion

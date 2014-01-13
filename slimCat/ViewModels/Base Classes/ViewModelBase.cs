@@ -26,6 +26,7 @@ namespace Slimcat.ViewModels
     using System.Diagnostics;
     using System.Linq;
     using System.Web;
+    using System.Web.UI.WebControls;
     using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
@@ -89,7 +90,7 @@ namespace Slimcat.ViewModels
         /// <param name="cm">
         ///     The cm.
         /// </param>
-        protected ViewModelBase(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm, IOnlineCharacterLists lists)
+        protected ViewModelBase(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm, ICharacterManager manager)
         {
             try
             {
@@ -97,7 +98,7 @@ namespace Slimcat.ViewModels
                 RegionManager = regman.ThrowIfNull("regman");
                 Events = events.ThrowIfNull("events");
                 ChatModel = cm.ThrowIfNull("cm");
-                Lists = lists.ThrowIfNull("lists");
+                CharacterManager = manager.ThrowIfNull("manager");
 
                 RightClickMenuViewModel = new RightClickMenuViewModel(ChatModel.IsGlobalModerator);
                 CreateReportViewModel = new CreateReportViewModel(Events, ChatModel);
@@ -183,11 +184,11 @@ namespace Slimcat.ViewModels
                     return false;
 
                 var isLocalMod = false;
-                if (ChatModel.CurrentChannel is GeneralChannelModel)
+                var channel = ChatModel.CurrentChannel as GeneralChannelModel;
+
+                if (channel != null)
                 {
-                    isLocalMod =
-                        (ChatModel.CurrentChannel as GeneralChannelModel).Moderators.Contains(
-                            ChatModel.CurrentCharacter.Name);
+                    isLocalMod = channel.CharacterManager.IsOnList(ChatModel.CurrentCharacter.Name, ListKind.Moderator);
                 }
 
                 return ChatModel.IsGlobalModerator || isLocalMod;
@@ -260,8 +261,7 @@ namespace Slimcat.ViewModels
                 return openMenu ?? (openMenu = new RelayCommand(
                     args =>
                         {
-                            var newTarget =
-                                ChatModel.FindCharacter(args as string);
+                            var newTarget = CharacterManager.Find(args as string);
                             updateRightClickMenu(newTarget);
                         }));
             }
@@ -308,7 +308,7 @@ namespace Slimcat.ViewModels
 
         protected IEventAggregator Events { get; set; }
 
-        protected IOnlineCharacterLists Lists { get; set; }
+        protected ICharacterManager CharacterManager { get; set; }
 
         #endregion
 
@@ -330,7 +330,7 @@ namespace Slimcat.ViewModels
         /// </returns>
         public bool CanHandleReport(object args)
         {
-            return ChatModel.FindCharacter(args as string).HasReport;
+            return CharacterManager.Find(args as string).HasReport;
         }
 
         #endregion
@@ -402,7 +402,7 @@ namespace Slimcat.ViewModels
         /// </returns>
         private bool CanIgnore(object args)
         {
-            return args is string && !ChatModel.Ignored.Contains(args as string, StringComparer.OrdinalIgnoreCase);
+            return args is string && !CharacterManager.IsOnList(args as string, ListKind.Ignored, false);
         }
 
         /// <summary>

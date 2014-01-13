@@ -52,6 +52,11 @@ namespace Slimcat.Services
 
         private readonly IList<IDictionary<string, object>> que = new List<IDictionary<string, object>>();
 
+        private const string nameArgument = "name";
+        private const string characterArgument = "character";
+        private const string channelArgument = "channel";
+        private const string messageArgument = "message";
+
         #endregion
 
         #region Constructors and Destructors
@@ -84,8 +89,8 @@ namespace Slimcat.Services
             IUnityContainer contain,
             IRegionManager regman,
             IEventAggregator eventagg,
-            IOnlineCharacterLists lists)
-            : base(contain, regman, eventagg, cm, lists)
+            ICharacterManager characterManager)
+            : base(contain, regman, eventagg, cm, characterManager)
         {
             connection = conn;
             this.manager = manager;
@@ -177,16 +182,16 @@ namespace Slimcat.Services
 
         private void AdminsCommand(IDictionary<string, object> command)
         {
-            Lists.Set(ListKind.Moderator, command["ops"] as string[]);
-            if (Lists.Get(ListKind.Moderator).Contains(ChatModel.CurrentCharacter.Name))
+            CharacterManager.Set(command["ops"] as string[], ListKind.Moderator);
+            if (CharacterManager.Get(ListKind.Moderator).Contains(ChatModel.CurrentCharacter.Name))
                 Dispatcher.Invoke((Action) delegate { ChatModel.IsGlobalModerator = true; });
         }
 
         private void BroadcastCommand(IDictionary<string, object> command)
         {
-            var message = command["message"] as string;
-            var posterName = command["character"] as string;
-            var poster = Lists.Find(posterName);
+            var message = command[messageArgument] as string;
+            var posterName = command[characterArgument] as string;
+            var poster = CharacterManager.Find(posterName);
 
             Events.GetEvent<NewUpdateEvent>()
                 .Publish(
@@ -195,25 +200,19 @@ namespace Slimcat.Services
 
         private void ChannelBanListCommand(IDictionary<string, object> command)
         {
-            var channelId = (string) command["channel"];
+            var channelId = (string) command[channelArgument];
             var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
 
             if (channel == null)
                 return;
 
-            channel.Banned.Clear();
-
-            var message = ((string) command["message"]).Split(':');
+            var message = ((string) command[channelArgument]).Split(':');
             var banned = message[1].Trim();
 
             if (banned.IndexOf(',') == -1)
-                channel.Banned.Add(banned);
+                channel.CharacterManager.Add(banned, ListKind.Banned);
             else
-            {
-                var bannedList = banned.Split(',');
-                foreach (var ban in bannedList)
-                    channel.Banned.Add(ban.Trim());
-            }
+                channel.CharacterManager.Set(banned.Split(','), ListKind.Banned);
 
             Events.GetEvent<NewUpdateEvent>()
                 .Publish(new ChannelUpdateModel(channel, new ChannelUpdateModel.ChannelTypeBannedListEventArgs()));
@@ -255,14 +254,12 @@ namespace Slimcat.Services
             dynamic users = command["users"]; // dynamic lets us deal with odd syntax
             foreach (IDictionary<string, object> character in users)
             {
-                var name = character["identity"] as string;
+                var name = character["identity"] as string; 
 
                 if (string.IsNullOrWhiteSpace(name))
                     continue;
 
                 if (
-                    !channel.Users.Any(
-                        x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && ChatModel.IsOnline(name)))
                     channel.Users.Add(ChatModel.FindCharacter(name));
             }
         }

@@ -87,8 +87,8 @@ namespace Slimcat.ViewModels
         ///     The eventagg.
         /// </param>
         public ManageListsViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
-            : base(contain, regman, eventagg, cm)
+            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg, ICharacterManager manager)
+            : base(contain, regman, eventagg, cm, manager)
         {
             Container.RegisterType<object, ManageListsTabView>(ManageListsTabView);
 
@@ -174,7 +174,14 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> Banned
         {
-            get { return HasUsers ? Update(((GeneralChannelModel) ChatModel.CurrentChannel).Banned, roomBans) : null; }
+            get
+            {
+                var channel = ChatModel.CurrentChannel as GeneralChannelModel;
+                if (HasUsers && channel != null)
+                {
+                    return channel.CharacterManager.Get(ListKind.Banned, false);
+                }
+            }
         }
 
         /// <summary>

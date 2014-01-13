@@ -82,8 +82,8 @@ namespace Slimcat.ViewModels
         ///     The events.
         /// </param>
         public ChannelbarViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator events)
-            : base(contain, regman, events, cm)
+            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator events, ICharacterManager manager)
+            : base(contain, regman, events, cm, manager)
         {
             try
             {

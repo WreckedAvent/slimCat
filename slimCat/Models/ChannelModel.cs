@@ -251,7 +251,7 @@ namespace Slimcat.Models
         /// </summary>
         protected int Unread
         {
-            get { return Messages.Count - LastReadCount; }
+            get { return Math.Max(Messages.Count - LastReadCount, 0); }
         }
 
         protected bool UnreadContainsInteresting { private get; set; }

@@ -28,6 +28,7 @@ namespace Slimcat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
+    using Services;
     using Utilities;
     using Views;
 
@@ -79,8 +80,8 @@ namespace Slimcat.ViewModels
         ///     The eventagg.
         /// </param>
         public NotificationsTabViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
-            : base(contain, regman, eventagg, cm)
+            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg, ICharacterManager manager)
+            : base(contain, regman, eventagg, cm, manager)
         {
             Container.RegisterType<object, NotificationsTabView>(NotificationsTabView);
 

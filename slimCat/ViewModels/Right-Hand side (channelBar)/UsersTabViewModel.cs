@@ -76,8 +76,8 @@ namespace Slimcat.ViewModels
         ///     The eventagg.
         /// </param>
         public UsersTabViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
-            : base(contain, regman, eventagg, cm)
+            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg, ICharacterManager manager)
+            : base(contain, regman, eventagg, cm, manager)
         {
             Container.RegisterType<object, UsersTabView>(UsersTabView);
             genderSettings = new GenderSettingsModel();
@@ -147,19 +147,14 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the sorted users.
         /// </summary>
-        public IEnumerable<ICharacter> SortedUsers
+        public ICollection<ICharacter> SortedUsers
         {
             get
             {
-                if (HasUsers)
+                var channel = ChatModel.CurrentChannel as GeneralChannelModel;
+                if (HasUsers && channel != null)
                 {
-                    lock (SelectedChan.Users)
-                    {
-                        return
-                            SelectedChan.Users.Where(MeetsFilter)
-                                .OrderBy(RelationshipToUser)
-                                .ThenBy(x => x.Name);
-                    }
+                    return channel.CharacterManager.SortedCharacters;
                 }
                 return null;
             }

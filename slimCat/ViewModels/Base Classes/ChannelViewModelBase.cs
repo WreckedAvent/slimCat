@@ -92,8 +92,8 @@ namespace Slimcat.ViewModels
         ///     The cm.
         /// </param>
         protected ChannelViewModelBase(
-            IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm, IOnlineCharacterLists lists)
-            : base(contain, regman, events, cm, lists)
+            IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm, ICharacterManager manager)
+            : base(contain, regman, events, cm, manager)
         {
             Events.GetEvent<ErrorEvent>().Subscribe(UpdateError);
 

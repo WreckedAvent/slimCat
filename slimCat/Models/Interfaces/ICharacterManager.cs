@@ -1,13 +1,19 @@
 ﻿namespace Slimcat.Models
 {
+    using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
 
-    public interface IOnlineCharacterLists
+    /// <summary>
+    /// A generic way to
+    /// </summary>
+    public interface ICharacterManager : IDisposable
     {
         ConcurrentDictionary<string, ICharacter> CharacterDictionary { get; }
 
         ICollection<ICharacter> Characters { get; }
+
+        ICollection<ICharacter> SortedCharacters { get; } 
 
         int CharacterCount { get; }
 
@@ -18,14 +24,14 @@
         /// </summary>
         /// <param name="name">The name of the character to remove</param>
         /// <param name="listKind">Which kind of list to remove from</param>
-        void Remove(string name, ListKind listKind = ListKind.Online);
+        void Remove(string name, ListKind listKind);
 
         /// <summary>
         /// Adds a character to both the offline and online lists. Thread-safe.
         /// </summary>
         /// <param name="name">The name of the character to add</param>
         /// <param name="listKind">Which kind of list to add to</param>
-        void Add(string name, ListKind listKind = ListKind.Online);
+        void Add(string name, ListKind listKind);
 
         /// <summary>
         /// Adds a character to online lists if they are on the offline ones. Thread-safe.
@@ -52,7 +58,7 @@
         /// </summary>
         /// <param name="listKind">The kind of list to set. Cannot be 'Online'</param>
         /// <param name="names">The list of names to set the offline list to</param>
-        void Set(ListKind listKind, IEnumerable<string> names);
+        void Set(IEnumerable<string> names, ListKind listKind);
 
         /// <summary>
         /// Evaluates if a given name is of interest to a user. Thread-safe.
@@ -60,5 +66,14 @@
         /// <param name="name">The character name to check</param>
         /// <returns>Whether or not the character is of interest</returns>
         bool IsOfInterest(string name);
+
+        /// <summary>
+        /// Evaluates if a given name is on a given list. Thread-safe.
+        /// </summary>
+        /// <param name="name">The character name to check</param>
+        /// <param name="listKind">The kind of list to check</param>
+        /// <param name="onlineOnly">Whether to check only the online list or not</param>
+        /// <returns>Whether or not the character is on the given list</returns>
+        bool IsOnList(string name, ListKind listKind, bool onlineOnly = true);
     }
 }

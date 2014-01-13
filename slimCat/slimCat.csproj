@@ -139,6 +139,8 @@
     </ApplicationDefinition>
     <Compile Include="lib\FlashWindowHelper.cs" />
     <Compile Include="lib\TextBlockHelper.cs" />
+    <Compile Include="Models\CharacterManagerBase.cs" />
+    <Compile Include="Models\CollectionPair.cs" />
     <Compile Include="Models\Enums\ChannelMode.cs" />
     <Compile Include="Models\ChannelModel.cs" />
     <Compile Include="Models\ChannelSettingsModel.cs" />
@@ -152,16 +154,17 @@
     <Compile Include="Models\GenderSettingsModel.cs" />
     <Compile Include="Models\GeneralChannelModel.cs" />
     <Compile Include="Models\GenericSearchSettingsModel.cs" />
+    <Compile Include="Models\ChannelCharacterManager.cs" />
     <Compile Include="Models\Interfaces\IAccount.cs" />
     <Compile Include="Models\Interfaces\ICharacter.cs" />
-    <Compile Include="Models\Interfaces\ICharacterList.cs" />
+    <Compile Include="Models\Interfaces\ICharacterManager.cs" />
     <Compile Include="Models\Interfaces\IChatModel.cs" />
     <Compile Include="Models\Interfaces\IMessage.cs" />
     <Compile Include="Models\Interfaces\IViewableObject.cs" />
     <Compile Include="Models\MessageBase.cs" />
     <Compile Include="Models\Enums\MessageType.cs" />
     <Compile Include="Models\NotificationModels.cs" />
-    <Compile Include="Models\OnlineCharacterLists.cs" />
+    <Compile Include="Models\GlobalCharacterManager.cs" />
     <Compile Include="Models\ReportModel.cs" />
     <Compile Include="Models\Enums\StatusType.cs" />
     <Compile Include="Models\Enums\TypingStatus.cs" />

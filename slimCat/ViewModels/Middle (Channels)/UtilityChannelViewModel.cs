@@ -83,8 +83,8 @@ namespace Slimcat.ViewModels
         ///     The cm.
         /// </param>
         public UtilityChannelViewModel(
-            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
-            : base(contain, regman, events, cm)
+            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm, ICharacterManager manager)
+            : base(contain, regman, events, cm, manager)
         {
             try
             {
@@ -203,7 +203,6 @@ namespace Slimcat.ViewModels
             {
                 ApplicationSettings.FriendsAreAccountWide = value;
                 SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
-                ChatModel.FriendsChanged();
             }
         }
 
@@ -280,7 +279,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int OnlineBookmarksCount
         {
-            get { return ChatModel.OnlineBookmarks == null ? 0 : ChatModel.OnlineBookmarks.Count(); }
+            get { return CharacterManager.Get(ListKind.Bookmark).Count; }
         }
 
         /// <summary>
@@ -288,7 +287,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int OnlineCount
         {
-            get { return ChatModel.OnlineCharacterCount; }
+            get { return CharacterManager.CharacterCount; }
         }
 
         /// <summary>
@@ -304,7 +303,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int OnlineFriendsCount
         {
-            get { return ChatModel.OnlineFriends == null ? 0 : ChatModel.OnlineFriends.Count(); }
+            get { return CharacterManager.Get(ListKind.Friend).Count; }
         }
 
         /// <summary>
@@ -467,7 +466,7 @@ namespace Slimcat.ViewModels
         /// </returns>
         public int OnlineCountPrime()
         {
-            return ChatModel.OnlineCharacters.Count();
+            return OnlineCount;
         }
 
         /// <summary>

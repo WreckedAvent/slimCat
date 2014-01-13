@@ -106,8 +106,8 @@ namespace Slimcat.ViewModels
         ///     The cm.
         /// </param>
         public GeneralChannelViewModel(
-            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
-            : base(contain, regman, events, cm)
+            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm, ICharacterManager manager)
+            : base(contain, regman, events, cm, manager)
         {
             try
             {
@@ -615,7 +615,7 @@ namespace Slimcat.ViewModels
 
                 var model = (GeneralChannelModel) Model;
                 model.Description = null;
-                model.Moderators.Clear();
+                model.CharacterManager.Dispose();
             }
 
             base.Dispose(isManaged);
