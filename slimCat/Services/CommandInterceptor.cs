@@ -83,8 +83,9 @@ namespace Slimcat.Services
             IChannelManager manager,
             IUnityContainer contain,
             IRegionManager regman,
-            IEventAggregator eventagg)
-            : base(contain, regman, eventagg, cm)
+            IEventAggregator eventagg,
+            IOnlineCharacterLists lists)
+            : base(contain, regman, eventagg, cm, lists)
         {
             connection = conn;
             this.manager = manager;
@@ -176,8 +177,8 @@ namespace Slimcat.Services
 
         private void AdminsCommand(IDictionary<string, object> command)
         {
-            AddToSomeListCommand(command, "ops", ChatModel.Mods);
-            if (ChatModel.Mods.Contains(ChatModel.CurrentCharacter.Name))
+            Lists.Set(ListKind.Moderator, command["ops"] as string[]);
+            if (Lists.Get(ListKind.Moderator).Contains(ChatModel.CurrentCharacter.Name))
                 Dispatcher.Invoke((Action) delegate { ChatModel.IsGlobalModerator = true; });
         }
 
@@ -185,7 +186,7 @@ namespace Slimcat.Services
         {
             var message = command["message"] as string;
             var posterName = command["character"] as string;
-            var poster = ChatModel.FindCharacter(posterName);
+            var poster = Lists.Find(posterName);
 
             Events.GetEvent<NewUpdateEvent>()
                 .Publish(
@@ -195,7 +196,7 @@ namespace Slimcat.Services
         private void ChannelBanListCommand(IDictionary<string, object> command)
         {
             var channelId = (string) command["channel"];
-            var channel = ExtensionMethods.FirstByIdOrDefault(ChatModel.CurrentChannels, channelId);
+            var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
 
             if (channel == null)
                 return;
@@ -221,7 +222,7 @@ namespace Slimcat.Services
         private void ChannelDesciptionCommand(IDictionary<string, object> command)
         {
             var channelName = command["channel"];
-            var channel = Enumerable.First(ChatModel.CurrentChannels, x => x.Id == channelName as string);
+            var channel = ChatModel.CurrentChannels.First(x => x.Id == channelName as string);
             var description = command["description"];
 
             var isInitializer = string.IsNullOrWhiteSpace(channel.Description);
@@ -248,7 +249,7 @@ namespace Slimcat.Services
         {
             var channelName = (string) command["channel"];
             var mode = (ChannelMode) Enum.Parse(typeof (ChannelMode), (string) command["mode"], true);
-            var channel = ExtensionMethods.FirstByIdOrDefault(ChatModel.CurrentChannels, channelName);
+            var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
 
             channel.Mode = mode;
             dynamic users = command["users"]; // dynamic lets us deal with odd syntax
@@ -310,7 +311,7 @@ namespace Slimcat.Services
         private void ChannelOperatorListCommand(IDictionary<string, object> command)
         {
             var channelName = (string) command["channel"];
-            var channel = ExtensionMethods.FirstByIdOrDefault(ChatModel.CurrentChannels, channelName);
+            var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
 
             if (channel == null)
                 return;
@@ -349,7 +350,7 @@ namespace Slimcat.Services
                     LeaveChannelCommand(c);
             }
 
-            var characterChannel = ExtensionMethods.FirstByIdOrDefault(ChatModel.CurrentPms, characterName);
+            var characterChannel = ChatModel.CurrentPms.FirstByIdOrDefault(characterName);
             if (characterChannel != null)
                 characterChannel.TypingStatus = TypingStatus.Clear;
 
@@ -421,8 +422,7 @@ namespace Slimcat.Services
             {
                 // this makes unignore actually work
                 var toRemove =
-                    Enumerable.FirstOrDefault(ChatModel.Ignored,
-                        ignore => ignore.Equals(command["character"] as string, StringComparison.OrdinalIgnoreCase));
+                    ChatModel.Ignored.FirstOrDefault(ignore => ignore.Equals(command["character"] as string, StringComparison.OrdinalIgnoreCase));
                 if (toRemove != null)
                     ChatModel.Ignored.Remove(toRemove);
 
@@ -553,7 +553,7 @@ namespace Slimcat.Services
             // JCH is used in a few situations. It is used when others join a channel and when we join a channel
 
             // if this is a situation where we are joining a channel...
-            var channel = ExtensionMethods.FirstByIdOrDefault(ChatModel.CurrentChannels, channelName);
+            var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
             if (channel == null)
             {
                 var kind = ChannelType.Public;
@@ -612,7 +612,7 @@ namespace Slimcat.Services
             if (ChatModel.CurrentCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
                 return;
 
-            var channel = ExtensionMethods.FirstByIdOrDefault(ChatModel.CurrentChannels, channelName);
+            var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
             if (channel == null)
                 return;
 
@@ -647,7 +647,7 @@ namespace Slimcat.Services
             var message = (string) command["message"];
             var channel = (string) command["channel"];
 
-            if (!Enumerable.Contains(ChatModel.Ignored, character, StringComparer.OrdinalIgnoreCase))
+            if (!ChatModel.Ignored.Contains(character, StringComparer.OrdinalIgnoreCase))
                 manager.AddMessage(message, channel, character, isAd ? MessageType.Ad : MessageType.Normal);
         }
 
@@ -781,14 +781,14 @@ namespace Slimcat.Services
         private void PrivateMessageCommand(IDictionary<string, object> command)
         {
             var sender = (string) command["character"];
-            if (!Enumerable.Contains(ChatModel.Ignored, sender, StringComparer.OrdinalIgnoreCase))
+            if (!ChatModel.Ignored.Contains(sender, StringComparer.OrdinalIgnoreCase))
             {
-                if (ExtensionMethods.FirstByIdOrDefault(ChatModel.CurrentPms, sender) == null)
+                if (ChatModel.CurrentPms.FirstByIdOrDefault(sender) == null)
                     manager.AddChannel(ChannelType.PrivateMessage, sender);
 
                 manager.AddMessage(command["message"] as string, sender, sender);
 
-                var temp = ExtensionMethods.FirstByIdOrDefault(ChatModel.CurrentPms, sender);
+                var temp = ChatModel.CurrentPms.FirstByIdOrDefault(sender);
                 if (temp == null)
                     return;
 
@@ -811,7 +811,7 @@ namespace Slimcat.Services
             string title = null;
             if (channelId != null)
             {
-                var channel = ExtensionMethods.FirstByIdOrDefault(ChatModel.CurrentChannels, channelId);
+                var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
                 if (channel != null)
                     title = channel.Title;
             }
@@ -927,7 +927,7 @@ namespace Slimcat.Services
             var mode = (string) command["mode"];
 
             var newMode = (ChannelMode) Enum.Parse(typeof (ChannelMode), mode, true);
-            var channel = ExtensionMethods.FirstByIdOrDefault(ChatModel.CurrentChannels, channelId);
+            var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
 
             if (channel == null)
                 return;
@@ -945,7 +945,7 @@ namespace Slimcat.Services
             var channelId = command["channel"] as string;
             var isPublic = ((string) command["message"]).IndexOf("public", StringComparison.OrdinalIgnoreCase) != -1;
 
-            var channel = ExtensionMethods.FirstByIdOrDefault(ChatModel.CurrentChannels, channelId);
+            var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
 
             if (channel == null)
                 return; // can't change the settings of a room we don't know
@@ -1022,7 +1022,7 @@ namespace Slimcat.Services
         {
             var sender = (string) command["character"];
 
-            var channel = ExtensionMethods.FirstByIdOrDefault(ChatModel.CurrentPms, sender);
+            var channel = ChatModel.CurrentPms.FirstByIdOrDefault(sender);
             if (channel == null)
                 return;
 

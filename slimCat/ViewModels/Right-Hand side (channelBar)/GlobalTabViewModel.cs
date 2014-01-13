@@ -139,17 +139,15 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the sorted users.
         /// </summary>
-        public IEnumerable<ICharacter> SortedUsers
+        public IList<ICharacter> SortedUsers
         {
             get
             {
-                lock (ChatModel.OnlineCharacters)
-                {
-                    return
-                        ChatModel.OnlineCharacters.Where(MeetsFilter)
-                            .OrderBy(RelationshipToUser)
-                            .ThenBy(x => x.Name);
-                }
+                return
+                    ChatModel.OnlineCharacters.Where(MeetsFilter)
+                        .OrderBy(RelationshipToUser)
+                        .ThenBy(x => x.Name)
+                        .ToList();
             }
         }
 

@@ -49,7 +49,7 @@ namespace Slimcat.Models
         private readonly ObservableCollection<NotificationModel> notifications =
             new ObservableCollection<NotificationModel>();
 
-        private readonly IDictionary<string, ICharacter> onlineCharacters =
+        private readonly ConcurrentDictionary<string, ICharacter> onlineCharacters =
             new ConcurrentDictionary<string, ICharacter>(StringComparer.OrdinalIgnoreCase);
 
         private readonly ObservableCollection<GeneralChannelModel> ourChannels =
@@ -69,7 +69,7 @@ namespace Slimcat.Models
         // caches for speed improvements in filtering
         private IList<ICharacter> onlineBookmarkCache;
 
-        private IEnumerable<ICharacter> onlineCharactersCache;
+        private IList<ICharacter> onlineCharactersCache;
 
         private IList<ICharacter> onlineFriendCache;
 
@@ -223,7 +223,7 @@ namespace Slimcat.Models
         /// <summary>
         ///     Gets the online bookmarks.
         /// </summary>
-        public IEnumerable<ICharacter> OnlineBookmarks
+        public IList<ICharacter> OnlineBookmarks
         {
             get
             {
@@ -242,7 +242,7 @@ namespace Slimcat.Models
         /// <summary>
         ///     Gets the online characters.
         /// </summary>
-        public IEnumerable<ICharacter> OnlineCharacters
+        public IList<ICharacter> OnlineCharacters
         {
             get
             {
@@ -251,10 +251,15 @@ namespace Slimcat.Models
             }
         }
 
+        public int OnlineCharacterCount
+        {
+            get { return onlineCharacters.Count; }
+        }
+
         /// <summary>
         ///     Gets the online friends.
         /// </summary>
-        public IEnumerable<ICharacter> OnlineFriends
+        public IList<ICharacter> OnlineFriends
         {
             get
             {
@@ -275,7 +280,7 @@ namespace Slimcat.Models
         /// <summary>
         ///     Gets the online global mods.
         /// </summary>
-        public IEnumerable<ICharacter> OnlineGlobalMods
+        public IList<ICharacter> OnlineGlobalMods
         {
             get
             {
@@ -380,11 +385,10 @@ namespace Slimcat.Models
         /// </returns>
         public ICharacter FindCharacter(string name)
         {
-            if (IsOnline(name))
-                return OnlineCharactersDictionary[name];
-
-            Console.WriteLine("Unknown character: " + name);
-            return new CharacterModel {Name = name, Status = StatusType.Offline};
+            ICharacter toReturn;
+            return OnlineCharactersDictionary.TryGetValue(name, out toReturn) 
+                ? toReturn 
+                : new CharacterModel {Name = name, Status = StatusType.Offline};
         }
 
         public ChannelModel FindChannel(string id, string title = null)

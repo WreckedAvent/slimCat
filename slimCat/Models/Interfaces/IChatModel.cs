@@ -52,11 +52,6 @@ namespace Slimcat.Models
         ObservableCollection<GeneralChannelModel> AllChannels { get; }
 
         /// <summary>
-        ///     A list of all bookmarked characters
-        /// </summary>
-        IList<string> Bookmarks { get; }
-
-        /// <summary>
         ///     Gets or sets the client uptime.
         /// </summary>
         DateTimeOffset ClientUptime { get; set; }
@@ -70,21 +65,6 @@ namespace Slimcat.Models
         ///     A collection of all opened Pms
         /// </summary>
         ObservableCollection<PmChannelModel> CurrentPms { get; }
-
-        /// <summary>
-        ///     Gets the friends.
-        /// </summary>
-        IList<string> Friends { get; }
-
-        /// <summary>
-        ///     Gets the ignored.
-        /// </summary>
-        IList<string> Ignored { get; }
-
-        /// <summary>
-        ///     Gets the interested.
-        /// </summary>
-        IList<string> Interested { get; }
 
         /// <summary>
         ///     If we're actively connected and authenticated through F-Chat
@@ -102,39 +82,9 @@ namespace Slimcat.Models
         DateTimeOffset LastMessageReceived { get; set; }
 
         /// <summary>
-        ///     A list of all global moderators
-        /// </summary>
-        IList<string> Mods { get; }
-
-        /// <summary>
-        ///     Gets the not interested.
-        /// </summary>
-        IList<string> NotInterested { get; }
-
-        /// <summary>
         ///     A collection of all of our notifications
         /// </summary>
         ObservableCollection<NotificationModel> Notifications { get; }
-
-        /// <summary>
-        ///     A list of all online characters who are bookmarked
-        /// </summary>
-        IEnumerable<ICharacter> OnlineBookmarks { get; }
-
-        /// <summary>
-        ///     A list of all online characters
-        /// </summary>
-        IEnumerable<ICharacter> OnlineCharacters { get; }
-
-        /// <summary>
-        ///     A list of all online characters who are friends
-        /// </summary>
-        IEnumerable<ICharacter> OnlineFriends { get; }
-
-        /// <summary>
-        ///     A list of all online global moderators
-        /// </summary>
-        IEnumerable<ICharacter> OnlineGlobalMods { get; }
 
         /// <summary>
         ///     Information relating to the currently selected account
@@ -159,26 +109,6 @@ namespace Slimcat.Models
         #endregion
 
         #region Public Methods and Operators
-
-        /// <summary>
-        ///     The add character.
-        /// </summary>
-        /// <param name="character">
-        ///     The character.
-        /// </param>
-        void AddCharacter(ICharacter character);
-
-        /// <summary>
-        ///     Returns the ICharacter value of a given string, if online
-        /// </summary>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="ICharacter" />.
-        /// </returns>
-        ICharacter FindCharacter(string name);
-
         /// <summary>
         ///     Returns the ChannelModel for a given id/title, if it exists
         /// </summary>
@@ -186,56 +116,7 @@ namespace Slimcat.Models
         /// <param name="title">Title of the channel used to create if not existant</param>
         /// <returns></returns>
         ChannelModel FindChannel(string id, string title = null);
-
-        /// <summary>
-        ///     The is of interest.
-        /// </summary>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
-        bool IsOfInterest(string name);
-
-        /// <summary>
-        ///     Checks if a given user is online
-        /// </summary>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
-        bool IsOnline(string name);
-
-        /// <summary>
-        ///     The remove character.
-        /// </summary>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
-        void RemoveCharacter(string name);
-
-        /// <summary>
-        ///     Toggle our interest in a character
-        /// </summary>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
-        void ToggleInterestedMark(string name);
-
-        /// <summary>
-        ///     Toggle our disinterested in a character
-        /// </summary>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
-        void ToggleNotInterestedMark(string name);
-
         #endregion
-
-        void FriendsChanged();
 
         void Wipe();
     }

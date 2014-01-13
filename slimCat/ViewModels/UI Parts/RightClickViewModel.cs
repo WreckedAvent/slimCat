@@ -209,17 +209,17 @@ namespace Slimcat.ViewModels
         /// <param name="canUnignore">
         ///     The can unignore.
         /// </param>
-        /// <param name="hasReports">
+        /// <param name="thisHasReports">
         ///     The has reports.
         /// </param>
-        public void SetNewTarget(ICharacter newTarget, bool canIgnore, bool canUnignore, bool hasReports)
+        public void SetNewTarget(ICharacter newTarget, bool canIgnore, bool canUnignore, bool thisHasReports)
         {
             Target = newTarget;
             Target.GetAvatar();
 
             CanIgnore = canIgnore;
             CanUnignore = canUnignore;
-            this.hasReports = hasReports;
+            hasReports = thisHasReports;
 
             OnPropertyChanged("Target");
             OnPropertyChanged("CanIgnore");

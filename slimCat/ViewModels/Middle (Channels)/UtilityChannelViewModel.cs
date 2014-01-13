@@ -288,7 +288,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int OnlineCount
         {
-            get { return ChatModel.OnlineCharacters.Count(); }
+            get { return ChatModel.OnlineCharacterCount; }
         }
 
         /// <summary>

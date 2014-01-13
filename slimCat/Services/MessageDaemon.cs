@@ -403,13 +403,8 @@ namespace Slimcat.Services
                 events.GetEvent<ErrorEvent>().Publish("Hmmm... talking to yourself?");
             else
             {
-                ICharacter guess;
-                lock (model.OnlineCharacters)
-                {
-                    guess =
-                        model.OnlineCharacters.OrderBy(c => c.Name)
-                            .FirstOrDefault(c => c.Name.StartsWith(characterName, true, null));
-                }
+                var guess = model.OnlineCharacters.OrderBy(c => c.Name)
+                    .FirstOrDefault(c => c.Name.StartsWith(characterName, true, null));
 
                 JoinChannel(ChannelType.PrivateMessage, guess == null ? characterName : guess.Name);
             }

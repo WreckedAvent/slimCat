@@ -89,7 +89,7 @@ namespace Slimcat.ViewModels
         /// <param name="cm">
         ///     The cm.
         /// </param>
-        protected ViewModelBase(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
+        protected ViewModelBase(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm, IOnlineCharacterLists lists)
         {
             try
             {
@@ -97,6 +97,7 @@ namespace Slimcat.ViewModels
                 RegionManager = regman.ThrowIfNull("regman");
                 Events = events.ThrowIfNull("events");
                 ChatModel = cm.ThrowIfNull("cm");
+                Lists = lists.ThrowIfNull("lists");
 
                 RightClickMenuViewModel = new RightClickMenuViewModel(ChatModel.IsGlobalModerator);
                 CreateReportViewModel = new CreateReportViewModel(Events, ChatModel);
@@ -306,6 +307,8 @@ namespace Slimcat.ViewModels
         protected IRegionManager RegionManager { get; set; }
 
         protected IEventAggregator Events { get; set; }
+
+        protected IOnlineCharacterLists Lists { get; set; }
 
         #endregion
 
@@ -650,12 +653,12 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     The start link in default browser.
         /// </summary>
-        /// <param name="link">
+        /// <param name="linkToOpen">
         ///     The link.
         /// </param>
-        private void StartLinkInDefaultBrowser(object link)
+        private void StartLinkInDefaultBrowser(object linkToOpen)
         {
-            var interpret = link as string;
+            var interpret = linkToOpen as string;
             if (interpret != null && (!interpret.Contains(".") || interpret.Contains(" ")))
                 interpret = "http://www.f-list.net/c/" + HttpUtility.UrlEncode(interpret);
 
