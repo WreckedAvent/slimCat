@@ -147,14 +147,14 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the sorted users.
         /// </summary>
-        public ICollection<ICharacter> SortedUsers
+        public IEnumerable<ICharacter> SortedUsers
         {
             get
             {
                 var channel = ChatModel.CurrentChannel as GeneralChannelModel;
                 if (HasUsers && channel != null)
                 {
-                    return channel.CharacterManager.SortedCharacters;
+                    return channel.CharacterManager.SortedCharacters.Where(MeetsFilter).OrderBy(RelationshipToUser).ThenBy(x => x.Name);
                 }
                 return null;
             }
@@ -176,7 +176,7 @@ namespace Slimcat.ViewModels
                 OnPropertyChanged("SortedUsers");
         }
 
-        private char RelationshipToUser(ICharacter character)
+        private string RelationshipToUser(ICharacter character)
         {
             return character.RelationshipToUser(CharacterManager, ChatModel.CurrentChannel as GeneralChannelModel);
         }

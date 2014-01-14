@@ -417,7 +417,7 @@ namespace Slimcat.Services
                 events.GetEvent<ErrorEvent>().Publish("Hmmm... talking to yourself?");
             else
             {
-                var guess = characterManager.SortedCharacters
+                var guess = characterManager.SortedCharacters.OrderBy(x => x.Name)
                     .FirstOrDefault(c => c.Name.StartsWith(characterName, true, null));
 
                 JoinChannel(ChannelType.PrivateMessage, guess == null ? characterName : guess.Name);

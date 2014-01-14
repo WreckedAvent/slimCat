@@ -381,7 +381,7 @@ namespace Slimcat.ViewModels
             OnPropertyChanged("IsConnecting");
 
 
-            SettingsDaemon.ReadApplicationSettingsFromXml(ChatModel.CurrentCharacter.Name);
+            SettingsDaemon.ReadApplicationSettingsFromXml(ChatModel.CurrentCharacter.Name, CharacterManager);
 
             try
             {

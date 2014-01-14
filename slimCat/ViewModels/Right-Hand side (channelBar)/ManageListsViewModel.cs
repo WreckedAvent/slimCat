@@ -191,7 +191,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> Bookmarks
         {
-            get { return CharacterManager.GetCharacters(ListKind.Bookmark); }
+            get { return CharacterManager.GetCharacters(ListKind.Bookmark, !showOffline); }
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> Friends
         {
-            get { return CharacterManager.GetCharacters(ListKind.Friend); }
+            get { return CharacterManager.GetCharacters(ListKind.Friend, !showOffline); }
         }
 
         /// <summary>
@@ -240,11 +240,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> Interested
         {
-            get
-            {
-                interested = Update(ApplicationSettings.Interested, interested);
-                return interested;
-            }
+            get { return CharacterManager.GetCharacters(ListKind.Interested, !showOffline); }
         }
 
         /// <summary>
@@ -257,7 +253,7 @@ namespace Slimcat.ViewModels
                 var channel = ChatModel.CurrentChannel as GeneralChannelModel;
                 if (HasUsers && channel != null)
                 {
-                    return channel.CharacterManager.GetCharacters(ListKind.Moderator, showOffline);
+                    return channel.CharacterManager.GetCharacters(ListKind.Moderator, !showOffline);
                 }
 
                 return null;
@@ -269,11 +265,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> NotInterested
         {
-            get
-            {
-                notInterested = Update(ApplicationSettings.NotInterested, notInterested);
-                return notInterested;
-            }
+            get { return CharacterManager.GetCharacters(ListKind.NotInterested, !showOffline); }
         }
 
         /// <summary>

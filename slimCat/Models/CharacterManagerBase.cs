@@ -146,9 +146,6 @@ namespace Slimcat.Models
         protected virtual void Dispose(bool isManaged)
         {
             characters.Clear();
-            Collections.Clear();
-            CollectionDictionary.Clear();
-            OfInterestCollections.Clear();
         }
     }
 }

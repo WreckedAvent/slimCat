@@ -139,9 +139,9 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets the sorted users.
         /// </summary>
-        public ICollection<ICharacter> SortedUsers
+        public IEnumerable<ICharacter> SortedUsers
         {
-            get { return CharacterManager.SortedCharacters; }
+            get { return CharacterManager.SortedCharacters.Where(MeetsFilter).OrderBy(RelationshipToUser).ThenBy(x => x.Name); }
         }
 
         #endregion
@@ -159,7 +159,7 @@ namespace Slimcat.ViewModels
                 OnPropertyChanged("SortedUsers");
         }
 
-        private char RelationshipToUser(ICharacter character)
+        private string RelationshipToUser(ICharacter character)
         {
             return character.RelationshipToUser(CharacterManager, null);
         }

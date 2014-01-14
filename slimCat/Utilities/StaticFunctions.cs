@@ -431,25 +431,25 @@ namespace Slimcat.Utilities
         /// <returns>
         ///     The <see cref="string" />.
         /// </returns>
-        public static char RelationshipToUser(this ICharacter character, ICharacterManager cm, GeneralChannelModel channel)
+        public static string RelationshipToUser(this ICharacter character, ICharacterManager cm, GeneralChannelModel channel)
         {
-            var map = new HashSet<KeyValuePair<ListKind, char>>
+            var map = new HashSet<KeyValuePair<ListKind, string>>
                 {
-                    new KeyValuePair<ListKind, char>(ListKind.Friend, 'a'),
-                    new KeyValuePair<ListKind, char>(ListKind.Bookmark, 'b'),
-                    new KeyValuePair<ListKind, char>(ListKind.Interested, 'c'),
-                    new KeyValuePair<ListKind, char>(ListKind.Moderator, 'd'),
-                    new KeyValuePair<ListKind, char>(ListKind.Ignored, 'z'),
-                    new KeyValuePair<ListKind, char>(ListKind.NotInterested, 'z'),
+                    new KeyValuePair<ListKind, string>(ListKind.Friend, "a"),
+                    new KeyValuePair<ListKind, string>(ListKind.Bookmark, "b"),
+                    new KeyValuePair<ListKind, string>(ListKind.Interested, "c"),
+                    new KeyValuePair<ListKind, string>(ListKind.Moderator, "d"),
+                    new KeyValuePair<ListKind, string>(ListKind.Ignored, "z"),
+                    new KeyValuePair<ListKind, string>(ListKind.NotInterested, "z"),
                 };
 
-            var statusMap = new Dictionary<StatusType, char>
+            var statusMap = new Dictionary<StatusType, string>
                 {
-                    {StatusType.Looking, 'e'},
-                    {StatusType.Busy, 'f'},
-                    {StatusType.Idle, 'g'},
-                    {StatusType.Away, 'g'},
-                    {StatusType.Dnd, 'h'}
+                    {StatusType.Looking, "e"},
+                    {StatusType.Busy, "g"},
+                    {StatusType.Idle, "h"},
+                    {StatusType.Away, "i"},
+                    {StatusType.Dnd, "y"}
                 };
 
             foreach (var pair in map.Where(pair => cm.IsOnList(character.Name, pair.Key)))
@@ -458,12 +458,12 @@ namespace Slimcat.Utilities
             }
 
             if (channel != null && channel.CharacterManager.IsOnList(character.Name, ListKind.Moderator))
-                return 'd';
+                return "d";
 
-            char result;
+            string result;
             return statusMap.TryGetValue(character.Status, out result) 
                 ? result 
-                : 'e';
+                : "f";
         }
 
         /// <summary>
