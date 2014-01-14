@@ -106,7 +106,8 @@ namespace Slimcat.ViewModels
         ///     The cm.
         /// </param>
         public GeneralChannelViewModel(
-            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm, ICharacterManager manager)
+            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
+            ICharacterManager manager)
             : base(contain, regman, events, cm, manager)
         {
             try

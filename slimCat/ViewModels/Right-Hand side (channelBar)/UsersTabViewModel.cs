@@ -76,7 +76,8 @@ namespace Slimcat.ViewModels
         ///     The eventagg.
         /// </param>
         public UsersTabViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg, ICharacterManager manager)
+            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg,
+            ICharacterManager manager)
             : base(contain, regman, eventagg, cm, manager)
         {
             Container.RegisterType<object, UsersTabView>(UsersTabView);
@@ -154,7 +155,10 @@ namespace Slimcat.ViewModels
                 var channel = ChatModel.CurrentChannel as GeneralChannelModel;
                 if (HasUsers && channel != null)
                 {
-                    return channel.CharacterManager.SortedCharacters.Where(MeetsFilter).OrderBy(RelationshipToUser).ThenBy(x => x.Name);
+                    return
+                        channel.CharacterManager.SortedCharacters.Where(MeetsFilter)
+                            .OrderBy(RelationshipToUser)
+                            .ThenBy(x => x.Name);
                 }
                 return null;
             }

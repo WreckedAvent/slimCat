@@ -83,7 +83,8 @@ namespace Slimcat.ViewModels
         ///     The cm.
         /// </param>
         public LoginViewModel(
-            IUnityContainer contain, IRegionManager regman, IAccount acc, IEventAggregator events, IChatModel cm, ICharacterManager lists)
+            IUnityContainer contain, IRegionManager regman, IAccount acc, IEventAggregator events, IChatModel cm,
+            ICharacterManager lists)
             : base(contain, regman, events, cm, lists)
         {
             try

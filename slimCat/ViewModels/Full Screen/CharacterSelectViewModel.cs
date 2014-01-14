@@ -85,7 +85,8 @@ namespace Slimcat.ViewModels
         ///     The cm.
         /// </param>
         public CharacterSelectViewModel(
-            IUnityContainer contain, IRegionManager regman, IEventAggregator events, IAccount acc, IChatModel cm, ICharacterManager manager)
+            IUnityContainer contain, IRegionManager regman, IEventAggregator events, IAccount acc, IChatModel cm,
+            ICharacterManager manager)
             : base(contain, regman, events, cm, manager)
         {
             try

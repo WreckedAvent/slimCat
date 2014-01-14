@@ -52,11 +52,11 @@ namespace Slimcat.Services
         #region Fields
 
         private readonly IChatModel cm;
-        private readonly ICharacterManager manager;
 
         private readonly IEventAggregator events;
 
         private readonly NotifyIcon icon = new NotifyIcon();
+        private readonly ICharacterManager manager;
 
         private readonly ToastNotificationsViewModel toast;
 

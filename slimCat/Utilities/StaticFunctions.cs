@@ -29,7 +29,6 @@ namespace Slimcat.Utilities
     using System.Web;
     using System.Windows;
     using System.Windows.Media;
-    using System.Windows.Media.Imaging;
     using Models;
 
     #endregion
@@ -285,7 +284,8 @@ namespace Slimcat.Utilities
         ///     The <see cref="bool" />.
         /// </returns>
         public static bool MeetsChatModelLists(
-            this ICharacter character, GenericSearchSettingsModel search, ICharacterManager cm, GeneralChannelModel channel)
+            this ICharacter character, GenericSearchSettingsModel search, ICharacterManager cm,
+            GeneralChannelModel channel)
         {
             var name = character.Name;
 
@@ -300,14 +300,12 @@ namespace Slimcat.Utilities
 
             // weee thread-safe functions
             foreach (var pair in map.Where(pair => cm.IsOnList(name, pair.Key)))
-            {
                 return pair.Value;
-            }
 
             if (channel == null) return search.MeetsStatusFilter(character);
 
-            return channel.CharacterManager.IsOnList(name, ListKind.Moderator) 
-                ? search.ShowMods 
+            return channel.CharacterManager.IsOnList(name, ListKind.Moderator)
+                ? search.ShowMods
                 : search.MeetsStatusFilter(character);
         }
 
@@ -342,8 +340,8 @@ namespace Slimcat.Utilities
             if (!character.NameContains(search.SearchString))
                 return false;
 
-            return genders.MeetsGenderFilter(character) 
-                && character.MeetsChatModelLists(search, cm, channel);
+            return genders.MeetsGenderFilter(character)
+                   && character.MeetsChatModelLists(search, cm, channel);
         }
 
         /// <summary>
@@ -378,8 +376,8 @@ namespace Slimcat.Utilities
                 && !message.Message.ContainsOrdinal(search.SearchString))
                 return false;
 
-            return genders.MeetsGenderFilter(message.Poster) 
-                && message.Poster.MeetsChatModelLists(search, cm, channel);
+            return genders.MeetsGenderFilter(message.Poster)
+                   && message.Poster.MeetsChatModelLists(search, cm, channel);
         }
 
         /// <summary>
@@ -431,7 +429,8 @@ namespace Slimcat.Utilities
         /// <returns>
         ///     The <see cref="string" />.
         /// </returns>
-        public static string RelationshipToUser(this ICharacter character, ICharacterManager cm, GeneralChannelModel channel)
+        public static string RelationshipToUser(this ICharacter character, ICharacterManager cm,
+            GeneralChannelModel channel)
         {
             var map = new HashSet<KeyValuePair<ListKind, string>>
                 {
@@ -453,16 +452,14 @@ namespace Slimcat.Utilities
                 };
 
             foreach (var pair in map.Where(pair => cm.IsOnList(character.Name, pair.Key)))
-            {
                 return pair.Value;
-            }
 
             if (channel != null && channel.CharacterManager.IsOnList(character.Name, ListKind.Moderator))
                 return "d";
 
             string result;
-            return statusMap.TryGetValue(character.Status, out result) 
-                ? result 
+            return statusMap.TryGetValue(character.Status, out result)
+                ? result
                 : "f";
         }
 

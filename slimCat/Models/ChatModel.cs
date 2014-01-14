@@ -97,40 +97,11 @@ namespace Slimcat.Models
         }
 
         /// <summary>
-        ///     Gets the all channels.
-        /// </summary>
-        public ObservableCollection<GeneralChannelModel> AllChannels
-        {
-            get { return channels; }
-        }
-
-        /// <summary>
         ///     Gets the bookmarks.
         /// </summary>
         public IList<string> Bookmarks
         {
             get { return CurrentAccount.Bookmarks; }
-        }
-
-        /// <summary>
-        ///     Gets or sets the client uptime.
-        /// </summary>
-        public DateTimeOffset ClientUptime { get; set; }
-
-        /// <summary>
-        ///     Gets the current channels.
-        /// </summary>
-        public ObservableCollection<GeneralChannelModel> CurrentChannels
-        {
-            get { return ourChannels; }
-        }
-
-        /// <summary>
-        ///     Gets the current private messages.
-        /// </summary>
-        public ObservableCollection<PmChannelModel> CurrentPms
-        {
-            get { return pms; }
         }
 
         /// <summary>
@@ -173,30 +144,6 @@ namespace Slimcat.Models
         }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether is authenticated.
-        /// </summary>
-        public bool IsAuthenticated
-        {
-            get { return isAuthenticated; }
-
-            set
-            {
-                isAuthenticated = value;
-                OnPropertyChanged("IsAuthenticated");
-            }
-        }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether is global moderator.
-        /// </summary>
-        public bool IsGlobalModerator { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the last message received.
-        /// </summary>
-        public DateTimeOffset LastMessageReceived { get; set; }
-
-        /// <summary>
         ///     Gets the mods.
         /// </summary>
         public IList<string> Mods
@@ -210,14 +157,6 @@ namespace Slimcat.Models
         public IList<string> NotInterested
         {
             get { return ApplicationSettings.NotInterested; }
-        }
-
-        /// <summary>
-        ///     Gets the notifications.
-        /// </summary>
-        public ObservableCollection<NotificationModel> Notifications
-        {
-            get { return notifications; }
         }
 
         /// <summary>
@@ -296,6 +235,67 @@ namespace Slimcat.Models
         }
 
         /// <summary>
+        ///     Gets the all channels.
+        /// </summary>
+        public ObservableCollection<GeneralChannelModel> AllChannels
+        {
+            get { return channels; }
+        }
+
+        /// <summary>
+        ///     Gets or sets the client uptime.
+        /// </summary>
+        public DateTimeOffset ClientUptime { get; set; }
+
+        /// <summary>
+        ///     Gets the current channels.
+        /// </summary>
+        public ObservableCollection<GeneralChannelModel> CurrentChannels
+        {
+            get { return ourChannels; }
+        }
+
+        /// <summary>
+        ///     Gets the current private messages.
+        /// </summary>
+        public ObservableCollection<PmChannelModel> CurrentPms
+        {
+            get { return pms; }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether is authenticated.
+        /// </summary>
+        public bool IsAuthenticated
+        {
+            get { return isAuthenticated; }
+
+            set
+            {
+                isAuthenticated = value;
+                OnPropertyChanged("IsAuthenticated");
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether is global moderator.
+        /// </summary>
+        public bool IsGlobalModerator { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the last message received.
+        /// </summary>
+        public DateTimeOffset LastMessageReceived { get; set; }
+
+        /// <summary>
+        ///     Gets the notifications.
+        /// </summary>
+        public ObservableCollection<NotificationModel> Notifications
+        {
+            get { return notifications; }
+        }
+
+        /// <summary>
         ///     Gets or sets the our account.
         /// </summary>
         public IAccount CurrentAccount
@@ -353,6 +353,29 @@ namespace Slimcat.Models
 
         #region Public Methods and Operators
 
+        public ChannelModel FindChannel(string id, string title = null)
+        {
+            var channel = AllChannels.FirstByIdOrDefault(id);
+
+            return channel ?? new GeneralChannelModel(id, ChannelType.InviteOnly) {Title = title};
+        }
+
+        public void Wipe()
+        {
+            Dispatcher.Invoke(
+                (Action) delegate
+                    {
+                        onlineCharactersCache = null;
+
+                        channels.Clear();
+                        onlineCharacters.Clear();
+
+                        onlineModsCache = null;
+                        onlineBookmarkCache = null;
+                        onlineFriendCache = null;
+                    });
+        }
+
         /// <summary>
         ///     The add character.
         /// </summary>
@@ -386,16 +409,9 @@ namespace Slimcat.Models
         public ICharacter FindCharacter(string name)
         {
             ICharacter toReturn;
-            return OnlineCharactersDictionary.TryGetValue(name, out toReturn) 
-                ? toReturn 
+            return OnlineCharactersDictionary.TryGetValue(name, out toReturn)
+                ? toReturn
                 : new CharacterModel {Name = name, Status = StatusType.Offline};
-        }
-
-        public ChannelModel FindChannel(string id, string title = null)
-        {
-            var channel = AllChannels.FirstByIdOrDefault(id);
-
-            return channel ?? new GeneralChannelModel(id, ChannelType.InviteOnly) {Title = title};
         }
 
         /// <summary>
@@ -505,22 +521,6 @@ namespace Slimcat.Models
             onlineFriendCache = null;
             OnPropertyChanged("Friends");
             OnPropertyChanged("OnlineFriends");
-        }
-
-        public void Wipe()
-        {
-            Dispatcher.Invoke(
-                (Action) delegate
-                    {
-                        onlineCharactersCache = null;
-
-                        channels.Clear();
-                        onlineCharacters.Clear();
-
-                        onlineModsCache = null;
-                        onlineBookmarkCache = null;
-                        onlineFriendCache = null;
-                    });
         }
 
         #endregion

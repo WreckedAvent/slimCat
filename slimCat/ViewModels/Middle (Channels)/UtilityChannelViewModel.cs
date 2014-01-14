@@ -24,7 +24,6 @@ namespace Slimcat.ViewModels
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Net;
     using System.Text;
     using System.Timers;
@@ -83,7 +82,8 @@ namespace Slimcat.ViewModels
         ///     The cm.
         /// </param>
         public UtilityChannelViewModel(
-            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm, ICharacterManager manager)
+            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
+            ICharacterManager manager)
             : base(contain, regman, events, cm, manager)
         {
             try

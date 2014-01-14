@@ -1,15 +1,38 @@
-﻿namespace Slimcat.Models
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="GlobalCharacterManager.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace Slimcat.Models
 {
+    #region Usings
+
     using System.Collections.Generic;
+
+    #endregion
 
     public class GlobalCharacterManager : CharacterManagerBase
     {
         private readonly CollectionPair bookmarks = new CollectionPair();
         private readonly CollectionPair friends = new CollectionPair();
-        private readonly CollectionPair moderators = new CollectionPair();
-        private readonly CollectionPair interested = new CollectionPair();
-        private readonly CollectionPair notInterested = new CollectionPair();
         private readonly CollectionPair ignored = new CollectionPair();
+        private readonly CollectionPair interested = new CollectionPair();
+        private readonly CollectionPair moderators = new CollectionPair();
+        private readonly CollectionPair notInterested = new CollectionPair();
 
         public GlobalCharacterManager()
         {

@@ -63,7 +63,8 @@ namespace Slimcat.ViewModels
         ///     The cm.
         /// </param>
         public ChatWrapperViewModel(
-            IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm, ICharacterManager lists)
+            IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
+            ICharacterManager lists)
             : base(contain, regman, events, cm, lists)
         {
             try

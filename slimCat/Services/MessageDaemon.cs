@@ -43,8 +43,6 @@ namespace Slimcat.Services
     /// </summary>
     public class MessageDaemon : DispatcherObject, IChannelManager
     {
-        private readonly ICharacterManager characterManager;
-
         private const string channelArgument = "channel";
         private const string characterArgument = "character";
         private const string actionArgument = "action";
@@ -114,7 +112,7 @@ namespace Slimcat.Services
                 this.model = model.ThrowIfNull("model");
                 this.connection = connection.ThrowIfNull("connection");
                 this.api = api.ThrowIfNull("api");
-                this.characterManager = manager.ThrowIfNull("characterManager");
+                characterManager = manager.ThrowIfNull("characterManager");
 
                 this.model.SelectedChannelChanged += (s, e) => RequestNavigate(this.model.CurrentChannel.Id);
 
@@ -438,7 +436,8 @@ namespace Slimcat.Services
 
         private void OnLrpRequested(IDictionary<string, object> command)
         {
-            AddMessage(command[messageArgument] as string, command[channelArgument] as string, thisCharacter, MessageType.Ad);
+            AddMessage(command[messageArgument] as string, command[channelArgument] as string, thisCharacter,
+                MessageType.Ad);
             connection.SendMessage(command);
         }
 
@@ -454,13 +453,13 @@ namespace Slimcat.Services
 
         private void OnCloseRequested(IDictionary<string, object> command)
         {
-            var args = (string)command[channelArgument];
+            var args = (string) command[channelArgument];
             RemoveChannel(args);
         }
 
         private void OnJoinRequested(IDictionary<string, object> command)
         {
-            var args = (string)command[channelArgument];
+            var args = (string) command[channelArgument];
 
             if (model.CurrentChannels.FirstByIdOrDefault(args) != null)
             {
@@ -488,20 +487,14 @@ namespace Slimcat.Services
         {
             var args = command[characterArgument] as string;
 
-            var action = (string)command[actionArgument];
+            var action = (string) command[actionArgument];
 
             if (action.Equals("add"))
-            {
                 characterManager.Add(args, ListKind.Ignored);
-            }
             else if (action.Equals("delete"))
-            {
                 characterManager.Remove(args, ListKind.Ignored);
-            }
             else
-            {
                 return;
-            }
 
             events.GetEvent<NewUpdateEvent>()
                 .Publish(
@@ -920,5 +913,7 @@ namespace Slimcat.Services
         }
 
         #endregion
+
+        private readonly ICharacterManager characterManager;
     }
 }

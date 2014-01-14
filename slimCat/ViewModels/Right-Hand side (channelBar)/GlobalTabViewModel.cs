@@ -74,7 +74,8 @@ namespace Slimcat.ViewModels
         ///     The eventagg.
         /// </param>
         public GlobalTabViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg, ICharacterManager manager)
+            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg,
+            ICharacterManager manager)
             : base(contain, regman, eventagg, cm, manager)
         {
             Container.RegisterType<object, GlobalTabView>(GlobalTabView);
@@ -141,7 +142,11 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> SortedUsers
         {
-            get { return CharacterManager.SortedCharacters.Where(MeetsFilter).OrderBy(RelationshipToUser).ThenBy(x => x.Name); }
+            get
+            {
+                return
+                    CharacterManager.SortedCharacters.Where(MeetsFilter).OrderBy(RelationshipToUser).ThenBy(x => x.Name);
+            }
         }
 
         #endregion

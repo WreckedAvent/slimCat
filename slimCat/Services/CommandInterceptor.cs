@@ -46,14 +46,6 @@ namespace Slimcat.Services
     {
         #region Fields
 
-        private readonly IChatConnection connection;
-
-        private readonly IChannelManager manager;
-
-        private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
-        
-        private readonly object locker = new object();
-
         private const string NameArgument = "name";
         private const string CharacterArgument = "character";
         private const string ChannelArgument = "channel";
@@ -67,6 +59,11 @@ namespace Slimcat.Services
         private const string TitleArgument = "title";
         private const string ModeArgument = "mode";
         private const string SenderArgument = "sender";
+        private readonly IChatConnection connection;
+        private readonly object locker = new object();
+        private readonly IChannelManager manager;
+
+        private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
 
         #endregion
 
@@ -240,7 +237,7 @@ namespace Slimcat.Services
             dynamic users = command[UsersArgument]; // dynamic lets us deal with odd syntax TODO: switch to strong-type
             foreach (IDictionary<string, object> character in users)
             {
-                var name = character[IdentityArgument] as string; 
+                var name = character[IdentityArgument] as string;
 
                 if (string.IsNullOrWhiteSpace(name))
                     continue;
@@ -407,9 +404,7 @@ namespace Slimcat.Services
 
             var characters = (command[MultipleCharactersArgument] as JsonArray);
             if (characters != null)
-            {
                 characters.Select(x => x as string).Each(doAction);
-            }
 
             // todo: add notification for this
         }
@@ -924,7 +919,8 @@ namespace Slimcat.Services
         private void RoomTypeChangedCommand(IDictionary<string, object> command)
         {
             var channelId = command[ChannelArgument] as string;
-            var isPublic = ((string) command[MessageArgument]).IndexOf("public", StringComparison.OrdinalIgnoreCase) != -1;
+            var isPublic = ((string) command[MessageArgument]).IndexOf("public", StringComparison.OrdinalIgnoreCase) !=
+                           -1;
 
             var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
 

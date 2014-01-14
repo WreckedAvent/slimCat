@@ -26,7 +26,6 @@ namespace Slimcat.ViewModels
     using System.Diagnostics;
     using System.Linq;
     using System.Web;
-    using System.Web.UI.WebControls;
     using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
@@ -90,7 +89,8 @@ namespace Slimcat.ViewModels
         /// <param name="cm">
         ///     The cm.
         /// </param>
-        protected ViewModelBase(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm, ICharacterManager manager)
+        protected ViewModelBase(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
+            ICharacterManager manager)
         {
             try
             {
@@ -187,9 +187,7 @@ namespace Slimcat.ViewModels
                 var channel = ChatModel.CurrentChannel as GeneralChannelModel;
 
                 if (channel != null)
-                {
                     isLocalMod = channel.CharacterManager.IsOnList(ChatModel.CurrentCharacter.Name, ListKind.Moderator);
-                }
 
                 return ChatModel.IsGlobalModerator || isLocalMod;
             }

@@ -23,7 +23,6 @@ namespace Slimcat.ViewModels
 
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
@@ -87,7 +86,8 @@ namespace Slimcat.ViewModels
         ///     The eventagg.
         /// </param>
         public ManageListsViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg, ICharacterManager manager)
+            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg,
+            ICharacterManager manager)
             : base(contain, regman, eventagg, cm, manager)
         {
             Container.RegisterType<object, ManageListsTabView>(ManageListsTabView);
@@ -178,9 +178,7 @@ namespace Slimcat.ViewModels
             {
                 var channel = ChatModel.CurrentChannel as GeneralChannelModel;
                 if (HasUsers && channel != null)
-                {
                     return channel.CharacterManager.GetCharacters(ListKind.Banned, false);
-                }
 
                 return null;
             }
@@ -219,9 +217,7 @@ namespace Slimcat.ViewModels
             {
                 var channel = ChatModel.CurrentChannel as GeneralChannelModel;
                 if (HasUsers && channel != null)
-                {
                     return channel.CharacterManager.GetNames(ListKind.Banned, false).Count > 0;
-                }
 
                 return false;
             }
@@ -252,9 +248,7 @@ namespace Slimcat.ViewModels
             {
                 var channel = ChatModel.CurrentChannel as GeneralChannelModel;
                 if (HasUsers && channel != null)
-                {
                     return channel.CharacterManager.GetCharacters(ListKind.Moderator, !showOffline);
-                }
 
                 return null;
             }

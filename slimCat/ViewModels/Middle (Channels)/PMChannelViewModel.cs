@@ -44,6 +44,7 @@ namespace Slimcat.ViewModels
         #region Fields
 
         private Timer checkTick = new Timer(5000);
+        private ICharacter conversationWith;
 
         private Timer cooldownTimer = new Timer(500);
 
@@ -54,8 +55,6 @@ namespace Slimcat.ViewModels
         private FilteredCollection<IMessage, IViewableObject> messageManager;
 
         private int typingLengthCache;
-
-        private ICharacter conversationWith;
 
         #endregion
 
@@ -80,7 +79,8 @@ namespace Slimcat.ViewModels
         ///     The cm.
         /// </param>
         public PmChannelViewModel(
-            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm, ICharacterManager manager)
+            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
+            ICharacterManager manager)
             : base(contain, regman, events, cm, manager)
         {
             try
@@ -231,7 +231,8 @@ namespace Slimcat.ViewModels
                     case StatusType.Away:
                     case StatusType.Busy:
                     case StatusType.Idle:
-                        return string.Format("Warning: {0} is currently {1}.", Model, conversationWith.Status.ToString().ToLower());
+                        return string.Format("Warning: {0} is currently {1}.", Model,
+                            conversationWith.Status.ToString().ToLower());
                     case StatusType.Looking:
                         return string.Format("{0} is looking for roleplay.", Model.Id);
                     case StatusType.Dnd:

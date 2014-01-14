@@ -132,7 +132,8 @@ namespace Slimcat.ViewModels
         /// <param name="cm">
         ///     The cm.
         /// </param>
-        public UserbarViewModel(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm, ICharacterManager manager)
+        public UserbarViewModel(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
+            ICharacterManager manager)
             : base(contain, regman, events, cm, manager)
         {
             try

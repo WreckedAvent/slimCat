@@ -1,5 +1,26 @@
+#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CharacterManagerBase.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
 namespace Slimcat.Models
 {
+    #region Usings
+
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -7,14 +28,18 @@ namespace Slimcat.Models
     using SimpleJson;
     using Utilities;
 
+    #endregion
+
     public abstract class CharacterManagerBase : ICharacterManager
     {
-        private readonly ConcurrentDictionary<string, ICharacter> characters = new ConcurrentDictionary<string, ICharacter>(StringComparer.OrdinalIgnoreCase);
-
-        protected HashSet<CollectionPair> Collections = new HashSet<CollectionPair>();
-        protected Dictionary<ListKind, CollectionPair> CollectionDictionary = new Dictionary<ListKind, CollectionPair>();
-        protected HashSet<CollectionPair> OfInterestCollections = new HashSet<CollectionPair>();
         protected readonly object Locker = new object();
+
+        private readonly ConcurrentDictionary<string, ICharacter> characters =
+            new ConcurrentDictionary<string, ICharacter>(StringComparer.OrdinalIgnoreCase);
+
+        protected Dictionary<ListKind, CollectionPair> CollectionDictionary = new Dictionary<ListKind, CollectionPair>();
+        protected HashSet<CollectionPair> Collections = new HashSet<CollectionPair>();
+        protected HashSet<CollectionPair> OfInterestCollections = new HashSet<CollectionPair>();
 
         public ConcurrentDictionary<string, ICharacter> CharacterDictionary
         {
@@ -34,14 +59,14 @@ namespace Slimcat.Models
         public virtual ICollection<ICharacter> SortedCharacters
         {
             get { return characters.Values; }
-        } 
+        }
 
         public ICharacter Find(string name)
         {
             ICharacter character;
-            return characters.TryGetValue(name, out character) 
-                ? character 
-                : new CharacterModel{Name = name, Status = StatusType.Offline};
+            return characters.TryGetValue(name, out character)
+                ? character
+                : new CharacterModel {Name = name, Status = StatusType.Offline};
         }
 
         public bool Remove(string name, ListKind listKind)
@@ -120,9 +145,11 @@ namespace Slimcat.Models
             {
                 CollectionPair list;
                 if (CollectionDictionary.TryGetValue(listKind, out list))
-                    return onlineOnly 
-                        ? list.OnlineList.Contains(name) 
+                {
+                    return onlineOnly
+                        ? list.OnlineList.Contains(name)
                         : list.List.Contains(name);
+                }
                 return false;
             }
         }
@@ -136,7 +163,7 @@ namespace Slimcat.Models
                 var names = GetNames(listKind, isOnlineOnly);
                 return names.Select(Find).ToList();
             }
-        } 
+        }
 
         public void Dispose()
         {

@@ -22,7 +22,6 @@ namespace Slimcat.Models
     #region Usings
 
     using System;
-    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
 
@@ -109,6 +108,7 @@ namespace Slimcat.Models
         #endregion
 
         #region Public Methods and Operators
+
         /// <summary>
         ///     Returns the ChannelModel for a given id/title, if it exists
         /// </summary>
@@ -116,6 +116,7 @@ namespace Slimcat.Models
         /// <param name="title">Title of the channel used to create if not existant</param>
         /// <returns></returns>
         ChannelModel FindChannel(string id, string title = null);
+
         #endregion
 
         void Wipe();
