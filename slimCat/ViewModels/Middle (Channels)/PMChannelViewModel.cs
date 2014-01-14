@@ -107,7 +107,7 @@ namespace Slimcat.ViewModels
                         if (!IsTyping)
                             checkTick.Enabled = false;
 
-                        if (Message != null && typingLengthCache == Message.Length)
+                        if (!string.IsNullOrEmpty(Message) && typingLengthCache == Message.Length)
                         {
                             IsTyping = false;
                             SendTypingNotification(TypingStatus.Paused);
