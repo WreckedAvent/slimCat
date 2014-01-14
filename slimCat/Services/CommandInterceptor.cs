@@ -168,7 +168,7 @@ namespace Slimcat.Services
 
         private void AdminsCommand(IDictionary<string, object> command)
         {
-            CharacterManager.Set(command[MultipleModeratorsArgument] as string[], ListKind.Moderator);
+            CharacterManager.Set(command[MultipleModeratorsArgument] as JsonArray, ListKind.Moderator);
             if (CharacterManager.GetNames(ListKind.Moderator).Contains(ChatModel.CurrentCharacter.Name))
                 Dispatcher.Invoke((Action) delegate { ChatModel.IsGlobalModerator = true; });
         }
@@ -251,7 +251,7 @@ namespace Slimcat.Services
 
         private void ChannelListCommand(IDictionary<string, object> command, bool isPublic)
         {
-            dynamic arr = command[ChannelArgument];
+            dynamic arr = command["channels"];
             lock (ChatModel.AllChannels)
             {
                 foreach (IDictionary<string, object> channel in arr)
@@ -298,7 +298,7 @@ namespace Slimcat.Services
             if (channel == null)
                 return;
 
-            channel.CharacterManager.Set(command[MultipleModeratorsArgument] as string[], ListKind.Moderator);
+            channel.CharacterManager.Set(command["oplist"] as JsonArray, ListKind.Moderator);
         }
 
         private void CharacterDisconnectCommand(IDictionary<string, object> command)
@@ -405,10 +405,10 @@ namespace Slimcat.Services
                 }
             }
 
-            var characters = command[MultipleCharactersArgument] as string[];
+            var characters = (command[MultipleCharactersArgument] as JsonArray);
             if (characters != null)
             {
-                characters.Each(doAction);
+                characters.Select(x => x as string).Each(doAction);
             }
 
             // todo: add notification for this

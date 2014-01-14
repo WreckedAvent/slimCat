@@ -4,6 +4,7 @@ namespace Slimcat.Models
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using SimpleJson;
     using Utilities;
 
     public abstract class CharacterManagerBase : ICharacterManager
@@ -107,6 +108,12 @@ namespace Slimcat.Models
             }
         }
 
+        public void Set(JsonArray array, ListKind listKind)
+        {
+            var names = array.ConvertAll(x => x.ToString());
+            Set(names, listKind);
+        }
+
         public bool IsOnList(string name, ListKind listKind, bool onlineOnly = true)
         {
             lock (Locker)
@@ -127,7 +134,7 @@ namespace Slimcat.Models
             lock (Locker)
             {
                 var names = GetNames(listKind, isOnlineOnly);
-                return names.Select(x => characters[x]).ToList();
+                return names.Select(Find).ToList();
             }
         } 
 

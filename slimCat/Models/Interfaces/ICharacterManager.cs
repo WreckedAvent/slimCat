@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using SimpleJson;
 
     /// <summary>
     /// A generic way to
@@ -59,6 +60,8 @@
         /// <param name="listKind">The kind of list to set. Cannot be 'Online'</param>
         /// <param name="names">The list of names to set the offline list to</param>
         void Set(IEnumerable<string> names, ListKind listKind);
+
+        void Set(JsonArray names, ListKind listKind);
 
         /// <summary>
         /// Evaluates if a given name is of interest to a user. Thread-safe.

@@ -23,7 +23,10 @@
         public void Set(IEnumerable<string> collection)
         {
             List.Clear();
-            List.UnionWith(collection);
+            if (collection != null)
+            {
+                List.UnionWith(collection);
+            }
         }
 
         public bool SignOff(string name)
