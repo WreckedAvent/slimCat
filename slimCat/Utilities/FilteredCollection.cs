@@ -131,23 +131,29 @@ namespace Slimcat.Utilities
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
+                {
                     var items = e.NewItems.Cast<T>();
                     if (IsFiltering)
                         items = items.Where(ActiveFilter);
 
                     items.Each(item => Collection.Add(item));
                     break;
+                }
 
                 case NotifyCollectionChangedAction.Reset:
+                {
                     Collection.Clear();
                     break;
+                }
 
                 case NotifyCollectionChangedAction.Remove:
-                    if (e.OldStartingIndex == -1)
+                {
+                    if (e.OldStartingIndex == -1 || Collection.Count == 0)
                         return;
 
                     Collection.RemoveAt(e.OldStartingIndex);
                     break;
+                }
             }
         }
 
