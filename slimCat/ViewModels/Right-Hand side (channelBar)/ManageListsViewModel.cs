@@ -64,7 +64,7 @@ namespace Slimcat.ViewModels
 
         private IList<ICharacter> roomMods;
 
-        private bool showOffline = true;
+        private bool showOffline;
 
         #endregion
 

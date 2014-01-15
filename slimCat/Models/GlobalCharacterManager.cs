@@ -22,11 +22,15 @@ namespace Slimcat.Models
     #region Usings
 
     using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.Practices.Prism.Events;
 
     #endregion
 
     public class GlobalCharacterManager : CharacterManagerBase
     {
+        private readonly IAccount account;
+        private readonly IEventAggregator eventAggregator;
         private readonly CollectionPair bookmarks = new CollectionPair();
         private readonly CollectionPair friends = new CollectionPair();
         private readonly CollectionPair ignored = new CollectionPair();
@@ -34,8 +38,11 @@ namespace Slimcat.Models
         private readonly CollectionPair moderators = new CollectionPair();
         private readonly CollectionPair notInterested = new CollectionPair();
 
-        public GlobalCharacterManager()
+        public GlobalCharacterManager(IAccount account, IEventAggregator eventAggregator)
         {
+            this.account = account;
+            this.eventAggregator = eventAggregator;
+
             Collections = new HashSet<CollectionPair>
                 {
                     bookmarks,
@@ -62,6 +69,8 @@ namespace Slimcat.Models
                     friends,
                     interested
                 };
+
+            eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Subscribe(InitializeBookmarks);
         }
 
         public override bool IsOfInterest(string name)
@@ -77,6 +86,13 @@ namespace Slimcat.Models
 
                 return isOfInterest;
             }
+        }
+
+        private void InitializeBookmarks(string _)
+        {
+            bookmarks.Set(account.Bookmarks);
+            friends.Set(account.AllFriends.Select(x => x.Key)); // todo: manage if friends are global or not
+            eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(InitializeBookmarks);
         }
     }
 }
