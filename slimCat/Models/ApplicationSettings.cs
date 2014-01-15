@@ -39,7 +39,7 @@ namespace Slimcat.Models
         /// </summary>
         static ApplicationSettings()
         {
-            Volume = 0.5;
+            Volume = 1; // 0.5 sometimes crashes people for some reason beyond me
             ShowNotificationsGlobal = true;
             AllowLogging = true;
 

@@ -25,6 +25,7 @@ namespace Slimcat.Services
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
+    using System.Media;
     using System.Web;
     using System.Windows;
     using System.Windows.Forms;
@@ -60,7 +61,7 @@ namespace Slimcat.Services
 
         private readonly ToastNotificationsViewModel toast;
 
-        private MediaPlayer dingLing = new MediaPlayer();
+        private SoundPlayer dingLing = new SoundPlayer();
 
         private DateTime lastDingLinged;
 
@@ -219,8 +220,6 @@ namespace Slimcat.Services
                 return;
 
             icon.Dispose();
-            dingLing.Close();
-            dingLing = null;
             toast.Dispose();
         }
 
@@ -240,13 +239,7 @@ namespace Slimcat.Services
             if ((DateTime.Now - lastDingLinged) <= TimeSpan.FromSeconds(1))
                 return;
 
-            ResetDingLing();
-            dingLing.Volume = ApplicationSettings.Volume;
-
-            if (Math.Abs(dingLing.Volume - 0.0) < 0.001)
-                return;
-
-            dingLing.Play();
+            (new SoundPlayer(Environment.CurrentDirectory + @"\sounds\" + "newmessage.wav")).Play();
             lastDingLinged = DateTime.Now;
         }
 
@@ -527,12 +520,6 @@ namespace Slimcat.Services
                 };
 
             Dispatcher.Invoke(notify);
-        }
-
-        private void ResetDingLing()
-        {
-            dingLing.Close();
-            dingLing.Open(new Uri(Environment.CurrentDirectory + @"\sounds\" + "newmessage.wav"));
         }
 
         private void ToggleSound(object sender, EventArgs e)

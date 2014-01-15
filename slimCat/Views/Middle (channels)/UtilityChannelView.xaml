@@ -73,6 +73,8 @@
             <StackPanel Grid.Row="1">
                 <Expander Header="Settings">
                     <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
+
+                        <!--
                         <StackPanel Margin="0,5,0,10">
                             <TextBlock Text="Notifications Volume" Margin="5,0,0,0" />
                             <Slider Value="{Binding Volume}"
@@ -85,7 +87,7 @@
                                     TickPlacement="BottomRight"
                                     HorizontalAlignment="Left"
                                     Margin="5,0,0,0" />
-                        </StackPanel>
+                        </StackPanel>-->
 
                         <CheckBox IsChecked="{Binding ShowNotifications}"
                                   VerticalAlignment="Center"
@@ -104,11 +106,13 @@
                             Allow Colors
                         </CheckBox>
 
+                        <!-- disabled until I figure out how to do this without doing what I was doing before
                         <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
                                   VerticalAlignment="Center"
                                   Margin="0,5">
                             Friends are account wide
-                        </CheckBox>
+                        </CheckBox>-->
+                        
                         <CheckBox IsChecked="{Binding SpellCheckEnabled}"
                                   VerticalAlignment="Center"
                                   Margin="0,5">
