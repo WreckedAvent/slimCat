@@ -71,7 +71,7 @@ namespace Slimcat.ViewModels
         private bool isSearching;
 
         private Timer messageFlood = new Timer(500);
-        private FilteredCollection<IMessage, IViewableObject> messageManager;
+        private FilteredMessageCollection messageManager;
 
         private GenericSearchSettingsModel searchSettings = new GenericSearchSettingsModel();
 
@@ -130,11 +130,12 @@ namespace Slimcat.ViewModels
                 Model.PropertyChanged += OnModelPropertyChanged;
 
                 messageManager =
-                    new FilteredCollection<IMessage, IViewableObject>(
+                    new FilteredMessageCollection(
                         isDisplayingChat
                             ? Model.Messages
                             : Model.Ads,
                         MeetsFilter,
+                        ConstantFilter,
                         IsDisplayingAds);
 
                 genderSettings.Updated += (s, e) => OnPropertyChanged("GenderSettings");
@@ -723,6 +724,15 @@ namespace Slimcat.ViewModels
                 GenderSettings, SearchSettings, CharacterManager, ChatModel.CurrentChannel as GeneralChannelModel);
         }
 
+        private bool ConstantFilter(IMessage message)
+        {
+            if (message.Type == MessageType.Ad)
+            {
+                return !CharacterManager.IsOnList(message.Poster.Name, ListKind.NotInterested);
+            }
+            return true;
+        }
+
         private void OnAdsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (IsDisplayingChat)
@@ -754,12 +764,16 @@ namespace Slimcat.ViewModels
                     OnPropertyChanged("StatusString"); // keep the counter updated
                     break;
                 case "SearchSettings":
+                {
+                    if (!SearchSettings.IsChangingSettings)
+                        messageManager.IsFiltering = isSearching;
+                    break;
+                }
                 case "IsSearching":
                 {
-                    messageManager.IsFiltering = IsDisplayingAds || isSearching;
-                }
-
+                    messageManager.IsFiltering = isSearching;
                     break;
+                }
             }
         }
 

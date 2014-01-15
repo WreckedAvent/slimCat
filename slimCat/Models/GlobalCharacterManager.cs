@@ -94,5 +94,12 @@ namespace Slimcat.Models
             friends.Set(account.AllFriends.Select(x => x.Key)); // todo: manage if friends are global or not
             eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(InitializeBookmarks);
         }
+
+        public override bool SignOn(ICharacter character)
+        {
+            var toReturn = base.SignOn(character);
+            character.IsInteresting = IsOfInterest(character.Name);
+            return toReturn;
+        }
     }
 }
