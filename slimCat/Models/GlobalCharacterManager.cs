@@ -21,6 +21,7 @@ namespace Slimcat.Models
 {
     #region Usings
 
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Practices.Prism.Events;
@@ -98,8 +99,62 @@ namespace Slimcat.Models
         public override bool SignOn(ICharacter character)
         {
             var toReturn = base.SignOn(character);
-            character.IsInteresting = IsOfInterest(character.Name);
+            lock (Locker)
+            {
+                character.IsInteresting = IsOfInterest(character.Name);
+            }
             return toReturn;
+        }
+
+        public override bool Add(string name, ListKind listKind)
+        {
+            var toReturn = base.Add(name, listKind);
+
+            if (listKind == ListKind.Interested || listKind == ListKind.NotInterested)
+                SyncInterestedMarks(name, listKind, true);
+
+            return toReturn;
+        }
+
+        public override bool Remove(string name, ListKind listKind)
+        {
+            var toReturn = base.Remove(name, listKind);
+
+            if (listKind == ListKind.Interested || listKind == ListKind.NotInterested)
+                SyncInterestedMarks(name, listKind, false);
+
+            return toReturn;
+        }
+
+        private void SyncInterestedMarks(string name, ListKind listKind, bool isAdd)
+        {
+            lock (Locker)
+            {
+                var isInteresting = listKind == ListKind.Interested;
+                var oppositeList = isInteresting ? notInterested : interested;
+                var sameList = isInteresting ? interested : notInterested;
+                Action<CollectionPair> addRemove = c =>
+                    {
+                        if (isAdd)
+                            c.Add(name);
+                        else
+                            c.Remove(name);
+                    };
+
+                if (isAdd) // if we're adding to one, then we have to remove from the other
+                {
+                    oppositeList.Remove(name);
+                }
+
+                // now we do the actual action on the list specified
+                addRemove(sameList);
+
+                ICharacter toModify;
+                if (CharacterDictionary.TryGetValue(name, out toModify))
+                {
+                    toModify.IsInteresting = isInteresting && isAdd;
+                }
+            }
         }
     }
 }

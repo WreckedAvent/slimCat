@@ -100,7 +100,7 @@ namespace Slimcat.ViewModels
                 ChatModel = cm.ThrowIfNull("cm");
                 CharacterManager = manager.ThrowIfNull("manager");
 
-                RightClickMenuViewModel = new RightClickMenuViewModel(ChatModel.IsGlobalModerator);
+                RightClickMenuViewModel = new RightClickMenuViewModel(ChatModel.IsGlobalModerator, CharacterManager);
                 CreateReportViewModel = new CreateReportViewModel(Events, ChatModel);
                 ChatModel.SelectedChannelChanged += OnSelectedChannelChanged;
 
@@ -359,8 +359,7 @@ namespace Slimcat.ViewModels
         private void updateRightClickMenu(ICharacter newTarget)
         {
             var name = newTarget.Name;
-            RightClickMenuViewModel.SetNewTarget(
-                newTarget, CanIgnore(name), CanUnIgnore(name), CanHandleReport(name));
+            RightClickMenuViewModel.SetNewTarget(newTarget, CanHandleReport(name));
             RightClickMenuViewModel.IsOpen = true;
             CreateReportViewModel.Target = name;
             OnPropertyChanged("RightClickMenuViewModel");
