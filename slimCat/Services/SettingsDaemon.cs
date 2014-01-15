@@ -137,9 +137,16 @@ namespace Slimcat.Services
                         {
                             if (!element.HasElements)
                             {
-                                var setter = Convert.ChangeType(element.Value, property.PropertyType);
-                                property.SetValue(null, setter, null);
-                                break;
+                                try
+                                {
+                                    var setter = Convert.ChangeType(element.Value, property.PropertyType);
+                                    property.SetValue(null, setter, null);
+                                }
+                                catch
+                                {
+                                }
+
+                                continue;
                             }
 
                             var collection = ApplicationSettings.SavedChannels;
