@@ -167,7 +167,7 @@
                 <Expander Header="Help">
                     <WrapPanel>
                         <TextBlock Foreground="{StaticResource ForegroundBrush}" TextWrapping="Wrap">
-                            For trouble shooting, support, feature suggestions, or other inquiries, please send a note to or PM <ContentControl ContentTemplate="{StaticResource UsernameTemplate}" Content="{Binding Path=Slimcat}"/>
+                            For trouble shooting, support, feature suggestions, bug reports, or other inquiries, please send a note to or PM <ContentControl ContentTemplate="{StaticResource UsernameTemplate}" Content="{Binding Path=Slimcat}"/>
                         </TextBlock>
                     </WrapPanel>
                 </Expander>

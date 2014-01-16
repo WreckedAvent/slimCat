@@ -106,6 +106,11 @@ namespace Slimcat.Libraries
             execute(parameter);
         }
 
+        public override string ToString()
+        {
+            return string.Empty;
+        }
+
         #endregion
     }
 }
