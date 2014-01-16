@@ -233,6 +233,11 @@ namespace Slimcat.ViewModels
             }
         }
 
+        public ICharacter Slimcat
+        {
+            get { return CharacterManager.Find("slimCat"); }
+        }
+
         /// <summary>
         ///     Gets the connect flavor text.
         /// </summary>
