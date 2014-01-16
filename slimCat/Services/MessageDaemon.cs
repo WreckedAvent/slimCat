@@ -53,6 +53,7 @@ namespace Slimcat.Services
         #region Fields
 
         private readonly IListConnection api;
+
         private readonly IDictionary<string, CommandHandler> commands;
 
         private readonly IChatConnection connection;
@@ -202,7 +203,6 @@ namespace Slimcat.Services
                 container.Resolve<PmChannelViewModel>(new ParameterOverride("name", temp.Id));
 
                 Dispatcher.Invoke((Action) (() => model.CurrentPms.Add(temp)));
-
                 // then add it to the model's data
             }
             else
@@ -356,16 +356,10 @@ namespace Slimcat.Services
             if (model.CurrentChannels.Any(param => param.Id == name))
             {
                 var temp = model.CurrentChannels.First(param => param.Id == name);
-
-                var vm = container.Resolve<GeneralChannelViewModel>(new ParameterOverride("name", temp.Id));
-                vm.Dispose();
+                temp.Description = null;
 
                 Dispatcher.Invoke(
-                    (Action) delegate
-                        {
-                            model.CurrentChannels.Remove(temp);
-                            temp.Dispose();
-                        });
+                    (Action) (() => model.CurrentChannels.Remove(temp)));
 
                 object toSend = new {channel = name};
                 connection.SendMessage(toSend, "LCH");
@@ -374,11 +368,7 @@ namespace Slimcat.Services
             {
                 var temp = model.CurrentPms.First(param => param.Id == name);
 
-                var vm = container.Resolve<PmChannelViewModel>(new ParameterOverride("name", temp.Id));
-                vm.Dispose();
-
                 model.CurrentPms.Remove(temp);
-                temp.Dispose();
             }
             else
                 throw new ArgumentOutOfRangeException("name", "Could not find the channel requested to remove");

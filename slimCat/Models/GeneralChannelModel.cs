@@ -38,8 +38,6 @@ namespace Slimcat.Models
 
         private int lastAdCount;
 
-        private DateTime lastUpdate;
-
         private int userCount;
 
         #endregion

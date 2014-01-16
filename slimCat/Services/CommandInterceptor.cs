@@ -1051,7 +1051,7 @@ namespace Slimcat.Services
 
         private void WipeState(string message)
         {
-            ChatModel.Wipe();
+            // todo: wipe
         }
 
         #endregion

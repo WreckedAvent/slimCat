@@ -118,7 +118,5 @@ namespace Slimcat.Models
         ChannelModel FindChannel(string id, string title = null);
 
         #endregion
-
-        void Wipe();
     }
 }

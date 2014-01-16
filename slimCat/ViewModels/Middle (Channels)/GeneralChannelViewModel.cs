@@ -56,7 +56,7 @@ namespace Slimcat.ViewModels
 
         private bool autoPostAds;
 
-        private GenderSettingsModel genderSettings = new GenderSettingsModel();
+        private readonly GenderSettingsModel genderSettings;
 
         private bool hasNewAds;
 
@@ -71,9 +71,10 @@ namespace Slimcat.ViewModels
         private bool isSearching;
 
         private Timer messageFlood = new Timer(500);
-        private FilteredMessageCollection messageManager;
 
-        private GenericSearchSettingsModel searchSettings = new GenericSearchSettingsModel();
+        private readonly FilteredMessageCollection messageManager;
+
+        private readonly GenericSearchSettingsModel searchSettings;
 
         private RelayCommand @switch;
 
@@ -128,6 +129,9 @@ namespace Slimcat.ViewModels
                 Model.Messages.CollectionChanged += OnMessagesChanged;
                 Model.Ads.CollectionChanged += OnAdsChanged;
                 Model.PropertyChanged += OnModelPropertyChanged;
+
+                searchSettings = new GenericSearchSettingsModel();
+                genderSettings = new GenderSettingsModel();
 
                 messageManager =
                     new FilteredMessageCollection(
@@ -605,15 +609,10 @@ namespace Slimcat.ViewModels
                 messageFlood.Dispose();
                 messageFlood = null;
 
-                searchSettings = null;
-                genderSettings = null;
-
                 Events.GetEvent<NewUpdateEvent>().Unsubscribe(UpdateChat);
                 Model.Messages.CollectionChanged -= OnMessagesChanged;
                 Model.Ads.CollectionChanged -= OnAdsChanged;
                 PropertyChanged -= OnPropertyChanged;
-                messageManager.Dispose();
-                messageManager = null;
 
                 var model = (GeneralChannelModel) Model;
                 model.Description = null;
@@ -736,7 +735,7 @@ namespace Slimcat.ViewModels
         private void OnAdsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (IsDisplayingChat)
-                OtherTabHasMessages = e.Action != NotifyCollectionChangedAction.Reset;
+                OtherTabHasMessages = e.NewItems != null && e.NewItems.Count > 0;
         }
 
         private void OnMessagesChanged(object sender, NotifyCollectionChangedEventArgs e)

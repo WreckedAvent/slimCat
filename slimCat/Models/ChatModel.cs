@@ -42,15 +42,8 @@ namespace Slimcat.Models
         private readonly ObservableCollection<GeneralChannelModel> channels =
             new ObservableCollection<GeneralChannelModel>();
 
-        private readonly IList<string> globalMods = new List<string>();
-
-        private readonly IList<string> ignored = new List<string>();
-
         private readonly ObservableCollection<NotificationModel> notifications =
             new ObservableCollection<NotificationModel>();
-
-        private readonly ConcurrentDictionary<string, ICharacter> onlineCharacters =
-            new ConcurrentDictionary<string, ICharacter>(StringComparer.OrdinalIgnoreCase);
 
         private readonly ObservableCollection<GeneralChannelModel> ourChannels =
             new ObservableCollection<GeneralChannelModel>();
@@ -63,17 +56,6 @@ namespace Slimcat.Models
         private ICharacter currentCharacter;
 
         private bool isAuthenticated;
-
-        private DateTime lastCharacterListCache;
-
-        // caches for speed improvements in filtering
-        private IList<ICharacter> onlineBookmarkCache;
-
-        private IList<ICharacter> onlineCharactersCache;
-
-        private IList<ICharacter> onlineFriendCache;
-
-        private IList<ICharacter> onlineModsCache;
 
         #endregion
 
@@ -213,23 +195,6 @@ namespace Slimcat.Models
 
             return channel ?? new GeneralChannelModel(id, ChannelType.InviteOnly) {Title = title};
         }
-
-        public void Wipe()
-        {
-            Dispatcher.Invoke(
-                (Action) delegate
-                    {
-                        onlineCharactersCache = null;
-
-                        channels.Clear();
-                        onlineCharacters.Clear();
-
-                        onlineModsCache = null;
-                        onlineBookmarkCache = null;
-                        onlineFriendCache = null;
-                    });
-        }
-
         #endregion
     }
 }
