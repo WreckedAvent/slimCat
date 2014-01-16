@@ -29,6 +29,7 @@ namespace Slimcat.Utilities
     using System.Web;
     using System.Windows;
     using System.Windows.Media;
+    using System.Windows.Navigation;
     using Models;
 
     #endregion
@@ -262,7 +263,9 @@ namespace Slimcat.Utilities
                 folderName = folderName.Replace('\\', '-');
             }
 
-            return Path.Combine(basePath, "slimCat", character, folderName);
+            return ApplicationSettings.PortableMode 
+                ? Path.Combine("logs", character, folderName)
+                : Path.Combine(basePath, "slimCat", character, folderName);
         }
 
         /// <summary>

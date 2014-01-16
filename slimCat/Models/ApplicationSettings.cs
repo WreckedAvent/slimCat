@@ -21,6 +21,7 @@ namespace Slimcat.Models
 {
     #region Usings
 
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -43,11 +44,12 @@ namespace Slimcat.Models
             ShowNotificationsGlobal = true;
             AllowLogging = true;
 
-            BackLogMax = 125;
+            BackLogMax = 200;
             GlobalNotifyTerms = string.Empty;
             SavedChannels = new List<string>();
             Interested = new List<string>();
             NotInterested = new List<string>();
+            PortableMode = Environment.GetCommandLineArgs().Contains("portable", StringComparer.OrdinalIgnoreCase);
             FontSize = 13;
 
             Langauge = Thread.CurrentThread.CurrentCulture.Name;
@@ -97,6 +99,8 @@ namespace Slimcat.Models
         ///     Gets or sets a value indicating whether show notifications global.
         /// </summary>
         public static bool ShowNotificationsGlobal { get; set; }
+
+        public static bool PortableMode { get; set; }
 
         /// <summary>
         ///     Gets or sets the volume.
