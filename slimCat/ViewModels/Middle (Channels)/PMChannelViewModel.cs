@@ -231,7 +231,7 @@ namespace Slimcat.ViewModels
                     case StatusType.Away:
                     case StatusType.Busy:
                     case StatusType.Idle:
-                        return string.Format("Warning: {0} is currently {1}.", Model,
+                        return string.Format("Warning: {0} is currently {1}.", Model.Id,
                             conversationWith.Status.ToString().ToLower());
                     case StatusType.Looking:
                         return string.Format("{0} is looking for roleplay.", Model.Id);
