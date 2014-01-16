@@ -48,6 +48,7 @@ namespace Slimcat.Models
             SavedChannels = new List<string>();
             Interested = new List<string>();
             NotInterested = new List<string>();
+            FontSize = 13;
 
             Langauge = Thread.CurrentThread.CurrentCulture.Name;
             if (!LanguageList.Contains(Langauge))
@@ -89,6 +90,8 @@ namespace Slimcat.Models
         }
 
         public static bool FriendsAreAccountWide { get; set; }
+
+        public static int FontSize { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether show notifications global.

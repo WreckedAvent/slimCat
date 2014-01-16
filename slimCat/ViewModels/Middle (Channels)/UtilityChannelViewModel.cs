@@ -206,6 +206,17 @@ namespace Slimcat.ViewModels
             }
         }
 
+        public int FontSize
+        {
+            get { return ApplicationSettings.FontSize; }
+            set
+            {
+                if (value >= 8 && value <= 20)
+                    ApplicationSettings.FontSize = value;
+                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+            }
+        }
+
         /// <summary>
         ///     Gets or sets the back log max.
         /// </summary>

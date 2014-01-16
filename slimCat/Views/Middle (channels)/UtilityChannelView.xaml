@@ -6,6 +6,7 @@
                   mc:Ignorable="d"
                   xmlns:vm="clr-namespace:Slimcat.ViewModels"
                   xmlns:v="clr-namespace:Slimcat.Views"
+                  xmlns:models="clr-namespace:Slimcat.Models"
 
                   d:DataContext="{d:DesignInstance vm:UtilityChannelViewModel}">
 
@@ -44,13 +45,6 @@
                         <Run Text="Users: " />
                         <Run Text="{Binding Path=OnlineCount, Mode=OneWay}" />
                         <Run Text="{Binding Path=OnlineCountChange, Mode=OneWay}" />
-                        <LineBreak />
-                        <Run Text="Friends: " />
-                        <Run Text="{Binding Path=OnlineFriendsCount, Mode=OneWay}" />
-                        <LineBreak />
-
-                        <Run Text="Bookmarks: " />
-                        <Run Text="{Binding Path=OnlineBookmarksCount, Mode=OneWay}" />
                         <LineBreak />
 
                         <Run Text="Server uptime: " />
@@ -128,6 +122,13 @@
                                       DisplayMemberPath="Key"
                                       SelectedValuePath="Value" />
                         </StackPanel>
+                        
+                        <WrapPanel Margin="0,15,0,0">
+                            <TextBlock Margin="0,0,5,0">Message font size</TextBlock>
+                            <TextBox Text="{Binding Path=FontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     VerticalAlignment="Center"
+                                     FontSize="12" />
+                        </WrapPanel>
 
                         <WrapPanel Margin="0,15,0,0">
                             <TextBlock Margin="0,0,5,0">Keep</TextBlock>
