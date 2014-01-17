@@ -254,9 +254,7 @@ namespace Slimcat.Services
         public void AddMessage(
             string message, string channelName, string poster, MessageType messageType = MessageType.Normal)
         {
-            var sender = poster != thisCharacter
-                ? characterManager.Find(poster)
-                : model.CurrentCharacter;
+            var sender = characterManager.Find(poster == thisCharacter ? model.CurrentCharacter.Name : poster);
 
             var channel = model.CurrentChannels.FirstByIdOrDefault(channelName)
                           ?? (ChannelModel) model.CurrentPms.FirstByIdOrDefault(channelName);

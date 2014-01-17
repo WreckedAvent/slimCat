@@ -44,7 +44,7 @@ namespace Slimcat.Models
             ShowNotificationsGlobal = true;
             AllowLogging = true;
 
-            BackLogMax = 200;
+            BackLogMax = 150;
             GlobalNotifyTerms = string.Empty;
             SavedChannels = new List<string>();
             Interested = new List<string>();

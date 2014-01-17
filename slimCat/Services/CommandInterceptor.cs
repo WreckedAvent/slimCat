@@ -1015,9 +1015,6 @@ namespace Slimcat.Services
         {
             var character = (string) command[IdentityArgument];
 
-            if (ChatModel.CurrentCharacter.Name.Equals(character, StringComparison.OrdinalIgnoreCase))
-                return;
-
             var temp = new CharacterModel
                 {
                     Name = character,
