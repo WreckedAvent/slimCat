@@ -178,8 +178,8 @@
     <Compile Include="Utilities\KeepToCurrentScrollViewer.cs" />
     <Compile Include="Utilities\StaticFunctions.cs" />
     <Compile Include="Utilities\FilteredCollection.cs" />
-    <Compile Include="ViewModels\Right-Hand side %28channelBar%29\GlobalTabViewModel.cs" />
-    <Compile Include="ViewModels\Right-Hand side %28channelBar%29\ManageListsViewModel.cs" />
+    <Compile Include="ViewModels\Channel Bar\GlobalTabViewModel.cs" />
+    <Compile Include="ViewModels\Channel Bar\ManageListsViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\ChannelManagementViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\CreateReportViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\RightClickViewModel.cs" />
@@ -202,37 +202,37 @@
     <Compile Include="Utilities\Exceptions.cs" />
     <Compile Include="Utilities\ExtensionMethods.cs" />
     <Compile Include="ViewModels\Base Classes\SysProp.cs" />
-    <Compile Include="ViewModels\Right-Hand side %28channelBar%29\ChannelBarViewModel.cs" />
-    <Compile Include="ViewModels\Right-Hand side %28channelBar%29\ChannelBarViewModelCommon.cs" />
-    <Compile Include="ViewModels\Right-Hand side %28channelBar%29\ChannelTabViewModel.cs" />
+    <Compile Include="ViewModels\Channel Bar\ChannelBarViewModel.cs" />
+    <Compile Include="ViewModels\Channel Bar\ChannelBarViewModelCommon.cs" />
+    <Compile Include="ViewModels\Channel Bar\ChannelTabViewModel.cs" />
     <Compile Include="ViewModels\Base Classes\ChannelViewModelBase.cs" />
-    <Compile Include="ViewModels\Middle %28Channels%29\GeneralChannelViewModel.cs" />
-    <Compile Include="ViewModels\Right-Hand side %28channelBar%29\NotificationsTabViewModel.cs" />
-    <Compile Include="ViewModels\Middle %28Channels%29\PMChannelViewModel.cs" />
+    <Compile Include="ViewModels\Channels\GeneralChannelViewModel.cs" />
+    <Compile Include="ViewModels\Channel Bar\NotificationsTabViewModel.cs" />
+    <Compile Include="ViewModels\Channels\PMChannelViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\ToastNotificationsViewModel.cs" />
-    <Compile Include="ViewModels\Right-Hand side %28channelBar%29\UsersTabViewModel.cs" />
-    <Compile Include="ViewModels\Middle %28Channels%29\UtilityChannelViewModel.cs" />
+    <Compile Include="ViewModels\Channel Bar\UsersTabViewModel.cs" />
+    <Compile Include="ViewModels\Channels\UtilityChannelViewModel.cs" />
     <Compile Include="ViewModels\Full Screen\CharacterSelectViewModel.cs" />
     <Compile Include="ViewModels\Full Screen\ChatWrapperViewModel.cs" />
     <Compile Include="ViewModels\Full Screen\LoginViewModel.cs" />
-    <Compile Include="ViewModels\Left-Hand Side %28userbar%29\UserbarViewModel.cs" />
+    <Compile Include="ViewModels\User Bar\UserbarViewModel.cs" />
     <Compile Include="ViewModels\Base Classes\ViewModelBase.cs" />
-    <Compile Include="Views\Right-Hand Side %28channelbar%29\ChannelBarView.xaml.cs">
+    <Compile Include="Views\Channel Bar\ChannelBarView.xaml.cs">
       <DependentUpon>ChannelBarView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Right-Hand Side %28channelbar%29\ChannelbarChannelListView.xaml.cs">
+    <Compile Include="Views\Channel Bar\ChannelbarChannelListView.xaml.cs">
       <DependentUpon>ChannelbarChannelListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Right-Hand Side %28channelbar%29\ChannelbarNotificationsTabView.xaml.cs">
+    <Compile Include="Views\Channel Bar\ChannelbarNotificationsTabView.xaml.cs">
       <DependentUpon>ChannelbarNotificationsTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Right-Hand Side %28channelbar%29\ChannelbarUserListView.xaml.cs">
+    <Compile Include="Views\Channel Bar\ChannelbarUserListView.xaml.cs">
       <DependentUpon>ChannelbarUserListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Right-Hand Side %28channelbar%29\ChannelbarGlobalListView.xaml.cs">
+    <Compile Include="Views\Channel Bar\ChannelbarGlobalListView.xaml.cs">
       <DependentUpon>ChannelbarGlobalListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Right-Hand Side %28channelbar%29\ManageListsView.xaml.cs">
+    <Compile Include="Views\Channel Bar\ManageListsView.xaml.cs">
       <DependentUpon>ManageListsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UI Parts\Buttons\AutoButtonView.xaml.cs">
@@ -317,7 +317,7 @@
     <Compile Include="Views\UI Parts\SearchBoxView.xaml.cs">
       <DependentUpon>SearchBoxView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Left-Hand Side %28userbar%29\UserbarChannelView.xaml.cs">
+    <Compile Include="Views\User Bar\UserbarChannelView.xaml.cs">
       <DependentUpon>UserbarChannelView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UI Parts\ChannelTextBoxEntryView.xaml.cs">
@@ -329,7 +329,7 @@
     <Compile Include="Views\Full Screen\ChatWrapperView.xaml.cs">
       <DependentUpon>ChatWrapperView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Middle %28channels%29\GeneralChannelView.xaml.cs">
+    <Compile Include="Views\Channels\GeneralChannelView.xaml.cs">
       <DependentUpon>GeneralChannelView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Full Screen\LoginView.xaml.cs">
@@ -344,16 +344,16 @@
     <Compile Include="Views\UI Parts\ToastNotificationsView.xaml.cs">
       <DependentUpon>ToastNotificationsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Middle %28channels%29\PMChannelView.xaml.cs">
+    <Compile Include="Views\Channels\PMChannelView.xaml.cs">
       <DependentUpon>PMChannelView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Left-Hand Side %28userbar%29\UserbarPMView.xaml.cs">
+    <Compile Include="Views\User Bar\UserbarPMView.xaml.cs">
       <DependentUpon>UserbarPMView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Left-Hand Side %28userbar%29\UserbarView.xaml.cs">
+    <Compile Include="Views\User Bar\UserbarView.xaml.cs">
       <DependentUpon>UserbarView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Middle %28channels%29\UtilityChannelView.xaml.cs">
+    <Compile Include="Views\Channels\UtilityChannelView.xaml.cs">
       <DependentUpon>UtilityChannelView.xaml</DependentUpon>
     </Compile>
     <Page Include="Theme\Colors.xaml">
@@ -365,19 +365,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Right-Hand Side %28channelbar%29\ChannelbarNotificationsTabView.xaml">
+    <Page Include="Views\Channel Bar\ChannelbarNotificationsTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Right-Hand Side %28channelbar%29\ChannelbarUserListView.xaml">
+    <Page Include="Views\Channel Bar\ChannelbarUserListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Right-Hand Side %28channelbar%29\ChannelbarGlobalListView.xaml">
+    <Page Include="Views\Channel Bar\ChannelbarGlobalListView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Right-Hand Side %28channelbar%29\ManageListsView.xaml">
+    <Page Include="Views\Channel Bar\ManageListsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -509,15 +509,15 @@
       <DependentUpon>Shell.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\Right-Hand Side %28channelbar%29\ChannelBarView.xaml">
+    <Page Include="Views\Channel Bar\ChannelBarView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Right-Hand Side %28channelbar%29\ChannelbarChannelListView.xaml">
+    <Page Include="Views\Channel Bar\ChannelbarChannelListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Left-Hand Side %28userbar%29\UserbarChannelView.xaml">
+    <Page Include="Views\User Bar\UserbarChannelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -525,7 +525,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Middle %28channels%29\GeneralChannelView.xaml">
+    <Page Include="Views\Channels\GeneralChannelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -533,15 +533,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Middle %28channels%29\PMChannelView.xaml">
+    <Page Include="Views\Channels\PMChannelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Left-Hand Side %28userbar%29\UserbarPMView.xaml">
+    <Page Include="Views\User Bar\UserbarPMView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Middle %28channels%29\UtilityChannelView.xaml">
+    <Page Include="Views\Channels\UtilityChannelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -562,7 +562,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Left-Hand Side %28userbar%29\UserbarView.xaml">
+    <Page Include="Views\User Bar\UserbarView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
