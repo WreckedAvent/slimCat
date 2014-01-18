@@ -28,9 +28,9 @@ namespace Slimcat.Utilities
 
         public const string ClientId = "slimCat";
 
-        public const string ClientName = "ColorfulOcelot";
+        public const string ClientName = "Ocelot";
 
-        public const string ClientVer = "rc3.04 dev";
+        public const string ClientVer = "rc3.05";
 
         #endregion
 
