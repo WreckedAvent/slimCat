@@ -644,73 +644,72 @@ namespace Slimcat.Services
 
                 // "report" is in some sort of arbitrary and non-compulsory format
                 // attempt to decipher it
-                if (report != null)
+                if (report == null) return;
+
+                var rawReport = report.Split('|').Select(x => x.Trim()).ToList();
+
+                var starters = new[] {"Current Tab/Channel:", "Reporting User:", string.Empty};
+
+                // each section should start with one of these
+                var reportData = new List<string>();
+
+                for (var i = 0; i < rawReport.Count; i++)
                 {
-                    var rawReport = report.Split('|').Select(x => x.Trim()).ToList();
+                    if (rawReport[i].StartsWith(starters[i]))
+                        reportData.Add(rawReport[i].Substring(starters[i].Length).Trim());
+                }
 
-                    var starters = new[] {"Current Tab/Channel:", "Reporting User:", string.Empty};
+                if (reportData.Count == 3)
+                    reportIsClean = true;
 
-                    // each section should start with one of these
-                    var reportData = new List<string>();
+                var reporterName = command[CharacterArgument] as string;
+                var reporter = CharacterManager.Find(reporterName);
 
-                    for (var i = 0; i < rawReport.Count; i++)
-                    {
-                        if (rawReport[i].StartsWith(starters[i]))
-                            reportData.Add(rawReport[i].Substring(starters[i].Length).Trim());
-                    }
+                if (reportIsClean)
+                {
+                    Events.GetEvent<NewUpdateEvent>()
+                        .Publish(
+                            new CharacterUpdateModel(
+                                reporter,
+                                new CharacterUpdateModel.ReportFiledEventArgs
+                                    {
+                                        Reported = reportData[0],
+                                        Tab = reportData[1],
+                                        Complaint = reportData[2],
+                                        LogId = logId,
+                                        CallId = callId,
+                                    }));
 
-                    if (reportData.Count == 3)
-                        reportIsClean = true;
+                    reporter.LastReport = new ReportModel
+                        {
+                            Reporter = reporter,
+                            Reported = reportData[0],
+                            Tab = reportData[1],
+                            Complaint = reportData[2],
+                            CallId = callId,
+                            LogId = logId
+                        };
+                }
+                else
+                {
+                    Events.GetEvent<NewUpdateEvent>()
+                        .Publish(
+                            new CharacterUpdateModel(
+                                reporter,
+                                new CharacterUpdateModel.ReportFiledEventArgs
+                                    {
+                                        Complaint = report,
+                                        CallId = callId,
+                                        LogId = logId,
+                                    }));
 
-                    var reporterName = command[CharacterArgument] as string;
-                    var reporter = CharacterManager.Find(reporterName);
-
-                    if (reportIsClean)
-                    {
-                        Events.GetEvent<NewUpdateEvent>()
-                            .Publish(
-                                new CharacterUpdateModel(
-                                    reporter,
-                                    new CharacterUpdateModel.ReportFiledEventArgs
-                                        {
-                                            Reported = reportData[0],
-                                            Tab = reportData[1],
-                                            Complaint = reportData[2],
-                                            LogId = logId,
-                                            CallId = callId,
-                                        }));
-
-                        reporter.LastReport = new ReportModel
-                            {
-                                Reporter = reporter,
-                                Reported = reportData[0],
-                                Tab = reportData[1],
-                                Complaint = reportData[2],
-                                CallId = callId,
-                                LogId = logId
-                            };
-                    }
-                    else
-                    {
-                        Events.GetEvent<NewUpdateEvent>()
-                            .Publish(
-                                new CharacterUpdateModel(
-                                    reporter,
-                                    new CharacterUpdateModel.ReportFiledEventArgs
-                                        {
-                                            Complaint = report,
-                                            CallId = callId,
-                                            LogId = logId,
-                                        }));
-
-                        reporter.LastReport = new ReportModel
-                            {
-                                Reporter = reporter,
-                                Complaint = report,
-                                CallId = callId,
-                                LogId = logId
-                            };
-                    }
+                    reporter.LastReport = new ReportModel
+                        {
+                            Reporter = reporter,
+                            Complaint = report,
+                            CallId = callId,
+                            LogId = logId
+                        };
                 }
             }
             else if (type.Equals("confirm"))

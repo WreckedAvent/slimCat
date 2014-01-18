@@ -167,6 +167,20 @@ namespace Slimcat.ViewModels
             }
         }
 
+        public static IEnumerable<KeyValuePair<string, GenderColorSettings>> GenderSettings
+        {
+            get
+            {
+                return new Dictionary<string, GenderColorSettings>
+                    {
+                        {"No Coloring", GenderColorSettings.None},
+                        {"Minimal Coloring", GenderColorSettings.GenderOnly},
+                        {"Moderate Coloring", GenderColorSettings.GenderAndHerm},
+                        {"Full Coloring", GenderColorSettings.Full}
+                    };
+            }
+        }
+
         public bool AllowColors
         {
             get { return ApplicationSettings.AllowColors; }
@@ -265,6 +279,16 @@ namespace Slimcat.ViewModels
             set
             {
                 ApplicationSettings.GlobalNotifyTerms = value;
+                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+            }
+        }
+
+        public GenderColorSettings GenderColorSettings
+        {
+            get { return ApplicationSettings.GenderColorSettings; }
+            set
+            {
+                ApplicationSettings.GenderColorSettings = value;
                 SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
             }
         }

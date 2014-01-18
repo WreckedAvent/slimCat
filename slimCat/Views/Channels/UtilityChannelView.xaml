@@ -123,6 +123,15 @@
                                       SelectedValuePath="Value" />
                         </StackPanel>
                         
+                        <StackPanel Margin="0,15,0,5">
+                            <TextBlock Text="Gender Color Settings"/>
+                            <ComboBox ItemsSource="{Binding Path=GenderSettings}"
+                                      SelectedValue="{Binding Path=GenderColorSettings}"
+                                      
+                                      DisplayMemberPath="Key"
+                                      SelectedValuePath="Value"/>
+                        </StackPanel>
+                        
                         <WrapPanel Margin="0,15,0,0">
                             <TextBlock Margin="0,0,5,0">Message font size</TextBlock>
                             <TextBox Text="{Binding Path=FontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

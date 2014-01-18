@@ -748,7 +748,7 @@ namespace Slimcat.Utilities
                 {Gender.Female, Gender.Female},
                 {Gender.Shemale, Gender.Female},
                 {Gender.HermF, Gender.Female},
-                {Gender.Transgender, Gender.Transgender},
+                {Gender.Transgender, Gender.None},
                 {Gender.None, Gender.None}
             }; 
 
