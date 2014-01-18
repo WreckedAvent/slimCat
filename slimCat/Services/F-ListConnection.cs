@@ -107,13 +107,13 @@ namespace Slimcat.Services
                 var sb =
                     new StringBuilder(
                         string.Format(
-                            "{0} log upload <br/> All times in 24hr {1} <br/><br/>",
+                            "{0} log upload \nAll times in 24hr {1} \n\n",
                             Constants.FriendlyName,
                             TimeZone.CurrentTimeZone.StandardName));
 
                 var messages =
                     log.Select(
-                        m => string.Format("{0} {1}: {2} <br/>", m.PostedTime.ToTimeStamp(), m.Poster.Name, m.Message));
+                        m => string.Format("{0} {1}: {2} \n", m.PostedTime.ToTimeStamp(), m.Poster.Name, m.Message));
 
                 var i = 0;
                 foreach (var m in messages)
@@ -121,7 +121,7 @@ namespace Slimcat.Services
                     sb.Append(m);
                     if (i >= 24)
                     {
-                        sb.Append("<br/>"); // legibility
+                        sb.Append("\n\n"); // legibility
                         i = 0;
                     }
 
