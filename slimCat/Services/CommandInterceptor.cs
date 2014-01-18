@@ -166,7 +166,7 @@ namespace Slimcat.Services
         private void AdminsCommand(IDictionary<string, object> command)
         {
             CharacterManager.Set(command[MultipleModeratorsArgument] as JsonArray, ListKind.Moderator);
-            if (CharacterManager.GetNames(ListKind.Moderator).Contains(ChatModel.CurrentCharacter.Name))
+            if (CharacterManager.IsOnList(ChatModel.CurrentCharacter.Name, ListKind.Moderator, false))
                 Dispatcher.Invoke((Action) delegate { ChatModel.IsGlobalModerator = true; });
         }
 
