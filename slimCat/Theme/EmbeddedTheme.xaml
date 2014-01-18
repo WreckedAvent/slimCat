@@ -110,8 +110,13 @@
             <TextBlock TextWrapping="Wrap"
                        Grid.Column="1">
                 <Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
-                           Style="{StaticResource UsernameStyle}"
-                           Foreground="{Binding Path=IsInteresting, Mode=OneWay, Converter={StaticResource NameplateColorConverter}}">
+                           Style="{StaticResource UsernameStyle}">
+                    <Hyperlink.Foreground>
+                    <MultiBinding Converter="{StaticResource NameplateColorConverter}" Mode="OneWay">
+                        <Binding Path="Gender"/>
+                        <Binding Path="IsInteresting"/>
+                    </MultiBinding>
+                    </Hyperlink.Foreground>
                     <Run Text="{Binding Path=Name, Mode=OneTime}" />
                     <Hyperlink.InputBindings>
                         <MouseBinding MouseAction="RightClick"

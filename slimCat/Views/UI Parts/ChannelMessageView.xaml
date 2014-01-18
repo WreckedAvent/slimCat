@@ -11,9 +11,8 @@
            FontFamily="Segoe UI, Verdanda"
            FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
            d:DataContext="{models:IMessage}">
-
-    <Run Text="{Binding TimeStamp, Mode=OneTime}"
-         Foreground="{Binding Path=Poster.IsInteresting, Mode=OneWay, Converter={StaticResource NameplateColorConverter}}"
+    <Run Text="{Binding TimeStamp, Mode=OneTime}" 
+         Foreground="{StaticResource HighlightBrush}"
          FontSize="12" />
 
     <InlineUIContainer BaselineAlignment="Bottom">
@@ -33,8 +32,13 @@
 
     <Hyperlink CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}"
                Command="{Binding Path=DataContext.NavigateTo, RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
-               Style="{StaticResource UsernameStyle}"
-               Foreground="{Binding Path=Poster.IsInteresting, Mode=OneWay, Converter={StaticResource NameplateColorConverter}}">
+               Style="{StaticResource UsernameStyle}">
+        <Hyperlink.Foreground>
+            <MultiBinding Converter="{StaticResource NameplateColorConverter}" Mode="OneWay">
+                <Binding Path="Poster.Gender"/>
+                <Binding Path="Poster.IsInteresting"/>
+            </MultiBinding>
+        </Hyperlink.Foreground>
         <Run Text="{Binding Path=Poster.Name, Mode=OneTime}" />
         <Hyperlink.InputBindings>
             <MouseBinding MouseAction="RightClick"
