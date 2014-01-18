@@ -729,65 +729,99 @@ namespace Slimcat.Utilities
         #endregion
     }
 
-    /// <summary>
-    /// Converts gender string into gender color.
-    /// </summary>
-    public sealed class GenderColorConverter : IMultiValueConverter
+    public abstract class GenderColorConverterBase : IMultiValueConverter
     {
-        #region Public Methods and Operators
-
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-        {
-            try
+        private readonly IDictionary<Gender, string> genderNames = new Dictionary<Gender, string>
             {
-                var gender = (Gender) values[0];
-                var findResource = Application.Current.FindResource("ForegroundColor");
-                if (findResource != null)
-                {
-                    var paleColor = (Color) findResource;
-                Color brightColor;
-                    if (values.Length > 1 && (bool) values[1])
-                        brightColor = (Color) Application.Current.TryFindResource("ContrastColor");
-                else
-                        brightColor = (Color) Application.Current.TryFindResource("HighlightColor");
+                {Gender.HermM, "MaleHerm"},
+                {Gender.Cuntboy, "Cunt"},
+                {Gender.Male, "Male"},
+                {Gender.HermF, "Herm"},
+                {Gender.Female, "Female"},
+                {Gender.Shemale, "Shemale"},
+                {Gender.Transgender, "Transgender"},
+                {Gender.None, "Highlight"}
+            }; 
 
-                var stops = new List<GradientStop>
-                                {
-                                    new GradientStop(paleColor, 0.0),
-                                    new GradientStop(paleColor, 0.5),
-                                    new GradientStop(brightColor, 0.5),
-                                    new GradientStop(brightColor, 1.0)
-                                };
-
-                switch (gender)
-                {
-                    case Gender.HermF:
-                        return new LinearGradientBrush(new GradientStopCollection(stops), 0);
-                    case Gender.HermM:
-                        return new LinearGradientBrush(new GradientStopCollection(stops));
-
-                    case Gender.Cuntboy:
-                    case Gender.Shemale:
-                        return Application.Current.FindResource("ForegroundBrush");
-                    default:
-                        return new SolidColorBrush(brightColor);
-                }
-            }
-            }
-            catch
-            {
-                return new SolidColorBrush();
-            }
-
-            return new SolidColorBrush();
-        }
+        public abstract object Convert(object[] values, Type targetType, object parameter, CultureInfo culture);
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
 
-        #endregion
+        protected SolidColorBrush GetBrush(Gender? gender)
+        {
+            var name = gender.HasValue ? genderNames[gender.Value] : "Highlight";
+            return (SolidColorBrush)TryGet(name, true);
+        }
+
+        protected static Object TryGet(string name, bool isBrush)
+        {
+            var toReturn = Application.Current.TryFindResource(name + (isBrush ? "Brush" : "Color"));
+
+            if (isBrush)
+            {
+                return toReturn as SolidColorBrush ?? Application.Current.FindResource("HighlightBrush");
+            }
+
+            var color = toReturn as Color?;
+            return color.HasValue
+                ? color.Value
+                : Application.Current.FindResource("HighlightColor");
+        }
+
+        protected Color GetColor(Gender? gender)
+        {
+            var name = gender.HasValue ? genderNames[gender.Value] : "Highlight";
+            return (Color)TryGet(name, false);
+        }
+    }
+
+    /// <summary>
+    /// Converts gender string into gender color.
+    /// </summary>
+    public sealed class GenderColorConverter : GenderColorConverterBase
+    {
+        public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            var gender = values[0] as Gender?;
+            var isInteresting = values[1] as bool?;
+
+            Color baseColor;
+            var brightColor = (Color) TryGet("Foreground", false);
+
+            if (isInteresting.HasValue && isInteresting.Value)
+            {
+                baseColor = (Color) TryGet("Contrast", false);
+            }
+            else
+            {
+                baseColor = GetColor(gender);
+            }
+ 
+            var stops = new List<GradientStop>
+                {
+                    new GradientStop(baseColor, 0.0),
+                    new GradientStop(baseColor, 0.5),
+                    new GradientStop(brightColor, 0.5),
+                    new GradientStop(brightColor, 1.0)
+                };
+
+            switch (gender)
+            {
+                case Gender.HermF:
+                    return new LinearGradientBrush(new GradientStopCollection(stops), 0);
+                case Gender.HermM:
+                    return new LinearGradientBrush(new GradientStopCollection(stops));
+
+                case Gender.Cuntboy:
+                case Gender.Shemale:
+                    return TryGet("Foreground", true);
+                default:
+                    return new SolidColorBrush(baseColor);
+            }
+        }
     }
 
     /// <summary>
@@ -954,57 +988,19 @@ namespace Slimcat.Utilities
     /// <summary>
     /// Converts a character's interested level to a nameplate color
     /// </summary>
-    public sealed class NameplateColorConverter : IMultiValueConverter
+    public sealed class NameplateColorConverter : GenderColorConverterBase
     {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            SolidColorBrush brush = (SolidColorBrush)Application.Current.FindResource("HighlightBrush");
-            try
-            {
-                var gender = (Gender)values[0];
-                var interesting = (bool)values[1];
-                if (interesting)
-                {
-                    return (SolidColorBrush)Application.Current.FindResource("ContrastBrush");
-                }
+            var gender = values[0] as Gender?;
+            var interesting = values[1] as bool?;
 
-                switch (gender)
-                {
-                    case Gender.HermM:
-                        brush = (SolidColorBrush)Application.Current.FindResource("MaleHermBrush");
-                        break;
-                    case Gender.Cuntboy:
-                        brush = (SolidColorBrush)Application.Current.FindResource("CuntBrush");
-                        break;
-                    case Gender.Male:
-                        brush = (SolidColorBrush)Application.Current.FindResource("MaleBrush");
-                        break;
-                    case Gender.HermF:
-                        brush = (SolidColorBrush)Application.Current.FindResource("HermBrush");
-                        break;
-                    case Gender.Female:
-                        brush = (SolidColorBrush)Application.Current.FindResource("FemaleBrush");
-                        break;
-                    case Gender.Shemale:
-                        brush = (SolidColorBrush)Application.Current.FindResource("ShemaleBrush");
-                        break;
-                    case Gender.Transgender:
-                        brush = (SolidColorBrush)Application.Current.FindResource("TransgenderBrush");
-                        break;
-                    default:
-                        brush = (SolidColorBrush)Application.Current.FindResource("HighlightBrush");
-                        break;
-                }
-            }
-            catch
+            if (interesting.HasValue && interesting.Value)
             {
+                return TryGet("Contrast", true);
             }
-            return brush;
-        }
 
-        public object[] ConvertBack(object values, Type[] targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
+            return GetBrush(gender);
         }
     }
 

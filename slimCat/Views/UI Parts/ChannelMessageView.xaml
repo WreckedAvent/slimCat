@@ -12,8 +12,14 @@
            FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
            d:DataContext="{models:IMessage}">
     <Run Text="{Binding TimeStamp, Mode=OneTime}" 
-         Foreground="{StaticResource HighlightBrush}"
-         FontSize="12" />
+         FontSize="12" >
+        <Run.Foreground>
+            <MultiBinding Converter="{StaticResource NameplateColorConverter}" Mode="OneWay">
+                <Binding Path="Poster.Gender"/>
+                <Binding Path="Poster.IsInteresting"/>
+            </MultiBinding>
+        </Run.Foreground>
+    </Run>
 
     <InlineUIContainer BaselineAlignment="Bottom">
         <Rectangle Height="15" Width="15" Margin="0">
