@@ -37,35 +37,44 @@ namespace Slimcat.Utilities
 
     #endregion
 
-    /// <summary>
-    ///     Returns the opposite boolean value
-    /// </summary>
-    public class OppositeBoolConverter : IValueConverter
+    public abstract class OneWayConverter : IValueConverter
     {
-        #region Public Methods and Operators
-
-        public object Convert(object value, Type targetType, object paramater, CultureInfo culture)
-        {
-            var v = (bool) value;
-            return !v;
-        }
+        public abstract object Convert(object value, Type targetType, object parameter, CultureInfo culture);
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
+    }
 
-        #endregion
+    public abstract class OneWayMultiConverter : IMultiValueConverter
+    {
+        public abstract object Convert(object[] values, Type targetType, object parameter, CultureInfo culture);
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    ///     Returns the opposite boolean value
+    /// </summary>
+    public class OppositeBoolConverter : OneWayConverter
+    {
+        public override object Convert(object value, Type targetType, object paramater, CultureInfo culture)
+        {
+            var v = (bool) value;
+            return !v;
+        }
     }
 
     /// <summary>
     ///     If true, return a bright color
     /// </summary>
-    public class BoolColorConverter : IValueConverter
+    public class BoolColorConverter : OneWayConverter
     {
-        #region Public Methods and Operators
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var v = (bool) value;
             if (v)
@@ -73,29 +82,17 @@ namespace Slimcat.Utilities
 
             return Application.Current.FindResource("BrightBackgroundBrush") as SolidColorBrush;
         }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
     }
 
-    public class GreaterThanZeroConverter : IValueConverter
+    public class GreaterThanZeroConverter : OneWayConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var parsed = (int) value;
 
             return parsed > 0
                 ? Visibility.Visible
                 : Visibility.Collapsed;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
         }
     }
 
@@ -729,7 +726,7 @@ namespace Slimcat.Utilities
         #endregion
     }
 
-    public abstract class GenderColorConverterBase : IMultiValueConverter
+    public abstract class GenderColorConverterBase : OneWayMultiConverter
     {
         private readonly IDictionary<Gender, string> genderNames = new Dictionary<Gender, string>
             {
@@ -742,13 +739,6 @@ namespace Slimcat.Utilities
                 {Gender.Transgender, "Transgender"},
                 {Gender.None, "Highlight"}
             }; 
-
-        public abstract object Convert(object[] values, Type targetType, object parameter, CultureInfo culture);
-
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
 
         protected SolidColorBrush GetBrush(Gender? gender)
         {
@@ -827,11 +817,9 @@ namespace Slimcat.Utilities
     /// <summary>
     /// Converts gender string into a gender image.
     /// </summary>
-    public sealed class GenderImageConverter : IValueConverter
+    public sealed class GenderImageConverter : OneWayConverter
     {
-        #region Public Methods and Operators
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {
@@ -865,23 +853,14 @@ namespace Slimcat.Utilities
                 return new BitmapImage();
             }
         }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
     }
 
     /// <summary>
     /// Converts notify level into strings.
     /// </summary>
-    public sealed class NotifyLevelConverter : IValueConverter
+    public sealed class NotifyLevelConverter : OneWayConverter
     {
-        #region Public Methods and Operators
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var toParse = (int) value;
             var notificationType = parameter as string;
@@ -913,23 +892,14 @@ namespace Slimcat.Utilities
 
             return verboseNotificationKind;
         }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
     }
 
     /// <summary>
     /// Converts Interested-only data into strings
     /// </summary>
-    public sealed class InterestedOnlyBoolConverter : IValueConverter
+    public sealed class InterestedOnlyBoolConverter : OneWayConverter
     {
-        #region Public Methods and Operators
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is bool))
                 return null;
@@ -938,23 +908,14 @@ namespace Slimcat.Utilities
 
             return v ? "only for people of interest." : "for everyone.";
         }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
     }
 
     /// <summary>
     /// Converts a channel type enum into a channel type image representation.
     /// </summary>
-    public sealed class ChannelTypeToImageConverter : IValueConverter
+    public sealed class ChannelTypeToImageConverter : OneWayConverter
     {
-        #region Public Methods and Operators
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var args = (ChannelType) value;
             var uri = new Uri("pack://application:,,,/icons/chat.png");
@@ -976,13 +937,6 @@ namespace Slimcat.Utilities
 
             return new BitmapImage(uri);
         }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
     }
 
     /// <summary>
