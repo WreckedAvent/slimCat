@@ -51,6 +51,7 @@ namespace Slimcat.Models
             NotInterested = new List<string>();
             PortableMode = Environment.GetCommandLineArgs().Contains("portable", StringComparer.OrdinalIgnoreCase);
             FontSize = 13;
+            GenderColorSettings = GenderColorSettings.GenderOnly;
 
             Langauge = Thread.CurrentThread.CurrentCulture.Name;
             if (!LanguageList.Contains(Langauge))
@@ -139,6 +140,33 @@ namespace Slimcat.Models
             get { return new[] {"en-US", "en-GB", "de", "es", "fr"}; }
         }
 
+        public static GenderColorSettings GenderColorSettings { get; set; }
+
         #endregion
+    }
+
+    public enum GenderColorSettings
+    {
+        /// <summary>
+        /// No characters are colored by gender.
+        /// </summary>
+        None,
+        /// <summary>
+        /// Non gender options are coerced to genders, then colored. 
+        /// Shemale, HermF, and Female are 'female'-colored.
+        /// Cuntboy, HermM, and Male are 'male'-colored.
+        /// Transgender and None are the default theme color.
+        /// </summary>
+        GenderOnly,
+        /// <summary>
+        /// Male, Female, HermF, and HermM are colored.
+        /// Shemale and Cuntboy are coerced to gender then colored.
+        /// Transgender and none are the default theme color.
+        /// </summary>
+        GenderAndHerm,
+        /// <summary>
+        /// All genders are colored uniquely.
+        /// </summary>
+        Full
     }
 }

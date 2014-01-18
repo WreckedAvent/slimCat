@@ -8,10 +8,10 @@
     <Color x:Key="ForegroundColor">#F2EFE5</Color>
 
     <!-- Highlight color is used to draw attention to controls, such as when a control is focused. -->
-    <Color x:Key="HighlightColor">#CD9100</Color>
+    <Color x:Key="HighlightColor">#D89900</Color>
 
     <!-- Contrast color is used in some places where a contrasting color is needed, such as for the friend's nameplates -->
-    <Color x:Key="ContrastColor">#41B500</Color>
+    <Color x:Key="ContrastColor">#6DDA00</Color>
 
     <!-- Background is used as the basis for every UI element. -->
     <Color x:Key="BackgroundColor">#101010</Color>
@@ -21,14 +21,14 @@
 
     <!-- Bright background is used for some odds and ends, most notably the 'expand' bars on either side of the screen. -->
     <Color x:Key="BrightBackgroundColor">#323232</Color>
-	
-	<Color x:Key="MaleColor">#6699FF</Color>
-	<Color x:Key="FemaleColor">#FF6699</Color>
-	<Color x:Key="CuntColor">#00CC66</Color>
-	<Color x:Key="MaleHermColor">#007FFF</Color>
-	<Color x:Key="TransgenderColor">#EE8822</Color>
-	<Color x:Key="ShemaleColor">#CC66FF</Color>
-	<Color x:Key="HermColor">#9B30FF</Color>
+
+    <Color x:Key="MaleColor">#6DBAD8</Color>
+    <Color x:Key="FemaleColor">#DA6CB0</Color>
+	<Color x:Key="CuntColor">#00D8D2</Color>
+    <Color x:Key="MaleHermColor">#007FFF</Color>
+    <Color x:Key="TransgenderColor">#EE8822</Color>
+	<Color x:Key="ShemaleColor">#D80040</Color>
+	<Color x:Key="HermColor">#A800D9</Color>
 
 
     <!-- Do not modify below this line unless you know what you are doing. -->

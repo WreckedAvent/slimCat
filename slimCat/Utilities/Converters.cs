@@ -740,10 +740,25 @@ namespace Slimcat.Utilities
                 {Gender.None, "Highlight"}
             }; 
 
+        private readonly IDictionary<Gender, Gender> genderFallbacks = new Dictionary<Gender, Gender>
+            {
+                {Gender.Male, Gender.Male},
+                {Gender.HermM, Gender.Male},
+                {Gender.Cuntboy, Gender.Male},
+                {Gender.Female, Gender.Female},
+                {Gender.Shemale, Gender.Female},
+                {Gender.HermF, Gender.Female},
+                {Gender.Transgender, Gender.Transgender},
+                {Gender.None, Gender.None}
+            }; 
+
         protected SolidColorBrush GetBrush(Gender? gender)
         {
-            var name = gender.HasValue ? genderNames[gender.Value] : "Highlight";
-            return (SolidColorBrush)TryGet(name, true);
+            return (SolidColorBrush)TryGet(GetGenderName(gender), true);
+        }
+        protected Color GetColor(Gender? gender)
+        {
+            return (Color)TryGet(GetGenderName(gender), false);
         }
 
         protected static Object TryGet(string name, bool isBrush)
@@ -761,10 +776,22 @@ namespace Slimcat.Utilities
                 : Application.Current.FindResource("HighlightColor");
         }
 
-        protected Color GetColor(Gender? gender)
+        protected string GetGenderName(Gender? gender)
         {
-            var name = gender.HasValue ? genderNames[gender.Value] : "Highlight";
-            return (Color)TryGet(name, false);
+            if (gender == null || ApplicationSettings.GenderColorSettings == GenderColorSettings.None)
+                return "Highlight";
+
+            if (ApplicationSettings.GenderColorSettings == GenderColorSettings.Full)
+                return genderNames[gender.Value];
+
+            if (ApplicationSettings.GenderColorSettings == GenderColorSettings.GenderOnly)
+                return genderNames[genderFallbacks[gender.Value]];
+
+            if (ApplicationSettings.GenderColorSettings == GenderColorSettings.GenderAndHerm
+                && (gender == Gender.HermM || gender == Gender.HermF))
+                return genderNames[gender.Value];
+
+            return genderNames[genderFallbacks[gender.Value]];
         }
     }
 
