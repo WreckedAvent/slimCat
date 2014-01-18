@@ -42,15 +42,8 @@ namespace Slimcat.Models
         private readonly ObservableCollection<GeneralChannelModel> channels =
             new ObservableCollection<GeneralChannelModel>();
 
-        private readonly IList<string> globalMods = new List<string>();
-
-        private readonly IList<string> ignored = new List<string>();
-
         private readonly ObservableCollection<NotificationModel> notifications =
             new ObservableCollection<NotificationModel>();
-
-        private readonly IDictionary<string, ICharacter> onlineCharacters =
-            new ConcurrentDictionary<string, ICharacter>(StringComparer.OrdinalIgnoreCase);
 
         private readonly ObservableCollection<GeneralChannelModel> ourChannels =
             new ObservableCollection<GeneralChannelModel>();
@@ -63,17 +56,6 @@ namespace Slimcat.Models
         private ICharacter currentCharacter;
 
         private bool isAuthenticated;
-
-        private DateTime lastCharacterListCache;
-
-        // caches for speed improvements in filtering
-        private IList<ICharacter> onlineBookmarkCache;
-
-        private IEnumerable<ICharacter> onlineCharactersCache;
-
-        private IList<ICharacter> onlineFriendCache;
-
-        private IList<ICharacter> onlineModsCache;
 
         #endregion
 
@@ -89,27 +71,11 @@ namespace Slimcat.Models
         #region Public Properties
 
         /// <summary>
-        ///     Gets the online characters dictionary.
-        /// </summary>
-        private IDictionary<string, ICharacter> OnlineCharactersDictionary
-        {
-            get { return onlineCharacters; }
-        }
-
-        /// <summary>
         ///     Gets the all channels.
         /// </summary>
         public ObservableCollection<GeneralChannelModel> AllChannels
         {
             get { return channels; }
-        }
-
-        /// <summary>
-        ///     Gets the bookmarks.
-        /// </summary>
-        public IList<string> Bookmarks
-        {
-            get { return CurrentAccount.Bookmarks; }
         }
 
         /// <summary>
@@ -131,45 +97,6 @@ namespace Slimcat.Models
         public ObservableCollection<PmChannelModel> CurrentPms
         {
             get { return pms; }
-        }
-
-        /// <summary>
-        ///     Gets the friends.
-        /// </summary>
-        public IList<string> Friends
-        {
-            get
-            {
-                if (ApplicationSettings.FriendsAreAccountWide)
-                {
-                    return CurrentAccount.AllFriends
-                        .Select(pair => pair.Key)
-                        .Distinct()
-                        .ToList();
-                }
-
-                return
-                    CurrentAccount.AllFriends
-                        .Where(pair => pair.Value.Contains(CurrentCharacter.Name))
-                        .Select(pair => pair.Key)
-                        .ToList();
-            }
-        }
-
-        /// <summary>
-        ///     Gets the ignored.
-        /// </summary>
-        public IList<string> Ignored
-        {
-            get { return ignored; }
-        }
-
-        /// <summary>
-        ///     Gets the interested.
-        /// </summary>
-        public IList<string> Interested
-        {
-            get { return ApplicationSettings.Interested; }
         }
 
         /// <summary>
@@ -197,97 +124,11 @@ namespace Slimcat.Models
         public DateTimeOffset LastMessageReceived { get; set; }
 
         /// <summary>
-        ///     Gets the mods.
-        /// </summary>
-        public IList<string> Mods
-        {
-            get { return globalMods; }
-        }
-
-        /// <summary>
-        ///     Gets the not interested.
-        /// </summary>
-        public IList<string> NotInterested
-        {
-            get { return ApplicationSettings.NotInterested; }
-        }
-
-        /// <summary>
         ///     Gets the notifications.
         /// </summary>
         public ObservableCollection<NotificationModel> Notifications
         {
             get { return notifications; }
-        }
-
-        /// <summary>
-        ///     Gets the online bookmarks.
-        /// </summary>
-        public IEnumerable<ICharacter> OnlineBookmarks
-        {
-            get
-            {
-                return onlineBookmarkCache
-                       ?? (onlineBookmarkCache =
-                           OnlineCharacters.Where(
-                               character =>
-                                   Bookmarks.Any(
-                                       bookmark =>
-                                           (character != null
-                                            && character.Name.Equals(bookmark, StringComparison.OrdinalIgnoreCase))))
-                               .ToList());
-            }
-        }
-
-        /// <summary>
-        ///     Gets the online characters.
-        /// </summary>
-        public IEnumerable<ICharacter> OnlineCharacters
-        {
-            get
-            {
-                return onlineCharactersCache
-                       ?? (onlineCharactersCache = OnlineCharactersDictionary.Values.ToList());
-            }
-        }
-
-        /// <summary>
-        ///     Gets the online friends.
-        /// </summary>
-        public IEnumerable<ICharacter> OnlineFriends
-        {
-            get
-            {
-                if (onlineFriendCache == null && Friends != null)
-                {
-                    onlineFriendCache =
-                        OnlineCharacters.Where(
-                            character =>
-                                Friends.Any(
-                                    friend => character.Name.Equals(friend, StringComparison.OrdinalIgnoreCase)))
-                            .ToList();
-                }
-
-                return onlineFriendCache;
-            }
-        }
-
-        /// <summary>
-        ///     Gets the online global mods.
-        /// </summary>
-        public IEnumerable<ICharacter> OnlineGlobalMods
-        {
-            get
-            {
-                return onlineModsCache
-                       ?? (onlineModsCache =
-                           OnlineCharacters.Where(
-                               character =>
-                                   (character != null
-                                    && globalMods.Any(
-                                        mod => mod.Equals(character.Name, StringComparison.OrdinalIgnoreCase))))
-                               .ToList());
-            }
         }
 
         /// <summary>
@@ -348,212 +189,12 @@ namespace Slimcat.Models
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The add character.
-        /// </summary>
-        /// <param name="character">
-        ///     The character.
-        /// </param>
-        public void AddCharacter(ICharacter character)
-        {
-            try
-            {
-                character.IsInteresting = IsOfInterest(character.Name);
-                OnlineCharactersDictionary.Add(character.Name, character);
-                UpdateCharacterList(IsOfInterest(character.Name));
-                UpdateBindings(character.Name);
-            }
-            catch
-            {
-                Console.WriteLine("Error: Unable to add character: " + character.Name);
-            }
-        }
-
-        /// <summary>
-        ///     The find character.
-        /// </summary>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="ICharacter" />.
-        /// </returns>
-        public ICharacter FindCharacter(string name)
-        {
-            if (IsOnline(name))
-                return OnlineCharactersDictionary[name];
-
-            Console.WriteLine("Unknown character: " + name);
-            return new CharacterModel {Name = name, Status = StatusType.Offline};
-        }
-
         public ChannelModel FindChannel(string id, string title = null)
         {
             var channel = AllChannels.FirstByIdOrDefault(id);
 
             return channel ?? new GeneralChannelModel(id, ChannelType.InviteOnly) {Title = title};
         }
-
-        /// <summary>
-        ///     The is of interest.
-        /// </summary>
-        /// <param name="character">
-        ///     The character.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
-        public bool IsOfInterest(string character)
-        {
-            return (Bookmarks.Any(bookmark => bookmark.Equals(character, StringComparison.OrdinalIgnoreCase))
-                    || Friends.Any(friend => friend.Equals(character, StringComparison.OrdinalIgnoreCase))
-                    || Interested.Any(interest => interest.Equals(character, StringComparison.OrdinalIgnoreCase)))
-                   || CurrentPms.Any(pm => pm.Id.Equals(character, StringComparison.OrdinalIgnoreCase));
-        }
-
-        /// <summary>
-        ///     The is online.
-        /// </summary>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
-        public bool IsOnline(string name)
-        {
-            return name != null && OnlineCharactersDictionary.ContainsKey(name);
-        }
-
-        /// <summary>
-        ///     The remove character.
-        /// </summary>
-        /// <param name="character">
-        ///     The character.
-        /// </param>
-        public void RemoveCharacter(string character)
-        {
-            try
-            {
-                OnlineCharactersDictionary.Remove(character);
-                UpdateCharacterList(IsOfInterest(character));
-                UpdateBindings(character);
-            }
-            catch
-            {
-                Console.WriteLine("Error: Unable to remove character: " + character + " ( is he/she online? )");
-            }
-        }
-
-        /// <summary>
-        ///     The toggle interested mark.
-        /// </summary>
-        /// <param name="character">
-        ///     The character.
-        /// </param>
-        public void ToggleInterestedMark(string character)
-        {
-            var target = FindCharacter(character);
-            if (!Interested.Contains(character))
-            {
-                Interested.Add(character);
-                target.IsInteresting = true;
-                if (NotInterested.Contains(character))
-                    NotInterested.Remove(character);
-            }
-            else
-            {
-                Interested.Remove(character);
-                target.IsInteresting = IsOfInterest(character);
-            }
-
-            SettingsDaemon.SaveApplicationSettingsToXml(CurrentCharacter.Name);
-        }
-
-        /// <summary>
-        ///     The toggle not interested mark.
-        /// </summary>
-        /// <param name="character">
-        ///     The character.
-        /// </param>
-        public void ToggleNotInterestedMark(string character)
-        {
-            if (!NotInterested.Contains(character))
-            {
-                NotInterested.Add(character);
-                if (Interested.Contains(character))
-                {
-                    Interested.Remove(character);
-                    FindCharacter(character).IsInteresting = IsOfInterest(character);
-                }
-            }
-            else
-            {
-                NotInterested.Remove(character);
-                FindCharacter(character).IsInteresting = IsOfInterest(character);
-            }
-
-            SettingsDaemon.SaveApplicationSettingsToXml(CurrentCharacter.Name);
-        }
-
-        public void FriendsChanged()
-        {
-            onlineFriendCache = null;
-            OnPropertyChanged("Friends");
-            OnPropertyChanged("OnlineFriends");
-        }
-
-        public void Wipe()
-        {
-            Dispatcher.Invoke(
-                (Action) delegate
-                    {
-                        onlineCharactersCache = null;
-
-                        channels.Clear();
-                        onlineCharacters.Clear();
-
-                        onlineModsCache = null;
-                        onlineBookmarkCache = null;
-                        onlineFriendCache = null;
-                    });
-        }
-
-        #endregion
-
-        #region Methods
-
-        private void UpdateBindings(string name)
-        {
-            if (Bookmarks.Contains(name))
-            {
-                onlineBookmarkCache = null;
-                OnPropertyChanged("OnlineBookmarks");
-            }
-
-            if (Friends.Contains(name))
-            {
-                onlineFriendCache = null;
-                OnPropertyChanged("OnlineFriends");
-            }
-
-            if (!Mods.Contains(name))
-                return;
-
-            onlineModsCache = null;
-            OnPropertyChanged("OnlineGlobalMods");
-        }
-
-        private void UpdateCharacterList(bool force)
-        {
-            if (!force && lastCharacterListCache.AddSeconds(15) >= DateTime.Now)
-                return;
-
-            onlineCharactersCache = onlineCharacters.Values.ToList();
-            lastCharacterListCache = DateTime.Now;
-            OnPropertyChanged("OnlineCharacters");
-        }
-
         #endregion
     }
 }

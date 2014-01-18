@@ -79,8 +79,9 @@ namespace Slimcat.ViewModels
         ///     The eventagg.
         /// </param>
         public NotificationsTabViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
-            : base(contain, regman, eventagg, cm)
+            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg,
+            ICharacterManager manager)
+            : base(contain, regman, eventagg, cm, manager)
         {
             Container.RegisterType<object, NotificationsTabView>(NotificationsTabView);
 

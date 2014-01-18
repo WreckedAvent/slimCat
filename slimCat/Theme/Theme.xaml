@@ -37,11 +37,13 @@
 
     <Style TargetType="Hyperlink">
         <Setter Property="Command" Value="{Binding NavigateTo}" />
-        <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
-
+        <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
+        <Setter Property="TextDecorations" Value="{x:Null}"/>
+        <Setter Property="FontWeight" Value="Thin"/>
+        
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -157,11 +159,10 @@
 
     <Style TargetType="{x:Type Button}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="Padding" Value="5" />
+        <Setter Property="Padding" Value="8" />
         <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource DepressedBrush}" />
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -233,13 +234,99 @@
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="True">
                             <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
-                        </Trigger>
-                        <Trigger Property="IsFocused" Value="True">
-                            <Setter Property="BorderBrush" TargetName="Root"
-                                    Value="{StaticResource HighlightBrush}" />
+                            <Setter Property="Background" Value="{StaticResource BrightBackgroundBrush}"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="BorderBrush" TargetName="Root"
+                            <Setter Property="Background" TargetName="Root"
+                                    Value="{StaticResource HighlightBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Button}"
+           x:Key="ImageButtonBase">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Root"
+                            BorderThickness="{TemplateBinding Property=BorderThickness}"
+                            Padding="{TemplateBinding Property=Padding}"
+                            TextBlock.Foreground="{TemplateBinding Property=Foreground}"
+                            BorderBrush="{TemplateBinding Property=BorderBrush}"
+                            Background="{TemplateBinding Property=Background}"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="Scale" ScaleX="1" ScaleY="1" />
+                        </Border.RenderTransform>
+
+                        <ContentPresenter x:Name="PART_ContentHost"
+                                          OverridesDefaultStyle="True"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Foreground"
+                                    Value="{StaticResource DepressedBrush}" />
+
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Scale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         From="1"
+                                                         To="0.90" Duration="0:0:0.05">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CircleEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="Scale"
+                                                         From="1"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="0.90" Duration="0:0:0.05">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CircleEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Scale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         From="0.90"
+                                                         To="1" Duration="0:0:0.05">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CircleEase EasingMode="EaseIn" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="Scale"
+                                                         From="0.90"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="1" Duration="0:0:0.05">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CircleEase EasingMode="EaseIn" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground" 
                                     Value="{StaticResource HighlightBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -253,31 +340,34 @@
         <Setter Property="Command" Value="{Binding Path=JoinChannelCommand}" />
     </Style>
 
-    <Style TargetType="{x:Type Button}" x:Key="ImageContentButton" BasedOn="{StaticResource {x:Type Button}}">
+    <Style TargetType="{x:Type Button}" x:Key="ImageContentButton" BasedOn="{StaticResource ImageButtonBase}">
         <Setter Property="Padding" Value="0" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="2,0" />
-        <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Cursor" Value="Hand" />
                 <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
             </Trigger>
             <Trigger Property="IsMouseOver" Value="False">
                 <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
                 <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
 
     <Style TargetType="ToggleButton">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="Padding" Value="5" />
-        <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Background" Value="{StaticResource DepressedBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
@@ -300,13 +390,13 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter Property="Background" Value="{StaticResource BrightBackgroundBrush}" />
-                            <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+                            <Setter Property="Background" Value="{StaticResource HighlightBrush}" />
+                            <Setter Property="Foreground" Value="{StaticResource BackgroundBrush}" />
                         </Trigger>
 
                         <Trigger Property="IsChecked" Value="False">
-                            <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
-                            <Setter Property="BorderBrush" Value="{StaticResource DepressedBrush}" />
+                            <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+                            <Setter Property="Background" Value="{StaticResource BrightBackgroundBrush}" />
                         </Trigger>
 
                         <Trigger Property="IsPressed" Value="True">
@@ -358,12 +448,9 @@
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
                         </Trigger>
-                        <Trigger Property="IsFocused" Value="True">
-                            <Setter Property="BorderBrush" TargetName="Root"
-                                    Value="{StaticResource HighlightBrush}" />
-                        </Trigger>
+                        
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="BorderBrush" TargetName="Root"
+                            <Setter Property="Background" TargetName="Root"
                                     Value="{StaticResource HighlightBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -371,21 +458,125 @@
             </Setter.Value>
         </Setter>
     </Style>
+    
+    <Style TargetType="ToggleButton"
+           x:Key="ToggleImageButtonBase">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Background" Value="{StaticResource DepressedBrush}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="Root"
+                            BorderThickness="{TemplateBinding Property=BorderThickness}"
+                            Padding="{TemplateBinding Property=Padding}"
+                            TextBlock.Foreground="{TemplateBinding Property=Foreground}"
+                            BorderBrush="{StaticResource DepressedBrush}"
+                            Background="{TemplateBinding Property=Background}"
+                            RenderTransformOrigin="0.5,0.5">
 
-    <Style x:Key="ImageContentToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="Scale" ScaleX="1" ScaleY="1" />
+                        </Border.RenderTransform>
+
+                        <ContentPresenter x:Name="PART_ContentHost"
+                                          OverridesDefaultStyle="True"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Background" Value="{StaticResource HighlightBrush}" />
+                        </Trigger>
+
+                        <Trigger Property="IsChecked" Value="False">
+                            <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+                        </Trigger>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Foreground"
+                                    Value="{StaticResource HighlightBrush}" />
+                        </Trigger>
+                        
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Foreground" 
+                                    Value="{StaticResource DepressedBrush}" />
+
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Scale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         From="1"
+                                                         To="0.90" Duration="0:0:0.05">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CircleEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="Scale"
+                                                         From="1"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="0.90" Duration="0:0:0.05">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CircleEase EasingMode="EaseOut" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Scale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         From="0.90"
+                                                         To="1" Duration="0:0:0.05">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CircleEase EasingMode="EaseIn" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="Scale"
+                                                         From="0.90"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="1" Duration="0:0:0.05">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CircleEase EasingMode="EaseIn" />
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style x:Key="ImageContentToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource ToggleImageButtonBase}">
         <Setter Property="Padding" Value="0" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="2,0" />
         <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand" />
                 <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
             </Trigger>
             <Trigger Property="IsMouseOver" Value="False">
                 <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
                 <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
             </Trigger>
         </Style.Triggers>
     </Style>

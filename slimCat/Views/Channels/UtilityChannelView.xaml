@@ -6,6 +6,7 @@
                   mc:Ignorable="d"
                   xmlns:vm="clr-namespace:Slimcat.ViewModels"
                   xmlns:v="clr-namespace:Slimcat.Views"
+                  xmlns:models="clr-namespace:Slimcat.Models"
 
                   d:DataContext="{d:DesignInstance vm:UtilityChannelViewModel}">
 
@@ -45,13 +46,6 @@
                         <Run Text="{Binding Path=OnlineCount, Mode=OneWay}" />
                         <Run Text="{Binding Path=OnlineCountChange, Mode=OneWay}" />
                         <LineBreak />
-                        <Run Text="Friends: " />
-                        <Run Text="{Binding Path=OnlineFriendsCount, Mode=OneWay}" />
-                        <LineBreak />
-
-                        <Run Text="Bookmarks: " />
-                        <Run Text="{Binding Path=OnlineBookmarksCount, Mode=OneWay}" />
-                        <LineBreak />
 
                         <Run Text="Server uptime: " />
                         <Run Text="{Binding Path=RoughServerUpTime, Mode=OneWay}"
@@ -73,6 +67,8 @@
             <StackPanel Grid.Row="1">
                 <Expander Header="Settings">
                     <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
+
+                        <!--
                         <StackPanel Margin="0,5,0,10">
                             <TextBlock Text="Notifications Volume" Margin="5,0,0,0" />
                             <Slider Value="{Binding Volume}"
@@ -85,7 +81,7 @@
                                     TickPlacement="BottomRight"
                                     HorizontalAlignment="Left"
                                     Margin="5,0,0,0" />
-                        </StackPanel>
+                        </StackPanel>-->
 
                         <CheckBox IsChecked="{Binding ShowNotifications}"
                                   VerticalAlignment="Center"
@@ -104,11 +100,13 @@
                             Allow Colors
                         </CheckBox>
 
+                        <!-- disabled until I figure out how to do this without doing what I was doing before
                         <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
                                   VerticalAlignment="Center"
                                   Margin="0,5">
                             Friends are account wide
-                        </CheckBox>
+                        </CheckBox>-->
+                        
                         <CheckBox IsChecked="{Binding SpellCheckEnabled}"
                                   VerticalAlignment="Center"
                                   Margin="0,5">
@@ -124,6 +122,13 @@
                                       DisplayMemberPath="Key"
                                       SelectedValuePath="Value" />
                         </StackPanel>
+                        
+                        <WrapPanel Margin="0,15,0,0">
+                            <TextBlock Margin="0,0,5,0">Message font size</TextBlock>
+                            <TextBox Text="{Binding Path=FontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     VerticalAlignment="Center"
+                                     FontSize="12" />
+                        </WrapPanel>
 
                         <WrapPanel Margin="0,15,0,0">
                             <TextBlock Margin="0,0,5,0">Keep</TextBlock>
@@ -157,6 +162,14 @@
                         </TextBlock>
 
                     </StackPanel>
+                </Expander>
+                
+                <Expander Header="Help">
+                    <WrapPanel>
+                        <TextBlock Foreground="{StaticResource ForegroundBrush}" TextWrapping="Wrap">
+                            For trouble shooting, support, feature suggestions, bug reports, or other inquiries, please send a note to or PM <ContentControl ContentTemplate="{StaticResource UsernameTemplate}" Content="{Binding Path=Slimcat}"/>
+                        </TextBlock>
+                    </WrapPanel>
                 </Expander>
             </StackPanel>
 

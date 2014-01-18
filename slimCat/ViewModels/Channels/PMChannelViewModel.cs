@@ -44,6 +44,7 @@ namespace Slimcat.ViewModels
         #region Fields
 
         private Timer checkTick = new Timer(5000);
+        private ICharacter conversationWith;
 
         private Timer cooldownTimer = new Timer(500);
 
@@ -78,8 +79,9 @@ namespace Slimcat.ViewModels
         ///     The cm.
         /// </param>
         public PmChannelViewModel(
-            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
-            : base(contain, regman, events, cm)
+            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
+            ICharacterManager manager)
+            : base(contain, regman, events, cm, manager)
         {
             try
             {
@@ -105,7 +107,7 @@ namespace Slimcat.ViewModels
                         if (!IsTyping)
                             checkTick.Enabled = false;
 
-                        if (Message != null && typingLengthCache == Message.Length)
+                        if (!string.IsNullOrEmpty(Message) && typingLengthCache == Message.Length)
                         {
                             IsTyping = false;
                             SendTypingNotification(TypingStatus.Paused);
@@ -162,12 +164,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public ICharacter ConversationWith
         {
-            get
-            {
-                return ChatModel.IsOnline(Model.Id)
-                    ? ChatModel.FindCharacter(Model.Id)
-                    : new CharacterModel {Name = Model.Id};
-            }
+            get { return conversationWith ?? (conversationWith = CharacterManager.Find(Model.Id)); }
         }
 
         public ObservableCollection<IViewableObject> CurrentMessages
@@ -228,17 +225,14 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (!ChatModel.IsOnline(Model.Id))
-                    return string.Format("Warning: {0} is not online.", Model.Id);
-
                 switch (ConversationWith.Status)
                 {
+                    case StatusType.Offline:
                     case StatusType.Away:
-                        return string.Format("Warning: {0} is currently away.", Model.Id);
                     case StatusType.Busy:
-                        return string.Format("Warning: {0} is currently busy.", Model.Id);
                     case StatusType.Idle:
-                        return string.Format("Warning: {0} is currently idle.", Model.Id);
+                        return string.Format("Warning: {0} is currently {1}.", Model.Id,
+                            conversationWith.Status.ToString().ToLower());
                     case StatusType.Looking:
                         return string.Format("{0} is looking for roleplay.", Model.Id);
                     case StatusType.Dnd:
@@ -263,7 +257,7 @@ namespace Slimcat.ViewModels
             {
                 var pm = (PmChannelModel) Model;
 
-                if (!ChatModel.IsOnline(Model.Id))
+                if (ConversationWith.Status == StatusType.Offline)
                 {
                     // visual indicator to help the user know when the other has gone offline
                     return string.Format("{0} is not online!", pm.Id);

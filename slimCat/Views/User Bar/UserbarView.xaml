@@ -109,7 +109,7 @@
                                   FontSize="12" />
 
                         <TextBox
-                            Text="{Binding Path=ChatModel.CurrentCharacter.StatusMessage, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                            Text="{Binding Path=ChatModel.CurrentCharacter.StatusMessage, UpdateSourceTrigger=PropertyChanged}"
                             FontSize="12"
                             TextWrapping="Wrap"
                             MaxWidth="200"

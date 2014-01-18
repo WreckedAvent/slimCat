@@ -112,7 +112,7 @@ namespace Slimcat.Services
         /// <param name="currentCharacter">
         ///     The current Character.
         /// </param>
-        public static void ReadApplicationSettingsFromXml(string currentCharacter)
+        public static void ReadApplicationSettingsFromXml(string currentCharacter, ICharacterManager cm)
         {
             MakeGlobalSettingsFileIfNotExist(currentCharacter);
 
@@ -137,21 +137,30 @@ namespace Slimcat.Services
                         {
                             if (!element.HasElements)
                             {
-                                var setter = Convert.ChangeType(element.Value, property.PropertyType);
-                                property.SetValue(null, setter, null);
-                                break;
+                                try
+                                {
+                                    var setter = Convert.ChangeType(element.Value, property.PropertyType);
+                                    property.SetValue(null, setter, null);
+                                }
+                                catch
+                                {
+                                }
+
+                                continue;
                             }
 
                             var collection = ApplicationSettings.SavedChannels;
 
                             if (property.Name.Equals("interested", StringComparison.OrdinalIgnoreCase))
-                                collection = ApplicationSettings.Interested;
+                                cm.Set(element.Elements().Select(x => x.Value), ListKind.Interested);
                             else if (property.Name.Equals("notinterested", StringComparison.OrdinalIgnoreCase))
-                                collection = ApplicationSettings.NotInterested;
-
-                            collection.Clear();
-                            foreach (var item in element.Elements())
-                                collection.Add(item.Value);
+                                cm.Set(element.Elements().Select(x => x.Value), ListKind.NotInterested);
+                            else
+                            {
+                                collection.Clear();
+                                foreach (var item in element.Elements())
+                                    collection.Add(item.Value);
+                            }
                         }
                     }
                 }

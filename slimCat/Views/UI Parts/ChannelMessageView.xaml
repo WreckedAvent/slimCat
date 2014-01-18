@@ -9,7 +9,7 @@
            Padding="0"
            Foreground="{StaticResource ForegroundBrush}"
            FontFamily="Segoe UI, Verdanda"
-           FontSize="13"
+           FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
            d:DataContext="{models:IMessage}">
     <Run Text="{Binding TimeStamp, Mode=OneTime}" 
          Foreground="{StaticResource HighlightBrush}"

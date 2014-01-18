@@ -25,6 +25,7 @@ namespace Slimcat.Services
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
+    using System.Media;
     using System.Web;
     using System.Windows;
     using System.Windows.Forms;
@@ -56,10 +57,11 @@ namespace Slimcat.Services
         private readonly IEventAggregator events;
 
         private readonly NotifyIcon icon = new NotifyIcon();
+        private readonly ICharacterManager manager;
 
         private readonly ToastNotificationsViewModel toast;
 
-        private MediaPlayer dingLing = new MediaPlayer();
+        private SoundPlayer dingLing = new SoundPlayer();
 
         private DateTime lastDingLinged;
 
@@ -80,10 +82,12 @@ namespace Slimcat.Services
         /// <param name="cm">
         ///     The cm.
         /// </param>
-        public NotificationsDaemon(IEventAggregator eventagg, IChatModel cm)
+        /// <param name="manager"></param>
+        public NotificationsDaemon(IEventAggregator eventagg, IChatModel cm, ICharacterManager manager)
         {
             events = eventagg;
             this.cm = cm;
+            this.manager = manager;
             toast = new ToastNotificationsViewModel(events);
 
             events.GetEvent<NewMessageEvent>().Subscribe(HandleNewChannelMessage, true);
@@ -216,8 +220,6 @@ namespace Slimcat.Services
                 return;
 
             icon.Dispose();
-            dingLing.Close();
-            dingLing = null;
             toast.Dispose();
         }
 
@@ -237,13 +239,7 @@ namespace Slimcat.Services
             if ((DateTime.Now - lastDingLinged) <= TimeSpan.FromSeconds(1))
                 return;
 
-            ResetDingLing();
-            dingLing.Volume = ApplicationSettings.Volume;
-
-            if (Math.Abs(dingLing.Volume - 0.0) < 0.001)
-                return;
-
-            dingLing.Play();
+            (new SoundPlayer(Environment.CurrentDirectory + @"\sounds\" + "newmessage.wav")).Play();
             lastDingLinged = DateTime.Now;
         }
 
@@ -281,7 +277,7 @@ namespace Slimcat.Services
                 var shouldDing = channel.Settings.MessageNotifyLevel
                                  > (int) ChannelSettingsModel.NotifyLevel.NotificationAndToast;
 
-                if ((channel.Settings.MessageNotifyOnlyForInteresting && cm.IsOfInterest(message.Poster.Name))
+                if ((channel.Settings.MessageNotifyOnlyForInteresting && manager.IsOfInterest(message.Poster.Name))
                     || !channel.Settings.MessageNotifyOnlyForInteresting)
                 {
                     NotifyUser(shouldDing, shouldDing, message.Poster.Name + '\n' + cleanMessageText, channel.Id);
@@ -412,7 +408,7 @@ namespace Slimcat.Services
 
                     if (channel.Settings.PromoteDemoteNotifyOnlyForInteresting)
                     {
-                        if (!cm.IsOfInterest(targetCharacter))
+                        if (!manager.IsOfInterest(targetCharacter))
                             return; // if we only want to know interesting people, no need to evalute further
                     }
 
@@ -432,7 +428,7 @@ namespace Slimcat.Services
 
                     if (channel.Settings.JoinLeaveNotifyOnlyForInteresting)
                     {
-                        if (!cm.IsOfInterest(targetCharacter))
+                        if (!manager.IsOfInterest(targetCharacter))
                             return;
                     }
 
@@ -463,7 +459,7 @@ namespace Slimcat.Services
                     AddNotification(model);
                     NotifyUser(true, true, notification.ToString(), targetCharacter, "report");
                 }
-                else if (cm.IsOfInterest(targetCharacter))
+                else if (manager.IsOfInterest(targetCharacter))
                 {
                     AddNotification(model);
 
@@ -524,12 +520,6 @@ namespace Slimcat.Services
                 };
 
             Dispatcher.Invoke(notify);
-        }
-
-        private void ResetDingLing()
-        {
-            dingLing.Close();
-            dingLing.Open(new Uri(Environment.CurrentDirectory + @"\sounds\" + "newmessage.wav"));
         }
 
         private void ToggleSound(object sender, EventArgs e)

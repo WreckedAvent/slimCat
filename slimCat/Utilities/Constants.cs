@@ -30,7 +30,7 @@ namespace Slimcat.Utilities
 
         public const string ClientName = "Ocelot";
 
-        public const string ClientVer = "rc3.01";
+        public const string ClientVer = "rc3.04";
 
         #endregion
 

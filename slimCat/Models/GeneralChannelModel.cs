@@ -22,10 +22,7 @@ namespace Slimcat.Models
     #region Usings
 
     using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Collections.Specialized;
-    using System.Linq;
     using Utilities;
 
     #endregion
@@ -37,17 +34,9 @@ namespace Slimcat.Models
     {
         #region Fields
 
-        private readonly List<string> banned;
-
-        private readonly List<string> mods;
-
-        private readonly ObservableCollection<ICharacter> users;
-
         private string description;
 
         private int lastAdCount;
-
-        private DateTime lastUpdate;
 
         private int userCount;
 
@@ -83,16 +72,8 @@ namespace Slimcat.Models
 
                 UserCount = users;
 
-                this.users = new ObservableCollection<ICharacter>();
-                mods = new List<string>();
-                banned = new List<string>();
+                CharacterManager = new ChannelCharacterManager();
                 Settings = new ChannelSettingsModel();
-
-                Users.CollectionChanged += (s, e) =>
-                    {
-                        if (e.Action != NotifyCollectionChangedAction.Reset)
-                            UpdateBindings();
-                    };
 
                 // the message count now faces the user, so when we reset it it now requires a UI update
                 Messages.CollectionChanged += (s, e) =>
@@ -124,13 +105,7 @@ namespace Slimcat.Models
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets the banned.
-        /// </summary>
-        public IList<string> Banned
-        {
-            get { return banned; }
-        }
+        public ICharacterManager CharacterManager { get; private set; }
 
         /// <summary>
         ///     Gets a value indicating whether can close.
@@ -145,7 +120,7 @@ namespace Slimcat.Models
         /// </summary>
         public int CompositeUnreadCount
         {
-            get { return Unread + UnreadAds; }
+            get { return Math.Max(Unread + UnreadAds, 0); }
         }
 
         /// <summary>
@@ -203,14 +178,6 @@ namespace Slimcat.Models
         }
 
         /// <summary>
-        ///     Gets the moderators.
-        /// </summary>
-        public IList<string> Moderators
-        {
-            get { return mods; }
-        }
-
-        /// <summary>
         ///     Gets a value indicating whether needs attention.
         /// </summary>
         public override bool NeedsAttention
@@ -231,14 +198,6 @@ namespace Slimcat.Models
         }
 
         /// <summary>
-        ///     Gets the owner.
-        /// </summary>
-        public string Owner
-        {
-            get { return mods != null ? mods[0] : null; }
-        }
-
-        /// <summary>
         ///     Gets the unread Ads.
         /// </summary>
         public int UnreadAds
@@ -251,7 +210,7 @@ namespace Slimcat.Models
         /// </summary>
         public int UserCount
         {
-            get { return Users.Count == 0 ? userCount : Users.Count(); }
+            get { return CharacterManager.CharacterCount == 0 ? userCount : CharacterManager.CharacterCount; }
 
             set
             {
@@ -260,36 +219,9 @@ namespace Slimcat.Models
             }
         }
 
-        /// <summary>
-        ///     Gets the users.
-        /// </summary>
-        public ObservableCollection<ICharacter> Users
-        {
-            get { return users; }
-        }
-
         #endregion
 
         #region Public Methods and Operators
-
-        /// <summary>
-        ///     The add character.
-        /// </summary>
-        /// <param name="toAdd">
-        ///     The to add.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
-        public bool AddCharacter(ICharacter toAdd)
-        {
-            if (users.Contains(toAdd))
-                return false;
-
-            users.Add(toAdd);
-            CallListChanged();
-            return true;
-        }
 
         /// <summary>
         ///     The add message.
@@ -330,42 +262,6 @@ namespace Slimcat.Models
                 UnreadContainsInteresting = isOfInterest;
 
             UpdateBindings();
-        }
-
-        /// <summary>
-        ///     The call list changed.
-        /// </summary>
-        public void CallListChanged()
-        {
-            if (lastUpdate.AddSeconds(3) >= DateTime.Now)
-                return;
-
-            OnPropertyChanged("Moderators");
-            OnPropertyChanged("Owner");
-            OnPropertyChanged("Banned");
-            OnPropertyChanged("Users");
-            OnPropertyChanged("UsersCount");
-            lastUpdate = DateTime.Now;
-        }
-
-        /// <summary>
-        ///     The remove character.
-        /// </summary>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
-        public bool RemoveCharacter(string name)
-        {
-            var toRemove = users.FirstOrDefault(c => c.NameEquals(name));
-            if (toRemove == null)
-                return false;
-
-            users.Remove(toRemove);
-            CallListChanged();
-            return true;
         }
 
         #endregion

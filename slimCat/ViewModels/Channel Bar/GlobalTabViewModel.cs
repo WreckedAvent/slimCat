@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="UsersTabViewModel.cs">
+// <copyright file="GlobalTabViewModel.cs">
 //    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
 //   
 //    This source is subject to the Simplified BSD License.
@@ -35,16 +35,16 @@ namespace Slimcat.ViewModels
     #endregion
 
     /// <summary>
-    ///     On the channel bar (right-hand side) the 'users' tab, only it shows only the users in the current channel
+    ///     On the channel bar (right-hand side) the 'users' tab, only it shows the entire list
     /// </summary>
-    public class UsersTabViewModel : ChannelbarViewModelCommon
+    public class GlobalTabViewModel : ChannelbarViewModelCommon
     {
         #region Constants
 
         /// <summary>
-        ///     The users tab view.
+        ///     The global tab view.
         /// </summary>
-        public const string UsersTabView = "UsersTabView";
+        public const string GlobalTabView = "GlobalTabView";
 
         #endregion
 
@@ -52,16 +52,14 @@ namespace Slimcat.ViewModels
 
         private readonly GenderSettingsModel genderSettings;
 
-        private readonly Timer updateTick = new Timer(3000);
-
-        private GeneralChannelModel currentChan;
+        private readonly Timer updateTick = new Timer(5000);
 
         #endregion
 
         #region Constructors and Destructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="UsersTabViewModel" /> class.
+        ///     Initializes a new instance of the <see cref="GlobalTabViewModel" /> class.
         /// </summary>
         /// <param name="cm">
         ///     The cm.
@@ -75,11 +73,12 @@ namespace Slimcat.ViewModels
         /// <param name="eventagg">
         ///     The eventagg.
         /// </param>
-        public UsersTabViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
-            : base(contain, regman, eventagg, cm)
+        public GlobalTabViewModel(
+            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg,
+            ICharacterManager manager)
+            : base(contain, regman, eventagg, cm, manager)
         {
-            Container.RegisterType<object, UsersTabView>(UsersTabView);
+            Container.RegisterType<object, GlobalTabView>(GlobalTabView);
             genderSettings = new GenderSettingsModel();
 
             SearchSettings.Updated += (s, e) =>
@@ -94,13 +93,6 @@ namespace Slimcat.ViewModels
                     OnPropertyChanged("SortedUsers");
                 };
 
-            ChatModel.SelectedChannelChanged += (s, e) =>
-                {
-                    currentChan = null;
-                    OnPropertyChanged("SortContentString");
-                    OnPropertyChanged("SortedUsers");
-                };
-
             Events.GetEvent<NewUpdateEvent>().Subscribe(
                 args =>
                     {
@@ -108,8 +100,9 @@ namespace Slimcat.ViewModels
                         if (thisNotification == null)
                             return;
 
-                        if (thisNotification.Arguments is CharacterUpdateModel.PromoteDemoteEventArgs)
-                            OnPropertyChanged("HasPermissions");
+                        var thisArgument = thisNotification.Arguments as CharacterUpdateModel.ListChangedEventArgs;
+                        if (thisArgument != null)
+                            OnPropertyChanged("SortedUsers");
                     });
 
             updateTick.Elapsed += OnChannelListUpdated;
@@ -133,7 +126,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public GeneralChannelModel SelectedChan
         {
-            get { return currentChan ?? ChatModel.CurrentChannel as GeneralChannelModel; }
+            get { return ChatModel.CurrentChannel as GeneralChannelModel; }
         }
 
         /// <summary>
@@ -141,7 +134,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public string SortContentString
         {
-            get { return HasUsers ? SelectedChan.Title : null; }
+            get { return "Global"; }
         }
 
         /// <summary>
@@ -151,17 +144,8 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (HasUsers)
-                {
-                    lock (SelectedChan.Users)
-                    {
-                        return
-                            SelectedChan.Users.Where(MeetsFilter)
-                                .OrderBy(RelationshipToUser)
-                                .ThenBy(x => x.Name);
-                    }
-                }
-                return null;
+                return
+                    CharacterManager.SortedCharacters.Where(MeetsFilter).OrderBy(RelationshipToUser).ThenBy(x => x.Name);
             }
         }
 
@@ -171,19 +155,18 @@ namespace Slimcat.ViewModels
 
         private bool MeetsFilter(ICharacter character)
         {
-            return character.MeetsFilters(
-                GenderSettings, SearchSettings, ChatModel, ChatModel.CurrentChannel as GeneralChannelModel);
+            return character.MeetsFilters(GenderSettings, SearchSettings, CharacterManager, null);
         }
 
         private void OnChannelListUpdated(object sender, EventArgs e)
         {
-            if (SelectedChan != null)
+            if (SelectedChan != null) 
                 OnPropertyChanged("SortedUsers");
         }
 
         private string RelationshipToUser(ICharacter character)
         {
-            return character.RelationshipToUser(ChatModel, ChatModel.CurrentChannel as GeneralChannelModel);
+            return character.RelationshipToUser(CharacterManager, null);
         }
 
         #endregion

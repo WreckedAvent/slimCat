@@ -57,8 +57,9 @@ namespace Slimcat.ViewModels
         ///     The cm.
         /// </param>
         protected ChannelbarViewModelCommon(
-            IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
-            : base(contain, regman, events, cm)
+            IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
+            ICharacterManager lists)
+            : base(contain, regman, events, cm, lists)
         {
             cm.SelectedChannelChanged += (s, e) => OnPropertyChanged("HasUsers");
         }

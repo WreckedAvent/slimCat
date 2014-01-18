@@ -23,7 +23,6 @@ namespace Slimcat.ViewModels
 
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
@@ -65,7 +64,7 @@ namespace Slimcat.ViewModels
 
         private IList<ICharacter> roomMods;
 
-        private bool showOffline = true;
+        private bool showOffline;
 
         #endregion
 
@@ -87,8 +86,9 @@ namespace Slimcat.ViewModels
         ///     The eventagg.
         /// </param>
         public ManageListsViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg)
-            : base(contain, regman, eventagg, cm)
+            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg,
+            ICharacterManager manager)
+            : base(contain, regman, eventagg, cm, manager)
         {
             Container.RegisterType<object, ManageListsTabView>(ManageListsTabView);
 
@@ -174,7 +174,14 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> Banned
         {
-            get { return HasUsers ? Update(((GeneralChannelModel) ChatModel.CurrentChannel).Banned, roomBans) : null; }
+            get
+            {
+                var channel = ChatModel.CurrentChannel as GeneralChannelModel;
+                if (HasUsers && channel != null)
+                    return channel.CharacterManager.GetCharacters(ListKind.Banned, false);
+
+                return null;
+            }
         }
 
         /// <summary>
@@ -182,11 +189,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> Bookmarks
         {
-            get
-            {
-                bookmarks = Update(ChatModel.Bookmarks, bookmarks);
-                return bookmarks;
-            }
+            get { return CharacterManager.GetCharacters(ListKind.Bookmark, !showOffline); }
         }
 
         /// <summary>
@@ -194,11 +197,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> Friends
         {
-            get
-            {
-                friends = Update(ChatModel.Friends, friends);
-                return friends;
-            }
+            get { return CharacterManager.GetCharacters(ListKind.Friend, !showOffline); }
         }
 
         /// <summary>
@@ -214,7 +213,14 @@ namespace Slimcat.ViewModels
         /// </summary>
         public bool HasBanned
         {
-            get { return HasUsers && (((GeneralChannelModel) ChatModel.CurrentChannel).Banned.Count > 0); }
+            get
+            {
+                var channel = ChatModel.CurrentChannel as GeneralChannelModel;
+                if (HasUsers && channel != null)
+                    return channel.CharacterManager.GetNames(ListKind.Banned, false).Count > 0;
+
+                return false;
+            }
         }
 
         /// <summary>
@@ -222,11 +228,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> Ignored
         {
-            get
-            {
-                ignored = Update(ChatModel.Ignored, ignored);
-                return ignored;
-            }
+            get { return CharacterManager.GetCharacters(ListKind.Ignored); }
         }
 
         /// <summary>
@@ -234,11 +236,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> Interested
         {
-            get
-            {
-                interested = Update(ApplicationSettings.Interested, interested);
-                return interested;
-            }
+            get { return CharacterManager.GetCharacters(ListKind.Interested, !showOffline); }
         }
 
         /// <summary>
@@ -248,7 +246,11 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                return HasUsers ? Update(((GeneralChannelModel) ChatModel.CurrentChannel).Moderators, roomMods) : null;
+                var channel = ChatModel.CurrentChannel as GeneralChannelModel;
+                if (HasUsers && channel != null)
+                    return channel.CharacterManager.GetCharacters(ListKind.Moderator, !showOffline);
+
+                return null;
             }
         }
 
@@ -257,11 +259,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> NotInterested
         {
-            get
-            {
-                notInterested = Update(ApplicationSettings.NotInterested, notInterested);
-                return notInterested;
-            }
+            get { return CharacterManager.GetCharacters(ListKind.NotInterested, !showOffline); }
         }
 
         /// <summary>
@@ -293,7 +291,7 @@ namespace Slimcat.ViewModels
         private bool MeetsFilter(ICharacter character)
         {
             return character.MeetsFilters(
-                GenderSettings, SearchSettings, ChatModel, ChatModel.CurrentChannel as GeneralChannelModel);
+                GenderSettings, SearchSettings, CharacterManager, ChatModel.CurrentChannel as GeneralChannelModel);
         }
 
         private IList<ICharacter> Update(ICollection<string> characterNames, IList<ICharacter> currentList)
@@ -301,13 +299,14 @@ namespace Slimcat.ViewModels
             if (characterNames == null)
                 return currentList;
 
+            /*
             if (currentList == null || currentList.Count != characterNames.Count)
             {
                 currentList = characterNames
                     .Select(characterName => ChatModel.FindCharacter(characterName))
                     .Where(toAdd => toAdd.Status != StatusType.Offline || showOffline)
-                    .Where(MeetsFilter).ToList();
-            }
+                    .Where(activeFilter).ToList();
+            }*/
 
             return currentList;
         }

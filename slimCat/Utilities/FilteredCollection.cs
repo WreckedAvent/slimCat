@@ -25,8 +25,8 @@ namespace Slimcat.Utilities
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Collections.Specialized;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using Models;
     using ViewModels;
 
     #endregion
@@ -43,7 +43,9 @@ namespace Slimcat.Utilities
 
         private bool isFiltering;
 
-        private Func<T, bool> meetsFilter;
+        protected readonly Func<T, bool> ActiveFilter;
+
+        protected readonly object Locker = new object();
 
         private ObservableCollection<T> originalCollection;
 
@@ -51,10 +53,10 @@ namespace Slimcat.Utilities
 
         #region Constructors and Destructors
 
-        public FilteredCollection(ObservableCollection<T> toWatch, Func<T, bool> meetsFilter, bool isFiltering = false)
+        public FilteredCollection(ObservableCollection<T> toWatch, Func<T, bool> activeFilter, bool isFiltering = false)
         {
             originalCollection = toWatch;
-            this.meetsFilter = meetsFilter;
+            ActiveFilter = activeFilter;
             Collection = new ObservableCollection<TR>();
 
             originalCollection.CollectionChanged += OnCollectionChanged;
@@ -70,7 +72,7 @@ namespace Slimcat.Utilities
 
         public bool IsFiltering
         {
-            private get { return isFiltering; }
+            get { return isFiltering; }
 
             set
             {
@@ -105,30 +107,21 @@ namespace Slimcat.Utilities
 
         public void RebuildItems()
         {
-            Collection.Clear();
+            lock (Locker)
+            {
+                Collection.Clear();
 
-            IEnumerable<T> items = originalCollection;
-            if (isFiltering)
-                items = items.Where(meetsFilter);
+                IEnumerable<T> items = originalCollection;
+                
+                items = items.Where(MeetsFilter);
 
-            items.Each(item => Collection.Add(item));
+                items.Each(item => Collection.Add(item));
+            }
         }
 
         #endregion
 
         #region Methods
-
-        protected override void Dispose(bool isManaged)
-        {
-            if (isManaged)
-            {
-                originalCollection = null;
-                meetsFilter = null;
-                Collection = null;
-            }
-
-            base.Dispose(isManaged);
-        }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -138,24 +131,35 @@ namespace Slimcat.Utilities
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
+                {
                     var items = e.NewItems.Cast<T>();
                     if (IsFiltering)
-                        items = items.Where(meetsFilter);
+                        items = items.Where(ActiveFilter);
 
                     items.Each(item => Collection.Add(item));
                     break;
+                }
 
                 case NotifyCollectionChangedAction.Reset:
+                {
                     Collection.Clear();
                     break;
+                }
 
                 case NotifyCollectionChangedAction.Remove:
-                    if (e.OldStartingIndex == -1)
+                {
+                    if (e.OldStartingIndex == -1 || Collection.Count == 0)
                         return;
 
                     Collection.RemoveAt(e.OldStartingIndex);
                     break;
+                }
             }
+        }
+
+        protected virtual bool MeetsFilter(T item)
+        {
+            return !isFiltering || ActiveFilter(item);
         }
 
         #endregion
@@ -165,18 +169,32 @@ namespace Slimcat.Utilities
     ///     A filtered observable collection which syncronizes with another collection
     /// </summary>
     /// <typeparam name="T">The type of collection to filter and return</typeparam>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass",
-        Justification = "Same type as other class, only less specific.")]
     public class FilteredCollection<T> : FilteredCollection<T, T>
         where T : class
     {
         #region Constructors and Destructors
 
-        public FilteredCollection(ObservableCollection<T> toWatch, Func<T, bool> meetsFilter, bool isFiltering = false)
-            : base(toWatch, meetsFilter, isFiltering)
+        public FilteredCollection(ObservableCollection<T> toWatch, Func<T, bool> activeFilter, bool isFiltering = false)
+            : base(toWatch, activeFilter, isFiltering)
         {
         }
 
         #endregion
+    }
+
+    public class FilteredMessageCollection : FilteredCollection<IMessage, IViewableObject>
+    {
+        private readonly Func<IMessage, bool> constantFilter;
+
+        public FilteredMessageCollection(ObservableCollection<IMessage> toWatch, Func<IMessage, bool> activeFilter, Func<IMessage, bool> constantFilter, bool isFiltering = false)
+            : base(toWatch, activeFilter, isFiltering)
+        {
+            this.constantFilter = constantFilter;
+        }
+
+        protected override bool MeetsFilter(IMessage item)
+        {
+            return IsFiltering ? ActiveFilter(item) : constantFilter(item);
+        }
     }
 }

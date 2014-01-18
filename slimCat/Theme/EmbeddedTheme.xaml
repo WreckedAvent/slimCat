@@ -136,11 +136,12 @@
                                   RelativeSource={RelativeSource Mode=FindAncestor,
                                   AncestorType={x:Type Grid}, AncestorLevel=2} }" />
 
-        <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
-
+        <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
+        <Setter Property="FontWeight" Value="Light"/>
+        <Setter Property="TextDecorations" Value="{x:Null}"/>        
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>

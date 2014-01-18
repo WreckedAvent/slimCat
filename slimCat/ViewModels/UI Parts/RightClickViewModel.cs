@@ -33,6 +33,7 @@ namespace Slimcat.ViewModels
         #region Fields
 
         private readonly bool isModerator;
+        private readonly ICharacterManager manager;
 
         private bool hasReports;
 
@@ -48,9 +49,10 @@ namespace Slimcat.ViewModels
         /// <param name="isModerator">
         ///     The is moderator.
         /// </param>
-        public RightClickMenuViewModel(bool isModerator)
+        public RightClickMenuViewModel(bool isModerator, ICharacterManager manager)
         {
             this.isModerator = isModerator;
+            this.manager = manager;
         }
 
         #endregion
@@ -60,12 +62,24 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets a value indicating whether can ignore.
         /// </summary>
-        public bool CanIgnore { get; private set; }
+        public bool CanIgnore 
+        {
+            get
+            {
+                if (Target != null)
+                {
+                    return !manager.IsOnList(Target.Name, ListKind.Ignored);
+                }
+
+                return false;
+            } 
+        }
+
 
         /// <summary>
         ///     Gets a value indicating whether can unignore.
         /// </summary>
-        public bool CanUnignore { get; private set; }
+        public bool CanUnignore { get { return !CanIgnore; } }
 
         /// <summary>
         ///     Gets a value indicating whether has report.
@@ -112,7 +126,7 @@ namespace Slimcat.ViewModels
             {
                 if (Target != null)
                 {
-                    return ApplicationSettings.Interested.Contains(Target.Name)
+                    return manager.IsOnList(Target.Name, ListKind.Interested)
                         ? "Remove interested mark"
                         : "Add interested mark";
                 }
@@ -130,7 +144,7 @@ namespace Slimcat.ViewModels
             {
                 if (Target != null)
                 {
-                    return ApplicationSettings.NotInterested.Contains(Target.Name)
+                    return manager.IsOnList(Target.Name, ListKind.NotInterested)
                         ? "Remove not interested mark"
                         : "Add not interested mark";
                 }
@@ -151,20 +165,17 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (Target != null)
-                {
-                    switch (Target.Gender)
-                    {
-                        case Gender.HermF:
-                            return "Feminine Herm";
-                        case Gender.HermM:
-                            return "Masculine Herm";
-                        default:
-                            return Target.Gender.ToString();
-                    }
-                }
+                if (Target == null) return "None";
 
-                return "None";
+                switch (Target.Gender)
+                {
+                    case Gender.HermF:
+                        return "Feminine Herm";
+                    case Gender.HermM:
+                        return "Masculine Herm";
+                    default:
+                        return Target.Gender.ToString();
+                }
             }
         }
 
@@ -175,21 +186,18 @@ namespace Slimcat.ViewModels
         {
             get
             {
-                if (Target != null)
-                {
-                    switch (Target.Status)
-                    {
-                        case StatusType.Dnd:
-                            return "Do Not Disturb";
-                        case StatusType.Looking:
-                            return "Looking For Play";
-                        default: // we just need to capitalize the first letter
-                            return char.ToUpper(Target.Status.ToString()[0])
-                                   + Target.Status.ToString().Substring(1);
-                    }
-                }
+                if (Target == null) return "None";
 
-                return "None";
+                switch (Target.Status)
+                {
+                    case StatusType.Dnd:
+                        return "Do Not Disturb";
+                    case StatusType.Looking:
+                        return "Looking For Play";
+                    default: // we just need to capitalize the first letter
+                        return char.ToUpper(Target.Status.ToString()[0])
+                               + Target.Status.ToString().Substring(1);
+                }
             }
         }
 
@@ -203,23 +211,15 @@ namespace Slimcat.ViewModels
         /// <param name="newTarget">
         ///     The target.
         /// </param>
-        /// <param name="canIgnore">
-        ///     The can ignore.
-        /// </param>
-        /// <param name="canUnignore">
-        ///     The can unignore.
-        /// </param>
-        /// <param name="hasReports">
+        /// <param name="thisHasReports">
         ///     The has reports.
         /// </param>
-        public void SetNewTarget(ICharacter newTarget, bool canIgnore, bool canUnignore, bool hasReports)
+        public void SetNewTarget(ICharacter newTarget, bool thisHasReports)
         {
             Target = newTarget;
             Target.GetAvatar();
 
-            CanIgnore = canIgnore;
-            CanUnignore = canUnignore;
-            this.hasReports = hasReports;
+            hasReports = thisHasReports;
 
             OnPropertyChanged("Target");
             OnPropertyChanged("CanIgnore");

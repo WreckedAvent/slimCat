@@ -89,7 +89,8 @@ namespace Slimcat.ViewModels
         /// <param name="cm">
         ///     The cm.
         /// </param>
-        protected ViewModelBase(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
+        protected ViewModelBase(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
+            ICharacterManager manager)
         {
             try
             {
@@ -97,8 +98,9 @@ namespace Slimcat.ViewModels
                 RegionManager = regman.ThrowIfNull("regman");
                 Events = events.ThrowIfNull("events");
                 ChatModel = cm.ThrowIfNull("cm");
+                CharacterManager = manager.ThrowIfNull("manager");
 
-                RightClickMenuViewModel = new RightClickMenuViewModel(ChatModel.IsGlobalModerator);
+                RightClickMenuViewModel = new RightClickMenuViewModel(ChatModel.IsGlobalModerator, CharacterManager);
                 CreateReportViewModel = new CreateReportViewModel(Events, ChatModel);
                 ChatModel.SelectedChannelChanged += OnSelectedChannelChanged;
 
@@ -182,12 +184,10 @@ namespace Slimcat.ViewModels
                     return false;
 
                 var isLocalMod = false;
-                if (ChatModel.CurrentChannel is GeneralChannelModel)
-                {
-                    isLocalMod =
-                        (ChatModel.CurrentChannel as GeneralChannelModel).Moderators.Contains(
-                            ChatModel.CurrentCharacter.Name);
-                }
+                var channel = ChatModel.CurrentChannel as GeneralChannelModel;
+
+                if (channel != null)
+                    isLocalMod = channel.CharacterManager.IsOnList(ChatModel.CurrentCharacter.Name, ListKind.Moderator);
 
                 return ChatModel.IsGlobalModerator || isLocalMod;
             }
@@ -259,8 +259,7 @@ namespace Slimcat.ViewModels
                 return openMenu ?? (openMenu = new RelayCommand(
                     args =>
                         {
-                            var newTarget =
-                                ChatModel.FindCharacter(args as string);
+                            var newTarget = CharacterManager.Find(args as string);
                             updateRightClickMenu(newTarget);
                         }));
             }
@@ -307,6 +306,8 @@ namespace Slimcat.ViewModels
 
         protected IEventAggregator Events { get; set; }
 
+        protected ICharacterManager CharacterManager { get; set; }
+
         #endregion
 
         #region Public Methods and Operators
@@ -327,7 +328,7 @@ namespace Slimcat.ViewModels
         /// </returns>
         public bool CanHandleReport(object args)
         {
-            return ChatModel.FindCharacter(args as string).HasReport;
+            return CharacterManager.Find(args as string).HasReport;
         }
 
         #endregion
@@ -358,8 +359,7 @@ namespace Slimcat.ViewModels
         private void updateRightClickMenu(ICharacter newTarget)
         {
             var name = newTarget.Name;
-            RightClickMenuViewModel.SetNewTarget(
-                newTarget, CanIgnore(name), CanUnIgnore(name), CanHandleReport(name));
+            RightClickMenuViewModel.SetNewTarget(newTarget, CanHandleReport(name));
             RightClickMenuViewModel.IsOpen = true;
             CreateReportViewModel.Target = name;
             OnPropertyChanged("RightClickMenuViewModel");
@@ -399,7 +399,7 @@ namespace Slimcat.ViewModels
         /// </returns>
         private bool CanIgnore(object args)
         {
-            return args is string && !ChatModel.Ignored.Contains(args as string, StringComparer.OrdinalIgnoreCase);
+            return args is string && !CharacterManager.IsOnList(args as string, ListKind.Ignored, false);
         }
 
         /// <summary>
@@ -650,12 +650,12 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     The start link in default browser.
         /// </summary>
-        /// <param name="link">
+        /// <param name="linkToOpen">
         ///     The link.
         /// </param>
-        private void StartLinkInDefaultBrowser(object link)
+        private void StartLinkInDefaultBrowser(object linkToOpen)
         {
-            var interpret = link as string;
+            var interpret = linkToOpen as string;
             if (interpret != null && (!interpret.Contains(".") || interpret.Contains(" ")))
                 interpret = "http://www.f-list.net/c/" + HttpUtility.UrlEncode(interpret);
 

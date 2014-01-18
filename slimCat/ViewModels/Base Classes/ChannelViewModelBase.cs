@@ -92,8 +92,9 @@ namespace Slimcat.ViewModels
         ///     The cm.
         /// </param>
         protected ChannelViewModelBase(
-            IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
-            : base(contain, regman, events, cm)
+            IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
+            ICharacterManager manager)
+            : base(contain, regman, events, cm, manager)
         {
             Events.GetEvent<ErrorEvent>().Subscribe(UpdateError);
 
@@ -361,15 +362,16 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Error handling behavior
         /// </summary>
-        /// <param name="error">
+        /// <param name="newError">
         ///     The error.
         /// </param>
-        protected void UpdateError(string error)
+        protected void UpdateError(string newError)
         {
-            if (errorRemoveTimer != null)
-                errorRemoveTimer.Stop();
+            if (errorRemoveTimer == null) return;
 
-            Error = error;
+            errorRemoveTimer.Stop();
+
+            Error = newError;
             errorRemoveTimer.Start();
         }
 

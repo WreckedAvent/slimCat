@@ -101,6 +101,8 @@ namespace Slimcat.Utilities
 
     public abstract class BbCodeBaseConverter
     {
+        private readonly ICharacterManager characterManager;
+
         #region Static Fields
 
         private static readonly IList<string> BbType = new List<string>
@@ -137,8 +139,9 @@ namespace Slimcat.Utilities
 
         #region Constructors
 
-        protected BbCodeBaseConverter(IChatModel chatModel)
+        protected BbCodeBaseConverter(IChatModel chatModel, ICharacterManager characterManager)
         {
+            this.characterManager = characterManager;
             ChatModel = chatModel;
         }
 
@@ -370,7 +373,7 @@ namespace Slimcat.Utilities
             if (y.StartsWith("user") || y.StartsWith("icon"))
             {
                 var target = StripBeforeType(y);
-                return MakeUsernameLink(ChatModel.FindCharacter(target));
+                return MakeUsernameLink(characterManager.Find(target));
             }
 
             if (y.StartsWith("channel") || y.StartsWith("session"))
@@ -511,8 +514,8 @@ namespace Slimcat.Utilities
     {
         #region Constructors
 
-        public BbCodePostConverter(IChatModel chatModel)
-            : base(chatModel)
+        public BbCodePostConverter(IChatModel chatModel, ICharacterManager characterManager)
+            : base(chatModel, characterManager)
         {
         }
 
@@ -624,8 +627,8 @@ namespace Slimcat.Utilities
     {
         #region Constructors
 
-        public BbFlowConverter(IChatModel chatModel)
-            : base(chatModel)
+        public BbFlowConverter(IChatModel chatModel, ICharacterManager characterManager)
+            : base(chatModel, characterManager)
         {
         }
 
@@ -694,8 +697,8 @@ namespace Slimcat.Utilities
     {
         #region Constructors
 
-        public BbCodeConverter(IChatModel chatModel)
-            : base(chatModel)
+        public BbCodeConverter(IChatModel chatModel, ICharacterManager characterManager)
+            : base(chatModel, characterManager)
         {
         }
 

@@ -56,7 +56,7 @@ namespace Slimcat.ViewModels
 
         private bool autoPostAds;
 
-        private GenderSettingsModel genderSettings = new GenderSettingsModel();
+        private readonly GenderSettingsModel genderSettings;
 
         private bool hasNewAds;
 
@@ -71,9 +71,10 @@ namespace Slimcat.ViewModels
         private bool isSearching;
 
         private Timer messageFlood = new Timer(500);
-        private FilteredCollection<IMessage, IViewableObject> messageManager;
 
-        private GenericSearchSettingsModel searchSettings = new GenericSearchSettingsModel();
+        private readonly FilteredMessageCollection messageManager;
+
+        private readonly GenericSearchSettingsModel searchSettings;
 
         private RelayCommand @switch;
 
@@ -106,8 +107,9 @@ namespace Slimcat.ViewModels
         ///     The cm.
         /// </param>
         public GeneralChannelViewModel(
-            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
-            : base(contain, regman, events, cm)
+            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
+            ICharacterManager manager)
+            : base(contain, regman, events, cm, manager)
         {
             try
             {
@@ -128,12 +130,16 @@ namespace Slimcat.ViewModels
                 Model.Ads.CollectionChanged += OnAdsChanged;
                 Model.PropertyChanged += OnModelPropertyChanged;
 
+                searchSettings = new GenericSearchSettingsModel();
+                genderSettings = new GenderSettingsModel();
+
                 messageManager =
-                    new FilteredCollection<IMessage, IViewableObject>(
+                    new FilteredMessageCollection(
                         isDisplayingChat
                             ? Model.Messages
                             : Model.Ads,
                         MeetsFilter,
+                        ConstantFilter,
                         IsDisplayingAds);
 
                 genderSettings.Updated += (s, e) => OnPropertyChanged("GenderSettings");
@@ -603,19 +609,14 @@ namespace Slimcat.ViewModels
                 messageFlood.Dispose();
                 messageFlood = null;
 
-                searchSettings = null;
-                genderSettings = null;
-
                 Events.GetEvent<NewUpdateEvent>().Unsubscribe(UpdateChat);
                 Model.Messages.CollectionChanged -= OnMessagesChanged;
                 Model.Ads.CollectionChanged -= OnAdsChanged;
                 PropertyChanged -= OnPropertyChanged;
-                messageManager.Dispose();
-                messageManager = null;
 
                 var model = (GeneralChannelModel) Model;
                 model.Description = null;
-                model.Moderators.Clear();
+                model.CharacterManager.Dispose();
             }
 
             base.Dispose(isManaged);
@@ -719,13 +720,22 @@ namespace Slimcat.ViewModels
         private bool MeetsFilter(IMessage message)
         {
             return message.MeetsFilters(
-                GenderSettings, SearchSettings, ChatModel, ChatModel.CurrentChannel as GeneralChannelModel);
+                GenderSettings, SearchSettings, CharacterManager, ChatModel.CurrentChannel as GeneralChannelModel);
+        }
+
+        private bool ConstantFilter(IMessage message)
+        {
+            if (message.Type == MessageType.Ad)
+            {
+                return !CharacterManager.IsOnList(message.Poster.Name, ListKind.NotInterested);
+            }
+            return true;
         }
 
         private void OnAdsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (IsDisplayingChat)
-                OtherTabHasMessages = e.Action != NotifyCollectionChangedAction.Reset;
+                OtherTabHasMessages = e.NewItems != null && e.NewItems.Count > 0;
         }
 
         private void OnMessagesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -753,12 +763,16 @@ namespace Slimcat.ViewModels
                     OnPropertyChanged("StatusString"); // keep the counter updated
                     break;
                 case "SearchSettings":
+                {
+                    if (!SearchSettings.IsChangingSettings)
+                        messageManager.IsFiltering = isSearching;
+                    break;
+                }
                 case "IsSearching":
                 {
-                    messageManager.IsFiltering = IsDisplayingAds || isSearching;
-                }
-
+                    messageManager.IsFiltering = isSearching;
                     break;
+                }
             }
         }
 

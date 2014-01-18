@@ -24,7 +24,6 @@ namespace Slimcat.ViewModels
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Net;
     using System.Text;
     using System.Timers;
@@ -83,8 +82,9 @@ namespace Slimcat.ViewModels
         ///     The cm.
         /// </param>
         public UtilityChannelViewModel(
-            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm)
-            : base(contain, regman, events, cm)
+            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
+            ICharacterManager manager)
+            : base(contain, regman, events, cm, manager)
         {
             try
             {
@@ -203,7 +203,17 @@ namespace Slimcat.ViewModels
             {
                 ApplicationSettings.FriendsAreAccountWide = value;
                 SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
-                ChatModel.FriendsChanged();
+            }
+        }
+
+        public int FontSize
+        {
+            get { return ApplicationSettings.FontSize; }
+            set
+            {
+                if (value >= 8 && value <= 20)
+                    ApplicationSettings.FontSize = value;
+                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
             }
         }
 
@@ -221,6 +231,11 @@ namespace Slimcat.ViewModels
 
                 SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
             }
+        }
+
+        public ICharacter Slimcat
+        {
+            get { return CharacterManager.Find("slimCat"); }
         }
 
         /// <summary>
@@ -280,7 +295,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int OnlineBookmarksCount
         {
-            get { return ChatModel.OnlineBookmarks == null ? 0 : ChatModel.OnlineBookmarks.Count(); }
+            get { return CharacterManager.GetNames(ListKind.Bookmark).Count; }
         }
 
         /// <summary>
@@ -288,7 +303,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int OnlineCount
         {
-            get { return ChatModel.OnlineCharacters.Count(); }
+            get { return CharacterManager.CharacterCount; }
         }
 
         /// <summary>
@@ -304,7 +319,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public int OnlineFriendsCount
         {
-            get { return ChatModel.OnlineFriends == null ? 0 : ChatModel.OnlineFriends.Count(); }
+            get { return CharacterManager.GetNames(ListKind.Friend).Count; }
         }
 
         /// <summary>
@@ -382,7 +397,7 @@ namespace Slimcat.ViewModels
             OnPropertyChanged("IsConnecting");
 
 
-            SettingsDaemon.ReadApplicationSettingsFromXml(ChatModel.CurrentCharacter.Name);
+            SettingsDaemon.ReadApplicationSettingsFromXml(ChatModel.CurrentCharacter.Name, CharacterManager);
 
             try
             {
@@ -467,7 +482,7 @@ namespace Slimcat.ViewModels
         /// </returns>
         public int OnlineCountPrime()
         {
-            return ChatModel.OnlineCharacters.Count();
+            return OnlineCount;
         }
 
         /// <summary>
