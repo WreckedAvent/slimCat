@@ -160,7 +160,7 @@ namespace Slimcat.ViewModels
 
         private void OnChannelListUpdated(object sender, EventArgs e)
         {
-            if (SelectedChan != null) 
+            if (SelectedChan != null)
                 OnPropertyChanged("SortedUsers");
         }
 

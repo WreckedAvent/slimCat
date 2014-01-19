@@ -38,9 +38,9 @@
     <Style TargetType="Hyperlink">
         <Setter Property="Command" Value="{Binding NavigateTo}" />
         <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
-        <Setter Property="TextDecorations" Value="{x:Null}"/>
-        <Setter Property="FontWeight" Value="Thin"/>
-        
+        <Setter Property="TextDecorations" Value="{x:Null}" />
+        <Setter Property="FontWeight" Value="Thin" />
+
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
@@ -234,7 +234,7 @@
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="True">
                             <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
-                            <Setter Property="Background" Value="{StaticResource BrightBackgroundBrush}"/>
+                            <Setter Property="Background" Value="{StaticResource BrightBackgroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" TargetName="Root"
@@ -326,7 +326,7 @@
                             <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Foreground" 
+                            <Setter Property="Foreground"
                                     Value="{StaticResource HighlightBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -348,15 +348,15 @@
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Cursor" Value="Hand" />
                 <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
-                <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
             </Trigger>
             <Trigger Property="IsMouseOver" Value="False">
                 <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
-                <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
                 <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
-                <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -366,7 +366,7 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="8" />
         <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
-        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="Background" Value="{StaticResource DepressedBrush}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -448,7 +448,7 @@
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
                         </Trigger>
-                        
+
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" TargetName="Root"
                                     Value="{StaticResource HighlightBrush}" />
@@ -458,14 +458,14 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <Style TargetType="ToggleButton"
            x:Key="ToggleImageButtonBase">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="8" />
         <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
-        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="Background" Value="{StaticResource DepressedBrush}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -500,9 +500,9 @@
                             <Setter Property="Foreground"
                                     Value="{StaticResource HighlightBrush}" />
                         </Trigger>
-                        
+
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Foreground" 
+                            <Setter Property="Foreground"
                                     Value="{StaticResource DepressedBrush}" />
 
                             <Trigger.EnterActions>
@@ -555,7 +555,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <Style x:Key="ImageContentToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource ToggleImageButtonBase}">
         <Setter Property="Padding" Value="0" />
         <Setter Property="BorderThickness" Value="0" />
@@ -565,18 +565,18 @@
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Cursor" Value="Hand" />
                 <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
-                <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
             </Trigger>
             <Trigger Property="IsMouseOver" Value="False">
                 <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
-                <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
                 <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
-                <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>

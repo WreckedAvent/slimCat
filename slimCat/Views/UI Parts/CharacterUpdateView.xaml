@@ -34,8 +34,8 @@
                Style="{StaticResource UsernameStyle}">
         <Hyperlink.Foreground>
             <MultiBinding Converter="{StaticResource NameplateColorConverter}" Mode="OneWay">
-                <Binding Path="TargetCharacter.Gender"/>
-                <Binding Path="TargetCharacter.IsInteresting"/>
+                <Binding Path="TargetCharacter.Gender" />
+                <Binding Path="TargetCharacter.IsInteresting" />
             </MultiBinding>
         </Hyperlink.Foreground>
         <Run Text="{Binding Path=TargetCharacter.Name, Mode=OneTime}" />

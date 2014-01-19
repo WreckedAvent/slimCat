@@ -7,13 +7,13 @@
 //    This source is subject to the Simplified BSD License.
 //    Please see the License.txt file for more information.
 //    All other rights reserved.
-//   
+//    
 //    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
 //    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //    PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
+//  --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -103,7 +103,7 @@ namespace Slimcat.Utilities
         #region Static Fields
 
         private static readonly IList<string> BbType = new List<string>
-        {
+            {
                 "b",
                 "s",
                 "u",
@@ -118,8 +118,8 @@ namespace Slimcat.Utilities
                 "sub",
                 "sup",
                 "small",
-            "big"
-        };
+                "big"
+            };
 
         private static readonly IList<string> SpecialBbCases = new List<string>
             {
@@ -153,20 +153,20 @@ namespace Slimcat.Utilities
         #region Methods
 
         /// <summary>
-        /// Converts an Icharacter into a username 'button'.
+        ///     Converts an Icharacter into a username 'button'.
         /// </summary>
         internal static Inline MakeUsernameLink(ICharacter target)
         {
             var toReturn =
                 new InlineUIContainer
-                {
-                    Child = new ContentControl
                     {
+                        Child = new ContentControl
+                            {
                                 ContentTemplate = (DataTemplate) Application.Current.FindResource("UsernameTemplate"),
-                        Content = target
-                    },
-                    BaselineAlignment = BaselineAlignment.TextBottom,
-                };
+                                Content = target
+                            },
+                        BaselineAlignment = BaselineAlignment.TextBottom,
+                    };
 
             return toReturn;
         }
@@ -175,20 +175,20 @@ namespace Slimcat.Utilities
         {
             var toReturn =
                 new InlineUIContainer
-                {
-                    Child = new ContentControl
                     {
+                        Child = new ContentControl
+                            {
                                 ContentTemplate = (DataTemplate) Application.Current.FindResource("ChannelTemplate"),
-                        Content = channel
-                    },
-                    BaselineAlignment = BaselineAlignment.TextBottom
-                };
+                                Content = channel
+                            },
+                        BaselineAlignment = BaselineAlignment.TextBottom
+                    };
 
             return toReturn;
         }
 
         /// <summary>
-        /// Converts a string to richly-formatted inline elements.
+        ///     Converts a string to richly-formatted inline elements.
         /// </summary>
         internal Inline Parse(string text)
         {
@@ -325,8 +325,8 @@ namespace Slimcat.Utilities
                 return text; // if there's no url in it, we don't have a link to mark up
 
             var matches = from word in text.Split(' ')
-                          where StartsWithValidTerm(word)
-                          select new Tuple<string, string>(word, MarkUpUrlWithBbCode(word));
+                where StartsWithValidTerm(word)
+                select new Tuple<string, string>(word, MarkUpUrlWithBbCode(word));
 
             return matches.Aggregate(text, (current, toReplace) => current.Replace(toReplace.Item1, toReplace.Item2));
         }
@@ -358,11 +358,11 @@ namespace Slimcat.Utilities
                 var url = StripBeforeType(y);
 
                 var toReturn = new Hyperlink(x)
-                {
-                    CommandParameter = url,
-                    ToolTip = url,
+                    {
+                        CommandParameter = url,
+                        ToolTip = url,
                         Style = (Style) Application.Current.FindResource("Hyperlink")
-                };
+                    };
 
                 return toReturn;
             }
@@ -381,10 +381,10 @@ namespace Slimcat.Utilities
             }
 
             if (!y.StartsWith("color") || !ApplicationSettings.AllowColors) return new Span(x);
-                var colorString = StripBeforeType(y);
+            var colorString = StripBeforeType(y);
 
-                try
-                {
+            try
+            {
                 var convertFromString = ColorConverter.ConvertFromString(colorString);
                 if (convertFromString != null)
                 {
@@ -394,9 +394,9 @@ namespace Slimcat.Utilities
                 }
             }
             catch // the color might be invalid, so ignore if it is
-                {
-                    return new Span(x);
-                }
+            {
+                return new Span(x);
+            }
 
             return new Span(x);
         }
@@ -505,7 +505,7 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    /// Converts active messages into textblock inlines.
+    ///     Converts active messages into textblock inlines.
     /// </summary>
     public sealed class BbCodePostConverter : BbCodeBaseConverter, IMultiValueConverter
     {
@@ -618,7 +618,7 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    /// Converts active messages into flow document inlines.
+    ///     Converts active messages into flow document inlines.
     /// </summary>
     public sealed class BbFlowConverter : BbCodeBaseConverter, IValueConverter
     {
@@ -688,7 +688,7 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    ///  Converts history messages into document inlines.
+    ///     Converts history messages into document inlines.
     /// </summary>
     public sealed class BbCodeConverter : BbCodeBaseConverter, IValueConverter
     {
@@ -728,18 +728,6 @@ namespace Slimcat.Utilities
 
     public abstract class GenderColorConverterBase : OneWayMultiConverter
     {
-        private readonly IDictionary<Gender, string> genderNames = new Dictionary<Gender, string>
-            {
-                {Gender.HermM, "MaleHerm"},
-                {Gender.Cuntboy, "Cunt"},
-                {Gender.Male, "Male"},
-                {Gender.HermF, "Herm"},
-                {Gender.Female, "Female"},
-                {Gender.Shemale, "Shemale"},
-                {Gender.Transgender, "Transgender"},
-                {Gender.None, "Highlight"}
-            }; 
-
         private readonly IDictionary<Gender, Gender> genderFallbacks = new Dictionary<Gender, Gender>
             {
                 {Gender.Male, Gender.Male},
@@ -750,15 +738,28 @@ namespace Slimcat.Utilities
                 {Gender.HermF, Gender.Female},
                 {Gender.Transgender, Gender.None},
                 {Gender.None, Gender.None}
-            }; 
+            };
+
+        private readonly IDictionary<Gender, string> genderNames = new Dictionary<Gender, string>
+            {
+                {Gender.HermM, "MaleHerm"},
+                {Gender.Cuntboy, "Cunt"},
+                {Gender.Male, "Male"},
+                {Gender.HermF, "Herm"},
+                {Gender.Female, "Female"},
+                {Gender.Shemale, "Shemale"},
+                {Gender.Transgender, "Transgender"},
+                {Gender.None, "Highlight"}
+            };
 
         protected SolidColorBrush GetBrush(Gender? gender)
         {
-            return (SolidColorBrush)TryGet(GetGenderName(gender), true);
+            return (SolidColorBrush) TryGet(GetGenderName(gender), true);
         }
+
         protected Color GetColor(Gender? gender)
         {
-            return (Color)TryGet(GetGenderName(gender), false);
+            return (Color) TryGet(GetGenderName(gender), false);
         }
 
         protected static Object TryGet(string name, bool isBrush)
@@ -766,9 +767,7 @@ namespace Slimcat.Utilities
             var toReturn = Application.Current.TryFindResource(name + (isBrush ? "Brush" : "Color"));
 
             if (isBrush)
-            {
                 return toReturn as SolidColorBrush ?? Application.Current.FindResource("HighlightBrush");
-            }
 
             var color = toReturn as Color?;
             return color.HasValue
@@ -796,7 +795,7 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    /// Converts gender string into gender color.
+    ///     Converts gender string into gender color.
     /// </summary>
     public sealed class GenderColorConverter : GenderColorConverterBase
     {
@@ -809,14 +808,10 @@ namespace Slimcat.Utilities
             var brightColor = (Color) TryGet("Foreground", false);
 
             if (isInteresting.HasValue && isInteresting.Value)
-            {
                 baseColor = (Color) TryGet("Contrast", false);
-            }
             else
-            {
                 baseColor = GetColor(gender);
-            }
- 
+
             var stops = new List<GradientStop>
                 {
                     new GradientStop(baseColor, 0.0),
@@ -842,7 +837,7 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    /// Converts gender string into a gender image.
+    ///     Converts gender string into a gender image.
     /// </summary>
     public sealed class GenderImageConverter : OneWayConverter
     {
@@ -883,7 +878,7 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    /// Converts notify level into strings.
+    ///     Converts notify level into strings.
     /// </summary>
     public sealed class NotifyLevelConverter : OneWayConverter
     {
@@ -909,7 +904,7 @@ namespace Slimcat.Utilities
                         verboseNotificationKind += " with sound";
                     else
                         verboseNotificationKind += "\n• An audible alert";
-                    }
+                }
 
                 verboseNotificationKind += "\n• 5 Window Flashes";
             }
@@ -922,7 +917,7 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    /// Converts Interested-only data into strings
+    ///     Converts Interested-only data into strings
     /// </summary>
     public sealed class InterestedOnlyBoolConverter : OneWayConverter
     {
@@ -938,7 +933,7 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    /// Converts a channel type enum into a channel type image representation.
+    ///     Converts a channel type enum into a channel type image representation.
     /// </summary>
     public sealed class ChannelTypeToImageConverter : OneWayConverter
     {
@@ -967,7 +962,7 @@ namespace Slimcat.Utilities
     }
 
     /// <summary>
-    /// Converts a character's interested level to a nameplate color
+    ///     Converts a character's interested level to a nameplate color
     /// </summary>
     public sealed class NameplateColorConverter : GenderColorConverterBase
     {
@@ -977,9 +972,7 @@ namespace Slimcat.Utilities
             var interesting = values[1] as bool?;
 
             if (interesting.HasValue && interesting.Value)
-            {
                 return TryGet("Contrast", true);
-            }
 
             return GetBrush(gender);
         }
@@ -993,7 +986,7 @@ namespace Slimcat.Utilities
         #region Public Methods and Operators
 
         /// <summary>
-        /// Like above, but works for dates in the time
+        ///     Like above, but works for dates in the time
         /// </summary>
         public static string DateTimeInFutureToRough(DateTimeOffset futureTime)
         {
@@ -1019,7 +1012,7 @@ namespace Slimcat.Utilities
         }
 
         /// <summary>
-        /// Converts a datetimeoffset to a "x h x m x s ago" format
+        ///     Converts a datetimeoffset to a "x h x m x s ago" format
         /// </summary>
         public static string DateTimeToRough(DateTimeOffset original, bool returnSeconds = false, bool appendAgo = true)
         {
@@ -1043,7 +1036,7 @@ namespace Slimcat.Utilities
             {
                 if (rough.Seconds > 0)
                     temp.Append(rough.Seconds + "s ");
-                }
+            }
 
             if (appendAgo)
                 temp.Append("ago");
@@ -1052,7 +1045,7 @@ namespace Slimcat.Utilities
         }
 
         /// <summary>
-        /// Used for shitty shit channel names with spaces
+        ///     Used for shitty shit channel names with spaces
         /// </summary>
         public static string EscapeSpaces(string text)
         {
@@ -1060,7 +1053,7 @@ namespace Slimcat.Utilities
         }
 
         /// <summary>
-        /// Turns a datetime to a timestamp (hh:mm)
+        ///     Turns a datetime to a timestamp (hh:mm)
         /// </summary>
         public static string ToTimeStamp(this DateTimeOffset time)
         {
@@ -1071,7 +1064,7 @@ namespace Slimcat.Utilities
         }
 
         /// <summary>
-        /// Converts a POSIX/UNIX timecode to a datetime
+        ///     Converts a POSIX/UNIX timecode to a datetime
         /// </summary>
         public static DateTimeOffset UnixTimeToDateTime(long time)
         {

@@ -24,11 +24,11 @@
 
     <Color x:Key="MaleColor">#6DBAD8</Color>
     <Color x:Key="FemaleColor">#DA6CB0</Color>
-	<Color x:Key="CuntColor">#00D8D2</Color>
+    <Color x:Key="CuntColor">#00D8D2</Color>
     <Color x:Key="MaleHermColor">#007FFF</Color>
     <Color x:Key="TransgenderColor">#EE8822</Color>
-	<Color x:Key="ShemaleColor">#D80040</Color>
-	<Color x:Key="HermColor">#A800D9</Color>
+    <Color x:Key="ShemaleColor">#D80040</Color>
+    <Color x:Key="HermColor">#A800D9</Color>
 
 
     <!-- Do not modify below this line unless you know what you are doing. -->
@@ -39,12 +39,12 @@
     <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
     <SolidColorBrush x:Key="DepressedBrush" Color="{StaticResource DepressedColor}" />
     <SolidColorBrush x:Key="BrightBackgroundBrush" Color="{StaticResource BrightBackgroundColor}" />
-	
-	<SolidColorBrush x:Key="MaleBrush" Color="{StaticResource MaleColor}" />
-	<SolidColorBrush x:Key="FemaleBrush" Color="{StaticResource FemaleColor}" />
-	<SolidColorBrush x:Key="HermBrush" Color="{StaticResource HermColor}" />
-	<SolidColorBrush x:Key="MaleHermBrush" Color="{StaticResource MaleHermColor}" />
-	<SolidColorBrush x:Key="TransgenderBrush" Color="{StaticResource TransgenderColor}" />
-	<SolidColorBrush x:Key="CuntBrush" Color="{StaticResource CuntColor}" />
-	<SolidColorBrush x:Key="ShemaleBrush" Color="{StaticResource ShemaleColor}" />
+
+    <SolidColorBrush x:Key="MaleBrush" Color="{StaticResource MaleColor}" />
+    <SolidColorBrush x:Key="FemaleBrush" Color="{StaticResource FemaleColor}" />
+    <SolidColorBrush x:Key="HermBrush" Color="{StaticResource HermColor}" />
+    <SolidColorBrush x:Key="MaleHermBrush" Color="{StaticResource MaleHermColor}" />
+    <SolidColorBrush x:Key="TransgenderBrush" Color="{StaticResource TransgenderColor}" />
+    <SolidColorBrush x:Key="CuntBrush" Color="{StaticResource CuntColor}" />
+    <SolidColorBrush x:Key="ShemaleBrush" Color="{StaticResource ShemaleColor}" />
 </ResourceDictionary>

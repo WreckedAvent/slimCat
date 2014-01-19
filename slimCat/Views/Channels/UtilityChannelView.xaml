@@ -106,7 +106,7 @@
                                   Margin="0,5">
                             Friends are account wide
                         </CheckBox>-->
-                        
+
                         <CheckBox IsChecked="{Binding SpellCheckEnabled}"
                                   VerticalAlignment="Center"
                                   Margin="0,5">
@@ -122,16 +122,16 @@
                                       DisplayMemberPath="Key"
                                       SelectedValuePath="Value" />
                         </StackPanel>
-                        
+
                         <StackPanel Margin="0,15,0,5">
-                            <TextBlock Text="Gender Color Settings"/>
+                            <TextBlock Text="Gender Color Settings" />
                             <ComboBox ItemsSource="{Binding Path=GenderSettings}"
                                       SelectedValue="{Binding Path=GenderColorSettings}"
-                                      
+
                                       DisplayMemberPath="Key"
-                                      SelectedValuePath="Value"/>
+                                      SelectedValuePath="Value" />
                         </StackPanel>
-                        
+
                         <WrapPanel Margin="0,15,0,0">
                             <TextBlock Margin="0,0,5,0">Message font size</TextBlock>
                             <TextBox Text="{Binding Path=FontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -172,11 +172,13 @@
 
                     </StackPanel>
                 </Expander>
-                
+
                 <Expander Header="Help">
                     <WrapPanel>
                         <TextBlock Foreground="{StaticResource ForegroundBrush}" TextWrapping="Wrap">
-                            For trouble shooting, support, feature suggestions, bug reports, or other inquiries, please send a note to or PM <ContentControl ContentTemplate="{StaticResource UsernameTemplate}" Content="{Binding Path=Slimcat}"/>
+                            For trouble shooting, support, feature suggestions, bug reports, or other inquiries, please send a note to or PM
+                            <ContentControl ContentTemplate="{StaticResource UsernameTemplate}"
+                                            Content="{Binding Path=Slimcat}" />
                         </TextBlock>
                     </WrapPanel>
                 </Expander>

@@ -29,7 +29,6 @@ namespace Slimcat.Services
     using System.Web;
     using System.Windows;
     using System.Windows.Forms;
-    using System.Windows.Media;
     using System.Windows.Threading;
     using Libraries;
     using Microsoft.Practices.Prism.Events;

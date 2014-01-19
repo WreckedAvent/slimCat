@@ -23,15 +23,13 @@ namespace Slimcat.Services
 
     using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
     using System.Timers;
     using Microsoft.Practices.Prism.Events;
     using Models;
     using SimpleJson;
+    using SuperSocket.ClientEngine;
     using Utilities;
     using WebSocket4Net;
-    using ErrorEventArgs = SuperSocket.ClientEngine.ErrorEventArgs;
 
     #endregion
 
@@ -130,7 +128,7 @@ namespace Slimcat.Services
 
 #if (DEBUG)
 
-                // debug information
+    // debug information
                 logger.WriteLine("->> Command: " + commandType);
                 logger.WriteLine("Data: " + ser);
                 logger.WriteLine();
@@ -321,7 +319,7 @@ namespace Slimcat.Services
 
                 // add back in the command type so our models can listen for them
 #if (DEBUG)
-                // for debug, write the command received to file
+    // for debug, write the command received to file
                 logger.WriteLine("<<- Command: {0}", json["command"]);
 
                 foreach (var pair in json.Where(pair => pair.Key != "command"))

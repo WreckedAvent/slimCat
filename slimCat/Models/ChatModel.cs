@@ -22,11 +22,7 @@ namespace Slimcat.Models
     #region Usings
 
     using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Linq;
-    using Services;
     using Utilities;
     using ViewModels;
 
@@ -195,6 +191,7 @@ namespace Slimcat.Models
 
             return channel ?? new GeneralChannelModel(id, ChannelType.InviteOnly) {Title = title};
         }
+
         #endregion
     }
 }

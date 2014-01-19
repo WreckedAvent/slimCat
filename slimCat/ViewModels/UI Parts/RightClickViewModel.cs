@@ -62,24 +62,25 @@ namespace Slimcat.ViewModels
         /// <summary>
         ///     Gets a value indicating whether can ignore.
         /// </summary>
-        public bool CanIgnore 
+        public bool CanIgnore
         {
             get
             {
                 if (Target != null)
-                {
                     return !manager.IsOnList(Target.Name, ListKind.Ignored);
-                }
 
                 return false;
-            } 
+            }
         }
 
 
         /// <summary>
         ///     Gets a value indicating whether can unignore.
         /// </summary>
-        public bool CanUnignore { get { return !CanIgnore; } }
+        public bool CanUnignore
+        {
+            get { return !CanIgnore; }
+        }
 
         /// <summary>
         ///     Gets a value indicating whether has report.

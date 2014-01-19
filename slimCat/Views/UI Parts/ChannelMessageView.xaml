@@ -11,12 +11,12 @@
            FontFamily="Segoe UI, Verdanda"
            FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
            d:DataContext="{models:IMessage}">
-    <Run Text="{Binding TimeStamp, Mode=OneTime}" 
-         FontSize="12" >
+    <Run Text="{Binding TimeStamp, Mode=OneTime}"
+         FontSize="12">
         <Run.Foreground>
             <MultiBinding Converter="{StaticResource NameplateColorConverter}" Mode="OneWay">
-                <Binding Path="Poster.Gender"/>
-                <Binding Path="Poster.IsInteresting"/>
+                <Binding Path="Poster.Gender" />
+                <Binding Path="Poster.IsInteresting" />
             </MultiBinding>
         </Run.Foreground>
     </Run>
@@ -41,8 +41,8 @@
                Style="{StaticResource UsernameStyle}">
         <Hyperlink.Foreground>
             <MultiBinding Converter="{StaticResource NameplateColorConverter}" Mode="OneWay">
-                <Binding Path="Poster.Gender"/>
-                <Binding Path="Poster.IsInteresting"/>
+                <Binding Path="Poster.Gender" />
+                <Binding Path="Poster.IsInteresting" />
             </MultiBinding>
         </Hyperlink.Foreground>
         <Run Text="{Binding Path=Poster.Name, Mode=OneTime}" />

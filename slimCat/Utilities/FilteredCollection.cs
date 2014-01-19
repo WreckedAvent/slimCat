@@ -41,11 +41,10 @@ namespace Slimcat.Utilities
     {
         #region Fields
 
-        private bool isFiltering;
-
         protected readonly Func<T, bool> ActiveFilter;
 
         protected readonly object Locker = new object();
+        private bool isFiltering;
 
         private ObservableCollection<T> originalCollection;
 
@@ -112,7 +111,7 @@ namespace Slimcat.Utilities
                 Collection.Clear();
 
                 IEnumerable<T> items = originalCollection;
-                
+
                 items = items.Where(MeetsFilter);
 
                 items.Each(item => Collection.Add(item));
@@ -186,7 +185,8 @@ namespace Slimcat.Utilities
     {
         private readonly Func<IMessage, bool> constantFilter;
 
-        public FilteredMessageCollection(ObservableCollection<IMessage> toWatch, Func<IMessage, bool> activeFilter, Func<IMessage, bool> constantFilter, bool isFiltering = false)
+        public FilteredMessageCollection(ObservableCollection<IMessage> toWatch, Func<IMessage, bool> activeFilter,
+            Func<IMessage, bool> constantFilter, bool isFiltering = false)
             : base(toWatch, activeFilter, isFiltering)
         {
             this.constantFilter = constantFilter;

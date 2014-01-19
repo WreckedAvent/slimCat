@@ -31,8 +31,8 @@ namespace Slimcat.Models
     public class GlobalCharacterManager : CharacterManagerBase
     {
         private readonly IAccount account;
-        private readonly IEventAggregator eventAggregator;
         private readonly CollectionPair bookmarks = new CollectionPair();
+        private readonly IEventAggregator eventAggregator;
         private readonly CollectionPair friends = new CollectionPair();
         private readonly CollectionPair ignored = new CollectionPair();
         private readonly CollectionPair interested = new CollectionPair();
@@ -142,18 +142,14 @@ namespace Slimcat.Models
                     };
 
                 if (isAdd) // if we're adding to one, then we have to remove from the other
-                {
                     oppositeList.Remove(name);
-                }
 
                 // now we do the actual action on the list specified
                 addRemove(sameList);
 
                 ICharacter toModify;
                 if (CharacterDictionary.TryGetValue(name, out toModify))
-                {
                     toModify.IsInteresting = isInteresting && isAdd;
-                }
             }
         }
     }

@@ -112,10 +112,10 @@
                 <Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
                            Style="{StaticResource UsernameStyle}">
                     <Hyperlink.Foreground>
-                    <MultiBinding Converter="{StaticResource NameplateColorConverter}" Mode="OneWay">
-                        <Binding Path="Gender"/>
-                        <Binding Path="IsInteresting"/>
-                    </MultiBinding>
+                        <MultiBinding Converter="{StaticResource NameplateColorConverter}" Mode="OneWay">
+                            <Binding Path="Gender" />
+                            <Binding Path="IsInteresting" />
+                        </MultiBinding>
                     </Hyperlink.Foreground>
                     <Run Text="{Binding Path=Name, Mode=OneTime}" />
                     <Hyperlink.InputBindings>
@@ -137,8 +137,8 @@
                                   AncestorType={x:Type Grid}, AncestorLevel=2} }" />
 
         <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
-        <Setter Property="FontWeight" Value="Light"/>
-        <Setter Property="TextDecorations" Value="{x:Null}"/>        
+        <Setter Property="FontWeight" Value="Light" />
+        <Setter Property="TextDecorations" Value="{x:Null}" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />

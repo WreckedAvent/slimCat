@@ -48,6 +48,10 @@ namespace Slimcat.ViewModels
     {
         #region Fields
 
+        private readonly GenderSettingsModel genderSettings;
+        private readonly FilteredMessageCollection messageManager;
+
+        private readonly GenericSearchSettingsModel searchSettings;
         private readonly IList<string> thisDingTerms = new List<string>();
 
         private Timer adFlood = new Timer(602000);
@@ -55,8 +59,6 @@ namespace Slimcat.ViewModels
         private string adMessage = string.Empty;
 
         private bool autoPostAds;
-
-        private readonly GenderSettingsModel genderSettings;
 
         private bool hasNewAds;
 
@@ -71,10 +73,6 @@ namespace Slimcat.ViewModels
         private bool isSearching;
 
         private Timer messageFlood = new Timer(500);
-
-        private readonly FilteredMessageCollection messageManager;
-
-        private readonly GenericSearchSettingsModel searchSettings;
 
         private RelayCommand @switch;
 
@@ -726,9 +724,7 @@ namespace Slimcat.ViewModels
         private bool ConstantFilter(IMessage message)
         {
             if (message.Type == MessageType.Ad)
-            {
                 return !CharacterManager.IsOnList(message.Poster.Name, ListKind.NotInterested);
-            }
             return true;
         }
 
