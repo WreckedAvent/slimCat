@@ -122,14 +122,6 @@ namespace Slimcat.ViewModels
         }
 
         /// <summary>
-        ///     Gets the selected chan.
-        /// </summary>
-        public GeneralChannelModel SelectedChan
-        {
-            get { return ChatModel.CurrentChannel as GeneralChannelModel; }
-        }
-
-        /// <summary>
         ///     Gets the sort content string.
         /// </summary>
         public string SortContentString
@@ -160,8 +152,7 @@ namespace Slimcat.ViewModels
 
         private void OnChannelListUpdated(object sender, EventArgs e)
         {
-            if (SelectedChan != null)
-                OnPropertyChanged("SortedUsers");
+            OnPropertyChanged("SortedUsers");
         }
 
         private string RelationshipToUser(ICharacter character)
