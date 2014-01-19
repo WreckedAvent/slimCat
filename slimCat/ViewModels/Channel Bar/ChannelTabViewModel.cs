@@ -59,7 +59,7 @@ namespace Slimcat.ViewModels
 
         private bool sortByName;
 
-        private int thresh;
+        private int thresh = 5;
 
         #endregion
 

@@ -21,10 +21,8 @@ namespace Slimcat.ViewModels
 {
     #region Usings
 
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Timers;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
@@ -51,8 +49,6 @@ namespace Slimcat.ViewModels
         #region Fields
 
         private readonly GenderSettingsModel genderSettings;
-
-        private readonly Timer updateTick = new Timer(3000);
 
         private GeneralChannelModel currentChan;
 
@@ -111,10 +107,12 @@ namespace Slimcat.ViewModels
 
                         if (thisNotification.Arguments is CharacterUpdateModel.PromoteDemoteEventArgs)
                             OnPropertyChanged("HasPermissions");
-                    });
 
-            updateTick.Elapsed += OnChannelListUpdated;
-            updateTick.Start();
+
+                        else if (thisNotification.Arguments is CharacterUpdateModel.JoinLeaveEventArgs
+                            || thisNotification.Arguments is CharacterUpdateModel.ListChangedEventArgs)
+                            OnPropertyChanged("SortedUsers");
+                    });
         }
 
         #endregion
@@ -172,12 +170,6 @@ namespace Slimcat.ViewModels
         {
             return character.MeetsFilters(
                 GenderSettings, SearchSettings, CharacterManager, ChatModel.CurrentChannel as GeneralChannelModel);
-        }
-
-        private void OnChannelListUpdated(object sender, EventArgs e)
-        {
-            if (SelectedChan != null)
-                OnPropertyChanged("SortedUsers");
         }
 
         private string RelationshipToUser(ICharacter character)

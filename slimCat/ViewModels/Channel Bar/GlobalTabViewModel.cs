@@ -24,7 +24,6 @@ namespace Slimcat.ViewModels
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Timers;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
@@ -51,8 +50,6 @@ namespace Slimcat.ViewModels
         #region Fields
 
         private readonly GenderSettingsModel genderSettings;
-
-        private readonly Timer updateTick = new Timer(5000);
 
         #endregion
 
@@ -100,13 +97,10 @@ namespace Slimcat.ViewModels
                         if (thisNotification == null)
                             return;
 
-                        var thisArgument = thisNotification.Arguments as CharacterUpdateModel.ListChangedEventArgs;
-                        if (thisArgument != null)
+                        if (thisNotification.Arguments is CharacterUpdateModel.ListChangedEventArgs
+                            || thisNotification.Arguments is CharacterUpdateModel.LoginStateChangedEventArgs)
                             OnPropertyChanged("SortedUsers");
                     });
-
-            updateTick.Elapsed += OnChannelListUpdated;
-            updateTick.Start();
         }
 
         #endregion
