@@ -27,6 +27,7 @@ namespace Slimcat.Services
     using System.Timers;
     using System.Web;
     using System.Windows;
+    using System.Windows.Annotations;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
@@ -59,6 +60,7 @@ namespace Slimcat.Services
         private const string TitleArgument = "title";
         private const string ModeArgument = "mode";
         private const string SenderArgument = "sender";
+
         private readonly IChatConnection connection;
         private readonly object locker = new object();
         private readonly IChannelManager manager;
@@ -187,7 +189,10 @@ namespace Slimcat.Services
             var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
 
             if (channel == null)
+            {
+                RequeCommand(command);
                 return;
+            }
 
             var message = ((string) command[ChannelArgument]).Split(':');
             var banned = message[1].Trim();
@@ -206,6 +211,12 @@ namespace Slimcat.Services
             var channelName = command[ChannelArgument];
             var channel = ChatModel.CurrentChannels.First(x => x.Id == channelName as string);
             var description = command["description"];
+
+            if (channel == null)
+            {
+                RequeCommand(command);
+                return;
+            }
 
             var isInitializer = string.IsNullOrWhiteSpace(channel.Description);
 
@@ -232,6 +243,12 @@ namespace Slimcat.Services
             var channelName = (string) command[ChannelArgument];
             var mode = (ChannelMode) Enum.Parse(typeof (ChannelMode), (string) command[ModeArgument], true);
             var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
+
+            if (channel == null)
+            {
+                RequeCommand(command);
+                return;
+            }
 
             channel.Mode = mode;
             dynamic users = command[UsersArgument]; // dynamic lets us deal with odd syntax TODO: switch to strong-type
@@ -293,7 +310,10 @@ namespace Slimcat.Services
             var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
 
             if (channel == null)
+            {
+                RequeCommand(command);
                 return;
+            }
 
             channel.CharacterManager.Set(command["oplist"] as JsonArray, ListKind.Moderator);
         }
@@ -1050,6 +1070,21 @@ namespace Slimcat.Services
             // todo: wipe
         }
 
+        private void RequeCommand(IDictionary<string, object> command)
+        {
+            object value;
+            if (!command.TryGetValue("retryAttempt", out value))
+            {
+                value = 0;
+            }
+
+            var retryAttempts = (int) value;
+            if (retryAttempts >= 5) return;
+
+            retryAttempts++;
+            command["retryAttempt"] = retryAttempts;
+            EnqueAction(command);
+        }
         #endregion
     }
 }
