@@ -23,6 +23,7 @@ namespace Slimcat.ViewModels
 
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
@@ -178,7 +179,7 @@ namespace Slimcat.ViewModels
             {
                 var channel = ChatModel.CurrentChannel as GeneralChannelModel;
                 if (HasUsers && channel != null)
-                    return channel.CharacterManager.GetCharacters(ListKind.Banned, false);
+                    return channel.CharacterManager.GetCharacters(ListKind.Banned, false).OrderBy(x => x.Name);
 
                 return null;
             }
@@ -189,7 +190,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> Bookmarks
         {
-            get { return CharacterManager.GetCharacters(ListKind.Bookmark, !showOffline); }
+            get { return CharacterManager.GetCharacters(ListKind.Bookmark, !showOffline).OrderBy(x => x.Name); }
         }
 
         /// <summary>
@@ -197,7 +198,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> Friends
         {
-            get { return CharacterManager.GetCharacters(ListKind.Friend, !showOffline); }
+            get { return CharacterManager.GetCharacters(ListKind.Friend, !showOffline).OrderBy(x => x.Name); }
         }
 
         /// <summary>
@@ -228,7 +229,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> Ignored
         {
-            get { return CharacterManager.GetCharacters(ListKind.Ignored); }
+            get { return CharacterManager.GetCharacters(ListKind.Ignored).OrderBy(x => x.Name); }
         }
 
         /// <summary>
@@ -236,7 +237,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> Interested
         {
-            get { return CharacterManager.GetCharacters(ListKind.Interested, !showOffline); }
+            get { return CharacterManager.GetCharacters(ListKind.Interested, !showOffline).OrderBy(x => x.Name); }
         }
 
         /// <summary>
@@ -248,7 +249,7 @@ namespace Slimcat.ViewModels
             {
                 var channel = ChatModel.CurrentChannel as GeneralChannelModel;
                 if (HasUsers && channel != null)
-                    return channel.CharacterManager.GetCharacters(ListKind.Moderator, !showOffline);
+                    return channel.CharacterManager.GetCharacters(ListKind.Moderator, !showOffline).OrderBy(x => x.Name);
 
                 return null;
             }
@@ -259,7 +260,7 @@ namespace Slimcat.ViewModels
         /// </summary>
         public IEnumerable<ICharacter> NotInterested
         {
-            get { return CharacterManager.GetCharacters(ListKind.NotInterested, !showOffline); }
+            get { return CharacterManager.GetCharacters(ListKind.NotInterested, !showOffline).OrderBy(x => x.Name); }
         }
 
         /// <summary>

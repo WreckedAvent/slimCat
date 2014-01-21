@@ -135,7 +135,7 @@ namespace Slimcat.Models
 
         public void Set(JsonArray array, ListKind listKind)
         {
-            var names = array.ConvertAll(x => x.ToString());
+            var names = array.ConvertAll(x => x.ToString()).Where(x => !string.IsNullOrWhiteSpace(x));
             Set(names, listKind);
         }
 
