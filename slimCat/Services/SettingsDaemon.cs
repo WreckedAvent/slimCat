@@ -139,7 +139,10 @@ namespace Slimcat.Services
                             {
                                 try
                                 {
-                                    var setter = Convert.ChangeType(element.Value, property.PropertyType);
+                                    var setter = property.PropertyType.IsEnum 
+                                        ? Enum.Parse(property.PropertyType, element.Value) 
+                                        : Convert.ChangeType(element.Value, property.PropertyType);
+
                                     property.SetValue(null, setter, null);
                                 }
                                 catch
