@@ -90,8 +90,9 @@ namespace Slimcat.Models
         ///     Evaluates if a given name is of interest to a user. Thread-safe.
         /// </summary>
         /// <param name="name">The character name to check</param>
+        /// <param name="onlineOnly">If only the online list should be checked</param>
         /// <returns>Whether or not the character is of interest</returns>
-        bool IsOfInterest(string name);
+        bool IsOfInterest(string name, bool onlineOnly = true);
 
         /// <summary>
         ///     Evaluates if a given name is on a given list. Thread-safe.

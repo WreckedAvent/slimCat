@@ -154,7 +154,7 @@ namespace Slimcat.Models
             }
         }
 
-        public abstract bool IsOfInterest(string name);
+        public abstract bool IsOfInterest(string name, bool onlineOnly = true);
 
         public ICollection<ICharacter> GetCharacters(ListKind listKind, bool isOnlineOnly = true)
         {

@@ -458,7 +458,7 @@ namespace Slimcat.Services
                     AddNotification(model);
                     NotifyUser(true, true, notification.ToString(), targetCharacter, "report");
                 }
-                else if (IsOfInterest(targetCharacter))
+                else if (IsOfInterest(targetCharacter, false))
                 {
                     AddNotification(model);
 
@@ -481,9 +481,9 @@ namespace Slimcat.Services
             }
         }
 
-        private bool IsOfInterest(string name)
+        private bool IsOfInterest(string name, bool onlineOnly = true)
         {
-            return cm.CurrentPms.Any(x => x.Id.Equals(name)) || manager.IsOfInterest(name);
+            return cm.CurrentPms.Any(x => x.Id.Equals(name)) || manager.IsOfInterest(name, onlineOnly);
         }
 
         private void HideWindow()

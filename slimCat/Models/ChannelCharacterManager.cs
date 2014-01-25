@@ -45,7 +45,7 @@ namespace Slimcat.Models
                 };
         }
 
-        public override bool IsOfInterest(string name)
+        public override bool IsOfInterest(string name, bool onlineOnly = true)
         {
             return false;
         }

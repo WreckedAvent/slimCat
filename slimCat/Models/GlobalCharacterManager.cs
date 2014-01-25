@@ -74,14 +74,16 @@ namespace Slimcat.Models
             eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Subscribe(InitializeBookmarks);
         }
 
-        public override bool IsOfInterest(string name)
+        public override bool IsOfInterest(string name, bool onlineOnly = true)
         {
             lock (Locker)
             {
                 var isOfInterest = false;
                 foreach (var list in OfInterestCollections)
                 {
-                    isOfInterest = list.OnlineList.Contains(name);
+                    isOfInterest = onlineOnly 
+                        ? list.OnlineList.Contains(name)
+                        : list.List.Contains(name);
                     if (isOfInterest) break;
                 }
 
