@@ -276,7 +276,7 @@ namespace Slimcat.Services
                 var shouldDing = channel.Settings.MessageNotifyLevel
                                  > (int) ChannelSettingsModel.NotifyLevel.NotificationAndToast;
 
-                if ((channel.Settings.MessageNotifyOnlyForInteresting && manager.IsOfInterest(message.Poster.Name))
+                if ((channel.Settings.MessageNotifyOnlyForInteresting && IsOfInterest(message.Poster.Name))
                     || !channel.Settings.MessageNotifyOnlyForInteresting)
                 {
                     NotifyUser(shouldDing, shouldDing, message.Poster.Name + '\n' + cleanMessageText, channel.Id);
@@ -407,7 +407,7 @@ namespace Slimcat.Services
 
                     if (channel.Settings.PromoteDemoteNotifyOnlyForInteresting)
                     {
-                        if (!manager.IsOfInterest(targetCharacter))
+                        if (!IsOfInterest(targetCharacter))
                             return; // if we only want to know interesting people, no need to evalute further
                     }
 
@@ -427,7 +427,7 @@ namespace Slimcat.Services
 
                     if (channel.Settings.JoinLeaveNotifyOnlyForInteresting)
                     {
-                        if (!manager.IsOfInterest(targetCharacter))
+                        if (!IsOfInterest(targetCharacter))
                             return;
                     }
 
@@ -458,7 +458,7 @@ namespace Slimcat.Services
                     AddNotification(model);
                     NotifyUser(true, true, notification.ToString(), targetCharacter, "report");
                 }
-                else if (manager.IsOfInterest(targetCharacter))
+                else if (IsOfInterest(targetCharacter))
                 {
                     AddNotification(model);
 
@@ -479,6 +479,11 @@ namespace Slimcat.Services
                 AddNotification(notification);
                 NotifyUser(false, false, notification.ToString(), channelId);
             }
+        }
+
+        private bool IsOfInterest(string name)
+        {
+            return cm.CurrentPms.Any(x => x.Id.Equals(name)) || manager.IsOfInterest(name);
         }
 
         private void HideWindow()

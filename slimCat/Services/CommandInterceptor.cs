@@ -209,7 +209,7 @@ namespace Slimcat.Services
         private void ChannelDesciptionCommand(IDictionary<string, object> command)
         {
             var channelName = command[ChannelArgument];
-            var channel = ChatModel.CurrentChannels.First(x => x.Id == channelName as string);
+            var channel = ChatModel.CurrentChannels.FirstOrDefault(x => x.Id == channelName as string);
             var description = command["description"];
 
             if (channel == null)
