@@ -178,7 +178,7 @@ namespace Slimcat.Models
                     using (var webClient = new WebClient())
                     {
                         webClient.Proxy = null; // avoids dynamic proxy discovery delay
-                        webClient.CachePolicy = new RequestCachePolicy(RequestCacheLevel.Default);
+                        webClient.CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate);
                         try
                         {
                             var imageBytes = webClient.DownloadData(uri);
