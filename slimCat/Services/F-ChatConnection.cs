@@ -23,13 +23,16 @@ namespace Slimcat.Services
 
     using System;
     using System.Collections.Generic;
+    // used by debug build
+    using System.IO;
+    using System.Linq;
     using System.Timers;
     using Microsoft.Practices.Prism.Events;
     using Models;
     using SimpleJson;
-    using SuperSocket.ClientEngine;
     using Utilities;
     using WebSocket4Net;
+    using ErrorEventArgs = SuperSocket.ClientEngine.ErrorEventArgs;
 
     #endregion
 
