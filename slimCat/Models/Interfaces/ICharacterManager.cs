@@ -29,7 +29,7 @@ namespace Slimcat.Models
     #endregion
 
     /// <summary>
-    ///     A generic way to
+    ///     A generic way to manage character online lists of various types, such as bookmarks and moderators
     /// </summary>
     public interface ICharacterManager : IDisposable
     {

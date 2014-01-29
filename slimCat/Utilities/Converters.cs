@@ -34,8 +34,29 @@ namespace Slimcat.Utilities
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using Models;
+    using slimCat.Models;
 
     #endregion
+
+    public enum BbCodeType
+    {
+        None,
+        Bold,
+        Underline,
+        Italic,
+        Session,
+        Superscript,
+        Subscript,
+        Small,
+        Big,
+        Strikethrough,
+        Url,
+        Channel,
+        User,
+        Icon,
+        Invalid,
+        Color
+    }
 
     public abstract class OneWayConverter : IValueConverter
     {
@@ -99,36 +120,9 @@ namespace Slimcat.Utilities
     public abstract class BbCodeBaseConverter
     {
         private readonly ICharacterManager characterManager;
+        internal readonly IThemeLocator Locator;
 
         #region Static Fields
-
-        private static readonly IList<string> BbType = new List<string>
-            {
-                "b",
-                "s",
-                "u",
-                "i",
-                "url",
-                "color",
-                "channel",
-                "session",
-                "user",
-                "noparse",
-                "icon",
-                "sub",
-                "sup",
-                "small",
-                "big"
-            };
-
-        private static readonly IList<string> SpecialBbCases = new List<string>
-            {
-                "url",
-                "channel",
-                "user",
-                "icon",
-                "color"
-            };
 
         private static readonly string[] ValidStartTerms = {"http://", "https://", "ftp://"};
 
@@ -136,10 +130,13 @@ namespace Slimcat.Utilities
 
         #region Constructors
 
-        protected BbCodeBaseConverter(IChatModel chatModel, ICharacterManager characterManager)
+        protected BbCodeBaseConverter(IChatModel chatModel, ICharacterManager characterManager, IThemeLocator locator)
         {
             this.characterManager = characterManager;
+            Locator = locator;
             ChatModel = chatModel;
+
+
         }
 
         #endregion
@@ -155,14 +152,14 @@ namespace Slimcat.Utilities
         /// <summary>
         ///     Converts an Icharacter into a username 'button'.
         /// </summary>
-        internal static Inline MakeUsernameLink(ICharacter target)
+        internal Inline MakeUsernameLink(ICharacter target)
         {
             var toReturn =
                 new InlineUIContainer
                     {
                         Child = new ContentControl
                             {
-                                ContentTemplate = (DataTemplate) Application.Current.FindResource("UsernameTemplate"),
+                                ContentTemplate = Locator.Find<DataTemplate>("UsernameTemplate"),
                                 Content = target
                             },
                         BaselineAlignment = BaselineAlignment.TextBottom,
@@ -171,14 +168,14 @@ namespace Slimcat.Utilities
             return toReturn;
         }
 
-        internal static Inline MakeChannelLink(ChannelModel channel)
+        internal Inline MakeChannelLink(ChannelModel channel)
         {
             var toReturn =
                 new InlineUIContainer
                     {
                         Child = new ContentControl
                             {
-                                ContentTemplate = (DataTemplate) Application.Current.FindResource("ChannelTemplate"),
+                                ContentTemplate = Locator.Find<DataTemplate>("ChannelTemplate"),
                                 Content = channel
                             },
                         BaselineAlignment = BaselineAlignment.TextBottom
@@ -192,7 +189,7 @@ namespace Slimcat.Utilities
         /// </summary>
         internal Inline Parse(string text)
         {
-            return BbcodeToInline(PreProcessBbCode(text));
+            return AsInline(PreProcessBbCode(text));
         }
 
         private static bool ContainsUrl(string args)
@@ -205,39 +202,6 @@ namespace Slimcat.Utilities
 
             var starter = ValidStartTerms.First(match.StartsWith);
             return args.Trim().Length > starter.Length;
-        }
-
-        private static string FindEndType(string x)
-        {
-            var root = x.IndexOf('[');
-            if (root == -1 || x.Length < 4)
-                return "n";
-
-            var end = x.IndexOf(']', root);
-            if (end == -1)
-                return "n";
-
-            if (x[root + 1] != '/')
-                return FindEndType(x.Substring(end + 1));
-
-            var type = x.Substring(root + 2, end - (root + 2));
-
-            return BbType.Any(type.Equals) ? type : FindEndType(x.Substring(end + 1));
-        }
-
-        private static string FindStartType(string x)
-        {
-            var root = x.IndexOf('[');
-            if (root == -1 || x.Length < 3)
-                return "n";
-
-            var end = x.IndexOf(']', root);
-            if (end == -1)
-                return "n";
-
-            var type = x.Substring(root + 1, end - root - 1);
-
-            return BbType.Any(type.StartsWith) ? type : FindStartType(x.Substring(end + 1));
         }
 
         private static string GetUrlDisplay(string args)
@@ -263,39 +227,10 @@ namespace Slimcat.Utilities
             return stripped;
         }
 
-        private static bool HasOpenTag(string x)
-        {
-            var root = x.IndexOf('[');
-            if (root == -1 || x.Length < 3)
-                return false;
-
-            var end = x.IndexOf(']', root);
-            if (end == -1)
-                return false;
-
-            if (x[root + 1] == '/')
-                HasOpenTag(x.Substring(end));
-
-            var type = x.Substring(root + 1, end - root - 1);
-
-            return BbType.Any(type.StartsWith) || HasOpenTag(x.Substring(end + 1));
-        }
-
         private static string MarkUpUrlWithBbCode(string args)
         {
             var toShow = GetUrlDisplay(args);
             return "[url=" + args + "]" + toShow + "[/url]"; // mark the bitch up
-        }
-
-        private static string RemoveFirstEndType(string x, string type)
-        {
-            var endtype = "[/" + type + "]";
-            var firstOccur = x.IndexOf(endtype, StringComparison.Ordinal);
-
-            var interestedin = x.Substring(0, firstOccur);
-            var rest = x.Substring(firstOccur + endtype.Length);
-
-            return interestedin + rest;
         }
 
         private static bool StartsWithValidTerm(string text)
@@ -303,20 +238,12 @@ namespace Slimcat.Utilities
             return ValidStartTerms.Any(text.StartsWith);
         }
 
-        private static string StripAfterType(string z)
-        {
-            return z.Contains('=') ? z.Substring(0, z.IndexOf('=')) : z;
-        }
-
         private static string StripBeforeType(string z)
         {
-            if (z.Contains('='))
-            {
-                var type = z.Substring(0, z.IndexOf('='));
-                return z.Substring(z.IndexOf('=') + 1, z.Length - (type.Length + 1));
-            }
+            if (!z.Contains('=')) return z;
 
-            return z;
+            var type = z.Substring(0, z.IndexOf('='));
+            return z.Substring(z.IndexOf('=') + 1, z.Length - (type.Length + 1));
         }
 
         private static string PreProcessBbCode(string text)
@@ -324,9 +251,9 @@ namespace Slimcat.Utilities
             if (!ContainsUrl(text))
                 return text; // if there's no url in it, we don't have a link to mark up
 
-            var matches = from word in text.Split(' ')
+            var matches = (from word in text.Split(' ')
                 where StartsWithValidTerm(word)
-                select new Tuple<string, string>(word, MarkUpUrlWithBbCode(word));
+                select new Tuple<string, string>(word, MarkUpUrlWithBbCode(word))).Distinct();
 
             return matches.Aggregate(text, (current, toReplace) => current.Replace(toReplace.Item1, toReplace.Item2));
         }
@@ -361,7 +288,7 @@ namespace Slimcat.Utilities
                     {
                         CommandParameter = url,
                         ToolTip = url,
-                        Style = (Style) Application.Current.FindResource("Hyperlink")
+                        Style = Locator.FindStyle("Hyperlink")
                     };
 
                 return toReturn;
@@ -401,102 +328,423 @@ namespace Slimcat.Utilities
             return new Span(x);
         }
 
-        private Inline BbcodeToInline(string x)
+        private Inline ToInline(ParsedChunk chunk)
         {
-            if (!HasOpenTag(x))
-                return new Run(x);
-
-            var toReturn = new Span();
-
-            var startType = FindStartType(x);
-            var startIndex = x.IndexOf("[" + startType + "]", StringComparison.Ordinal);
-
-            if (startIndex > 0)
-                toReturn.Inlines.Add(new Run(x.Substring(0, startIndex)));
-
-            if (startType.StartsWith("session"))
-            {
-                // hack-in for session to work
-                var rough = x.Substring(startIndex);
-                var firstBrace = rough.IndexOf(']');
-                var endInd = rough.IndexOf("[/session]", StringComparison.Ordinal);
-
-                if (firstBrace != -1 || endInd != -1)
+            var converters = new Dictionary<BbCodeType, Func<ParsedChunk, Inline>>
                 {
-                    var channel = rough.Substring(firstBrace + 1, endInd - firstBrace - 1);
-                    var title = rough.Substring("[session=".Length, firstBrace - "[session=".Length);
+                    {BbCodeType.Bold, MakeBold},
+                    {BbCodeType.Italic, MakeItalic},
+                    {BbCodeType.Underline, MakeUnderline},
+                    {BbCodeType.Url, MakeUrl},
+                    {BbCodeType.None, MakeNormalText},
+                    {BbCodeType.Color, MakeColor},
+                    {BbCodeType.Strikethrough, MakeStrikeThrough},
+                    {BbCodeType.Session, MakeSession}
+                };
 
-                    if (!title.Contains("ADH-"))
+            var converter = converters[chunk.Type];
+            var toReturn = converter(chunk);
+
+            var span = toReturn as Span;
+            if (chunk.Children != null && chunk.Children.Any() && span != null)
+                span.Inlines.AddRange(chunk.Children.Select(ToInline));
+
+            return toReturn;
+        }
+
+        private Span MakeStrikeThrough(ParsedChunk arg)
+        {
+            return new Span(WrapInRun(arg.InnerText)) { TextDecorations =  TextDecorations.Strikethrough };
+        }
+
+        private static Span MakeNormalText(ParsedChunk arg)
+        {
+            return new Span(WrapInRun(arg.InnerText));
+        }
+
+        private static Run WrapInRun(string text)
+        {
+            return new Run(text);
+        }
+
+        private Span MakeUrl(ParsedChunk arg)
+        {
+            var url = arg.Arguments;
+            var display = arg.Children.First().InnerText;
+
+            if (url == null)
+            {
+                url = arg.InnerText;
+                display = GetUrlDisplay(arg.Children.First().InnerText);
+            }
+
+            return new Hyperlink(WrapInRun(display))
+            {
+                CommandParameter = url,
+                ToolTip = url,
+                Style = Locator.FindStyle("Hyperlink")
+            };
+        }
+
+        private Inline MakeSession(ParsedChunk args)
+        {
+            return MakeChannelLink(ChatModel.FindChannel(args.Children.First().InnerText));
+        }
+
+        private static Span MakeUnderline(ParsedChunk arg)
+        {
+            return new Underline(WrapInRun(arg.InnerText));
+        }
+
+        private static Span MakeBold(ParsedChunk arg)
+        {
+            return new Bold(WrapInRun(arg.InnerText));
+        }
+
+        private static Span MakeItalic(ParsedChunk arg)
+        {
+            return new Italic(WrapInRun(arg.InnerText));
+        }
+
+        private Span MakeColor(ParsedChunk arg)
+        {
+
+            var colorString = arg.Arguments;
+
+            if (!ApplicationSettings.AllowColors || colorString == null)
+                return MakeNormalText(arg);
+
+            var brush = new BrushConverter().ConvertFromString(colorString) as SolidColorBrush;
+            if (brush == null) return MakeNormalText(arg);
+
+            brush.Color = Lighten(brush.Color, 25);
+            return new Span(WrapInRun(arg.InnerText)) { Foreground = brush };
+        }
+
+        public static Color Lighten(Color inColor, double inAmount)
+        {
+            return Color.FromArgb(
+              inColor.A,
+              (byte)Math.Min(255, inColor.R + 255 * inAmount),
+              (byte)Math.Min(255, inColor.G + 255 * inAmount),
+              (byte)Math.Min(255, inColor.B + 255 * inAmount));
+        }
+
+        public class ParsedChunk
+        {
+            public int Start { get; set; }
+            
+            public int End { get; set; }
+
+            public string InnerText { get; set; }
+
+            public string Arguments { get; set; }
+
+            public BbCodeType Type { get; set; }
+
+            public IList<ParsedChunk> Children { get; set; }
+        }
+
+        public class BbFinder
+        {
+            private readonly string input;
+            private int lastStart;
+            private int currentPosition;
+            private const int NotFound = -1;
+            private string arguments;
+
+            private static readonly IDictionary<string, BbCodeType> Types = new Dictionary<string, BbCodeType>
+                {
+                    {"big", BbCodeType.Big},
+                    {"b", BbCodeType.Bold},
+                    {"i", BbCodeType.Italic},
+                    {"url", BbCodeType.Url},
+                    {"u", BbCodeType.Underline},
+                    {"user", BbCodeType.User},
+                    {"icon", BbCodeType.User},
+                    {"sup", BbCodeType.Superscript},
+                    {"sub", BbCodeType.Subscript},
+                    {"small", BbCodeType.Small},
+                    {"s", BbCodeType.Strikethrough},
+                    {"channel", BbCodeType.Channel},
+                    {"session", BbCodeType.Session},
+                    {"color", BbCodeType.Color}
+                };
+
+            public BbTag Last { get; private set; }
+
+            public bool HasReachedEnd { get; private set; }
+
+            public BbFinder(string input)
+            {
+                this.input = input;
+            }
+
+            public BbTag Next()
+            {
+                if (HasReachedEnd)
+                    return NoResult();
+
+                var openBrace = input.IndexOf('[', currentPosition);
+                var closeBrace = input.IndexOf(']', currentPosition);
+
+                currentPosition = closeBrace + 1;
+                lastStart = openBrace + 1;
+
+                if (openBrace == NotFound || closeBrace == NotFound)
+                {
+                    HasReachedEnd = true;
+
+                    var start = Last != null ? Last.End : 0;
+                    var end = input.Length;
+
+                    return new BbTag
+                        {
+                            Type = BbCodeType.None,
+                            Start = start,
+                            End = end
+                        };
+                }
+
+                var type = input.Substring(openBrace + 1, closeBrace - openBrace - 1);
+
+                var equalsSign = type.IndexOf('=');
+                if (equalsSign != NotFound)
+                {
+                    var typeBeforeEquals = type.Substring(0, equalsSign);
+
+                    arguments = type.Substring(equalsSign + 1, type.Length - equalsSign - 1).Trim();
+                    type = typeBeforeEquals.Trim();
+                }
+
+                var isEndType = type[0].Equals('/');
+                var possibleMatch = isEndType
+                    ? Types.Keys.Where(type.EndsWith).FirstOrDefault() 
+                    : Types.Keys.Where(type.StartsWith).FirstOrDefault();
+
+                if (possibleMatch == null)
+                    return NoResult();
+
+                if (!possibleMatch.Equals(isEndType ? type.Substring(1) : type, StringComparison.Ordinal))
+                    return NoResult();
+
+                Last =  new BbTag
                     {
-                        x = x.Replace(channel, title);
-                        x = x.Replace("[session=" + title + "]", "[session=" + channel + "]");
-                        startType = FindStartType(x);
+                        Arguments = arguments,
+                        End = currentPosition,
+                        Start = openBrace,
+                        Type = Types[possibleMatch],
+                        IsClosing = isEndType
+                    };
+
+                return Last;
+            }
+
+            private BbTag NoResult()
+            {
+                return new BbTag
+                    {
+                        Start = lastStart,
+                        End = currentPosition,
+                        Type = BbCodeType.None
+                    };
+            }
+        }
+
+        public class BbTag
+        {
+            public BbCodeType Type { get; set; }
+
+            public int Start { get; set; }
+
+            public int End { get; set; }
+
+            public string Arguments { get; set; }
+
+            public bool IsClosing { get; set; }
+
+            public BbTag ClosingTag { get; set; }
+
+            public IList<BbTag> Children { get; set; }
+        }
+
+        public static IList<ParsedChunk> ParseChunk(string input)
+        {
+            // init
+            var toReturn = new List<ParsedChunk>();
+            var openTags = new Stack<BbTag>();
+            var tags = new Queue<BbTag>();
+            var processedQueue = new Queue<BbTag>();
+
+            var finder = new BbFinder(input);
+
+            // find all tags
+            while (!finder.HasReachedEnd) tags.Enqueue(finder.Next());
+
+            // return original input if we've no valid bbcode tags
+            if (tags.All(x => x.Type == BbCodeType.None))
+                return new[] { AsChunk(input) };
+
+            var starting = tags.Peek();
+            if (starting != null && starting.Start != -1)
+            {
+                // add text before any bbcode
+                toReturn.Add(new ParsedChunk
+                    {
+                        Start = 0,
+                        End = starting.Start,
+                        InnerText = input.Substring(0, starting.Start)
+                    });
+            }
+
+            while (tags.Count > 0)
+            {
+                // get the next tag to process
+                var tag = tags.Dequeue();
+                var addToQueue = true;
+
+                // check if we're in the context of another open tag
+                if (openTags.Count > 0)
+                {
+                    var lastOpen = openTags.Peek();
+
+                    // check if we're the closing for the last open tag
+                    if (lastOpen.Type == tag.Type)
+                    {
+                        // find the text after the last child in the tag
+                        var lastChild = lastOpen.Children != null 
+                            ? lastOpen.Children.LastOrDefault(x => x.ClosingTag != null) 
+                            : null;
+
+                        if (lastChild != null)
+                        {
+                            var distanceBetweenEnd = tag.Start - lastChild.End;
+
+                            if (distanceBetweenEnd > 0)
+                                lastOpen.Children.Add(new BbTag
+                                    {
+                                        Type = BbCodeType.None,
+                                        Start = lastChild.ClosingTag.End,
+                                        End = tag.Start
+                                    });
+                        }
+                        else
+                        {
+                            var distanceBetweenBrackets = tag.Start - lastOpen.End;
+                            lastOpen.Children = lastOpen.Children ?? new List<BbTag>();
+
+                            if (distanceBetweenBrackets > 0)
+                                lastOpen.Children.Add(new BbTag
+                                    {
+                                        Type = BbCodeType.None,
+                                        Start = lastOpen.End,
+                                        End = tag.Start
+                                    });
+                        }
+
+                        lastOpen.ClosingTag = tag;
+                        openTags.Pop();
+                    }
+                    else
+                    {
+                        // if not, we have to be a child of it
+                        lastOpen.Children = lastOpen.Children ?? new List<BbTag>();
+
+                        // but first, add the text that possibly exists before us
+                        var spaceBetweenParent = tag.Start - lastOpen.End;
+                        if (spaceBetweenParent > 0)
+                        {
+                            lastOpen.Children.Add(new BbTag
+                                {
+                                    Type = BbCodeType.None,
+                                    Start = lastOpen.End,
+                                    End = tag.Start,
+                                });
+                        }
+
+                        lastOpen.Children.Add(tag);
+                        addToQueue = false;
                     }
                 }
+
+                // we don't need to continue processing closing tags
+                if (tag.IsClosing) continue;
+
+                // tell the system we're in the context of this tag now
+                if (tag.Type != BbCodeType.None)
+                    openTags.Push(tag);
+
+                // if we're added as a child to another tag, don't process independently of parent
+                if (addToQueue) processedQueue.Enqueue(tag);
             }
 
-            var roughString = x.Substring(startIndex);
-            roughString = roughString.Remove(0, roughString.IndexOf(']') + 1);
-
-            var endType = FindEndType(roughString);
-            var endIndex = roughString.IndexOf("[/" + endType + "]", StringComparison.Ordinal);
-            var endLength = ("[/" + endType + "]").Length;
-
-            // for BbCode with arguments, we must do this
-            if (SpecialBbCases.Any(bbcase => startType.Equals(bbcase)))
+            // if we have any left, they're improper tags
+            while (openTags.Count > 0)
             {
-                startType += "=";
+                var tag = openTags.Pop();
 
-                var content = endIndex != -1 ? roughString.Substring(0, endIndex) : roughString;
+                // don't treat this as BbCode
+                tag.Type = BbCodeType.None;
 
-                startType += content;
+                if (tag.Children == null || !tag.Children.Any()) continue;
+                
+                // try and place any children back on the queue to be processed
+                // TODO: this won't work in some complex scenarios. It'll do
+                // someone who just throws a random piece of bbcode though.
+
+                var children = tag.Children;
+                tag.Children = null;
+                children.Each(processedQueue.Enqueue);
             }
 
-            if (startType == "noparse")
-            {
-                endIndex = roughString.IndexOf("[/noparse]", StringComparison.Ordinal);
-                var restofString = roughString.Substring(endIndex + "[/noparse]".Length);
-                var skipthis = roughString.Substring(0, endIndex);
+            // if in the process of removing improper tags we end up with no bbcode,
+            // return original
+            if (processedQueue.All(x => x.Type == BbCodeType.None))
+                return new[] { AsChunk(input) };
 
-                toReturn.Inlines.Add(new Run(skipthis));
-                toReturn.Inlines.Add(BbcodeToInline(restofString));
-            }
-            else if (endType == "n" || endIndex == -1)
-                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType));
-            else if (endType != startType)
-            {
-                var properEnd = "[/" + StripAfterType(startType) + "]";
-                if (roughString.Contains(properEnd))
+            toReturn.AddRange(processedQueue.Select(x => FromTag(x, input)));
+
+            return toReturn;
+        }
+
+        internal static ParsedChunk AsChunk(string input)
+        {
+            return new ParsedChunk
                 {
-                    var properIndex = roughString.IndexOf(properEnd, StringComparison.Ordinal);
-                    var toMarkUp = roughString.Substring(0, properIndex);
-                    var restOfString = roughString.Substring(properIndex + properEnd.Length);
+                    Type = BbCodeType.None,
+                    Start = 0,
+                    End = input.Length,
+                    InnerText = input
+                };
+        }
 
-                    toReturn.Inlines.Add(TypeToInline(BbcodeToInline(toMarkUp), startType));
+        public Inline AsInline(string bbcode)
+        {
+            var inlines = ParseChunk(bbcode).Select(ToInline).ToList();
+            if (inlines.Count == 1) return inlines.First();
 
-                    toReturn.Inlines.Add(BbcodeToInline(restOfString));
-                }
-                else
+            var toReturn = new Span();
+            toReturn.Inlines.AddRange(inlines);
+
+            return toReturn;
+        } 
+
+        internal static ParsedChunk FromTag(BbTag tag, string context)
+        {
+            var last = tag.ClosingTag != null ? tag.ClosingTag.End : tag.End;
+            var toReturn = new ParsedChunk
                 {
-                    toReturn.Inlines.Add(
-                        TypeToInline(BbcodeToInline(roughString), startType));
-                }
-            }
-            else if (endIndex + endLength == roughString.Length)
-            {
-                roughString = roughString.Remove(endIndex, endLength);
-                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType));
-            }
-            else
-            {
-                var restOfString = roughString.Substring(endIndex + endLength);
+                    Start = tag.Start,
+                    End = last,
+                    Type = tag.Type,
+                    Arguments = tag.Arguments
+                };
 
-                roughString = roughString.Substring(0, endIndex);
+            if (tag.Children != null && tag.Children.Any())
+                toReturn.Children = tag.Children.Select(x => FromTag(x, context)).ToList();
 
-                toReturn.Inlines.Add(TypeToInline(new Run(roughString), startType));
-
-                toReturn.Inlines.Add(BbcodeToInline(restOfString));
-            }
+            if (tag.Type == BbCodeType.None)
+                toReturn.InnerText = context.Substring(tag.Start, tag.End - tag.Start);
 
             return toReturn;
         }
@@ -511,8 +759,8 @@ namespace Slimcat.Utilities
     {
         #region Constructors
 
-        public BbCodePostConverter(IChatModel chatModel, ICharacterManager characterManager)
-            : base(chatModel, characterManager)
+        public BbCodePostConverter(IChatModel chatModel, ICharacterManager characterManager, IThemeLocator locator)
+            : base(chatModel, characterManager, locator)
         {
         }
 
@@ -534,8 +782,7 @@ namespace Slimcat.Utilities
 
                 if (type == MessageType.Roll)
                 {
-                    inlines.Add(Parse(text));
-                    return inlines;
+                    return Parse(text);
                 }
 
                 // this creates the name link
@@ -571,7 +818,7 @@ namespace Slimcat.Utilities
                         inlines.Add(new Run(" warns, "));
                         var toAdd = Parse(text);
 
-                        toAdd.Foreground = (Brush) Application.Current.FindResource("HighlightBrush");
+                        toAdd.Foreground = Locator.Find<Brush>("HighlightBrush");
                         toAdd.FontWeight = FontWeights.ExtraBold;
                         inlines.Add(toAdd);
 
@@ -624,8 +871,8 @@ namespace Slimcat.Utilities
     {
         #region Constructors
 
-        public BbFlowConverter(IChatModel chatModel, ICharacterManager characterManager)
-            : base(chatModel, characterManager)
+        public BbFlowConverter(IChatModel chatModel, ICharacterManager characterManager, IThemeLocator locator)
+            : base(chatModel, characterManager, locator)
         {
         }
 
@@ -665,7 +912,7 @@ namespace Slimcat.Utilities
                 inlines.Add(new Run(" warns, "));
 
                 var toAdd = Parse(text);
-                toAdd.Foreground = (Brush) Application.Current.FindResource("HighlightBrush");
+                toAdd.Foreground = Locator.Find<Brush>("HighlightBrush");
                 toAdd.FontWeight = FontWeights.ExtraBold;
 
                 inlines.Add(Parse(text));
@@ -694,8 +941,8 @@ namespace Slimcat.Utilities
     {
         #region Constructors
 
-        public BbCodeConverter(IChatModel chatModel, ICharacterManager characterManager)
-            : base(chatModel, characterManager)
+        public BbCodeConverter(IChatModel chatModel, ICharacterManager characterManager, IThemeLocator locator)
+            : base(chatModel, characterManager, locator)
         {
         }
 

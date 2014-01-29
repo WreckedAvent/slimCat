@@ -143,6 +143,11 @@ namespace Slimcat.Models
         {
             lock (Locker)
             {
+                if (listKind == ListKind.Online)
+                {
+                    return characters.ContainsKey(name);
+                }
+
                 CollectionPair list;
                 if (CollectionDictionary.TryGetValue(listKind, out list))
                 {

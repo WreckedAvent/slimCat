@@ -30,6 +30,7 @@ namespace Slimcat.Utilities
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
+    using slimCat.Models;
     using ViewModels;
 
     #endregion
@@ -58,8 +59,11 @@ namespace Slimcat.Utilities
                 Container.RegisterType<IChatModel, ChatModel>(new ContainerControlledLifetimeManager());
                 Container.RegisterType<IChannelManager, MessageDaemon>(new ContainerControlledLifetimeManager());
                 Container.RegisterType<EventAggregator>(new ContainerControlledLifetimeManager());
+                Container.RegisterType<IThemeLocator, ApplicationThemeLocator>(new ContainerControlledLifetimeManager());
                 Container.RegisterType<ICharacterManager, GlobalCharacterManager>(
                     new ContainerControlledLifetimeManager());
+
+                Container.RegisterInstance(typeof (Application), Application.Current);
 
                 // these are services that are not directly used by our singletons or modules
                 Container.Resolve<NotificationsDaemon>();

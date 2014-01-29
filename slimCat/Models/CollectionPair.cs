@@ -46,6 +46,8 @@ namespace Slimcat.Models
         public void Set(IEnumerable<string> collection)
         {
             List.Clear();
+            OnlineList.Clear();
+
             if (collection != null)
                 List.UnionWith(collection);
         }

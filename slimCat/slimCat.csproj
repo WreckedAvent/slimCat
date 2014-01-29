@@ -141,6 +141,7 @@
     </ApplicationDefinition>
     <Compile Include="lib\FlashWindowHelper.cs" />
     <Compile Include="lib\TextBlockHelper.cs" />
+    <Compile Include="Models\ApplicationThemeLocator.cs" />
     <Compile Include="Models\CharacterManagerBase.cs" />
     <Compile Include="Models\CollectionPair.cs" />
     <Compile Include="Models\Enums\ChannelMode.cs" />
@@ -163,6 +164,7 @@
     <Compile Include="Models\Interfaces\IChatModel.cs" />
     <Compile Include="Models\Interfaces\IMessage.cs" />
     <Compile Include="Models\Interfaces\IViewableObject.cs" />
+    <Compile Include="Models\Interfaces\IThemeLocator.cs" />
     <Compile Include="Models\MessageBase.cs" />
     <Compile Include="Models\Enums\MessageType.cs" />
     <Compile Include="Models\NotificationModels.cs" />
