@@ -77,6 +77,7 @@ namespace slimCatTest
         [TestClass]
         public class BbCodeMarkupTest : ParserTest
         {
+            #region Bbcode Smoke Tests
             [TestMethod]
             public void BoldWorks()
             {
@@ -84,9 +85,9 @@ namespace slimCatTest
                 const string textAtStart = "[b]some well-formed[/b] bold text";
                 const string textAtMiddle = "some well-[b]formed bold[/b] text";
 
-                ShouldBeOneOf<Bold>(textAtEnd);
-                ShouldBeOneOf<Bold>(textAtMiddle);
-                ShouldBeOneOf<Bold>(textAtStart);
+                ShouldBeOneOf<Bold>(textAtEnd).AssertFirstTextIs("bold text");
+                ShouldBeOneOf<Bold>(textAtMiddle).AssertFirstTextIs("formed bold");
+                ShouldBeOneOf<Bold>(textAtStart).AssertFirstTextIs("some well-formed");
             }
 
             [TestMethod]
@@ -94,8 +95,7 @@ namespace slimCatTest
             {
                 const string text = "some well-formed [i]italic[/i] text";
 
-                var result = ShouldBeOneOf<Italic>(text).First();
-                Assert.IsTrue(result.GetText() == "italic");
+                ShouldBeOneOf<Italic>(text).AssertFirstTextIs("italic");
             }
 
             [TestMethod]
@@ -103,8 +103,7 @@ namespace slimCatTest
             {
                 const string text = "some well-formed [u]underline[/u] text";
 
-                var result = ShouldBeOneOf<Underline>(text).First();
-                Assert.IsTrue(result.GetText().Equals("underline"));
+                ShouldBeOneOf<Underline>(text).AssertFirstTextIs("underline");
             }
 
             [TestMethod]
@@ -114,7 +113,7 @@ namespace slimCatTest
 
                 var result = ShouldBeOneOf<Span>(text).First(x => x.TextDecorations.Equals(TextDecorations.Strikethrough));
 
-                Assert.IsTrue(result.GetText().Equals("strike-through"));
+                result.AssertTextIs("strike-through");
             }
 
             [TestMethod]
@@ -122,9 +121,7 @@ namespace slimCatTest
             {
                 const string text = "some well formed [url=https://www.google.com]url[/url] text";
 
-                var result = ShouldBeOneOf<Hyperlink>(text).First();
-
-                Assert.IsTrue(result.GetText().Equals("url"));
+                ShouldBeOneOf<Hyperlink>(text).AssertFirstTextIs("url");
             }
 
             [TestMethod]
@@ -132,9 +129,7 @@ namespace slimCatTest
             {
                 const string text = "some well-formed [url]https://www.google.com[/url] text";
 
-                var result = ShouldBeOneOf<Hyperlink>(text).First();
-
-                Assert.IsTrue(result.GetText().Equals("google.com"));
+                ShouldBeOneOf<Hyperlink>(text).AssertFirstTextIs("google.com");
             }
 
             [TestMethod]
@@ -159,8 +154,7 @@ namespace slimCatTest
             {
                 const string text = "some well-formed [big]big[/big] text";
 
-                var result = ShouldBeOneOf<Span>(text).First(x => x.FontSize > 12);
-                Assert.IsTrue(result.GetText().Equals("big"));
+                ShouldBeOneOf<Span>(text).First(x => x.FontSize > 12).AssertTextIs("big");
             }
 
             [TestMethod]
@@ -176,8 +170,7 @@ namespace slimCatTest
             {
                 const string text = "some well-formed [small]small[/small] text";
 
-                var result = ShouldBeOneOf<Span>(text).First(x => x.FontSize < 12);
-                Assert.IsTrue(result.GetText().Equals("small"));
+                ShouldBeOneOf<Span>(text).First(x => x.FontSize < 12).AssertTextIs("small");
             }
 
             [TestMethod]
@@ -185,8 +178,9 @@ namespace slimCatTest
             {
                 const string text = "some well-formed [sub]sub[/sub] text";
 
-                var result = ShouldBeOneOf<Span>(text).First(x => x.BaselineAlignment == BaselineAlignment.Subscript);
-                Assert.IsTrue(result.GetText().Equals("sub"));
+                ShouldBeOneOf<Span>(text)
+                    .First(x => x.BaselineAlignment == BaselineAlignment.Subscript)
+                    .AssertTextIs("sub");
             }
 
             [TestMethod]
@@ -194,8 +188,9 @@ namespace slimCatTest
             {
                 const string text = "some well-formed [sup]sup[/sup] text";
 
-                var result = ShouldBeOneOf<Span>(text).First(x => x.BaselineAlignment == BaselineAlignment.Superscript);
-                Assert.IsTrue(result.GetText().Equals("sup"));
+                ShouldBeOneOf<Span>(text)
+                    .First(x => x.BaselineAlignment == BaselineAlignment.Superscript)
+                    .AssertTextIs("sup");
             }
 
             [TestMethod]
@@ -204,8 +199,9 @@ namespace slimCatTest
                 ApplicationSettings.AllowColors = true; // TODO : get this as a dependency
                 const string text = "some well-formed [color=green]color[/color] text";
 
-                var result = ShouldBeOneOf<Span>(text).First(x => x.Foreground.IsColor(Colors.Green));
-                Assert.IsTrue(result.GetText().Equals("color"));
+                ShouldBeOneOf<Span>(text)
+                    .First(x => x.Foreground.IsColor(Colors.Green))
+                    .AssertTextIs("color");
             }
 
             [TestMethod]
@@ -226,6 +222,46 @@ namespace slimCatTest
 
                 var result = ShouldBeOneOf<Span>(text).First(x => x.GetText().Equals("color"));
                 Assert.IsFalse(result.Foreground.IsColor(Colors.Green));
+            }
+            #endregion
+
+            [TestMethod]
+            public void StackedBbCodeWorks()
+            {
+                const string text = "some stacked [i][b]bbcode[/b][/i] text";
+
+                var result = ShouldBeOneOf<Italic>(text).First().GetFirstChild<Bold>();
+
+                result.AssertTextIs("bbcode");
+            }
+
+            [TestMethod]
+            public void PlainChildrenInStackedBbCodeWorks()
+            {
+                const string text = "some stacked [i]bbcode with [b]plain text[/b] at various points[/i] ... text";
+
+                var root = ShouldBeOneOf<Italic>(text).First();
+
+                root.GetFirstChild().AssertTextIs("bbcode with ");
+                root.GetFirstChild<Bold>().AssertTextIs("plain text");
+                root.GetChildren().Last().AssertTextIs(" at various points");
+            }
+
+            [TestMethod]
+            public void MultipleStackedBcodeWorks()
+            {
+                const string text = "some  [b]bbcode [u]with [i]lots[/i] of[/u] [u]stacking[/u][/b] text";
+
+                var root = ShouldBeOneOf<Bold>(text).First();
+
+                root.GetFirstChild().AssertTextIs("bbcode ");
+
+                var second = root.GetFirstChild<Underline>();
+                second.AssertTextIs("with ");
+
+                second.GetFirstChild<Italic>().AssertTextIs("lots");
+                second.GetChildren().Last().AssertTextIs(" of");
+                root.GetChildren<Underline>().Last().AssertTextIs("stacking");
             }
 
             [TestMethod]
@@ -248,15 +284,13 @@ namespace slimCatTest
 
         private void ShouldContainLink(string input, string expected)
         {
-            var result = GetAll<Hyperlink>(input).First().GetText();
-
-            Assert.IsTrue(result == expected);
+            GetAll<Hyperlink>(input).AssertFirstTextIs(expected);
         }
 
         private IEnumerable<T> GetAll<T>(string input)
             where T : Inline
         {
-            return FirstSpan(input).Inlines.OfType<T>();
+            return FirstSpan(input).GetChildren<T>();
         }
 
         private IEnumerable<T> ShouldBeOneOf<T>(string input)
@@ -271,9 +305,8 @@ namespace slimCatTest
 
         private void ShouldNotContainMarkup(string input)
         {
-            var result = FirstSpan(input).Inlines.OfType<Run>().FirstOrDefault();
+            var result = FirstSpan(input).GetChildren<Run>().First();
 
-            Assert.IsNotNull(result);
             Assert.IsTrue(result.Text == input);
         }
 
@@ -295,11 +328,11 @@ namespace slimCatTest
         public static string GetText<T>(this T element)
             where T : Span
         {
-            var span = element.Inlines.OfType<Span>().FirstOrDefault();
+            var span = element.GetChildren<Span>().FirstOrDefault();
 
             var run = span != null
-                ? span.Inlines.OfType<Run>().FirstOrDefault()
-                : element.Inlines.OfType<Run>().FirstOrDefault();
+                ? span.GetChildren<Run>().FirstOrDefault()
+                : element.GetChildren<Run>().FirstOrDefault();
 
             Assert.IsNotNull(run);
 
@@ -311,6 +344,38 @@ namespace slimCatTest
             var asSolid = brush as SolidColorBrush;
 
             return asSolid != null && asSolid.Color.Equals(suspectColor);
+        }
+
+        public static IEnumerable<T> GetChildren<T>(this Span element)
+            where T : Inline
+        {
+            return element.Inlines.OfType<T>();
+        }
+
+        public static IEnumerable<Span> GetChildren(this Span element)
+        {
+            return element.Inlines.OfType<Span>();
+        }
+
+        public static Span GetFirstChild(this Span element)
+        {
+            return element.GetChildren().First();
+        }
+
+        public static T GetFirstChild<T>(this Span element)
+            where T : Inline
+        {
+            return element.GetChildren<T>().First();
+        }
+
+        public static void AssertTextIs(this Span element, string expected)
+        {
+            Assert.IsTrue(element.GetText().Equals(expected));
+        }
+
+        public static void AssertFirstTextIs(this IEnumerable<Span> elements, string expected)
+        {
+            elements.First().AssertTextIs(expected);
         }
     }
 }
