@@ -18,8 +18,15 @@ namespace slimCatTest
 
         public ParserTest()
         {
+            var dummySession = new GeneralChannelModel("Love Room", ChannelType.Private);
+
+            var chat = new Mock<IChatModel>();
+
+            chat.Setup(x => x.FindChannel("Love Room", It.IsAny<string>()))
+                .Returns(dummySession);
+
             var manager = Mock.Of<ICharacterManager>();
-            var chatModel = Mock.Of<IChatModel>();
+            var chatModel = chat.Object;
             var locator = Mock.Of<IThemeLocator>();
 
             converter = new BbFlowConverter(chatModel, manager, locator); 

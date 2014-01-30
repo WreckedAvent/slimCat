@@ -339,7 +339,8 @@ namespace Slimcat.Utilities
                     {BbCodeType.None, MakeNormalText},
                     {BbCodeType.Color, MakeColor},
                     {BbCodeType.Strikethrough, MakeStrikeThrough},
-                    {BbCodeType.Session, MakeSession}
+                    {BbCodeType.Session, MakeSession},
+                    {BbCodeType.Channel, MakeChannel}
                 };
 
             var converter = converters[chunk.Type];
@@ -350,6 +351,13 @@ namespace Slimcat.Utilities
                 span.Inlines.AddRange(chunk.Children.Select(ToInline));
 
             return toReturn;
+        }
+
+        private Inline MakeChannel(ParsedChunk arg)
+        {
+            var channel = MakeChannelLink(ChatModel.FindChannel(arg.Children.First().InnerText));
+            arg.Children.Clear();
+            return channel;
         }
 
         private Span MakeStrikeThrough(ParsedChunk arg)
@@ -378,6 +386,8 @@ namespace Slimcat.Utilities
                 display = GetUrlDisplay(arg.Children.First().InnerText);
             }
 
+            arg.Children.Clear();
+
             return new Hyperlink(WrapInRun(display))
             {
                 CommandParameter = url,
@@ -386,9 +396,11 @@ namespace Slimcat.Utilities
             };
         }
 
-        private Inline MakeSession(ParsedChunk args)
+        private Inline MakeSession(ParsedChunk arg)
         {
-            return MakeChannelLink(ChatModel.FindChannel(args.Children.First().InnerText));
+            var channel = MakeChannelLink(ChatModel.FindChannel(arg.Children.First().InnerText, arg.Arguments));
+            arg.Children.Clear();
+            return channel;
         }
 
         private static Span MakeUnderline(ParsedChunk arg)
@@ -415,19 +427,10 @@ namespace Slimcat.Utilities
                 return MakeNormalText(arg);
 
             var brush = new BrushConverter().ConvertFromString(colorString) as SolidColorBrush;
-            if (brush == null) return MakeNormalText(arg);
 
-            brush.Color = Lighten(brush.Color, 25);
-            return new Span(WrapInRun(arg.InnerText)) { Foreground = brush };
-        }
-
-        public static Color Lighten(Color inColor, double inAmount)
-        {
-            return Color.FromArgb(
-              inColor.A,
-              (byte)Math.Min(255, inColor.R + 255 * inAmount),
-              (byte)Math.Min(255, inColor.G + 255 * inAmount),
-              (byte)Math.Min(255, inColor.B + 255 * inAmount));
+            return brush == null 
+                ? MakeNormalText(arg) 
+                : new Span(WrapInRun(arg.InnerText)) { Foreground = brush};
         }
 
         public class ParsedChunk
@@ -465,9 +468,9 @@ namespace Slimcat.Utilities
                     {"sup", BbCodeType.Superscript},
                     {"sub", BbCodeType.Subscript},
                     {"small", BbCodeType.Small},
+                    {"session", BbCodeType.Session},
                     {"s", BbCodeType.Strikethrough},
                     {"channel", BbCodeType.Channel},
-                    {"session", BbCodeType.Session},
                     {"color", BbCodeType.Color}
                 };
 
