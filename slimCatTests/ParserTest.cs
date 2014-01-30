@@ -5,6 +5,7 @@ namespace slimCatTest
     using System.Linq;
     using System.Windows;
     using System.Windows.Documents;
+    using System.Windows.Media;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using Slimcat.Models;
@@ -142,6 +143,7 @@ namespace slimCatTest
                 const string text = "some well-formed [session=Love Bar]ADH-SOMENONSENSE[/session] session";
 
                 ShouldBeOneOf<InlineUIContainer>(text);
+                // not sure how to grab text out of InlineUIContainer. TODO
             }
 
             [TestMethod]
@@ -150,6 +152,80 @@ namespace slimCatTest
                 const string text = "some well-formed [channel]Helpdesk[/channel] channel text";
 
                 ShouldBeOneOf<InlineUIContainer>(text);
+            }
+
+            [TestMethod]
+            public void BigWorks()
+            {
+                const string text = "some well-formed [big]big[/big] text";
+
+                var result = ShouldBeOneOf<Span>(text).First(x => x.FontSize > 12);
+                Assert.IsTrue(result.GetText().Equals("big"));
+            }
+
+            [TestMethod]
+            public void UserWorks()
+            {
+                const string text = "some well-formed [user]user[/user] text";
+
+                ShouldBeOneOf<InlineUIContainer>(text);
+            }
+
+            [TestMethod]
+            public void SmallWorks()
+            {
+                const string text = "some well-formed [small]small[/small] text";
+
+                var result = ShouldBeOneOf<Span>(text).First(x => x.FontSize < 12);
+                Assert.IsTrue(result.GetText().Equals("small"));
+            }
+
+            [TestMethod]
+            public void SubscriptWorks()
+            {
+                const string text = "some well-formed [sub]sub[/sub] text";
+
+                var result = ShouldBeOneOf<Span>(text).First(x => x.BaselineAlignment == BaselineAlignment.Subscript);
+                Assert.IsTrue(result.GetText().Equals("sub"));
+            }
+
+            [TestMethod]
+            public void SuperWorks()
+            {
+                const string text = "some well-formed [sup]sup[/sup] text";
+
+                var result = ShouldBeOneOf<Span>(text).First(x => x.BaselineAlignment == BaselineAlignment.Superscript);
+                Assert.IsTrue(result.GetText().Equals("sup"));
+            }
+
+            [TestMethod]
+            public void ColorWorks()
+            {
+                ApplicationSettings.AllowColors = true; // TODO : get this as a dependency
+                const string text = "some well-formed [color=green]color[/color] text";
+
+                var result = ShouldBeOneOf<Span>(text).First(x => x.Foreground.IsColor(Colors.Green));
+                Assert.IsTrue(result.GetText().Equals("color"));
+            }
+
+            [TestMethod]
+            public void ColorToggleWorks()
+            {
+                ApplicationSettings.AllowColors = false;
+                const string text = "some well-formed [color=green]color[/color] text";
+
+                var result = ShouldBeOneOf<Span>(text).First(x => x.GetText().Equals("color"));
+                Assert.IsFalse(result.Foreground.IsColor(Colors.Green));
+            }
+
+            [TestMethod]
+            public void InvalidColorIsHandledGracefully()
+            {
+                ApplicationSettings.AllowColors = false;
+                const string text = "some well-formed [color]color[/color] text";
+
+                var result = ShouldBeOneOf<Span>(text).First(x => x.GetText().Equals("color"));
+                Assert.IsFalse(result.Foreground.IsColor(Colors.Green));
             }
 
             [TestMethod]
@@ -228,6 +304,13 @@ namespace slimCatTest
             Assert.IsNotNull(run);
 
             return run.Text;
+        }
+
+        public static bool IsColor(this Brush brush, Color suspectColor)
+        {
+            var asSolid = brush as SolidColorBrush;
+
+            return asSolid != null && asSolid.Color.Equals(suspectColor);
         }
     }
 }

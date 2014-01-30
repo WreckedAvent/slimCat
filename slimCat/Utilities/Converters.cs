@@ -126,6 +126,24 @@ namespace Slimcat.Utilities
 
         private static readonly string[] ValidStartTerms = {"http://", "https://", "ftp://"};
 
+        private static readonly IDictionary<string, BbCodeType> Types = new Dictionary<string, BbCodeType>
+            {
+                {"big", BbCodeType.Big},
+                {"b", BbCodeType.Bold},
+                {"i", BbCodeType.Italic},
+                {"user", BbCodeType.User},
+                {"url", BbCodeType.Url},
+                {"u", BbCodeType.Underline},
+                {"icon", BbCodeType.User},
+                {"sup", BbCodeType.Superscript},
+                {"sub", BbCodeType.Subscript},
+                {"small", BbCodeType.Small},
+                {"session", BbCodeType.Session},
+                {"s", BbCodeType.Strikethrough},
+                {"channel", BbCodeType.Channel},
+                {"color", BbCodeType.Color}
+            };
+
         #endregion
 
         #region Constructors
@@ -238,14 +256,6 @@ namespace Slimcat.Utilities
             return ValidStartTerms.Any(text.StartsWith);
         }
 
-        private static string StripBeforeType(string z)
-        {
-            if (!z.Contains('=')) return z;
-
-            var type = z.Substring(0, z.IndexOf('='));
-            return z.Substring(z.IndexOf('=') + 1, z.Length - (type.Length + 1));
-        }
-
         private static string PreProcessBbCode(string text)
         {
             if (!ContainsUrl(text))
@@ -258,75 +268,6 @@ namespace Slimcat.Utilities
             return matches.Aggregate(text, (current, toReplace) => current.Replace(toReplace.Item1, toReplace.Item2));
         }
 
-        private Inline TypeToInline(Inline x, string y)
-        {
-            switch (y)
-            {
-                case "b":
-                    return new Bold(x);
-                case "u":
-                    return new Span(x) {TextDecorations = TextDecorations.Underline};
-                case "i":
-                    return new Italic(x);
-                case "s":
-                    return new Span(x) {TextDecorations = TextDecorations.Strikethrough};
-                case "sub":
-                    return new Span(x) {BaselineAlignment = BaselineAlignment.Subscript, FontSize = 10};
-                case "sup":
-                    return new Span(x) {BaselineAlignment = BaselineAlignment.Top, FontSize = 10};
-                case "small":
-                    return new Span(x) {FontSize = 9};
-                case "big":
-                    return new Span(x) {FontSize = 16};
-            }
-
-            if (y.StartsWith("url"))
-            {
-                var url = StripBeforeType(y);
-
-                var toReturn = new Hyperlink(x)
-                    {
-                        CommandParameter = url,
-                        ToolTip = url,
-                        Style = Locator.FindStyle("Hyperlink")
-                    };
-
-                return toReturn;
-            }
-
-            if (y.StartsWith("user") || y.StartsWith("icon"))
-            {
-                var target = StripBeforeType(y);
-                return MakeUsernameLink(characterManager.Find(target));
-            }
-
-            if (y.StartsWith("channel") || y.StartsWith("session"))
-            {
-                var channel = StripBeforeType(y);
-
-                return MakeChannelLink(ChatModel.FindChannel(channel));
-            }
-
-            if (!y.StartsWith("color") || !ApplicationSettings.AllowColors) return new Span(x);
-            var colorString = StripBeforeType(y);
-
-            try
-            {
-                var convertFromString = ColorConverter.ConvertFromString(colorString);
-                if (convertFromString != null)
-                {
-                    var color = (Color) convertFromString;
-                    var brush = new SolidColorBrush(color);
-                    return new Span(x) {Foreground = brush};
-                }
-            }
-            catch // the color might be invalid, so ignore if it is
-            {
-                return new Span(x);
-            }
-
-            return new Span(x);
-        }
 
         private Inline ToInline(ParsedChunk chunk)
         {
@@ -340,7 +281,12 @@ namespace Slimcat.Utilities
                     {BbCodeType.Color, MakeColor},
                     {BbCodeType.Strikethrough, MakeStrikeThrough},
                     {BbCodeType.Session, MakeSession},
-                    {BbCodeType.Channel, MakeChannel}
+                    {BbCodeType.Channel, MakeChannel},
+                    {BbCodeType.Big, MakeBig},
+                    {BbCodeType.Small, MakeSmall},
+                    {BbCodeType.Subscript, MakeSubscript},
+                    {BbCodeType.Superscript, MakeSuperscript},
+                    {BbCodeType.User, MakeUser}
                 };
 
             var converter = converters[chunk.Type];
@@ -351,6 +297,37 @@ namespace Slimcat.Utilities
                 span.Inlines.AddRange(chunk.Children.Select(ToInline));
 
             return toReturn;
+        }
+
+        private Inline MakeUser(ParsedChunk arg)
+        {
+            var user = MakeUsernameLink(characterManager.Find(arg.Children.First().InnerText));
+            arg.Children.Clear();
+            return user;
+        }
+
+        private Inline MakeSuperscript(ParsedChunk arg)
+        {
+            var small = MakeSmall(arg);
+            small.BaselineAlignment = BaselineAlignment.Superscript;
+            return small;
+        }
+
+        private Inline MakeSubscript(ParsedChunk arg)
+        {
+            var small = MakeSmall(arg);
+            small.BaselineAlignment = BaselineAlignment.Subscript;
+            return small;
+        }
+
+        private Inline MakeSmall(ParsedChunk arg)
+        {
+            return new Span(WrapInRun(arg.InnerText)) { FontSize =  9 };
+        }
+
+        private Inline MakeBig(ParsedChunk arg)
+        {
+            return new Span(WrapInRun(arg.InnerText)) { FontSize = 16 };
         }
 
         private Inline MakeChannel(ParsedChunk arg)
@@ -456,23 +433,6 @@ namespace Slimcat.Utilities
             private const int NotFound = -1;
             private string arguments;
 
-            private static readonly IDictionary<string, BbCodeType> Types = new Dictionary<string, BbCodeType>
-                {
-                    {"big", BbCodeType.Big},
-                    {"b", BbCodeType.Bold},
-                    {"i", BbCodeType.Italic},
-                    {"url", BbCodeType.Url},
-                    {"u", BbCodeType.Underline},
-                    {"user", BbCodeType.User},
-                    {"icon", BbCodeType.User},
-                    {"sup", BbCodeType.Superscript},
-                    {"sub", BbCodeType.Subscript},
-                    {"small", BbCodeType.Small},
-                    {"session", BbCodeType.Session},
-                    {"s", BbCodeType.Strikethrough},
-                    {"channel", BbCodeType.Channel},
-                    {"color", BbCodeType.Color}
-                };
 
             public BbTag Last { get; private set; }
 
@@ -521,14 +481,11 @@ namespace Slimcat.Utilities
                 }
 
                 var isEndType = type[0].Equals('/');
-                var possibleMatch = isEndType
-                    ? Types.Keys.Where(type.EndsWith).FirstOrDefault() 
-                    : Types.Keys.Where(type.StartsWith).FirstOrDefault();
+                type = isEndType ? type.Substring(1) : type;
+
+                var possibleMatch = Types.Keys.FirstOrDefault(x => x.Equals(type, StringComparison.Ordinal));
 
                 if (possibleMatch == null)
-                    return NoResult();
-
-                if (!possibleMatch.Equals(isEndType ? type.Substring(1) : type, StringComparison.Ordinal))
                     return NoResult();
 
                 Last =  new BbTag
