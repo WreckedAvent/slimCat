@@ -274,18 +274,18 @@ namespace slimCatTest
 
                 // make sure urls are formed correctly
                 var hyperlinks = result.OfType<Hyperlink>().ToList();
-                hyperlinks.FirstTextShouldBe("Zerglings");
-                hyperlinks.Skip(1).FirstTextShouldBe("Hydralisks");
-                hyperlinks.Skip(2).FirstTextShouldBe("Sangheili");
-                hyperlinks.Skip(3).FirstTextShouldBe("Xenomorphs~");
+                hyperlinks[0].TextShouldBe("Zerglings");
+                hyperlinks[1].TextShouldBe("Hydralisks");
+                hyperlinks[2].TextShouldBe("Sangheili");
+                hyperlinks[3].TextShouldBe("Xenomorphs~");
 
                 // make sure text/spacing between them is preserverd
                 var plainText = result.Where(x => !(x is Hyperlink)).ToList();
-                plainText.FirstTextShouldBe("Any ");
-                plainText.Skip(1).FirstTextShouldBe(" or ");
-                plainText.Skip(2).FirstTextShouldBe(" Want a piece of my ass~? Also open to ");
-                plainText.Skip(3).FirstTextShouldBe(" and ");
-                plainText.Skip(4).FirstTextShouldBe(" Would especially love you if you play a Sangheili~");
+                plainText[0].TextShouldBe("Any ");
+                plainText[1].TextShouldBe(" or ");
+                plainText[2].TextShouldBe(" Want a piece of my ass~? Also open to ");
+                plainText[3].TextShouldBe(" and ");
+                plainText[4].TextShouldBe(" Would especially love you if you play a Sangheili~");
             }
 
             [TestMethod]
@@ -297,7 +297,7 @@ namespace slimCatTest
                 var root = ShouldBeOneOf<Span>(text).ToList();
                 root.FirstTextShouldBe("b ");
 
-                var colorTag = root.Skip(1).First();
+                var colorTag = root[1];
                 colorTag.GetChildren().FirstTextShouldBe("r");
                 colorTag.GetChildren().Skip(1).FirstTextShouldBe("g");
 
@@ -306,6 +306,32 @@ namespace slimCatTest
 
                 Assert.AreEqual(suspectedLast, actualLast);
                 actualLast.TextShouldBe(" b");
+            }
+
+            [TestMethod]
+            public void NoParseWorks()
+            {
+                const string text = "o [noparse][b]b[/b][/noparse] o";
+
+                var result = ShouldBeOneOf<Span>(text).ToList();
+                result[0].TextShouldBe("o ");
+
+                result[1].GetChildren().FirstTextShouldBe("[b]b[/b]");
+            }
+
+            [TestMethod]
+            public void MultipleNoParseWorks()
+            {
+                const string text = "o [noparse][i]i[/i][/noparse][noparse][b]b[/b][/noparse] o";
+
+                var result = ShouldBeOneOf<Span>(text).ToList();
+                result[0].TextShouldBe("o ");
+
+                result[1].GetChildren().FirstTextShouldBe("[i]i[/i]");
+
+                result[2].GetChildren().FirstTextShouldBe("[b]b[/b]");
+
+                result.Last().TextShouldBe(" o");
             }
 
             [TestMethod]

@@ -55,7 +55,8 @@ namespace Slimcat.Utilities
         User,
         Icon,
         Invalid,
-        Color
+        Color,
+        NoParse
     }
 
     public abstract class OneWayConverter : IValueConverter
@@ -141,7 +142,8 @@ namespace Slimcat.Utilities
                 {"session", BbCodeType.Session},
                 {"s", BbCodeType.Strikethrough},
                 {"channel", BbCodeType.Channel},
-                {"color", BbCodeType.Color}
+                {"color", BbCodeType.Color},
+                {"noparse", BbCodeType.NoParse}
             };
 
         #endregion
@@ -286,7 +288,8 @@ namespace Slimcat.Utilities
                     {BbCodeType.Small, MakeSmall},
                     {BbCodeType.Subscript, MakeSubscript},
                     {BbCodeType.Superscript, MakeSuperscript},
-                    {BbCodeType.User, MakeUser}
+                    {BbCodeType.User, MakeUser},
+                    {BbCodeType.NoParse, MakeNormalText}
                 };
 
             var converter = converters[chunk.Type];
@@ -574,6 +577,7 @@ namespace Slimcat.Utilities
                     tags.Enqueue(next);
             }
 
+
             // return original input if we've no valid bbcode tags
             if (tags.All(x => x.Type == BbCodeType.None))
                 return new[] { AsChunk(input) };
@@ -595,19 +599,35 @@ namespace Slimcat.Utilities
                     if (lastOpen.Type == tag.Type 
                         && tag.IsClosing)
                     {
-                        tag.Parent = lastOpen;
-
                         lastOpen.ClosingTag = tag;
                         openTags.Pop();
-                    }
-                    else
-                    {
-                        // if not, we have to be a child of it
-                        lastOpen.Children = lastOpen.Children ?? new List<BbTag>();
 
-                        lastOpen.Children.Add(tag);
+                        #region handle noparse
+                        if (lastOpen.Type == BbCodeType.NoParse)
+                        {
+                            lastOpen.Children = lastOpen.Children ?? new List<BbTag>();
+                            lastOpen.Children.Add(new BbTag
+                                {
+                                    Type = BbCodeType.None,
+                                    End = tag.Start,
+                                    Start = lastOpen.End 
+                                });
+                        }
+                        #endregion
+                    }
+                    else 
+                    {
+                        if (lastOpen.Type != BbCodeType.NoParse)
+                        {
+                            // if not, we have to be a child of it
+                            lastOpen.Children = lastOpen.Children ?? new List<BbTag>();
+
+                            lastOpen.Children.Add(tag);
+                        }
+
                         addToQueue = false;
                     }
+
                 }
                 #endregion
 
