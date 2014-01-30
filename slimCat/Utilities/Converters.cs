@@ -406,8 +406,8 @@ namespace Slimcat.Utilities
             var brush = new BrushConverter().ConvertFromString(colorString) as SolidColorBrush;
 
             return brush == null 
-                ? MakeNormalText(arg) 
-                : new Span(WrapInRun(arg.InnerText)) { Foreground = brush};
+                ? new Span()
+                : new Span { Foreground = brush};
         }
 
         public class ParsedChunk
@@ -433,7 +433,6 @@ namespace Slimcat.Utilities
             private const int NotFound = -1;
             private string arguments;
 
-
             public BbTag Last { get; private set; }
 
             public bool HasReachedEnd { get; private set; }
@@ -441,6 +440,21 @@ namespace Slimcat.Utilities
             public BbFinder(string input)
             {
                 this.input = input;
+            }
+
+            private BbTag ReturnAsTextBetween(int start, int end)
+            {
+                var toReturn = new BbTag
+                {
+                    Type = BbCodeType.None,
+                    Start = start,
+                    End = end -1
+                };
+
+                var rewindTo = Last != null ? Last.End : 0;
+                currentPosition = rewindTo;
+                Last = toReturn;
+                return toReturn;
             }
 
             public BbTag Next()
@@ -461,14 +475,25 @@ namespace Slimcat.Utilities
                     var start = Last != null ? Last.End : 0;
                     var end = input.Length;
 
-                    return new BbTag
-                        {
-                            Type = BbCodeType.None,
-                            Start = start,
-                            End = end
-                        };
+                    if (end - start > 0)
+                    {
+                        return new BbTag
+                            {
+                                Type = BbCodeType.None,
+                                Start = start,
+                                End = end
+                            };
+                    }
+                    return null;
                 }
 
+                if (Last == null)
+                    return ReturnAsTextBetween(0, lastStart);
+
+                if (lastStart - Last.End > 1)
+                    return ReturnAsTextBetween(Last.End, lastStart);
+
+                arguments = null;
                 var type = input.Substring(openBrace + 1, closeBrace - openBrace - 1);
 
                 var equalsSign = type.IndexOf('=');
@@ -526,10 +551,13 @@ namespace Slimcat.Utilities
             public BbTag ClosingTag { get; set; }
 
             public IList<BbTag> Children { get; set; }
+
+            public BbTag Parent { get; set; }
         }
 
         public static IList<ParsedChunk> ParseChunk(string input)
         {
+            #region init
             // init
             var toReturn = new List<ParsedChunk>();
             var openTags = new Stack<BbTag>();
@@ -539,23 +567,17 @@ namespace Slimcat.Utilities
             var finder = new BbFinder(input);
 
             // find all tags
-            while (!finder.HasReachedEnd) tags.Enqueue(finder.Next());
+            while (!finder.HasReachedEnd)
+            {
+                var next = finder.Next();
+                if (next != null)
+                    tags.Enqueue(next);
+            }
 
             // return original input if we've no valid bbcode tags
             if (tags.All(x => x.Type == BbCodeType.None))
                 return new[] { AsChunk(input) };
-
-            var starting = tags.Peek();
-            if (starting != null && starting.Start != -1)
-            {
-                // add text before any bbcode
-                toReturn.Add(new ParsedChunk
-                    {
-                        Start = 0,
-                        End = starting.Start,
-                        InnerText = input.Substring(0, starting.Start)
-                    });
-            }
+            #endregion
 
             while (tags.Count > 0)
             {
@@ -563,44 +585,17 @@ namespace Slimcat.Utilities
                 var tag = tags.Dequeue();
                 var addToQueue = true;
 
+                #region add as child of last tag
                 // check if we're in the context of another open tag
                 if (openTags.Count > 0)
                 {
                     var lastOpen = openTags.Peek();
 
                     // check if we're the closing for the last open tag
-                    if (lastOpen.Type == tag.Type)
+                    if (lastOpen.Type == tag.Type 
+                        && tag.IsClosing)
                     {
-                        // find the text after the last child in the tag
-                        var lastChild = lastOpen.Children != null 
-                            ? lastOpen.Children.LastOrDefault(x => x.ClosingTag != null) 
-                            : null;
-
-                        if (lastChild != null)
-                        {
-                            var distanceBetweenEnd = tag.Start - lastChild.End;
-
-                            if (distanceBetweenEnd > 0)
-                                lastOpen.Children.Add(new BbTag
-                                    {
-                                        Type = BbCodeType.None,
-                                        Start = lastChild.ClosingTag.End,
-                                        End = tag.Start
-                                    });
-                        }
-                        else
-                        {
-                            var distanceBetweenBrackets = tag.Start - lastOpen.End;
-                            lastOpen.Children = lastOpen.Children ?? new List<BbTag>();
-
-                            if (distanceBetweenBrackets > 0)
-                                lastOpen.Children.Add(new BbTag
-                                    {
-                                        Type = BbCodeType.None,
-                                        Start = lastOpen.End,
-                                        End = tag.Start
-                                    });
-                        }
+                        tag.Parent = lastOpen;
 
                         lastOpen.ClosingTag = tag;
                         openTags.Pop();
@@ -610,34 +605,24 @@ namespace Slimcat.Utilities
                         // if not, we have to be a child of it
                         lastOpen.Children = lastOpen.Children ?? new List<BbTag>();
 
-                        // but first, add the text that possibly exists before us
-                        var spaceBetweenParent = tag.Start - lastOpen.End;
-                        if (spaceBetweenParent > 0)
-                        {
-                            lastOpen.Children.Add(new BbTag
-                                {
-                                    Type = BbCodeType.None,
-                                    Start = lastOpen.End,
-                                    End = tag.Start,
-                                });
-                        }
-
                         lastOpen.Children.Add(tag);
                         addToQueue = false;
                     }
                 }
+                #endregion
 
                 // we don't need to continue processing closing tags
                 if (tag.IsClosing) continue;
 
                 // tell the system we're in the context of this tag now
-                if (tag.Type != BbCodeType.None)
+                if (tag.Type != BbCodeType.None) // text content can't have children
                     openTags.Push(tag);
 
                 // if we're added as a child to another tag, don't process independently of parent
                 if (addToQueue) processedQueue.Enqueue(tag);
             }
 
+            #region process non-closed tags
             // if we have any left, they're improper tags
             while (openTags.Count > 0)
             {
@@ -648,14 +633,17 @@ namespace Slimcat.Utilities
 
                 if (tag.Children == null || !tag.Children.Any()) continue;
                 
-                // try and place any children back on the queue to be processed
-                // TODO: this won't work in some complex scenarios. It'll do
-                // someone who just throws a random piece of bbcode though.
+                // try and place any children back where they belong
 
                 var children = tag.Children;
                 tag.Children = null;
-                children.Each(processedQueue.Enqueue);
+
+                if (tag.Parent == null)
+                    children.Each(processedQueue.Enqueue);
+                else
+                    children.Each(tag.Parent.Children.Add);
             }
+            #endregion
 
             // if in the process of removing improper tags we end up with no bbcode,
             // return original
@@ -709,6 +697,17 @@ namespace Slimcat.Utilities
             return toReturn;
         }
 
+        internal static BbTag FromBetween(BbTag start, BbTag end)
+        {
+            var lastStart = start.ClosingTag != null ? start.ClosingTag.End : start.End;
+
+            return new BbTag
+                {
+                    Type = BbCodeType.None,
+                    Start = lastStart,
+                    End = end.Start
+                };
+        }
         #endregion
     }
 

@@ -85,9 +85,9 @@ namespace slimCatTest
                 const string textAtStart = "[b]some well-formed[/b] bold text";
                 const string textAtMiddle = "some well-[b]formed bold[/b] text";
 
-                ShouldBeOneOf<Bold>(textAtEnd).AssertFirstTextIs("bold text");
-                ShouldBeOneOf<Bold>(textAtMiddle).AssertFirstTextIs("formed bold");
-                ShouldBeOneOf<Bold>(textAtStart).AssertFirstTextIs("some well-formed");
+                ShouldBeOneOf<Bold>(textAtEnd).FirstTextShouldBe("bold text");
+                ShouldBeOneOf<Bold>(textAtMiddle).FirstTextShouldBe("formed bold");
+                ShouldBeOneOf<Bold>(textAtStart).FirstTextShouldBe("some well-formed");
             }
 
             [TestMethod]
@@ -95,7 +95,7 @@ namespace slimCatTest
             {
                 const string text = "some well-formed [i]italic[/i] text";
 
-                ShouldBeOneOf<Italic>(text).AssertFirstTextIs("italic");
+                ShouldBeOneOf<Italic>(text).FirstTextShouldBe("italic");
             }
 
             [TestMethod]
@@ -103,7 +103,7 @@ namespace slimCatTest
             {
                 const string text = "some well-formed [u]underline[/u] text";
 
-                ShouldBeOneOf<Underline>(text).AssertFirstTextIs("underline");
+                ShouldBeOneOf<Underline>(text).FirstTextShouldBe("underline");
             }
 
             [TestMethod]
@@ -113,7 +113,7 @@ namespace slimCatTest
 
                 var result = ShouldBeOneOf<Span>(text).First(x => x.TextDecorations.Equals(TextDecorations.Strikethrough));
 
-                result.AssertTextIs("strike-through");
+                result.TextShouldBe("strike-through");
             }
 
             [TestMethod]
@@ -121,7 +121,7 @@ namespace slimCatTest
             {
                 const string text = "some well formed [url=https://www.google.com]url[/url] text";
 
-                ShouldBeOneOf<Hyperlink>(text).AssertFirstTextIs("url");
+                ShouldBeOneOf<Hyperlink>(text).FirstTextShouldBe("url");
             }
 
             [TestMethod]
@@ -129,7 +129,7 @@ namespace slimCatTest
             {
                 const string text = "some well-formed [url]https://www.google.com[/url] text";
 
-                ShouldBeOneOf<Hyperlink>(text).AssertFirstTextIs("google.com");
+                ShouldBeOneOf<Hyperlink>(text).FirstTextShouldBe("google.com");
             }
 
             [TestMethod]
@@ -154,7 +154,7 @@ namespace slimCatTest
             {
                 const string text = "some well-formed [big]big[/big] text";
 
-                ShouldBeOneOf<Span>(text).First(x => x.FontSize > 12).AssertTextIs("big");
+                ShouldBeOneOf<Span>(text).First(x => x.FontSize > 12).TextShouldBe("big");
             }
 
             [TestMethod]
@@ -170,7 +170,7 @@ namespace slimCatTest
             {
                 const string text = "some well-formed [small]small[/small] text";
 
-                ShouldBeOneOf<Span>(text).First(x => x.FontSize < 12).AssertTextIs("small");
+                ShouldBeOneOf<Span>(text).First(x => x.FontSize < 12).TextShouldBe("small");
             }
 
             [TestMethod]
@@ -180,7 +180,7 @@ namespace slimCatTest
 
                 ShouldBeOneOf<Span>(text)
                     .First(x => x.BaselineAlignment == BaselineAlignment.Subscript)
-                    .AssertTextIs("sub");
+                    .TextShouldBe("sub");
             }
 
             [TestMethod]
@@ -190,7 +190,7 @@ namespace slimCatTest
 
                 ShouldBeOneOf<Span>(text)
                     .First(x => x.BaselineAlignment == BaselineAlignment.Superscript)
-                    .AssertTextIs("sup");
+                    .TextShouldBe("sup");
             }
 
             [TestMethod]
@@ -201,7 +201,7 @@ namespace slimCatTest
 
                 ShouldBeOneOf<Span>(text)
                     .First(x => x.Foreground.IsColor(Colors.Green))
-                    .AssertTextIs("color");
+                    .TextShouldBe("color");
             }
 
             [TestMethod]
@@ -232,7 +232,7 @@ namespace slimCatTest
 
                 var result = ShouldBeOneOf<Italic>(text).First().GetFirstChild<Bold>();
 
-                result.AssertTextIs("bbcode");
+                result.TextShouldBe("bbcode");
             }
 
             [TestMethod]
@@ -242,9 +242,9 @@ namespace slimCatTest
 
                 var root = ShouldBeOneOf<Italic>(text).First();
 
-                root.GetFirstChild().AssertTextIs("bbcode with ");
-                root.GetFirstChild<Bold>().AssertTextIs("plain text");
-                root.GetChildren().Last().AssertTextIs(" at various points");
+                root.GetFirstChild().TextShouldBe("bbcode with ");
+                root.GetFirstChild<Bold>().TextShouldBe("plain text");
+                root.GetChildren().Last().TextShouldBe(" at various points");
             }
 
             [TestMethod]
@@ -254,14 +254,58 @@ namespace slimCatTest
 
                 var root = ShouldBeOneOf<Bold>(text).First();
 
-                root.GetFirstChild().AssertTextIs("bbcode ");
+                root.GetFirstChild().TextShouldBe("bbcode ");
 
                 var second = root.GetFirstChild<Underline>();
-                second.AssertTextIs("with ");
+                second.TextShouldBe("with ");
 
-                second.GetFirstChild<Italic>().AssertTextIs("lots");
-                second.GetChildren().Last().AssertTextIs(" of");
-                root.GetChildren<Underline>().Last().AssertTextIs("stacking");
+                second.GetFirstChild<Italic>().TextShouldBe("lots");
+                second.GetChildren().Last().TextShouldBe(" of");
+                root.GetChildren<Underline>().Last().TextShouldBe("stacking");
+            }
+
+            [TestMethod]
+            public void TextBetweenBbCodeWorks()
+            {
+                const string text =
+                    "Any [url=http://static.f-list.net/images/charimage/316487.jpg]Zerglings[/url] or [url=http://static.f-list.net/images/charimage/659750.jpg]Hydralisks[/url] Want a piece of my ass~? Also open to [url=http://static.f-list.net/images/charimage/729294.png]Sangheili[/url] and [url=https://static1.e621.net/data/sample/e9/d0/e9d0295fcd569bda48d2efe2762a2cbc.jpg]Xenomorphs~[/url] Would especially love you if you play a Sangheili~";
+
+                var result = ShouldBeOneOf<Span>(text).ToList();
+
+                // make sure urls are formed correctly
+                var hyperlinks = result.OfType<Hyperlink>().ToList();
+                hyperlinks.FirstTextShouldBe("Zerglings");
+                hyperlinks.Skip(1).FirstTextShouldBe("Hydralisks");
+                hyperlinks.Skip(2).FirstTextShouldBe("Sangheili");
+                hyperlinks.Skip(3).FirstTextShouldBe("Xenomorphs~");
+
+                // make sure text/spacing between them is preserverd
+                var plainText = result.Where(x => !(x is Hyperlink)).ToList();
+                plainText.FirstTextShouldBe("Any ");
+                plainText.Skip(1).FirstTextShouldBe(" or ");
+                plainText.Skip(2).FirstTextShouldBe(" Want a piece of my ass~? Also open to ");
+                plainText.Skip(3).FirstTextShouldBe(" and ");
+                plainText.Skip(4).FirstTextShouldBe(" Would especially love you if you play a Sangheili~");
+            }
+
+            [TestMethod]
+            public void StackedBbCodeOfSameTypeWorks()
+            {
+                const string text =
+                    "b [color=red]r[color=green]g[/color][/color] b";
+
+                var root = ShouldBeOneOf<Span>(text).ToList();
+                root.FirstTextShouldBe("b ");
+
+                var colorTag = root.Skip(1).First();
+                colorTag.GetChildren().FirstTextShouldBe("r");
+                colorTag.GetChildren().Skip(1).FirstTextShouldBe("g");
+
+                var suspectedLast = root.Skip(2).First();
+                var actualLast = root.Last();
+
+                Assert.AreEqual(suspectedLast, actualLast);
+                actualLast.TextShouldBe(" b");
             }
 
             [TestMethod]
@@ -284,7 +328,7 @@ namespace slimCatTest
 
         private void ShouldContainLink(string input, string expected)
         {
-            GetAll<Hyperlink>(input).AssertFirstTextIs(expected);
+            GetAll<Hyperlink>(input).FirstTextShouldBe(expected);
         }
 
         private IEnumerable<T> GetAll<T>(string input)
@@ -368,14 +412,14 @@ namespace slimCatTest
             return element.GetChildren<T>().First();
         }
 
-        public static void AssertTextIs(this Span element, string expected)
+        public static void TextShouldBe(this Span element, string expected)
         {
             Assert.IsTrue(element.GetText().Equals(expected));
         }
 
-        public static void AssertFirstTextIs(this IEnumerable<Span> elements, string expected)
+        public static void FirstTextShouldBe(this IEnumerable<Span> elements, string expected)
         {
-            elements.First().AssertTextIs(expected);
+            elements.First().TextShouldBe(expected);
         }
     }
 }
