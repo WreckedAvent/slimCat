@@ -11,7 +11,6 @@ namespace slimCatTest
     using Slimcat.Models;
     using slimCat.Models;
     using Slimcat.Utilities;
-    using Slimcat.Views;
 
     [TestClass]
     public class ParserTest

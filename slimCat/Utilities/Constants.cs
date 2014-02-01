@@ -45,8 +45,6 @@ namespace Slimcat.Utilities
         /// </summary>
         public static class UrlConstants
         {
-            #region Constants
-
             /// <summary>
             ///     The url for the root api.
             /// </summary>
@@ -81,8 +79,25 @@ namespace Slimcat.Utilities
             ///     The url for the upload log script.
             /// </summary>
             public const string UploadLog = Domain + @"/fchat/submitLog.php";
+        }
 
-            #endregion
+        public static class Arguments
+        {
+            public const string Name = "name";
+            public const string Character = "character";
+            public const string Command = "command";
+            public const string Channel = "channel";
+            public const string Message = "message";
+            public const string MultipleModerators = "ops";
+            public const string MultipleUsers = "users";
+            public const string Identity = "identity";
+            public const string MultipleCharacters = "characters";
+            public const string Action = "action";
+            public const string Type = "type";
+            public const string Title = "title";
+            public const string Mode = "mode";
+            public const string Sender = "sender";
+            public const string ThisCharacter = "_thisCharacter";
         }
     }
 }
