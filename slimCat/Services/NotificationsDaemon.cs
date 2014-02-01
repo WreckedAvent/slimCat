@@ -60,8 +60,6 @@ namespace Slimcat.Services
 
         private readonly ToastNotificationsViewModel toast;
 
-        private SoundPlayer dingLing = new SoundPlayer();
-
         private DateTime lastDingLinged;
 
         private double soundSaveVolume;
@@ -457,6 +455,11 @@ namespace Slimcat.Services
                 {
                     AddNotification(model);
                     NotifyUser(true, true, notification.ToString(), targetCharacter, "report");
+                }
+                else if (args is CharacterUpdateModel.BroadcastEventArgs)
+                {
+                    AddNotification(model);
+                    NotifyUser(true, true, notification.ToString(), targetCharacter);
                 }
                 else if (IsOfInterest(targetCharacter, false))
                 {
