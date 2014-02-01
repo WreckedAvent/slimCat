@@ -325,18 +325,17 @@ namespace Slimcat.Services
 
             {
                 // check the message content
-                var match = checkAgainst.Select(dingWord => cleanMessageText.FirstMatch(dingWord))
+                var match = checkAgainst.Select(cleanMessageText.FirstMatch)
                     .FirstOrDefault(attemptedMatch => !string.IsNullOrWhiteSpace(attemptedMatch.Item1));
 
-                if (match != null)
-                {
-                    // if one of our words is a dingling word
-                    var notifyMessage = string.Format(
-                        "{0} mentioned {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
+                if (match == null) return;
 
-                    NotifyUser(true, true, notifyMessage, channel.Id);
-                    channel.FlashTab();
-                }
+                // if one of our words is a dingling word
+                var notifyMessage = string.Format(
+                    "{0} mentioned {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
+
+                NotifyUser(true, true, notifyMessage, channel.Id);
+                channel.FlashTab();
             }
 
             #endregion

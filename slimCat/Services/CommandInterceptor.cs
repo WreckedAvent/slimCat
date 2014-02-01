@@ -570,6 +570,7 @@ namespace Slimcat.Services
             var channelId = (string) command[Constants.Arguments.Channel];
             var kicked = (string) command[Constants.Arguments.Character];
             var isBan = (string) command["command"] == "CBU";
+            var channel = ChatModel.FindChannel(channelId) as GeneralChannelModel;
 
             if (kicked.Equals(ChatModel.CurrentCharacter.Name, StringComparison.OrdinalIgnoreCase))
                 kicked = "you";
@@ -580,12 +581,14 @@ namespace Slimcat.Services
                     Kicked = kicked,
                     Kicker = kicker
                 };
-            var update = new ChannelUpdateModel(ChatModel.FindChannel(channelId), args);
-
-            Events.GetEvent<NewUpdateEvent>().Publish(update);
+            var update = new ChannelUpdateModel(channel, args);
 
             if (kicked == "you")
                 manager.RemoveChannel(channelId);
+            else
+                channel.CharacterManager.SignOff(kicked);
+
+            Events.GetEvent<NewUpdateEvent>().Publish(update);
         }
 
         private void LeaveChannelCommand(IDictionary<string, object> command)
@@ -791,15 +794,22 @@ namespace Slimcat.Services
 
         private void PromoteOrDemote(string character, bool isPromote, string channelId = null)
         {
+            var target = CharacterManager.Find(character);
+
             string title = null;
             if (channelId != null)
             {
                 var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
                 if (channel != null)
+                {
                     title = channel.Title;
+                    if (isPromote)
+                        channel.CharacterManager.Add(character, ListKind.Moderator);
+                    else
+                        channel.CharacterManager.Remove(character, ListKind.Moderator);
+                }
             }
 
-            var target = CharacterManager.Find(character);
 
             if (target != null)
             {
@@ -920,7 +930,7 @@ namespace Slimcat.Services
                 .Publish(
                     new ChannelUpdateModel(
                         channel,
-                        new ChannelUpdateModel.ChannelModeUpdateEventArgs {NewMode = newMode,}));
+                        new ChannelUpdateModel.ChannelModeUpdateEventArgs {NewMode = newMode}));
         }
 
         private void RoomTypeChangedCommand(IDictionary<string, object> command)
