@@ -592,6 +592,20 @@ namespace Slimcat.Utilities
                 return new[] { AsChunk(input) };
             #endregion
 
+            #region handle unbalanced tags
+            var unbalancedTags = 
+                (from t in tags
+                 where t.Type != BbCodeType.None
+                 group t by t.Type into g
+                 select new {Type = g.Key, Tags = g})
+                .Where(x => x.Tags.Count() % 2 == 1);
+
+            foreach (var tagGroup in unbalancedTags.ToList())
+            {
+                tagGroup.Tags.First().Type = BbCodeType.None;
+            }
+            #endregion
+
             while (tags.Count > 0)
             {
                 // get the next tag to process
@@ -651,29 +665,6 @@ namespace Slimcat.Utilities
                 if (addToQueue) processedQueue.Enqueue(tag);
             }
 
-            #region process non-closed tags
-            // if we have any left, they're improper tags
-            while (openTags.Count > 0)
-            {
-                var tag = openTags.Pop();
-
-                // don't treat this as BbCode
-                tag.Type = BbCodeType.None;
-
-                if (tag.Children == null || !tag.Children.Any()) continue;
-                
-                // try and place any children back where they belong
-
-                var children = tag.Children;
-                tag.Children = null;
-
-                if (tag.Parent == null)
-                    children.Each(processedQueue.Enqueue);
-                else
-                    children.Each(tag.Parent.Children.Add);
-            }
-            #endregion
-
             // if in the process of removing improper tags we end up with no bbcode,
             // return original
             if (processedQueue.All(x => x.Type == BbCodeType.None))
@@ -724,18 +715,6 @@ namespace Slimcat.Utilities
                 toReturn.InnerText = context.Substring(tag.Start, tag.End - tag.Start);
 
             return toReturn;
-        }
-
-        internal static BbTag FromBetween(BbTag start, BbTag end)
-        {
-            var lastStart = start.ClosingTag != null ? start.ClosingTag.End : start.End;
-
-            return new BbTag
-                {
-                    Type = BbCodeType.None,
-                    Start = lastStart,
-                    End = end.Start
-                };
         }
         #endregion
     }

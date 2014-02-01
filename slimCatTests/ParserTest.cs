@@ -11,6 +11,7 @@ namespace slimCatTest
     using Slimcat.Models;
     using slimCat.Models;
     using Slimcat.Utilities;
+    using Slimcat.Views;
 
     [TestClass]
     public class ParserTest
@@ -217,6 +218,7 @@ namespace slimCatTest
             [TestMethod]
             public void MissingColorIsHandledGracefully()
             {
+                ApplicationSettings.AllowColors = true;
                 const string text = "some well-formed [color]color[/color] text";
 
                 var result = ShouldBeOneOf<Span>(text).First(x => x.GetText().Equals("color"));
@@ -226,6 +228,7 @@ namespace slimCatTest
             [TestMethod]
             public void InvalidColorIsHandledGracefully()
             {
+                ApplicationSettings.AllowColors = true;
                 const string text = "this is some text with [color=badcolor]a bad color in it[/color].";
 
                 var result = ShouldBeOneOf<Span>(text).First(x => x.GetText().Equals("a bad color in it"));
@@ -355,6 +358,42 @@ namespace slimCatTest
                 ShouldNotContainMarkup(totallyWrong);
                 ShouldNotContainMarkup(slightlyWrong);
                 ShouldNotContainMarkup(typoWrong);
+            }
+
+            [TestMethod]
+            public void UnclosedTagsWorks()
+            {
+                const string text = "o [b][b]b[/b] o";
+
+                var result = ShouldBeOneOf<Span>(text).ToList();
+                result[0].TextShouldBe("o ");
+
+                Assert.IsFalse(result[1] is Bold);
+                result[1].TextShouldBe("[b]");
+
+                Assert.IsTrue(result[2] is Bold);
+                result[2].TextShouldBe("b");
+
+                Assert.IsFalse(result[3] is Bold);
+                result[3].TextShouldBe(" o");
+
+                Assert.IsTrue(result[3].Equals(result.Last()));
+            }
+
+            [TestMethod]
+            public void UnclosedNestedTagsWorks()
+            {
+                const string text = "o [b]some well-formed bold with a run-away [user] tag[/b] o";
+
+                var result = ShouldBeOneOf<Span>(text).ToList();
+
+                result[0].TextShouldBe("o ");
+
+                Assert.IsTrue(result[1] is Bold);
+                var boldChildren = result[1].Inlines.OfType<Span>().ToList();
+                boldChildren[0].TextShouldBe("some well-formed bold with a run-away ");
+                boldChildren[1].TextShouldBe("[user]");
+                boldChildren[2].TextShouldBe(" tag");
             }
         }
 
