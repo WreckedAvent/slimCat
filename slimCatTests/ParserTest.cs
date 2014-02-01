@@ -211,17 +211,25 @@ namespace slimCatTest
                 const string text = "some well-formed [color=green]color[/color] text";
 
                 var result = ShouldBeOneOf<Span>(text).First(x => x.GetText().Equals("color"));
-                Assert.IsFalse(result.Foreground.IsColor(Colors.Green));
+                result.ShouldBeDefaultColor();
+            }
+
+            [TestMethod]
+            public void MissingColorIsHandledGracefully()
+            {
+                const string text = "some well-formed [color]color[/color] text";
+
+                var result = ShouldBeOneOf<Span>(text).First(x => x.GetText().Equals("color"));
+                result.ShouldBeDefaultColor();
             }
 
             [TestMethod]
             public void InvalidColorIsHandledGracefully()
             {
-                ApplicationSettings.AllowColors = false;
-                const string text = "some well-formed [color]color[/color] text";
+                const string text = "this is some text with [color=badcolor]a bad color in it[/color].";
 
-                var result = ShouldBeOneOf<Span>(text).First(x => x.GetText().Equals("color"));
-                Assert.IsFalse(result.Foreground.IsColor(Colors.Green));
+                var result = ShouldBeOneOf<Span>(text).First(x => x.GetText().Equals("a bad color in it"));
+                result.ShouldBeDefaultColor();
             }
             #endregion
 
@@ -414,6 +422,11 @@ namespace slimCatTest
             var asSolid = brush as SolidColorBrush;
 
             return asSolid != null && asSolid.Color.Equals(suspectColor);
+        }
+
+        public static void ShouldBeDefaultColor(this Span element)
+        {
+            Assert.IsTrue(element.Foreground.IsColor(Colors.Black));
         }
 
         public static IEnumerable<T> GetChildren<T>(this Span element)

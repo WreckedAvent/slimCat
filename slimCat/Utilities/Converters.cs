@@ -406,11 +406,20 @@ namespace Slimcat.Utilities
             if (!ApplicationSettings.AllowColors || colorString == null)
                 return MakeNormalText(arg);
 
-            var brush = new BrushConverter().ConvertFromString(colorString) as SolidColorBrush;
+            try
+            {
+                var brush = new BrushConverter().ConvertFromString(colorString) as SolidColorBrush;
 
-            return brush == null 
-                ? new Span()
-                : new Span { Foreground = brush};
+                return brush == null
+                    ? new Span()
+                    : new Span {Foreground = brush};
+            }
+
+            catch (FormatException)
+            {
+            }
+
+            return new Span();
         }
 
         public class ParsedChunk
