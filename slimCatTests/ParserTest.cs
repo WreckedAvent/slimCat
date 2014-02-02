@@ -30,7 +30,7 @@ namespace slimCatTest
         public class AutoUrlMarkupTest : ParserTest
         {
             [TestMethod]
-            public void CanMarkUpPlainHttpsUrl()
+            public void PlainHttpsWorks()
             {
                 const string text = @"check out this link at https://www.google.com !";
 
@@ -38,7 +38,7 @@ namespace slimCatTest
             }
 
             [TestMethod]
-            public void CanMarkUpPlainHttpUrl()
+            public void PlainHttpWorks()
             {
                 const string text = @"check out this link at http://www.google.com !";
 
@@ -46,7 +46,7 @@ namespace slimCatTest
             }
 
             [TestMethod]
-            public void CanMarkUpPlainFtpUrl()
+            public void PlainFtpWorks()
             {
                 const string text = @"check out this link at ftp://www.mysite.com";
 
@@ -54,7 +54,7 @@ namespace slimCatTest
             }
 
             [TestMethod]
-            public void DoesNotMarkUpPlainJunkLink()
+            public void JunkLinkIsHandledGracefully()
             {
                 const string text = @"check out this link at snns://www.google.com";
 
@@ -62,15 +62,39 @@ namespace slimCatTest
             }
 
             [TestMethod]
-            public void CanHandleUrlsDelimitedBySlash()
+            public void DuplicateUrlWorks()
             {
                 const string text =
                     @"https://e621.net/post/show/410627/anus-areola-balls-big_balls-big_butt-big_penis-bre / https://e621.net/post/show/410627/anus-areola-balls-big_balls-big_butt-big_penis-bre (I'm looking currently at these)";
 
-                var hyperlinks = GetAll<Hyperlink>(text);
+                var hyperlinks = GetAll<Hyperlink>(text).ToList();
 
-                Assert.IsTrue(hyperlinks.Count() == 2);
+                Assert.IsTrue(hyperlinks.Count == 2);
                 Assert.IsTrue(hyperlinks.All(x => x.GetText().Equals("e621.net")));
+            }
+
+            [TestMethod]
+            public void DoesNotMarkUpInUrlTag()
+            {
+                const string text = @"hey check out this link [url= https://www.google.com]here[/url]";
+
+                ShouldContainLink(text, "here");
+            }
+
+            [TestMethod]
+            public void LinksSeparatedByNewlineWork()
+            {
+                const string text =
+                    @"hey check out this link https://www.google.com
+https://www.mysite.com
+http://www.foo.bar.com";
+
+                var hyperlinks = GetAll<Hyperlink>(text).ToList();
+
+                Assert.IsTrue(hyperlinks.Count == 3);
+                hyperlinks[0].TextShouldBe("google.com");
+                hyperlinks[1].TextShouldBe("mysite.com");
+                hyperlinks[2].TextShouldBe("foo.bar.com");
             }
         }
 

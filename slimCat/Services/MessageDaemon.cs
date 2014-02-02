@@ -59,6 +59,8 @@ namespace Slimcat.Services
 
         private readonly IRegionManager region;
 
+        private readonly ICharacterManager characterManager;
+
         private ChannelModel lastSelected;
 
         private ILogger logger;
@@ -211,15 +213,10 @@ namespace Slimcat.Services
                 else
                 {
                     // our model should have a reference to other channels though
-                    try
-                    {
-                        temp = model.AllChannels.First(param => param.Id == id);
-                    }
-                    catch
-                    {
-                        temp = new GeneralChannelModel(id, ChannelType.InviteOnly) {Title = name};
+                        temp = model.AllChannels.FirstOrDefault(param => param.Id == id) 
+                            ?? new GeneralChannelModel(id, ChannelType.InviteOnly) {Title = name};
+
                         Dispatcher.Invoke((Action) (() => model.CurrentChannels.Add(temp)));
-                    }
 
                     container.Resolve<GeneralChannelViewModel>(new ParameterOverride("name", id));
                 }
@@ -894,7 +891,5 @@ namespace Slimcat.Services
         }
 
         #endregion
-
-        private readonly ICharacterManager characterManager;
     }
 }

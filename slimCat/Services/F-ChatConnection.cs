@@ -250,7 +250,6 @@ namespace Slimcat.Services
                 events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(ConnectToChat);
 
                 socket = new WebSocket(Host);
-
                 // define socket behavior
                 socket.Opened += ConnectionOpened;
                 socket.Error += ConnectionError;

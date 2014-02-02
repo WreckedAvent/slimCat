@@ -260,12 +260,23 @@ namespace Slimcat.Utilities
 
         private static string PreProcessBbCode(string text)
         {
-            if (!ContainsUrl(text))
-                return text; // if there's no url in it, we don't have a link to mark up
+            var exploded = text.Split(new[] {' ', '\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
+            var valid = new List<string>();
 
-            var matches = (from word in text.Split(' ')
-                where StartsWithValidTerm(word)
-                select new Tuple<string, string>(word, MarkUpUrlWithBbCode(word))).Distinct();
+            for (var i = 0; i < exploded.Length; i++)
+            {
+                var current = exploded[i];
+
+                if (i != 0)
+                {
+                    var last = exploded[i - 1];
+                    if (last.EndsWith("[url=", StringComparison.Ordinal)) continue;
+                }
+
+                if (StartsWithValidTerm(current)) valid.Add(current);
+            }
+
+            var matches = valid.Select(x => new Tuple<string, string>(x, MarkUpUrlWithBbCode(x))).Distinct();
 
             return matches.Aggregate(text, (current, toReplace) => current.Replace(toReplace.Item1, toReplace.Item2));
         }

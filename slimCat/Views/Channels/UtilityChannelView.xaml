@@ -97,7 +97,7 @@
                         <CheckBox IsChecked="{Binding AllowColors}"
                                   VerticalAlignment="Center"
                                   Margin="0,5">
-                            Allow Colors
+                            Allow BBCode Colors
                         </CheckBox>
 
                         <!-- disabled until I figure out how to do this without doing what I was doing before
