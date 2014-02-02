@@ -369,15 +369,22 @@ namespace Slimcat.Utilities
         private Span MakeUrl(ParsedChunk arg)
         {
             var url = arg.Arguments;
-            var display = arg.Children.First().InnerText;
+            var display = arg.Children != null 
+                ? arg.Children.First().InnerText 
+                : arg.Arguments;
 
             if (url == null)
             {
-                url = arg.InnerText;
-                display = GetUrlDisplay(arg.Children.First().InnerText);
+                url = arg.InnerText ?? string.Empty;
+                display = arg.Children != null 
+                    ? GetUrlDisplay(arg.Children.First().InnerText) 
+                    : string.Empty;
             }
 
-            arg.Children.Clear();
+            if (arg.Children != null)
+            {
+                arg.Children.Clear();
+            }
 
             return new Hyperlink(WrapInRun(display))
             {
