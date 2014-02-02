@@ -27,7 +27,6 @@ namespace Slimcat.Services
     using System.Timers;
     using System.Web;
     using System.Windows;
-    using System.Windows.Annotations;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
@@ -35,6 +34,8 @@ namespace Slimcat.Services
     using SimpleJson;
     using Utilities;
     using ViewModels;
+    using Commands = Utilities.Constants.ServerCommands;
+    using Arguments = Slimcat.Utilities.Constants.Arguments;
 
     #endregion
 
@@ -144,7 +145,7 @@ namespace Slimcat.Services
                     return Gender.Cuntboy;
 
                 default: // every other gender is parsed normally
-                    return (Gender) Enum.Parse(typeof (Gender), input, true);
+                    return input.ToEnum<Gender>();
             }
         }
 
@@ -155,15 +156,15 @@ namespace Slimcat.Services
 
         private void AdminsCommand(IDictionary<string, object> command)
         {
-            CharacterManager.Set(command[Constants.Arguments.MultipleModerators] as JsonArray, ListKind.Moderator);
+            CharacterManager.Set(command.Get<JsonArray>(Arguments.MultipleModerators), ListKind.Moderator);
             if (CharacterManager.IsOnList(ChatModel.CurrentCharacter.Name, ListKind.Moderator, false))
                 Dispatcher.Invoke((Action) delegate { ChatModel.IsGlobalModerator = true; });
         }
 
         private void BroadcastCommand(IDictionary<string, object> command)
         {
-            var message = command[Constants.Arguments.Message] as string;
-            var posterName = command[Constants.Arguments.Character] as string;
+            var message = command.Get(Arguments.Command);
+            var posterName = command.Get(Arguments.Character);
             var poster = CharacterManager.Find(posterName);
 
             Events.GetEvent<NewUpdateEvent>()
@@ -173,7 +174,7 @@ namespace Slimcat.Services
 
         private void ChannelBanListCommand(IDictionary<string, object> command)
         {
-            var channelId = (string) command[Constants.Arguments.Channel];
+            var channelId = command.Get(Arguments.Channel);
             var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
 
             if (channel == null)
@@ -182,7 +183,7 @@ namespace Slimcat.Services
                 return;
             }
 
-            var message = ((string) command[Constants.Arguments.Channel]).Split(':');
+            var message = channelId.Split(':');
             var banned = message[1].Trim();
 
             if (banned.IndexOf(',') == -1)
@@ -196,9 +197,9 @@ namespace Slimcat.Services
 
         private void ChannelDesciptionCommand(IDictionary<string, object> command)
         {
-            var channelName = command[Constants.Arguments.Channel];
-            var channel = ChatModel.CurrentChannels.FirstOrDefault(x => x.Id == channelName as string);
-            var description = command["description"];
+            var channelName = command.Get(Arguments.Channel);
+            var channel = ChatModel.CurrentChannels.FirstOrDefault(x => x.Id == channelName);
+            var description = command.Get("description");
 
             if (channel == null)
             {
@@ -209,15 +210,15 @@ namespace Slimcat.Services
             var isInitializer = string.IsNullOrWhiteSpace(channel.Description);
 
             if (!isInitializer)
-                channel.Description = description as string;
-            else if (description.ToString().StartsWith("Welcome to your private room!"))
+                channel.Description = description;
+            else if (description.StartsWith("Welcome to your private room!"))
             {
                 // shhh go away lame init description
                 channel.Description =
                     "Man this description is lame. You should change it and make it amaaaaaazing. Click that pencil, man.";
             }
             else
-                channel.Description = description as string; // derpherp no channel description bug fix
+                channel.Description = description; // derpherp no channel description bug fix
 
             if (isInitializer)
                 return;
@@ -228,8 +229,8 @@ namespace Slimcat.Services
 
         private void ChannelInitializedCommand(IDictionary<string, object> command)
         {
-            var channelName = (string) command[Constants.Arguments.Channel];
-            var mode = (ChannelMode) Enum.Parse(typeof (ChannelMode), (string) command[Constants.Arguments.Mode], true);
+            var channelName = command.Get(Arguments.Channel);
+            var mode = command.Get(Arguments.Mode).ToEnum<ChannelMode>();
             var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
 
             if (channel == null)
@@ -239,10 +240,10 @@ namespace Slimcat.Services
             }
 
             channel.Mode = mode;
-            dynamic users = command[Constants.Arguments.MultipleUsers]; // dynamic lets us deal with odd syntax TODO: switch to strong-type
+            dynamic users = command[Arguments.MultipleUsers]; // dynamic lets us deal with odd syntax TODO: switch to strong-type
             foreach (IDictionary<string, object> character in users)
             {
-                var name = character[Constants.Arguments.Identity] as string;
+                var name = character.Get(Arguments.Identity);
 
                 if (string.IsNullOrWhiteSpace(name))
                     continue;
@@ -253,21 +254,21 @@ namespace Slimcat.Services
 
         private void ChannelListCommand(IDictionary<string, object> command, bool isPublic)
         {
-            dynamic arr = command["channels"];
+            dynamic arr = command[Arguments.MultipleChannels];
             lock (ChatModel.AllChannels)
             {
                 foreach (IDictionary<string, object> channel in arr)
                 {
-                    var name = channel[Constants.Arguments.Name] as string;
+                    var name = channel.Get(Arguments.Name);
                     string title = null;
                     if (!isPublic)
-                        title = HttpUtility.HtmlDecode(channel[Constants.Arguments.Title] as string);
+                        title = HttpUtility.HtmlDecode(channel.Get(Arguments.Title));
 
                     var mode = ChannelMode.Both;
                     if (isPublic)
-                        mode = (ChannelMode) Enum.Parse(typeof (ChannelMode), (string) channel[Constants.Arguments.Mode], true);
+                        mode = channel.Get(Arguments.Mode).ToEnum<ChannelMode>();
 
-                    var number = (long) channel[Constants.Arguments.MultipleCharacters];
+                    var number = (long) channel[Arguments.MultipleCharacters];
                     if (number < 0)
                         number = 0;
 
@@ -294,7 +295,7 @@ namespace Slimcat.Services
 
         private void ChannelOperatorListCommand(IDictionary<string, object> command)
         {
-            var channelName = (string) command[Constants.Arguments.Channel];
+            var channelName = command.Get(Arguments.Channel);
             var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
 
             if (channel == null)
@@ -303,27 +304,23 @@ namespace Slimcat.Services
                 return;
             }
 
-            channel.CharacterManager.Set(command["oplist"] as JsonArray, ListKind.Moderator);
+            channel.CharacterManager.Set(command.Get<JsonArray>("oplist"), ListKind.Moderator);
         }
 
         private void CharacterDisconnectCommand(IDictionary<string, object> command)
         {
-            var characterName = (string) command[Constants.Arguments.Character];
+            var characterName = (string) command[Arguments.Character];
 
             var character = CharacterManager.Find(characterName);
             var ofInterest = CharacterManager.IsOfInterest(characterName);
 
-            var channels = from c in ChatModel.CurrentChannels
-                where c.CharacterManager.SignOff(characterName)
+            var channels = from channel in ChatModel.CurrentChannels
+                where channel.CharacterManager.SignOff(characterName)
                 select
                     new Dictionary<string, object>
                         {
-                            {
-                                Constants.Arguments.Character, character.Name
-                            },
-                            {
-                                Constants.Arguments.Channel, c.Id
-                            }
+                            { Arguments.Character, character.Name },
+                            { Arguments.Channel, channel.Id }
                         };
 
             if (!ofInterest)
@@ -371,7 +368,7 @@ namespace Slimcat.Services
 
         private void ErrorCommand(IDictionary<string, object> command)
         {
-            var thisMessage = (string) command[Constants.Arguments.Message];
+            var thisMessage = command.Get(Arguments.Message);
 
             // for some fucktarded reason room status changes are only done through SYS
             if (thisMessage.IndexOf("this channel is now", StringComparison.OrdinalIgnoreCase) != -1)
@@ -395,14 +392,14 @@ namespace Slimcat.Services
         private void IgnoreUserCommand(IDictionary<string, object> command)
         {
             Action<string> doAction;
-            if (command[Constants.Arguments.Action] as string != "delete")
+            if (command.Get(Arguments.Action) != Arguments.ActionDelete)
                 doAction = x => CharacterManager.Add(x, ListKind.Ignored);
             else
                 doAction = x => CharacterManager.Remove(x, ListKind.Ignored);
 
-            if (command.ContainsKey(Constants.Arguments.Character))
+            if (command.ContainsKey(Arguments.Character))
             {
-                var character = command[Constants.Arguments.Character] as string;
+                var character = command.Get(Arguments.Character);
                 if (character != null)
                 {
                     doAction(character);
@@ -410,7 +407,7 @@ namespace Slimcat.Services
                 }
             }
 
-            var characters = (command[Constants.Arguments.MultipleCharacters] as JsonArray);
+            var characters = command.Get<JsonArray>(Arguments.MultipleCharacters);
             if (characters != null)
                 characters.Select(x => x as string).Each(doAction);
 
@@ -419,7 +416,7 @@ namespace Slimcat.Services
 
         private void InitialCharacterListCommand(IDictionary<string, object> command)
         {
-            dynamic arr = command[Constants.Arguments.MultipleCharacters]; // dynamic for ease-of-use
+            dynamic arr = command[Arguments.MultipleCharacters]; // dynamic for ease-of-use
             foreach (JsonArray character in arr)
             {
                 ICharacter temp = new CharacterModel();
@@ -428,7 +425,7 @@ namespace Slimcat.Services
 
                 temp.Gender = ParseGender((string) character[1]); // character's gender
 
-                temp.Status = (StatusType) Enum.Parse(typeof (StatusType), (string) character[2], true);
+                temp.Status = character[2].ToEnum<StatusType>();
 
                 // Character's status
                 temp.StatusMessage = (string) character[3]; // Character's status message
@@ -441,75 +438,75 @@ namespace Slimcat.Services
         {
             ChatModel.LastMessageReceived = DateTimeOffset.Now;
 
-            if (command == null || string.IsNullOrWhiteSpace(command[Constants.Arguments.Command] as string))
+            if (command == null || string.IsNullOrWhiteSpace(command.Get(Arguments.Command)))
                 return null;
 
-            switch ((string) command[Constants.Arguments.Command])
+            switch (command.Get(Arguments.Command))
             {
-                case "IDN":
+                case Commands.SystemAuthenticate:
                     return LoginCommand;
-                case "UPT":
+                case Commands.SystemUptime:
                     return UptimeCommand;
-                case "ADL":
+                case Commands.AdminList:
                     return AdminsCommand;
-                case "IGN":
+                case Commands.UserIgnore:
                     return IgnoreUserCommand;
-                case "LIS":
+                case Commands.UserList:
                     return InitialCharacterListCommand;
-                case "CHA":
+                case Commands.PublicChannelList:
                     return PublicChannelListCommand;
-                case "ORS":
+                case Commands.PrivateChannelList:
                     return PrivateChannelListCommand;
-                case "STA":
+                case Commands.UserStatus:
                     return StatusChangedCommand;
-                case "LRP":
+                case Commands.ChannelAd:
                     return AdMessageCommand;
-                case "MSG":
+                case Commands.ChannelMessage:
                     return ChannelMessageCommand;
-                case "PRI":
+                case Commands.UserMessage:
                     return PrivateMessageCommand;
-                case "TPN":
+                case Commands.UserTyping:
                     return TypingStatusCommand;
-                case "JCH":
+                case Commands.ChannelJoin:
                     return JoinChannelCommand;
-                case "LCH":
+                case Commands.ChannelLeave:
                     return LeaveChannelCommand;
-                case "COL":
+                case Commands.ChannelModerators:
                     return ChannelOperatorListCommand;
-                case "ICH":
+                case Commands.ChannelInitialize:
                     return ChannelInitializedCommand;
-                case "CDS":
+                case Commands.ChannelDescription:
                     return ChannelDesciptionCommand;
-                case "SYS":
-                case "ERR":
+                case Commands.SystemError:
+                case Commands.SystemMessage:
                     return ErrorCommand;
-                case "CIU":
+                case Commands.UserInvite:
                     return InviteCommand;
-                case "CKU":
+                case Commands.ChannelKick:
                     return KickCommand;
-                case "CBU":
+                case Commands.ChannelBan:
                     return KickCommand;
-                case "NLN":
+                case Commands.UserJoin:
                     return UserLoggedInCommand;
-                case "FLN":
+                case Commands.UserLeave:
                     return CharacterDisconnectCommand;
-                case "RLL":
+                case Commands.ChannelRoll:
                     return RollCommand;
-                case "DOP":
+                case Commands.AdminDemote:
                     return OperatorDemoteCommand;
-                case "COP":
+                case Commands.AdminPromote:
                     return OperatorPromoteCommand;
-                case "COR":
+                case Commands.ChannelDemote:
                     return OperatorDemoteCommand;
-                case "COA":
+                case Commands.ChannelPromote:
                     return OperatorPromoteCommand;
-                case "RMO":
+                case Commands.ChannelMode:
                     return RoomModeChangedCommand;
-                case "BRO":
+                case Commands.AdminBroadcast:
                     return BroadcastCommand;
-                case "RTB":
+                case Commands.SystemBridge:
                     return RealTimeBridgeCommand;
-                case "SFC":
+                case Commands.AdminReport:
                     return NewReportCommand;
                 default:
                     return null;
@@ -518,9 +515,9 @@ namespace Slimcat.Services
 
         private void InviteCommand(IDictionary<string, object> command)
         {
-            var sender = command[Constants.Arguments.Sender] as string;
-            var id = command[Constants.Arguments.Name] as string;
-            var title = command[Constants.Arguments.Title] as string;
+            var sender = command.Get(Arguments.Sender);
+            var id = command.Get(Arguments.Name);
+            var title = command.Get(Arguments.Title);
 
             var args = new ChannelUpdateModel.ChannelInviteEventArgs {Inviter = sender};
             Events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(ChatModel.FindChannel(id, title), args));
@@ -528,11 +525,11 @@ namespace Slimcat.Services
 
         private void JoinChannelCommand(IDictionary<string, object> command)
         {
-            var title = (string) command[Constants.Arguments.Title];
-            var channelName = (string) command[Constants.Arguments.Channel];
+            var title = command.Get(Arguments.Title);
+            var channelName = command.Get(Arguments.Channel);
 
-            var id = (IDictionary<string, object>) command[Constants.Arguments.Character];
-            var identity = (string) id[Constants.Arguments.Identity];
+            var id = command.Get<IDictionary<string,object>>(Arguments.Character);
+            var identity = id.Get(Arguments.Identity);
 
             // JCH is used in a few situations. It is used when others join a channel and when we join a channel
 
@@ -566,10 +563,10 @@ namespace Slimcat.Services
 
         private void KickCommand(IDictionary<string, object> command)
         {
-            var kicker = (string) command["operator"];
-            var channelId = (string) command[Constants.Arguments.Channel];
-            var kicked = (string) command[Constants.Arguments.Character];
-            var isBan = (string) command["command"] == "CBU";
+            var kicker = command.Get("operator");
+            var channelId = command.Get(Arguments.Channel);
+            var kicked = command.Get(Arguments.Character);
+            var isBan = command.Get(Arguments.Command) == Commands.ChannelBan;
             var channel = ChatModel.FindChannel(channelId) as GeneralChannelModel;
 
             if (kicked.Equals(ChatModel.CurrentCharacter.Name, StringComparison.OrdinalIgnoreCase))
@@ -593,8 +590,8 @@ namespace Slimcat.Services
 
         private void LeaveChannelCommand(IDictionary<string, object> command)
         {
-            var channelName = (string) command[Constants.Arguments.Channel];
-            var characterName = (string) command[Constants.Arguments.Character];
+            var channelName = command.Get(Arguments.Channel);
+            var characterName = command.Get(Arguments.Character);
 
             if (ChatModel.CurrentCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
                 return;
@@ -621,18 +618,18 @@ namespace Slimcat.Services
         {
             ChatModel.ClientUptime = DateTimeOffset.Now;
 
-            connection.SendMessage("CHA"); // request channels
-            connection.SendMessage("UPT"); // request uptime
-            connection.SendMessage("ORS"); // request private channels
+            connection.SendMessage(Constants.ClientCommands.PublicChannelList); 
+            connection.SendMessage(Constants.ClientCommands.SystemUptime);
+            connection.SendMessage(Constants.ClientCommands.PrivateChannelList);
 
             Dispatcher.Invoke((Action) delegate { ChatModel.IsAuthenticated = true; });
         }
 
         private void MessageRecieved(IDictionary<string, object> command, bool isAd)
         {
-            var character = (string) command[Constants.Arguments.Character];
-            var message = (string) command[Constants.Arguments.Message];
-            var channel = (string) command[Constants.Arguments.Channel];
+            var character = command.Get(Arguments.Character);
+            var message = command.Get(Arguments.Message);
+            var channel = command.Get(Arguments.Channel);
 
             if (!CharacterManager.IsOnList(character, ListKind.Ignored))
                 manager.AddMessage(message, channel, character, isAd ? MessageType.Ad : MessageType.Normal);
@@ -640,15 +637,15 @@ namespace Slimcat.Services
 
         private void NewReportCommand(IDictionary<string, object> command)
         {
-            var type = command[Constants.Arguments.Action] as string;
+            var type = command.Get(Arguments.Action);
             if (string.IsNullOrWhiteSpace(type))
                 return;
 
             if (type.Equals("report"))
             {
                 // new report
-                var report = command["report"] as string;
-                var callId = command["callid"] as string;
+                var report = command.Get("report");
+                var callId = command.Get("callid");
                 var logId = command.ContainsKey("logid") ? command["logid"] as int? : null;
 
                 var reportIsClean = false;
@@ -673,7 +670,7 @@ namespace Slimcat.Services
                 if (reportData.Count == 3)
                     reportIsClean = true;
 
-                var reporterName = command[Constants.Arguments.Character] as string;
+                var reporterName = command.Get(Arguments.Character);
                 var reporter = CharacterManager.Find(reporterName);
 
                 if (reportIsClean)
@@ -726,8 +723,8 @@ namespace Slimcat.Services
             else if (type.Equals("confirm"))
             {
                 // someone else handling a report
-                var handlerName = command["moderator"] as string;
-                var handled = command[Constants.Arguments.Character] as string;
+                var handlerName = command.Get("moderator");
+                var handled = command.Get(Arguments.Character);
                 var handler = CharacterManager.Find(handlerName);
 
                 Events.GetEvent<NewUpdateEvent>()
@@ -739,22 +736,22 @@ namespace Slimcat.Services
 
         private void OperatorDemoteCommand(IDictionary<string, object> command)
         {
-            var target = command[Constants.Arguments.Character] as string;
+            var target = command.Get(Arguments.Character);
             string channelId = null;
 
-            if (command.ContainsKey(Constants.Arguments.Channel))
-                channelId = command[Constants.Arguments.Channel] as string;
+            if (command.ContainsKey(Arguments.Channel))
+                channelId = command.Get(Arguments.Channel);
 
             PromoteOrDemote(target, false, channelId);
         }
 
         private void OperatorPromoteCommand(IDictionary<string, object> command)
         {
-            var target = command[Constants.Arguments.Character] as string;
+            var target = command.Get(Arguments.Character);
             string channelId = null;
 
-            if (command.ContainsKey(Constants.Arguments.Channel))
-                channelId = command[Constants.Arguments.Channel] as string;
+            if (command.ContainsKey(Arguments.Channel))
+                channelId = command.Get(Arguments.Channel);
 
             PromoteOrDemote(target, true, channelId);
         }
@@ -766,13 +763,13 @@ namespace Slimcat.Services
 
         private void PrivateMessageCommand(IDictionary<string, object> command)
         {
-            var sender = (string) command[Constants.Arguments.Character];
+            var sender = command.Get(Arguments.Character);
             if (!CharacterManager.IsOnList(sender, ListKind.Ignored))
             {
                 if (ChatModel.CurrentPms.FirstByIdOrDefault(sender) == null)
                     manager.AddChannel(ChannelType.PrivateMessage, sender);
 
-                manager.AddMessage(command[Constants.Arguments.Message] as string, sender, sender);
+                manager.AddMessage(command.Get(Arguments.Message), sender, sender);
 
                 var temp = ChatModel.CurrentPms.FirstByIdOrDefault(sender);
                 if (temp == null)
@@ -785,9 +782,9 @@ namespace Slimcat.Services
                 connection.SendMessage(
                     new Dictionary<string, object>
                         {
-                            {Constants.Arguments.Action, "notify"},
-                            {Constants.Arguments.Character, sender},
-                            {Constants.Arguments.Type, "IGN"}
+                            {Arguments.Action, Arguments.ActionNotify},
+                            {Arguments.Character, sender},
+                            {Arguments.Type, Constants.ClientCommands.UserIgnore}
                         });
             }
         }
@@ -842,7 +839,7 @@ namespace Slimcat.Services
             {
                 waitTimer.Elapsed += (s, e) =>
                     {
-                        connection.SendMessage(walk.Current, "JCH");
+                        connection.SendMessage(walk.Current, Constants.ClientCommands.ChannelJoin);
                         if (walk.MoveNext())
                             return;
 
@@ -856,12 +853,12 @@ namespace Slimcat.Services
 
         private void RealTimeBridgeCommand(IDictionary<string, object> command)
         {
-            var type = command[Constants.Arguments.Type] as string;
+            var type = command.Get(Arguments.Type);
 
             if (type != null && type.Equals("note"))
             {
-                var senderName = command[Constants.Arguments.Sender] as string;
-                var subject = command["subject"] as string;
+                var senderName = command.Get(Arguments.Sender);
+                var subject = command.Get("subject");
                 var id = (long) command["id"];
 
                 var sender = CharacterManager.Find(senderName);
@@ -873,21 +870,19 @@ namespace Slimcat.Services
             }
             else if (type != null && type.Equals("comment"))
             {
-                var name = command[Constants.Arguments.Name] as string;
+                var name = command.Get(Arguments.Name);
                 var character = CharacterManager.Find(name);
 
                 // sometimes ID is sent as a string. Sometimes it is sent as a number.
                 // so even though it's THE SAME COMMAND we have to treat *each* number differently
-                var commentId = long.Parse((string) command["id"]);
+                var commentId = long.Parse(command.Get("id"));
                 var parentId = (long) command["parent_id"];
-                var targetId = long.Parse((string) command["target_id"]);
+                var targetId = long.Parse(command.Get("target_id"));
 
-                var title = HttpUtility.HtmlDecode(command["target"] as string);
+                var title = HttpUtility.HtmlDecode(command.Get("target"));
 
                 var commentType =
-                    (CharacterUpdateModel.CommentEventArgs.CommentTypes)
-                        Enum.Parse(typeof (CharacterUpdateModel.CommentEventArgs.CommentTypes),
-                            (string) command["target_type"], true);
+                    command.Get("target_type").ToEnum<CharacterUpdateModel.CommentEventArgs.CommentTypes>();
 
                 Events.GetEvent<NewUpdateEvent>()
                     .Publish(
@@ -906,9 +901,9 @@ namespace Slimcat.Services
 
         private void RollCommand(IDictionary<string, object> command)
         {
-            var channel = command[Constants.Arguments.Channel] as string;
-            var message = command[Constants.Arguments.Message] as string;
-            var poster = command[Constants.Arguments.Character] as string;
+            var channel = command.Get(Arguments.Channel);
+            var message = command.Get(Arguments.Message);
+            var poster = command.Get(Arguments.Character);
 
             if (!CharacterManager.IsOnList(poster, ListKind.Ignored))
                 manager.AddMessage(message, channel, poster, MessageType.Roll);
@@ -916,10 +911,10 @@ namespace Slimcat.Services
 
         private void RoomModeChangedCommand(IDictionary<string, object> command)
         {
-            var channelId = command[Constants.Arguments.Channel] as string;
-            var mode = (string) command[Constants.Arguments.Mode];
+            var channelId = command.Get(Arguments.Channel);
+            var mode = command.Get(Arguments.Mode);
 
-            var newMode = (ChannelMode) Enum.Parse(typeof (ChannelMode), mode, true);
+            var newMode = mode.ToEnum<ChannelMode>();
             var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
 
             if (channel == null)
@@ -935,8 +930,8 @@ namespace Slimcat.Services
 
         private void RoomTypeChangedCommand(IDictionary<string, object> command)
         {
-            var channelId = command[Constants.Arguments.Channel] as string;
-            var isPublic = ((string) command[Constants.Arguments.Message]).IndexOf("public", StringComparison.OrdinalIgnoreCase) !=
+            var channelId = command.Get(Arguments.Channel);
+            var isPublic = (command.Get(Arguments.Message)).IndexOf("public", StringComparison.OrdinalIgnoreCase) !=
                            -1;
 
             var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
@@ -970,9 +965,9 @@ namespace Slimcat.Services
 
         private void StatusChangedCommand(IDictionary<string, object> command)
         {
-            var character = (string) command[Constants.Arguments.Character];
-            var status = (StatusType) Enum.Parse(typeof (StatusType), (string) command["status"], true);
-            var statusMessage = (string) command["statusmsg"];
+            var character = command.Get(Arguments.Character);
+            var status = command.Get(Arguments.Status).ToEnum<StatusType>();
+            var statusMessage = command.Get(Arguments.StatusMessage);
 
             var temp = CharacterManager.Find(character);
             var statusChanged = false;
@@ -1011,13 +1006,13 @@ namespace Slimcat.Services
 
         private void TypingStatusCommand(IDictionary<string, object> command)
         {
-            var sender = (string) command[Constants.Arguments.Character];
+            var sender = command.Get(Arguments.Character);
 
             var channel = ChatModel.CurrentPms.FirstByIdOrDefault(sender);
             if (channel == null)
                 return;
 
-            var type = (TypingStatus) Enum.Parse(typeof (TypingStatus), (string) command["status"], true);
+            var type = command.Get("status").ToEnum<TypingStatus>();
 
             channel.TypingStatus = type;
         }
@@ -1030,14 +1025,13 @@ namespace Slimcat.Services
 
         private void UserLoggedInCommand(IDictionary<string, object> command)
         {
-            var character = (string) command[Constants.Arguments.Identity];
+            var character = command.Get(Arguments.Identity);
 
             var temp = new CharacterModel
                 {
                     Name = character,
-                    Gender = ParseGender((string) command["gender"]),
-                    Status =
-                        (StatusType) Enum.Parse(typeof (StatusType), (string) command["status"], true)
+                    Gender = ParseGender(command.Get("gender")),
+                    Status = command.Get("status").ToEnum<StatusType>()
                 };
 
             CharacterManager.SignOn(temp);

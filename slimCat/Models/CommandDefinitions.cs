@@ -24,6 +24,9 @@ namespace Slimcat.Models
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    // I know these are bad names, but it makes the giant list below more legible
+    using C = Utilities.Constants.ClientCommands;
+    using A = Utilities.Constants.Arguments;
 
     #endregion
 
@@ -65,11 +68,11 @@ namespace Slimcat.Models
         public static readonly IDictionary<string, CommandModel> Commands = new Dictionary<string, CommandModel>
             {
                 // user commands
-                {"addbookmark", new CommandModel("addbookmark", "bookmark-add", new[] {"name"})},
+                {"addbookmark", new CommandModel("addbookmark", "bookmark-add", new[] {A.Name})},
                 {"addfriend", new CommandModel("addfriend", "friend-add", new[] {"dest_name"})},
                 {
                     "bottle",
-                    new CommandModel("bottle", "RLL", new[] {"dice"}, CommandModel.CommandTypes.SingleArgsAndChannel)
+                    new CommandModel("bottle", C.ChannelRoll, new[] {"dice"}, CommandModel.CommandTypes.SingleArgsAndChannel)
                 },
                 {"code", new CommandModel("code", "code", null, CommandModel.CommandTypes.NoArgs)},
                 {"clear", new CommandModel("clear", "clear", null, CommandModel.CommandTypes.NoArgs)},
@@ -77,15 +80,15 @@ namespace Slimcat.Models
                 {"close", new CommandModel("close", "close", new[] {"channel"}, CommandModel.CommandTypes.OnlyChannel)},
                 {
                     "ignore",
-                    new CommandModel("ignore", "IGN", new[] {"character", "action"}, CommandModel.CommandTypes.TwoArgs)
+                    new CommandModel("ignore", C.UserIgnore, new[] {A.Character, A.Action}, CommandModel.CommandTypes.TwoArgs)
                 },
-                {"interesting", new CommandModel("interesting", "interesting", new[] {"character"})},
+                {"interesting", new CommandModel("interesting", "interesting", new[] {A.Character})},
                 {
                     "invite",
-                    new CommandModel("invite", "CIU", new[] {"character"},
+                    new CommandModel("invite", C.UserInvite, new[] {A.Character},
                         CommandModel.CommandTypes.SingleArgsAndChannel)
                 },
-                {"join", new CommandModel("join", "join", new[] {"channel"})},
+                {"join", new CommandModel("join", "join", new[] {A.Channel})},
                 {
                     "lastupdate",
                     new CommandModel("lastupdate", "_snap_to_last_update", null, CommandModel.CommandTypes.NoArgs)
@@ -96,8 +99,8 @@ namespace Slimcat.Models
                     "lognewline",
                     new CommandModel("lognewline", "_logger_new_line", null, CommandModel.CommandTypes.NoArgs)
                 },
-                {"makeroom", new CommandModel("makeroom", "CCR", new[] {"channel"})},
-                {"notinteresting", new CommandModel("notinteresting", "notinteresting", new[] {"character"})},
+                {"makeroom", new CommandModel("makeroom", C.ChannelCreate, new[] {A.Channel})},
+                {"notinteresting", new CommandModel("notinteresting", "notinteresting", new[] {A.Character})},
                 {
                     "openlog",
                     new CommandModel("openlog", "_logger_open_log", null, CommandModel.CommandTypes.OnlyChannel)
@@ -106,27 +109,27 @@ namespace Slimcat.Models
                     "openlogfolder",
                     new CommandModel("openlogfolder", "_logger_open_folder", null, CommandModel.CommandTypes.OnlyChannel)
                 },
-                {"priv", new CommandModel("priv", "priv", new[] {"character"})},
-                {"removebookmark", new CommandModel("removebookmark", "bookmark-remove", new[] {"name"})},
+                {"priv", new CommandModel("priv", "priv", new[] {A.Character})},
+                {"removebookmark", new CommandModel("removebookmark", "bookmark-remove", new[] {A.Name})},
                 {"removefriend", new CommandModel("removefriend", "friend-remove", new[] {"dest_name"})},
                 {
                     "roll",
-                    new CommandModel("roll", "RLL", new[] {"dice"}, CommandModel.CommandTypes.SingleArgsAndChannel)
+                    new CommandModel("roll", C.ChannelRoll, new[] {"dice"}, CommandModel.CommandTypes.SingleArgsAndChannel)
                 },
                 {
                     "report",
-                    new CommandModel("report", "SFC", new[] {"name", "report"},
+                    new CommandModel("report", C.AdminAlert, new[] {A.Name, A.Report},
                         CommandModel.CommandTypes.TwoArgsAndChannel)
                 },
                 {
                     "status",
-                    new CommandModel("status", "STA", new[] {"status", "statusmsg"}, CommandModel.CommandTypes.TwoArgs)
+                    new CommandModel("status", C.UserStatus, new[] {A.Status, A.StatusMessage}, CommandModel.CommandTypes.TwoArgs)
                 },
-                {"tempignore", new CommandModel("tempignore", "tempignore", new[] {"character"})},
-                {"tempunignore", new CommandModel("tempunignore", "tempunignore", new[] {"character"})},
+                {"tempignore", new CommandModel("tempignore", "tempignore", new[] {A.Character})},
+                {"tempunignore", new CommandModel("tempunignore", "tempunignore", new[] {A.Character})},
                 {
                     "unignore",
-                    new CommandModel("unignore", "IGN", new[] {"character", "action"}, CommandModel.CommandTypes.TwoArgs)
+                    new CommandModel("unignore", C.UserIgnore, new[] {A.Character, A.Action}, CommandModel.CommandTypes.TwoArgs)
                 },
                 {"who", new CommandModel("who", "who", null, CommandModel.CommandTypes.NoArgs)},
 
@@ -135,22 +138,22 @@ namespace Slimcat.Models
                     "ban",
                     new CommandModel(
                         "ban",
-                        "CBU",
-                        new[] {"character"},
+                        C.ChannelBan,
+                        new[] {A.Character},
                         CommandModel.CommandTypes.SingleArgsAndChannel,
                         CommandModel.PermissionLevel.Moderator)
                 },
                 {
                     "banlist",
                     new CommandModel(
-                        "banlist", "CBL", null, CommandModel.CommandTypes.OnlyChannel,
+                        "banlist", C.ChannelBanList, null, CommandModel.CommandTypes.OnlyChannel,
                         CommandModel.PermissionLevel.Moderator)
                 },
                 {
                     "closeroom",
                     new CommandModel(
                         "closeroom",
-                        "RST",
+                        C.ChannelKind,
                         new[] {"status"},
                         CommandModel.CommandTypes.OnlyChannel,
                         CommandModel.PermissionLevel.Moderator)
@@ -159,8 +162,8 @@ namespace Slimcat.Models
                     "demote",
                     new CommandModel(
                         "demote",
-                        "COR",
-                        new[] {"character"},
+                        C.ChannelDemote,
+                        new[] {A.Character},
                         CommandModel.CommandTypes.SingleArgsAndChannel,
                         CommandModel.PermissionLevel.Moderator)
                 },
@@ -177,8 +180,8 @@ namespace Slimcat.Models
                     "kick",
                     new CommandModel(
                         "kick",
-                        "CKU",
-                        new[] {"character"},
+                        C.ChannelKick,
+                        new[] {A.Character},
                         CommandModel.CommandTypes.SingleArgsAndChannel,
                         CommandModel.PermissionLevel.Moderator)
                 },
@@ -186,7 +189,7 @@ namespace Slimcat.Models
                     "openroom",
                     new CommandModel(
                         "openroom",
-                        "RST",
+                        C.ChannelKind,
                         new[] {"status"},
                         CommandModel.CommandTypes.OnlyChannel,
                         CommandModel.PermissionLevel.Moderator)
@@ -195,8 +198,8 @@ namespace Slimcat.Models
                     "promote",
                     new CommandModel(
                         "promote",
-                        "COA",
-                        new[] {"character"},
+                        C.ChannelPromote,
+                        new[] {A.Character},
                         CommandModel.CommandTypes.SingleArgsAndChannel,
                         CommandModel.PermissionLevel.Moderator)
                 },
@@ -204,7 +207,7 @@ namespace Slimcat.Models
                     "setdescription",
                     new CommandModel(
                         "setdescription",
-                        "CDS",
+                        C.ChannelDescription,
                         new[] {"description"},
                         CommandModel.CommandTypes.SingleArgsAndChannel,
                         CommandModel.PermissionLevel.Moderator)
@@ -213,8 +216,8 @@ namespace Slimcat.Models
                     "unban",
                     new CommandModel(
                         "unban",
-                        "CUB",
-                        new[] {"character"},
+                        C.ChannelUnban,
+                        new[] {A.Character},
                         CommandModel.CommandTypes.SingleArgsAndChannel,
                         CommandModel.PermissionLevel.Moderator)
                 },
@@ -222,8 +225,8 @@ namespace Slimcat.Models
                     "setmode",
                     new CommandModel(
                         "setmode",
-                        "RMO",
-                        new[] {"mode"},
+                        C.ChannelMode,
+                        new[] {A.Mode},
                         CommandModel.CommandTypes.SingleArgsAndChannel,
                         CommandModel.PermissionLevel.Moderator)
                 },
@@ -233,8 +236,8 @@ namespace Slimcat.Models
                     "chatban",
                     new CommandModel(
                         "chatban",
-                        "ACB",
-                        new[] {"character"},
+                        C.AdminBan,
+                        new[] {A.Character},
                         CommandModel.CommandTypes.SingleSentence,
                         CommandModel.PermissionLevel.GlobalMod)
                 },
@@ -242,8 +245,8 @@ namespace Slimcat.Models
                     "chatkick",
                     new CommandModel(
                         "chatkick",
-                        "KIK",
-                        new[] {"character"},
+                        C.AdminKick,
+                        new[] {A.Character},
                         CommandModel.CommandTypes.SingleSentence,
                         CommandModel.PermissionLevel.GlobalMod)
                 },
@@ -251,8 +254,8 @@ namespace Slimcat.Models
                     "chatunban",
                     new CommandModel(
                         "chatunban",
-                        "UBN",
-                        new[] {"character"},
+                        C.AdminUnban,
+                        new[] {A.Character},
                         CommandModel.CommandTypes.SingleSentence,
                         CommandModel.PermissionLevel.GlobalMod)
                 },
@@ -260,8 +263,8 @@ namespace Slimcat.Models
                     "reward",
                     new CommandModel(
                         "reward",
-                        "RWD",
-                        new[] {"character"},
+                        C.AdminReward,
+                        new[] {A.Character},
                         CommandModel.CommandTypes.SingleSentence,
                         CommandModel.PermissionLevel.GlobalMod)
                 },
@@ -269,8 +272,8 @@ namespace Slimcat.Models
                     "timeout",
                     new CommandModel(
                         "timeout",
-                        "TMO",
-                        new[] {"character"},
+                        C.ChannelTimeOut,
+                        new[] {A.Character},
                         CommandModel.CommandTypes.SingleSentence,
                         CommandModel.PermissionLevel.GlobalMod)
                 },
@@ -279,7 +282,7 @@ namespace Slimcat.Models
                     new CommandModel(
                         "handlereport",
                         "handlereport",
-                        new[] {"name"},
+                        new[] {A.Name},
                         CommandModel.CommandTypes.SingleSentence,
                         CommandModel.PermissionLevel.GlobalMod)
                 },
@@ -298,8 +301,8 @@ namespace Slimcat.Models
                     "broadcast",
                     new CommandModel(
                         "broadcast",
-                        "BRO",
-                        new[] {"character"},
+                        C.AdminBroadcast,
+                        new[] {A.Character},
                         CommandModel.CommandTypes.SingleSentence,
                         CommandModel.PermissionLevel.GlobalMod)
                 },
@@ -307,8 +310,8 @@ namespace Slimcat.Models
                     "chatdemote",
                     new CommandModel(
                         "chatdemote",
-                        "DOP",
-                        new[] {"character"},
+                        C.AdminDemote,
+                        new[] {A.Character},
                         CommandModel.CommandTypes.SingleSentence,
                         CommandModel.PermissionLevel.GlobalMod)
                 },
@@ -316,8 +319,8 @@ namespace Slimcat.Models
                     "chatpromote",
                     new CommandModel(
                         "chatpromote",
-                        "AOP",
-                        new[] {"character"},
+                        C.AdminPromote,
+                        new[] {A.Character},
                         CommandModel.CommandTypes.SingleSentence,
                         CommandModel.PermissionLevel.GlobalMod)
                 },
@@ -325,8 +328,8 @@ namespace Slimcat.Models
                     "makechannel",
                     new CommandModel(
                         "makechannel",
-                        "CRC",
-                        new[] {"channel"},
+                        C.SystemChannelCreate,
+                        new[] {A.Character},
                         CommandModel.CommandTypes.SingleSentence,
                         CommandModel.PermissionLevel.GlobalMod)
                 },
@@ -335,23 +338,23 @@ namespace Slimcat.Models
                 {
                     ClientSendTypingStatus,
                     new CommandModel(
-                        ClientSendTypingStatus, "TPN", new[] {"status", "character"}, CommandModel.CommandTypes.TwoArgs)
+                        ClientSendTypingStatus, "TPN", new[] {"status", A.Character}, CommandModel.CommandTypes.TwoArgs)
                 },
                 {
                     ClientSendPm,
-                    new CommandModel(ClientSendPm, "PRI", new[] {"message", "recipient"},
+                    new CommandModel(ClientSendPm, "PRI", new[] {A.Message, "recipient"},
                         CommandModel.CommandTypes.TwoArgs)
                 },
                 {
                     ClientSendChannelMessage,
                     new CommandModel(
-                        ClientSendChannelMessage, "MSG", new[] {"message"},
+                        ClientSendChannelMessage, "MSG", new[] {A.Message},
                         CommandModel.CommandTypes.SingleArgsAndChannel)
                 },
                 {
                     ClientSendChannelAd,
                     new CommandModel(
-                        ClientSendChannelAd, "LRP", new[] {"message"}, CommandModel.CommandTypes.SingleArgsAndChannel)
+                        ClientSendChannelAd, C.ChannelAd, new[] {A.Message}, CommandModel.CommandTypes.SingleArgsAndChannel)
                 },
             };
 
@@ -432,40 +435,40 @@ namespace Slimcat.Models
                 {
                     // format ->
                     // commmand to override, command parameter to override, value to override with
-                    "online", new CommandOverride("status", "online")
+                    "online", new CommandOverride(A.Status, "online")
                 },
                 {
-                    "busy", new CommandOverride("status", "busy")
+                    "busy", new CommandOverride(A.Status, "busy")
                 },
                 {
-                    "looking", new CommandOverride("status", "looking")
+                    "looking", new CommandOverride(A.Status, "looking")
                 },
                 {
-                    "away", new CommandOverride("status", "away")
+                    "away", new CommandOverride(A.Status, "away")
                 },
                 {
-                    "dnd", new CommandOverride("status", "dnd")
+                    "dnd", new CommandOverride(A.Status, "dnd")
                 },
                 {
-                    "ignore", new CommandOverride("action", "add")
+                    "ignore", new CommandOverride(A.Action, A.ActionAdd)
                 },
                 {
-                    "unignore", new CommandOverride("action", "delete")
+                    "unignore", new CommandOverride(A.Action, A.ActionDelete)
                 },
                 {
-                    "openroom", new CommandOverride("status", "public")
+                    "openroom", new CommandOverride(A.Status, "public")
                 },
                 {
-                    "closeroom", new CommandOverride("status", "private")
+                    "closeroom", new CommandOverride(A.Status, "private")
                 },
                 {
                     "bottle", new CommandOverride("dice", "bottle")
                 },
                 {
-                    "report", new CommandOverride("action", "report")
+                    "report", new CommandOverride(A.Action, A.ActionReport)
                 },
                 {
-                    "handlereport", new CommandOverride("action", "confirm")
+                    "handlereport", new CommandOverride(A.Action, A.ActionConfirm)
                 },
             };
 

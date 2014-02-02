@@ -114,6 +114,26 @@ namespace Slimcat.Utilities
             collection.InsertAfter(collection.ElementAt(index), item);
         }
 
+        public static string Get(this IDictionary<string, object> command, string key)
+        {
+            return command.Get<string>(key);
+        }
+
+        public static T Get<T>(this IDictionary<string, object> command, string key) where T : class
+        {
+            return command[key] as T;
+        }
+
+        public static T ToEnum<T>(this object obj)
+        {
+            var str = obj as string;
+            return (T) Enum.Parse(typeof (T), str, true);
+        }
+
+        public static T ToEnum<T>(this string str)
+        {
+            return (T) Enum.Parse(typeof (T), str, true);
+        }
         #endregion
     }
 }

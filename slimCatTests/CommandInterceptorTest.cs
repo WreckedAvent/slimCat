@@ -15,6 +15,8 @@
     using Slimcat.Models;
     using Slimcat.Services;
     using Slimcat.Utilities;
+    using Commands = Slimcat.Utilities.Constants.ServerCommands;
+    using Arguments = Slimcat.Utilities.Constants.Arguments;
 
     [TestClass]
     public class CommandInterceptorTest
@@ -57,10 +59,6 @@
         #endregion
 
         #region Helpers
-        private void MockCommand(IDictionary<string, object> command)
-        {
-            eventAggregator.GetEvent<ChatCommandEvent>().Publish(command);
-        }
 
         internal void MockCommand(params KeyValuePair<string, object>[] command)
         {
@@ -86,7 +84,7 @@
 
         internal static IDictionary<string, object> WithIdentity(string id)
         {
-            return new Dictionary<string, object>{{"identity", id}};
+            return new Dictionary<string, object>{{Arguments.Identity, id}};
         } 
 
         private static void AllowProcessingTime()
@@ -165,9 +163,9 @@
                     x => x.AddMessage(Message, Character, Character, MessageType.Normal));
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Character, Character),
-                    WithArgument(Constants.Arguments.Command, "PRI"),
-                    WithArgument(Constants.Arguments.Message, Message));
+                    WithArgument(Arguments.Command, Commands.UserMessage),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
 
                 characterManager.VerifyAll();
                 channelManager.VerifyAll();
@@ -188,9 +186,9 @@
                     .Returns(new ObservableCollection<PmChannelModel> { currentModel });
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Character, Character),
-                    WithArgument(Constants.Arguments.Command, "PRI"),
-                    WithArgument(Constants.Arguments.Message, Message));
+                    WithArgument(Arguments.Command, Commands.UserMessage),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
 
                 characterManager.VerifyAll();
                 channelManager.VerifyAll();
@@ -207,15 +205,15 @@
                 chatConnection.Setup(
                     x => x.SendMessage(new Dictionary<string, object>
                         {
-                            {Constants.Arguments.Action, "notify"},
-                            {Constants.Arguments.Character, Character},
-                            {Constants.Arguments.Type, "IGN"}
+                            {Arguments.Action, Arguments.ActionNotify},
+                            {Arguments.Character, Character},
+                            {Arguments.Type, Commands.UserIgnore}
                         }));
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Character, Character),
-                    WithArgument(Constants.Arguments.Command, "PRI"),
-                    WithArgument(Constants.Arguments.Message, Message));
+                    WithArgument(Arguments.Command, Commands.UserMessage),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
 
                 characterManager.VerifyAll();
                 channelManager.Verify(
@@ -234,10 +232,10 @@
                     x => x.AddMessage(Message, channel, Character, MessageType.Normal));
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Channel, channel),
-                    WithArgument(Constants.Arguments.Character, Character),
-                    WithArgument(Constants.Arguments.Message, Message),
-                    WithArgument(Constants.Arguments.Command, "MSG"));
+                    WithArgument(Arguments.Command, Commands.ChannelMessage),
+                    WithArgument(Arguments.Channel, channel),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
 
                 channelManager.VerifyAll();
             }
@@ -250,10 +248,10 @@
                 IgnoreIncomingCharacter();
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Channel, channel),
-                    WithArgument(Constants.Arguments.Character, Character),
-                    WithArgument(Constants.Arguments.Message, Message),
-                    WithArgument(Constants.Arguments.Command, "MSG"));
+                    WithArgument(Arguments.Command, Commands.ChannelMessage),
+                    WithArgument(Arguments.Channel, channel),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
 
                 channelManager.Verify(
                     x => x.AddMessage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageType>()), Times.Never);
@@ -270,10 +268,10 @@
                     x => x.AddMessage(Message, channel, Character, MessageType.Ad));
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Channel, channel),
-                    WithArgument(Constants.Arguments.Character, Character),
-                    WithArgument(Constants.Arguments.Message, Message),
-                    WithArgument(Constants.Arguments.Command, "LRP"));
+                    WithArgument(Arguments.Command, Commands.ChannelAd),
+                    WithArgument(Arguments.Channel, channel),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
 
                 channelManager.VerifyAll();
             }
@@ -286,10 +284,10 @@
                 IgnoreIncomingCharacter();
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Channel, channel),
-                    WithArgument(Constants.Arguments.Character, Character),
-                    WithArgument(Constants.Arguments.Message, Message),
-                    WithArgument(Constants.Arguments.Command, "LRP"));
+                    WithArgument(Arguments.Command, Commands.ChannelAd),
+                    WithArgument(Arguments.Channel, channel),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
 
                 channelManager.Verify(
                     x => x.AddMessage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageType>()), Times.Never);
@@ -311,9 +309,9 @@
                     });
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Command, "BRO"),
-                    WithArgument(Constants.Arguments.Character, Character),
-                    WithArgument(Constants.Arguments.Message, Message));
+                    WithArgument(Arguments.Command, Commands.AdminBroadcast),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
 
 
                 characterManager.VerifyAll();
@@ -330,10 +328,10 @@
                     x => x.AddMessage(Message, channel, Character, MessageType.Roll));
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Channel, channel),
-                    WithArgument(Constants.Arguments.Character, Character),
-                    WithArgument(Constants.Arguments.Message, Message),
-                    WithArgument(Constants.Arguments.Command, "RLL"));
+                    WithArgument(Arguments.Command, Commands.ChannelRoll),
+                    WithArgument(Arguments.Channel, channel),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
 
                 channelManager.VerifyAll();
             }
@@ -346,10 +344,10 @@
                 IgnoreIncomingCharacter();
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Channel, channel),
-                    WithArgument(Constants.Arguments.Character, Character),
-                    WithArgument(Constants.Arguments.Message, Message),
-                    WithArgument(Constants.Arguments.Command, "RLL"));
+                    WithArgument(Arguments.Command, Commands.ChannelRoll),
+                    WithArgument(Arguments.Channel, channel),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
 
                 channelManager.Verify(
                     x => x.AddMessage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageType>()), Times.Never);
@@ -364,8 +362,8 @@
             private const string ChannelName = "testing channel";
             private readonly GeneralChannelModel channelModel;
 
-            const string first = "testing character one";
-            const string second = "testing character two";
+            const string First = "testing character one";
+            const string Second = "testing character two";
             #endregion
 
             #region Constructor
@@ -387,12 +385,12 @@
             private void SetupLists()
             {
                 characterManager
-                    .Setup(x => x.Find(first))
-                    .Returns(new CharacterModel { Name = first });
+                    .Setup(x => x.Find(First))
+                    .Returns(new CharacterModel { Name = First });
 
                 characterManager
-                    .Setup(x => x.Find(second))
-                    .Returns(new CharacterModel { Name = second });
+                    .Setup(x => x.Find(Second))
+                    .Returns(new CharacterModel { Name = Second });
             }
 
             private void JoinCurrentChannel(string name)
@@ -407,17 +405,17 @@
             {
                 SetupLists();
 
-                var users = new List<Dictionary<string, object>>
+                var users = new List<IDictionary<string, object>>
                     {
-                        new Dictionary<string, object> {{"identity", first}},
-                        new Dictionary<string, object> {{"identity", second}}
+                        WithIdentity(First),
+                        WithIdentity(Second)
                     };
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Command, "ICH"),
-                    WithArgument(Constants.Arguments.MultipleUsers,  users),
-                    WithArgument(Constants.Arguments.Channel, ChannelName),
-                    WithArgument(Constants.Arguments.Mode, ChannelMode.Both.ToString()));
+                    WithArgument(Arguments.Command, Commands.ChannelInitialize),
+                    WithArgument(Arguments.MultipleUsers,  users),
+                    WithArgument(Arguments.Channel, ChannelName),
+                    WithArgument(Arguments.Mode, ChannelMode.Both.ToString()));
 
 
                 Thread.Sleep(250);
@@ -437,8 +435,8 @@
                 ShouldNotCreateUpdate();
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Command, "CDS"),
-                    WithArgument(Constants.Arguments.Channel, ChannelName),
+                    WithArgument(Arguments.Command, Commands.ChannelDescription),
+                    WithArgument(Arguments.Channel, ChannelName),
                     WithArgument("description", description));
 
                 Assert.IsTrue(channelModel.Description.Equals(description));
@@ -457,8 +455,8 @@
                     });
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Command, "CDS"),
-                    WithArgument(Constants.Arguments.Channel, ChannelName),
+                    WithArgument(Arguments.Command, Commands.ChannelDescription),
+                    WithArgument(Arguments.Channel, ChannelName),
                     WithArgument("description", description));
 
                 Assert.IsTrue(channelModel.Description.Equals(description));
@@ -471,16 +469,16 @@
             {
                 SetupLists();
 
-                var moderators = new JsonArray {first, second};
+                var moderators = new JsonArray {First, Second};
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Command, "COL"),
+                    WithArgument(Arguments.Command, Commands.ChannelModerators),
                     WithArgument("oplist", moderators),
-                    WithArgument(Constants.Arguments.Channel, ChannelName));
+                    WithArgument(Arguments.Channel, ChannelName));
 
                 Thread.Sleep(50);
-                Assert.IsTrue(channelModel.CharacterManager.IsOnList(first, ListKind.Moderator, false));
-                Assert.IsTrue(channelModel.CharacterManager.IsOnList(second, ListKind.Moderator, false));
+                Assert.IsTrue(channelModel.CharacterManager.IsOnList(First, ListKind.Moderator, false));
+                Assert.IsTrue(channelModel.CharacterManager.IsOnList(Second, ListKind.Moderator, false));
             }
             #endregion
 
@@ -497,9 +495,9 @@
                     });
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Command, "RMO"),
-                    WithArgument(Constants.Arguments.Channel, ChannelName),
-                    WithArgument(Constants.Arguments.Mode, ChannelMode.Ads.ToString()));
+                    WithArgument(Arguments.Command, Commands.ChannelMode),
+                    WithArgument(Arguments.Channel, ChannelName),
+                    WithArgument(Arguments.Mode, ChannelMode.Ads.ToString()));
 
                 chatModel.VerifyGet(x => x.CurrentChannels);
                 Assert.IsTrue(channelModel.Mode == ChannelMode.Ads);
@@ -527,10 +525,10 @@
                 JoinCurrentChannel(kicked);
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Command, "CKU"),
+                    WithArgument(Arguments.Command, Commands.ChannelKick),
                     WithArgument("operator", op),
-                    WithArgument(Constants.Arguments.Character, kicked),
-                    WithArgument(Constants.Arguments.Channel, channelModel.Id));
+                    WithArgument(Arguments.Character, kicked),
+                    WithArgument(Arguments.Channel, channelModel.Id));
 
                 chatModel.VerifyGet(x => x.CurrentCharacter);
                 chatModel.Verify(x => x.FindChannel(ChannelName, null), Times.Exactly(1));
@@ -557,10 +555,10 @@
                 channelManager.Setup(x => x.RemoveChannel(ChannelName));
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Command, "CKU"),
+                    WithArgument(Arguments.Command, Commands.ChannelKick),
                     WithArgument("operator", op),
-                    WithArgument(Constants.Arguments.Character, kicked),
-                    WithArgument(Constants.Arguments.Channel, channelModel.Id));
+                    WithArgument(Arguments.Character, kicked),
+                    WithArgument(Arguments.Channel, channelModel.Id));
 
                 chatModel.VerifyGet(x => x.CurrentCharacter);
                 chatModel.Verify(x => x.FindChannel(ChannelName, null), Times.Exactly(1));
@@ -586,10 +584,10 @@
                 channelModel.CharacterManager.SignOn(CharacterWithName(kicked));
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Command, "CBU"),
+                    WithArgument(Arguments.Command, Commands.ChannelBan),
                     WithArgument("operator", op),
-                    WithArgument(Constants.Arguments.Character, kicked),
-                    WithArgument(Constants.Arguments.Channel, channelModel.Id));
+                    WithArgument(Arguments.Character, kicked),
+                    WithArgument(Arguments.Channel, channelModel.Id));
 
                 chatModel.VerifyGet(x => x.CurrentCharacter);
                 chatModel.Verify(x => x.FindChannel(ChannelName, null), Times.Exactly(1));
@@ -616,9 +614,9 @@
                 characterManager.Setup(x => x.Find(promotee)).Returns(CharacterWithName(promotee));
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Command, "COA"),
-                    WithArgument(Constants.Arguments.Channel, ChannelName),
-                    WithArgument(Constants.Arguments.Character, promotee));
+                    WithArgument(Arguments.Command, Commands.ChannelPromote),
+                    WithArgument(Arguments.Channel, ChannelName),
+                    WithArgument(Arguments.Character, promotee));
 
                 Assert.IsTrue(channelModel.CharacterManager.IsOnList(promotee, ListKind.Moderator));
             }
@@ -641,9 +639,9 @@
                 characterManager.Setup(x => x.Find(promotee)).Returns(CharacterWithName(promotee));
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Command, "COR"),
-                    WithArgument(Constants.Arguments.Channel, ChannelName),
-                    WithArgument(Constants.Arguments.Character, promotee));
+                    WithArgument(Arguments.Command, Commands.ChannelDemote),
+                    WithArgument(Arguments.Channel, ChannelName),
+                    WithArgument(Arguments.Character, promotee));
 
                 Assert.IsFalse(channelModel.CharacterManager.IsOnList(promotee, ListKind.Moderator));
             }
@@ -667,10 +665,10 @@
                 });
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Command, "JCH"),
-                    WithArgument(Constants.Arguments.Character, WithIdentity(joinerName)),
-                    WithArgument(Constants.Arguments.Channel, ChannelName),
-                    WithArgument(Constants.Arguments.Title, ChannelName));
+                    WithArgument(Arguments.Command, Commands.ChannelJoin),
+                    WithArgument(Arguments.Character, WithIdentity(joinerName)),
+                    WithArgument(Arguments.Channel, ChannelName),
+                    WithArgument(Arguments.Title, ChannelName));
 
                 characterManager.VerifyAll();
                 Assert.IsTrue(channelModel.CharacterManager.IsOnList(joinerName, ListKind.Online));
@@ -687,10 +685,10 @@
                 ShouldNotCreateUpdate();
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Command, "JCH"),
-                    WithArgument(Constants.Arguments.Character, WithIdentity(joinerName)),
-                    WithArgument(Constants.Arguments.Channel, ChannelName),
-                    WithArgument(Constants.Arguments.Title, ChannelName));
+                    WithArgument(Arguments.Command, Commands.ChannelJoin),
+                    WithArgument(Arguments.Character, WithIdentity(joinerName)),
+                    WithArgument(Arguments.Channel, ChannelName),
+                    WithArgument(Arguments.Title, ChannelName));
 
                 chatModel.SetupGet(x => x.CurrentChannels);
                 channelManager.VerifyAll();

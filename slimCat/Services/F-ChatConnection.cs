@@ -24,6 +24,7 @@ namespace Slimcat.Services
     using System;
     using System.Collections.Generic;
     // used by debug build
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Timers;
@@ -157,9 +158,9 @@ namespace Slimcat.Services
         {
             try
             {
-                var type = command["type"] as string;
+                var type = command.Get(Constants.Arguments.Type);
 
-                command.Remove("type");
+                command.Remove(Constants.Arguments.Type);
 
                 var ser = SimpleJson.SerializeObject(command);
 
@@ -299,11 +300,7 @@ namespace Slimcat.Services
         /// </param>
         private void ConnectionMessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            if (!isAuthenticated)
-            {
-                isAuthenticated = true;
-                events.GetEvent<LoginAuthenticatedEvent>().Publish(null);
-            }
+            isAuthenticated = true;
 
             var commandType = e.Message.Substring(0, 3); // type of command sent
 
@@ -317,7 +314,7 @@ namespace Slimcat.Services
                 var json = (IDictionary<string, object>) SimpleJson.DeserializeObject(message);
 
                 // de-serialize it to an object model
-                json.Add("command", commandType);
+                json.Add(Constants.Arguments.Command, commandType);
 
                 // add back in the command type so our models can listen for them
 #if (DEBUG)
@@ -330,20 +327,24 @@ namespace Slimcat.Services
                 logger.WriteLine();
                 logger.Flush();
 #endif
-
-                if ((json["command"] as string) == "ERR" && json.ContainsKey("number"))
+                if (json.Get(Constants.Arguments.Command) == Constants.ServerCommands.SystemError 
+                    && json.ContainsKey("number"))
                 {
-                    if (json["number"] as string == "2")
-                    {
-                        // no login spaces error
-                        isAuthenticated = false;
-                    }
+                    int err;
+                    int.TryParse(json.Get("number"), out err);
+                    var errsThatDisconnect = new[]
+                        {
+                            Constants.Errors.NoLoginSlots,
+                            Constants.Errors.NoServerSlots,
+                            Constants.Errors.KickedFromServer,
+                            Constants.Errors.SimultaneousLoginKick,
+                            Constants.Errors.BannedFromServer,
+                            Constants.Errors.BadLoginInfo,
+                            Constants.Errors.TooManyConnections,
+                            Constants.Errors.UnknownLoginMethod
+                        };
 
-                    if (json["number"] as string == "62")
-                    {
-                        // no login slots error
-                        isAuthenticated = false;
-                    }
+                    if (errsThatDisconnect.Contains(err)) isAuthenticated = false;
                 }
 
                 events.GetEvent<ChatCommandEvent>().Publish(json);
@@ -352,14 +353,15 @@ namespace Slimcat.Services
             {
                 switch (e.Message)
                 {
-                    case "PIN":
-                        SendMessage("PIN"); // auto-respond to pings
+                    case Constants.ServerCommands.SystemPing:
+                        SendMessage(Constants.ClientCommands.SystemPing); // auto-respond to pings
                         events.GetEvent<ChatCommandEvent>().Publish(null);
-                        break;
-                    case "LRP":
                         break;
                 }
             }
+
+            if (isAuthenticated)
+                events.GetEvent<LoginAuthenticatedEvent>().Publish(null);
         }
 
         /// <summary>
@@ -389,7 +391,7 @@ namespace Slimcat.Services
         private void ConnectionOpened(object sender, EventArgs e)
         {
             // Handshake completed, send login command
-            object idn =
+            object authRequest =
                 new
                     {
                         ticket = Account.Ticket,
@@ -400,7 +402,7 @@ namespace Slimcat.Services
                         cversion = string.Format("{0} {1}", Constants.ClientName, Constants.ClientVer)
                     };
 
-            SendMessage(idn, "IDN");
+            SendMessage(authRequest, Constants.ClientCommands.SystemAuthenticate);
 
             if (staggerTimer != null)
             {
