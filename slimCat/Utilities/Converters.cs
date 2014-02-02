@@ -371,7 +371,7 @@ namespace Slimcat.Utilities
             var url = arg.Arguments;
             var display = arg.Children != null 
                 ? arg.Children.First().InnerText 
-                : arg.Arguments;
+                : GetUrlDisplay(arg.Arguments);
 
             if (url == null)
             {

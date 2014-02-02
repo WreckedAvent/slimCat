@@ -14,7 +14,6 @@
     using Slimcat;
     using Slimcat.Models;
     using Slimcat.Services;
-    using Slimcat.Utilities;
     using Commands = Slimcat.Utilities.Constants.ServerCommands;
     using Arguments = Slimcat.Utilities.Constants.Arguments;
 
@@ -716,11 +715,12 @@
                     });
 
                 MockCommand(
-                    WithArgument(Constants.Arguments.Command, "LCH"),
-                    WithArgument(Constants.Arguments.Channel, ChannelName),
-                    WithArgument(Constants.Arguments.Character, leaverName));
+                    WithArgument(Arguments.Command, Commands.ChannelLeave),
+                    WithArgument(Arguments.Channel, ChannelName),
+                    WithArgument(Arguments.Character, leaverName));
 
-                characterManager.VerifyAll();
+                characterManager.VerifyAll(); 
+                Assert.IsFalse(channelModel.CharacterManager.IsOnList(leaverName, ListKind.Online));
             }
             #endregion
         }
