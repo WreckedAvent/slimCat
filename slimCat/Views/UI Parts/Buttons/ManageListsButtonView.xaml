@@ -1,4 +1,4 @@
-﻿<RadioButton x:Class="Slimcat.Views.ManageButtonView"
+﻿<RadioButton x:Class="slimCat.Views.ManageButtonView"
              x:Name="ManageButton"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

@@ -11,11 +11,11 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using SimpleJson;
-    using Slimcat;
-    using Slimcat.Models;
-    using Slimcat.Services;
-    using Commands = Slimcat.Utilities.Constants.ServerCommands;
-    using Arguments = Slimcat.Utilities.Constants.Arguments;
+    using slimCat;
+    using slimCat.Models;
+    using slimCat.Services;
+    using Commands = slimCat.Utilities.Constants.ServerCommands;
+    using Arguments = slimCat.Utilities.Constants.Arguments;
 
     [TestClass]
     public class CommandInterceptorTest

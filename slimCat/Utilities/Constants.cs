@@ -17,7 +17,7 @@
 
 #endregion
 
-namespace Slimcat.Utilities
+namespace slimCat.Utilities
 {
     /// <summary>
     ///     The constants.

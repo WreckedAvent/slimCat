@@ -17,7 +17,7 @@
 
 #endregion
 
-namespace Slimcat.Models
+namespace slimCat.Models
 {
     /// <summary>
     ///     Types of available status

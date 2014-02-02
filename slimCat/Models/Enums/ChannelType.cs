@@ -17,7 +17,7 @@
 
 #endregion
 
-namespace Slimcat.Models
+namespace slimCat.Models
 {
     /// <summary>
     ///     Represents the possible channel types

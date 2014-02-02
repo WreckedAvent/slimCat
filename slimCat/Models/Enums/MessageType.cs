@@ -17,7 +17,7 @@
 
 #endregion
 
-namespace Slimcat.Models
+namespace slimCat.Models
 {
     /// <summary>
     ///     Used to represent possible types of message sent to the client

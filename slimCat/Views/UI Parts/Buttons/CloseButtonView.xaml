@@ -1,4 +1,4 @@
-﻿<Button x:Class="Slimcat.Views.CloseButtonView"
+﻿<Button x:Class="slimCat.Views.CloseButtonView"
         x:Name="CloseButton"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

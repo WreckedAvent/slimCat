@@ -6,9 +6,9 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using SimpleJson;
-    using Slimcat;
-    using Slimcat.Models;
-    using Slimcat.Utilities;
+    using slimCat;
+    using slimCat.Models;
+    using slimCat.Utilities;
 
     [TestClass]
     public class ListManagerTests

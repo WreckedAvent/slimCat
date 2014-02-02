@@ -17,7 +17,7 @@
 
 #endregion
 
-namespace Slimcat.ViewModels
+namespace slimCat.ViewModels
 {
     #region Usings
 
@@ -247,7 +247,7 @@ namespace Slimcat.ViewModels
             }
         }
 
-        public ICharacter Slimcat
+        public ICharacter slimCat
         {
             get { return CharacterManager.Find("slimCat"); }
         }

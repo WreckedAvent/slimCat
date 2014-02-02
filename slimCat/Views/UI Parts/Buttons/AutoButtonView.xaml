@@ -1,4 +1,4 @@
-﻿<ToggleButton x:Class="Slimcat.Views.AutoButtonView"
+﻿<ToggleButton x:Class="slimCat.Views.AutoButtonView"
               x:Name="AutoButton"
               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

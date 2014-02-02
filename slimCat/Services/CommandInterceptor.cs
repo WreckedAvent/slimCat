@@ -17,7 +17,7 @@
 
 #endregion
 
-namespace Slimcat.Services
+namespace slimCat.Services
 {
     #region Usings
 
@@ -35,7 +35,7 @@ namespace Slimcat.Services
     using Utilities;
     using ViewModels;
     using Commands = Utilities.Constants.ServerCommands;
-    using Arguments = Slimcat.Utilities.Constants.Arguments;
+    using Arguments = slimCat.Utilities.Constants.Arguments;
 
     #endregion
 

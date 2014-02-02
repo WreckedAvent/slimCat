@@ -8,9 +8,8 @@ namespace slimCatTest
     using System.Windows.Media;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
-    using Slimcat.Models;
     using slimCat.Models;
-    using Slimcat.Utilities;
+    using slimCat.Utilities;
 
     [TestClass]
     public class ParserTest

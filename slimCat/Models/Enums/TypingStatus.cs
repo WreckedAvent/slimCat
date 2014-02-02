@@ -17,7 +17,7 @@
 
 #endregion
 
-namespace Slimcat.Models
+namespace slimCat.Models
 {
     /// <summary>
     ///     The possible states of typing

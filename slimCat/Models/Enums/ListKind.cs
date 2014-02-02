@@ -17,7 +17,7 @@
 
 #endregion
 
-namespace Slimcat.Models
+namespace slimCat.Models
 {
     public enum ListKind
     {

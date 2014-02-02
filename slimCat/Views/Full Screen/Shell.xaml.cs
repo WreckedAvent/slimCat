@@ -17,7 +17,7 @@
 
 #endregion
 
-namespace Slimcat
+namespace slimCat
 {
     /// <summary>
     ///     The shell has no meaningful purpose other than being a giant container.

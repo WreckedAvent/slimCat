@@ -1,4 +1,4 @@
-﻿<Popup x:Class="Slimcat.Views.CreateReportView"
+﻿<Popup x:Class="slimCat.Views.CreateReportView"
        d:DataContext="{d:DesignInstance vm:GeneralChannelViewModel}"
        IsOpen="{Binding Path=CreateReportViewModel.IsOpen}"
        PlacementTarget="{Binding ElementName=PopupAnchor}"
@@ -7,7 +7,7 @@
        UseLayoutRounding="True"
        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-       xmlns:vm="clr-namespace:Slimcat.ViewModels"
+       xmlns:vm="clr-namespace:slimCat.ViewModels"
        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
        mc:Ignorable="d">

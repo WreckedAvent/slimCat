@@ -17,7 +17,7 @@
 
 #endregion
 
-namespace Slimcat.ViewModels
+namespace slimCat.ViewModels
 {
     #region Usings
 

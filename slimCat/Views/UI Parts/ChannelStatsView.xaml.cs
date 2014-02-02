@@ -17,7 +17,7 @@
 
 #endregion
 
-namespace Slimcat.Views
+namespace slimCat.Views
 {
     /// <summary>
     ///     Interaction logic for ChannelStatsView.xaml

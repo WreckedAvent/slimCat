@@ -1,4 +1,4 @@
-﻿<Button x:Class="Slimcat.Views.RestartButtonView"
+﻿<Button x:Class="slimCat.Views.RestartButtonView"
         x:Name="RestartButton"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
