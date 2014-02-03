@@ -26,6 +26,7 @@ namespace slimCat.Services
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Net.Cache;
     using System.Text;
     using System.Web;
     using Microsoft.Practices.Prism.Events;
@@ -278,10 +279,13 @@ namespace slimCat.Services
 
             var toPost = Encoding.ASCII.GetBytes(totalRequest.ToString());
 
+            var cachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
             var req = (HttpWebRequest) WebRequest.Create(host);
+            req.CachePolicy = cachePolicy;
             req.Method = requestType;
             req.ContentType = contentType;
             req.ContentLength = toPost.Length;
+
             if (useCookies)
                 req.CookieContainer = loginCookies;
 

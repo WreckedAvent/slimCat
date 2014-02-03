@@ -833,7 +833,7 @@ namespace slimCat.Services
             var channels = from c in ApplicationSettings.SavedChannels
                 where !string.IsNullOrWhiteSpace(c)
                 select new {channel = c};
-            var walk = channels.GetEnumerator();
+            var walk = channels.ToList().GetEnumerator();
 
             if (walk.MoveNext())
             {
