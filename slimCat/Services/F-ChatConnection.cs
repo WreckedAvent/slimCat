@@ -24,7 +24,7 @@ namespace slimCat.Services
     using System;
     using System.Collections.Generic;
     // used by debug build
-    using System.Globalization;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Timers;
@@ -47,14 +47,15 @@ namespace slimCat.Services
 
         private readonly IEventAggregator events;
 
-#if (DEBUG)
-        private readonly StreamWriter logger;
-#endif
-        private readonly ISocket socket;
+        private StreamWriter logger;
+
+        private readonly WebSocket socket;
 
         private Timer staggerTimer;
 
         private bool isAuthenticated;
+
+        private readonly int[] errsThatDisconnect;
 
         #endregion
 
@@ -71,21 +72,31 @@ namespace slimCat.Services
         ///     The eventagg.
         /// </param>
         /// <param name="socket"></param>
-        public ChatConnection(IAccount user, IEventAggregator eventagg, ISocket socket)
+        public ChatConnection(IAccount user, IEventAggregator eventagg, WebSocket socket)
         {
             this.socket = socket;
             Account = user.ThrowIfNull("user");
             events = eventagg.ThrowIfNull("eventagg");
 
             events.GetEvent<CharacterSelectedLoginEvent>()
-                .Subscribe(ConnectToChat, ThreadOption.BackgroundThread, true);
+                .Subscribe(ConnectToChat, ThreadOption.BackgroundThread, true); 
+            
+            errsThatDisconnect = new[]
+                {
+                    Constants.Errors.NoLoginSlots,
+                    Constants.Errors.NoServerSlots,
+                    Constants.Errors.KickedFromServer,
+                    Constants.Errors.SimultaneousLoginKick,
+                    Constants.Errors.BannedFromServer,
+                    Constants.Errors.BadLoginInfo,
+                    Constants.Errors.TooManyConnections,
+                    Constants.Errors.UnknownLoginMethod
+                };
 
-#if (DEBUG)
             if (!Directory.Exists(@"Debug"))
                 Directory.CreateDirectory("Debug");
 
-            logger = new StreamWriter(@"Debug\Rawchat " + DateTime.Now.Ticks + ".log", true);
-#endif
+            InitializeLog();
         }
 
         #endregion
@@ -112,28 +123,21 @@ namespace slimCat.Services
         /// <param name="command">
         ///     non-serialized data to be sent
         /// </param>
-        /// <param name="commandType">
+        /// <param name="type">
         ///     The command_type.
         /// </param>
-        public void SendMessage(object command, string commandType)
+        public void SendMessage(object command, string type)
         {
             try
             {
-                if (commandType.Length > 3 || commandType.Length < 3)
-                    throw new ArgumentOutOfRangeException("commandType", "Command type must be 3 characters long");
+                if (type.Length > 3 || type.Length < 3)
+                    throw new ArgumentOutOfRangeException("type", "Command type must be 3 characters long");
 
                 var ser = SimpleJson.SerializeObject(command);
 
-#if (DEBUG)
+                Log(type, ser);
 
-    // debug information
-                logger.WriteLine("[{0}] sent {1}: ", DateTime.Now.ToString("h:mm:ss.ff tt"), commandType);
-                logger.WriteLine("Data: " + ser);
-                logger.WriteLine();
-                logger.Flush();
-#endif
-
-                socket.Send(commandType + " " + ser);
+                socket.Send(type + " " + ser);
             }
             catch (Exception ex)
             {
@@ -158,12 +162,7 @@ namespace slimCat.Services
 
                 var ser = SimpleJson.SerializeObject(command);
 
-#if (DEBUG)
-                logger.WriteLine("[{0}] sent {1}: ", DateTime.Now.ToString("h:mm:ss.ff tt"), type);
-                logger.WriteLine("Data: " + ser);
-                logger.WriteLine();
-                logger.Flush();
-#endif
+                Log(type, command);
 
                 socket.Send(type + " " + ser);
             }
@@ -187,11 +186,7 @@ namespace slimCat.Services
                 if (commandType.Length > 3 || commandType.Length < 3)
                     throw new ArgumentOutOfRangeException("commandType", "Command type must be 3 characters long");
 
-#if (DEBUG)
-                logger.WriteLine("[{0}] sent {1}", DateTime.Now.ToString("h:mm:ss.ff tt"), commandType);
-                logger.WriteLine();
-                logger.Flush();
-#endif
+                Log(commandType);
 
                 socket.Send(commandType);
             }
@@ -220,11 +215,9 @@ namespace slimCat.Services
         /// </param>
         protected virtual void Dispose(bool isManagedDispose)
         {
-#if (DEBUG)
-            if (isManagedDispose)
+            if (isManagedDispose && logger != null)
                 logger.Dispose();
 
-#endif
             socket.Close();
         }
 
@@ -243,8 +236,6 @@ namespace slimCat.Services
                 Character = character.ThrowIfNull("character");
 
                 events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(ConnectToChat);
-
-
 
                 // define socket behavior
                 socket.Opened += ConnectionOpened;
@@ -308,36 +299,17 @@ namespace slimCat.Services
 
                 var json = (IDictionary<string, object>) SimpleJson.DeserializeObject(message);
 
+                Log(commandType, json, false);
+
                 // de-serialize it to an object model
                 json.Add(Constants.Arguments.Command, commandType);
 
                 // add back in the command type so our models can listen for them
-#if (DEBUG)
-    // for debug, write the command received to file
-                logger.WriteLine("[{0}] received {1}: ", DateTime.Now.ToString("h:mm:ss.ff tt"), json["command"]);
-
-                foreach (var pair in json.Where(pair => pair.Key != "command"))
-                    logger.WriteLine("{0}: {1}", pair.Key, pair.Value);
-
-                logger.WriteLine();
-                logger.Flush();
-#endif
                 if (json.Get(Constants.Arguments.Command) == Constants.ServerCommands.SystemError 
                     && json.ContainsKey("number"))
                 {
                     int err;
                     int.TryParse(json.Get("number"), out err);
-                    var errsThatDisconnect = new[]
-                        {
-                            Constants.Errors.NoLoginSlots,
-                            Constants.Errors.NoServerSlots,
-                            Constants.Errors.KickedFromServer,
-                            Constants.Errors.SimultaneousLoginKick,
-                            Constants.Errors.BannedFromServer,
-                            Constants.Errors.BadLoginInfo,
-                            Constants.Errors.TooManyConnections,
-                            Constants.Errors.UnknownLoginMethod
-                        };
 
                     if (errsThatDisconnect.Contains(err)) isAuthenticated = false;
                 }
@@ -424,6 +396,36 @@ namespace slimCat.Services
                     events.GetEvent<ReconnectingEvent>().Publish(string.Empty);
                 };
             staggerTimer.Enabled = true;
+        }
+
+        [Conditional("DEBUG")]
+        private void Log(string type, object payload = null, bool isSent = true)
+        {
+            logger.WriteLine("[{0}] {1} {2}{3}",
+                DateTime.Now.ToString("h:mm:ss.ff tt"),
+                isSent ? "sent" : "received",
+                type,
+                payload != null ? ":" : string.Empty);
+
+            var dict = payload as IDictionary<string, object>;
+            if (dict != null)
+            {
+                foreach (var pair in dict.Where(pair => pair.Key != Constants.Arguments.Command))
+                    logger.WriteLine("{0}: {1}", pair.Key, pair.Value);
+            }
+            else if (payload != null)
+            {
+                logger.WriteLine(payload);
+            }
+
+            logger.WriteLine();
+            logger.Flush();
+        }
+
+        [Conditional("DEBUG")]
+        private void InitializeLog()
+        {
+            logger = new StreamWriter(@"Debug\Rawchat " + DateTime.Now.Ticks + ".log", true);
         }
 
         #endregion

@@ -32,6 +32,8 @@ namespace slimCat.Utilities
 
         public const string ClientVer = "rc3.07";
 
+        public const string ServerHost = "wss://chat.f-list.net:9799/";
+
         #endregion
 
         #region Static Fields

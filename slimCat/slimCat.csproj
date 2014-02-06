@@ -179,11 +179,9 @@
     <Compile Include="Services\Interfaces\IChatConnection.cs" />
     <Compile Include="Services\Interfaces\IListConnection.cs" />
     <Compile Include="Services\Interfaces\ILogger.cs" />
-    <Compile Include="Services\Interfaces\ISocket.cs" />
     <Compile Include="Services\Interfaces\ITicketProvider.cs" />
     <Compile Include="Services\SettingsDaemon.cs" />
     <Compile Include="Services\TicketProvider.cs" />
-    <Compile Include="Services\WebsocketAdapter.cs" />
     <Compile Include="Utilities\CacheCount.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\KeepToCurrentScrollViewer.cs" />

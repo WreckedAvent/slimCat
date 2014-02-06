@@ -23,15 +23,14 @@ namespace slimCat.Utilities
 
     using System;
     using System.Windows;
-    using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Modularity;
     using Microsoft.Practices.Prism.UnityExtensions;
     using Microsoft.Practices.ServiceLocation;
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
-    using slimCat.Models;
     using ViewModels;
+    using WebSocket4Net;
 
     #endregion
 
@@ -63,7 +62,7 @@ namespace slimCat.Utilities
                 RegisterSingleton<ICharacterManager, GlobalCharacterManager>();
 
                 Register<Application, Application>(Application.Current);
-                Register<ISocket, WebsocketAdapter>(new WebsocketAdapter(Constants.ServerHost));
+                Register<WebSocket, WebSocket>(new WebSocket(Constants.ServerHost));
 
                 // these are services that are not directly used by our singletons or modules
                 Instantiate<NotificationsDaemon>();
