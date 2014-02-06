@@ -23,7 +23,6 @@ namespace slimCat.Services
 
     using System;
     using System.Collections.Generic;
-    // used by debug build
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -79,8 +78,8 @@ namespace slimCat.Services
             events = eventagg.ThrowIfNull("eventagg");
 
             events.GetEvent<CharacterSelectedLoginEvent>()
-                .Subscribe(ConnectToChat, ThreadOption.BackgroundThread, true); 
-            
+                .Subscribe(ConnectToChat, ThreadOption.BackgroundThread, true);
+
             errsThatDisconnect = new[]
                 {
                     Constants.Errors.NoLoginSlots,
@@ -92,10 +91,6 @@ namespace slimCat.Services
                     Constants.Errors.TooManyConnections,
                     Constants.Errors.UnknownLoginMethod
                 };
-
-            if (!Directory.Exists(@"Debug"))
-                Directory.CreateDirectory("Debug");
-
             InitializeLog();
         }
 
@@ -286,7 +281,11 @@ namespace slimCat.Services
         /// </param>
         private void ConnectionMessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            isAuthenticated = true;
+            if (!isAuthenticated)
+            {
+                isAuthenticated = true;
+                events.GetEvent<LoginAuthenticatedEvent>().Publish(null);
+            }
 
             var commandType = e.Message.Substring(0, 3); // type of command sent
 
@@ -326,9 +325,6 @@ namespace slimCat.Services
                         break;
                 }
             }
-
-            if (isAuthenticated)
-                events.GetEvent<LoginAuthenticatedEvent>().Publish(null);
         }
 
         /// <summary>
@@ -360,14 +356,14 @@ namespace slimCat.Services
             // Handshake completed, send login command
             object authRequest =
                 new
-                    {
-                        ticket = Account.Ticket,
-                        method = "ticket",
-                        account = Account.AccountName,
-                        character = Character,
-                        cname = Constants.ClientId,
-                        cversion = string.Format("{0} {1}", Constants.ClientName, Constants.ClientVer)
-                    };
+                {
+                    ticket = Account.Ticket,
+                    method = "ticket",
+                    account = Account.AccountName,
+                    character = Character,
+                    cname = Constants.ClientId,
+                    cversion = string.Format("{0} {1}", Constants.ClientName, Constants.ClientVer)
+                };
 
             SendMessage(authRequest, Constants.ClientCommands.SystemAuthenticate);
 
@@ -391,10 +387,10 @@ namespace slimCat.Services
 
             staggerTimer = new Timer((new Random().Next(10) + 5)*1000); // between 5 and 15 seconds
             staggerTimer.Elapsed += (s, e) =>
-                {
-                    ConnectToChat(Character);
-                    events.GetEvent<ReconnectingEvent>().Publish(string.Empty);
-                };
+            {
+                ConnectToChat(Character);
+                events.GetEvent<ReconnectingEvent>().Publish(string.Empty);
+            };
             staggerTimer.Enabled = true;
         }
 
@@ -425,6 +421,9 @@ namespace slimCat.Services
         [Conditional("DEBUG")]
         private void InitializeLog()
         {
+            if (!Directory.Exists(@"Debug"))
+                Directory.CreateDirectory("Debug");
+
             logger = new StreamWriter(@"Debug\Rawchat " + DateTime.Now.Ticks + ".log", true);
         }
 
