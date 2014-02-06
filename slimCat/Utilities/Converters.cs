@@ -212,18 +212,6 @@ namespace slimCat.Utilities
             return AsInline(PreProcessBbCode(text));
         }
 
-        private static bool ContainsUrl(string args)
-        {
-            var match = args.Split(' ').FirstOrDefault(StartsWithValidTerm);
-
-            // see if it starts with something useful
-            if (match == null)
-                return false;
-
-            var starter = ValidStartTerms.First(match.StartsWith);
-            return args.Trim().Length > starter.Length;
-        }
-
         private static string GetUrlDisplay(string args)
         {
             var match = ValidStartTerms.FirstOrDefault(args.StartsWith);
@@ -271,6 +259,7 @@ namespace slimCat.Utilities
                 {
                     var last = exploded[i - 1];
                     if (last.EndsWith("[url=", StringComparison.Ordinal)) continue;
+                    if (last.EndsWith("url:")) continue;
                 }
 
                 if (StartsWithValidTerm(current)) valid.Add(current);
@@ -523,6 +512,9 @@ namespace slimCat.Utilities
                 if (lastStart - Last.End > 1)
                     return ReturnAsTextBetween(Last.End, lastStart);
 
+                if (closeBrace < openBrace)
+                    return ReturnAsTextBetween(closeBrace, openBrace);
+
                 arguments = null;
                 var type = input.Substring(openBrace + 1, closeBrace - openBrace - 1);
 
@@ -535,15 +527,20 @@ namespace slimCat.Utilities
                     type = typeBeforeEquals.Trim();
                 }
 
-                var isEndType = type[0].Equals('/');
-                type = isEndType ? type.Substring(1) : type;
+                var isEndType = false;
+
+                if (type.Length > 1)
+                {
+                    isEndType = type[0].Equals('/');
+                    type = isEndType ? type.Substring(1) : type;
+                }
 
                 var possibleMatch = Types.Keys.FirstOrDefault(x => x.Equals(type, StringComparison.Ordinal));
 
                 if (possibleMatch == null)
                     return NoResult();
 
-                Last =  new BbTag
+                Last = new BbTag
                     {
                         Arguments = arguments,
                         End = currentPosition,

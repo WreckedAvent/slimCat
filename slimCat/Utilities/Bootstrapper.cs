@@ -53,21 +53,21 @@ namespace slimCat.Utilities
                 base.ConfigureContainer();
 
                 // create singletons
-                Container.RegisterType<IAccount, AccountModel>(new ContainerControlledLifetimeManager());
-                Container.RegisterType<IListConnection, ListConnection>(new ContainerControlledLifetimeManager());
-                Container.RegisterType<IChatConnection, ChatConnection>(new ContainerControlledLifetimeManager());
-                Container.RegisterType<IChatModel, ChatModel>(new ContainerControlledLifetimeManager());
-                Container.RegisterType<IChannelManager, MessageDaemon>(new ContainerControlledLifetimeManager());
-                Container.RegisterType<EventAggregator>(new ContainerControlledLifetimeManager());
-                Container.RegisterType<IThemeLocator, ApplicationThemeLocator>(new ContainerControlledLifetimeManager());
-                Container.RegisterType<ICharacterManager, GlobalCharacterManager>(
-                    new ContainerControlledLifetimeManager());
+                RegisterSingleton<IAccount, AccountModel>();
+                RegisterSingleton<IBrowser, Browser>();
+                RegisterSingleton<IListConnection, ListConnection>();
+                RegisterSingleton<IChatConnection, ChatConnection>();
+                RegisterSingleton<IChatModel, ChatModel>();
+                RegisterSingleton<IChannelManager, MessageDaemon>();
+                RegisterSingleton<IThemeLocator, ApplicationThemeLocator>();
+                RegisterSingleton<ICharacterManager, GlobalCharacterManager>();
 
-                Container.RegisterInstance(typeof (Application), Application.Current);
+                Register<Application, Application>(Application.Current);
+                Register<ISocket, WebsocketAdapter>(new WebsocketAdapter(Constants.ServerHost));
 
                 // these are services that are not directly used by our singletons or modules
-                Container.Resolve<NotificationsDaemon>();
-                Container.Resolve<CommandInterceptor>();
+                Instantiate<NotificationsDaemon>();
+                Instantiate<CommandInterceptor>();
 
                 // some resources that are dependant on our singletons
                 Application.Current.Resources.Add("BbCodeConverter", Container.Resolve<BbCodeConverter>());
@@ -79,6 +79,26 @@ namespace slimCat.Utilities
                 ex.Source = "Bootstrapper, Configure container";
                 Exceptions.HandleException(ex);
             }
+        }
+
+        private void RegisterSingleton<TFrom, TTo>()
+            where TFrom : class 
+            where TTo : TFrom
+        {
+            Container.RegisterType<TFrom, TTo>(new ContainerControlledLifetimeManager());
+        }
+
+        private void Instantiate<TInstance>()
+            where TInstance : class
+        {
+            Container.Resolve<TInstance>();
+        }
+
+        private void Register<T, TConcrete>(TConcrete instance)
+            where T : class
+            where TConcrete : T
+        {
+            Container.RegisterInstance(typeof (T), instance);
         }
 
         /// <summary>

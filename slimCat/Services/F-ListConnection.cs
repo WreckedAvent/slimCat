@@ -23,12 +23,9 @@ namespace slimCat.Services
 
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Net.Cache;
     using System.Text;
-    using System.Web;
     using Microsoft.Practices.Prism.Events;
     using Models;
     using SimpleJson;
@@ -42,11 +39,11 @@ namespace slimCat.Services
     /// </summary>
     internal class ListConnection : IListConnection
     {
+        private readonly IBrowser browser;
+
         #region Fields
 
         private readonly IEventAggregator events;
-
-        private readonly CookieContainer loginCookies = new CookieContainer();
 
         private readonly IAccount model;
 
@@ -65,8 +62,9 @@ namespace slimCat.Services
         /// <param name="eventagg">
         ///     The eventagg.
         /// </param>
-        public ListConnection(IAccount model, IEventAggregator eventagg)
+        public ListConnection(IAccount model, IEventAggregator eventagg, IBrowser browser)
         {
+            this.browser = browser;
             try
             {
                 this.model = model.ThrowIfNull("model");
@@ -142,7 +140,7 @@ namespace slimCat.Services
                         {"channel", report.Tab}
                     };
 
-                var buffer = GetResponse(Constants.UrlConstants.UploadLog, toUpload, true);
+                var buffer = browser.GetResponse(Constants.UrlConstants.UploadLog, toUpload, true);
                 dynamic result = SimpleJson.DeserializeObject(buffer);
 
                 if (result.log_id != null)
@@ -177,7 +175,7 @@ namespace slimCat.Services
                         {"password", model.Password},
                     };
 
-                var buffer = GetResponse(Constants.UrlConstants.GetTicket, loginCredentials);
+                var buffer = browser.GetResponse(Constants.UrlConstants.GetTicket, loginCredentials);
 
                 // assign the data to our account model
                 dynamic result = SimpleJson.DeserializeObject(buffer);
@@ -226,7 +224,7 @@ namespace slimCat.Services
                         {"password", model.Password},
                     };
 
-                GetResponse(Constants.UrlConstants.Login, loginCredentials, true);
+                browser.GetResponse(Constants.UrlConstants.Login, loginCredentials, true);
             }
             catch (Exception ex)
             {
@@ -246,7 +244,7 @@ namespace slimCat.Services
             command.Add("account", model.AccountName.ToLower());
             command.Add("ticket", model.Ticket);
 
-            var buffer = GetResponse(host, command);
+            var buffer = browser.GetResponse(host, command);
 
             dynamic result = SimpleJson.DeserializeObject(buffer);
 
@@ -254,52 +252,6 @@ namespace slimCat.Services
 
             if (hasError)
                 events.GetEvent<ErrorEvent>().Publish((string) result.error);
-        }
-
-        private string GetResponse(string host, IEnumerable<KeyValuePair<string, object>> arguments,
-            bool useCookies = false)
-        {
-            const string contentType = "application/x-www-form-urlencoded";
-            const string requestType = "POST";
-
-            var isFirst = true;
-
-            var totalRequest = new StringBuilder();
-            foreach (var arg in arguments.Where(arg => arg.Key != "type"))
-            {
-                if (!isFirst)
-                    totalRequest.Append('&');
-                else
-                    isFirst = false;
-
-                totalRequest.Append(arg.Key);
-                totalRequest.Append('=');
-                totalRequest.Append(HttpUtility.UrlEncode((string) arg.Value));
-            }
-
-            var toPost = Encoding.ASCII.GetBytes(totalRequest.ToString());
-
-            var cachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
-            var req = (HttpWebRequest) WebRequest.Create(host);
-            req.CachePolicy = cachePolicy;
-            req.Method = requestType;
-            req.ContentType = contentType;
-            req.ContentLength = toPost.Length;
-
-            if (useCookies)
-                req.CookieContainer = loginCookies;
-
-            using (var postStream = req.GetRequestStream())
-                postStream.Write(toPost, 0, toPost.Length);
-
-            using (var rep = (HttpWebResponse) req.GetResponse())
-            using (var answerStream = rep.GetResponseStream())
-            {
-                if (answerStream == null)
-                    return null;
-                using (var answerReader = new StreamReader(answerStream))
-                    return answerReader.ReadToEnd(); // read our response
-            }
         }
 
         private void HandleCommand(IDictionary<string, object> command)

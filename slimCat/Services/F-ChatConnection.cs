@@ -42,14 +42,6 @@ namespace slimCat.Services
     /// </summary>
     public class ChatConnection : IChatConnection, IDisposable
     {
-        #region Constants
-
-        /// <summary>
-        ///     The host.
-        /// </summary>
-        private const string Host = "wss://chat.f-list.net:9799/";
-
-        #endregion
 
         #region Fields
 
@@ -58,7 +50,7 @@ namespace slimCat.Services
 #if (DEBUG)
         private readonly StreamWriter logger;
 #endif
-        private WebSocket socket;
+        private readonly ISocket socket;
 
         private Timer staggerTimer;
 
@@ -78,8 +70,10 @@ namespace slimCat.Services
         /// <param name="eventagg">
         ///     The eventagg.
         /// </param>
-        public ChatConnection(IAccount user, IEventAggregator eventagg)
+        /// <param name="socket"></param>
+        public ChatConnection(IAccount user, IEventAggregator eventagg, ISocket socket)
         {
+            this.socket = socket;
             Account = user.ThrowIfNull("user");
             events = eventagg.ThrowIfNull("eventagg");
 
@@ -133,7 +127,7 @@ namespace slimCat.Services
 #if (DEBUG)
 
     // debug information
-                logger.WriteLine("->> Command: " + commandType);
+                logger.WriteLine("[{0}] sent {1}: ", DateTime.Now.ToString("h:mm:ss.ff tt"), commandType);
                 logger.WriteLine("Data: " + ser);
                 logger.WriteLine();
                 logger.Flush();
@@ -165,7 +159,7 @@ namespace slimCat.Services
                 var ser = SimpleJson.SerializeObject(command);
 
 #if (DEBUG)
-                logger.WriteLine("->> Command: " + type);
+                logger.WriteLine("[{0}] sent {1}: ", DateTime.Now.ToString("h:mm:ss.ff tt"), type);
                 logger.WriteLine("Data: " + ser);
                 logger.WriteLine();
                 logger.Flush();
@@ -194,7 +188,7 @@ namespace slimCat.Services
                     throw new ArgumentOutOfRangeException("commandType", "Command type must be 3 characters long");
 
 #if (DEBUG)
-                logger.WriteLine("->> Command: " + commandType);
+                logger.WriteLine("[{0}] sent {1}", DateTime.Now.ToString("h:mm:ss.ff tt"), commandType);
                 logger.WriteLine();
                 logger.Flush();
 #endif
@@ -250,7 +244,8 @@ namespace slimCat.Services
 
                 events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(ConnectToChat);
 
-                socket = new WebSocket(Host);
+
+
                 // define socket behavior
                 socket.Opened += ConnectionOpened;
                 socket.Error += ConnectionError;
@@ -319,7 +314,7 @@ namespace slimCat.Services
                 // add back in the command type so our models can listen for them
 #if (DEBUG)
     // for debug, write the command received to file
-                logger.WriteLine("<<- Command: {0}", json["command"]);
+                logger.WriteLine("[{0}] received {1}: ", DateTime.Now.ToString("h:mm:ss.ff tt"), json["command"]);
 
                 foreach (var pair in json.Where(pair => pair.Key != "command"))
                     logger.WriteLine("{0}: {1}", pair.Key, pair.Value);

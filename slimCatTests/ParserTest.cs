@@ -417,6 +417,21 @@ http://www.foo.bar.com";
                 boldChildren[1].TextShouldBe("[user]");
                 boldChildren[2].TextShouldBe(" tag");
             }
+
+            [TestMethod]
+            public void DoubleBracketsWork()
+            {
+                const string text = @"[[this is two bracekets]]\n[[and two more]]";
+
+                ShouldNotContainMarkup(text);
+            }
+
+            [TestMethod]
+            public void Test()
+            {
+                const string text =
+                    "[20:29] Kali Trixtan: [i][b]YoteBot[/b] says[/i]: [bad url: http://www.knife.com] ";
+            }
         }
 
         #region Helpers
