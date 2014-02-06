@@ -134,6 +134,7 @@ namespace slimCat.Utilities
         {
             return (T) Enum.Parse(typeof (T), str, true);
         }
+
         #endregion
     }
 }

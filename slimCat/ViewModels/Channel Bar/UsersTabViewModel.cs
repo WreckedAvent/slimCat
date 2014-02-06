@@ -110,7 +110,7 @@ namespace slimCat.ViewModels
 
 
                         else if (thisNotification.Arguments is CharacterUpdateModel.JoinLeaveEventArgs
-                            || thisNotification.Arguments is CharacterUpdateModel.ListChangedEventArgs)
+                                 || thisNotification.Arguments is CharacterUpdateModel.ListChangedEventArgs)
                             OnPropertyChanged("SortedUsers");
                     });
         }

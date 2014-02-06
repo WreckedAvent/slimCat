@@ -73,9 +73,9 @@ namespace slimCat.Services
                 events.GetEvent<LoginEvent>().Subscribe(GetTicket, ThreadOption.BackgroundThread);
                 events.GetEvent<UserCommandEvent>().Subscribe(HandleCommand, ThreadOption.BackgroundThread);
                 events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(args => selectedCharacter = args);
-                
+
                 // fix problem with SSL not being trusted on some machines
-                ServicePointManager.ServerCertificateValidationCallback = 
+                ServicePointManager.ServerCertificateValidationCallback =
                     (sender, certificate, chain, sslPolicyErrors) => true;
             }
             catch (Exception ex)

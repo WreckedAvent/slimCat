@@ -34,9 +34,9 @@ namespace slimCat.Services
     using Utilities;
     using ViewModels;
     using Views;
-
     using Commands = Utilities.Constants.ClientCommands;
     using Arguments = Utilities.Constants.Arguments;
+
     #endregion
 
     /// <summary>
@@ -48,6 +48,7 @@ namespace slimCat.Services
         #region Fields
 
         private readonly IListConnection api;
+        private readonly ICharacterManager characterManager;
 
         private readonly IDictionary<string, CommandHandler> commands;
 
@@ -60,8 +61,6 @@ namespace slimCat.Services
         private readonly IChatModel model;
 
         private readonly IRegionManager region;
-
-        private readonly ICharacterManager characterManager;
 
         private ChannelModel lastSelected;
 
@@ -215,10 +214,10 @@ namespace slimCat.Services
                 else
                 {
                     // our model should have a reference to other channels though
-                        temp = model.AllChannels.FirstOrDefault(param => param.Id == id) 
-                            ?? new GeneralChannelModel(id, ChannelType.InviteOnly) {Title = name};
+                    temp = model.AllChannels.FirstOrDefault(param => param.Id == id)
+                           ?? new GeneralChannelModel(id, ChannelType.InviteOnly) {Title = name};
 
-                        Dispatcher.Invoke((Action) (() => model.CurrentChannels.Add(temp)));
+                    Dispatcher.Invoke((Action) (() => model.CurrentChannels.Add(temp)));
 
                     container.Resolve<GeneralChannelViewModel>(new ParameterOverride("name", id));
                 }
@@ -246,7 +245,8 @@ namespace slimCat.Services
         public void AddMessage(
             string message, string channelName, string poster, MessageType messageType = MessageType.Normal)
         {
-            var sender = characterManager.Find(poster == Arguments.ThisCharacter ? model.CurrentCharacter.Name : poster);
+            var sender =
+                characterManager.Find(poster == Arguments.ThisCharacter ? model.CurrentCharacter.Name : poster);
 
             var channel = model.CurrentChannels.FirstByIdOrDefault(channelName)
                           ?? (ChannelModel) model.CurrentPms.FirstByIdOrDefault(channelName);
@@ -404,19 +404,22 @@ namespace slimCat.Services
 
         private void OnPriRequested(IDictionary<string, object> command)
         {
-            AddMessage(command.Get(Arguments.Message), command.Get("recipient"), Arguments.ThisCharacter);
+            AddMessage(command.Get(Arguments.Message), command.Get("recipient"),
+                Arguments.ThisCharacter);
             connection.SendMessage(command);
         }
 
         private void OnMsgRequested(IDictionary<string, object> command)
         {
-            AddMessage(command.Get(Arguments.Message), command.Get(Arguments.Channel), Arguments.ThisCharacter);
+            AddMessage(command.Get(Arguments.Message), command.Get(Arguments.Channel),
+                Arguments.ThisCharacter);
             connection.SendMessage(command);
         }
 
         private void OnLrpRequested(IDictionary<string, object> command)
         {
-            AddMessage(command.Get(Arguments.Message), command.Get(Arguments.Channel), Arguments.ThisCharacter,
+            AddMessage(command.Get(Arguments.Message), command.Get(Arguments.Channel),
+                Arguments.ThisCharacter,
                 MessageType.Ad);
             connection.SendMessage(command);
         }

@@ -81,7 +81,7 @@ namespace slimCat.Models
                 var isOfInterest = false;
                 foreach (var list in OfInterestCollections)
                 {
-                    isOfInterest = onlineOnly 
+                    isOfInterest = onlineOnly
                         ? list.OnlineList.Contains(name)
                         : list.List.Contains(name);
                     if (isOfInterest) break;

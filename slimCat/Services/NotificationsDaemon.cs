@@ -233,7 +233,8 @@ namespace slimCat.Services
 
         private void DingTheCrapOutOfTheUser()
         {
-            if ((DateTime.Now - lastDingLinged) <= TimeSpan.FromSeconds(1) || Math.Abs(ApplicationSettings.Volume) < 0.01)
+            if ((DateTime.Now - lastDingLinged) <= TimeSpan.FromSeconds(1) ||
+                Math.Abs(ApplicationSettings.Volume) < 0.01)
                 return;
 
             (new SoundPlayer(Environment.CurrentDirectory + @"\sounds\" + "newmessage.wav")).Play();

@@ -1,6 +1,26 @@
-﻿
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ParserTest.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
 namespace slimCatTest
 {
+    #region Usings
+
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows;
@@ -10,6 +30,8 @@ namespace slimCatTest
     using Moq;
     using slimCat.Models;
     using slimCat.Utilities;
+
+    #endregion
 
     [TestClass]
     public class ParserTest
@@ -22,7 +44,7 @@ namespace slimCatTest
             var chatModel = Mock.Of<IChatModel>();
             var locator = Mock.Of<IThemeLocator>();
 
-            converter = new BbFlowConverter(chatModel, manager, locator); 
+            converter = new BbFlowConverter(chatModel, manager, locator);
         }
 
         [TestClass]
@@ -101,6 +123,7 @@ http://www.foo.bar.com";
         public class BbCodeMarkupTest : ParserTest
         {
             #region Bbcode Smoke Tests
+
             [TestMethod]
             public void BoldWorks()
             {
@@ -134,7 +157,8 @@ http://www.foo.bar.com";
             {
                 const string text = "some well-formed [s]strike-through[/s] text";
 
-                var result = ShouldBeOneOf<Span>(text).First(x => x.TextDecorations.Equals(TextDecorations.Strikethrough));
+                var result =
+                    ShouldBeOneOf<Span>(text).First(x => x.TextDecorations.Equals(TextDecorations.Strikethrough));
 
                 result.TextShouldBe("strike-through");
             }
@@ -256,6 +280,7 @@ http://www.foo.bar.com";
                 var result = ShouldBeOneOf<Span>(text).First(x => x.GetText().Equals("a bad color in it"));
                 result.ShouldBeDefaultColor();
             }
+
             #endregion
 
             [TestMethod]

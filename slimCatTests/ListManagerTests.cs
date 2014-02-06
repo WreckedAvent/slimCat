@@ -1,5 +1,26 @@
-﻿namespace slimCatTest
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ListManagerTests.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace slimCatTest
 {
+    #region Usings
+
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Practices.Prism.Events;
@@ -10,26 +31,28 @@
     using slimCat.Models;
     using slimCat.Utilities;
 
+    #endregion
+
     [TestClass]
     public class ListManagerTests
     {
         private readonly ICharacter bookmarkCharacter;
+        private readonly IList<string> bookmarks;
+        private readonly IEventAggregator eventAggregator;
         private readonly ICharacter friendCharacter;
-        private readonly ICharacter otherCharacter;
         private readonly ICharacter interestedCharacter;
 
         private readonly ICharacterManager manager;
-        private readonly IEventAggregator eventAggregator;
-        private readonly IList<string> bookmarks; 
+        private readonly ICharacter otherCharacter;
 
         public ListManagerTests()
         {
-            bookmarkCharacter = new CharacterModel { Name = "Character One" };
-            friendCharacter = new CharacterModel { Name = "Character Two" };
-            otherCharacter = new CharacterModel { Name = "Character Three" };
+            bookmarkCharacter = new CharacterModel {Name = "Character One"};
+            friendCharacter = new CharacterModel {Name = "Character Two"};
+            otherCharacter = new CharacterModel {Name = "Character Three"};
             interestedCharacter = new CharacterModel {Name = "Character Four"};
 
-            bookmarks = new[] { bookmarkCharacter.Name };
+            bookmarks = new[] {bookmarkCharacter.Name};
             var allFriends = new Dictionary<string, IList<string>> {{friendCharacter.Name, null}};
 
             var account = Mock.Of<IAccount>(acc =>
@@ -148,7 +171,7 @@
         [TestMethod]
         public void CanSetList()
         {
-            manager.Set(new[] { interestedCharacter.Name }, ListKind.Interested);
+            manager.Set(new[] {interestedCharacter.Name}, ListKind.Interested);
             ShouldBeOnOfflineListOf(ListKind.Interested, interestedCharacter);
 
             SignOnAllTestCharacters();
@@ -274,6 +297,7 @@
         }
 
         #region Helpers
+
         private void ShouldBeOffline(params ICharacter[] characters)
         {
             ShouldBe(ListKind.Online, false, true, characters);
@@ -316,6 +340,7 @@
 
             characters.Each(x => Assert.IsFalse(manager.IsOnList(x.Name, listKind, offlineOnly)));
         }
+
         #endregion
     }
 }

@@ -41,20 +41,16 @@ namespace slimCat.Services
     /// </summary>
     public class ChatConnection : IChatConnection, IDisposable
     {
-
         #region Fields
 
+        private readonly int[] errsThatDisconnect;
         private readonly IEventAggregator events;
-
-        private StreamWriter logger;
 
         private readonly WebSocket socket;
 
-        private Timer staggerTimer;
-
         private bool isAuthenticated;
-
-        private readonly int[] errsThatDisconnect;
+        private StreamWriter logger;
+        private Timer staggerTimer;
 
         #endregion
 
@@ -304,7 +300,7 @@ namespace slimCat.Services
                 json.Add(Constants.Arguments.Command, commandType);
 
                 // add back in the command type so our models can listen for them
-                if (json.Get(Constants.Arguments.Command) == Constants.ServerCommands.SystemError 
+                if (json.Get(Constants.Arguments.Command) == Constants.ServerCommands.SystemError
                     && json.ContainsKey("number"))
                 {
                     int err;
@@ -356,14 +352,14 @@ namespace slimCat.Services
             // Handshake completed, send login command
             object authRequest =
                 new
-                {
-                    ticket = Account.Ticket,
-                    method = "ticket",
-                    account = Account.AccountName,
-                    character = Character,
-                    cname = Constants.ClientId,
-                    cversion = string.Format("{0} {1}", Constants.ClientName, Constants.ClientVer)
-                };
+                    {
+                        ticket = Account.Ticket,
+                        method = "ticket",
+                        account = Account.AccountName,
+                        character = Character,
+                        cname = Constants.ClientId,
+                        cversion = string.Format("{0} {1}", Constants.ClientName, Constants.ClientVer)
+                    };
 
             SendMessage(authRequest, Constants.ClientCommands.SystemAuthenticate);
 
@@ -387,10 +383,10 @@ namespace slimCat.Services
 
             staggerTimer = new Timer((new Random().Next(10) + 5)*1000); // between 5 and 15 seconds
             staggerTimer.Elapsed += (s, e) =>
-            {
-                ConnectToChat(Character);
-                events.GetEvent<ReconnectingEvent>().Publish(string.Empty);
-            };
+                {
+                    ConnectToChat(Character);
+                    events.GetEvent<ReconnectingEvent>().Publish(string.Empty);
+                };
             staggerTimer.Enabled = true;
         }
 
@@ -410,9 +406,7 @@ namespace slimCat.Services
                     logger.WriteLine("{0}: {1}", pair.Key, pair.Value);
             }
             else if (payload != null)
-            {
                 logger.WriteLine(payload);
-            }
 
             logger.WriteLine();
             logger.Flush();

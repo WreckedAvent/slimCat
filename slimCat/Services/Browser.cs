@@ -1,5 +1,26 @@
-﻿namespace slimCat.Services
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Browser.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace slimCat.Services
 {
+    #region Usings
+
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -8,7 +29,9 @@
     using System.Text;
     using System.Web;
 
-    class Browser : IBrowser
+    #endregion
+
+    internal class Browser : IBrowser
     {
         private readonly CookieContainer loginCookies = new CookieContainer();
 
@@ -30,13 +53,13 @@
 
                 totalRequest.Append(arg.Key);
                 totalRequest.Append('=');
-                totalRequest.Append(HttpUtility.UrlEncode((string)arg.Value));
+                totalRequest.Append(HttpUtility.UrlEncode((string) arg.Value));
             }
 
             var toPost = Encoding.ASCII.GetBytes(totalRequest.ToString());
 
             var cachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
-            var req = (HttpWebRequest)WebRequest.Create(host);
+            var req = (HttpWebRequest) WebRequest.Create(host);
             req.CachePolicy = cachePolicy;
             req.Method = requestType;
             req.ContentType = contentType;

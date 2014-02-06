@@ -34,7 +34,6 @@ namespace slimCat.Utilities
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using Models;
-    using slimCat.Models;
 
     #endregion
 
@@ -120,8 +119,8 @@ namespace slimCat.Utilities
 
     public abstract class BbCodeBaseConverter
     {
-        private readonly ICharacterManager characterManager;
         internal readonly IThemeLocator Locator;
+        private readonly ICharacterManager characterManager;
 
         #region Static Fields
 
@@ -155,8 +154,6 @@ namespace slimCat.Utilities
             this.characterManager = characterManager;
             Locator = locator;
             ChatModel = chatModel;
-
-
         }
 
         #endregion
@@ -325,12 +322,12 @@ namespace slimCat.Utilities
 
         private Inline MakeSmall(ParsedChunk arg)
         {
-            return new Span(WrapInRun(arg.InnerText)) { FontSize =  9 };
+            return new Span(WrapInRun(arg.InnerText)) {FontSize = 9};
         }
 
         private Inline MakeBig(ParsedChunk arg)
         {
-            return new Span(WrapInRun(arg.InnerText)) { FontSize = 16 };
+            return new Span(WrapInRun(arg.InnerText)) {FontSize = 16};
         }
 
         private Inline MakeChannel(ParsedChunk arg)
@@ -342,7 +339,7 @@ namespace slimCat.Utilities
 
         private Span MakeStrikeThrough(ParsedChunk arg)
         {
-            return new Span(WrapInRun(arg.InnerText)) { TextDecorations =  TextDecorations.Strikethrough };
+            return new Span(WrapInRun(arg.InnerText)) {TextDecorations = TextDecorations.Strikethrough};
         }
 
         private static Span MakeNormalText(ParsedChunk arg)
@@ -358,29 +355,27 @@ namespace slimCat.Utilities
         private Span MakeUrl(ParsedChunk arg)
         {
             var url = arg.Arguments;
-            var display = arg.Children != null 
-                ? arg.Children.First().InnerText 
+            var display = arg.Children != null
+                ? arg.Children.First().InnerText
                 : GetUrlDisplay(arg.Arguments);
 
             if (url == null)
             {
                 url = arg.InnerText ?? string.Empty;
-                display = arg.Children != null 
-                    ? GetUrlDisplay(arg.Children.First().InnerText) 
+                display = arg.Children != null
+                    ? GetUrlDisplay(arg.Children.First().InnerText)
                     : string.Empty;
             }
 
             if (arg.Children != null)
-            {
                 arg.Children.Clear();
-            }
 
             return new Hyperlink(WrapInRun(display))
-            {
-                CommandParameter = url,
-                ToolTip = url,
-                Style = Locator.FindStyle("Hyperlink")
-            };
+                {
+                    CommandParameter = url,
+                    ToolTip = url,
+                    Style = Locator.FindStyle("Hyperlink")
+                };
         }
 
         private Inline MakeSession(ParsedChunk arg)
@@ -407,7 +402,6 @@ namespace slimCat.Utilities
 
         private Span MakeColor(ParsedChunk arg)
         {
-
             var colorString = arg.Arguments;
 
             if (!ApplicationSettings.AllowColors || colorString == null)
@@ -429,46 +423,187 @@ namespace slimCat.Utilities
             return new Span();
         }
 
-        public class ParsedChunk
+        public static IList<ParsedChunk> ParseChunk(string input)
         {
-            public int Start { get; set; }
-            
-            public int End { get; set; }
+            #region init
 
-            public string InnerText { get; set; }
+            // init
+            var toReturn = new List<ParsedChunk>();
+            var openTags = new Stack<BbTag>();
+            var tags = new Queue<BbTag>();
+            var processedQueue = new Queue<BbTag>();
 
-            public string Arguments { get; set; }
+            var finder = new BbFinder(input);
 
-            public BbCodeType Type { get; set; }
+            // find all tags
+            while (!finder.HasReachedEnd)
+            {
+                var next = finder.Next();
+                if (next != null)
+                    tags.Enqueue(next);
+            }
 
-            public IList<ParsedChunk> Children { get; set; }
+
+            // return original input if we've no valid bbcode tags
+            if (tags.All(x => x.Type == BbCodeType.None))
+                return new[] {AsChunk(input)};
+
+            #endregion
+
+            #region handle unbalanced tags
+
+            var unbalancedTags =
+                (from t in tags
+                    where t.Type != BbCodeType.None
+                    group t by t.Type
+                    into g
+                    select new {Type = g.Key, Tags = g})
+                    .Where(x => x.Tags.Count()%2 == 1);
+
+            foreach (var tagGroup in unbalancedTags.ToList())
+                tagGroup.Tags.First().Type = BbCodeType.None;
+
+            #endregion
+
+            while (tags.Count > 0)
+            {
+                // get the next tag to process
+                var tag = tags.Dequeue();
+                var addToQueue = true;
+
+                #region add as child of last tag
+
+                // check if we're in the context of another open tag
+                if (openTags.Count > 0)
+                {
+                    var lastOpen = openTags.Peek();
+
+                    // check if we're the closing for the last open tag
+                    if (lastOpen.Type == tag.Type
+                        && tag.IsClosing)
+                    {
+                        lastOpen.ClosingTag = tag;
+                        openTags.Pop();
+
+                        #region handle noparse
+
+                        if (lastOpen.Type == BbCodeType.NoParse)
+                        {
+                            lastOpen.Children = lastOpen.Children ?? new List<BbTag>();
+                            lastOpen.Children.Add(new BbTag
+                                {
+                                    Type = BbCodeType.None,
+                                    End = tag.Start,
+                                    Start = lastOpen.End
+                                });
+                        }
+
+                        #endregion
+                    }
+                    else
+                    {
+                        if (lastOpen.Type != BbCodeType.NoParse)
+                        {
+                            // if not, we have to be a child of it
+                            lastOpen.Children = lastOpen.Children ?? new List<BbTag>();
+
+                            lastOpen.Children.Add(tag);
+                        }
+
+                        addToQueue = false;
+                    }
+                }
+
+                #endregion
+
+                // we don't need to continue processing closing tags
+                if (tag.IsClosing) continue;
+
+                // tell the system we're in the context of this tag now
+                if (tag.Type != BbCodeType.None) // text content can't have children
+                    openTags.Push(tag);
+
+                // if we're added as a child to another tag, don't process independently of parent
+                if (addToQueue) processedQueue.Enqueue(tag);
+            }
+
+            // if in the process of removing improper tags we end up with no bbcode,
+            // return original
+            if (processedQueue.All(x => x.Type == BbCodeType.None))
+                return new[] {AsChunk(input)};
+
+            toReturn.AddRange(processedQueue.Select(x => FromTag(x, input)));
+
+            return toReturn;
+        }
+
+        internal static ParsedChunk AsChunk(string input)
+        {
+            return new ParsedChunk
+                {
+                    Type = BbCodeType.None,
+                    Start = 0,
+                    End = input.Length,
+                    InnerText = input
+                };
+        }
+
+        public Inline AsInline(string bbcode)
+        {
+            var inlines = ParseChunk(bbcode).Select(ToInline).ToList();
+            if (inlines.Count == 1) return inlines.First();
+
+            var toReturn = new Span();
+            toReturn.Inlines.AddRange(inlines);
+
+            return toReturn;
+        }
+
+        internal static ParsedChunk FromTag(BbTag tag, string context)
+        {
+            var last = tag.ClosingTag != null ? tag.ClosingTag.End : tag.End;
+            var toReturn = new ParsedChunk
+                {
+                    Start = tag.Start,
+                    End = last,
+                    Type = tag.Type,
+                    Arguments = tag.Arguments
+                };
+
+            if (tag.Children != null && tag.Children.Any())
+                toReturn.Children = tag.Children.Select(x => FromTag(x, context)).ToList();
+
+            if (tag.Type == BbCodeType.None)
+                toReturn.InnerText = context.Substring(tag.Start, tag.End - tag.Start);
+
+            return toReturn;
         }
 
         public class BbFinder
         {
-            private readonly string input;
-            private int lastStart;
-            private int currentPosition;
             private const int NotFound = -1;
+            private readonly string input;
             private string arguments;
-
-            public BbTag Last { get; private set; }
-
-            public bool HasReachedEnd { get; private set; }
+            private int currentPosition;
+            private int lastStart;
 
             public BbFinder(string input)
             {
                 this.input = input;
             }
 
+            public BbTag Last { get; private set; }
+
+            public bool HasReachedEnd { get; private set; }
+
             private BbTag ReturnAsTextBetween(int start, int end)
             {
                 var toReturn = new BbTag
-                {
-                    Type = BbCodeType.None,
-                    Start = start,
-                    End = end -1
-                };
+                    {
+                        Type = BbCodeType.None,
+                        Start = start,
+                        End = end - 1
+                    };
 
                 var rewindTo = Last != null ? Last.End : 0;
                 currentPosition = rewindTo;
@@ -582,155 +717,21 @@ namespace slimCat.Utilities
             public BbTag Parent { get; set; }
         }
 
-        public static IList<ParsedChunk> ParseChunk(string input)
+        public class ParsedChunk
         {
-            #region init
-            // init
-            var toReturn = new List<ParsedChunk>();
-            var openTags = new Stack<BbTag>();
-            var tags = new Queue<BbTag>();
-            var processedQueue = new Queue<BbTag>();
+            public int Start { get; set; }
 
-            var finder = new BbFinder(input);
+            public int End { get; set; }
 
-            // find all tags
-            while (!finder.HasReachedEnd)
-            {
-                var next = finder.Next();
-                if (next != null)
-                    tags.Enqueue(next);
-            }
+            public string InnerText { get; set; }
 
+            public string Arguments { get; set; }
 
-            // return original input if we've no valid bbcode tags
-            if (tags.All(x => x.Type == BbCodeType.None))
-                return new[] { AsChunk(input) };
-            #endregion
+            public BbCodeType Type { get; set; }
 
-            #region handle unbalanced tags
-            var unbalancedTags = 
-                (from t in tags
-                 where t.Type != BbCodeType.None
-                 group t by t.Type into g
-                 select new {Type = g.Key, Tags = g})
-                .Where(x => x.Tags.Count() % 2 == 1);
-
-            foreach (var tagGroup in unbalancedTags.ToList())
-            {
-                tagGroup.Tags.First().Type = BbCodeType.None;
-            }
-            #endregion
-
-            while (tags.Count > 0)
-            {
-                // get the next tag to process
-                var tag = tags.Dequeue();
-                var addToQueue = true;
-
-                #region add as child of last tag
-                // check if we're in the context of another open tag
-                if (openTags.Count > 0)
-                {
-                    var lastOpen = openTags.Peek();
-
-                    // check if we're the closing for the last open tag
-                    if (lastOpen.Type == tag.Type 
-                        && tag.IsClosing)
-                    {
-                        lastOpen.ClosingTag = tag;
-                        openTags.Pop();
-
-                        #region handle noparse
-                        if (lastOpen.Type == BbCodeType.NoParse)
-                        {
-                            lastOpen.Children = lastOpen.Children ?? new List<BbTag>();
-                            lastOpen.Children.Add(new BbTag
-                                {
-                                    Type = BbCodeType.None,
-                                    End = tag.Start,
-                                    Start = lastOpen.End 
-                                });
-                        }
-                        #endregion
-                    }
-                    else 
-                    {
-                        if (lastOpen.Type != BbCodeType.NoParse)
-                        {
-                            // if not, we have to be a child of it
-                            lastOpen.Children = lastOpen.Children ?? new List<BbTag>();
-
-                            lastOpen.Children.Add(tag);
-                        }
-
-                        addToQueue = false;
-                    }
-
-                }
-                #endregion
-
-                // we don't need to continue processing closing tags
-                if (tag.IsClosing) continue;
-
-                // tell the system we're in the context of this tag now
-                if (tag.Type != BbCodeType.None) // text content can't have children
-                    openTags.Push(tag);
-
-                // if we're added as a child to another tag, don't process independently of parent
-                if (addToQueue) processedQueue.Enqueue(tag);
-            }
-
-            // if in the process of removing improper tags we end up with no bbcode,
-            // return original
-            if (processedQueue.All(x => x.Type == BbCodeType.None))
-                return new[] { AsChunk(input) };
-
-            toReturn.AddRange(processedQueue.Select(x => FromTag(x, input)));
-
-            return toReturn;
+            public IList<ParsedChunk> Children { get; set; }
         }
 
-        internal static ParsedChunk AsChunk(string input)
-        {
-            return new ParsedChunk
-                {
-                    Type = BbCodeType.None,
-                    Start = 0,
-                    End = input.Length,
-                    InnerText = input
-                };
-        }
-
-        public Inline AsInline(string bbcode)
-        {
-            var inlines = ParseChunk(bbcode).Select(ToInline).ToList();
-            if (inlines.Count == 1) return inlines.First();
-
-            var toReturn = new Span();
-            toReturn.Inlines.AddRange(inlines);
-
-            return toReturn;
-        } 
-
-        internal static ParsedChunk FromTag(BbTag tag, string context)
-        {
-            var last = tag.ClosingTag != null ? tag.ClosingTag.End : tag.End;
-            var toReturn = new ParsedChunk
-                {
-                    Start = tag.Start,
-                    End = last,
-                    Type = tag.Type,
-                    Arguments = tag.Arguments
-                };
-
-            if (tag.Children != null && tag.Children.Any())
-                toReturn.Children = tag.Children.Select(x => FromTag(x, context)).ToList();
-
-            if (tag.Type == BbCodeType.None)
-                toReturn.InnerText = context.Substring(tag.Start, tag.End - tag.Start);
-
-            return toReturn;
-        }
         #endregion
     }
 
@@ -763,9 +764,7 @@ namespace slimCat.Utilities
                 var type = (MessageType) values[2]; // what kind of type our message is
 
                 if (type == MessageType.Roll)
-                {
                     return Parse(text);
-                }
 
                 // this creates the name link
                 var nameLink = MakeUsernameLink(user);

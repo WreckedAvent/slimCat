@@ -42,47 +42,6 @@ namespace slimCat.Utilities
 
         #endregion
 
-        /// <summary>
-        ///     The url constants.
-        /// </summary>
-        public static class UrlConstants
-        {
-            /// <summary>
-            ///     The url for the root api.
-            /// </summary>
-            public const string Api = Domain + @"/json/api/";
-
-            /// <summary>
-            ///     The url for f-list.
-            /// </summary>
-            public const string Domain = @"https://www.f-list.net";
-
-            /// <summary>
-            ///     The url for the ticket get script.
-            /// </summary>
-            public const string GetTicket = Domain + @"/json/getApiTicket.php";
-
-            /// <summary>
-            ///     The url for the login script.
-            /// </summary>
-            public const string Login = Domain + @"/action/script_login.php";
-
-            /// <summary>
-            ///     The url for the get log script.
-            /// </summary>
-            public const string ReadLog = Domain + @"/fchat/getLog.php?log=";
-
-            /// <summary>
-            ///     The url for the view note script.
-            /// </summary>
-            public const string ViewNote = Domain + @"/view_note.php?note_id=";
-
-            /// <summary>
-            ///     The url for the upload log script.
-            /// </summary>
-            public const string UploadLog = Domain + @"/fchat/submitLog.php";
-        }
-
         public static class Arguments
         {
             public const string MultipleChannels = "channels";
@@ -112,6 +71,61 @@ namespace slimCat.Utilities
             public const string ActionConfirm = "confirm";
             public const string ActionAdd = "add";
             public const string ActionNotify = "notify";
+        }
+
+        /// <remarks>
+        ///     Some of these will be the same as server commands;
+        ///     there's no contract for them to be the same command code, though.
+        /// </remarks>
+        public static class ClientCommands
+        {
+            public const string AdminBroadcast = "BRO";
+            public const string AdminPromote = "AOP";
+            public const string AdminAccountWatch = "AWC"; // possibly depreciated
+            public const string AdminDemote = "DOP";
+            public const string AdminAlert = "SFC";
+            public const string AdminReward = "RWD";
+            public const string AdminBan = "ACB";
+            public const string AdminKick = "KIK";
+            public const string AdminUnban = "UBN";
+            public const string AdminTimeout = "TMO";
+
+            public const string ChannelCreate = "CCR";
+            public const string ChannelBanList = "CBL";
+            public const string ChannelDescription = "CDS";
+            public const string ChannelKick = "CKU";
+            public const string ChannelPromote = "COA";
+            public const string ChannelDemote = "COR";
+            public const string ChannelModeratorList = "COL";
+            public const string ChannelOwner = "CSO";
+            public const string ChannelTimeOut = "CTU";
+            public const string ChannelBan = "CBU";
+            public const string ChannelUnban = "CUB";
+            public const string ChannelJoin = "JCH";
+            public const string ChannelLeave = "LCH";
+            public const string ChannelMessage = "MSG";
+            public const string ChannelRoll = "RLL";
+            public const string ChannelMode = "RMO";
+            public const string ChannelKind = "RST";
+            public const string ChannelAd = "LRP";
+
+            public const string UserInvite = "CIU";
+            public const string UserSearch = "FKS";
+            public const string UserIgnore = "IGN";
+            public const string UserKinks = "KIN";
+            public const string UserMessage = "PRI";
+            public const string UserProfile = "PRO";
+            public const string UserStatus = "STA";
+            public const string UserTyping = "TPN";
+
+            public const string PublicChannelList = "CHA";
+            public const string PrivateChannelList = "ORS";
+
+            public const string SystemChannelCreate = "CRC";
+            public const string SystemAuthenticate = "IDN";
+            public const string SystemPing = "PIN";
+            public const string SystemReload = "RLD";
+            public const string SystemUptime = "UPT";
         }
 
         public static class Errors
@@ -247,59 +261,45 @@ namespace slimCat.Utilities
             public const string SearchResult = "FKS";
         }
 
-        /// <remarks>
-        /// Some of these will be the same as server commands;
-        /// there's no contract for them to be the same command code, though.
-        /// </remarks>
-        public static class ClientCommands
+        /// <summary>
+        ///     The url constants.
+        /// </summary>
+        public static class UrlConstants
         {
-            public const string AdminBroadcast = "BRO";
-            public const string AdminPromote = "AOP";
-            public const string AdminAccountWatch = "AWC"; // possibly depreciated
-            public const string AdminDemote = "DOP";
-            public const string AdminAlert = "SFC";
-            public const string AdminReward = "RWD";
-            public const string AdminBan = "ACB";
-            public const string AdminKick = "KIK";
-            public const string AdminUnban = "UBN";
-            public const string AdminTimeout = "TMO";
+            /// <summary>
+            ///     The url for the root api.
+            /// </summary>
+            public const string Api = Domain + @"/json/api/";
 
-            public const string ChannelCreate = "CCR";
-            public const string ChannelBanList = "CBL";
-            public const string ChannelDescription = "CDS";
-            public const string ChannelKick = "CKU";
-            public const string ChannelPromote = "COA";
-            public const string ChannelDemote = "COR";
-            public const string ChannelModeratorList = "COL";
-            public const string ChannelOwner = "CSO";
-            public const string ChannelTimeOut = "CTU";
-            public const string ChannelBan = "CBU";
-            public const string ChannelUnban = "CUB";
-            public const string ChannelJoin = "JCH";
-            public const string ChannelLeave = "LCH";
-            public const string ChannelMessage = "MSG";
-            public const string ChannelRoll = "RLL";
-            public const string ChannelMode = "RMO";
-            public const string ChannelKind = "RST";
-            public const string ChannelAd = "LRP";
+            /// <summary>
+            ///     The url for f-list.
+            /// </summary>
+            public const string Domain = @"https://www.f-list.net";
 
-            public const string UserInvite = "CIU";
-            public const string UserSearch = "FKS";
-            public const string UserIgnore = "IGN";
-            public const string UserKinks = "KIN";
-            public const string UserMessage = "PRI";
-            public const string UserProfile = "PRO";
-            public const string UserStatus = "STA";
-            public const string UserTyping = "TPN";
+            /// <summary>
+            ///     The url for the ticket get script.
+            /// </summary>
+            public const string GetTicket = Domain + @"/json/getApiTicket.php";
 
-            public const string PublicChannelList = "CHA";
-            public const string PrivateChannelList = "ORS";
+            /// <summary>
+            ///     The url for the login script.
+            /// </summary>
+            public const string Login = Domain + @"/action/script_login.php";
 
-            public const string SystemChannelCreate = "CRC";
-            public const string SystemAuthenticate = "IDN";
-            public const string SystemPing = "PIN";
-            public const string SystemReload = "RLD";
-            public const string SystemUptime = "UPT";
+            /// <summary>
+            ///     The url for the get log script.
+            /// </summary>
+            public const string ReadLog = Domain + @"/fchat/getLog.php?log=";
+
+            /// <summary>
+            ///     The url for the view note script.
+            /// </summary>
+            public const string ViewNote = Domain + @"/view_note.php?note_id=";
+
+            /// <summary>
+            ///     The url for the upload log script.
+            /// </summary>
+            public const string UploadLog = Domain + @"/fchat/submitLog.php";
         }
     }
 }

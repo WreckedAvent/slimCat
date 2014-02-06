@@ -139,8 +139,8 @@ namespace slimCat.Services
                             {
                                 try
                                 {
-                                    var setter = property.PropertyType.IsEnum 
-                                        ? Enum.Parse(property.PropertyType, element.Value) 
+                                    var setter = property.PropertyType.IsEnum
+                                        ? Enum.Parse(property.PropertyType, element.Value)
                                         : Convert.ChangeType(element.Value, property.PropertyType);
 
                                     property.SetValue(null, setter, null);

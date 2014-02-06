@@ -1,5 +1,26 @@
-﻿namespace slimCatTest
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CommandInterceptorTest.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace slimCatTest
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -17,18 +38,23 @@
     using Commands = slimCat.Utilities.Constants.ServerCommands;
     using Arguments = slimCat.Utilities.Constants.Arguments;
 
+    #endregion
+
     [TestClass]
     public class CommandInterceptorTest
     {
         #region Fields
-        private readonly Mock<IChatModel> chatModel;
-        private readonly Mock<IChatConnection> chatConnection;
+
         private readonly Mock<IChannelManager> channelManager;
         private readonly Mock<ICharacterManager> characterManager;
+        private readonly Mock<IChatConnection> chatConnection;
+        private readonly Mock<IChatModel> chatModel;
         private readonly IEventAggregator eventAggregator;
+
         #endregion
 
         #region Constructor
+
         public CommandInterceptorTest()
         {
             // TODO: maybe create a real container to handle this dependency injection
@@ -55,6 +81,7 @@
                 eventAggregator,
                 characterManager.Object);
         }
+
         #endregion
 
         #region Helpers
@@ -78,13 +105,13 @@
 
         internal static ICharacter CharacterWithName(string name)
         {
-            return new CharacterModel { Name = name };
+            return new CharacterModel {Name = name};
         }
 
         internal static IDictionary<string, object> WithIdentity(string id)
         {
-            return new Dictionary<string, object>{{Arguments.Identity, id}};
-        } 
+            return new Dictionary<string, object> {{Arguments.Identity, id}};
+        }
 
         private static void AllowProcessingTime()
         {
@@ -136,236 +163,24 @@
         {
             characterManager.Setup(x => x.Find(name)).Returns(CharacterWithName(name));
         }
+
         #endregion
-
-        [TestClass]
-        public class MessageCommandTests : CommandInterceptorTest
-        {
-            #region Fields
-            private const string Character = "testing character";
-            private const string Message = "testing message";
-            #endregion
-
-            #region Helpers
-            private void IgnoreIncomingCharacter()
-            {
-                characterManager.Setup(
-                    x => x.IsOnList(Character, ListKind.Ignored, true)).Returns(true);
-            }
-            #endregion
-
-            #region PRI
-            [TestMethod]
-            public void NewPrivateMessageWorks()
-            {
-                channelManager.Setup(
-                    x => x.AddMessage(Message, Character, Character, MessageType.Normal));
-
-                MockCommand(
-                    WithArgument(Arguments.Command, Commands.UserMessage),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
-
-                characterManager.VerifyAll();
-                channelManager.VerifyAll();
-            }
-
-            [TestMethod]
-            public void PrivateMethodFromExistingPmWorks()
-            {
-                var currentModel = new PmChannelModel(new CharacterModel { Name = Character }) { TypingStatus = TypingStatus.Typing };
-
-                characterManager.Setup(
-                    x => x.IsOnList(Character, ListKind.Ignored, true)).Returns(false);
-
-                channelManager.Setup(
-                    x => x.AddMessage(Message, Character, Character, MessageType.Normal));
-
-                chatModel.SetupGet(x => x.CurrentPms)
-                    .Returns(new ObservableCollection<PmChannelModel> { currentModel });
-
-                MockCommand(
-                    WithArgument(Arguments.Command, Commands.UserMessage),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
-
-                characterManager.VerifyAll();
-                channelManager.VerifyAll();
-                chatModel.VerifyGet(x => x.CurrentPms);
-
-                Assert.IsTrue(currentModel.TypingStatus == TypingStatus.Clear);
-            }
-
-            [TestMethod]
-            public void PmsFromIgnoredUserAreBlocked()
-            {
-                IgnoreIncomingCharacter();
-
-                chatConnection.Setup(
-                    x => x.SendMessage(new Dictionary<string, object>
-                        {
-                            {Arguments.Action, Arguments.ActionNotify},
-                            {Arguments.Character, Character},
-                            {Arguments.Type, Commands.UserIgnore}
-                        }));
-
-                MockCommand(
-                    WithArgument(Arguments.Command, Commands.UserMessage),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
-
-                characterManager.VerifyAll();
-                channelManager.Verify(
-                    x => x.AddMessage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), MessageType.Normal), Times.Never);
-                chatConnection.VerifyAll();
-            }
-            #endregion
-
-            #region MSG
-            [TestMethod]
-            public void ChannelMessagesWork()
-            {
-                const string channel = "testing channel";
-
-                channelManager.Setup(
-                    x => x.AddMessage(Message, channel, Character, MessageType.Normal));
-
-                MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelMessage),
-                    WithArgument(Arguments.Channel, channel),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
-
-                channelManager.VerifyAll();
-            }
-
-            [TestMethod]
-            public void ChannelMessagesFromIgnoredUserAreBlocked()
-            {
-                const string channel = "testing channel";
-
-                IgnoreIncomingCharacter();
-
-                MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelMessage),
-                    WithArgument(Arguments.Channel, channel),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
-
-                channelManager.Verify(
-                    x => x.AddMessage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageType>()), Times.Never);
-            }
-            #endregion
-
-            #region LRP
-            [TestMethod]
-            public void ChannelAdsWork()
-            {
-                const string channel = "testing channel";
-
-                channelManager.Setup(
-                    x => x.AddMessage(Message, channel, Character, MessageType.Ad));
-
-                MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelAd),
-                    WithArgument(Arguments.Channel, channel),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
-
-                channelManager.VerifyAll();
-            }
-
-            [TestMethod]
-            public void ChannelAdsFromIgnoredUserAreBlocked()
-            {
-                const string channel = "testing channel";
-
-                IgnoreIncomingCharacter();
-
-                MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelAd),
-                    WithArgument(Arguments.Channel, channel),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
-
-                channelManager.Verify(
-                    x => x.AddMessage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageType>()), Times.Never);
-            }
-            #endregion
-
-            #region BRO
-
-            [TestMethod]
-            public void BroadcastWorks()
-            {
-                characterManager.Setup(x => x.Find(Character)).Returns(new CharacterModel { Name = Character });
-
-                ShouldCreateUpdate(x =>
-                    {
-                        var result = ShouldBeCharacterUpdate<CharacterUpdateModel.BroadcastEventArgs>(x);
-                        Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(Character));
-                        Assert.IsTrue(result.Item2.Message.Equals(Message));
-                    });
-
-                MockCommand(
-                    WithArgument(Arguments.Command, Commands.AdminBroadcast),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
-
-
-                characterManager.VerifyAll();
-            }
-            #endregion
-
-            #region RLL
-            [TestMethod]
-            public void ChannelRollsWork()
-            {
-                const string channel = "testing channel";
-
-                channelManager.Setup(
-                    x => x.AddMessage(Message, channel, Character, MessageType.Roll));
-
-                MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelRoll),
-                    WithArgument(Arguments.Channel, channel),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
-
-                channelManager.VerifyAll();
-            }
-
-            [TestMethod]
-            public void ChannelRollsFromIgnoredUserAreBlocked()
-            {
-                const string channel = "testing channel";
-
-                IgnoreIncomingCharacter();
-
-                MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelRoll),
-                    WithArgument(Arguments.Channel, channel),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
-
-                channelManager.Verify(
-                    x => x.AddMessage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageType>()), Times.Never);
-            }
-            #endregion
-        }
 
         [TestClass]
         public class ChannelCommandTests : CommandInterceptorTest
         {
             #region Fields
+
             private const string ChannelName = "testing channel";
+
+            private const string First = "testing character one";
+            private const string Second = "testing character two";
             private readonly GeneralChannelModel channelModel;
 
-            const string First = "testing character one";
-            const string Second = "testing character two";
             #endregion
 
             #region Constructor
+
             public ChannelCommandTests()
             {
                 channelModel = new GeneralChannelModel(ChannelName, ChannelType.Public);
@@ -374,31 +189,35 @@
                     .Returns(new ObservableCollection<GeneralChannelModel> {channelModel});
 
                 chatModel.SetupGet(x => x.CurrentChannels)
-                    .Returns(new ObservableCollection<GeneralChannelModel> { channelModel });
+                    .Returns(new ObservableCollection<GeneralChannelModel> {channelModel});
 
                 chatModel.Setup(x => x.FindChannel(ChannelName, null)).Returns(channelModel);
             }
+
             #endregion
 
             #region Helpers
+
             private void SetupLists()
             {
                 characterManager
                     .Setup(x => x.Find(First))
-                    .Returns(new CharacterModel { Name = First });
+                    .Returns(new CharacterModel {Name = First});
 
                 characterManager
                     .Setup(x => x.Find(Second))
-                    .Returns(new CharacterModel { Name = Second });
+                    .Returns(new CharacterModel {Name = Second});
             }
 
             private void JoinCurrentChannel(string name)
             {
                 channelModel.CharacterManager.SignOn(CharacterWithName(name));
             }
+
             #endregion
 
             #region ICH
+
             [TestMethod]
             public void ChannelInitializeWorks()
             {
@@ -412,7 +231,7 @@
 
                 MockCommand(
                     WithArgument(Arguments.Command, Commands.ChannelInitialize),
-                    WithArgument(Arguments.MultipleUsers,  users),
+                    WithArgument(Arguments.MultipleUsers, users),
                     WithArgument(Arguments.Channel, ChannelName),
                     WithArgument(Arguments.Mode, ChannelMode.Both.ToString()));
 
@@ -420,12 +239,14 @@
                 Thread.Sleep(250);
                 characterManager.VerifyAll();
 
-                Assert.IsTrue(channelModel.CharacterManager.Characters.Count == 2); 
+                Assert.IsTrue(channelModel.CharacterManager.Characters.Count == 2);
                 Assert.IsTrue(channelModel.Mode == ChannelMode.Both);
             }
+
             #endregion
 
             #region CDS
+
             [TestMethod]
             public void ChannelDescriptionInitializeWorks()
             {
@@ -460,9 +281,11 @@
 
                 Assert.IsTrue(channelModel.Description.Equals(description));
             }
+
             #endregion
 
             #region COL
+
             [TestMethod]
             public void ChannelModeratorListWorks()
             {
@@ -479,6 +302,7 @@
                 Assert.IsTrue(channelModel.CharacterManager.IsOnList(First, ListKind.Moderator, false));
                 Assert.IsTrue(channelModel.CharacterManager.IsOnList(Second, ListKind.Moderator, false));
             }
+
             #endregion
 
             #region RMO
@@ -501,6 +325,7 @@
                 chatModel.VerifyGet(x => x.CurrentChannels);
                 Assert.IsTrue(channelModel.Mode == ChannelMode.Ads);
             }
+
             #endregion
 
             #region CKU / CBU
@@ -512,13 +337,13 @@
                 const string kicked = "testing kickee";
 
                 ShouldCreateUpdate(x =>
-                {
-                    var result = ShouldBeChannelUpdate<ChannelUpdateModel.ChannelDisciplineEventArgs>(x);
-                    Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
-                    Assert.IsTrue(result.Item2.IsBan == false);
-                    Assert.IsTrue(result.Item2.Kicker == op);
-                    Assert.IsTrue(result.Item2.Kicked == kicked);
-                });
+                    {
+                        var result = ShouldBeChannelUpdate<ChannelUpdateModel.ChannelDisciplineEventArgs>(x);
+                        Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
+                        Assert.IsTrue(result.Item2.IsBan == false);
+                        Assert.IsTrue(result.Item2.Kicker == op);
+                        Assert.IsTrue(result.Item2.Kicked == kicked);
+                    });
 
                 SetCurrentCharacterTo("foobar");
                 JoinCurrentChannel(kicked);
@@ -541,13 +366,13 @@
                 const string kicked = "testing kickee";
 
                 ShouldCreateUpdate(x =>
-                {
-                    var result = ShouldBeChannelUpdate<ChannelUpdateModel.ChannelDisciplineEventArgs>(x);
-                    Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
-                    Assert.IsTrue(result.Item2.IsBan == false);
-                    Assert.IsTrue(result.Item2.Kicker == op);
-                    Assert.IsTrue(result.Item2.Kicked == kicked);
-                });
+                    {
+                        var result = ShouldBeChannelUpdate<ChannelUpdateModel.ChannelDisciplineEventArgs>(x);
+                        Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
+                        Assert.IsTrue(result.Item2.IsBan == false);
+                        Assert.IsTrue(result.Item2.Kicker == op);
+                        Assert.IsTrue(result.Item2.Kicked == kicked);
+                    });
 
                 SetCurrentCharacterTo(kicked);
                 JoinCurrentChannel(kicked);
@@ -596,6 +421,7 @@
             #endregion
 
             #region COA / COR
+
             [TestMethod]
             public void ChannelPromoteWorks()
             {
@@ -603,12 +429,12 @@
                 channelModel.CharacterManager.SignOn(CharacterWithName(promotee));
 
                 ShouldCreateUpdate(x =>
-                {
-                    var result = ShouldBeCharacterUpdate<CharacterUpdateModel.PromoteDemoteEventArgs>(x);
-                    Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(promotee));
-                    Assert.IsTrue(result.Item2.IsPromote);
-                    Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
-                });
+                    {
+                        var result = ShouldBeCharacterUpdate<CharacterUpdateModel.PromoteDemoteEventArgs>(x);
+                        Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(promotee));
+                        Assert.IsTrue(result.Item2.IsPromote);
+                        Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
+                    });
 
                 characterManager.Setup(x => x.Find(promotee)).Returns(CharacterWithName(promotee));
 
@@ -628,12 +454,12 @@
                 channelModel.CharacterManager.Add(promotee, ListKind.Moderator);
 
                 ShouldCreateUpdate(x =>
-                {
-                    var result = ShouldBeCharacterUpdate<CharacterUpdateModel.PromoteDemoteEventArgs>(x);
-                    Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(promotee));
-                    Assert.IsFalse(result.Item2.IsPromote);
-                    Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
-                });
+                    {
+                        var result = ShouldBeCharacterUpdate<CharacterUpdateModel.PromoteDemoteEventArgs>(x);
+                        Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(promotee));
+                        Assert.IsFalse(result.Item2.IsPromote);
+                        Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
+                    });
 
                 characterManager.Setup(x => x.Find(promotee)).Returns(CharacterWithName(promotee));
 
@@ -644,9 +470,11 @@
 
                 Assert.IsFalse(channelModel.CharacterManager.IsOnList(promotee, ListKind.Moderator));
             }
+
             #endregion
 
             #region JCH
+
             [TestMethod]
             public void ChannelJoinWorks()
             {
@@ -656,12 +484,12 @@
                 LogInCharacter(joinerName);
 
                 ShouldCreateUpdate(x =>
-                {
-                    var result = ShouldBeCharacterUpdate<CharacterUpdateModel.JoinLeaveEventArgs>(x);
-                    Assert.IsTrue(result.Item1.TargetCharacter.Equals(joiner));
-                    Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
-                    Assert.IsTrue(result.Item2.Joined);
-                });
+                    {
+                        var result = ShouldBeCharacterUpdate<CharacterUpdateModel.JoinLeaveEventArgs>(x);
+                        Assert.IsTrue(result.Item1.TargetCharacter.Equals(joiner));
+                        Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
+                        Assert.IsTrue(result.Item2.Joined);
+                    });
 
                 MockCommand(
                     WithArgument(Arguments.Command, Commands.ChannelJoin),
@@ -680,7 +508,7 @@
 
                 chatModel.SetupGet(x => x.CurrentChannels).Returns(new ObservableCollection<GeneralChannelModel>());
                 channelManager.Setup(x => x.JoinChannel(ChannelType.Public, ChannelName, ChannelName));
-                
+
                 ShouldNotCreateUpdate();
 
                 MockCommand(
@@ -696,6 +524,7 @@
             #endregion
 
             #region LCH
+
             [TestMethod]
             public void LeaveChannelWorks()
             {
@@ -719,9 +548,249 @@
                     WithArgument(Arguments.Channel, ChannelName),
                     WithArgument(Arguments.Character, leaverName));
 
-                characterManager.VerifyAll(); 
+                characterManager.VerifyAll();
                 Assert.IsFalse(channelModel.CharacterManager.IsOnList(leaverName, ListKind.Online));
             }
+
+            #endregion
+        }
+
+        [TestClass]
+        public class MessageCommandTests : CommandInterceptorTest
+        {
+            #region Fields
+
+            private const string Character = "testing character";
+            private const string Message = "testing message";
+
+            #endregion
+
+            #region Helpers
+
+            private void IgnoreIncomingCharacter()
+            {
+                characterManager.Setup(
+                    x => x.IsOnList(Character, ListKind.Ignored, true)).Returns(true);
+            }
+
+            #endregion
+
+            #region PRI
+
+            [TestMethod]
+            public void NewPrivateMessageWorks()
+            {
+                channelManager.Setup(
+                    x => x.AddMessage(Message, Character, Character, MessageType.Normal));
+
+                MockCommand(
+                    WithArgument(Arguments.Command, Commands.UserMessage),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
+
+                characterManager.VerifyAll();
+                channelManager.VerifyAll();
+            }
+
+            [TestMethod]
+            public void PrivateMethodFromExistingPmWorks()
+            {
+                var currentModel = new PmChannelModel(new CharacterModel {Name = Character})
+                    {
+                        TypingStatus = TypingStatus.Typing
+                    };
+
+                characterManager.Setup(
+                    x => x.IsOnList(Character, ListKind.Ignored, true)).Returns(false);
+
+                channelManager.Setup(
+                    x => x.AddMessage(Message, Character, Character, MessageType.Normal));
+
+                chatModel.SetupGet(x => x.CurrentPms)
+                    .Returns(new ObservableCollection<PmChannelModel> {currentModel});
+
+                MockCommand(
+                    WithArgument(Arguments.Command, Commands.UserMessage),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
+
+                characterManager.VerifyAll();
+                channelManager.VerifyAll();
+                chatModel.VerifyGet(x => x.CurrentPms);
+
+                Assert.IsTrue(currentModel.TypingStatus == TypingStatus.Clear);
+            }
+
+            [TestMethod]
+            public void PmsFromIgnoredUserAreBlocked()
+            {
+                IgnoreIncomingCharacter();
+
+                chatConnection.Setup(
+                    x => x.SendMessage(new Dictionary<string, object>
+                        {
+                            {Arguments.Action, Arguments.ActionNotify},
+                            {Arguments.Character, Character},
+                            {Arguments.Type, Commands.UserIgnore}
+                        }));
+
+                MockCommand(
+                    WithArgument(Arguments.Command, Commands.UserMessage),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
+
+                characterManager.VerifyAll();
+                channelManager.Verify(
+                    x => x.AddMessage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), MessageType.Normal),
+                    Times.Never);
+                chatConnection.VerifyAll();
+            }
+
+            #endregion
+
+            #region MSG
+
+            [TestMethod]
+            public void ChannelMessagesWork()
+            {
+                const string channel = "testing channel";
+
+                channelManager.Setup(
+                    x => x.AddMessage(Message, channel, Character, MessageType.Normal));
+
+                MockCommand(
+                    WithArgument(Arguments.Command, Commands.ChannelMessage),
+                    WithArgument(Arguments.Channel, channel),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
+
+                channelManager.VerifyAll();
+            }
+
+            [TestMethod]
+            public void ChannelMessagesFromIgnoredUserAreBlocked()
+            {
+                const string channel = "testing channel";
+
+                IgnoreIncomingCharacter();
+
+                MockCommand(
+                    WithArgument(Arguments.Command, Commands.ChannelMessage),
+                    WithArgument(Arguments.Channel, channel),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
+
+                channelManager.Verify(
+                    x =>
+                        x.AddMessage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageType>()),
+                    Times.Never);
+            }
+
+            #endregion
+
+            #region LRP
+
+            [TestMethod]
+            public void ChannelAdsWork()
+            {
+                const string channel = "testing channel";
+
+                channelManager.Setup(
+                    x => x.AddMessage(Message, channel, Character, MessageType.Ad));
+
+                MockCommand(
+                    WithArgument(Arguments.Command, Commands.ChannelAd),
+                    WithArgument(Arguments.Channel, channel),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
+
+                channelManager.VerifyAll();
+            }
+
+            [TestMethod]
+            public void ChannelAdsFromIgnoredUserAreBlocked()
+            {
+                const string channel = "testing channel";
+
+                IgnoreIncomingCharacter();
+
+                MockCommand(
+                    WithArgument(Arguments.Command, Commands.ChannelAd),
+                    WithArgument(Arguments.Channel, channel),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
+
+                channelManager.Verify(
+                    x =>
+                        x.AddMessage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageType>()),
+                    Times.Never);
+            }
+
+            #endregion
+
+            #region BRO
+
+            [TestMethod]
+            public void BroadcastWorks()
+            {
+                characterManager.Setup(x => x.Find(Character)).Returns(new CharacterModel {Name = Character});
+
+                ShouldCreateUpdate(x =>
+                    {
+                        var result = ShouldBeCharacterUpdate<CharacterUpdateModel.BroadcastEventArgs>(x);
+                        Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(Character));
+                        Assert.IsTrue(result.Item2.Message.Equals(Message));
+                    });
+
+                MockCommand(
+                    WithArgument(Arguments.Command, Commands.AdminBroadcast),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
+
+
+                characterManager.VerifyAll();
+            }
+
+            #endregion
+
+            #region RLL
+
+            [TestMethod]
+            public void ChannelRollsWork()
+            {
+                const string channel = "testing channel";
+
+                channelManager.Setup(
+                    x => x.AddMessage(Message, channel, Character, MessageType.Roll));
+
+                MockCommand(
+                    WithArgument(Arguments.Command, Commands.ChannelRoll),
+                    WithArgument(Arguments.Channel, channel),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
+
+                channelManager.VerifyAll();
+            }
+
+            [TestMethod]
+            public void ChannelRollsFromIgnoredUserAreBlocked()
+            {
+                const string channel = "testing channel";
+
+                IgnoreIncomingCharacter();
+
+                MockCommand(
+                    WithArgument(Arguments.Command, Commands.ChannelRoll),
+                    WithArgument(Arguments.Channel, channel),
+                    WithArgument(Arguments.Character, Character),
+                    WithArgument(Arguments.Message, Message));
+
+                channelManager.Verify(
+                    x =>
+                        x.AddMessage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MessageType>()),
+                    Times.Never);
+            }
+
             #endregion
         }
     }

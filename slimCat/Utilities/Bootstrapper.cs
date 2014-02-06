@@ -81,7 +81,7 @@ namespace slimCat.Utilities
         }
 
         private void RegisterSingleton<TFrom, TTo>()
-            where TFrom : class 
+            where TFrom : class
             where TTo : TFrom
         {
             Container.RegisterType<TFrom, TTo>(new ContainerControlledLifetimeManager());

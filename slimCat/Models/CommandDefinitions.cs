@@ -21,10 +21,10 @@ namespace slimCat.Models
 {
     #region Usings
 
+    // I know these are bad names, but it makes the giant list below more legible
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    // I know these are bad names, but it makes the giant list below more legible
     using C = Utilities.Constants.ClientCommands;
     using A = Utilities.Constants.Arguments;
 
@@ -72,7 +72,8 @@ namespace slimCat.Models
                 {"addfriend", new CommandModel("addfriend", "friend-add", new[] {"dest_name"})},
                 {
                     "bottle",
-                    new CommandModel("bottle", C.ChannelRoll, new[] {"dice"}, CommandModel.CommandTypes.SingleArgsAndChannel)
+                    new CommandModel("bottle", C.ChannelRoll, new[] {"dice"},
+                        CommandModel.CommandTypes.SingleArgsAndChannel)
                 },
                 {"code", new CommandModel("code", "code", null, CommandModel.CommandTypes.NoArgs)},
                 {"clear", new CommandModel("clear", "clear", null, CommandModel.CommandTypes.NoArgs)},
@@ -80,7 +81,8 @@ namespace slimCat.Models
                 {"close", new CommandModel("close", "close", new[] {"channel"}, CommandModel.CommandTypes.OnlyChannel)},
                 {
                     "ignore",
-                    new CommandModel("ignore", C.UserIgnore, new[] {A.Character, A.Action}, CommandModel.CommandTypes.TwoArgs)
+                    new CommandModel("ignore", C.UserIgnore, new[] {A.Character, A.Action},
+                        CommandModel.CommandTypes.TwoArgs)
                 },
                 {"interesting", new CommandModel("interesting", "interesting", new[] {A.Character})},
                 {
@@ -114,7 +116,8 @@ namespace slimCat.Models
                 {"removefriend", new CommandModel("removefriend", "friend-remove", new[] {"dest_name"})},
                 {
                     "roll",
-                    new CommandModel("roll", C.ChannelRoll, new[] {"dice"}, CommandModel.CommandTypes.SingleArgsAndChannel)
+                    new CommandModel("roll", C.ChannelRoll, new[] {"dice"},
+                        CommandModel.CommandTypes.SingleArgsAndChannel)
                 },
                 {
                     "report",
@@ -123,13 +126,15 @@ namespace slimCat.Models
                 },
                 {
                     "status",
-                    new CommandModel("status", C.UserStatus, new[] {A.Status, A.StatusMessage}, CommandModel.CommandTypes.TwoArgs)
+                    new CommandModel("status", C.UserStatus, new[] {A.Status, A.StatusMessage},
+                        CommandModel.CommandTypes.TwoArgs)
                 },
                 {"tempignore", new CommandModel("tempignore", "tempignore", new[] {A.Character})},
                 {"tempunignore", new CommandModel("tempunignore", "tempunignore", new[] {A.Character})},
                 {
                     "unignore",
-                    new CommandModel("unignore", C.UserIgnore, new[] {A.Character, A.Action}, CommandModel.CommandTypes.TwoArgs)
+                    new CommandModel("unignore", C.UserIgnore, new[] {A.Character, A.Action},
+                        CommandModel.CommandTypes.TwoArgs)
                 },
                 {"who", new CommandModel("who", "who", null, CommandModel.CommandTypes.NoArgs)},
 
@@ -354,7 +359,8 @@ namespace slimCat.Models
                 {
                     ClientSendChannelAd,
                     new CommandModel(
-                        ClientSendChannelAd, C.ChannelAd, new[] {A.Message}, CommandModel.CommandTypes.SingleArgsAndChannel)
+                        ClientSendChannelAd, C.ChannelAd, new[] {A.Message},
+                        CommandModel.CommandTypes.SingleArgsAndChannel)
                 },
             };
 
