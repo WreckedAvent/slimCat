@@ -64,8 +64,6 @@ namespace slimCat.Services
 
         private double soundSaveVolume;
 
-        private bool windowHasFocus;
-
         #endregion
 
         #region Constructors and Destructors
@@ -161,10 +159,7 @@ namespace slimCat.Services
         {
             get
             {
-                Dispatcher.Invoke(
-                    (Action) delegate { windowHasFocus = Application.Current.MainWindow.IsActive; });
-
-                return windowHasFocus;
+                return (bool) Dispatcher.Invoke(new Func<bool>(() => Application.Current.MainWindow.IsActive ));
             }
         }
 
@@ -361,7 +356,10 @@ namespace slimCat.Services
             if (channel == null)
                 return;
 
-            if (channel.IsSelected && WindowIsFocused)
+            var windowFocusMatters = WindowIsFocused && !ApplicationSettings.PlaySoundEvenWhenWindowIsFocused;
+            var channelFocusMatters = channel.IsSelected && !ApplicationSettings.PlaySoundEvenWhenTabIsFocused;
+
+            if (channelFocusMatters && windowFocusMatters)
                 return;
 
             switch ((ChannelSettingsModel.NotifyLevel) channel.Settings.MessageNotifyLevel)
@@ -384,6 +382,8 @@ namespace slimCat.Services
 
         private void HandleNotification(NotificationModel notification)
         {
+            // TODO: Refactor to each update model handling this logic atomically
+
             // character update models will be *most* of the notification the user will see
             var model = notification as CharacterUpdateModel;
             if (model != null)

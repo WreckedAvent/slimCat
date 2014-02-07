@@ -100,6 +100,18 @@
                             Allow BBCode Colors
                         </CheckBox>
 
+                        <CheckBox IsChecked="{Binding AllowSoundWhenWindowIsFocused}"
+                                  VerticalAlignment="Center"
+                                  Margin="0,5">
+                            Allow Sound when Window is Focused
+                        </CheckBox>
+                        
+                        <CheckBox IsChecked="{Binding AllowSoundWhenTabIsFocused}"
+                                  VerticalAlignment="Center"
+                                  Margin="0,5">
+                            Allow Sound when Current Tab is Focused
+                        </CheckBox>
+
                         <!-- disabled until I figure out how to do this without doing what I was doing before
                         <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
                                   VerticalAlignment="Center"

@@ -405,6 +405,28 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool AllowSoundWhenWindowIsFocused
+        {
+            get { return ApplicationSettings.PlaySoundEvenWhenWindowIsFocused; }
+
+            set
+            {
+                ApplicationSettings.PlaySoundEvenWhenWindowIsFocused = value;
+                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+            }
+        }
+
+        public bool AllowSoundWhenTabIsFocused
+        {
+            get { return ApplicationSettings.PlaySoundEvenWhenTabIsFocused; }
+
+            set
+            {
+                ApplicationSettings.PlaySoundEvenWhenTabIsFocused = value;
+                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+            }
+        }
+
         #endregion
 
         #region Public Methods and Operators

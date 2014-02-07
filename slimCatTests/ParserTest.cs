@@ -454,8 +454,9 @@ http://www.foo.bar.com";
             [TestMethod]
             public void Test()
             {
-                const string text =
-                    "[20:29] Kali Trixtan: [i][b]YoteBot[/b] says[/i]: [bad url: http://www.knife.com] ";
+                const string text ="[15:46] Lyrra Goron: desu~~desu~~desu~~desu~~desu~~ http://www.youtube.com/watch?v=-2PEpB8gaws&list=FL0bOYeJ-zn1hTIDuHcih4-A";
+
+                var result = ShouldBeOneOf<Span>(text).ToList();
             }
         }
 

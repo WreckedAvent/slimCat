@@ -140,7 +140,20 @@ namespace slimCat.Models
             get { return new[] {"en-US", "en-GB", "de", "es", "fr"}; }
         }
 
+        /// <summary>
+        ///     Gets or sets the gender color settings.
+        /// </summary>
         public static GenderColorSettings GenderColorSettings { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether to play sound even when the window is focused.
+        /// </summary>
+        public static bool PlaySoundEvenWhenWindowIsFocused { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether play sound even when the current tab is focused.
+        /// </summary>
+        public static bool PlaySoundEvenWhenTabIsFocused { get; set; }
 
         #endregion
     }
