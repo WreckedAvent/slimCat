@@ -28,8 +28,10 @@ namespace slimCat.Services
 
     public interface ITicketProvider
     {
-        Task<string> GetTicketAsync();
+        string Ticket { get; }
 
-        Task<IAccount> GetAccountAsync();
+        IAccount Account { get; }
+
+        void SetCredentials(string user, string pass);
     }
 }

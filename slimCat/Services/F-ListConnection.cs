@@ -26,6 +26,7 @@ namespace slimCat.Services
     using System.Linq;
     using System.Net;
     using System.Text;
+    using Microsoft.Practices.Prism;
     using Microsoft.Practices.Prism.Events;
     using Models;
     using SimpleJson;
@@ -40,6 +41,7 @@ namespace slimCat.Services
     internal class ListConnection : IListConnection
     {
         private readonly IBrowser browser;
+        private readonly ITicketProvider ticketProvider;
 
         #region Fields
 
@@ -62,9 +64,13 @@ namespace slimCat.Services
         /// <param name="eventagg">
         ///     The eventagg.
         /// </param>
-        public ListConnection(IAccount model, IEventAggregator eventagg, IBrowser browser)
+        /// <param name="browser"></param>
+        /// <param name="ticketProvider"></param>
+        public ListConnection(IAccount model, IEventAggregator eventagg, IBrowser browser, ITicketProvider ticketProvider)
         {
             this.browser = browser;
+            this.ticketProvider = ticketProvider;
+
             try
             {
                 this.model = model.ThrowIfNull("model");
@@ -169,62 +175,15 @@ namespace slimCat.Services
             try
             {
                 model.Error = string.Empty;
-                var loginCredentials = new Dictionary<string, object>
-                    {
-                        {"account", model.AccountName.ToLower()},
-                        {"password", model.Password},
-                    };
+                ticketProvider.SetCredentials(model.AccountName, model.Password);
 
-                var buffer = browser.GetResponse(Constants.UrlConstants.GetTicket, loginCredentials);
+                var acc = ticketProvider.Account;
 
-                // assign the data to our account model
-                dynamic result = SimpleJson.DeserializeObject(buffer);
-
-                var hasError = !string.IsNullOrWhiteSpace((string) result.error);
-
-                model.Ticket = (string) result.ticket;
-
-                if (hasError)
-                {
-                    model.Error = (string) result.error;
-
-                    events.GetEvent<LoginCompleteEvent>().Publish(false);
-                    return;
-                }
-
-                foreach (var item in result.characters)
-                    model.Characters.Add((string) item);
-
-                foreach (var item in result.friends)
-                {
-                    if (model.AllFriends.ContainsKey(item["source_name"]))
-                        model.AllFriends[item["source_name"]].Add((string) item["dest_name"]);
-                    else
-                    {
-                        var list = new List<string> {(string) item["dest_name"]};
-
-                        model.AllFriends.Add(item["source_name"], list);
-                    }
-                }
-
-                foreach (var item in result.bookmarks)
-                {
-                    if (!model.Bookmarks.Contains(item["name"] as string))
-                        model.Bookmarks.Add(item["name"] as string);
-                }
+                model.Characters.AddRange(acc.Characters);
+                acc.AllFriends.Each(model.AllFriends.Add);
+                acc.Bookmarks.Each(model.Bookmarks.Add);
 
                 events.GetEvent<LoginCompleteEvent>().Publish(true);
-
-                loginCredentials = new Dictionary<string, object>
-                    {
-                        {
-                            "username",
-                            model.AccountName.ToLower()
-                        },
-                        {"password", model.Password},
-                    };
-
-                browser.GetResponse(Constants.UrlConstants.Login, loginCredentials, true);
             }
             catch (Exception ex)
             {

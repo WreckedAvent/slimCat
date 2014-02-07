@@ -47,6 +47,7 @@ namespace slimCat.Services
         private readonly IEventAggregator events;
 
         private readonly WebSocket socket;
+        private readonly ITicketProvider provider;
 
         private bool isAuthenticated;
         private StreamWriter logger;
@@ -67,9 +68,11 @@ namespace slimCat.Services
         ///     The eventagg.
         /// </param>
         /// <param name="socket"></param>
-        public ChatConnection(IAccount user, IEventAggregator eventagg, WebSocket socket)
+        /// <param name="provider"></param>
+        public ChatConnection(IAccount user, IEventAggregator eventagg, WebSocket socket, ITicketProvider provider)
         {
             this.socket = socket;
+            this.provider = provider;
             Account = user.ThrowIfNull("user");
             events = eventagg.ThrowIfNull("eventagg");
 
@@ -228,6 +231,8 @@ namespace slimCat.Services
 
                 events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(ConnectToChat);
 
+                if (socket.State == WebSocketState.Open || socket.State == WebSocketState.Connecting) return;
+
                 // define socket behavior
                 socket.Opened += ConnectionOpened;
                 socket.Error += ConnectionError;
@@ -353,9 +358,9 @@ namespace slimCat.Services
             object authRequest =
                 new
                     {
-                        ticket = Account.Ticket,
+                        ticket = provider.Ticket,
                         method = "ticket",
-                        account = Account.AccountName,
+                        account = provider.Account.AccountName,
                         character = Character,
                         cname = Constants.ClientId,
                         cversion = string.Format("{0} {1}", Constants.ClientName, Constants.ClientVer)

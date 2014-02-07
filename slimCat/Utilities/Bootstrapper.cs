@@ -54,6 +54,7 @@ namespace slimCat.Utilities
                 // create singletons
                 RegisterSingleton<IAccount, AccountModel>();
                 RegisterSingleton<IBrowser, Browser>();
+                RegisterSingleton<ITicketProvider, TicketProvider>();
                 RegisterSingleton<IListConnection, ListConnection>();
                 RegisterSingleton<IChatConnection, ChatConnection>();
                 RegisterSingleton<IChatModel, ChatModel>();
