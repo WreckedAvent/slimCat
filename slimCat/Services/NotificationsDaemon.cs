@@ -379,7 +379,7 @@ namespace slimCat.Services
 
         private void HandleNotification(NotificationModel notification)
         {
-            // TODO: I'M DYIN'! REFACTOR ME OVER HERE!
+            // TODO: I'M DYIN' OVER HERE! REFACTOR ME!
 
             // character update models will be *most* of the notification the user will see
             var model = notification as CharacterUpdateModel;
@@ -458,7 +458,7 @@ namespace slimCat.Services
                     AddNotification(model);
                     NotifyUser(true, true, notification.ToString(), targetCharacter);
                 }
-                else if (IsOfInterest(targetCharacter, false))
+                else if (IsOfInterest(targetCharacter, false) && !model.TargetCharacter.IgnoreUpdates)
                 {
                     AddNotification(model);
 

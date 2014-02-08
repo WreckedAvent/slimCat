@@ -140,8 +140,7 @@ namespace slimCat.Services
                         {"getdescription", OnChannelDescripionRequested},
                         {"interesting", OnMarkInterestedRequested},
                         {"notinteresting", OnMarkNotInterestedRequested},
-                        {"ingnoreUpdates", OnIgnoreUpdatesRequested},
-                        {"unignoreUpdates", OnUnigoreUpdatesRequested},
+                        {"ignoreUpdates", OnIgnoreUpdatesRequested},
                         {Commands.AdminAlert, OnReportRequested},
                         {"tempignore", OnTemporaryIgnoreRequested},
                         {"tempunignore", OnTemporaryIgnoreRequested},
@@ -692,14 +691,15 @@ namespace slimCat.Services
                             }));
         }
 
-        private void OnUnigoreUpdatesRequested(IDictionary<string, object> command)
-        {
-            throw new NotImplementedException();
-        }
-
         private void OnIgnoreUpdatesRequested(IDictionary<string, object> command)
         {
-            throw new NotImplementedException();
+            var args = command.Get(Arguments.Character);
+
+            var isAdd = !characterManager.IsOnList(args, ListKind.IgnoreUpdates);
+            if (isAdd)
+                characterManager.Add(args, ListKind.IgnoreUpdates);
+            else
+                characterManager.Remove(args, ListKind.IgnoreUpdates);
         }
 
         private void OnReportRequested(IDictionary<string, object> command)

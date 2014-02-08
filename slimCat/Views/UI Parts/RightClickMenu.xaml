@@ -87,6 +87,10 @@
                 <Button Command="{Binding NotInterestedCommand}"
                         Content="{Binding Path=RightClickMenuViewModel.MarkUninterested}" />
 
+                <Button Command="{Binding IgnoreUpdateCommand}"
+                        Content="{Binding Path=RightClickMenuViewModel.IgnoreUpdate}"
+                        Visibility="{Binding Path=RightClickMenuViewModel.CanIgnoreUpdates, Converter={StaticResource BoolConverter}}"/>
+                
                 <Button Command="{Binding IgnoreCommand}"
                         Content="Ignore"
                         Visibility="{Binding Path=RightClickMenuViewModel.CanIgnore, Converter={StaticResource BoolConverter}}" />

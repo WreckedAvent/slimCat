@@ -49,6 +49,8 @@ namespace slimCat.Models
             SavedChannels = new List<string>();
             Interested = new List<string>();
             NotInterested = new List<string>();
+            IgnoreUpdates = new List<string>();
+
             PortableMode = Environment.GetCommandLineArgs().Contains("portable", StringComparer.OrdinalIgnoreCase);
             FontSize = 13;
             GenderColorSettings = GenderColorSettings.GenderOnly;

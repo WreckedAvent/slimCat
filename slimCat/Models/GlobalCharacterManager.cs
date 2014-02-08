@@ -126,6 +126,7 @@ namespace slimCat.Models
             lock (Locker)
             {
                 character.IsInteresting = IsOfInterest(character.Name);
+                character.IgnoreUpdates = IsOnList(character.Name, ListKind.IgnoreUpdates, false);
             }
             return toReturn;
         }
@@ -139,6 +140,9 @@ namespace slimCat.Models
 
             TrySyncSavedLists(listKind);
 
+            if (listKind == ListKind.IgnoreUpdates)
+                UpdateIgnoreUpdatesMark(name, true);
+
             return toReturn;
         }
 
@@ -150,6 +154,9 @@ namespace slimCat.Models
                 SyncInterestedMarks(name, listKind, false);
 
             TrySyncSavedLists(listKind);
+
+            if (listKind == ListKind.IgnoreUpdates)
+                UpdateIgnoreUpdatesMark(name, false);
 
             return toReturn;
         }
@@ -167,6 +174,13 @@ namespace slimCat.Models
             currentCollection.List.Each(savedCollection.Add);
 
             SettingsDaemon.SaveApplicationSettingsToXml(currentCharacter);
+        }
+
+        private void UpdateIgnoreUpdatesMark(string name, bool isAdd)
+        {
+            ICharacter toModify;
+            if (CharacterDictionary.TryGetValue(name, out toModify))
+                toModify.IgnoreUpdates = isAdd;
         }
 
         private void SyncInterestedMarks(string name, ListKind listKind, bool isAdd)

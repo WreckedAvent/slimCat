@@ -71,7 +71,6 @@ namespace slimCat.ViewModels
         private RelayCommand unignore;
 
         private RelayCommand ignoreUpdate;
-        private RelayCommand unignoreUpdate;
 
         #endregion
 
@@ -291,14 +290,6 @@ namespace slimCat.ViewModels
         {
             get { return ignoreUpdate ?? (ignoreUpdate = new RelayCommand(IgnoreUpdatesEvent, CanIgnoreUpdate)); }
         }
-
-        public ICommand UnignoreUpdateCommand
-        {
-            get
-            {
-                return unignoreUpdate ?? (unignoreUpdate = new RelayCommand(UnignoreUpdatesEvent, CanUnignoreUpdate));
-            }
-        }
         #endregion
 
         /// <summary>
@@ -386,15 +377,11 @@ namespace slimCat.ViewModels
         {
             return !CanIgnore(args);
         }
-        private bool CanUnignoreUpdate(object obj)
-        {
-            return CharacterManager.IsOnList(obj as string, ListKind.IgnoreUpdates);
-        }
 
         private bool CanIgnoreUpdate(object obj)
         {
-            return CharacterManager.IsOfInterest(obj as string) &&
-                   !CharacterManager.IsOnList(obj as string, ListKind.IgnoreUpdates);
+            return CharacterManager.IsOfInterest(obj as string) ||
+                   CharacterManager.IsOnList(obj as string, ListKind.IgnoreUpdates);
         }
         #endregion
 
@@ -455,21 +442,13 @@ namespace slimCat.ViewModels
             Events.GetEvent<UserCommandEvent>()
                 .Publish(CommandDefinitions.CreateCommand(interestedIn
                     ? "interesting"
-                    : "notinteresteing", new[] {args as string}).ToDictionary());
+                    : "notinteresting", new[] {args as string}).ToDictionary());
         }
 
         private void IgnoreUpdatesEvent(object args)
         {
             Events.GetEvent<UserCommandEvent>().Publish(
-                CommandDefinitions.CreateCommand("ignoreUpdate", new[] { args as string }).ToDictionary());
-
-            OnRightClickMenuUpdated(RightClickMenuViewModel.Target); // updates the ignore/unignore text
-        }
-
-        private void UnignoreUpdatesEvent(object args)
-        {
-            Events.GetEvent<UserCommandEvent>().Publish(
-                CommandDefinitions.CreateCommand("unignoreUpdates", new[] { args as string }).ToDictionary()); 
+                CommandDefinitions.CreateCommand("ignoreUpdates", new[] { args as string }).ToDictionary());
 
             OnRightClickMenuUpdated(RightClickMenuViewModel.Target); // updates the ignore/unignore text
         }

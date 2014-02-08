@@ -73,6 +73,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool CanIgnoreUpdates
+        {
+            get
+            {
+                if (Target != null)
+                    return manager.IsOfInterest(Target.Name);
+
+                return false;
+            }
+        }
 
         /// <summary>
         ///     Gets a value indicating whether can unignore.
@@ -154,14 +164,14 @@ namespace slimCat.ViewModels
             }
         }
 
-        public string Updates
+        public string IgnoreUpdate
         {
             get
             {
                 if (Target != null)
                 {
                     return manager.IsOnList(Target.Name, ListKind.IgnoreUpdates)
-                        ? "Unigore updates"
+                        ? "Unignore updates"
                         : "Ignore updates";
                 }
 
@@ -244,6 +254,7 @@ namespace slimCat.ViewModels
             OnPropertyChanged("TargetStatus");
             OnPropertyChanged("HasStatus");
             OnPropertyChanged("HasReport");
+            OnPropertyChanged("CanIgnoreUpdates");
         }
 
         #endregion
