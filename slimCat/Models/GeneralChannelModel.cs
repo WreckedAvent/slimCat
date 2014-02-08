@@ -187,7 +187,18 @@ namespace slimCat.Models
                 if (!IsSelected && NeedsAttentionOverride)
                     return true; // flash for ding words
 
-                if (Settings.MessageNotifyLevel == 0)
+                var messageNotifyMatters = Mode == ChannelMode.Chat || Mode == ChannelMode.Both;
+                var adNotifyMatters = Mode == ChannelMode.Ads || Mode == ChannelMode.Both;
+
+                var returnEarly = false;
+
+                if (messageNotifyMatters)
+                    returnEarly = Settings.MessageNotifyLevel == 0;
+
+                if (adNotifyMatters)
+                    returnEarly = Settings.AdNotifyLevel == 0;
+
+                if (returnEarly)
                     return false; // terminate early upon user request
 
                 if (Settings.MessageNotifyOnlyForInteresting)

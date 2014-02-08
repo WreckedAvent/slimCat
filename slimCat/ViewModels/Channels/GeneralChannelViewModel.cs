@@ -340,6 +340,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool CanDisplayAds
+        {
+            get { return (Model.Mode == ChannelMode.Both || Model.Mode == ChannelMode.Ads) && Model.Type != ChannelType.PrivateMessage; }
+        }
+
+        public bool CanDisplayChat
+        {
+            get { return Model.Mode == ChannelMode.Both || Model.Mode == ChannelMode.Chat; }
+        }
+
         /// <summary>
         ///     Gets a value indicating whether is not searching.
         /// </summary>
@@ -385,9 +395,9 @@ namespace slimCat.ViewModels
 
             set
             {
-                if (IsDisplayingAds)
+                if (IsDisplayingAds && CanDisplayAds)
                     hasNewMessages = value;
-                else
+                else if (!IsDisplayingAds && CanDisplayChat)
                     hasNewAds = value;
 
                 OnPropertyChanged("OtherTabHasMessages");

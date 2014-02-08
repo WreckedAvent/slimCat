@@ -241,8 +241,8 @@ namespace slimCat.Services
         /// </param>
         private void HandleNewChannelMessage(IDictionary<string, object> update)
         {
-            var channel = update["channel"] as GeneralChannelModel;
-            var message = update["message"] as IMessage;
+            var channel = update.Get<GeneralChannelModel>("channel");
+            var message = update.Get<IMessage>("message");
 
             if (message == null || channel == null) return;
 
@@ -260,12 +260,14 @@ namespace slimCat.Services
             if (ApplicationSettings.NotInterested.Contains(message.Poster.Name))
                 return;
 
+            var notifyLevel = message.Type == MessageType.Ad
+                ? channel.Settings.AdNotifyLevel
+                : channel.Settings.MessageNotifyLevel;
 
             // now we check to see if we should notify because of settings
-            if (channel.Settings.MessageNotifyLevel > (int) ChannelSettingsModel.NotifyLevel.NotificationOnly)
+            if (notifyLevel > (int) ChannelSettingsModel.NotifyLevel.NotificationOnly)
             {
-                var shouldDing = channel.Settings.MessageNotifyLevel
-                                 > (int) ChannelSettingsModel.NotifyLevel.NotificationAndToast;
+                var shouldDing = notifyLevel > (int) ChannelSettingsModel.NotifyLevel.NotificationAndToast;
 
                 if ((channel.Settings.MessageNotifyOnlyForInteresting && IsOfInterest(message.Poster.Name))
                     || !channel.Settings.MessageNotifyOnlyForInteresting)

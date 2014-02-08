@@ -65,6 +65,7 @@ namespace slimCat.Models
         private bool promoteDemoteNotifyOnlyForInteresting;
 
         private int shouldFlashInterval = 1;
+        private int adNotifyLevel = 0;
 
         #endregion
 
@@ -235,7 +236,6 @@ namespace slimCat.Models
         }
 
         /// <summary>
-        ///     All Notify levels perform fairly simply:
         ///     0 for no notification ever
         ///     1 for a simple notification
         ///     2 for a simple notification and a toast
@@ -248,6 +248,23 @@ namespace slimCat.Models
             set
             {
                 messageLevel = value;
+                CallUpdate();
+            }
+        }   
+     
+        /// <summary>
+        ///     0 for no notification ever
+        ///     1 for a simple notification
+        ///     2 for a simple notification and a toast
+        ///     3 for a simple notification, a toast, and a sound
+        /// </summary>
+        public int AdNotifyLevel
+        {
+            get { return adNotifyLevel; }
+
+            set
+            {
+                adNotifyLevel = value;
                 CallUpdate();
             }
         }
