@@ -66,7 +66,8 @@ namespace slimCat.Services
         /// </param>
         /// <param name="browser"></param>
         /// <param name="ticketProvider"></param>
-        public ListConnection(IAccount model, IEventAggregator eventagg, IBrowser browser, ITicketProvider ticketProvider)
+        public ListConnection(IAccount model, IEventAggregator eventagg, IBrowser browser,
+            ITicketProvider ticketProvider)
         {
             this.browser = browser;
             this.ticketProvider = ticketProvider;

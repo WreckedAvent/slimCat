@@ -22,6 +22,7 @@ namespace slimCat.Models
     #region Usings
 
     using System.Collections.Generic;
+    using Utilities;
 
     #endregion
 
@@ -48,6 +49,12 @@ namespace slimCat.Models
         public override bool IsOfInterest(string name, bool onlineOnly = true)
         {
             return false;
+        }
+
+        public override void Clear()
+        {
+            Collections.Each(x => x.Set(new List<string>()));
+            base.Clear();
         }
     }
 }

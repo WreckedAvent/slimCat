@@ -157,10 +157,7 @@ namespace slimCat.Services
 
         private bool WindowIsFocused
         {
-            get
-            {
-                return (bool) Dispatcher.Invoke(new Func<bool>(() => Application.Current.MainWindow.IsActive ));
-            }
+            get { return (bool) Dispatcher.Invoke(new Func<bool>(() => Application.Current.MainWindow.IsActive)); }
         }
 
         #endregion

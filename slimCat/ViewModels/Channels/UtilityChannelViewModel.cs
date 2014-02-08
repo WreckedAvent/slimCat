@@ -259,8 +259,11 @@ namespace slimCat.ViewModels
         {
             get
             {
+                if (ChatModel.IsAuthenticated) return string.Empty;
+
                 return flavorText + connectDotDot.ToString()
-                       + (!inStagger ? "\nRequest sent " + ConnectTime + " seconds ago" : string.Empty);
+                       + (!inStagger ? "\nRequest sent " + ConnectTime + " seconds ago" : string.Empty)
+                       + (DelayTime > 0 ? "\nWaiting " + --DelayTime + " seconds until reconnecting" : string.Empty);
             }
         }
 
@@ -431,6 +434,8 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
+        public int DelayTime { get; set; }
+
         /// <summary>
         ///     The logged in event.
         /// </summary>
@@ -439,7 +444,7 @@ namespace slimCat.ViewModels
         /// </param>
         public void LoggedInEvent(bool? payload)
         {
-            updateTimer.Stop();
+            updateTimer.Elapsed -= UpdateConnectText;
             OnPropertyChanged("IsConnecting");
 
 
@@ -485,8 +490,11 @@ namespace slimCat.ViewModels
         /// </param>
         public void LoginFailedEvent(string error)
         {
-            updateTimer.Start();
-            ChatModel.IsAuthenticated = false;
+            if (ChatModel.IsAuthenticated)
+            {
+                updateTimer.Elapsed += UpdateConnectText;
+                ChatModel.IsAuthenticated = false;
+            }
 
             inStagger = true;
             flavorText = new StringBuilder(error);
@@ -503,14 +511,20 @@ namespace slimCat.ViewModels
         /// <param name="payload">
         ///     The payload.
         /// </param>
-        public void LoginReconnectingEvent(string payload)
+        public void LoginReconnectingEvent(int payload)
         {
-            updateTimer.Start();
-            inStagger = false;
-            ChatModel.IsAuthenticated = false;
+            if (ChatModel.IsAuthenticated)
+            {
+                updateTimer.Elapsed += UpdateConnectText;
+                ChatModel.IsAuthenticated = false;
+            }
 
+            inStagger = true;
             flavorText = new StringBuilder("Attempting reconnect");
+
             ConnectTime = 0;
+            DelayTime = payload;
+
             OnPropertyChanged("IsConnecting");
         }
 

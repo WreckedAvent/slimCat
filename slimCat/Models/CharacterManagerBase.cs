@@ -168,6 +168,11 @@ namespace slimCat.Models
             }
         }
 
+        public virtual void Clear()
+        {
+            characters.Clear();
+        }
+
         public void Dispose()
         {
             Dispose(true);

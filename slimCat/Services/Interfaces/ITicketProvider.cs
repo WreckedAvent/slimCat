@@ -21,7 +21,6 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using System.Threading.Tasks;
     using Models;
 
     #endregion

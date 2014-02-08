@@ -48,30 +48,23 @@ namespace slimCat.Services
         #region Public Methods and Operators
 
         /// <summary>
-        ///     The send message.
+        ///     Sends the message to the server.
         /// </summary>
-        /// <param name="command">
-        ///     The command.
-        /// </param>
-        /// <param name="commandType">
-        ///     The command_type.
-        /// </param>
+        /// <param name="command">The command.</param>
+        /// <param name="commandType">Type of the command.</param>
         void SendMessage(object command, string commandType);
 
         /// <summary>
-        ///     The send message.
+        ///     Sends an argumentless command to the server.
         /// </summary>
-        /// <param name="commandType">
-        ///     The command type.
-        /// </param>
+        /// <param name="commandType">Type of the command.</param>
         void SendMessage(string commandType);
 
+
         /// <summary>
-        ///     The send message.
+        ///     Sends the message to the server.
         /// </summary>
-        /// <param name="command">
-        ///     The command.
-        /// </param>
+        /// <param name="command">The command.</param>
         void SendMessage(IDictionary<string, object> command);
 
         #endregion

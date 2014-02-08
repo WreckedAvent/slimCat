@@ -26,13 +26,14 @@ namespace slimCat.Services
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
-    using System.Timers;
+    using System.Windows.Forms;
     using Microsoft.Practices.Prism.Events;
     using Models;
     using SimpleJson;
     using Utilities;
     using WebSocket4Net;
     using ErrorEventArgs = SuperSocket.ClientEngine.ErrorEventArgs;
+    using Timer = System.Timers.Timer;
 
     #endregion
 
@@ -51,12 +52,11 @@ namespace slimCat.Services
         private readonly Random random = new Random();
         private readonly Queue<KeyValuePair<string, object>> resendQueue = new Queue<KeyValuePair<string, object>>();
         private readonly Timer staggerTimer;
-        private bool gaveUp;
 
         private bool isAuthenticated;
         private StreamWriter logger;
 
-        private int retryAttempts = 0;
+        private int retryAttemptCount;
         private WebSocket socket;
 
         #endregion
@@ -102,44 +102,22 @@ namespace slimCat.Services
             autoPingTimer.Elapsed += (s, e) => TrySend(Constants.ClientCommands.SystemPing);
             autoPingTimer.Start();
 
-            staggerTimer = new Timer(5*1000); // first reconnect is 5 seconds
+            staggerTimer = new Timer(GetNextConnectDelay()); // first reconnect is 5 seconds
             staggerTimer.Elapsed += (s, e) => DoReconnect();
-        }
-
-        private void DoReconnect()
-        {
-            ConnectToChat(Character);
-            staggerTimer.Interval = (random.Next(10) + 5)*1000; // 5 - 15 seconds
-            staggerTimer.Stop();
         }
 
         #endregion
 
         #region Properties
 
-        /// <summary>
-        ///     Gets the account.
-        /// </summary>
         public IAccount Account { get; private set; }
 
-        /// <summary>
-        ///     Gets the character.
-        /// </summary>
         public string Character { get; private set; }
 
         #endregion
 
         #region Methods
 
-        /// <summary>
-        ///     Sends a message to the server
-        /// </summary>
-        /// <param name="command">
-        ///     non-serialized data to be sent
-        /// </param>
-        /// <param name="type">
-        ///     The command_type.
-        /// </param>
         public void SendMessage(object command, string type)
         {
             if (type.Length != 3)
@@ -152,12 +130,6 @@ namespace slimCat.Services
             TrySend(type, ser);
         }
 
-        /// <summary>
-        ///     The send message.
-        /// </summary>
-        /// <param name="command">
-        ///     The command.
-        /// </param>
         public void SendMessage(IDictionary<string, object> command)
         {
             var type = command.Get(Constants.Arguments.Type);
@@ -171,12 +143,6 @@ namespace slimCat.Services
             TrySend(type, ser);
         }
 
-        /// <summary>
-        ///     Sends an argument-less command to the server
-        /// </summary>
-        /// <param name="commandType">
-        ///     Type of command to send
-        /// </param>
         public void SendMessage(string commandType)
         {
             if (commandType.Length > 3 || commandType.Length < 3)
@@ -189,20 +155,11 @@ namespace slimCat.Services
 
         #endregion
 
-        /// <summary>
-        ///     The dispose.
-        /// </summary>
         public void Dispose()
         {
             Dispose(true);
         }
 
-        /// <summary>
-        ///     The dispose.
-        /// </summary>
-        /// <param name="isManagedDispose">
-        ///     The is managed dispose.
-        /// </param>
         protected virtual void Dispose(bool isManagedDispose)
         {
             if (isManagedDispose && logger != null)
@@ -213,12 +170,6 @@ namespace slimCat.Services
 
         #region Connection Management
 
-        /// <summary>
-        ///     When the user has picked a character and is ready to connect.
-        /// </summary>
-        /// <param name="character">
-        ///     Character to connect with
-        /// </param>
         private void ConnectToChat(string character)
         {
             Character = character.ThrowIfNull("character");
@@ -260,12 +211,6 @@ namespace slimCat.Services
         /// <summary>
         ///     When our connection was closed.
         /// </summary>
-        /// <param name="s">
-        ///     The s.
-        /// </param>
-        /// <param name="e">
-        ///     The e.
-        /// </param>
         private void ConnectionClosed(object s, EventArgs e)
         {
             if (!isAuthenticated)
@@ -282,12 +227,6 @@ namespace slimCat.Services
         /// <summary>
         ///     When we got something from the server!
         /// </summary>
-        /// <param name="sender">
-        ///     The sender.
-        /// </param>
-        /// <param name="e">
-        ///     The e.
-        /// </param>
         private void ConnectionMessageReceived(object sender, MessageReceivedEventArgs e)
         {
             if (!isAuthenticated)
@@ -295,6 +234,7 @@ namespace slimCat.Services
                 isAuthenticated = true;
                 events.GetEvent<LoginAuthenticatedEvent>().Publish(null);
                 SendQueue();
+                retryAttemptCount = 0;
             }
 
             var commandType = e.Message.Substring(0, 3); // type of command sent
@@ -333,12 +273,6 @@ namespace slimCat.Services
         /// <summary>
         ///     When something done goofed itself
         /// </summary>
-        /// <param name="sender">
-        ///     The sender.
-        /// </param>
-        /// <param name="e">
-        ///     The e.
-        /// </param>
         private void ConnectionError(object sender, ErrorEventArgs e)
         {
             events.GetEvent<LoginFailedEvent>().Publish(e.Exception.Message);
@@ -348,12 +282,6 @@ namespace slimCat.Services
         /// <summary>
         ///     When we have connection to F-chat.
         /// </summary>
-        /// <param name="sender">
-        ///     The sender.
-        /// </param>
-        /// <param name="e">
-        ///     The e.
-        /// </param>
         private void ConnectionOpened(object sender, EventArgs e)
         {
             // Handshake completed, send login command
@@ -382,7 +310,28 @@ namespace slimCat.Services
 
             staggerTimer.Start();
             isAuthenticated = false;
-            events.GetEvent<LoginFailedEvent>().Publish(null);
+            events.GetEvent<ReconnectingEvent>().Publish((int) staggerTimer.Interval/1000);
+            events.GetEvent<UserCommandEvent>().Publish(new Dictionary<string, object>
+                {
+                    {Constants.Arguments.Type, "join"},
+                    {Constants.Arguments.Channel, "Home"}
+                });
+        }
+
+        private void DoReconnect()
+        {
+            if (retryAttemptCount >= 21)
+            {
+                MessageBox.Show(
+                    "slimCat will no longer auto-reconnect. Please wait a few minutes then restart the client.",
+                    "Reconnect attempts exhausted!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.FailFast(null);
+            }
+
+            ConnectToChat(Character);
+            retryAttemptCount++;
+            staggerTimer.Interval = GetNextConnectDelay();
+            staggerTimer.Stop();
         }
 
         private void SendQueue()
@@ -393,6 +342,30 @@ namespace slimCat.Services
                 TrySend(current.Key, current.Value);
             }
         }
+
+        private int GetNextConnectDelay()
+        {
+            const int oneSecond = 1000;
+            // first retry is 5 seconds
+            if (retryAttemptCount == 0) return 5*oneSecond;
+
+            // next 5 are between 5 and 15 seconds
+            if (retryAttemptCount <= 5) return (random.Next(10) + 5)*oneSecond;
+
+            // next 5 are between 25 and 35
+            if (retryAttemptCount <= 10) return (random.Next(10) + 25)*oneSecond;
+
+            // next 5 are between 60 and 70
+            if (retryAttemptCount <= 15) return (random.Next(10) + 60)*oneSecond;
+
+            // next 5 are between 300 and 360 (five and six minutes)
+            if (retryAttemptCount <= 20) return (random.Next(60) + 300)*oneSecond;
+
+            // we're not going to reconnect at this point
+            return 60*60*oneSecond;
+        }
+
+        #region logging
 
         [Conditional("DEBUG")]
         private void Log(string type, object payload = null, bool isSent = true)
@@ -424,6 +397,8 @@ namespace slimCat.Services
 
             logger = new StreamWriter(@"Debug\Rawchat " + DateTime.Now.Ticks + ".log", true);
         }
+
+        #endregion
 
         #endregion
     }

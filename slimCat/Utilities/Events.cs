@@ -121,7 +121,7 @@ namespace slimCat
     /// <summary>
     ///     this event is used when the service layer is attempting a reconnect
     /// </summary>
-    public class ReconnectingEvent : CompositePresentationEvent<string>
+    public class ReconnectingEvent : CompositePresentationEvent<int>
     {
     }
 

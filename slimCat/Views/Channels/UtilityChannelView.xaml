@@ -105,7 +105,7 @@
                                   Margin="0,5">
                             Allow Sound when Window is Focused
                         </CheckBox>
-                        
+
                         <CheckBox IsChecked="{Binding AllowSoundWhenTabIsFocused}"
                                   VerticalAlignment="Center"
                                   Margin="0,5">

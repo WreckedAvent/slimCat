@@ -110,5 +110,10 @@ namespace slimCat.Models
         /// <param name="onlineOnly"></param>
         /// <returns></returns>
         ICollection<ICharacter> GetCharacters(ListKind listKind, bool onlineOnly = true);
+
+        /// <summary>
+        ///     Clears this instance.
+        /// </summary>
+        void Clear();
     }
 }

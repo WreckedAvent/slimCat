@@ -25,6 +25,7 @@ namespace slimCat.Models
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Practices.Prism.Events;
+    using Utilities;
 
     #endregion
 
@@ -89,6 +90,12 @@ namespace slimCat.Models
 
                 return isOfInterest;
             }
+        }
+
+        public override void Clear()
+        {
+            Collections.Each(x => x.Set(new List<string>()));
+            base.Clear();
         }
 
         private void InitializeBookmarks(string _)

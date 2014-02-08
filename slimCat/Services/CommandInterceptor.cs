@@ -206,16 +206,10 @@ namespace slimCat.Services
 
             var isInitializer = string.IsNullOrWhiteSpace(channel.Description);
 
-            if (!isInitializer)
-                channel.Description = description;
-            else if (description.StartsWith("Welcome to your private room!"))
-            {
-                // shhh go away lame init description
-                channel.Description =
-                    "Man this description is lame. You should change it and make it amaaaaaazing. Click that pencil, man.";
-            }
-            else
-                channel.Description = description; // derpherp no channel description bug fix
+            if (string.Equals(channel.Description, description, StringComparison.Ordinal))
+                return;
+
+            channel.Description = description;
 
             if (isInitializer)
                 return;
@@ -238,7 +232,7 @@ namespace slimCat.Services
 
             channel.Mode = mode;
             dynamic users = command[Constants.Arguments.MultipleUsers];
-                // dynamic lets us deal with odd syntax TODO: switch to strong-type
+            // dynamic lets us deal with odd syntax TODO: switch to strong-type
             foreach (IDictionary<string, object> character in users)
             {
                 var name = character.Get(Constants.Arguments.Identity);
@@ -1058,7 +1052,8 @@ namespace slimCat.Services
 
         private void WipeState(string message)
         {
-            // todo: wipe
+            CharacterManager.Clear();
+            ChatModel.CurrentChannels.Each(x => x.CharacterManager.Clear());
         }
 
         private void RequeCommand(IDictionary<string, object> command)

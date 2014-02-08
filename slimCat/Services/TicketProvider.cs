@@ -24,7 +24,6 @@ namespace slimCat.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using Models;
     using SimpleJson;
     using Utilities;
@@ -37,9 +36,8 @@ namespace slimCat.Services
 
         private bool hasGottenInfo;
 
-        private DateTime lastInfoRetrieval;
-
         private IAccount lastAccount;
+        private DateTime lastInfoRetrieval;
 
         private string lastTicket;
 
@@ -48,6 +46,11 @@ namespace slimCat.Services
         public TicketProvider(IBrowser browser)
         {
             this.browser = browser;
+        }
+
+        private bool ShouldGetNewTicket
+        {
+            get { return lastInfoRetrieval.AddMinutes(30) < DateTime.Now; }
         }
 
 
@@ -88,11 +91,6 @@ namespace slimCat.Services
             ReAuthenticate();
         }
 
-        private bool ShouldGetNewTicket
-        {
-            get { return lastInfoRetrieval.AddMinutes(30) < DateTime.Now; }
-        }
-
         private void GetNewTicket()
         {
             if (lastAccount == null || lastAccount.Password == null)
@@ -103,23 +101,23 @@ namespace slimCat.Services
             // assign the data to our account model
             dynamic result = SimpleJson.DeserializeObject(buffer);
 
-            var hasError = !string.IsNullOrWhiteSpace((string)result.error);
+            var hasError = !string.IsNullOrWhiteSpace((string) result.error);
 
-            lastTicket = (string)result.ticket;
+            lastTicket = (string) result.ticket;
 
             if (hasError)
                 throw new Exception(result.error);
 
             foreach (var item in result.characters)
-                lastAccount.Characters.Add((string)item);
+                lastAccount.Characters.Add((string) item);
 
             foreach (var item in result.friends)
             {
                 if (lastAccount.AllFriends.ContainsKey(item["source_name"]))
-                    lastAccount.AllFriends[item["source_name"]].Add((string)item["dest_name"]);
+                    lastAccount.AllFriends[item["source_name"]].Add((string) item["dest_name"]);
                 else
                 {
-                    var list = new List<string> { (string)item["dest_name"] };
+                    var list = new List<string> {(string) item["dest_name"]};
 
                     lastAccount.AllFriends.Add(item["source_name"], list);
                 }
