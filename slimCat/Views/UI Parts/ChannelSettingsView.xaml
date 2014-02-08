@@ -35,7 +35,9 @@
             <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
                         Margin="10">
                 <CheckBox IsChecked="{Binding Path=ChannelSettings.LoggingEnabled}">Allow logging</CheckBox>
-
+                <CheckBox IsChecked="{Binding Path=ChannelSettings.AlertAboutUpdates}"
+                          Visibility="{Binding ShowAllSettings, Converter={StaticResource BoolConverter}}">Allow Updates</CheckBox>
+                
                 <TextBlock Text="New Messages"
                            Margin="0,15,0,0" />
                 <Slider Maximum="3"
