@@ -641,10 +641,10 @@ namespace slimCat.Utilities
                     return null;
                 }
 
-                if (Last == null)
+                if (Last == null && openBrace > 0)
                     return ReturnAsTextBetween(0, lastStart);
 
-                if (lastStart - Last.End > 1)
+                if (Last != null && lastStart - Last.End > 1)
                     return ReturnAsTextBetween(Last.End, lastStart);
 
                 if (closeBrace < openBrace)
@@ -689,12 +689,14 @@ namespace slimCat.Utilities
 
             private BbTag NoResult()
             {
-                return new BbTag
+                var toReturn = new BbTag
                     {
-                        Start = lastStart,
+                        Start = lastStart-1,
                         End = currentPosition,
                         Type = BbCodeType.None
                     };
+                Last = toReturn;
+                return toReturn;
             }
         }
 

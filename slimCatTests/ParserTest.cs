@@ -454,9 +454,12 @@ http://www.foo.bar.com";
             [TestMethod]
             public void Test()
             {
-                const string text ="[15:46] Lyrra Goron: desu~~desu~~desu~~desu~~desu~~ http://www.youtube.com/watch?v=-2PEpB8gaws&list=FL0bOYeJ-zn1hTIDuHcih4-A";
+                const string text ="[20:20] test: text http://www.youtube.com/";
 
                 var result = ShouldBeOneOf<Span>(text).ToList();
+                result[0].TextShouldBe("[20:20]");
+                result[1].TextShouldBe(" test: text ");
+                result.OfType<Hyperlink>().First().TextShouldBe("youtube.com");
             }
         }
 
