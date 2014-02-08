@@ -355,7 +355,22 @@ namespace slimCat.Services
             if (channel == null)
                 return;
 
-            var windowFocusMatters = WindowIsFocused && !ApplicationSettings.PlaySoundEvenWhenWindowIsFocused;
+            if (!channel.HasAutoRepliedTo && cm.AutoReplyEnabled && !string.IsNullOrWhiteSpace(cm.AutoReplyMessage))
+            {
+                var respondWith = "[b]Auto Reply[/b]: {0}".FormatWith(cm.AutoReplyMessage);
+
+                events.GetEvent<UserCommandEvent>().Publish(
+                    CommandDefinitions.CreateCommand(
+                        CommandDefinitions.ClientSendPm, new[] {respondWith, channel.Id}).ToDictionary());
+
+                channel.HasAutoRepliedTo = true;
+            }
+            else if (channel.HasAutoRepliedTo && !cm.AutoReplyEnabled)
+            {
+                channel.HasAutoRepliedTo = false;
+            }
+
+        var windowFocusMatters = WindowIsFocused && !ApplicationSettings.PlaySoundEvenWhenWindowIsFocused;
             var channelFocusMatters = channel.IsSelected && !ApplicationSettings.PlaySoundEvenWhenTabIsFocused;
 
             if (channelFocusMatters && windowFocusMatters)

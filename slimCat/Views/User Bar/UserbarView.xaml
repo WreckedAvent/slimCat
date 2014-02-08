@@ -54,13 +54,26 @@
                                    TextWrapping="Wrap"
                                    FontSize="20" />
 
-                        <Button Content="{Binding Path=ChatModel.CurrentCharacter.Status, Mode=OneWay}"
-                                Grid.Row="1"
-                                VerticalAlignment="Top"
-                                HorizontalAlignment="Right"
-                                Style="{StaticResource ImageContentButton}"
-                                Command="{Binding ToggleStatusWindowCommand}"
-                                FontSize="16" />
+                        <DockPanel Grid.Row="1">
+                            <v:AutoButtonView
+                                IsChecked="{Binding AutoReplyEnabled, Mode=TwoWay}"
+                                ToolTip="Change auto reply settings"
+                                Margin="2,0,0,0"
+                                Command="{Binding ToggleAutoReplyWindowCommand}"
+                                VerticalAlignment="Center" 
+                                DockPanel.Dock="Right"/>
+                            
+                            <Button Content="{Binding Path=ChatModel.CurrentCharacter.Status, Mode=OneWay}"
+                                    VerticalAlignment="Top"
+                                    HorizontalAlignment="Right"
+                                    ToolTip="Change status"
+                                    Style="{StaticResource ImageContentButton}"
+                                    Command="{Binding ToggleStatusWindowCommand}"
+                                    Margin="0,4,0,0"
+                                    FontSize="16"
+                                    DockPanel.Dock="Right"/>
+
+                        </DockPanel>
 
                         <WrapPanel HorizontalAlignment="Right"
                                    Grid.Row="2"
@@ -135,7 +148,48 @@
 
                 </Border>
             </Popup>
+            
+            <Popup IsOpen="{Binding Path=IsChangingAuto, Mode=OneWay}"
+                   PlacementTarget="{Binding ElementName=PopupAnchor}"
+                   Grid.Row="0"
+                   Placement="Center">
+                <Border BorderBrush="{StaticResource HighlightBrush}"
+                        BorderThickness="1">
+                    <StackPanel Orientation="Vertical"
+                                Margin="5"
+                                Background="{StaticResource BackgroundBrush}"
+                                MinWidth="200">
+                        <TextBlock Text="Change Auto Reply"
+                                   Foreground="{StaticResource ForegroundBrush}"
+                                   FontSize="20"
+                                   Margin="10,5" />
 
+                        <CheckBox IsChecked="{Binding AutoReplyEnabled}"
+                                  VerticalAlignment="Center"
+                                  Margin="10,5">
+                            Auto Reply Enabled
+                        </CheckBox>
+
+                        <TextBlock 
+                            Foreground="{StaticResource DepressedBrush}" 
+                            HorizontalAlignment="Left"
+                            Margin="10,0,10,0">
+                            Reply Message
+                        </TextBlock>
+                        <TextBox
+                            Text="{Binding Path=ChatModel.AutoReplyMessage, UpdateSourceTrigger=PropertyChanged}"
+                            FontSize="12"
+                            TextWrapping="Wrap"
+                            MaxWidth="200"
+                            Margin="10,0,10,10" />
+
+                        <Button Content="Save"
+                                Margin="10,5"
+                                Command="{Binding ToggleAutoReplyWindowCommand}" />
+                    </StackPanel>
+
+                </Border>
+            </Popup>
             <ScrollViewer Grid.Row="1"
                           CanContentScroll="False">
                 <StackPanel>

@@ -181,6 +181,9 @@ namespace slimCat.Models
         /// </summary>
         public DateTimeOffset ServerUpTime { get; set; }
 
+        public bool AutoReplyEnabled { get; set; }
+        public string AutoReplyMessage { get; set; }
+
         #endregion
 
         #region Public Methods and Operators

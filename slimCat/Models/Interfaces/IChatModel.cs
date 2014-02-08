@@ -105,6 +105,16 @@ namespace slimCat.Models
         /// </summary>
         DateTimeOffset ServerUpTime { get; set; }
 
+        /// <summary>
+        ///     Gets or sets a value indicating whether automatic reply is enabled.
+        /// </summary>
+        bool AutoReplyEnabled { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the automatic reply message.
+        /// </summary>
+        string AutoReplyMessage { get; set; }
+
         #endregion
 
         #region Public Methods and Operators

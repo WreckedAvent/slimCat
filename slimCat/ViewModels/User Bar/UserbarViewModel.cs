@@ -113,6 +113,12 @@ namespace slimCat.ViewModels
 
         private RelayCommand toggleStatus;
 
+        private ICommand toggleAuto;
+
+        private bool isChangingAuto;
+
+        private bool autoReplyEnabled;
+
         #endregion
 
         #region Constructors and Destructors
@@ -422,6 +428,38 @@ namespace slimCat.ViewModels
             {
                 return toggleStatus
                        ?? (toggleStatus = new RelayCommand(args => IsChangingStatus = !IsChangingStatus));
+            }
+        }
+
+        public ICommand ToggleAutoReplyWindowCommand
+        {
+            get { return toggleAuto ?? (toggleAuto = new RelayCommand(ToggleAutoReplyEvent)); }
+        }
+
+        private void ToggleAutoReplyEvent(object o)
+        {
+            IsChangingAuto = !IsChangingAuto;
+            if (isChangingAuto) AutoReplyEnabled = !AutoReplyEnabled;
+        }
+
+        public bool IsChangingAuto
+        {
+            get { return isChangingAuto; }
+            set
+            {
+                isChangingAuto = value;
+                OnPropertyChanged("IsChangingAuto");
+            }
+        }
+
+        public bool AutoReplyEnabled
+        {
+            get { return autoReplyEnabled; }
+            set
+            {
+                autoReplyEnabled = value;
+                ChatModel.AutoReplyEnabled = value;
+                OnPropertyChanged("AutoReplyEnabled");
             }
         }
 

@@ -138,6 +138,8 @@ namespace slimCat.Models
             }
         }
 
+        public bool HasAutoRepliedTo { get; set; }
+
         #endregion
 
         #region Methods
