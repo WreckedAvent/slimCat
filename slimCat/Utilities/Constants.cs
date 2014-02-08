@@ -30,7 +30,7 @@ namespace slimCat.Utilities
 
         public const string ClientName = "Ocelot";
 
-        public const string ClientVer = "rc3.07";
+        public const string ClientVer = "rc3.08";
 
         public const string ServerHost = "wss://chat.f-list.net:9799/";
 

@@ -27,11 +27,13 @@ namespace slimCat.Services
     using System.IO;
     using System.Linq;
     using System.Windows.Forms;
+    using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Models;
     using SimpleJson;
     using Utilities;
     using WebSocket4Net;
+    using Application = System.Windows.Application;
     using ErrorEventArgs = SuperSocket.ClientEngine.ErrorEventArgs;
     using Timer = System.Timers.Timer;
 
@@ -310,6 +312,7 @@ namespace slimCat.Services
 
             staggerTimer.Start();
             isAuthenticated = false;
+
             events.GetEvent<ReconnectingEvent>().Publish((int) staggerTimer.Interval/1000);
             events.GetEvent<UserCommandEvent>().Publish(new Dictionary<string, object>
                 {

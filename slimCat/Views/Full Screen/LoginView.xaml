@@ -19,9 +19,18 @@
                    Margin="20"
                    TextWrapping="Wrap" />
         <StackPanel MaxWidth="400">
+            <TextBlock Foreground="{StaticResource DepressedBrush}" 
+                       Margin="10,0">
+                Username
+            </TextBlock>
             <TextBox Text="{Binding AccountName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     Margin="20, 10" />
-            <PasswordBox Margin="20, 10"
+                     Margin="10, 0, 10, 10" />
+            
+            <TextBlock Foreground="{StaticResource DepressedBrush}" 
+                       Margin="10,10,0,0">
+                Password
+            </TextBlock>
+            <PasswordBox Margin="10, 0, 10, 10"
                          lib:PasswordBoxAssistant.BindPassword="true"
                          lib:PasswordBoxAssistant.BoundPassword="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 <PasswordBox.InputBindings>

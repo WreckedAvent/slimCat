@@ -25,6 +25,7 @@ namespace slimCat.Models
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Practices.Prism.Events;
+    using Services;
     using Utilities;
 
     #endregion
@@ -32,13 +33,17 @@ namespace slimCat.Models
     public class GlobalCharacterManager : CharacterManagerBase
     {
         private readonly IAccount account;
-        private readonly CollectionPair bookmarks = new CollectionPair();
         private readonly IEventAggregator eventAggregator;
+        private readonly IDictionary<ListKind, IList<string>> savedCollections;
+
+        private readonly CollectionPair bookmarks = new CollectionPair();
         private readonly CollectionPair friends = new CollectionPair();
         private readonly CollectionPair ignored = new CollectionPair();
         private readonly CollectionPair interested = new CollectionPair();
         private readonly CollectionPair moderators = new CollectionPair();
         private readonly CollectionPair notInterested = new CollectionPair();
+        private readonly CollectionPair ignoreUpdates = new CollectionPair();
+        private string currentCharacter;
 
         public GlobalCharacterManager(IAccount account, IEventAggregator eventAggregator)
         {
@@ -52,7 +57,8 @@ namespace slimCat.Models
                     moderators,
                     interested,
                     notInterested,
-                    ignored
+                    ignored,
+                    ignoreUpdates
                 };
 
             CollectionDictionary = new Dictionary<ListKind, CollectionPair>
@@ -62,7 +68,15 @@ namespace slimCat.Models
                     {ListKind.Interested, interested},
                     {ListKind.Moderator, moderators},
                     {ListKind.NotInterested, notInterested},
-                    {ListKind.Ignored, ignored}
+                    {ListKind.Ignored, ignored},
+                    {ListKind.IgnoreUpdates, ignoreUpdates}
+                };
+
+            savedCollections = new Dictionary<ListKind, IList<string>>
+                {
+                    {ListKind.Interested, ApplicationSettings.Interested},
+                    {ListKind.NotInterested, ApplicationSettings.NotInterested},
+                    {ListKind.IgnoreUpdates, ApplicationSettings.IgnoreUpdates}
                 };
 
             OfInterestCollections = new HashSet<CollectionPair>
@@ -72,7 +86,7 @@ namespace slimCat.Models
                     interested
                 };
 
-            eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Subscribe(InitializeBookmarks);
+            eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Subscribe(Initialize);
         }
 
         public override bool IsOfInterest(string name, bool onlineOnly = true)
@@ -98,11 +112,12 @@ namespace slimCat.Models
             base.Clear();
         }
 
-        private void InitializeBookmarks(string _)
+        private void Initialize(string name)
         {
+            currentCharacter = name;
             bookmarks.Set(account.Bookmarks);
             friends.Set(account.AllFriends.Select(x => x.Key)); // todo: manage if friends are global or not
-            eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(InitializeBookmarks);
+            eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(Initialize);
         }
 
         public override bool SignOn(ICharacter character)
@@ -122,6 +137,8 @@ namespace slimCat.Models
             if (listKind == ListKind.Interested || listKind == ListKind.NotInterested)
                 SyncInterestedMarks(name, listKind, true);
 
+            TrySyncSavedLists(listKind);
+
             return toReturn;
         }
 
@@ -132,7 +149,24 @@ namespace slimCat.Models
             if (listKind == ListKind.Interested || listKind == ListKind.NotInterested)
                 SyncInterestedMarks(name, listKind, false);
 
+            TrySyncSavedLists(listKind);
+
             return toReturn;
+        }
+
+        private void TrySyncSavedLists(ListKind listKind)
+        {
+            IList<string> savedCollection;
+            if (!savedCollections.TryGetValue(listKind, out savedCollection)) return;
+
+
+            CollectionPair currentCollection;
+            if (!CollectionDictionary.TryGetValue(listKind, out currentCollection)) return;
+
+            savedCollection.Clear();
+            currentCollection.List.Each(savedCollection.Add);
+
+            SettingsDaemon.SaveApplicationSettingsToXml(currentCharacter);
         }
 
         private void SyncInterestedMarks(string name, ListKind listKind, bool isAdd)

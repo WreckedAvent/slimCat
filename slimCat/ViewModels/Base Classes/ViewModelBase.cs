@@ -70,6 +70,9 @@ namespace slimCat.ViewModels
 
         private RelayCommand unignore;
 
+        private RelayCommand ignoreUpdate;
+        private RelayCommand unignoreUpdate;
+
         #endregion
 
         #region Constructors and Destructors
@@ -145,33 +148,10 @@ namespace slimCat.ViewModels
         }
 
         /// <summary>
-        ///     Gets the ban command.
-        /// </summary>
-        public ICommand BanCommand
-        {
-            get { return ban ?? (ban = new RelayCommand(BanEvent, param => HasPermissions)); }
-        }
-
-        /// <summary>
         ///     Gets the create report view model.
         /// </summary>
         public CreateReportViewModel CreateReportViewModel { get; private set; }
 
-        /// <summary>
-        ///     Gets the find log command.
-        /// </summary>
-        public ICommand FindLogCommand
-        {
-            get { return getLogs ?? (getLogs = new RelayCommand(FindLogEvent)); }
-        }
-
-        /// <summary>
-        ///     Gets the handle report command.
-        /// </summary>
-        public ICommand HandleReportCommand
-        {
-            get { return handleReport ?? (handleReport = new RelayCommand(HandleReportEvent)); }
-        }
 
         /// <summary>
         ///     Returns true if the current user has moderator permissions
@@ -191,6 +171,31 @@ namespace slimCat.ViewModels
 
                 return ChatModel.IsGlobalModerator || isLocalMod;
             }
+        }
+
+        #region ICommands
+        /// <summary>
+        ///     Gets the ban command.
+        /// </summary>
+        public ICommand BanCommand
+        {
+            get { return ban ?? (ban = new RelayCommand(BanEvent, param => HasPermissions)); }
+        }
+
+        /// <summary>
+        ///     Gets the find log command.
+        /// </summary>
+        public ICommand FindLogCommand
+        {
+            get { return getLogs ?? (getLogs = new RelayCommand(FindLogEvent)); }
+        }
+
+        /// <summary>
+        ///     Gets the handle report command.
+        /// </summary>
+        public ICommand HandleReportCommand
+        {
+            get { return handleReport ?? (handleReport = new RelayCommand(HandleReportEvent)); }
         }
 
         /// <summary>
@@ -234,14 +239,6 @@ namespace slimCat.ViewModels
         }
 
         /// <summary>
-        ///     Gets the navigate to.
-        /// </summary>
-        public ICommand NavigateTo
-        {
-            get { return link ?? (link = new RelayCommand(StartLinkInDefaultBrowser)); }
-        }
-
-        /// <summary>
         ///     Gets the not interested command.
         /// </summary>
         public ICommand NotInterestedCommand
@@ -260,7 +257,7 @@ namespace slimCat.ViewModels
                     args =>
                         {
                             var newTarget = CharacterManager.Find(args as string);
-                            updateRightClickMenu(newTarget);
+                            OnRightClickMenuUpdated(newTarget);
                         }));
             }
         }
@@ -281,10 +278,6 @@ namespace slimCat.ViewModels
             get { return openPm ?? (openPm = new RelayCommand(RequestPmEvent, CanRequestPm)); }
         }
 
-        /// <summary>
-        ///     Gets the right click menu view model.
-        /// </summary>
-        public RightClickMenuViewModel RightClickMenuViewModel { get; private set; }
 
         /// <summary>
         ///     Gets the unignore command.
@@ -292,6 +285,33 @@ namespace slimCat.ViewModels
         public ICommand UnignoreCommand
         {
             get { return unignore ?? (unignore = new RelayCommand(RemoveIgnoreEvent, CanUnIgnore)); }
+        }
+
+        public ICommand IgnoreUpdateCommand
+        {
+            get { return ignoreUpdate ?? (ignoreUpdate = new RelayCommand(IgnoreUpdatesEvent, CanIgnoreUpdate)); }
+        }
+
+        public ICommand UnignoreUpdateCommand
+        {
+            get
+            {
+                return unignoreUpdate ?? (unignoreUpdate = new RelayCommand(UnignoreUpdatesEvent, CanUnignoreUpdate));
+            }
+        }
+        #endregion
+
+        /// <summary>
+        ///     Gets the right click menu view model.
+        /// </summary>
+        public RightClickMenuViewModel RightClickMenuViewModel { get; private set; }
+
+        /// <summary>
+        ///     Gets the navigate to.
+        /// </summary>
+        public ICommand NavigateTo
+        {
+            get { return link ?? (link = new RelayCommand(StartLinkInDefaultBrowser)); }
         }
 
         /// <summary>
@@ -312,20 +332,8 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The initialize.
-        /// </summary>
         public abstract void Initialize();
 
-        /// <summary>
-        ///     The can handle report.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         public bool CanHandleReport(object args)
         {
             return CharacterManager.Find(args as string).HasReport;
@@ -356,61 +364,12 @@ namespace slimCat.ViewModels
             base.Dispose(isManaged);
         }
 
-        private void updateRightClickMenu(ICharacter newTarget)
-        {
-            var name = newTarget.Name;
-            RightClickMenuViewModel.SetNewTarget(newTarget, CanHandleReport(name));
-            RightClickMenuViewModel.IsOpen = true;
-            CreateReportViewModel.Target = name;
-            OnPropertyChanged("RightClickMenuViewModel");
-            OnPropertyChanged("CreateReportViewModel");
-        }
-
-        /// <summary>
-        ///     The add ignore event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
-        private void AddIgnoreEvent(object args)
-        {
-            IgnoreEvent(args);
-        }
-
-        /// <summary>
-        ///     The ban event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
-        private void BanEvent(object args)
-        {
-            KickOrBanEvent(args, true);
-        }
-
-        /// <summary>
-        ///     The can ignore.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
+        #region Predicates for events
         private bool CanIgnore(object args)
         {
             return args is string && !CharacterManager.IsOnList(args as string, ListKind.Ignored, false);
         }
 
-        /// <summary>
-        ///     The can join channel.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         private bool CanJoinChannel(object args)
         {
             return
@@ -418,40 +377,38 @@ namespace slimCat.ViewModels
                     param => param.Id.Equals((string) args, StringComparison.OrdinalIgnoreCase));
         }
 
-        /// <summary>
-        ///     The can request PrivateMessage.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         private bool CanRequestPm(object args)
         {
             return true;
         }
 
-        /// <summary>
-        ///     The can un ignore.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         private bool CanUnIgnore(object args)
         {
             return !CanIgnore(args);
         }
+        private bool CanUnignoreUpdate(object obj)
+        {
+            return CharacterManager.IsOnList(obj as string, ListKind.IgnoreUpdates);
+        }
 
-        /// <summary>
-        ///     The file report event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
+        private bool CanIgnoreUpdate(object obj)
+        {
+            return CharacterManager.IsOfInterest(obj as string) &&
+                   !CharacterManager.IsOnList(obj as string, ListKind.IgnoreUpdates);
+        }
+        #endregion
+
+        #region ICommand events
+        private void AddIgnoreEvent(object args)
+        {
+            IgnoreEvent(args);
+        }
+
+        private void BanEvent(object args)
+        {
+            KickOrBanEvent(args, true);
+        }
+
         private void FileReportEvent(object args)
         {
             RightClickMenuViewModel.IsOpen = false;
@@ -461,12 +418,6 @@ namespace slimCat.ViewModels
             OnPropertyChanged("CreateReportViewModel");
         }
 
-        /// <summary>
-        ///     The find log event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
         private void FindLogEvent(object args)
         {
             var name = args as string;
@@ -477,12 +428,6 @@ namespace slimCat.ViewModels
             Events.GetEvent<UserCommandEvent>().Publish(command);
         }
 
-        /// <summary>
-        ///     The handle report event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
         private void HandleReportEvent(object args)
         {
             var name = args as string;
@@ -493,15 +438,6 @@ namespace slimCat.ViewModels
             Events.GetEvent<UserCommandEvent>().Publish(command);
         }
 
-        /// <summary>
-        ///     The ignore event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
-        /// <param name="remove">
-        ///     The remove.
-        /// </param>
         private void IgnoreEvent(object args, bool remove = false)
         {
             var name = args as string;
@@ -511,69 +447,48 @@ namespace slimCat.ViewModels
                     .ToDictionary();
 
             Events.GetEvent<UserCommandEvent>().Publish(command);
-            updateRightClickMenu(RightClickMenuViewModel.Target); // updates the ignore/unignore text
+            OnRightClickMenuUpdated(RightClickMenuViewModel.Target); // updates the ignore/unignore text
         }
 
-        /// <summary>
-        ///     The interested event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
-        /// <param name="interestedIn">
-        ///     The interested in.
-        /// </param>
         private void InterestedEvent(object args, bool interestedIn = true)
         {
             Events.GetEvent<UserCommandEvent>()
-                .Publish(
-                    interestedIn
-                        ? CommandDefinitions.CreateCommand("interesting", new[] {args as string}).ToDictionary()
-                        : CommandDefinitions.CreateCommand("notinteresting", new[] {args as string}).ToDictionary());
+                .Publish(CommandDefinitions.CreateCommand(interestedIn
+                    ? "interesting"
+                    : "notinteresteing", new[] {args as string}).ToDictionary());
         }
 
-        /// <summary>
-        ///     The is interested event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
+        private void IgnoreUpdatesEvent(object args)
+        {
+            Events.GetEvent<UserCommandEvent>().Publish(
+                CommandDefinitions.CreateCommand("ignoreUpdate", new[] { args as string }).ToDictionary());
+
+            OnRightClickMenuUpdated(RightClickMenuViewModel.Target); // updates the ignore/unignore text
+        }
+
+        private void UnignoreUpdatesEvent(object args)
+        {
+            Events.GetEvent<UserCommandEvent>().Publish(
+                CommandDefinitions.CreateCommand("unignoreUpdates", new[] { args as string }).ToDictionary()); 
+
+            OnRightClickMenuUpdated(RightClickMenuViewModel.Target); // updates the ignore/unignore text
+        }
+
         private void IsInterestedEvent(object args)
         {
             InterestedEvent(args);
         }
 
-        /// <summary>
-        ///     The is uninterested event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
         private void IsUninterestedEvent(object args)
         {
             InterestedEvent(args, false);
         }
 
-        /// <summary>
-        ///     The kick event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
         private void KickEvent(object args)
         {
             KickOrBanEvent(args, false);
         }
 
-        /// <summary>
-        ///     The kick or ban event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
-        /// <param name="isBan">
-        ///     The is ban.
-        /// </param>
         private void KickOrBanEvent(object args, bool isBan)
         {
             var name = args as string;
@@ -585,39 +500,28 @@ namespace slimCat.ViewModels
             Events.GetEvent<UserCommandEvent>().Publish(command);
         }
 
-        /// <summary>
-        ///     The on selected channel changed.
-        /// </summary>
-        /// <param name="sender">
-        ///     The sender.
-        /// </param>
-        /// <param name="e">
-        ///     The e.
-        /// </param>
+        private void RemoveIgnoreEvent(object args)
+        {
+            IgnoreEvent(args, true);
+        }
+        #endregion
+
         private void OnSelectedChannelChanged(object sender, EventArgs e)
         {
             OnPropertyChanged("HasPermissions");
             RightClickMenuViewModel.IsOpen = false;
             CreateReportViewModel.IsOpen = false;
         }
-
-        /// <summary>
-        ///     The remove ignore event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
-        private void RemoveIgnoreEvent(object args)
+        private void OnRightClickMenuUpdated(ICharacter newTarget)
         {
-            IgnoreEvent(args, true);
+            var name = newTarget.Name;
+            RightClickMenuViewModel.SetNewTarget(newTarget, CanHandleReport(name));
+            RightClickMenuViewModel.IsOpen = true;
+            CreateReportViewModel.Target = name;
+            OnPropertyChanged("RightClickMenuViewModel");
+            OnPropertyChanged("CreateReportViewModel");
         }
 
-        /// <summary>
-        ///     The request channel join event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
         protected void RequestChannelJoinEvent(object args)
         {
             var command =
@@ -626,12 +530,6 @@ namespace slimCat.ViewModels
             Events.GetEvent<UserCommandEvent>().Publish(command);
         }
 
-        /// <summary>
-        ///     The request PrivateMessage event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
         protected void RequestPmEvent(object args)
         {
             var tabName = (string) args;
@@ -647,12 +545,6 @@ namespace slimCat.ViewModels
             Events.GetEvent<UserCommandEvent>().Publish(command);
         }
 
-        /// <summary>
-        ///     The start link in default browser.
-        /// </summary>
-        /// <param name="linkToOpen">
-        ///     The link.
-        /// </param>
         private void StartLinkInDefaultBrowser(object linkToOpen)
         {
             var interpret = linkToOpen as string;
@@ -676,7 +568,7 @@ namespace slimCat.ViewModels
                 return;
 
             if (updateKind.TargetCharacter.Name == RightClickMenuViewModel.Target.Name)
-                updateRightClickMenu(RightClickMenuViewModel.Target);
+                OnRightClickMenuUpdated(RightClickMenuViewModel.Target);
 
             OnPropertyChanged("RightClickMenuViewModel");
         }

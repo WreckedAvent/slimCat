@@ -379,7 +379,7 @@ namespace slimCat.Services
 
         private void HandleNotification(NotificationModel notification)
         {
-            // TODO: Refactor to each update model handling this logic atomically
+            // TODO: I'M DYIN'! REFACTOR ME OVER HERE!
 
             // character update models will be *most* of the notification the user will see
             var model = notification as CharacterUpdateModel;
@@ -474,10 +474,12 @@ namespace slimCat.Services
             }
             else
             {
-                var channelId = ((ChannelUpdateModel) notification).TargetChannel.Id;
+                var channelUpdate = (ChannelUpdateModel) notification;
+
+                if (!channelUpdate.TargetChannel.Settings.AlertAboutUpdates) return;
 
                 AddNotification(notification);
-                NotifyUser(false, false, notification.ToString(), channelId);
+                NotifyUser(false, false, notification.ToString(), channelUpdate.TargetChannel.Id);
             }
         }
 

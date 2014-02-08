@@ -155,6 +155,8 @@ namespace slimCat.Models
         /// </summary>
         public static bool PlaySoundEvenWhenTabIsFocused { get; set; }
 
+        public static IList<string> IgnoreUpdates { get; set; }
+
         #endregion
     }
 

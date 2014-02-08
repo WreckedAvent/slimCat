@@ -72,6 +72,12 @@ namespace slimCat.Models
         /// </summary>
         bool IsInteresting { get; set; }
 
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether to ignore updates for this character.
+        /// </summary>
+        bool IgnoreUpdates { get; set; }
+
         #endregion
 
         #region Public Methods and Operators

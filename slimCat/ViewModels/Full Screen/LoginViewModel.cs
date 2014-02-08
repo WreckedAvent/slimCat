@@ -56,7 +56,7 @@ namespace slimCat.ViewModels
 
         private RelayCommand login;
 
-        private string relayMessage = "First, Enter your account details ..."; // message relayed to the user
+        private string relayMessage = Constants.FriendlyName; // message relayed to the user
 
         private bool requestIsSent; // used for determining Login UI state
 
@@ -224,7 +224,7 @@ namespace slimCat.ViewModels
 
         private void SendTicketRequest()
         {
-            RelayMessage = "Great! Logging in ...";
+            RelayMessage = "Logging in ...";
             RequestSent = true;
             Events.GetEvent<LoginEvent>().Publish(true);
             Events.GetEvent<LoginCompleteEvent>().Subscribe(HandleLogin, ThreadOption.UIThread);

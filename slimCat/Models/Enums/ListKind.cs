@@ -28,6 +28,7 @@ namespace slimCat.Models
         Interested,
         NotInterested,
         Ignored,
-        Banned
+        Banned,
+        IgnoreUpdates
     }
 }

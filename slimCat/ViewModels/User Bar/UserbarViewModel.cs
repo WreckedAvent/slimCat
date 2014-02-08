@@ -499,10 +499,10 @@ namespace slimCat.ViewModels
             if (difference.TotalSeconds > 10)
                 ConnectionIsGood = false;
 
-            if (difference.TotalSeconds > 15)
+            if (difference.TotalSeconds > 20)
                 ConnectionIsModerate = false;
 
-            if (difference.TotalSeconds > 30)
+            if (difference.TotalSeconds > 40)
                 ConnectionIsConnected = false;
 
             OnPropertyChanged("ConnectionIsPerfect");

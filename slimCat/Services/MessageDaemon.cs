@@ -140,6 +140,8 @@ namespace slimCat.Services
                         {"getdescription", OnChannelDescripionRequested},
                         {"interesting", OnMarkInterestedRequested},
                         {"notinteresting", OnMarkNotInterestedRequested},
+                        {"ingnoreUpdates", OnIgnoreUpdatesRequested},
+                        {"unignoreUpdates", OnUnigoreUpdatesRequested},
                         {Commands.AdminAlert, OnReportRequested},
                         {"tempignore", OnTemporaryIgnoreRequested},
                         {"tempunignore", OnTemporaryIgnoreRequested},
@@ -688,6 +690,16 @@ namespace slimCat.Services
                                 ListArgument =
                                     CharacterUpdateModel.ListChangedEventArgs.ListType.NotInterested
                             }));
+        }
+
+        private void OnUnigoreUpdatesRequested(IDictionary<string, object> command)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnIgnoreUpdatesRequested(IDictionary<string, object> command)
+        {
+            throw new NotImplementedException();
         }
 
         private void OnReportRequested(IDictionary<string, object> command)

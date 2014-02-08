@@ -30,13 +30,15 @@ namespace slimCat.Models
     #endregion
 
     /// <summary>
-    ///     Channel settings specific to each channel
+    /// Channel settings specific to each channel
     /// </summary>
     public class ChannelSettingsModel
     {
         #region Fields
 
         private bool enableLogging = true;
+
+        private bool alertAboutUpdates = true;
 
         private RelayCommand expandSettings;
 
@@ -246,6 +248,20 @@ namespace slimCat.Models
             set
             {
                 messageLevel = value;
+                CallUpdate();
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether to notify about updates.
+        /// </summary>
+        public bool AlertAboutUpdates
+        {
+            get { return alertAboutUpdates; }
+
+            set
+            {
+                alertAboutUpdates = value;
                 CallUpdate();
             }
         }

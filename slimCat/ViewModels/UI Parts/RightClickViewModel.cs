@@ -154,6 +154,21 @@ namespace slimCat.ViewModels
             }
         }
 
+        public string Updates
+        {
+            get
+            {
+                if (Target != null)
+                {
+                    return manager.IsOnList(Target.Name, ListKind.IgnoreUpdates)
+                        ? "Unigore updates"
+                        : "Ignore updates";
+                }
+
+                return string.Empty;
+            }
+        }
+
         /// <summary>
         ///     Gets the target.
         /// </summary>

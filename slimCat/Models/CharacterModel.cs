@@ -49,6 +49,7 @@ namespace slimCat.Models
         private StatusType status;
 
         private string statusMessage = string.Empty;
+        private bool ignoreUpdates;
 
         #endregion
 
@@ -155,6 +156,16 @@ namespace slimCat.Models
             {
                 isInteresting = value;
                 OnPropertyChanged("IsInteresting");
+            }
+        }
+
+        public bool IgnoreUpdates
+        {
+            get { return ignoreUpdates; }
+            set
+            {
+                ignoreUpdates = value;
+                OnPropertyChanged("IgnoreUpdates");
             }
         }
 

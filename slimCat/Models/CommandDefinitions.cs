@@ -84,6 +84,7 @@ namespace slimCat.Models
                     new CommandModel("ignore", C.UserIgnore, new[] {A.Character, A.Action},
                         CommandModel.CommandTypes.TwoArgs)
                 },
+                {"ignoreUpdates", new CommandModel("ignoreUpdates", "ignoreUpdates", new []{A.Character})},
                 {"interesting", new CommandModel("interesting", "interesting", new[] {A.Character})},
                 {
                     "invite",
@@ -136,6 +137,7 @@ namespace slimCat.Models
                     new CommandModel("unignore", C.UserIgnore, new[] {A.Character, A.Action},
                         CommandModel.CommandTypes.TwoArgs)
                 },
+                {"unignoreUpdates", new CommandModel("unignoreUpdates", "unignoreUpdates", new []{A.Character})},
                 {"who", new CommandModel("who", "who", null, CommandModel.CommandTypes.NoArgs)},
 
                 // channel moderator commands
