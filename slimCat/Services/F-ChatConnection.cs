@@ -43,15 +43,21 @@ namespace slimCat.Services
     {
         #region Fields
 
+        private readonly Timer autoPingTimer = new Timer(45*1000); // every 45 seconds
         private readonly int[] errsThatDisconnect;
         private readonly IEventAggregator events;
 
-        private readonly WebSocket socket;
         private readonly ITicketProvider provider;
+        private readonly Random random = new Random();
+        private readonly Queue<KeyValuePair<string, object>> resendQueue = new Queue<KeyValuePair<string, object>>();
+        private readonly Timer staggerTimer;
+        private bool gaveUp;
 
         private bool isAuthenticated;
         private StreamWriter logger;
-        private Timer staggerTimer;
+
+        private int retryAttempts = 0;
+        private WebSocket socket;
 
         #endregion
 
@@ -90,7 +96,21 @@ namespace slimCat.Services
                     Constants.Errors.TooManyConnections,
                     Constants.Errors.UnknownLoginMethod
                 };
+
             InitializeLog();
+
+            autoPingTimer.Elapsed += (s, e) => TrySend(Constants.ClientCommands.SystemPing);
+            autoPingTimer.Start();
+
+            staggerTimer = new Timer(5*1000); // first reconnect is 5 seconds
+            staggerTimer.Elapsed += (s, e) => DoReconnect();
+        }
+
+        private void DoReconnect()
+        {
+            ConnectToChat(Character);
+            staggerTimer.Interval = (random.Next(10) + 5)*1000; // 5 - 15 seconds
+            staggerTimer.Stop();
         }
 
         #endregion
@@ -122,22 +142,14 @@ namespace slimCat.Services
         /// </param>
         public void SendMessage(object command, string type)
         {
-            try
-            {
-                if (type.Length > 3 || type.Length < 3)
-                    throw new ArgumentOutOfRangeException("type", "Command type must be 3 characters long");
+            if (type.Length != 3)
+                throw new ArgumentOutOfRangeException("type", "Command type must be 3 characters long");
 
-                var ser = SimpleJson.SerializeObject(command);
+            var ser = SimpleJson.SerializeObject(command);
 
-                Log(type, ser);
+            Log(type, ser);
 
-                socket.Send(type + " " + ser);
-            }
-            catch (Exception ex)
-            {
-                ex.Source = "F-Chat connection, SendMessage method";
-                Exceptions.HandleException(ex);
-            }
+            TrySend(type, ser);
         }
 
         /// <summary>
@@ -148,23 +160,15 @@ namespace slimCat.Services
         /// </param>
         public void SendMessage(IDictionary<string, object> command)
         {
-            try
-            {
-                var type = command.Get(Constants.Arguments.Type);
+            var type = command.Get(Constants.Arguments.Type);
 
-                command.Remove(Constants.Arguments.Type);
+            command.Remove(Constants.Arguments.Type);
 
-                var ser = SimpleJson.SerializeObject(command);
+            var ser = SimpleJson.SerializeObject(command);
 
-                Log(type, command);
+            Log(type, ser);
 
-                socket.Send(type + " " + ser);
-            }
-            catch (Exception ex)
-            {
-                ex.Source = "F-Chat connection, Send Message Method, IDictionary<string, object> overload";
-                Exceptions.HandleException(ex);
-            }
+            TrySend(type, ser);
         }
 
         /// <summary>
@@ -175,20 +179,12 @@ namespace slimCat.Services
         /// </param>
         public void SendMessage(string commandType)
         {
-            try
-            {
-                if (commandType.Length > 3 || commandType.Length < 3)
-                    throw new ArgumentOutOfRangeException("commandType", "Command type must be 3 characters long");
+            if (commandType.Length > 3 || commandType.Length < 3)
+                throw new ArgumentOutOfRangeException("commandType", "Command type must be 3 characters long");
 
-                Log(commandType);
+            Log(commandType);
 
-                socket.Send(commandType);
-            }
-            catch (Exception ex)
-            {
-                ex.Source = "F-Chat connection, SendMessage method";
-                Exceptions.HandleException(ex);
-            }
+            TrySend(commandType);
         }
 
         #endregion
@@ -225,28 +221,40 @@ namespace slimCat.Services
         /// </param>
         private void ConnectToChat(string character)
         {
-            try
+            Character = character.ThrowIfNull("character");
+
+            events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(ConnectToChat);
+
+            if (socket.State == WebSocketState.Open || socket.State == WebSocketState.Connecting) return;
+
+            socket = new WebSocket(Constants.ServerHost);
+
+            // define socket behavior
+            socket.Opened += ConnectionOpened;
+            socket.Error += ConnectionError;
+            socket.MessageReceived += ConnectionMessageReceived;
+            socket.Closed += ConnectionClosed;
+
+            // start connection
+            socket.Open();
+        }
+
+        private void TrySend(string type, object args = null)
+        {
+            if (socket.State == WebSocketState.Open)
             {
-                Character = character.ThrowIfNull("character");
+                if (args != null)
+                    socket.Send(type + " " + args);
+                else
+                    socket.Send(type);
 
-                events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(ConnectToChat);
-
-                if (socket.State == WebSocketState.Open || socket.State == WebSocketState.Connecting) return;
-
-                // define socket behavior
-                socket.Opened += ConnectionOpened;
-                socket.Error += ConnectionError;
-                socket.MessageReceived += ConnectionMessageReceived;
-                socket.Closed += ConnectionClosed;
-
-                // start connection
-                socket.Open();
+                return;
             }
-            catch (Exception ex)
-            {
-                ex.Source = "F-Chat Connection Service, init";
-                Exceptions.HandleException(ex);
-            }
+
+            resendQueue.Enqueue(new KeyValuePair<string, object>(type, args));
+
+            if (socket.State != WebSocketState.Connecting)
+                AttemptReconnect();
         }
 
         /// <summary>
@@ -286,46 +294,40 @@ namespace slimCat.Services
             {
                 isAuthenticated = true;
                 events.GetEvent<LoginAuthenticatedEvent>().Publish(null);
+                SendQueue();
             }
 
             var commandType = e.Message.Substring(0, 3); // type of command sent
 
             var message = e.Message; // actual arguments sent
 
-            if (e.Message.Length > 3)
+            if (e.Message.Length <= 3)
             {
-                // if it has arguments...
-                message = message.Remove(0, 4); // chop off the command type
-
-                var json = (IDictionary<string, object>) SimpleJson.DeserializeObject(message);
-
-                Log(commandType, json, false);
-
-                // de-serialize it to an object model
-                json.Add(Constants.Arguments.Command, commandType);
-
-                // add back in the command type so our models can listen for them
-                if (json.Get(Constants.Arguments.Command) == Constants.ServerCommands.SystemError
-                    && json.ContainsKey("number"))
-                {
-                    int err;
-                    int.TryParse(json.Get("number"), out err);
-
-                    if (errsThatDisconnect.Contains(err)) isAuthenticated = false;
-                }
-
-                events.GetEvent<ChatCommandEvent>().Publish(json);
+                events.GetEvent<ChatCommandEvent>().Publish(null);
+                return;
             }
-            else
+
+            // if it has arguments...
+            message = message.Remove(0, 4); // chop off the command type
+
+            var json = (IDictionary<string, object>) SimpleJson.DeserializeObject(message);
+
+            Log(commandType, json, false);
+
+            // de-serialize it to an object model
+            json.Add(Constants.Arguments.Command, commandType);
+
+            // add back in the command type so our models can listen for them
+            if (json.Get(Constants.Arguments.Command) == Constants.ServerCommands.SystemError
+                && json.ContainsKey("number"))
             {
-                switch (e.Message)
-                {
-                    case Constants.ServerCommands.SystemPing:
-                        SendMessage(Constants.ClientCommands.SystemPing); // auto-respond to pings
-                        events.GetEvent<ChatCommandEvent>().Publish(null);
-                        break;
-                }
+                int err;
+                int.TryParse(json.Get("number"), out err);
+
+                if (errsThatDisconnect.Contains(err)) isAuthenticated = false;
             }
+
+            events.GetEvent<ChatCommandEvent>().Publish(json);
         }
 
         /// <summary>
@@ -368,11 +370,7 @@ namespace slimCat.Services
 
             SendMessage(authRequest, Constants.ClientCommands.SystemAuthenticate);
 
-            if (staggerTimer != null)
-            {
-                staggerTimer.Dispose();
-                staggerTimer = null;
-            }
+            staggerTimer.Stop();
         }
 
         /// <summary>
@@ -380,19 +378,20 @@ namespace slimCat.Services
         /// </summary>
         private void AttemptReconnect()
         {
-            if (staggerTimer != null)
-            {
-                staggerTimer.Dispose();
-                staggerTimer = null;
-            }
+            if (staggerTimer.Enabled || socket.State == WebSocketState.Open) return;
 
-            staggerTimer = new Timer((new Random().Next(10) + 5)*1000); // between 5 and 15 seconds
-            staggerTimer.Elapsed += (s, e) =>
-                {
-                    ConnectToChat(Character);
-                    events.GetEvent<ReconnectingEvent>().Publish(string.Empty);
-                };
-            staggerTimer.Enabled = true;
+            staggerTimer.Start();
+            isAuthenticated = false;
+            events.GetEvent<LoginFailedEvent>().Publish(null);
+        }
+
+        private void SendQueue()
+        {
+            while (resendQueue.Count > 0)
+            {
+                var current = resendQueue.Dequeue();
+                TrySend(current.Key, current.Value);
+            }
         }
 
         [Conditional("DEBUG")]

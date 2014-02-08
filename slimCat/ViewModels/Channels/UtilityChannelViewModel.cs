@@ -439,7 +439,7 @@ namespace slimCat.ViewModels
         /// </param>
         public void LoggedInEvent(bool? payload)
         {
-            updateTimer.Elapsed -= UpdateConnectText;
+            updateTimer.Stop();
             OnPropertyChanged("IsConnecting");
 
 
@@ -485,11 +485,8 @@ namespace slimCat.ViewModels
         /// </param>
         public void LoginFailedEvent(string error)
         {
-            if (ChatModel.IsAuthenticated)
-            {
-                updateTimer.Elapsed += UpdateConnectText;
-                ChatModel.IsAuthenticated = false;
-            }
+            updateTimer.Start();
+            ChatModel.IsAuthenticated = false;
 
             inStagger = true;
             flavorText = new StringBuilder(error);
@@ -508,12 +505,9 @@ namespace slimCat.ViewModels
         /// </param>
         public void LoginReconnectingEvent(string payload)
         {
+            updateTimer.Start();
             inStagger = false;
-            if (ChatModel.IsAuthenticated)
-            {
-                updateTimer.Elapsed += UpdateConnectText;
-                ChatModel.IsAuthenticated = false;
-            }
+            ChatModel.IsAuthenticated = false;
 
             flavorText = new StringBuilder("Attempting reconnect");
             ConnectTime = 0;
