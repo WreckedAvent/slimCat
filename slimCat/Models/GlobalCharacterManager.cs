@@ -23,6 +23,7 @@ namespace slimCat.Models
 
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using Microsoft.Practices.Prism.Events;
     using Services;
@@ -38,6 +39,7 @@ namespace slimCat.Models
 
         private readonly CollectionPair bookmarks = new CollectionPair();
         private readonly CollectionPair friends = new CollectionPair();
+        private readonly CollectionPair localFriends = new CollectionPair(); 
         private readonly CollectionPair ignored = new CollectionPair();
         private readonly CollectionPair interested = new CollectionPair();
         private readonly CollectionPair moderators = new CollectionPair();
@@ -102,8 +104,29 @@ namespace slimCat.Models
                     if (isOfInterest) break;
                 }
 
+                if (isOfInterest && friends.List.Contains(name) && !ApplicationSettings.FriendsAreAccountWide)
+                    isOfInterest = localFriends.List.Contains(name);
+
                 return isOfInterest;
             }
+        }
+
+        public override bool IsOnList(string name, ListKind listKind, bool onlineOnly = true)
+        {
+            var toReturn = base.IsOnList(name, listKind, onlineOnly);
+            if (listKind == ListKind.Friend && !ApplicationSettings.FriendsAreAccountWide)
+                toReturn = localFriends.List.Contains(name);
+
+            return toReturn;
+        }
+
+        public override ICollection<ICharacter> GetCharacters(ListKind listKind, bool isOnlineOnly = true)
+        {
+            var characters = base.GetCharacters(listKind, isOnlineOnly);
+            if (listKind == ListKind.Friend && !ApplicationSettings.FriendsAreAccountWide)
+                characters = characters.Where(x => localFriends.List.Contains(x.Name)).ToList();
+
+            return characters;
         }
 
         public override void Clear()
@@ -116,7 +139,8 @@ namespace slimCat.Models
         {
             currentCharacter = name;
             bookmarks.Set(account.Bookmarks);
-            friends.Set(account.AllFriends.Select(x => x.Key)); // todo: manage if friends are global or not
+            friends.Set(account.AllFriends.Select(x => x.Key));
+            localFriends.Set(account.AllFriends.Where(x => x.Value.Contains(name)).Select(x => x.Key));
             eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(Initialize);
         }
 

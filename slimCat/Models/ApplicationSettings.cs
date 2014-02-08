@@ -60,6 +60,7 @@ namespace slimCat.Models
                 Langauge = "en";
 
             SpellCheckEnabled = true;
+            FriendsAreAccountWide = true;
         }
 
         #endregion

@@ -112,12 +112,11 @@
                             Allow Sound when Current Tab is Focused
                         </CheckBox>
 
-                        <!-- disabled until I figure out how to do this without doing what I was doing before
                         <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
                                   VerticalAlignment="Center"
                                   Margin="0,5">
                             Friends are account wide
-                        </CheckBox>-->
+                        </CheckBox>
 
                         <CheckBox IsChecked="{Binding SpellCheckEnabled}"
                                   VerticalAlignment="Center"

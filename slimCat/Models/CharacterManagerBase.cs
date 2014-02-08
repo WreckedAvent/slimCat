@@ -139,7 +139,7 @@ namespace slimCat.Models
             Set(names, listKind);
         }
 
-        public bool IsOnList(string name, ListKind listKind, bool onlineOnly = true)
+        public virtual bool IsOnList(string name, ListKind listKind, bool onlineOnly = true)
         {
             lock (Locker)
             {
@@ -159,7 +159,7 @@ namespace slimCat.Models
 
         public abstract bool IsOfInterest(string name, bool onlineOnly = true);
 
-        public ICollection<ICharacter> GetCharacters(ListKind listKind, bool isOnlineOnly = true)
+        public virtual ICollection<ICharacter> GetCharacters(ListKind listKind, bool isOnlineOnly = true)
         {
             lock (Locker)
             {
