@@ -100,16 +100,10 @@
                             Allow BBCode Colors
                         </CheckBox>
 
-                        <CheckBox IsChecked="{Binding AllowSoundWhenWindowIsFocused}"
-                                  VerticalAlignment="Center"
-                                  Margin="0,5">
-                            Allow Sound when Window is Focused
-                        </CheckBox>
-
                         <CheckBox IsChecked="{Binding AllowSoundWhenTabIsFocused}"
                                   VerticalAlignment="Center"
                                   Margin="0,5">
-                            Allow Sound when Current Tab is Focused
+                            Allow Sound when Tab is Focused
                         </CheckBox>
 
                         <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
@@ -158,7 +152,7 @@
                             <TextBlock Margin="5,0,0,0">Messages in channel backlogs</TextBlock>
                         </WrapPanel>
 
-                        <TextBlock Text="Global Notify Words (seperate with commas)" Margin="0,15,0,0" />
+                        <TextBlock Text="Global Notify Words (comma seperated)" Margin="0,15,0,0" />
                         <TextBox
                             Text="{Binding Path=GlobalNotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             TextWrapping="Wrap"
@@ -173,9 +167,8 @@
                             <Run Text="There is a new update available!" />
                             <LineBreak />
                             <Run Text="{Binding Path=UpdateName, Mode=OneWay}" />
-                            <Run Text="(" />
+                            <Run Text=" @" />
                             <Run Text="{Binding Path=UpdateBuildTime, Mode=OneWay}" />
-                            <Run Text=")" />
                             <LineBreak />
 
                             <Hyperlink CommandParameter="{Binding Path=UpdateLink, Mode=OneWay}">Download Now</Hyperlink>

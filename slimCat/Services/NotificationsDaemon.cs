@@ -370,11 +370,11 @@ namespace slimCat.Services
                 channel.HasAutoRepliedTo = false;
             }
 
-        var windowFocusMatters = WindowIsFocused && !ApplicationSettings.PlaySoundEvenWhenWindowIsFocused;
-            var channelFocusMatters = channel.IsSelected && !ApplicationSettings.PlaySoundEvenWhenTabIsFocused;
-
-            if (channelFocusMatters && windowFocusMatters)
-                return;
+            if (WindowIsFocused)
+            {
+                if (channel.IsSelected && !ApplicationSettings.PlaySoundEvenWhenTabIsFocused)
+                    return;
+            }
 
             switch ((ChannelSettingsModel.NotifyLevel) channel.Settings.MessageNotifyLevel)
             {

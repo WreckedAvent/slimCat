@@ -408,17 +408,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        public bool AllowSoundWhenWindowIsFocused
-        {
-            get { return ApplicationSettings.PlaySoundEvenWhenWindowIsFocused; }
-
-            set
-            {
-                ApplicationSettings.PlaySoundEvenWhenWindowIsFocused = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
-            }
-        }
-
         public bool AllowSoundWhenTabIsFocused
         {
             get { return ApplicationSettings.PlaySoundEvenWhenTabIsFocused; }
@@ -463,8 +452,18 @@ namespace slimCat.ViewModels
                         args = reader.ReadToEnd().Split(',');
                 }
 
-                if (args[0] == Constants.FriendlyName)
+                if (args[0].Equals(Constants.FriendlyName, StringComparison.OrdinalIgnoreCase))
                     return;
+
+                var updateDelayTimer = new Timer(10*1000);
+                updateDelayTimer.Elapsed += (s, e) =>
+                    {
+                        Events.GetEvent<ErrorEvent>()
+                            .Publish("{0} is now available! \nPlease Update with the link in the home tab.".FormatWith(args[0]));
+                        updateDelayTimer.Stop();
+                        updateDelayTimer = null;
+                    };
+                updateDelayTimer.Start();
 
                 HasNewUpdate = true;
 
