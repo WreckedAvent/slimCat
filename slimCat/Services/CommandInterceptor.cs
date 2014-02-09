@@ -23,6 +23,7 @@ namespace slimCat.Services
 
     using System;
     using System.Collections.Generic;
+    using System.Dynamic;
     using System.Linq;
     using System.Timers;
     using System.Web;
@@ -1054,6 +1055,16 @@ namespace slimCat.Services
         {
             CharacterManager.Clear();
             ChatModel.CurrentChannels.Each(x => x.CharacterManager.Clear());
+
+
+            Dispatcher.Invoke((Action) (() =>
+                {
+                    ChatModel.AllChannels.Clear();
+                    while (ChatModel.CurrentChannels.Count > 1)
+                    {
+                        ChatModel.CurrentChannels.RemoveAt(1);
+                    }
+                }));
         }
 
         private void RequeCommand(IDictionary<string, object> command)
