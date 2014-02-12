@@ -131,9 +131,9 @@ http://www.foo.bar.com";
                 const string textAtStart = "[b]some well-formed[/b] bold text";
                 const string textAtMiddle = "some well-[b]formed bold[/b] text";
 
-                ShouldBeOneOf<Bold>(textAtEnd).FirstTextShouldBe("bold text");
-                ShouldBeOneOf<Bold>(textAtMiddle).FirstTextShouldBe("formed bold");
-                ShouldBeOneOf<Bold>(textAtStart).FirstTextShouldBe("some well-formed");
+                GetBbCode<Bold>(textAtEnd).FirstTextShouldBe("bold text");
+                GetBbCode<Bold>(textAtMiddle).FirstTextShouldBe("formed bold");
+                GetBbCode<Bold>(textAtStart).FirstTextShouldBe("some well-formed");
             }
 
             [TestMethod]
@@ -141,7 +141,7 @@ http://www.foo.bar.com";
             {
                 const string text = "some well-formed [i]italic[/i] text";
 
-                ShouldBeOneOf<Italic>(text).FirstTextShouldBe("italic");
+                GetBbCode<Italic>(text).FirstTextShouldBe("italic");
             }
 
             [TestMethod]
@@ -149,7 +149,7 @@ http://www.foo.bar.com";
             {
                 const string text = "some well-formed [u]underline[/u] text";
 
-                ShouldBeOneOf<Underline>(text).FirstTextShouldBe("underline");
+                GetBbCode<Underline>(text).FirstTextShouldBe("underline");
             }
 
             [TestMethod]
@@ -158,7 +158,7 @@ http://www.foo.bar.com";
                 const string text = "some well-formed [s]strike-through[/s] text";
 
                 var result =
-                    ShouldBeOneOf<Span>(text).First(x => x.TextDecorations.Equals(TextDecorations.Strikethrough));
+                    GetBbCode<Span>(text).First(x => x.TextDecorations.Equals(TextDecorations.Strikethrough));
 
                 result.TextShouldBe("strike-through");
             }
@@ -168,7 +168,7 @@ http://www.foo.bar.com";
             {
                 const string text = "some well formed [url=https://www.google.com]url[/url] text";
 
-                ShouldBeOneOf<Hyperlink>(text).FirstTextShouldBe("url");
+                GetBbCode<Hyperlink>(text).FirstTextShouldBe("url");
             }
 
             [TestMethod]
@@ -176,7 +176,7 @@ http://www.foo.bar.com";
             {
                 const string text = "some well-formed [url]https://www.google.com[/url] text";
 
-                ShouldBeOneOf<Hyperlink>(text).FirstTextShouldBe("google.com");
+                GetBbCode<Hyperlink>(text).FirstTextShouldBe("google.com");
             }
 
             [TestMethod]
@@ -184,7 +184,7 @@ http://www.foo.bar.com";
             {
                 const string text = "some well-formed [session=Love Bar]ADH-SOMENONSENSE[/session] session";
 
-                ShouldBeOneOf<InlineUIContainer>(text);
+                GetBbCode<InlineUIContainer>(text);
                 // not sure how to grab text out of InlineUIContainer. TODO
             }
 
@@ -193,7 +193,7 @@ http://www.foo.bar.com";
             {
                 const string text = "some well-formed [channel]Helpdesk[/channel] channel text";
 
-                ShouldBeOneOf<InlineUIContainer>(text);
+                GetBbCode<InlineUIContainer>(text);
             }
 
             [TestMethod]
@@ -201,7 +201,7 @@ http://www.foo.bar.com";
             {
                 const string text = "some well-formed [big]big[/big] text";
 
-                ShouldBeOneOf<Span>(text).First(x => x.FontSize > 12).TextShouldBe("big");
+                GetBbCode<Span>(text).First(x => x.FontSize > 12).TextShouldBe("big");
             }
 
             [TestMethod]
@@ -209,7 +209,7 @@ http://www.foo.bar.com";
             {
                 const string text = "some well-formed [user]user[/user] text";
 
-                ShouldBeOneOf<InlineUIContainer>(text);
+                GetBbCode<InlineUIContainer>(text);
             }
 
             [TestMethod]
@@ -217,7 +217,7 @@ http://www.foo.bar.com";
             {
                 const string text = "some well-formed [small]small[/small] text";
 
-                ShouldBeOneOf<Span>(text).First(x => x.FontSize < 12).TextShouldBe("small");
+                GetBbCode<Span>(text).First(x => x.FontSize < 12).TextShouldBe("small");
             }
 
             [TestMethod]
@@ -225,7 +225,7 @@ http://www.foo.bar.com";
             {
                 const string text = "some well-formed [sub]sub[/sub] text";
 
-                ShouldBeOneOf<Span>(text)
+                GetBbCode<Span>(text)
                     .First(x => x.BaselineAlignment == BaselineAlignment.Subscript)
                     .TextShouldBe("sub");
             }
@@ -235,7 +235,7 @@ http://www.foo.bar.com";
             {
                 const string text = "some well-formed [sup]sup[/sup] text";
 
-                ShouldBeOneOf<Span>(text)
+                GetBbCode<Span>(text)
                     .First(x => x.BaselineAlignment == BaselineAlignment.Superscript)
                     .TextShouldBe("sup");
             }
@@ -246,7 +246,7 @@ http://www.foo.bar.com";
                 ApplicationSettings.AllowColors = true; // TODO : get this as a dependency
                 const string text = "some well-formed [color=green]color[/color] text";
 
-                ShouldBeOneOf<Span>(text)
+                GetBbCode<Span>(text)
                     .First(x => x.Foreground.IsColor(Colors.Green))
                     .TextShouldBe("color");
             }
@@ -257,7 +257,7 @@ http://www.foo.bar.com";
                 ApplicationSettings.AllowColors = false;
                 const string text = "some well-formed [color=green]color[/color] text";
 
-                var result = ShouldBeOneOf<Span>(text).First(x => x.GetText().Equals("color"));
+                var result = GetBbCode<Span>(text).First(x => x.GetText().Equals("color"));
                 result.ShouldBeDefaultColor();
             }
 
@@ -267,7 +267,7 @@ http://www.foo.bar.com";
                 ApplicationSettings.AllowColors = true;
                 const string text = "some well-formed [color]color[/color] text";
 
-                var result = ShouldBeOneOf<Span>(text).First(x => x.GetText().Equals("color"));
+                var result = GetBbCode<Span>(text).First(x => x.GetText().Equals("color"));
                 result.ShouldBeDefaultColor();
             }
 
@@ -277,7 +277,7 @@ http://www.foo.bar.com";
                 ApplicationSettings.AllowColors = true;
                 const string text = "this is some text with [color=badcolor]a bad color in it[/color].";
 
-                var result = ShouldBeOneOf<Span>(text).First(x => x.GetText().Equals("a bad color in it"));
+                var result = GetBbCode<Span>(text).First(x => x.GetText().Equals("a bad color in it"));
                 result.ShouldBeDefaultColor();
             }
 
@@ -288,7 +288,7 @@ http://www.foo.bar.com";
             {
                 const string text = "some stacked [i][b]bbcode[/b][/i] text";
 
-                var result = ShouldBeOneOf<Italic>(text).First().GetFirstChild<Bold>();
+                var result = GetBbCode<Italic>(text).First().GetFirstChild<Bold>();
 
                 result.TextShouldBe("bbcode");
             }
@@ -298,7 +298,7 @@ http://www.foo.bar.com";
             {
                 const string text = "some stacked [i]bbcode with [b]plain text[/b] at various points[/i] ... text";
 
-                var root = ShouldBeOneOf<Italic>(text).First();
+                var root = GetBbCode<Italic>(text).First();
 
                 root.GetFirstChild().TextShouldBe("bbcode with ");
                 root.GetFirstChild<Bold>().TextShouldBe("plain text");
@@ -310,7 +310,7 @@ http://www.foo.bar.com";
             {
                 const string text = "some  [b]bbcode [u]with [i]lots[/i] of[/u] [u]stacking[/u][/b] text";
 
-                var root = ShouldBeOneOf<Bold>(text).First();
+                var root = GetBbCode<Bold>(text).First();
 
                 root.GetFirstChild().TextShouldBe("bbcode ");
 
@@ -328,7 +328,7 @@ http://www.foo.bar.com";
                 const string text =
                     "Any [url=http://static.f-list.net/images/charimage/316487.jpg]Zerglings[/url] or [url=http://static.f-list.net/images/charimage/659750.jpg]Hydralisks[/url] Want a piece of my ass~? Also open to [url=http://static.f-list.net/images/charimage/729294.png]Sangheili[/url] and [url=https://static1.e621.net/data/sample/e9/d0/e9d0295fcd569bda48d2efe2762a2cbc.jpg]Xenomorphs~[/url] Would especially love you if you play a Sangheili~";
 
-                var result = ShouldBeOneOf<Span>(text).ToList();
+                var result = GetBbCode<Span>(text).ToList();
 
                 // make sure urls are formed correctly
                 var hyperlinks = result.OfType<Hyperlink>().ToList();
@@ -352,7 +352,7 @@ http://www.foo.bar.com";
                 const string text =
                     "b [color=red]r[color=green]g[/color][/color] b";
 
-                var root = ShouldBeOneOf<Span>(text).ToList();
+                var root = GetBbCode<Span>(text).ToList();
                 root.FirstTextShouldBe("b ");
 
                 var colorTag = root[1];
@@ -371,7 +371,7 @@ http://www.foo.bar.com";
             {
                 const string text = "o [noparse][b]b[/b][/noparse] o";
 
-                var result = ShouldBeOneOf<Span>(text).ToList();
+                var result = GetBbCode<Span>(text).ToList();
                 result[0].TextShouldBe("o ");
 
                 result[1].GetChildren().FirstTextShouldBe("[b]b[/b]");
@@ -382,7 +382,7 @@ http://www.foo.bar.com";
             {
                 const string text = "o [noparse][i]i[/i][/noparse][noparse][b]b[/b][/noparse] o";
 
-                var result = ShouldBeOneOf<Span>(text).ToList();
+                var result = GetBbCode<Span>(text).ToList();
                 result[0].TextShouldBe("o ");
 
                 result[1].GetChildren().FirstTextShouldBe("[i]i[/i]");
@@ -412,7 +412,7 @@ http://www.foo.bar.com";
             {
                 const string text = "o [b][b]b[/b] o";
 
-                var result = ShouldBeOneOf<Span>(text).ToList();
+                var result = GetBbCode<Span>(text).ToList();
                 result[0].TextShouldBe("o ");
 
                 Assert.IsFalse(result[1] is Bold);
@@ -432,7 +432,7 @@ http://www.foo.bar.com";
             {
                 const string text = "o [b]some well-formed bold with a run-away [user] tag[/b] o";
 
-                var result = ShouldBeOneOf<Span>(text).ToList();
+                var result = GetBbCode<Span>(text).ToList();
 
                 result[0].TextShouldBe("o ");
 
@@ -452,14 +452,27 @@ http://www.foo.bar.com";
             }
 
             [TestMethod]
-            public void Test()
+            public void TimeStampsAndBbCodeWorks()
             {
-                const string text ="[20:20] test: text http://www.youtube.com/";
+                const string text = "[20:20] test: text http://www.youtube.com/";
 
-                var result = ShouldBeOneOf<Span>(text).ToList();
+                var result = GetBbCode<Span>(text).ToList();
                 result[0].TextShouldBe("[20:20]");
                 result[1].TextShouldBe(" test: text ");
                 result.OfType<Hyperlink>().First().TextShouldBe("youtube.com");
+            }
+
+            [TestMethod]
+            public void AloneCloseBracketDoesntLoopInfinitely()
+            {
+                const string text = "][color=red]test[/color]";
+
+                var result = GetBbCode<Span>(text).ToList();
+                result[0].TextShouldBe("]");
+
+                // result[1] should actually be "test", TODO
+                result[1].TextShouldBe("]");
+                result[2].TextShouldBe("test");
             }
         }
 
@@ -476,7 +489,7 @@ http://www.foo.bar.com";
             return FirstSpan(input).GetChildren<T>();
         }
 
-        private IEnumerable<T> ShouldBeOneOf<T>(string input)
+        private IEnumerable<T> GetBbCode<T>(string input)
             where T : Inline
         {
             var all = GetAll<T>(input).ToList();

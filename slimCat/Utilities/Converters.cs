@@ -267,7 +267,6 @@ namespace slimCat.Utilities
             return matches.Aggregate(text, (current, toReplace) => current.Replace(toReplace.Item1, toReplace.Item2));
         }
 
-
         private Inline ToInline(ParsedChunk chunk)
         {
             var converters = new Dictionary<BbCodeType, Func<ParsedChunk, Inline>>
@@ -598,11 +597,16 @@ namespace slimCat.Utilities
 
             private BbTag ReturnAsTextBetween(int start, int end)
             {
+                if (end - start <= 1)
+                {
+                    end = start + 2;
+                }
+
                 var toReturn = new BbTag
                     {
                         Type = BbCodeType.None,
                         Start = start,
-                        End = end - 1
+                        End = end - 1 
                     };
 
                 var rewindTo = Last != null ? Last.End : 0;
