@@ -862,9 +862,9 @@ namespace slimCat.Services
                                            (ChannelModel) model.CurrentPms.FirstByIdOrDefault(lastSelected.Id);
 
                             if (toUpdate == null)
-                                throw new ArgumentOutOfRangeException("channelId", "Cannot update unknown channel");
-
-                            toUpdate.IsSelected = false;
+                                lastSelected = null;
+                            else 
+                                toUpdate.IsSelected = false;
                         });
             }
 
