@@ -37,7 +37,7 @@ namespace slimCat.Utilities
         /// </summary>
         private const string DefaultMessage = "Uh-oh! Something bad happened."
                                               +
-                                              "\nPlease submit stacktrace.log found in your slimCat installation folder for debugging purposes.";
+                                              "\nPlease submit stacktrace.log found in your slimCat installation folder to slimCat on F-list for debugging purposes.";
 
         #endregion
 
