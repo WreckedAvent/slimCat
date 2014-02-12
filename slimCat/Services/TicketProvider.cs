@@ -49,7 +49,7 @@ namespace slimCat.Services
             this.browser = browser;
         }
 
-        private bool ShouldGetNewTicket
+        public bool ShouldGetNewTicket
         {
             set { shouldGetNewTicket = value; }
             get { return shouldGetNewTicket || lastInfoRetrieval.AddMinutes(25) < DateTime.Now; }

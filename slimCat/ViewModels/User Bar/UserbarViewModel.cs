@@ -84,6 +84,7 @@ namespace slimCat.ViewModels
             };
 
         private readonly Timer updateTick = new Timer(2500);
+        private bool autoReplyEnabled;
 
         private bool channelsExpanded = true;
 
@@ -92,10 +93,14 @@ namespace slimCat.ViewModels
         private bool hasNewChanMessage;
 
         private bool hasNewPm;
+        private bool isChangingAuto;
 
         private bool isChangingStatus;
 
         private bool isExpanded = true;
+        private string newAutoReplyString = string.Empty;
+        private string newStatusString = string.Empty;
+        private StatusType newStatusType = StatusType.Online;
 
         private bool pmsExpanded = true;
 
@@ -105,19 +110,10 @@ namespace slimCat.ViewModels
 
         private int selPmIndex = -1;
 
-        private string statusCache = string.Empty;
-
-        private StatusType statusTypeCache;
-
         private RelayCommand toggle;
 
-        private RelayCommand toggleStatus;
-
         private ICommand toggleAuto;
-
-        private bool isChangingAuto;
-
-        private bool autoReplyEnabled;
+        private RelayCommand toggleStatus;
 
         #endregion
 
@@ -250,6 +246,60 @@ namespace slimCat.ViewModels
             }
         }
 
+        public string CloseOrSave
+        {
+            get { return HasChanges ? "Save" : "Close"; }
+        }
+
+        public bool HasChanges { get; set; }
+
+        public string NewStatusString
+        {
+            get { return newStatusString; }
+            set
+            {
+                newStatusString = value;
+                OnPropertyChanged("NewStatusString");
+
+                HasChanges = newStatusString != ChatModel.CurrentCharacter.StatusMessage;
+
+                if (!HasChanges)
+                    HasChanges = newStatusType != ChatModel.CurrentCharacter.Status;
+
+                OnPropertyChanged("CloseOrSave");
+            }
+        }
+
+        public StatusType NewStatusType
+        {
+            get { return newStatusType; }
+            set
+            {
+                newStatusType = value;
+                OnPropertyChanged("NewStatusType");
+
+                HasChanges = newStatusType != ChatModel.CurrentCharacter.Status;
+
+                if (!HasChanges)
+                    HasChanges = newStatusString != ChatModel.CurrentCharacter.StatusMessage;
+
+                OnPropertyChanged("CloseOrSave");
+            }
+        }
+
+        public string NewAutoReplyString
+        {
+            get { return newAutoReplyString; }
+            set
+            {
+                newAutoReplyString = value;
+                OnPropertyChanged("NewAutoReplyString");
+
+                HasChanges = newAutoReplyString != ChatModel.AutoReplyMessage;
+                OnPropertyChanged("CloseOrSave");
+            }
+        }
+
         /// <summary>
         ///     Gets or sets a value indicating whether has new message.
         /// </summary>
@@ -314,13 +364,16 @@ namespace slimCat.ViewModels
                 OnPropertyChanged("IsChangingStatus");
 
                 if (value
-                    || (statusCache == ChatModel.CurrentCharacter.StatusMessage
-                        && statusTypeCache == ChatModel.CurrentCharacter.Status))
+                    || (newStatusString == ChatModel.CurrentCharacter.StatusMessage
+                        && newStatusType == ChatModel.CurrentCharacter.Status))
                     return;
 
+                HasChanges = false;
+                ChatModel.CurrentCharacter.StatusMessage = newStatusString;
+                ChatModel.CurrentCharacter.Status = newStatusType;
+
                 SendStatusChangedCommand();
-                statusCache = ChatModel.CurrentCharacter.StatusMessage;
-                statusTypeCache = ChatModel.CurrentCharacter.Status;
+                OnPropertyChanged("CloseOrSave");
             }
         }
 
@@ -436,12 +489,6 @@ namespace slimCat.ViewModels
             get { return toggleAuto ?? (toggleAuto = new RelayCommand(ToggleAutoReplyEvent)); }
         }
 
-        private void ToggleAutoReplyEvent(object o)
-        {
-            IsChangingAuto = !IsChangingAuto;
-            if (isChangingAuto) AutoReplyEnabled = !AutoReplyEnabled;
-        }
-
         public bool IsChangingAuto
         {
             get { return isChangingAuto; }
@@ -449,6 +496,13 @@ namespace slimCat.ViewModels
             {
                 isChangingAuto = value;
                 OnPropertyChanged("IsChangingAuto");
+
+                if (value) return;
+
+                HasChanges = false;
+                OnPropertyChanged("CloseOrSave");
+
+                ChatModel.AutoReplyMessage = newAutoReplyString;
             }
         }
 
@@ -461,6 +515,12 @@ namespace slimCat.ViewModels
                 ChatModel.AutoReplyEnabled = value;
                 OnPropertyChanged("AutoReplyEnabled");
             }
+        }
+
+        private void ToggleAutoReplyEvent(object o)
+        {
+            IsChangingAuto = !IsChangingAuto;
+            if (isChangingAuto) AutoReplyEnabled = !AutoReplyEnabled;
         }
 
         #endregion

@@ -123,7 +123,7 @@
                         </TextBlock>
                         <ComboBox ItemsSource="{Binding Path=StatusTypes}"
                                   DisplayMemberPath="Key"
-                                  SelectedValue="{Binding Path=ChatModel.CurrentCharacter.Status}"
+                                  SelectedValue="{Binding Path=NewStatusType}"
                                   SelectedValuePath="Value"
                                   Margin="10,0,10,0"
                                   FontSize="12" />
@@ -135,13 +135,13 @@
                             Status Message
                         </TextBlock>
                         <TextBox
-                            Text="{Binding Path=ChatModel.CurrentCharacter.StatusMessage, UpdateSourceTrigger=PropertyChanged}"
+                            Text="{Binding Path=NewStatusString, UpdateSourceTrigger=PropertyChanged}"
                             FontSize="12"
                             TextWrapping="Wrap"
                             MaxWidth="200"
                             Margin="10,0,10,10" />
 
-                        <Button Content="Save"
+                        <Button Content="{Binding CloseOrSave}"
                                 Margin="10,5"
                                 Command="{Binding ToggleStatusWindowCommand}" />
                     </StackPanel>
@@ -177,13 +177,13 @@
                             Reply Message
                         </TextBlock>
                         <TextBox
-                            Text="{Binding Path=ChatModel.AutoReplyMessage, UpdateSourceTrigger=PropertyChanged}"
+                            Text="{Binding Path=NewAutoReplyString, UpdateSourceTrigger=PropertyChanged}"
                             FontSize="12"
                             TextWrapping="Wrap"
                             MaxWidth="200"
                             Margin="10,0,10,10" />
 
-                        <Button Content="Save"
+                        <Button Content="{Binding Path=CloseOrSave}"
                                 Margin="10,5"
                                 Command="{Binding ToggleAutoReplyWindowCommand}" />
                     </StackPanel>

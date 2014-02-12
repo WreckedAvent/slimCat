@@ -270,7 +270,7 @@ namespace slimCat.Services
 
                 if (err == Constants.Errors.BadLoginInfo)
                 {
-                    provider.ShoulGetNewTicket = true;
+                    provider.ShouldGetNewTicket = true;
                     AttemptReconnect();
                 }
             }

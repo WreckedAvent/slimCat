@@ -34,6 +34,6 @@ namespace slimCat.Services
 
         void SetCredentials(string user, string pass);
 
-        bool ShoulGetNewTicket { get; set; }
+        bool ShouldGetNewTicket { get; set; }
     }
 }
