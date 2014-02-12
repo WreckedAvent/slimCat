@@ -307,27 +307,23 @@ namespace slimCat.Services
             var character = CharacterManager.Find(characterName);
             var ofInterest = CharacterManager.IsOfInterest(characterName);
 
-            var channels = from channel in ChatModel.CurrentChannels
+            CharacterManager.SignOff(characterName);
+
+            var leaveChannelCommands = from channel in ChatModel.CurrentChannels
                 where channel.CharacterManager.SignOff(characterName)
                 select
                     new Dictionary<string, object>
                         {
                             {Constants.Arguments.Character, character.Name},
-                            {Constants.Arguments.Channel, channel.Id}
+                            {Constants.Arguments.Channel, channel.Id},
+                            {"ignoreUpdate", ofInterest} // ignore updates from characters we'll already get a sign-out notice for
                         };
 
-            if (!ofInterest)
-            {
-                // don't show leave/join notifications if we already get a log out notification
-                foreach (var c in channels)
-                    LeaveChannelCommand(c);
-            }
+            leaveChannelCommands.Each(LeaveChannelCommand);
 
             var characterChannel = ChatModel.CurrentPms.FirstByIdOrDefault(characterName);
             if (characterChannel != null)
                 characterChannel.TypingStatus = TypingStatus.Clear;
-
-            CharacterManager.SignOff(characterName);
 
             Events.GetEvent<NewUpdateEvent>()
                 .Publish(
@@ -593,7 +589,12 @@ namespace slimCat.Services
             if (channel == null)
                 return;
 
-            if (channel.CharacterManager.SignOff(characterName))
+            var ignoreUpdate = false;
+
+            if (command.ContainsKey("ignoreUpdate"))
+                ignoreUpdate = (bool) command["ignoreUpdate"];
+
+            if (channel.CharacterManager.SignOff(characterName) && !ignoreUpdate)
             {
                 Events.GetEvent<NewUpdateEvent>().Publish(
                     new CharacterUpdateModel(
