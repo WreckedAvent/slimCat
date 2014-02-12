@@ -6,7 +6,6 @@
                   mc:Ignorable="d"
                   xmlns:vm="clr-namespace:slimCat.ViewModels"
                   xmlns:v="clr-namespace:slimCat.Views"
-                  xmlns:models="clr-namespace:slimCat.Models"
 
                   d:DataContext="{d:DesignInstance vm:UtilityChannelViewModel}">
 
@@ -64,11 +63,13 @@
                 </Expander>
             </Border>
 
-            <StackPanel Grid.Row="1">
-                <Expander Header="Settings">
-                    <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
+            <ScrollViewer Grid.Row="1" 
+                          CanContentScroll="False">
+                <StackPanel>
+                    <Expander Header="Settings">
+                        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
 
-                        <!--
+                            <!--
                         <StackPanel Margin="0,5,0,10">
                             <TextBlock Text="Notifications Volume" Margin="5,0,0,0" />
                             <Slider Value="{Binding Volume}"
@@ -83,110 +84,113 @@
                                     Margin="5,0,0,0" />
                         </StackPanel>-->
 
-                        <CheckBox IsChecked="{Binding ShowNotifications}"
-                                  VerticalAlignment="Center"
-                                  Margin="0,5">
-                            Allow Toast Notifications
-                        </CheckBox>
-                        <CheckBox IsChecked="{Binding AllowLogging}"
-                                  VerticalAlignment="Center"
-                                  Margin="0,5">
-                            Allow Logging
-                        </CheckBox>
+                            <CheckBox IsChecked="{Binding ShowNotifications}"
+                                      VerticalAlignment="Center"
+                                      Margin="0,5">
+                                Allow Toast Notifications
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding AllowLogging}"
+                                      VerticalAlignment="Center"
+                                      Margin="0,5">
+                                Allow Logging
+                            </CheckBox>
 
-                        <CheckBox IsChecked="{Binding AllowColors}"
-                                  VerticalAlignment="Center"
-                                  Margin="0,5">
-                            Allow BBCode Colors
-                        </CheckBox>
+                            <CheckBox IsChecked="{Binding AllowColors}"
+                                      VerticalAlignment="Center"
+                                      Margin="0,5">
+                                Allow BBCode Colors
+                            </CheckBox>
 
-                        <CheckBox IsChecked="{Binding AllowSoundWhenTabIsFocused}"
-                                  VerticalAlignment="Center"
-                                  Margin="0,5">
-                            Allow Sound when Tab is Focused
-                        </CheckBox>
+                            <CheckBox IsChecked="{Binding AllowSoundWhenTabIsFocused}"
+                                      VerticalAlignment="Center"
+                                      Margin="0,5">
+                                Allow Sound when Tab is Focused
+                            </CheckBox>
 
-                        <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
-                                  VerticalAlignment="Center"
-                                  Margin="0,5">
-                            Friends are account wide
-                        </CheckBox>
+                            <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
+                                      VerticalAlignment="Center"
+                                      Margin="0,5">
+                                Friends are account wide
+                            </CheckBox>
 
-                        <CheckBox IsChecked="{Binding SpellCheckEnabled}"
-                                  VerticalAlignment="Center"
-                                  Margin="0,5">
-                            Allow Spell Check
-                        </CheckBox>
+                            <CheckBox IsChecked="{Binding SpellCheckEnabled}"
+                                      VerticalAlignment="Center"
+                                      Margin="0,5">
+                                Allow Spell Check
+                            </CheckBox>
 
-                        <StackPanel Margin="0,15,0,5"
-                                    Visibility="{Binding SpellCheckEnabled, Converter={StaticResource BoolConverter}}">
-                            <TextBlock Text="Spell check language" />
-                            <ComboBox ItemsSource="{Binding Path=LanguageNames}"
-                                      SelectedValue="{Binding Path=Language}"
+                            <StackPanel Margin="0,15,0,5"
+                                        Visibility="{Binding SpellCheckEnabled, Converter={StaticResource BoolConverter}}">
+                                <TextBlock Text="Spell check language" />
+                                <ComboBox ItemsSource="{Binding Path=LanguageNames}"
+                                          SelectedValue="{Binding Path=Language}"
 
-                                      DisplayMemberPath="Key"
-                                      SelectedValuePath="Value" />
+                                          DisplayMemberPath="Key"
+                                          SelectedValuePath="Value" />
+                            </StackPanel>
+
+                            <StackPanel Margin="0,15,0,5">
+                                <TextBlock Text="Gender Color Settings" />
+                                <ComboBox ItemsSource="{Binding Path=GenderSettings}"
+                                          SelectedValue="{Binding Path=GenderColorSettings}"
+
+                                          DisplayMemberPath="Key"
+                                          SelectedValuePath="Value" />
+                            </StackPanel>
+
+                            <WrapPanel Margin="0,15,0,0">
+                                <TextBlock Margin="0,0,5,0">Message font size</TextBlock>
+                                <TextBox
+                                    Text="{Binding Path=FontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    VerticalAlignment="Center"
+                                    FontSize="12" />
+                            </WrapPanel>
+
+                            <WrapPanel Margin="0,15,0,0">
+                                <TextBlock Margin="0,0,5,0">Keep</TextBlock>
+                                <TextBox
+                                    Text="{Binding Path=BackLogMax, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    VerticalAlignment="Center"
+                                    FontSize="12" />
+                                <TextBlock Margin="5,0,0,0">Messages in channel backlogs</TextBlock>
+                            </WrapPanel>
+
+                            <TextBlock Text="Global Notify Words (comma seperated)" Margin="0,15,0,0" />
+                            <TextBox
+                                Text="{Binding Path=GlobalNotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                TextWrapping="Wrap"
+                                FontSize="12" />
                         </StackPanel>
+                    </Expander>
 
-                        <StackPanel Margin="0,15,0,5">
-                            <TextBlock Text="Gender Color Settings" />
-                            <ComboBox ItemsSource="{Binding Path=GenderSettings}"
-                                      SelectedValue="{Binding Path=GenderColorSettings}"
+                    <Expander Header="Update"
+                              Visibility="{Binding HasNewUpdate, Mode=OneWay, Converter={StaticResource BoolConverter}}">
+                        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
+                            <TextBlock>
+                                <Run Text="There is a new update available!" />
+                                <LineBreak />
+                                <Run Text="{Binding Path=UpdateName, Mode=OneWay}" />
+                                <Run Text=" @" />
+                                <Run Text="{Binding Path=UpdateBuildTime, Mode=OneWay}" />
+                                <LineBreak />
 
-                                      DisplayMemberPath="Key"
-                                      SelectedValuePath="Value" />
+                                <Hyperlink CommandParameter="{Binding Path=UpdateLink, Mode=OneWay}">Download Now</Hyperlink>
+                            </TextBlock>
+
                         </StackPanel>
+                    </Expander>
 
-                        <WrapPanel Margin="0,15,0,0">
-                            <TextBlock Margin="0,0,5,0">Message font size</TextBlock>
-                            <TextBox Text="{Binding Path=FontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     VerticalAlignment="Center"
-                                     FontSize="12" />
+                    <Expander Header="Help">
+                        <WrapPanel>
+                            <TextBlock Foreground="{StaticResource ForegroundBrush}" TextWrapping="Wrap">
+                                For trouble shooting, support, feature suggestions, bug reports, or other inquiries, please send a note to or PM
+                                <ContentControl ContentTemplate="{StaticResource UsernameTemplate}"
+                                                Content="{Binding Path=slimCat}" />
+                            </TextBlock>
                         </WrapPanel>
-
-                        <WrapPanel Margin="0,15,0,0">
-                            <TextBlock Margin="0,0,5,0">Keep</TextBlock>
-                            <TextBox Text="{Binding Path=BackLogMax, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                     VerticalAlignment="Center"
-                                     FontSize="12" />
-                            <TextBlock Margin="5,0,0,0">Messages in channel backlogs</TextBlock>
-                        </WrapPanel>
-
-                        <TextBlock Text="Global Notify Words (comma seperated)" Margin="0,15,0,0" />
-                        <TextBox
-                            Text="{Binding Path=GlobalNotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            TextWrapping="Wrap"
-                            FontSize="12" />
-                    </StackPanel>
-                </Expander>
-
-                <Expander Header="Update"
-                          Visibility="{Binding HasNewUpdate, Mode=OneWay, Converter={StaticResource BoolConverter}}">
-                    <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
-                        <TextBlock>
-                            <Run Text="There is a new update available!" />
-                            <LineBreak />
-                            <Run Text="{Binding Path=UpdateName, Mode=OneWay}" />
-                            <Run Text=" @" />
-                            <Run Text="{Binding Path=UpdateBuildTime, Mode=OneWay}" />
-                            <LineBreak />
-
-                            <Hyperlink CommandParameter="{Binding Path=UpdateLink, Mode=OneWay}">Download Now</Hyperlink>
-                        </TextBlock>
-
-                    </StackPanel>
-                </Expander>
-
-                <Expander Header="Help">
-                    <WrapPanel>
-                        <TextBlock Foreground="{StaticResource ForegroundBrush}" TextWrapping="Wrap">
-                            For trouble shooting, support, feature suggestions, bug reports, or other inquiries, please send a note to or PM
-                            <ContentControl ContentTemplate="{StaticResource UsernameTemplate}"
-                                            Content="{Binding Path=slimCat}" />
-                        </TextBlock>
-                    </WrapPanel>
-                </Expander>
-            </StackPanel>
+                    </Expander>
+                </StackPanel>
+            </ScrollViewer>
 
             <v:RightClickMenu Grid.Row="1" />
             <v:ChannelTextBoxEntryView Grid.Row="2"
