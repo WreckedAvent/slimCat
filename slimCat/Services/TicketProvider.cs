@@ -42,6 +42,7 @@ namespace slimCat.Services
         private string lastTicket;
 
         private Dictionary<string, object> loginCredentials;
+        private bool shouldGetNewTicket;
 
         public TicketProvider(IBrowser browser)
         {
@@ -50,7 +51,8 @@ namespace slimCat.Services
 
         private bool ShouldGetNewTicket
         {
-            get { return lastInfoRetrieval.AddMinutes(30) < DateTime.Now; }
+            set { shouldGetNewTicket = value; }
+            get { return shouldGetNewTicket || lastInfoRetrieval.AddMinutes(25) < DateTime.Now; }
         }
 
 
@@ -130,6 +132,7 @@ namespace slimCat.Services
             }
 
             lastInfoRetrieval = DateTime.Now;
+            ShouldGetNewTicket = false;
         }
 
         private void ReAuthenticate()

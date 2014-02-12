@@ -21,6 +21,7 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using System.Security.Cryptography.X509Certificates;
     using Models;
 
     #endregion
@@ -32,5 +33,7 @@ namespace slimCat.Services
         IAccount Account { get; }
 
         void SetCredentials(string user, string pass);
+
+        bool ShoulGetNewTicket { get; set; }
     }
 }

@@ -267,6 +267,12 @@ namespace slimCat.Services
                 int.TryParse(json.Get("number"), out err);
 
                 if (errsThatDisconnect.Contains(err)) isAuthenticated = false;
+
+                if (err == Constants.Errors.BadLoginInfo)
+                {
+                    provider.ShoulGetNewTicket = true;
+                    AttemptReconnect();
+                }
             }
 
             events.GetEvent<ChatCommandEvent>().Publish(json);
