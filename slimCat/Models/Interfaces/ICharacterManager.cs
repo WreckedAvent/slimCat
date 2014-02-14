@@ -66,14 +66,16 @@ namespace slimCat.Models
         /// </summary>
         /// <param name="name">The name of the character to remove</param>
         /// <param name="listKind">Which kind of list to remove from</param>
-        bool Remove(string name, ListKind listKind);
+        /// <param name="isTemporary">If the remove is saved to the character's settings</param>
+        bool Remove(string name, ListKind listKind, bool isTemporary = false);
 
         /// <summary>
         ///     Adds a character to both the offline and online lists for a specific list. Thread-safe.
         /// </summary>
         /// <param name="name">The name of the character to add</param>
         /// <param name="listKind">Which kind of list to add to</param>
-        bool Add(string name, ListKind listKind);
+        /// <param name="isTemporary">If the add is saved to the character's settings</param>
+        bool Add(string name, ListKind listKind, bool isTemporary = false);
 
         /// <summary>
         ///     Adds a character to online lists if they are on the offline ones. Thread-safe.

@@ -154,14 +154,15 @@ namespace slimCat.Models
             return toReturn;
         }
 
-        public override bool Add(string name, ListKind listKind)
+        public override bool Add(string name, ListKind listKind, bool isTemporary = false)
         {
             var toReturn = base.Add(name, listKind);
 
             if (listKind == ListKind.Interested || listKind == ListKind.NotInterested)
                 SyncInterestedMarks(name, listKind, true);
 
-            TrySyncSavedLists(listKind);
+            if (!isTemporary)
+                TrySyncSavedLists(listKind);
 
             if (listKind == ListKind.IgnoreUpdates)
                 UpdateIgnoreUpdatesMark(name, true);
@@ -169,14 +170,15 @@ namespace slimCat.Models
             return toReturn;
         }
 
-        public override bool Remove(string name, ListKind listKind)
+        public override bool Remove(string name, ListKind listKind, bool isTemporary = false)
         {
             var toReturn = base.Remove(name, listKind);
 
             if (listKind == ListKind.Interested || listKind == ListKind.NotInterested)
                 SyncInterestedMarks(name, listKind, false);
 
-            TrySyncSavedLists(listKind);
+            if (!isTemporary)
+                TrySyncSavedLists(listKind);
 
             if (listKind == ListKind.IgnoreUpdates)
                 UpdateIgnoreUpdatesMark(name, false);

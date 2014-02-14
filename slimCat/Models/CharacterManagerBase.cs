@@ -69,7 +69,7 @@ namespace slimCat.Models
                 : new CharacterModel {Name = name, Status = StatusType.Offline};
         }
 
-        public virtual bool Remove(string name, ListKind listKind)
+        public virtual bool Remove(string name, ListKind listKind, bool isTemporary = false)
         {
             lock (Locker)
             {
@@ -78,7 +78,7 @@ namespace slimCat.Models
             }
         }
 
-        public virtual bool Add(string name, ListKind listKind)
+        public virtual bool Add(string name, ListKind listKind, bool isTemporary = false)
         {
             lock (Locker)
             {

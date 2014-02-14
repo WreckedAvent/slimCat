@@ -22,6 +22,7 @@ namespace slimCatTest
     #region Usings
 
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -45,6 +46,8 @@ namespace slimCatTest
         private readonly ICharacterManager manager;
         private readonly ICharacter otherCharacter;
 
+        private const string currentCharacter = "current character";
+
         public ListManagerTests()
         {
             bookmarkCharacter = new CharacterModel {Name = "Character One"};
@@ -53,11 +56,12 @@ namespace slimCatTest
             interestedCharacter = new CharacterModel {Name = "Character Four"};
 
             bookmarks = new[] {bookmarkCharacter.Name};
-            var allFriends = new Dictionary<string, IList<string>> {{friendCharacter.Name, null}};
+            var allFriends = new Dictionary<string, IList<string>> {{friendCharacter.Name, new[]{currentCharacter}}};
 
             var account = Mock.Of<IAccount>(acc =>
                 acc.AllFriends == allFriends
-                && acc.Bookmarks == bookmarks);
+                && acc.Bookmarks == bookmarks
+                && acc.Characters == new ObservableCollection<string> {currentCharacter});
 
             eventAggregator = new EventAggregator();
             manager = new GlobalCharacterManager(account, eventAggregator);
@@ -156,7 +160,7 @@ namespace slimCatTest
         public void CanAddInterestedMark()
         {
             SignOnAllTestCharacters();
-            manager.Add(interestedCharacter.Name, ListKind.Interested);
+            manager.Add(interestedCharacter.Name, ListKind.Interested, true);
             ShouldBeOnList(ListKind.Interested, interestedCharacter);
         }
 
@@ -164,7 +168,7 @@ namespace slimCatTest
         public void CanAddNotInterestedMark()
         {
             SignOnAllTestCharacters();
-            manager.Add(interestedCharacter.Name, ListKind.NotInterested);
+            manager.Add(interestedCharacter.Name, ListKind.NotInterested, true);
             ShouldBeOnList(ListKind.NotInterested, interestedCharacter);
         }
 
@@ -194,14 +198,14 @@ namespace slimCatTest
         {
             CanAddInterestedMark();
 
-            manager.Remove(interestedCharacter.Name, ListKind.Interested);
+            manager.Remove(interestedCharacter.Name, ListKind.Interested, true);
 
             ShouldNotBeOnList(ListKind.Interested, interestedCharacter);
             ShouldNotBeOnOfflineListOf(ListKind.Interested, interestedCharacter);
 
             CanAddNotInterestedMark();
 
-            manager.Remove(interestedCharacter.Name, ListKind.NotInterested);
+            manager.Remove(interestedCharacter.Name, ListKind.NotInterested, true);
 
             ShouldNotBeOnList(ListKind.NotInterested, interestedCharacter);
             ShouldNotBeOnOfflineListOf(ListKind.NotInterested, interestedCharacter);
@@ -276,7 +280,7 @@ namespace slimCatTest
 
             ShouldNotBeOnList(ListKind.Interested, interestedCharacter);
 
-            manager.Add(interestedCharacter.Name, ListKind.Interested);
+            manager.Add(interestedCharacter.Name, ListKind.Interested, true);
 
             ShouldNotBeOnList(ListKind.NotInterested, interestedCharacter);
             ShouldBeOnList(ListKind.Interested, interestedCharacter);
