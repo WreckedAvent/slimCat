@@ -52,7 +52,7 @@ namespace slimCat.Services
         public bool ShouldGetNewTicket
         {
             set { shouldGetNewTicket = value; }
-            get { return shouldGetNewTicket || lastInfoRetrieval.AddMinutes(25) < DateTime.Now; }
+            get { return shouldGetNewTicket || lastInfoRetrieval.AddMinutes(4).AddSeconds(30) < DateTime.Now; }
         }
 
 
