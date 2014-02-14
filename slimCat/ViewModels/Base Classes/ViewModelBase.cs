@@ -52,6 +52,7 @@ namespace slimCat.ViewModels
         private RelayCommand handleReport;
 
         private RelayCommand ignore;
+        private RelayCommand ignoreUpdate;
 
         private RelayCommand invert;
         private RelayCommand isInterested;
@@ -70,27 +71,10 @@ namespace slimCat.ViewModels
 
         private RelayCommand unignore;
 
-        private RelayCommand ignoreUpdate;
-
         #endregion
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ViewModelBase" /> class.
-        /// </summary>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="events">
-        ///     The events.
-        /// </param>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
         protected ViewModelBase(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
             ICharacterManager manager)
         {
@@ -146,9 +130,6 @@ namespace slimCat.ViewModels
             get { return ApplicationSettings.LanguageList; }
         }
 
-        /// <summary>
-        ///     Gets the create report view model.
-        /// </summary>
         public CreateReportViewModel CreateReportViewModel { get; private set; }
 
 
@@ -172,82 +153,100 @@ namespace slimCat.ViewModels
             }
         }
 
-        #region ICommands
+        public RightClickMenuViewModel RightClickMenuViewModel { get; private set; }
+
+        public ICommand NavigateTo
+        {
+            get { return link ?? (link = new RelayCommand(StartLinkInDefaultBrowser)); }
+        }
+
         /// <summary>
-        ///     Gets the ban command.
+        ///     Gets or sets the chat model. The chat model is used to contain chat-related data unrelated to characters.
         /// </summary>
+        /// <value>
+        ///     The chat model.
+        /// </value>
+        public IChatModel ChatModel { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the container. The container is used to resolve dependencies.
+        /// </summary>
+        /// <value>
+        ///     The container.
+        /// </value>
+        protected IUnityContainer Container { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the region manager. The region manager is used to handle the views being displayed.
+        /// </summary>
+        /// <value>
+        ///     The region manager.
+        /// </value>
+        protected IRegionManager RegionManager { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the events. The event aggregator is for intra program communication.
+        /// </summary>
+        /// <value>
+        ///     The events.
+        /// </value>
+        protected IEventAggregator Events { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the character manager. The character manage is used to handle all character data.
+        /// </summary>
+        /// <value>
+        ///     The character manager.
+        /// </value>
+        protected ICharacterManager CharacterManager { get; set; }
+
+        #region ICommands
+
         public ICommand BanCommand
         {
             get { return ban ?? (ban = new RelayCommand(BanEvent, param => HasPermissions)); }
         }
 
-        /// <summary>
-        ///     Gets the find log command.
-        /// </summary>
         public ICommand FindLogCommand
         {
             get { return getLogs ?? (getLogs = new RelayCommand(FindLogEvent)); }
         }
 
-        /// <summary>
-        ///     Gets the handle report command.
-        /// </summary>
         public ICommand HandleReportCommand
         {
             get { return handleReport ?? (handleReport = new RelayCommand(HandleReportEvent)); }
         }
 
-        /// <summary>
-        ///     Gets the ignore command.
-        /// </summary>
         public ICommand IgnoreCommand
         {
             get { return ignore ?? (ignore = new RelayCommand(AddIgnoreEvent, CanIgnore)); }
         }
 
-        /// <summary>
-        ///     Gets the interested command.
-        /// </summary>
         public ICommand InterestedCommand
         {
             get { return isInterested ?? (isInterested = new RelayCommand(IsInterestedEvent)); }
         }
 
-        /// <summary>
-        ///     Gets the invert button command.
-        /// </summary>
         public ICommand InvertCommand
         {
             get { return invert ?? (invert = new RelayCommand(InvertButton)); }
         }
 
-        /// <summary>
-        ///     Gets the join channel command.
-        /// </summary>
         public ICommand JoinChannelCommand
         {
             get { return @join ?? (@join = new RelayCommand(RequestChannelJoinEvent, CanJoinChannel)); }
         }
 
-        /// <summary>
-        ///     Gets the kick command.
-        /// </summary>
         public ICommand KickCommand
         {
             get { return kick ?? (kick = new RelayCommand(KickEvent, param => HasPermissions)); }
         }
 
-        /// <summary>
-        ///     Gets the not interested command.
-        /// </summary>
         public ICommand NotInterestedCommand
         {
             get { return isNotInterested ?? (isNotInterested = new RelayCommand(IsUninterestedEvent)); }
         }
 
-        /// <summary>
-        ///     Gets the open right click menu command.
-        /// </summary>
         public ICommand OpenRightClickMenuCommand
         {
             get
@@ -261,26 +260,16 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the report command.
-        /// </summary>
         public ICommand ReportCommand
         {
             get { return report ?? (report = new RelayCommand(FileReportEvent)); }
         }
 
-        /// <summary>
-        ///     Gets the request PrivateMessage command.
-        /// </summary>
         public ICommand RequestPmCommand
         {
             get { return openPm ?? (openPm = new RelayCommand(RequestPmEvent, CanRequestPm)); }
         }
 
-
-        /// <summary>
-        ///     Gets the unignore command.
-        /// </summary>
         public ICommand UnignoreCommand
         {
             get { return unignore ?? (unignore = new RelayCommand(RemoveIgnoreEvent, CanUnIgnore)); }
@@ -290,34 +279,8 @@ namespace slimCat.ViewModels
         {
             get { return ignoreUpdate ?? (ignoreUpdate = new RelayCommand(IgnoreUpdatesEvent, CanIgnoreUpdate)); }
         }
+
         #endregion
-
-        /// <summary>
-        ///     Gets the right click menu view model.
-        /// </summary>
-        public RightClickMenuViewModel RightClickMenuViewModel { get; private set; }
-
-        /// <summary>
-        ///     Gets the navigate to.
-        /// </summary>
-        public ICommand NavigateTo
-        {
-            get { return link ?? (link = new RelayCommand(StartLinkInDefaultBrowser)); }
-        }
-
-        /// <summary>
-        ///     CM is the general reference to the ChatModel, which is central to anything which needs to interact with session
-        ///     data
-        /// </summary>
-        public IChatModel ChatModel { get; set; }
-
-        protected IUnityContainer Container { get; set; }
-
-        protected IRegionManager RegionManager { get; set; }
-
-        protected IEventAggregator Events { get; set; }
-
-        protected ICharacterManager CharacterManager { get; set; }
 
         #endregion
 
@@ -355,7 +318,76 @@ namespace slimCat.ViewModels
             base.Dispose(isManaged);
         }
 
+        private void OnSelectedChannelChanged(object sender, EventArgs e)
+        {
+            OnPropertyChanged("HasPermissions");
+            RightClickMenuViewModel.IsOpen = false;
+            CreateReportViewModel.IsOpen = false;
+        }
+
+        private void OnRightClickMenuUpdated(ICharacter newTarget)
+        {
+            var name = newTarget.Name;
+            RightClickMenuViewModel.SetNewTarget(newTarget, CanHandleReport(name));
+            RightClickMenuViewModel.IsOpen = true;
+            CreateReportViewModel.Target = name;
+            OnPropertyChanged("RightClickMenuViewModel");
+            OnPropertyChanged("CreateReportViewModel");
+        }
+
+        protected void RequestChannelJoinEvent(object args)
+        {
+            var command =
+                CommandDefinitions.CreateCommand("join", new List<string> {args as string}).ToDictionary();
+
+            Events.GetEvent<UserCommandEvent>().Publish(command);
+        }
+
+        protected void RequestPmEvent(object args)
+        {
+            var tabName = (string) args;
+            if (ChatModel.CurrentPms.Any(param => param.Id.Equals(tabName, StringComparison.OrdinalIgnoreCase)))
+            {
+                Events.GetEvent<RequestChangeTabEvent>().Publish(tabName);
+                return;
+            }
+
+            var command =
+                CommandDefinitions.CreateCommand("priv", new List<string> {tabName}).ToDictionary();
+
+            Events.GetEvent<UserCommandEvent>().Publish(command);
+        }
+
+        private void StartLinkInDefaultBrowser(object linkToOpen)
+        {
+            var interpret = linkToOpen as string;
+            if (interpret != null && (!interpret.Contains(".") || interpret.Contains(" ")))
+                interpret = "http://www.f-list.net/c/" + HttpUtility.UrlEncode(interpret);
+
+            if (!string.IsNullOrEmpty(interpret))
+                Process.Start(interpret);
+        }
+
+        private void UpdateRightClickMenu(NotificationModel argument)
+        {
+            if (!RightClickMenuViewModel.IsOpen)
+                return;
+
+            var updateKind = argument as CharacterUpdateModel;
+            if (updateKind == null)
+                return;
+
+            if (RightClickMenuViewModel.Target == null)
+                return;
+
+            if (updateKind.TargetCharacter.Name == RightClickMenuViewModel.Target.Name)
+                OnRightClickMenuUpdated(RightClickMenuViewModel.Target);
+
+            OnPropertyChanged("RightClickMenuViewModel");
+        }
+
         #region Predicates for events
+
         private bool CanIgnore(object args)
         {
             return args is string && !CharacterManager.IsOnList(args as string, ListKind.Ignored, false);
@@ -383,9 +415,11 @@ namespace slimCat.ViewModels
             return CharacterManager.IsOfInterest(obj as string) ||
                    CharacterManager.IsOnList(obj as string, ListKind.IgnoreUpdates);
         }
+
         #endregion
 
         #region ICommand events
+
         private void AddIgnoreEvent(object args)
         {
             IgnoreEvent(args);
@@ -448,7 +482,7 @@ namespace slimCat.ViewModels
         private void IgnoreUpdatesEvent(object args)
         {
             Events.GetEvent<UserCommandEvent>().Publish(
-                CommandDefinitions.CreateCommand("ignoreUpdates", new[] { args as string }).ToDictionary());
+                CommandDefinitions.CreateCommand("ignoreUpdates", new[] {args as string}).ToDictionary());
 
             OnRightClickMenuUpdated(RightClickMenuViewModel.Target); // updates the ignore/unignore text
         }
@@ -483,74 +517,8 @@ namespace slimCat.ViewModels
         {
             IgnoreEvent(args, true);
         }
+
         #endregion
-
-        private void OnSelectedChannelChanged(object sender, EventArgs e)
-        {
-            OnPropertyChanged("HasPermissions");
-            RightClickMenuViewModel.IsOpen = false;
-            CreateReportViewModel.IsOpen = false;
-        }
-        private void OnRightClickMenuUpdated(ICharacter newTarget)
-        {
-            var name = newTarget.Name;
-            RightClickMenuViewModel.SetNewTarget(newTarget, CanHandleReport(name));
-            RightClickMenuViewModel.IsOpen = true;
-            CreateReportViewModel.Target = name;
-            OnPropertyChanged("RightClickMenuViewModel");
-            OnPropertyChanged("CreateReportViewModel");
-        }
-
-        protected void RequestChannelJoinEvent(object args)
-        {
-            var command =
-                CommandDefinitions.CreateCommand("join", new List<string> {args as string}).ToDictionary();
-
-            Events.GetEvent<UserCommandEvent>().Publish(command);
-        }
-
-        protected void RequestPmEvent(object args)
-        {
-            var tabName = (string) args;
-            if (ChatModel.CurrentPms.Any(param => param.Id.Equals(tabName, StringComparison.OrdinalIgnoreCase)))
-            {
-                Events.GetEvent<RequestChangeTabEvent>().Publish(tabName);
-                return;
-            }
-
-            var command =
-                CommandDefinitions.CreateCommand("priv", new List<string> {tabName}).ToDictionary();
-
-            Events.GetEvent<UserCommandEvent>().Publish(command);
-        }
-
-        private void StartLinkInDefaultBrowser(object linkToOpen)
-        {
-            var interpret = linkToOpen as string;
-            if (interpret != null && (!interpret.Contains(".") || interpret.Contains(" ")))
-                interpret = "http://www.f-list.net/c/" + HttpUtility.UrlEncode(interpret);
-
-            if (!string.IsNullOrEmpty(interpret))
-                Process.Start(interpret);
-        }
-
-        private void UpdateRightClickMenu(NotificationModel argument)
-        {
-            if (!RightClickMenuViewModel.IsOpen)
-                return;
-
-            var updateKind = argument as CharacterUpdateModel;
-            if (updateKind == null)
-                return;
-
-            if (RightClickMenuViewModel.Target == null)
-                return;
-
-            if (updateKind.TargetCharacter.Name == RightClickMenuViewModel.Target.Name)
-                OnRightClickMenuUpdated(RightClickMenuViewModel.Target);
-
-            OnPropertyChanged("RightClickMenuViewModel");
-        }
 
         #endregion
     }

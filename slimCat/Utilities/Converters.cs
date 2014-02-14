@@ -37,6 +37,9 @@ namespace slimCat.Utilities
 
     #endregion
 
+    /// <summary>
+    ///     Valid and accepted BBCode types.
+    /// </summary>
     public enum BbCodeType
     {
         None,
@@ -58,6 +61,9 @@ namespace slimCat.Utilities
         NoParse
     }
 
+    /// <summary>
+    ///     Represents a converter which only converts to and not back.
+    /// </summary>
     public abstract class OneWayConverter : IValueConverter
     {
         public abstract object Convert(object value, Type targetType, object parameter, CultureInfo culture);
@@ -68,6 +74,9 @@ namespace slimCat.Utilities
         }
     }
 
+    /// <summary>
+    ///     Represents a converter which only coverts to and not back.
+    /// </summary>
     public abstract class OneWayMultiConverter : IMultiValueConverter
     {
         public abstract object Convert(object[] values, Type targetType, object parameter, CultureInfo culture);
@@ -105,6 +114,9 @@ namespace slimCat.Utilities
         }
     }
 
+    /// <summary>
+    ///     If greater than zero, return visible.
+    /// </summary>
     public class GreaterThanZeroConverter : OneWayConverter
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -117,6 +129,9 @@ namespace slimCat.Utilities
         }
     }
 
+    /// <summary>
+    ///     The common logic for parsing bbcode.
+    /// </summary>
     public abstract class BbCodeBaseConverter
     {
         internal readonly IThemeLocator Locator;
@@ -167,7 +182,7 @@ namespace slimCat.Utilities
         #region Methods
 
         /// <summary>
-        ///     Converts an Icharacter into a username 'button'.
+        ///     Makes a username link.
         /// </summary>
         internal Inline MakeUsernameLink(ICharacter target)
         {
@@ -185,6 +200,9 @@ namespace slimCat.Utilities
             return toReturn;
         }
 
+        /// <summary>
+        ///     Makes a channel link.
+        /// </summary>
         internal Inline MakeChannelLink(ChannelModel channel)
         {
             var toReturn =
@@ -209,6 +227,14 @@ namespace slimCat.Utilities
             return AsInline(PreProcessBbCode(text));
         }
 
+        /// <summary>
+        ///     Gets a simplified display Url from a string.
+        /// </summary>
+        /// <example>
+        ///     <code>
+        ///         GetUrlDisplay("https://www.google.com"); // returns google.com
+        ///     </code>
+        /// </example>
         private static string GetUrlDisplay(string args)
         {
             var match = ValidStartTerms.FirstOrDefault(args.StartsWith);
@@ -232,17 +258,26 @@ namespace slimCat.Utilities
             return stripped;
         }
 
+        /// <summary>
+        ///     Marks up URL with the corresponding url bbcode and with a simplified link to display.
+        /// </summary>
         private static string MarkUpUrlWithBbCode(string args)
         {
             var toShow = GetUrlDisplay(args);
-            return "[url=" + args + "]" + toShow + "[/url]"; // mark the bitch up
+            return "[url=" + args + "]" + toShow + "[/url]";
         }
 
+        /// <summary>
+        ///     If a given string starts with text valid for a link.
+        /// </summary>
         private static bool StartsWithValidTerm(string text)
         {
             return ValidStartTerms.Any(text.StartsWith);
         }
 
+        /// <summary>
+        ///     Auto-marks up links; a user expectation.
+        /// </summary>
         private static string PreProcessBbCode(string text)
         {
             var exploded = text.Split(new[] {' ', '\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
@@ -298,6 +333,7 @@ namespace slimCat.Utilities
             return toReturn;
         }
 
+        #region BBCode implementations
         private Inline MakeUser(ParsedChunk arg)
         {
             var user = MakeUsernameLink(characterManager.Find(arg.Children.First().InnerText));
@@ -421,6 +457,7 @@ namespace slimCat.Utilities
 
             return new Span();
         }
+        #endregion
 
         public static IList<ParsedChunk> ParseChunk(string input)
         {
@@ -960,6 +997,9 @@ namespace slimCat.Utilities
         #endregion
     }
 
+    /// <summary>
+    ///     Contains common logic for turning values into gender colors.
+    /// </summary>
     public abstract class GenderColorConverterBase : OneWayMultiConverter
     {
         private readonly IDictionary<Gender, Gender> genderFallbacks = new Dictionary<Gender, Gender>
@@ -1112,7 +1152,7 @@ namespace slimCat.Utilities
     }
 
     /// <summary>
-    ///     Converts notify level into strings.
+    ///     Converts notification notify level into descriptive strings.
     /// </summary>
     public sealed class NotifyLevelConverter : OneWayConverter
     {
@@ -1151,7 +1191,7 @@ namespace slimCat.Utilities
     }
 
     /// <summary>
-    ///     Converts Interested-only data into strings
+    ///     Converts notification Interested-only settings into descriptive strings.
     /// </summary>
     public sealed class InterestedOnlyBoolConverter : OneWayConverter
     {
@@ -1196,7 +1236,7 @@ namespace slimCat.Utilities
     }
 
     /// <summary>
-    ///     Converts a character's interested level to a nameplate color
+    ///     Converts a character's interested level to a nameplate color.
     /// </summary>
     public sealed class NameplateColorConverter : GenderColorConverterBase
     {
@@ -1213,15 +1253,16 @@ namespace slimCat.Utilities
     }
 
     /// <summary>
-    ///     Various conversion methods
+    ///     Various conversion methods.
     /// </summary>
     public static class HelperConverter
     {
         #region Public Methods and Operators
 
         /// <summary>
-        ///     Like above, but works for dates in the time
+        ///     Converts a <see cref="System.DateTimeOffset"/> to a rough time in the future.
         /// </summary>
+        /// <returns>A string in the "hours h minutes m seconds s" format.</returns>
         public static string DateTimeInFutureToRough(DateTimeOffset futureTime)
         {
             var temp = new StringBuilder();
@@ -1246,8 +1287,9 @@ namespace slimCat.Utilities
         }
 
         /// <summary>
-        ///     Converts a datetimeoffset to a "x h x m x s ago" format
+        ///     Converts a <see cref="System.DateTimeOffset"/> to a rough time in the past.
         /// </summary>
+        /// <returns>A string in the "hours h minutes m seconds s ago" format.</returns>
         public static string DateTimeToRough(DateTimeOffset original, bool returnSeconds = false, bool appendAgo = true)
         {
             var temp = new StringBuilder();
@@ -1279,7 +1321,7 @@ namespace slimCat.Utilities
         }
 
         /// <summary>
-        ///     Used for shitty shit channel names with spaces
+        ///     Used to replace channel names with spaces to something more unique.
         /// </summary>
         public static string EscapeSpaces(string text)
         {
@@ -1287,8 +1329,9 @@ namespace slimCat.Utilities
         }
 
         /// <summary>
-        ///     Turns a datetime to a timestamp (hh:mm)
+        ///     Turns a <see cref="System.DateTimeOffset"/> to a timestamp.
         /// </summary>
+        /// <returns>A string in the format [hours:minutes]</returns>
         public static string ToTimeStamp(this DateTimeOffset time)
         {
             var minute = time.Minute;
@@ -1298,7 +1341,7 @@ namespace slimCat.Utilities
         }
 
         /// <summary>
-        ///     Converts a POSIX/UNIX timecode to a datetime
+        ///     Converts a POSIX/UNIX timecode to a <see cref="System.DateTimeOffset"/>.
         /// </summary>
         public static DateTimeOffset UnixTimeToDateTime(long time)
         {

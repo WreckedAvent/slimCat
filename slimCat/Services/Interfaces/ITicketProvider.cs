@@ -21,7 +21,6 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using System.Security.Cryptography.X509Certificates;
     using Models;
 
     #endregion

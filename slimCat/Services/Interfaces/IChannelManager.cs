@@ -26,55 +26,37 @@ namespace slimCat.Services
     #endregion
 
     /// <summary>
-    ///     The ChannelManager interface.
+    ///     Represents several operations to manage channels.
     /// </summary>
     public interface IChannelManager
     {
         #region Public Methods and Operators
 
         /// <summary>
-        ///     Used to join a channel but not switch to it automatically
+        ///     Adds the channel to the chat model.
         /// </summary>
-        /// <param name="type">
-        ///     The type.
-        /// </param>
-        /// <param name="id">
-        ///     The ID.
-        /// </param>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
+        /// <param name="type">The channel's type.</param>
+        /// <param name="id">The channel's identifier.</param>
+        /// <param name="name">The channel's name.</param>
         void AddChannel(ChannelType type, string id, string name = "");
 
+
         /// <summary>
-        ///     Used to add a message to a given channel
+        ///     Adds the message.
         /// </summary>
-        /// <param name="message">
-        ///     The message.
-        /// </param>
-        /// <param name="channelName">
-        ///     The channel Name.
-        /// </param>
-        /// <param name="poster">
-        ///     The poster.
-        /// </param>
-        /// <param name="messageType">
-        ///     The message Type.
-        /// </param>
+        /// <param name="message">The message.</param>
+        /// <param name="channelName">Name of the channel.</param>
+        /// <param name="poster">The poster of the message.</param>
+        /// <param name="messageType">Type of the message.</param>
         void AddMessage(string message, string channelName, string poster, MessageType messageType = MessageType.Normal);
 
         /// <summary>
-        ///     Used to join or switch to a channel
+        ///     Joins the channel, and then switches the tab to it.
         /// </summary>
-        /// <param name="type">
-        ///     The type.
-        /// </param>
-        /// <param name="id">
-        ///     The ID.
-        /// </param>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
+        /// <remarks>The channel is created if it does not exist.</remarks>
+        /// <param name="type">The channel's type.</param>
+        /// <param name="id">The channel's identifier.</param>
+        /// <param name="name">The channel's name.</param>
         void JoinChannel(ChannelType type, string id, string name = "");
 
         /// <summary>

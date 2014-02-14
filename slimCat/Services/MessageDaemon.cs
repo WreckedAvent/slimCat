@@ -70,28 +70,6 @@ namespace slimCat.Services
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="MessageDaemon" /> class.
-        /// </summary>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="events">
-        ///     The events.
-        /// </param>
-        /// <param name="model">
-        ///     The model.
-        /// </param>
-        /// <param name="connection">
-        ///     The connection.
-        /// </param>
-        /// <param name="api">
-        ///     The api.
-        /// </param>
-        /// <param name="manager"></param>
         public MessageDaemon(
             IRegionManager regman,
             IUnityContainer contain,
@@ -174,18 +152,6 @@ namespace slimCat.Services
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The add channel.
-        /// </summary>
-        /// <param name="type">
-        ///     The type.
-        /// </param>
-        /// <param name="id">
-        ///     The id.
-        /// </param>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
         public void AddChannel(ChannelType type, string id, string name)
         {
             if (type == ChannelType.PrivateMessage)
@@ -228,29 +194,14 @@ namespace slimCat.Services
             }
         }
 
-        /// <summary>
-        ///     The add message.
-        /// </summary>
-        /// <param name="message">
-        ///     The message.
-        /// </param>
-        /// <param name="channelName">
-        ///     The channel name.
-        /// </param>
-        /// <param name="poster">
-        ///     The poster.
-        /// </param>
-        /// <param name="messageType">
-        ///     The message type.
-        /// </param>
         public void AddMessage(
             string message, string channelName, string poster, MessageType messageType = MessageType.Normal)
         {
             var sender =
                 characterManager.Find(poster == Arguments.ThisCharacter ? model.CurrentCharacter.Name : poster);
 
-            var channel = model.CurrentChannels.FirstByIdOrDefault(channelName)
-                          ?? (ChannelModel) model.CurrentPms.FirstByIdOrDefault(channelName);
+            var channel = model.CurrentChannels.FirstByIdOrNull(channelName)
+                          ?? (ChannelModel) model.CurrentPms.FirstByIdOrNull(channelName);
 
             if (channel == null)
                 return; // exception circumstance, swallow message
@@ -287,33 +238,21 @@ namespace slimCat.Services
                     });
         }
 
-        /// <summary>
-        ///     The join channel.
-        /// </summary>
-        /// <param name="type">
-        ///     The type.
-        /// </param>
-        /// <param name="id">
-        ///     The id.
-        /// </param>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
         public void JoinChannel(ChannelType type, string id, string name = "")
         {
             IEnumerable<string> history = new List<string>();
             if (!id.Equals("Home"))
                 history = Logger.GetLogs(string.IsNullOrWhiteSpace(name) ? id : name, id);
 
-            var toJoin = model.CurrentPms.FirstByIdOrDefault(id)
-                         ?? (ChannelModel) model.CurrentChannels.FirstByIdOrDefault(id);
+            var toJoin = model.CurrentPms.FirstByIdOrNull(id)
+                         ?? (ChannelModel) model.CurrentChannels.FirstByIdOrNull(id);
 
             if (toJoin == null)
             {
                 AddChannel(type, id, name);
 
-                toJoin = model.CurrentPms.FirstByIdOrDefault(id)
-                         ?? (ChannelModel) model.CurrentChannels.FirstByIdOrDefault(id);
+                toJoin = model.CurrentPms.FirstByIdOrNull(id)
+                         ?? (ChannelModel) model.CurrentChannels.FirstByIdOrNull(id);
             }
 
             if (history.Any())
@@ -332,14 +271,6 @@ namespace slimCat.Services
             RequestNavigate(id);
         }
 
-        /// <summary>
-        ///     The remove channel.
-        /// </summary>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// </exception>
         public void RemoveChannel(string name)
         {
             RequestNavigate("Home");
@@ -444,7 +375,7 @@ namespace slimCat.Services
         {
             var args = command.Get(Arguments.Channel);
 
-            if (model.CurrentChannels.FirstByIdOrDefault(args) != null)
+            if (model.CurrentChannels.FirstByIdOrNull(args) != null)
             {
                 RequestNavigate(args);
                 return;
@@ -560,8 +491,8 @@ namespace slimCat.Services
                     OnHandleLatestReportByUserRequested(command);
                 }
 
-                var channel = (ChannelModel) model.CurrentPms.FirstByIdOrDefault(target)
-                              ?? model.CurrentChannels.FirstByIdOrDefault(target);
+                var channel = (ChannelModel) model.CurrentPms.FirstByIdOrNull(target)
+                              ?? model.CurrentChannels.FirstByIdOrNull(target);
 
                 if (channel != null)
                 {
@@ -592,7 +523,7 @@ namespace slimCat.Services
                 return;
 
             var doStuffWith = stuffWith;
-            var newChannel = model.AllChannels.FirstByIdOrDefault(doStuffWith.TargetChannel.Id);
+            var newChannel = model.AllChannels.FirstByIdOrNull(doStuffWith.TargetChannel.Id);
 
             if (newChannel == null)
             {
@@ -723,9 +654,9 @@ namespace slimCat.Services
                 // we could just use _model.SelectedChannel, but the user might change tabs immediately after reporting, creating a race condition
                 ChannelModel channel;
                 if (channelText == command.Get(Arguments.Name))
-                    channel = model.CurrentPms.FirstByIdOrDefault(channelText);
+                    channel = model.CurrentPms.FirstByIdOrNull(channelText);
                 else
-                    channel = model.CurrentChannels.FirstByIdOrDefault(channelText);
+                    channel = model.CurrentChannels.FirstByIdOrNull(channelText);
 
                 if (channel != null)
                 {
@@ -857,9 +788,9 @@ namespace slimCat.Services
                 Dispatcher.Invoke(
                     (Action) delegate
                         {
-                            var toUpdate = model.CurrentChannels.FirstByIdOrDefault(lastSelected.Id)
+                            var toUpdate = model.CurrentChannels.FirstByIdOrNull(lastSelected.Id)
                                            ??
-                                           (ChannelModel) model.CurrentPms.FirstByIdOrDefault(lastSelected.Id);
+                                           (ChannelModel) model.CurrentPms.FirstByIdOrNull(lastSelected.Id);
 
                             if (toUpdate == null)
                                 lastSelected = null;
@@ -868,8 +799,8 @@ namespace slimCat.Services
                         });
             }
 
-            var channelModel = model.CurrentChannels.FirstByIdOrDefault(channelId)
-                               ?? (ChannelModel) model.CurrentPms.FirstByIdOrDefault(channelId);
+            var channelModel = model.CurrentChannels.FirstByIdOrNull(channelId)
+                               ?? (ChannelModel) model.CurrentPms.FirstByIdOrNull(channelId);
 
             if (channelModel == null)
                 throw new ArgumentOutOfRangeException("channelId", "Cannot navigate to unknown channel");

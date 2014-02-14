@@ -56,15 +56,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="CreateReportViewModel" /> class.
-        /// </summary>
-        /// <param name="eventagg">
-        ///     The eventagg.
-        /// </param>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
         public CreateReportViewModel(IEventAggregator eventagg, IChatModel cm)
         {
             events = eventagg;
@@ -75,17 +66,11 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets the close command.
-        /// </summary>
         public ICommand CloseCommand
         {
             get { return cancel ?? (cancel = new RelayCommand(param => IsOpen = !isOpen)); }
         }
 
-        /// <summary>
-        ///     Gets or sets the complaint.
-        /// </summary>
         public string Complaint
         {
             get { return complaint; }
@@ -97,17 +82,11 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the current tab.
-        /// </summary>
         public string CurrentTab
         {
             get { return cm.CurrentChannel.Id == "Home" ? "None" : cm.CurrentChannel.Id; }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether is open.
-        /// </summary>
         public bool IsOpen
         {
             get { return isOpen; }
@@ -122,17 +101,11 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the send report command.
-        /// </summary>
         public ICommand SendReportCommand
         {
             get { return send ?? (send = new RelayCommand(OnSendReport)); }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether should upload logs.
-        /// </summary>
         public bool ShouldUploadLogs
         {
             get { return shouldUploadLogs; }
@@ -144,9 +117,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the target.
-        /// </summary>
         public string Target
         {
             get { return target; }

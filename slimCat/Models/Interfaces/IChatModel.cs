@@ -28,7 +28,7 @@ namespace slimCat.Models
     #endregion
 
     /// <summary>
-    ///     The ChatModel interface.
+    ///     Represents data relating to chat that isn't specific to characters.
     /// </summary>
     public interface IChatModel
     {
@@ -46,7 +46,7 @@ namespace slimCat.Models
         #region Public Properties
 
         /// <summary>
-        ///     A collection of ALL channels, public or private
+        ///     Gets all channels, opened or not.
         /// </summary>
         ObservableCollection<GeneralChannelModel> AllChannels { get; }
 
@@ -56,22 +56,22 @@ namespace slimCat.Models
         DateTimeOffset ClientUptime { get; set; }
 
         /// <summary>
-        ///     A colleciton of all opened channels
+        ///     Gets the current opened channels.
         /// </summary>
         ObservableCollection<GeneralChannelModel> CurrentChannels { get; }
 
         /// <summary>
-        ///     A collection of all opened Pms
+        ///     Gets the current opened PMs.
         /// </summary>
         ObservableCollection<PmChannelModel> CurrentPms { get; }
 
         /// <summary>
-        ///     If we're actively connected and authenticated through F-Chat
+        ///     Gets or sets a value indicating whether the client is connected to the server.
         /// </summary>
         bool IsAuthenticated { get; set; }
 
         /// <summary>
-        ///     Whether or not the current user has permissions to act like a moderator
+        ///     Gets or sets a value indicating whether the current user is a global moderator.
         /// </summary>
         bool IsGlobalModerator { get; set; }
 
@@ -81,22 +81,24 @@ namespace slimCat.Models
         DateTimeOffset LastMessageReceived { get; set; }
 
         /// <summary>
-        ///     A collection of all of our notifications
+        ///     Gets the current notifications.
         /// </summary>
         ObservableCollection<NotificationModel> Notifications { get; }
 
         /// <summary>
-        ///     Information relating to the currently selected account
+        ///     Gets or sets the current account.
         /// </summary>
         IAccount CurrentAccount { get; set; }
 
+
         /// <summary>
-        ///     The Channel we have selected as the 'active' one
+        ///     Gets or sets the currently-selected channel.
         /// </summary>
         ChannelModel CurrentChannel { get; set; }
 
+
         /// <summary>
-        ///     The Character we've chosen to enter chat with
+        ///     Gets or sets the currently-selected character.
         /// </summary>
         ICharacter CurrentCharacter { get; set; }
 

@@ -84,26 +84,7 @@ namespace slimCat.ViewModels
 
         #endregion
 
-        #region Constructors and Destructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="GeneralChannelViewModel" /> class.
-        /// </summary>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="events">
-        ///     The events.
-        /// </param>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
+        #region Constructors and Destructor
         public GeneralChannelViewModel(
             string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
             ICharacterManager manager)
@@ -207,9 +188,6 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether auto post.
-        /// </summary>
         public bool AutoPost
         {
             get { return autoPostAds; }
@@ -221,9 +199,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether can post.
-        /// </summary>
         public bool CanPost
         {
             get
@@ -233,9 +208,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether can switch.
-        /// </summary>
         public bool CanSwitch
         {
             get
@@ -247,70 +219,45 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether cannot post.
-        /// </summary>
         public bool CannotPost
         {
             get { return !CanPost; }
         }
 
-        /// <summary>
-        ///     Gets the channel management view model.
-        /// </summary>
         public ChannelManagementViewModel ChannelManagementViewModel { get; private set; }
 
-        /// <summary>
-        ///     Gets the chat content string.
-        /// </summary>
+
         public string ChatContentString
         {
             get { return IsDisplayingChat ? "Chat" : "Ads"; }
         }
 
-        /// <summary>
-        ///     Gets the current messages.
-        /// </summary>
         public ObservableCollection<IViewableObject> CurrentMessages
         {
             get { return messageManager.Collection; }
         }
 
-        /// <summary>
-        ///     Gets the gender settings.
-        /// </summary>
         public GenderSettingsModel GenderSettings
         {
             get { return genderSettings; }
         }
 
-        /// <summary>
-        ///     Used for channel settings to display settings related to notify terms
-        /// </summary>
         public bool HasNotifyTerms
         {
             get { return !string.IsNullOrEmpty(ChannelSettings.NotifyTerms); }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether is chatting.
-        /// </summary>
+
         public bool IsChatting
         {
             get { return !IsSearching; }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether is displaying Ads.
-        /// </summary>
         public bool IsDisplayingAds
         {
             get { return !IsDisplayingChat; }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether is displaying chat.
-        /// </summary>
         public bool IsDisplayingChat
         {
             get { return isDisplayingChat; }
@@ -350,17 +297,11 @@ namespace slimCat.ViewModels
             get { return Model.Mode == ChannelMode.Both || Model.Mode == ChannelMode.Chat; }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether is not searching.
-        /// </summary>
         public bool IsNotSearching
         {
             get { return !IsSearching; }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether is searching.
-        /// </summary>
         public bool IsSearching
         {
             get { return isSearching; }
@@ -378,9 +319,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the motd.
-        /// </summary>
         public string Description
         {
             get { return ((GeneralChannelModel) Model).Description; }
@@ -405,33 +343,21 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the search settings.
-        /// </summary>
         public GenericSearchSettingsModel SearchSettings
         {
             get { return searchSettings; }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether should display Ads.
-        /// </summary>
         public bool ShouldDisplayAds
         {
             get { return (Model.Mode == ChannelMode.Both) || (Model.Mode == ChannelMode.Ads); }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether should display chat.
-        /// </summary>
         public bool ShouldDisplayChat
         {
             get { return (Model.Mode == ChannelMode.Both) || (Model.Mode == ChannelMode.Chat); }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether should show auto post.
-        /// </summary>
         public bool ShouldShowAutoPost
         {
             get
@@ -443,17 +369,11 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     This is used for the channel settings, if it should show settings like 'notify when this character is mentioned'
-        /// </summary>
         public bool ShowAllSettings
         {
             get { return true; }
         }
 
-        /// <summary>
-        ///     Gets the status string.
-        /// </summary>
         public string StatusString
         {
             get
@@ -467,19 +387,16 @@ namespace slimCat.ViewModels
                         "{0} / {1} characters", Message.Length, IsDisplayingChat ? "4,096" : "50,000");
                 }
 
-                if (hasNewAds && IsDisplayingChat)
+                if (OtherTabHasMessages && IsDisplayingChat)
                     return "This channel has new ad(s).";
 
-                if (hasNewMessages && IsDisplayingAds)
+                if (OtherTabHasMessages && IsDisplayingAds)
                     return "This channel has new message(s).";
 
                 return string.Empty;
             }
         }
 
-        /// <summary>
-        ///     Gets the switch command.
-        /// </summary>
         public ICommand SwitchCommand
         {
             get
@@ -489,9 +406,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the switch search command.
-        /// </summary>
         public ICommand SwitchSearchCommand
         {
             get
@@ -502,7 +416,7 @@ namespace slimCat.ViewModels
         }
 
         /// <summary>
-        ///     Gets the time left.
+        ///     Gets the time left before the next ad can be posted.
         /// </summary>
         public string TimeLeft
         {
@@ -544,9 +458,6 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The send auto ad.
-        /// </summary>
         public void SendAutoAd()
         {
             var messageToSend = IsDisplayingChat ? adMessage : Message;
@@ -598,12 +509,6 @@ namespace slimCat.ViewModels
             OnPropertyChanged("ChannelSettings");
         }
 
-        /// <summary>
-        ///     The dispose.
-        /// </summary>
-        /// <param name="isManaged">
-        ///     The is Managed.
-        /// </param>
         protected override void Dispose(bool isManaged)
         {
             if (isManaged)
@@ -630,15 +535,6 @@ namespace slimCat.ViewModels
             base.Dispose(isManaged);
         }
 
-        /// <summary>
-        ///     The on model property changed.
-        /// </summary>
-        /// <param name="sender">
-        ///     The sender.
-        /// </param>
-        /// <param name="e">
-        ///     The e.
-        /// </param>
         protected override void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
@@ -664,9 +560,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     The send message.
-        /// </summary>
         protected override void SendMessage()
         {
             if (IsSearching)

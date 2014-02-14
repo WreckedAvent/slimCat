@@ -17,6 +17,8 @@
 
 #endregion
 
+
+// TODO: This needs to become a singleton resolved by the container
 namespace slimCat.Services
 {
     #region Usings
@@ -27,7 +29,7 @@ namespace slimCat.Services
     #endregion
 
     /// <summary>
-    ///     The Logger interface.
+    ///     Represents a logging mechanism.
     /// </summary>
     public interface ILogger
     {

@@ -27,19 +27,19 @@ namespace slimCat.Services
     #endregion
 
     /// <summary>
-    ///     The ChatConnection interface.
+    ///     Represents a websocket endpoint for F-Chat.
     /// </summary>
     public interface IChatConnection
     {
         #region Public Properties
 
         /// <summary>
-        ///     Gets the account.
+        ///     Gets the current account.
         /// </summary>
         IAccount Account { get; }
 
         /// <summary>
-        ///     Gets the character.
+        ///     Gets the current character.
         /// </summary>
         string Character { get; }
 

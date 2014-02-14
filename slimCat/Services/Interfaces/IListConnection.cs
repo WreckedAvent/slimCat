@@ -27,7 +27,7 @@ namespace slimCat.Services
     #endregion
 
     /// <summary>
-    ///     Used for connectivity to F-list
+    ///     Represents an HTTP endpoint for F-list, mostly for API endpoints
     /// </summary>
     public interface IListConnection
     {

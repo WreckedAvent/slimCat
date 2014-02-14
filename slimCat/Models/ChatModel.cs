@@ -190,7 +190,7 @@ namespace slimCat.Models
 
         public ChannelModel FindChannel(string id, string title = null)
         {
-            var channel = AllChannels.FirstByIdOrDefault(id);
+            var channel = AllChannels.FirstByIdOrNull(id);
 
             return channel ?? new GeneralChannelModel(id, ChannelType.InviteOnly) {Title = title};
         }

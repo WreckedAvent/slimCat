@@ -63,24 +63,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="UtilityChannelViewModel" /> class.
-        /// </summary>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="events">
-        ///     The events.
-        /// </param>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
         public UtilityChannelViewModel(
             string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
             ICharacterManager manager)
@@ -138,9 +120,6 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets the client id string.
-        /// </summary>
         public static string ClientIdString
         {
             get
@@ -149,9 +128,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the language display names for a given culture name
-        /// </summary>
         public static IEnumerable<KeyValuePair<string, string>> LanguageNames
         {
             get
@@ -192,9 +168,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether allow logging.
-        /// </summary>
         public bool AllowLogging
         {
             get { return ApplicationSettings.AllowLogging; }
@@ -231,9 +204,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the back log max.
-        /// </summary>
         public int BackLogMax
         {
             get { return ApplicationSettings.BackLogMax; }
@@ -252,9 +222,7 @@ namespace slimCat.ViewModels
             get { return CharacterManager.Find("slimCat"); }
         }
 
-        /// <summary>
-        ///     Gets the connect flavor text.
-        /// </summary>
+
         public string ConnectFlavorText
         {
             get
@@ -267,14 +235,9 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the connect time.
-        /// </summary>
         public int ConnectTime { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the global notify terms.
-        /// </summary>
+
         public string GlobalNotifyTerms
         {
             get { return ApplicationSettings.GlobalNotifyTerms; }
@@ -296,78 +259,48 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether has new update.
-        /// </summary>
         public bool HasNewUpdate { get; set; }
 
-        /// <summary>
-        ///     Gets a value indicating whether is connecting.
-        /// </summary>
         public bool IsConnecting
         {
             get { return !ChatModel.IsAuthenticated; }
         }
 
-        /// <summary>
-        ///     Gets the last message received.
-        /// </summary>
         public string LastMessageReceived
         {
             get { return HelperConverter.DateTimeToRough(ChatModel.LastMessageReceived, true, false); }
         }
 
-        /// <summary>
-        ///     Gets the online bookmarks count.
-        /// </summary>
         public int OnlineBookmarksCount
         {
             get { return CharacterManager.GetNames(ListKind.Bookmark).Count; }
         }
 
-        /// <summary>
-        ///     Gets the online count.
-        /// </summary>
         public int OnlineCount
         {
             get { return CharacterManager.CharacterCount; }
         }
 
-        /// <summary>
-        ///     Gets the online count change.
-        /// </summary>
         public string OnlineCountChange
         {
             get { return minuteOnlineCount.GetDisplayString(); }
         }
 
-        /// <summary>
-        ///     Gets the online friends count.
-        /// </summary>
         public int OnlineFriendsCount
         {
             get { return CharacterManager.GetNames(ListKind.Friend).Count; }
         }
 
-        /// <summary>
-        ///     Gets the rough client up time.
-        /// </summary>
         public string RoughClientUpTime
         {
             get { return HelperConverter.DateTimeToRough(ChatModel.ClientUptime, true, false); }
         }
 
-        /// <summary>
-        ///     Gets the rough server up time.
-        /// </summary>
         public string RoughServerUpTime
         {
             get { return HelperConverter.DateTimeToRough(ChatModel.ServerUpTime, true, false); }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether show notifications.
-        /// </summary>
         public bool ShowNotifications
         {
             get { return ApplicationSettings.ShowNotificationsGlobal; }
@@ -379,24 +312,12 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the update build time.
-        /// </summary>
         public string UpdateBuildTime { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the update link.
-        /// </summary>
         public string UpdateLink { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the update name.
-        /// </summary>
         public string UpdateName { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the volume.
-        /// </summary>
         public double Volume
         {
             get { return ApplicationSettings.Volume; }
@@ -425,13 +346,7 @@ namespace slimCat.ViewModels
 
         public int DelayTime { get; set; }
 
-        /// <summary>
-        ///     The logged in event.
-        /// </summary>
-        /// <param name="payload">
-        ///     The payload.
-        /// </param>
-        public void LoggedInEvent(bool? payload)
+        public void LoggedInEvent(bool? _)
         {
             updateTimer.Elapsed -= UpdateConnectText;
             OnPropertyChanged("IsConnecting");
@@ -481,12 +396,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     The login failed event.
-        /// </summary>
-        /// <param name="error">
-        ///     The error.
-        /// </param>
         public void LoginFailedEvent(string error)
         {
             if (ChatModel.IsAuthenticated)
@@ -504,13 +413,7 @@ namespace slimCat.ViewModels
             OnPropertyChanged("IsConnecting");
         }
 
-        /// <summary>
-        ///     The login reconnecting event.
-        /// </summary>
-        /// <param name="payload">
-        ///     The payload.
-        /// </param>
-        public void LoginReconnectingEvent(int payload)
+        public void LoginReconnectingEvent(int reconnectTime)
         {
             if (ChatModel.IsAuthenticated)
             {
@@ -522,31 +425,16 @@ namespace slimCat.ViewModels
             flavorText = new StringBuilder("Attempting reconnect");
 
             ConnectTime = 0;
-            DelayTime = payload;
+            DelayTime = reconnectTime;
 
             OnPropertyChanged("IsConnecting");
         }
 
-        /// <summary>
-        ///     The online count prime.
-        /// </summary>
-        /// <returns>
-        ///     The <see cref="int" />.
-        /// </returns>
         public int OnlineCountPrime()
         {
             return OnlineCount;
         }
 
-        /// <summary>
-        ///     The update connect text.
-        /// </summary>
-        /// <param name="sender">
-        ///     The sender.
-        /// </param>
-        /// <param name="e">
-        ///     The e.
-        /// </param>
         public void UpdateConnectText(object sender, EventArgs e)
         {
             if (ChatModel.IsAuthenticated)
@@ -566,12 +454,6 @@ namespace slimCat.ViewModels
 
         #region Methods
 
-        /// <summary>
-        ///     The dispose.
-        /// </summary>
-        /// <param name="isManaged">
-        ///     The is managed dispose.
-        /// </param>
         protected override void Dispose(bool isManaged)
         {
             Dispose();
@@ -584,9 +466,6 @@ namespace slimCat.ViewModels
             Model = null;
         }
 
-        /// <summary>
-        ///     The send message.
-        /// </summary>
         protected override void SendMessage()
         {
             UpdateError("Cannot send messages to this channel!");

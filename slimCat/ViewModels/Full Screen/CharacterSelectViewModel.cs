@@ -44,9 +44,6 @@ namespace slimCat.ViewModels
     {
         #region Constants
 
-        /// <summary>
-        ///     The character select view name.
-        /// </summary>
         internal const string CharacterSelectViewName = "CharacterSelectView";
 
         #endregion
@@ -66,24 +63,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="CharacterSelectViewModel" /> class.
-        /// </summary>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="events">
-        ///     The events.
-        /// </param>
-        /// <param name="acc">
-        ///     The acc.
-        /// </param>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
         public CharacterSelectViewModel(
             IUnityContainer contain, IRegionManager regman, IEventAggregator events, IAccount acc, IChatModel cm,
             ICharacterManager manager)
@@ -107,9 +86,6 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets the characters.
-        /// </summary>
         public IEnumerable<ICharacter> Characters
         {
             get
@@ -124,9 +100,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether is connecting.
-        /// </summary>
         public bool IsConnecting
         {
             get { return isConnecting; }
@@ -138,9 +111,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the relay message.
-        /// </summary>
         public string RelayMessage
         {
             get { return relayMessage; }
@@ -152,9 +122,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the select character command.
-        /// </summary>
         public ICommand SelectCharacterCommand
         {
             get
@@ -166,9 +133,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the selected character.
-        /// </summary>
         public ICharacter CurrentCharacter
         {
             get { return selectedCharacter; }
@@ -184,9 +148,6 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The initialize.
-        /// </summary>
         public override void Initialize()
         {
             try

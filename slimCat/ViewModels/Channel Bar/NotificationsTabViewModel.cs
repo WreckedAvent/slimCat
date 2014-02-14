@@ -40,9 +40,6 @@ namespace slimCat.ViewModels
     {
         #region Constants
 
-        /// <summary>
-        ///     The notifications tab view.
-        /// </summary>
         public const string NotificationsTabView = "NotificationsTabView";
 
         #endregion
@@ -63,21 +60,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="NotificationsTabViewModel" /> class.
-        /// </summary>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="eventagg">
-        ///     The eventagg.
-        /// </param>
         public NotificationsTabViewModel(
             IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg,
             ICharacterManager manager)
@@ -99,10 +81,6 @@ namespace slimCat.ViewModels
         #endregion
 
         #region Public Properties
-
-        /// <summary>
-        ///     Gets the clear notifications command.
-        /// </summary>
         public ICommand ClearNotificationsCommand
         {
             get
@@ -112,19 +90,11 @@ namespace slimCat.ViewModels
             }
         }
 
-        // removed useless code which kept unread count of notifications
-
-        /// <summary>
-        ///     Gets a value indicating whether has no notifications.
-        /// </summary>
         public bool HasNoNotifications
         {
             get { return notificationManager.Collection.Count == 0; }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether is selected.
-        /// </summary>
         public bool IsSelected
         {
             get { return isSelected; }
@@ -139,17 +109,11 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the remove notification command.
-        /// </summary>
         public ICommand RemoveNotificationCommand
         {
             get { return killNoti ?? (killNoti = new RelayCommand(RemoveNotification)); }
         }
 
-        /// <summary>
-        ///     Gets or sets the search string.
-        /// </summary>
         public string SearchString
         {
             get { return search.ToLower(); }
@@ -162,9 +126,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the sorted notifications.
-        /// </summary>
         public ObservableCollection<IViewableObject> CurrentNotifications
         {
             get { return notificationManager.Collection; }
@@ -174,12 +135,6 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The remove notification.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
         public void RemoveNotification(object args)
         {
             var model = args as NotificationModel;

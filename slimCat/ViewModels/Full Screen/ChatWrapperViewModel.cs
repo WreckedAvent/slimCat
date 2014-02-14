@@ -38,30 +38,12 @@ namespace slimCat.ViewModels
     {
         #region Constants
 
-        /// <summary>
-        ///     The chat wrapper view.
-        /// </summary>
         private const string ChatWrapperView = "ChatWrapperView";
 
         #endregion
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ChatWrapperViewModel" /> class.
-        /// </summary>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="events">
-        ///     The events.
-        /// </param>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
         public ChatWrapperViewModel(
             IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
             ICharacterManager lists)
@@ -83,9 +65,6 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The initialize.
-        /// </summary>
         public override void Initialize()
         {
             try

@@ -39,9 +39,6 @@ namespace slimCat.ViewModels
     {
         #region Constants
 
-        /// <summary>
-        ///     The users tab view.
-        /// </summary>
         public const string UsersTabView = "UsersTabView";
 
         #endregion
@@ -56,21 +53,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="UsersTabViewModel" /> class.
-        /// </summary>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="eventagg">
-        ///     The eventagg.
-        /// </param>
         public UsersTabViewModel(
             IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg,
             ICharacterManager manager)
@@ -119,33 +101,21 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets the gender settings.
-        /// </summary>
         public GenderSettingsModel GenderSettings
         {
             get { return genderSettings; }
         }
 
-        /// <summary>
-        ///     Gets the selected chan.
-        /// </summary>
         public GeneralChannelModel SelectedChan
         {
             get { return currentChan ?? ChatModel.CurrentChannel as GeneralChannelModel; }
         }
 
-        /// <summary>
-        ///     Gets the sort content string.
-        /// </summary>
         public string SortContentString
         {
             get { return HasUsers ? SelectedChan.Title : null; }
         }
 
-        /// <summary>
-        ///     Gets the sorted users.
-        /// </summary>
         public IEnumerable<ICharacter> SortedUsers
         {
             get

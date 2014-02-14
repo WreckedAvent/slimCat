@@ -23,7 +23,6 @@ namespace slimCat.Services
 
     using System;
     using System.Collections.Generic;
-    using System.Dynamic;
     using System.Linq;
     using System.Timers;
     using System.Web;
@@ -173,7 +172,7 @@ namespace slimCat.Services
         private void ChannelBanListCommand(IDictionary<string, object> command)
         {
             var channelId = command.Get(Constants.Arguments.Channel);
-            var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
+            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelId);
 
             if (channel == null)
             {
@@ -223,7 +222,7 @@ namespace slimCat.Services
         {
             var channelName = command.Get(Constants.Arguments.Channel);
             var mode = command.Get(Constants.Arguments.Mode).ToEnum<ChannelMode>();
-            var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
+            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelName);
 
             if (channel == null)
             {
@@ -289,7 +288,7 @@ namespace slimCat.Services
         private void ChannelOperatorListCommand(IDictionary<string, object> command)
         {
             var channelName = command.Get(Constants.Arguments.Channel);
-            var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
+            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelName);
 
             if (channel == null)
             {
@@ -321,7 +320,7 @@ namespace slimCat.Services
 
             leaveChannelCommands.Each(LeaveChannelCommand);
 
-            var characterChannel = ChatModel.CurrentPms.FirstByIdOrDefault(characterName);
+            var characterChannel = ChatModel.CurrentPms.FirstByIdOrNull(characterName);
             if (characterChannel != null)
                 characterChannel.TypingStatus = TypingStatus.Clear;
 
@@ -523,7 +522,7 @@ namespace slimCat.Services
             // JCH is used in a few situations. It is used when others join a channel and when we join a channel
 
             // if this is a situation where we are joining a channel...
-            var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
+            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelName);
             if (channel == null)
             {
                 var kind = ChannelType.Public;
@@ -585,7 +584,7 @@ namespace slimCat.Services
             if (ChatModel.CurrentCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
                 return;
 
-            var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelName);
+            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelName);
             if (channel == null)
                 return;
 
@@ -760,12 +759,12 @@ namespace slimCat.Services
             var sender = command.Get(Constants.Arguments.Character);
             if (!CharacterManager.IsOnList(sender, ListKind.Ignored))
             {
-                if (ChatModel.CurrentPms.FirstByIdOrDefault(sender) == null)
+                if (ChatModel.CurrentPms.FirstByIdOrNull(sender) == null)
                     manager.AddChannel(ChannelType.PrivateMessage, sender);
 
                 manager.AddMessage(command.Get(Constants.Arguments.Message), sender, sender);
 
-                var temp = ChatModel.CurrentPms.FirstByIdOrDefault(sender);
+                var temp = ChatModel.CurrentPms.FirstByIdOrNull(sender);
                 if (temp == null)
                     return;
 
@@ -790,7 +789,7 @@ namespace slimCat.Services
             string title = null;
             if (channelId != null)
             {
-                var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
+                var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelId);
                 if (channel != null)
                 {
                     title = channel.Title;
@@ -909,7 +908,7 @@ namespace slimCat.Services
             var mode = command.Get(Constants.Arguments.Mode);
 
             var newMode = mode.ToEnum<ChannelMode>();
-            var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
+            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelId);
 
             if (channel == null)
                 return;
@@ -929,7 +928,7 @@ namespace slimCat.Services
                 (command.Get(Constants.Arguments.Message)).IndexOf("public", StringComparison.OrdinalIgnoreCase) !=
                 -1;
 
-            var channel = ChatModel.CurrentChannels.FirstByIdOrDefault(channelId);
+            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelId);
 
             if (channel == null)
                 return; // can't change the settings of a room we don't know
@@ -1003,7 +1002,7 @@ namespace slimCat.Services
         {
             var sender = command.Get(Constants.Arguments.Character);
 
-            var channel = ChatModel.CurrentPms.FirstByIdOrDefault(sender);
+            var channel = ChatModel.CurrentPms.FirstByIdOrNull(sender);
             if (channel == null)
                 return;
 

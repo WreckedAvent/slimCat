@@ -60,12 +60,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ToastNotificationsViewModel" /> class.
-        /// </summary>
-        /// <param name="eventAgg">
-        ///     The _event agg.
-        /// </param>
         public ToastNotificationsViewModel(IEventAggregator eventAgg)
         {
             hideDelay.Elapsed += (s, e) => HideNotifications();
@@ -76,9 +70,6 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets or sets the content.
-        /// </summary>
         public string Content
         {
             get { return content; }
@@ -98,22 +89,13 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the hide command.
-        /// </summary>
         public ICommand HideCommand
         {
             get { return hide ?? (hide = new RelayCommand(args => HideNotifications())); }
         }
 
-        /// <summary>
-        ///     The kind of target specified
-        /// </summary>
         public string Kind { get; set; }
 
-        /// <summary>
-        ///     Gets the snap to latest command.
-        /// </summary>
         public ICommand SnapToLatestCommand
         {
             get { return snap ?? (snap = new RelayCommand(OnSnapToLatestEvent)); }
@@ -128,9 +110,6 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The hide notifications.
-        /// </summary>
         public void HideNotifications()
         {
             Dispatcher.Invoke(
@@ -141,12 +120,6 @@ namespace slimCat.ViewModels
                     });
         }
 
-        /// <summary>
-        ///     The on snap to latest event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
         public void OnSnapToLatestEvent(object args)
         {
             var toSend = CommandDefinitions.CreateCommand("lastupdate").ToDictionary();
@@ -161,9 +134,6 @@ namespace slimCat.ViewModels
             events.GetEvent<UserCommandEvent>().Publish(toSend);
         }
 
-        /// <summary>
-        ///     The show notifications.
-        /// </summary>
         public void ShowNotifications()
         {
             hideDelay.Stop();
@@ -174,12 +144,6 @@ namespace slimCat.ViewModels
             hideDelay.Start();
         }
 
-        /// <summary>
-        ///     The update notification.
-        /// </summary>
-        /// <param name="newContent">
-        ///     The content.
-        /// </param>
         public void UpdateNotification(string newContent)
         {
             Content = newContent;

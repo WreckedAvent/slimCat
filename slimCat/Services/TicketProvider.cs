@@ -34,8 +34,6 @@ namespace slimCat.Services
     {
         private readonly IBrowser browser;
 
-        private bool hasGottenInfo;
-
         private IAccount lastAccount;
         private DateTime lastInfoRetrieval;
 

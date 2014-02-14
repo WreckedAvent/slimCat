@@ -41,9 +41,6 @@ namespace slimCat.ViewModels
     {
         #region Constants
 
-        /// <summary>
-        ///     The channelbar view.
-        /// </summary>
         internal const string ChannelbarView = "ChannelbarView";
 
         private const string TabViewRegion = "TabViewRegion";
@@ -66,21 +63,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ChannelbarViewModel" /> class.
-        /// </summary>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="events">
-        ///     The events.
-        /// </param>
         public ChannelbarViewModel(
             IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator events,
             ICharacterManager manager)
@@ -117,26 +99,17 @@ namespace slimCat.ViewModels
 
         #region Public Events
 
-        /// <summary>
-        ///     The on jump to notifications.
-        /// </summary>
         public event EventHandler OnJumpToNotifications;
 
         #endregion
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets the change tab command.
-        /// </summary>
         public ICommand ChangeTabCommand
         {
             get { return @select ?? (@select = new RelayCommand(NavigateToTabEvent)); }
         }
 
-        /// <summary>
-        ///     Gets the expand string.
-        /// </summary>
         public string ExpandString
         {
             get
@@ -148,9 +121,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether has update.
-        /// </summary>
         public bool HasUpdate
         {
             get { return hasUpdate; }
@@ -163,9 +133,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether is expanded.
-        /// </summary>
         public bool IsExpanded
         {
             get { return isExpanded; }
@@ -178,9 +145,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the toggle bar command.
-        /// </summary>
         public ICommand ToggleBarCommand
         {
             get
@@ -230,9 +194,6 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The initialize.
-        /// </summary>
         public override void Initialize()
         {
             try

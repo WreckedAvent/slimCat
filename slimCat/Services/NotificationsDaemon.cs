@@ -164,17 +164,11 @@ namespace slimCat.Services
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The dispose.
-        /// </summary>
         public void Dispose()
         {
             Dispose(true);
         }
 
-        /// <summary>
-        ///     The show window.
-        /// </summary>
         public static void ShowWindow()
         {
             Application.Current.MainWindow.Show();
@@ -184,9 +178,6 @@ namespace slimCat.Services
             Application.Current.MainWindow.Activate();
         }
 
-        /// <summary>
-        ///     The shut down.
-        /// </summary>
         public void ShutDown()
         {
             icon.Dispose();
@@ -197,12 +188,6 @@ namespace slimCat.Services
 
         #region Methods
 
-        /// <summary>
-        ///     The dispose.
-        /// </summary>
-        /// <param name="isManagedDispose">
-        ///     The is managed dispose.
-        /// </param>
         protected virtual void Dispose(bool isManagedDispose)
         {
             if (!isManagedDispose)
@@ -212,12 +197,6 @@ namespace slimCat.Services
             toast.Dispose();
         }
 
-        /// <summary>
-        ///     Adds the notification to the notifications collection
-        /// </summary>
-        /// <param name="notification">
-        ///     The Notification.
-        /// </param>
         private void AddNotification(NotificationModel notification)
         {
             Dispatcher.Invoke((Action) (() => cm.Notifications.Add(notification)));
@@ -233,12 +212,6 @@ namespace slimCat.Services
             lastDingLinged = DateTime.Now;
         }
 
-        /// <summary>
-        ///     Notification logic for new channel Ads and messages
-        /// </summary>
-        /// <param name="update">
-        ///     The update.
-        /// </param>
         private void HandleNewChannelMessage(IDictionary<string, object> update)
         {
             var channel = update.Get<GeneralChannelModel>("channel");
@@ -342,16 +315,10 @@ namespace slimCat.Services
                 Application.Current.MainWindow.FlashWindow();
         }
 
-        /// <summary>
-        ///     Notification logic for new Pm messages
-        /// </summary>
-        /// <param name="message">
-        ///     The Message.
-        /// </param>
         private void HandleNewMessage(IMessage message)
         {
             var poster = message.Poster;
-            var channel = cm.CurrentPms.FirstByIdOrDefault(message.Poster.Name);
+            var channel = cm.CurrentPms.FirstByIdOrNull(message.Poster.Name);
             if (channel == null)
                 return;
 
@@ -412,7 +379,7 @@ namespace slimCat.Services
                     var channelId = eventArgs.TargetChannelId;
 
                     // find by ID, not name
-                    var channel = cm.CurrentChannels.FirstByIdOrDefault(channelId);
+                    var channel = cm.CurrentChannels.FirstByIdOrNull(channelId);
 
                     if (channel == null)
                         return;
@@ -432,7 +399,7 @@ namespace slimCat.Services
                     var target = ((CharacterUpdateModel.JoinLeaveEventArgs) args).TargetChannelId;
 
                     // find by ID, not name
-                    var channel = cm.CurrentChannels.FirstByIdOrDefault(target);
+                    var channel = cm.CurrentChannels.FirstByIdOrNull(target);
 
                     if (channel == null)
                         return;

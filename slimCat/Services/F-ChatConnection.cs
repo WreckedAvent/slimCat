@@ -27,13 +27,11 @@ namespace slimCat.Services
     using System.IO;
     using System.Linq;
     using System.Windows.Forms;
-    using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Models;
     using SimpleJson;
     using Utilities;
     using WebSocket4Net;
-    using Application = System.Windows.Application;
     using ErrorEventArgs = SuperSocket.ClientEngine.ErrorEventArgs;
     using Timer = System.Timers.Timer;
 

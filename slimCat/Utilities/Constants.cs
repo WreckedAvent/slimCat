@@ -20,18 +20,30 @@
 namespace slimCat.Utilities
 {
     /// <summary>
-    ///     The constants.
+    ///     The constants used by slimCat.
     /// </summary>
     public static class Constants
     {
         #region Constants
 
+        /// <summary>
+        ///     The client's identifier.
+        /// </summary>
         public const string ClientId = "slimCat";
 
+        /// <summary>
+        ///     The client's name.
+        /// </summary>
         public const string ClientName = "Ocelot";
 
+        /// <summary>
+        ///     The client's version.
+        /// </summary>
         public const string ClientVer = "rc3.08";
 
+        /// <summary>
+        ///     The endpoint for F-chat websocket communication.
+        /// </summary>
         public const string ServerHost = "wss://chat.f-list.net:9799/";
 
         #endregion

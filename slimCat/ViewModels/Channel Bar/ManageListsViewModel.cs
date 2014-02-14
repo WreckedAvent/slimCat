@@ -40,9 +40,6 @@ namespace slimCat.ViewModels
     {
         #region Constants
 
-        /// <summary>
-        ///     The manage lists tab view.
-        /// </summary>
         public const string ManageListsTabView = "ManageListsTabView";
 
         #endregion
@@ -71,21 +68,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ManageListsViewModel" /> class.
-        /// </summary>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="eventagg">
-        ///     The eventagg.
-        /// </param>
         public ManageListsViewModel(
             IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg,
             ICharacterManager manager)
@@ -170,9 +152,6 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets the banned.
-        /// </summary>
         public IEnumerable<ICharacter> Banned
         {
             get
@@ -185,33 +164,21 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the bookmarks.
-        /// </summary>
         public IEnumerable<ICharacter> Bookmarks
         {
             get { return CharacterManager.GetCharacters(ListKind.Bookmark, !showOffline).OrderBy(x => x.Name); }
         }
 
-        /// <summary>
-        ///     Gets the friends.
-        /// </summary>
         public IEnumerable<ICharacter> Friends
         {
             get { return CharacterManager.GetCharacters(ListKind.Friend, !showOffline).OrderBy(x => x.Name); }
         }
 
-        /// <summary>
-        ///     Gets the gender settings.
-        /// </summary>
         public GenderSettingsModel GenderSettings
         {
             get { return genderSettings; }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether has banned.
-        /// </summary>
         public bool HasBanned
         {
             get
@@ -224,25 +191,16 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the ignored.
-        /// </summary>
         public IEnumerable<ICharacter> Ignored
         {
             get { return CharacterManager.GetCharacters(ListKind.Ignored).OrderBy(x => x.Name); }
         }
 
-        /// <summary>
-        ///     Gets the interested.
-        /// </summary>
         public IEnumerable<ICharacter> Interested
         {
             get { return CharacterManager.GetCharacters(ListKind.Interested, !showOffline).OrderBy(x => x.Name); }
         }
 
-        /// <summary>
-        ///     Gets the moderators.
-        /// </summary>
         public IEnumerable<ICharacter> Moderators
         {
             get
@@ -255,25 +213,16 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the not interested.
-        /// </summary>
         public IEnumerable<ICharacter> NotInterested
         {
             get { return CharacterManager.GetCharacters(ListKind.NotInterested, !showOffline).OrderBy(x => x.Name); }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether show mods.
-        /// </summary>
         public bool ShowMods
         {
             get { return ChatModel.CurrentChannel is GeneralChannelModel; }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether show offline.
-        /// </summary>
         public bool ShowOffline
         {
             get { return showOffline; }
@@ -295,44 +244,14 @@ namespace slimCat.ViewModels
                 GenderSettings, SearchSettings, CharacterManager, ChatModel.CurrentChannel as GeneralChannelModel);
         }
 
-        private IList<ICharacter> Update(ICollection<string> characterNames, IList<ICharacter> currentList)
-        {
-            if (characterNames == null)
-                return currentList;
-
-            /*
-            if (currentList == null || currentList.Count != characterNames.Count)
-            {
-                currentList = characterNames
-                    .Select(characterName => ChatModel.FindCharacter(characterName))
-                    .Where(toAdd => toAdd.Status != StatusType.Offline || showOffline)
-                    .Where(activeFilter).ToList();
-            }*/
-
-            return currentList;
-        }
-
         private void UpdateBindings()
         {
-            friends = new List<ICharacter>();
             OnPropertyChanged("Friends");
-
-            bookmarks = new List<ICharacter>();
             OnPropertyChanged("Bookmarks");
-
-            interested = new List<ICharacter>();
             OnPropertyChanged("Interested");
-
-            notInterested = new List<ICharacter>();
             OnPropertyChanged("NotInterested");
-
-            ignored = new List<ICharacter>();
             OnPropertyChanged("Ignored");
-
-            roomMods = new List<ICharacter>();
             OnPropertyChanged("Moderators");
-
-            roomBans = new List<ICharacter>();
             OnPropertyChanged("Banned");
         }
 

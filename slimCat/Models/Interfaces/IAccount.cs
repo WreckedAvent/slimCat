@@ -27,7 +27,7 @@ namespace slimCat.Models
     #endregion
 
     /// <summary>
-    ///     For everything that needs to interact with the user's account
+    ///     Represents data about an F-list account.
     /// </summary>
     public interface IAccount
     {
@@ -39,12 +39,12 @@ namespace slimCat.Models
         string AccountName { get; set; }
 
         /// <summary>
-        ///     Gets the all friends.
+        ///     Gets all of the account's friends.
         /// </summary>
         IDictionary<string, IList<string>> AllFriends { get; }
 
         /// <summary>
-        ///     Gets the character's bookmarks.
+        ///     Gets the account's bookmarks.
         /// </summary>
         IList<string> Bookmarks { get; }
 

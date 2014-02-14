@@ -37,40 +37,16 @@ namespace slimCat.Utilities
         #region Public Methods and Operators
 
         /// <summary>
-        ///     The first by id or default.
+        ///     Returns the first channel model with the given Id, or <see langword="null"/> if none exist.
         /// </summary>
-        /// <param name="model">
-        ///     The model.
-        /// </param>
-        /// <param name="id">
-        ///     The id.
-        /// </param>
-        /// <typeparam name="T">
-        /// </typeparam>
-        /// <returns>
-        ///     The <see cref="T" />.
-        /// </returns>
-        public static T FirstByIdOrDefault<T>(this ICollection<T> model, string id) where T : ChannelModel
+        public static T FirstByIdOrNull<T>(this ICollection<T> model, string id) where T : ChannelModel
         {
             return model.FirstOrDefault(param => param.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
-        ///     The throw if null.
+        ///     Throws an <see cref="ArgumentNullException"/> if the value provided is null.
         /// </summary>
-        /// <param name="x">
-        ///     The x.
-        /// </param>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
-        /// <typeparam name="T">
-        /// </typeparam>
-        /// <returns>
-        ///     The <see cref="T" />.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">
-        /// </exception>
         public static T ThrowIfNull<T>(this T x, string name) where T : class
         {
             if (x == null)
@@ -79,12 +55,20 @@ namespace slimCat.Utilities
             return x;
         }
 
+        /// <summary>
+        ///     Does an action against each item in the collection.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="functor">The functor to apply to each item.</param>
         public static void Each<T>(this IEnumerable<T> collection, Action<T> functor)
         {
-            foreach (var item in collection)
+            foreach (var item in collection.ToList())
                 functor(item);
         }
 
+        /// <summary>
+        ///     Uses a string as a format provider with the given arguments.
+        /// </summary>
         public static string FormatWith(this string toFormat, params object[] args)
         {
             return string.Format(toFormat, args);

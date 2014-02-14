@@ -43,9 +43,6 @@ namespace slimCat.ViewModels
     {
         #region Constants
 
-        /// <summary>
-        ///     The login view name.
-        /// </summary>
         internal const string LoginViewName = "LoginView";
 
         #endregion
@@ -64,24 +61,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="LoginViewModel" /> class.
-        /// </summary>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="acc">
-        ///     The acc.
-        /// </param>
-        /// <param name="events">
-        ///     The events.
-        /// </param>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
         public LoginViewModel(
             IUnityContainer contain, IRegionManager regman, IAccount acc, IEventAggregator events, IChatModel cm,
             ICharacterManager lists)
@@ -102,9 +81,6 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets or sets the account name.
-        /// </summary>
         public string AccountName
         {
             get { return model.AccountName; }
@@ -119,9 +95,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the login command.
-        /// </summary>
         public ICommand LoginCommand
         {
             get
@@ -131,9 +104,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the password.
-        /// </summary>
         public string Password
         {
             get { return model.Password; }
@@ -148,9 +118,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the relay message.
-        /// </summary>
         public string RelayMessage
         {
             get { return relayMessage; }
@@ -162,9 +129,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether request sent.
-        /// </summary>
         public bool RequestSent
         {
             get { return requestIsSent; }
@@ -176,9 +140,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether save login.
-        /// </summary>
         public bool SaveLogin
         {
             get { return Settings.Default.SaveLogin; }
@@ -194,9 +155,6 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The initialize.
-        /// </summary>
         public override void Initialize()
         {
             try

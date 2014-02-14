@@ -25,8 +25,20 @@ namespace slimCat.Services
 
     #endregion
 
+    /// <summary>
+    ///     Represents an endpoint for bi-directional HTTP requests.
+    /// </summary>
     public interface IBrowser
     {
+        /// <summary>
+        ///     Gets the response from the host.
+        /// </summary>
+        /// <param name="host">The host of the endpoint.</param>
+        /// <param name="arguments">The arguments to serialize and send.</param>
+        /// <param name="useCookies">if set to <c>true</c> then cookies will be saved/used.</param>
+        /// <returns>
+        ///     The full response from the endpoint serialized to a string.
+        /// </returns>
         string GetResponse(string host, IEnumerable<KeyValuePair<string, object>> arguments,
             bool useCookies = false);
     }

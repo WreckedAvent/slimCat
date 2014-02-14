@@ -45,9 +45,6 @@ namespace slimCat.ViewModels
     {
         #region Constants
 
-        /// <summary>
-        ///     The userbar view.
-        /// </summary>
         internal const string UserbarView = "UserbarView";
 
         #endregion
@@ -119,21 +116,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="UserbarViewModel" /> class.
-        /// </summary>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="events">
-        ///     The events.
-        /// </param>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
         public UserbarViewModel(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
             ICharacterManager manager)
             : base(contain, regman, events, cm, manager)
@@ -167,9 +149,6 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets or sets the chan_ selected.
-        /// </summary>
         public int ChannelSelected
         {
             get { return selChannelIndex; }
@@ -190,9 +169,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether channels are expanded.
-        /// </summary>
         public bool ChannelsAreExpanded
         {
             get { return channelsExpanded; }
@@ -204,37 +180,19 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the close command.
-        /// </summary>
         public ICommand CloseCommand
         {
             get { return close ?? (close = new RelayCommand(TabCloseEvent)); }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether connection is connected.
-        /// </summary>
         public bool ConnectionIsConnected { get; set; }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether connection is good.
-        /// </summary>
         public bool ConnectionIsGood { get; set; }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether connection is moderate.
-        /// </summary>
         public bool ConnectionIsModerate { get; set; }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether connection is perfect.
-        /// </summary>
         public bool ConnectionIsPerfect { get; set; }
 
-        /// <summary>
-        ///     Gets the expand string.
-        /// </summary>
         public string ExpandString
         {
             get
@@ -300,9 +258,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether has new message.
-        /// </summary>
         public bool HasNewMessage
         {
             get { return hasNewChanMessage; }
@@ -316,9 +271,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether has new PrivateMessage.
-        /// </summary>
         public bool HasNewPm
         {
             get { return hasNewPm; }
@@ -332,25 +284,16 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether has p ms.
-        /// </summary>
         public bool HasPms
         {
             get { return ChatModel.CurrentPms.Count > 0; }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether has update.
-        /// </summary>
         public bool HasUpdate
         {
             get { return hasNewChanMessage || hasNewPm; }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether is changing status.
-        /// </summary>
         public bool IsChangingStatus
         {
             get { return isChangingStatus; }
@@ -377,9 +320,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether is expanded.
-        /// </summary>
         public bool IsExpanded
         {
             get { return isExpanded; }
@@ -392,11 +332,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        // this links the Pm and Channel boxes so they act as one
-
-        /// <summary>
-        ///     Gets or sets the p m_ selected.
-        /// </summary>
         public int PmSelected
         {
             get { return selPmIndex; }
@@ -417,9 +352,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether p ms are expanded.
-        /// </summary>
         public bool PmsAreExpanded
         {
             get { return pmsExpanded; }
@@ -431,9 +363,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the save channels command.
-        /// </summary>
         public ICommand SaveChannelsCommand
         {
             get
@@ -456,25 +385,16 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the status types.
-        /// </summary>
         public IDictionary<string, StatusType> StatusTypes
         {
             get { return statusKinds; }
         }
 
-        /// <summary>
-        ///     Gets the toggle bar command.
-        /// </summary>
         public ICommand ToggleBarCommand
         {
             get { return toggle ?? (toggle = new RelayCommand(OnExpanded)); }
         }
 
-        /// <summary>
-        ///     Gets the toggle status window command.
-        /// </summary>
         public ICommand ToggleStatusWindowCommand
         {
             get
@@ -527,9 +447,6 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The initialize.
-        /// </summary>
         public override void Initialize()
         {
             try

@@ -25,6 +25,9 @@ namespace slimCat.Models
 
     #endregion
 
+    /// <summary>
+    ///     Represents an object which can be converted to a view.
+    /// </summary>
     public interface IViewableObject
     {
         Block View { get; }

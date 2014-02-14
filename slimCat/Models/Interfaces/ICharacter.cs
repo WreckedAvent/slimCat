@@ -26,7 +26,7 @@ namespace slimCat.Models
     #endregion
 
     /// <summary>
-    ///     For everything that interacts directly with character data
+    ///     Represents an F-list character.
     /// </summary>
     public interface ICharacter
     {
@@ -38,7 +38,7 @@ namespace slimCat.Models
         BitmapImage Avatar { get; set; }
 
         /// <summary>
-        ///     Gets or sets the gender.
+        ///     Gets or sets the character's gender.
         /// </summary>
         Gender Gender { get; set; }
 
@@ -58,17 +58,17 @@ namespace slimCat.Models
         string Name { get; set; }
 
         /// <summary>
-        ///     Gets or sets the status.
+        ///     Gets or sets the character's status.
         /// </summary>
         StatusType Status { get; set; }
 
         /// <summary>
-        ///     Gets or sets the status message.
+        ///     Gets or sets the character's status message.
         /// </summary>
         string StatusMessage { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether the user is interesting to our user.
+        ///     Gets or sets a value indicating whether the character is interesting to the current user.
         /// </summary>
         bool IsInteresting { get; set; }
 
@@ -83,7 +83,7 @@ namespace slimCat.Models
         #region Public Methods and Operators
 
         /// <summary>
-        ///     The get avatar.
+        ///     Downloads the avatar from the server.
         /// </summary>
         void GetAvatar();
 

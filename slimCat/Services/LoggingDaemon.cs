@@ -53,9 +53,6 @@ namespace slimCat.Services
         LineBreak
     }
 
-    /// <summary>
-    ///     The logging daemon.
-    /// </summary>
     public class LoggingDaemon : ILogger
     {
         #region Fields
@@ -67,13 +64,6 @@ namespace slimCat.Services
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="LoggingDaemon" /> class.
-        ///     Creates a new logging daemon for a given account name
-        /// </summary>
-        /// <param name="characterName">
-        ///     The character Name.
-        /// </param>
         public LoggingDaemon(string characterName)
         {
             currentCharacter = characterName;
@@ -89,18 +79,6 @@ namespace slimCat.Services
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The get logs.
-        /// </summary>
-        /// <param name="title">
-        ///     The title.
-        /// </param>
-        /// <param name="id">
-        ///     The id.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="IEnumerable{T}" />.
-        /// </returns>
         public IEnumerable<string> GetLogs(string title, string id)
         {
             var loggingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
@@ -133,18 +111,6 @@ namespace slimCat.Services
             return toReturn;
         }
 
-        /// <summary>
-        ///     The log message.
-        /// </summary>
-        /// <param name="title">
-        ///     The title.
-        /// </param>
-        /// <param name="id">
-        ///     The id.
-        /// </param>
-        /// <param name="message">
-        ///     The message.
-        /// </param>
         public void LogMessage(string title, string id, IMessage message)
         {
             using (var writer = AccessLog(title, id))
@@ -178,18 +144,6 @@ namespace slimCat.Services
             }
         }
 
-        /// <summary>
-        ///     The open log.
-        /// </summary>
-        /// <param name="isFolder">
-        ///     The is folder.
-        /// </param>
-        /// <param name="title">
-        ///     The title.
-        /// </param>
-        /// <param name="id">
-        ///     The id.
-        /// </param>
         public void OpenLog(bool isFolder = false, string title = null, string id = null)
         {
             if (id == null)
@@ -213,21 +167,6 @@ namespace slimCat.Services
             }
         }
 
-        /// <summary>
-        ///     The log special.
-        /// </summary>
-        /// <param name="title">
-        ///     The title.
-        /// </param>
-        /// <param name="id">
-        ///     The id.
-        /// </param>
-        /// <param name="kind">
-        ///     The kind.
-        /// </param>
-        /// <param name="specialTitle">
-        ///     The special title.
-        /// </param>
         public void LogSpecial(string title, string id, SpecialLogMessageKind kind, string specialTitle)
         {
             using (var writer = AccessLog(title, id))
@@ -289,18 +228,6 @@ namespace slimCat.Services
             return month + "-" + day + "-" + year + ".txt";
         }
 
-        /// <summary>
-        ///     Provides a streamwriter, given certain paramters
-        /// </summary>
-        /// <param name="title">
-        ///     The Title.
-        /// </param>
-        /// <param name="id">
-        ///     The ID.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="StreamWriter" />.
-        /// </returns>
         private StreamWriter AccessLog(string title, string id)
         {
             var loggingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);

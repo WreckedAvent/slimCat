@@ -35,9 +35,6 @@ namespace slimCat.ViewModels
     {
         #region Public Events
 
-        /// <summary>
-        ///     The property changed.
-        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
@@ -50,13 +47,10 @@ namespace slimCat.ViewModels
         }
 
         /// <summary>
-        ///     The verify property name.
+        /// Verifies the name of the property.
         /// </summary>
-        /// <param name="propertyName">
-        ///     The property name.
-        /// </param>
-        /// <exception cref="Exception">
-        /// </exception>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <exception cref="System.Exception">Thrown if the name is not valid for the class.</exception>
         [Conditional("DEBUG")]
         public void VerifyPropertyName(string propertyName)
         {
@@ -72,12 +66,6 @@ namespace slimCat.ViewModels
 
         #region Methods
 
-        /// <summary>
-        ///     The on property changed.
-        /// </summary>
-        /// <param name="propertyName">
-        ///     The property name.
-        /// </param>
         protected void OnPropertyChanged(string propertyName)
         {
             // this.VerifyPropertyName(propertyName);

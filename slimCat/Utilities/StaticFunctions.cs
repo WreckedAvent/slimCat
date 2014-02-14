@@ -43,15 +43,6 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The character is in list.
         /// </summary>
-        /// <param name="collection">
-        ///     The collection.
-        /// </param>
-        /// <param name="toFind">
-        ///     The to find.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         public static bool CharacterIsInList(this ICollection<ICharacter> collection, ICharacter toFind)
         {
             return collection.Any(character => character.Name.Equals(toFind.Name, StringComparison.OrdinalIgnoreCase));
@@ -60,18 +51,6 @@ namespace slimCat.Utilities
         /// <summary>
         ///     Checks if a string contains a term using ordinal string comparison
         /// </summary>
-        /// <param name="fullString">
-        ///     The full String.
-        /// </param>
-        /// <param name="checkterm">
-        ///     The checkterm.
-        /// </param>
-        /// <param name="ignoreCase">
-        ///     The ignore Case.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         public static bool ContainsOrdinal(this string fullString, string checkterm, bool ignoreCase = true)
         {
             var comparer = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;

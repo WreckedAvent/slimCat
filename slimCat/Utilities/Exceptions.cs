@@ -33,7 +33,7 @@ namespace slimCat.Utilities
         #region Constants
 
         /// <summary>
-        ///     The defaul t_ message.
+        ///     The default message.
         /// </summary>
         private const string DefaultMessage = "Uh-oh! Something bad happened."
                                               +
@@ -90,14 +90,8 @@ namespace slimCat.Utilities
         }
 
         /// <summary>
-        ///     The handle exception.
+        ///     Handles an exception by logging it entirely and displaying an error modal.
         /// </summary>
-        /// <param name="sender">
-        ///     The sender.
-        /// </param>
-        /// <param name="e">
-        ///     The e.
-        /// </param>
         public static void HandleException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             var ex = e.Exception;

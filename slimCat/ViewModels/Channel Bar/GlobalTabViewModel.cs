@@ -40,9 +40,6 @@ namespace slimCat.ViewModels
     {
         #region Constants
 
-        /// <summary>
-        ///     The global tab view.
-        /// </summary>
         public const string GlobalTabView = "GlobalTabView";
 
         #endregion
@@ -55,21 +52,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="GlobalTabViewModel" /> class.
-        /// </summary>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="eventagg">
-        ///     The eventagg.
-        /// </param>
         public GlobalTabViewModel(
             IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg,
             ICharacterManager manager)
@@ -107,25 +89,16 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets the gender settings.
-        /// </summary>
         public GenderSettingsModel GenderSettings
         {
             get { return genderSettings; }
         }
 
-        /// <summary>
-        ///     Gets the sort content string.
-        /// </summary>
         public string SortContentString
         {
             get { return "Global"; }
         }
 
-        /// <summary>
-        ///     Gets the sorted users.
-        /// </summary>
         public IEnumerable<ICharacter> SortedUsers
         {
             get

@@ -76,21 +76,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ChannelViewModelBase" /> class.
-        /// </summary>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="events">
-        ///     The events.
-        /// </param>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
         protected ChannelViewModelBase(
             IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
             ICharacterManager manager)
@@ -113,25 +98,16 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets the channel settings.
-        /// </summary>
         public ChannelSettingsModel ChannelSettings
         {
             get { return model.Settings; }
         }
 
-        /// <summary>
-        ///     Gets the clear error command.
-        /// </summary>
         public ICommand ClearErrorCommand
         {
             get { return clear ?? (clear = new RelayCommand(delegate { Error = null; })); }
         }
 
-        /// <summary>
-        ///     Gets the clear log command.
-        /// </summary>
         public ICommand ClearLogCommand
         {
             get
@@ -145,9 +121,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the error.
-        /// </summary>
         public string Error
         {
             get { return error; }
@@ -160,25 +133,16 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether has error.
-        /// </summary>
         public bool HasError
         {
             get { return !string.IsNullOrWhiteSpace(Error); }
         }
 
-        /// <summary>
-        ///     Gets the insert line break command.
-        /// </summary>
         public ICommand InsertLineBreakCommand
         {
             get { return linebreak ?? (linebreak = new RelayCommand(args => Message = Message + '\n')); }
         }
 
-        /// <summary>
-        ///     Message is what the user inputs to send
-        /// </summary>
         public string Message
         {
             get { return message; }
@@ -190,9 +154,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the model.
-        /// </summary>
         public ChannelModel Model
         {
             get { return model; }
@@ -204,9 +165,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the navigate down command.
-        /// </summary>
         public ICommand NavigateDownCommand
         {
             get
@@ -216,33 +174,21 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the navigate up command.
-        /// </summary>
         public ICommand NavigateUpCommand
         {
             get { return navUp ?? (navUp = new RelayCommand(args => RequestNavigateDirectionalEvent(true))); }
         }
 
-        /// <summary>
-        ///     Gets the open log command.
-        /// </summary>
         public ICommand OpenLogCommand
         {
             get { return openLog ?? (openLog = new RelayCommand(OnOpenLogEvent)); }
         }
 
-        /// <summary>
-        ///     Gets the open log folder command.
-        /// </summary>
         public ICommand OpenLogFolderCommand
         {
             get { return openLogFolder ?? (openLogFolder = new RelayCommand(OnOpenLogFolderEvent)); }
         }
 
-        /// <summary>
-        ///     Gets the send message command.
-        /// </summary>
         public ICommand SendMessageCommand
         {
             get { return sendText ?? (sendText = new RelayCommand(param => ParseAndSend())); }
@@ -252,44 +198,20 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The initialize.
-        /// </summary>
         public override void Initialize()
         {
         }
 
-        /// <summary>
-        ///     The on open log event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
         public void OnOpenLogEvent(object args)
         {
             OpenLogEvent(args, false);
         }
 
-        /// <summary>
-        ///     The on open log folder event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
         public void OnOpenLogFolderEvent(object args)
         {
             OpenLogEvent(args, true);
         }
 
-        /// <summary>
-        ///     The open log event.
-        /// </summary>
-        /// <param name="args">
-        ///     The args.
-        /// </param>
-        /// <param name="isFolder">
-        ///     The is folder.
-        /// </param>
         public void OpenLogEvent(object args, bool isFolder)
         {
             var toSend =
@@ -314,38 +236,14 @@ namespace slimCat.ViewModels
             base.Dispose(isManaged);
         }
 
-        /// <summary>
-        ///     When properties change on the model
-        /// </summary>
-        /// <param name="sender">
-        ///     The sender.
-        /// </param>
-        /// <param name="e">
-        ///     The e.
-        /// </param>
         protected virtual void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
         }
 
-        /// <summary>
-        ///     When properties on this class change
-        /// </summary>
-        /// <param name="sender">
-        ///     The sender.
-        /// </param>
-        /// <param name="e">
-        ///     The e.
-        /// </param>
         protected virtual void OnThisPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
         }
 
-        /// <summary>
-        ///     Command sending behavior
-        /// </summary>
-        /// <param name="command">
-        ///     The command.
-        /// </param>
         protected void SendCommand(IDictionary<string, object> command)
         {
             Error = null;
@@ -354,17 +252,9 @@ namespace slimCat.ViewModels
             Events.GetEvent<UserCommandEvent>().Publish(command);
         }
 
-        /// <summary>
-        ///     Message sending behavior
-        /// </summary>
+
         protected abstract void SendMessage();
 
-        /// <summary>
-        ///     Error handling behavior
-        /// </summary>
-        /// <param name="newError">
-        ///     The error.
-        /// </param>
         protected void UpdateError(string newError)
         {
             if (errorRemoveTimer == null) return;

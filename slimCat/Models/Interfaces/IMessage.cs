@@ -26,7 +26,7 @@ namespace slimCat.Models
     #endregion
 
     /// <summary>
-    ///     The Message interface.
+    ///     Represents data for F-chat messages.
     /// </summary>
     public interface IMessage : IDisposable, IViewableObject
     {

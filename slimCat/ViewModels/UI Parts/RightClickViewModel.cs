@@ -43,12 +43,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="RightClickMenuViewModel" /> class.
-        /// </summary>
-        /// <param name="isModerator">
-        ///     The is moderator.
-        /// </param>
         public RightClickMenuViewModel(bool isModerator, ICharacterManager manager)
         {
             this.isModerator = isModerator;
@@ -59,9 +53,6 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets a value indicating whether can ignore.
-        /// </summary>
         public bool CanIgnore
         {
             get
@@ -84,25 +75,16 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether can unignore.
-        /// </summary>
         public bool CanUnignore
         {
             get { return !CanIgnore; }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether has report.
-        /// </summary>
         public bool HasReport
         {
             get { return isModerator && hasReports; }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether has status message.
-        /// </summary>
         public bool HasStatusMessage
         {
             get
@@ -114,9 +96,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether is open.
-        /// </summary>
         public bool IsOpen
         {
             get { return isOpen; }
@@ -128,9 +107,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the mark interested.
-        /// </summary>
         public string MarkInterested
         {
             get
@@ -146,9 +122,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the mark uninterested.
-        /// </summary>
         public string MarkUninterested
         {
             get
@@ -179,14 +152,8 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the target.
-        /// </summary>
         public ICharacter Target { get; private set; }
 
-        /// <summary>
-        ///     Gets the target gender.
-        /// </summary>
         public string TargetGender
         {
             get
@@ -205,9 +172,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the target status.
-        /// </summary>
         public string TargetStatus
         {
             get
@@ -231,15 +195,12 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
+
         /// <summary>
-        ///     The set new target.
+        /// Sets the new target.
         /// </summary>
-        /// <param name="newTarget">
-        ///     The target.
-        /// </param>
-        /// <param name="thisHasReports">
-        ///     The has reports.
-        /// </param>
+        /// <param name="newTarget">The new target.</param>
+        /// <param name="thisHasReports">if set to <c>true</c> the character has reports.</param>
         public void SetNewTarget(ICharacter newTarget, bool thisHasReports)
         {
             Target = newTarget;

@@ -32,7 +32,7 @@ namespace slimCat.Services
     #endregion
 
     /// <summary>
-    ///     The settings daemon.
+    ///     Allows interaction with persistant settings.
     /// </summary>
     public static class SettingsDaemon
     {

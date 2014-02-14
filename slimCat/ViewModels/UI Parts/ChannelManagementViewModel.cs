@@ -59,15 +59,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ChannelManagementViewModel" /> class.
-        /// </summary>
-        /// <param name="eventagg">
-        ///     The eventagg.
-        /// </param>
-        /// <param name="model">
-        ///     The model.
-        /// </param>
         public ChannelManagementViewModel(IEventAggregator eventagg, GeneralChannelModel model)
         {
             this.model = model;
@@ -82,9 +73,6 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether is managing.
-        /// </summary>
         public bool IsManaging
         {
             get { return isOpen; }
@@ -99,9 +87,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the motd.
-        /// </summary>
         public string Description
         {
             get { return description; }
@@ -113,25 +98,16 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the mode types.
-        /// </summary>
         public IEnumerable<string> ModeTypes
         {
             get { return modeTypes; }
         }
 
-        /// <summary>
-        ///     Gets the open channel management command.
-        /// </summary>
         public ICommand OpenChannelManagementCommand
         {
             get { return open ?? (open = new RelayCommand(args => IsManaging = !IsManaging)); }
         }
 
-        /// <summary>
-        ///     Gets the room mode string.
-        /// </summary>
         public string RoomModeString
         {
             get
@@ -143,9 +119,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the room mode type.
-        /// </summary>
         public ChannelMode RoomModeType
         {
             get { return model.Mode; }
@@ -160,9 +133,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the room type string.
-        /// </summary>
         public string RoomTypeString
         {
             get
@@ -174,9 +144,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the toggle room tool tip.
-        /// </summary>
         public string ToggleRoomToolTip
         {
             get
@@ -193,9 +160,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the toggle room type command.
-        /// </summary>
         public ICommand ToggleRoomTypeCommand
         {
             get
@@ -205,9 +169,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the toggle room type string.
-        /// </summary>
         public string ToggleRoomTypeString
         {
             get

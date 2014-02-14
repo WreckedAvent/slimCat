@@ -65,7 +65,7 @@ namespace slimCat.Models
         private bool promoteDemoteNotifyOnlyForInteresting;
 
         private int shouldFlashInterval = 1;
-        private int adNotifyLevel = 0;
+        private int adNotifyLevel;
 
         #endregion
 

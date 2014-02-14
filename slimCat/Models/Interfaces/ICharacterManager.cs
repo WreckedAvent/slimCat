@@ -29,18 +29,36 @@ namespace slimCat.Models
     #endregion
 
     /// <summary>
-    ///     A generic way to manage character online lists of various types, such as bookmarks and moderators
+    ///     Represents several lists for managing and interacting with characters.
     /// </summary>
     public interface ICharacterManager : IDisposable
     {
+        /// <summary>
+        ///     Gets the character dictionary.
+        /// </summary>
         ConcurrentDictionary<string, ICharacter> CharacterDictionary { get; }
 
+        /// <summary>
+        ///     Gets the characters.
+        /// </summary>
         ICollection<ICharacter> Characters { get; }
 
+        /// <summary>
+        ///     Gets the sorted characters. 
+        /// </summary>
+        /// <remarks>
+        ///     Missing a sort implementation.
+        /// </remarks>
         ICollection<ICharacter> SortedCharacters { get; }
 
+        /// <summary>
+        ///     Gets the current character count.
+        /// </summary>
         int CharacterCount { get; }
 
+        /// <summary>
+        /// Finds the character with the specified name.
+        /// </summary>
         ICharacter Find(string name);
 
         /// <summary>

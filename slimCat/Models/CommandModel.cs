@@ -230,14 +230,10 @@ namespace slimCat.Models
         #region Public Methods and Operators
 
         /// <summary>
-        ///     The to dictionary.
+        ///     Converts a command to a dictionary for sending over the wire.
         /// </summary>
         /// <returns>
-        ///     The
-        ///     <see>
-        ///         <cref>IDictionary</cref>
-        ///     </see>
-        ///     .
+        ///     An <see cref="Dictionary{TKey,TValue}"/> which can be serialized to be sent to the server.
         /// </returns>
         public IDictionary<string, object> ToDictionary()
         {

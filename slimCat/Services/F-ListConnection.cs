@@ -55,17 +55,6 @@ namespace slimCat.Services
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ListConnection" /> class.
-        /// </summary>
-        /// <param name="model">
-        ///     The model.
-        /// </param>
-        /// <param name="eventagg">
-        ///     The eventagg.
-        /// </param>
-        /// <param name="browser"></param>
-        /// <param name="ticketProvider"></param>
         public ListConnection(IAccount model, IEventAggregator eventagg, IBrowser browser,
             ITicketProvider ticketProvider)
         {
@@ -95,18 +84,6 @@ namespace slimCat.Services
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The upload log.
-        /// </summary>
-        /// <param name="report">
-        ///     The report.
-        /// </param>
-        /// <param name="log">
-        ///     The log.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="int" />.
-        /// </returns>
         public int UploadLog(ReportModel report, IEnumerable<IMessage> log)
         {
             try
@@ -165,13 +142,7 @@ namespace slimCat.Services
             }
         }
 
-        /// <summary>
-        ///     The get ticket.
-        /// </summary>
-        /// <param name="sendUpdate">
-        ///     The send update.
-        /// </param>
-        public void GetTicket(bool sendUpdate)
+        public void GetTicket(bool _)
         {
             try
             {

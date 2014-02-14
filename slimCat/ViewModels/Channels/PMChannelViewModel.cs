@@ -59,24 +59,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="PmChannelViewModel" /> class.
-        /// </summary>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="events">
-        ///     The events.
-        /// </param>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
         public PmChannelViewModel(
             string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
             ICharacterManager manager)
@@ -150,17 +132,11 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets a value indicating whether can post.
-        /// </summary>
         public bool CanPost
         {
             get { return !isInCoolDown; }
         }
 
-        /// <summary>
-        ///     Gets the conversation with.
-        /// </summary>
         public ICharacter ConversationWith
         {
             get { return CharacterManager.Find(Model.Id); }
@@ -171,25 +147,16 @@ namespace slimCat.ViewModels
             get { return messageManager.Collection; }
         }
 
-        /// <summary>
-        ///     Used for channel settings to display settings related to notify terms
-        /// </summary>
         public bool HasNotifyTerms
         {
             get { return !string.IsNullOrEmpty(ChannelSettings.NotifyTerms); }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether has status.
-        /// </summary>
         public bool HasStatus
         {
             get { return ConversationWith.StatusMessage.Length > 0; }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether is typing.
-        /// </summary>
         public bool IsTyping
         {
             get { return isTyping; }
@@ -201,9 +168,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets a value indicating whether should show post length.
-        /// </summary>
         public bool ShouldShowPostLength
         {
             get { return !string.IsNullOrEmpty(Message) && isTyping; }
@@ -217,9 +181,6 @@ namespace slimCat.ViewModels
             get { return false; }
         }
 
-        /// <summary>
-        ///     Gets the status string.
-        /// </summary>
         public string StatusString
         {
             get
@@ -247,9 +208,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the typing string.
-        /// </summary>
         public string TypingString
         {
             get
@@ -278,12 +236,6 @@ namespace slimCat.ViewModels
 
         #region Methods
 
-        /// <summary>
-        ///     The dispose.
-        /// </summary>
-        /// <param name="isManaged">
-        ///     The is managed.
-        /// </param>
         protected override void Dispose(bool isManaged)
         {
             if (isManaged)
@@ -303,30 +255,12 @@ namespace slimCat.ViewModels
             base.Dispose(isManaged);
         }
 
-        /// <summary>
-        ///     The on model property changed.
-        /// </summary>
-        /// <param name="sender">
-        ///     The sender.
-        /// </param>
-        /// <param name="e">
-        ///     The e.
-        /// </param>
         protected override void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "TypingStatus" || e.PropertyName == "TypingString")
                 OnPropertyChanged("TypingString");
         }
 
-        /// <summary>
-        ///     The on this property changed.
-        /// </summary>
-        /// <param name="sender">
-        ///     The sender.
-        /// </param>
-        /// <param name="e">
-        ///     The e.
-        /// </param>
         protected override void OnThisPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName != "Message")
@@ -345,9 +279,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     The send message.
-        /// </summary>
         protected override void SendMessage()
         {
             if (Message.Length > 50000)
@@ -412,25 +343,13 @@ namespace slimCat.ViewModels
             Events.GetEvent<UserCommandEvent>().Publish(toSend);
         }
 
-        /// <summary>
-        ///     If the update is applicable to our Pm tab
-        /// </summary>
-        /// <param name="param">
-        ///     The param.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         private bool UpdateIsOurCharacter(NotificationModel param)
         {
             var updateModel = param as CharacterUpdateModel;
-            if (updateModel != null)
-            {
-                var args = updateModel.TargetCharacter;
-                return args.Name.Equals(ConversationWith.Name, StringComparison.OrdinalIgnoreCase);
-            }
+            if (updateModel == null) return false;
 
-            return false;
+            var args = updateModel.TargetCharacter;
+            return args.Name.Equals(ConversationWith.Name, StringComparison.OrdinalIgnoreCase);
         }
 
         #endregion

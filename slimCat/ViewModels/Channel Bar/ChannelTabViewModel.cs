@@ -39,9 +39,6 @@ namespace slimCat.ViewModels
     {
         #region Constants
 
-        /// <summary>
-        ///     The channels tab view.
-        /// </summary>
         public const string ChannelsTabView = "ChannelsTabView";
 
         #endregion
@@ -65,21 +62,6 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ChannelsTabViewModel" /> class.
-        /// </summary>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="reggman">
-        ///     The reggman.
-        /// </param>
-        /// <param name="events">
-        ///     The events.
-        /// </param>
         public ChannelsTabViewModel(
             IChatModel cm, IUnityContainer contain, IRegionManager reggman, IEventAggregator events,
             ICharacterManager manager)
@@ -98,9 +80,6 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether show private rooms.
-        /// </summary>
         public bool ShowPrivateRooms
         {
             get { return showPrivate; }
@@ -115,9 +94,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether show public rooms.
-        /// </summary>
         public bool ShowPublicRooms
         {
             get { return showPublic; }
@@ -132,9 +108,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether sort by name.
-        /// </summary>
         public bool SortByName
         {
             get { return sortByName; }
@@ -149,9 +122,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets the sorted channels.
-        /// </summary>
         public IEnumerable<GeneralChannelModel> SortedChannels
         {
             get
@@ -178,9 +148,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        /// <summary>
-        ///     Gets or sets the threshold.
-        /// </summary>
         public int Threshold
         {
             get { return thresh; }
@@ -199,9 +166,6 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The initialize.
-        /// </summary>
         public override void Initialize()
         {
         }
