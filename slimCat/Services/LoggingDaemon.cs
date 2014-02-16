@@ -90,7 +90,7 @@ namespace slimCat.Services
 
             var file =
                 new DirectoryInfo(loggingPath)
-                .GetFiles()
+                .GetFiles("*.txt")
                 .OrderByDescending(x => x.LastWriteTime).FirstOrDefault();
 
             if (file == null) return toReturn;
@@ -161,10 +161,14 @@ namespace slimCat.Services
                     return;
                 }
 
-                if (isFolder) Process.Start(workingPath);
+                if (isFolder)
+                {
+                    Process.Start(workingPath); 
+                    return;
+                }
 
                 var latest = new DirectoryInfo(workingPath)
-                    .GetFiles()
+                    .GetFiles("*.txt")
                     .OrderByDescending(x => x.LastWriteTime)
                     .FirstOrDefault();
 
