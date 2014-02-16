@@ -65,6 +65,7 @@ namespace slimCat.Models
         private bool promoteDemoteNotifyOnlyForInteresting;
 
         private int shouldFlashInterval = 1;
+
         private int adNotifyLevel;
 
         #endregion
@@ -90,7 +91,12 @@ namespace slimCat.Models
         public ChannelSettingsModel(bool isPm = false)
         {
             if (isPm)
+            {
                 MessageNotifyLevel = (int) NotifyLevel.NotificationAndSound;
+                MaxBackLogItems = 200;
+            } 
+            else
+                MaxBackLogItems = 100;
         }
 
         #endregion
@@ -268,6 +274,8 @@ namespace slimCat.Models
                 CallUpdate();
             }
         }
+
+        public int MaxBackLogItems { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether to notify about updates.

@@ -333,9 +333,9 @@ namespace slimCat.ViewModels
 
             set
             {
-                if (IsDisplayingAds && CanDisplayAds)
+                if (IsDisplayingAds && CanDisplayChat)
                     hasNewMessages = value;
-                else if (!IsDisplayingAds && CanDisplayChat)
+                else if (!IsDisplayingAds && CanDisplayAds)
                     hasNewAds = value;
 
                 OnPropertyChanged("OtherTabHasMessages");

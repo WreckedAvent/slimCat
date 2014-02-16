@@ -271,7 +271,7 @@ namespace slimCat.Models
         /// </param>
         public virtual void AddMessage(IMessage message, bool isOfInterest = false)
         {
-            while (messages.Count >= ApplicationSettings.BackLogMax)
+            while (messages.Count >= settings.MaxBackLogItems)
             {
                 messages[0].Dispose();
                 messages[0] = null;
@@ -282,7 +282,7 @@ namespace slimCat.Models
 
             if (isSelected)
                 lastRead = messages.Count;
-            else if (messages.Count == ApplicationSettings.BackLogMax)
+            else if (messages.Count == settings.MaxBackLogItems)
             {
                 UnreadContainsInteresting = UnreadContainsInteresting || isOfInterest;
                 lastRead--;

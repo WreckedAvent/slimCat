@@ -44,7 +44,6 @@ namespace slimCat.Models
             ShowNotificationsGlobal = true;
             AllowLogging = true;
 
-            BackLogMax = 150;
             GlobalNotifyTerms = string.Empty;
             SavedChannels = new List<string>();
             Interested = new List<string>();
@@ -76,11 +75,6 @@ namespace slimCat.Models
         ///     Gets or sets a value indiciating whether to allow user-inputted colors to be displayed.
         /// </summary>
         public static bool AllowColors { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the back log max.
-        /// </summary>
-        public static int BackLogMax { get; set; }
 
         /// <summary>
         ///     Gets or sets the global notify terms.

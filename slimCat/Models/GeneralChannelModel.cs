@@ -247,7 +247,7 @@ namespace slimCat.Models
         {
             var messageCollection = message.Type == MessageType.Ad ? Ads : Messages;
 
-            while (messageCollection.Count >= ApplicationSettings.BackLogMax)
+            while (messageCollection.Count >= Settings.MaxBackLogItems)
             {
                 messageCollection[0].Dispose();
                 messageCollection.RemoveAt(0);
@@ -262,7 +262,7 @@ namespace slimCat.Models
                 else
                     LastReadAdCount = messageCollection.Count;
             }
-            else if (messageCollection.Count >= ApplicationSettings.BackLogMax)
+            else if (messageCollection.Count >= Settings.MaxBackLogItems)
             {
                 if (message.Type == MessageType.Normal)
                     LastReadCount--;

@@ -53,6 +53,7 @@ namespace slimCat.ViewModels
         private readonly StringBuilder connectDotDot;
 
         private readonly CacheCount minuteOnlineCount;
+
         private readonly Timer updateTimer = new Timer(1000); // every second
 
         private StringBuilder flavorText;
@@ -200,19 +201,6 @@ namespace slimCat.ViewModels
             {
                 if (value >= 8 && value <= 20)
                     ApplicationSettings.FontSize = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
-            }
-        }
-
-        public int BackLogMax
-        {
-            get { return ApplicationSettings.BackLogMax; }
-
-            set
-            {
-                if (value < 25000 || value > 10)
-                    ApplicationSettings.BackLogMax = value;
-
                 SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
             }
         }

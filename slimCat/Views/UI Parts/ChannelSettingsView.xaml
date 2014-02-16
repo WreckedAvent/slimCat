@@ -34,10 +34,27 @@
 
             <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
                         Margin="10">
-                <CheckBox IsChecked="{Binding Path=ChannelSettings.LoggingEnabled}">Allow logging</CheckBox>
+                <CheckBox IsChecked="{Binding Path=ChannelSettings.LoggingEnabled}">Allow Logging</CheckBox>
                 <CheckBox IsChecked="{Binding Path=ChannelSettings.AlertAboutUpdates}"
                           Visibility="{Binding ShowAllSettings, Converter={StaticResource BoolConverter}}">Allow Updates</CheckBox>
-               
+
+                <StackPanel Margin="0,15,0,0">
+                    <WrapPanel>
+                        <TextBlock Text="Max Backlog Items: " />
+                        <TextBlock Text="{Binding Path=ChannelSettings.MaxBackLogItems}"/>
+                    </WrapPanel>
+                    <Slider Value="{Binding Path=ChannelSettings.MaxBackLogItems}"
+                                    LargeChange="25"
+                                    SmallChange="10"
+                                    Minimum="50"
+                                    Maximum="250"
+                                    Width="300"
+                                    TickFrequency="25"
+                                    TickPlacement="BottomRight"
+                                    HorizontalAlignment="Left"
+                                    Margin="5,0,0,0" />
+                </StackPanel>
+
                 <StackPanel Visibility="{Binding Path=CanDisplayChat, Converter={StaticResource BoolConverter}}">
                     <TextBlock Text="New Messages"
                                Margin="0,15,0,0" />
@@ -138,8 +155,10 @@
                 <TextBox
                     Text="{Binding Path=ChannelSettings.NotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     TextWrapping="Wrap"
-                    MaxWidth="500"
-                    FontSize="12" />
+                    MaxWidth="300"
+                    FontSize="12"
+                    AcceptsReturn="True"
+                    MaxLines="4" />
 
                 <StackPanel
                     Visibility="{Binding Path=HasNotifyTerms, Mode=OneWay, Converter={StaticResource BoolConverter}}"
