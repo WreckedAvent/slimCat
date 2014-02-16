@@ -194,7 +194,9 @@ namespace slimCat.Utilities
 
         protected override bool MeetsFilter(IMessage item)
         {
-            return IsFiltering ? ActiveFilter(item) : constantFilter(item);
+            if (item == null) return false;
+
+            return IsFiltering ? ActiveFilter(item) : constantFilter != null && constantFilter(item);
         }
     }
 }
