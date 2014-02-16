@@ -29,6 +29,7 @@ namespace slimCatTest
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using slimCat.Models;
+    using slimCat.Services;
     using slimCat.Utilities;
 
     #endregion
@@ -43,8 +44,9 @@ namespace slimCatTest
             var manager = Mock.Of<ICharacterManager>();
             var chatModel = Mock.Of<IChatModel>();
             var locator = Mock.Of<IThemeLocator>();
+            var permissions = Mock.Of<IPermissionService>();
 
-            converter = new BbFlowConverter(chatModel, manager, locator);
+            converter = new BbFlowConverter(chatModel, manager, locator, permissions);
         }
 
         [TestClass]
