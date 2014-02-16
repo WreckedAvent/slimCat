@@ -82,30 +82,33 @@ namespace slimCat.Services
         public IEnumerable<string> GetLogs(string title, string id)
         {
             var loggingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
-            IEnumerable<string> toReturn = new List<string>();
-            var fileName = DateToFileName();
+            var toReturn = new List<string>();
 
             if (!Directory.Exists(loggingPath))
                 return new List<string>();
 
-            var toGet = Path.Combine(loggingPath, fileName);
 
-            if (File.Exists(toGet))
+            var file =
+                new DirectoryInfo(loggingPath)
+                .GetFiles()
+                .OrderByDescending(x => x.LastWriteTime).FirstOrDefault();
+
+            if (file == null) return toReturn;
+
+            try
             {
-                try
-                {
-                    var lines = File.ReadLines(Path.Combine(loggingPath, fileName));
-                    var enumerable = lines as IList<string> ?? lines.ToList();
+                var lines = File.ReadLines(file.FullName);
+                var enumerable = lines as IList<string> ?? lines.ToList();
 
-                    var toSkip = Math.Max(enumerable.Count() - 10, 0);
+                var toSkip = Math.Max(enumerable.Count() - 10, 0);
 
-                    toReturn = enumerable.Skip(toSkip).ToList();
-                }
-                catch
-                {
-                    // file operations run the risk of exceptions
-                    return new List<string>();
-                }
+                toReturn = enumerable.Skip(toSkip).ToList();
+                toReturn.Insert(0, "[b]Log from {0}[/b]".FormatWith(file.LastWriteTime.ToShortDateString()));
+            }
+            catch
+            {
+                // file operations run the risk of exceptions
+                return new List<string>();
             }
 
             return toReturn;
