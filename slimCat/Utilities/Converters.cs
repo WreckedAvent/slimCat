@@ -1058,10 +1058,10 @@ namespace slimCat.Utilities
 
         protected SolidColorBrush GetBrush(ICharacter character)
         {
-            if (Permissions.IsModerator(character.Name))
+            if (Permissions != null && Permissions.IsModerator(character.Name))
                 return (SolidColorBrush) Application.Current.FindResource("ModeratorBrush");
 
-            if (manager.IsOnList(character.Name, ListKind.NotInterested))
+            if (manager != null && manager.IsOnList(character.Name, ListKind.NotInterested))
                 return (SolidColorBrush) Application.Current.FindResource("NotAvailableBrush");
 
             if (character.Status == StatusType.Crown 
@@ -1074,10 +1074,10 @@ namespace slimCat.Utilities
 
         protected Color GetColor(ICharacter character)
         {
-            if (Permissions.IsModerator(character.Name))
+            if (Permissions != null && Permissions.IsModerator(character.Name))
                 return (Color) Application.Current.FindResource("ModeratorColor");
 
-            if (manager.IsOnList(character.Name, ListKind.NotInterested))
+            if (manager != null && manager.IsOnList(character.Name, ListKind.NotInterested))
                 return (Color) Application.Current.FindResource("NotAvailableColor");
 
             if (character.Status == StatusType.Crown 
@@ -1128,6 +1128,11 @@ namespace slimCat.Utilities
         public GenderColorConverter(IPermissionService permissions, ICharacterManager manager)
             :base(permissions, manager)
         { 
+        }
+
+        public GenderColorConverter()
+            :base(null, null)
+        {
         }
 
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -1303,6 +1308,11 @@ namespace slimCat.Utilities
     {
         public NameplateColorConverter(IPermissionService permissions, ICharacterManager manager)
             :base(permissions, manager)
+        {
+        }
+
+        public NameplateColorConverter()
+            :base(null, null)
         {
         }
 
