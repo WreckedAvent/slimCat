@@ -78,7 +78,9 @@ namespace slimCat.Utilities
                 Application.Current.Resources.Add("BbPostConverter", Container.Resolve<BbCodePostConverter>());
                 Application.Current.Resources.Add("GenderColorConverter", Container.Resolve<GenderColorConverter>());
                 Application.Current.Resources.Add("NameplateColorConverter",
-                    Container.Resolve<NameplateColorConverter>());
+                    Container.Resolve<NameplateColorConverter>()); 
+                Application.Current.Resources.Add("NameplateMessageColorConverter",
+                     Container.Resolve<NameplateMessageColorConverter>());
             }
             catch (Exception ex)
             {
