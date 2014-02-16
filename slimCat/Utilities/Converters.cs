@@ -1307,12 +1307,12 @@ namespace slimCat.Utilities
     public sealed class NameplateColorConverter : GenderColorConverterBase
     {
         public NameplateColorConverter(IPermissionService permissions, ICharacterManager manager)
-            :base(permissions, manager)
+            : base(permissions, manager)
         {
         }
 
         public NameplateColorConverter()
-            :base(null, null)
+            : base(null, null)
         {
         }
 
@@ -1321,12 +1321,60 @@ namespace slimCat.Utilities
             if (!(value is ICharacter))
                 return Application.Current.FindResource("ForegroundBrush");
 
-            var character = (ICharacter) value;
+            var character = (ICharacter)value;
             var interesting = character.IsInteresting;
 
-            return interesting 
-                ? TryGet("Contrast", true) 
+            return interesting
+                ? TryGet("Contrast", true)
                 : GetBrush(character);
+        }
+    }    
+    
+    /// <summary>
+    ///     Converts a character's interested level to a nameplate color for a message. Accounts for message being of interest.
+    /// </summary>
+    public sealed class NameplateMessageColorConverter : GenderColorConverterBase
+    {
+        public NameplateMessageColorConverter(IPermissionService permissions, ICharacterManager manager)
+            : base(permissions, manager)
+        {
+        }
+
+        public NameplateMessageColorConverter()
+            : base(null, null)
+        {
+        }
+
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is IMessage))
+                return Application.Current.FindResource("ForegroundBrush");
+
+            var message = (IMessage)value;
+            var interesting = message.Poster.IsInteresting;
+
+            if (message.IsOfInterest)
+                return TryGet("Background", true);
+
+            return interesting
+                ? TryGet("Contrast", true)
+                : GetBrush(message.Poster);
+        }
+    }
+
+    /// <summary>
+    ///     Converts a message's of interest / not state to an appropriate foreground
+    /// </summary>
+    public sealed class MessageInterestedColorConverter : OneWayConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is IMessage))
+                return Application.Current.FindResource("BackgroundBrush");
+
+            var message = (IMessage) value;
+
+            return Application.Current.FindResource(message.IsOfInterest ? "ForegroundBrush" : "BackgroundBrush");
         }
     }
 

@@ -62,6 +62,11 @@ namespace slimCat.Models
         /// </summary>
         bool IsHistoryMessage { get; }
 
+        /// <summary>
+        ///     Gets or sets a value indicating whether this message is of interest to our user.
+        /// </summary>
+        bool IsOfInterest { get; set; }
+
         #endregion
     }
 }

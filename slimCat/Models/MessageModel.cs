@@ -33,18 +33,6 @@ namespace slimCat.Models
     {
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="MessageModel" /> class.
-        /// </summary>
-        /// <param name="poster">
-        ///     The character which posted the message
-        /// </param>
-        /// <param name="message">
-        ///     The message posted
-        /// </param>
-        /// <param name="type">
-        ///     The type of message posted
-        /// </param>
         public MessageModel(ICharacter poster, string message, MessageType type = MessageType.Normal)
         {
             Poster = poster;
@@ -52,12 +40,7 @@ namespace slimCat.Models
             Type = type;
         }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="MessageModel" /> class.
-        /// </summary>
-        /// <param name="message">
-        ///     The message posted at a previous date
-        /// </param>
+
         public MessageModel(string message)
         {
             Poster = new CharacterModel {Name = string.Empty};
@@ -73,27 +56,16 @@ namespace slimCat.Models
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets the message.
-        /// </summary>
         public string Message { get; private set; }
 
-        /// <summary>
-        ///     Gets the poster.
-        /// </summary>
         public ICharacter Poster { get; private set; }
 
-        /// <summary>
-        ///     Gets the type.
-        /// </summary>
         public MessageType Type { get; private set; }
-
 
         public bool IsHistoryMessage { get; private set; }
 
-        /// <summary>
-        ///     Gets the view associated with messages.
-        /// </summary>
+        public bool IsOfInterest { get; set; }
+
         public Block View
         {
             get

@@ -29,7 +29,8 @@
     <Hyperlink CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}"
                Command="{Binding Path=DataContext.NavigateTo, RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
                Style="{StaticResource UsernameStyle}"
-               Foreground="{Binding Path=Poster, Converter={StaticResource NameplateColorConverter}, Mode=OneWay}">
+               Background="{Binding Converter={StaticResource MessageInterestedColorConverter}, Mode=OneWay}"
+               Foreground="{Binding Converter={StaticResource NameplateMessageColorConverter}, Mode=OneWay}">
         <Run Text="{Binding Path=Poster.Name, Mode=OneTime}" />
         <Hyperlink.InputBindings>
             <MouseBinding MouseAction="RightClick"

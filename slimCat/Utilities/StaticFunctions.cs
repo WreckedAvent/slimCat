@@ -109,6 +109,9 @@ namespace slimCat.Utilities
                 }
             }
 
+            if (checkAgainst.Length == fullString.Length && checkAgainst == fullString)
+                return new Tuple<string, string>(checkAgainst, checkAgainst);
+
             return hasMatch
                 ? new Tuple<string, string>(checkAgainst, GetStringContext(fullString, checkAgainst))
                 : new Tuple<string, string>(string.Empty, string.Empty);

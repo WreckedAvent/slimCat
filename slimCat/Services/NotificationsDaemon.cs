@@ -219,6 +219,8 @@ namespace slimCat.Services
 
             if (message == null || channel == null) return;
 
+            var isFocusedAndSelected = (channel.IsSelected && WindowIsFocused);
+
             var cleanMessageText = HttpUtility.HtmlDecode(message.Message);
 
             var temp = new List<string>(channel.Settings.EnumerableTerms);
@@ -227,9 +229,6 @@ namespace slimCat.Services
             var checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase);
 
             // if any of these conditions hold true we have no reason to evaluate further
-            if (channel.IsSelected && WindowIsFocused)
-                return;
-
             if (manager.IsOnList(message.Poster.Name, ListKind.NotInterested))
                 return;
 
@@ -238,7 +237,7 @@ namespace slimCat.Services
                 : channel.Settings.MessageNotifyLevel;
 
             // now we check to see if we should notify because of settings
-            if (notifyLevel > (int) ChannelSettingsModel.NotifyLevel.NotificationOnly)
+            if (notifyLevel > (int) ChannelSettingsModel.NotifyLevel.NotificationOnly && !isFocusedAndSelected)
             {
                 var shouldDing = notifyLevel > (int) ChannelSettingsModel.NotifyLevel.NotificationAndToast;
 
@@ -249,9 +248,6 @@ namespace slimCat.Services
                     return; // and if we do, there is no need to evalutae further
                 }
             }
-
-            if (!channel.Settings.EnumerableTerms.Any() && !ApplicationSettings.GlobalNotifyTermsList.Any())
-                return; // if we don't have anything to check for, no need to evaluate further
 
             #region Ding Word evaluation
 
@@ -269,11 +265,16 @@ namespace slimCat.Services
 
                 if (match != null)
                 {
-                    var notifyMessage = string.Format(
-                        "{0}'s name matches {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
+                    if (!isFocusedAndSelected)
+                    {
+                        var notifyMessage = string.Format(
+                            "{0}'s name matches {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
 
-                    NotifyUser(true, true, notifyMessage, channel.Id);
-                    channel.FlashTab();
+                        NotifyUser(true, true, notifyMessage, channel.Id);
+                        channel.FlashTab();
+                    }
+
+                    message.IsOfInterest = true;
                     return;
                 }
             }
@@ -298,12 +299,16 @@ namespace slimCat.Services
 
                 if (match == null) return;
 
-                // if one of our words is a dingling word
-                var notifyMessage = string.Format(
-                    "{0} mentioned {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
+                if (!isFocusedAndSelected)
+                {
+                    // if one of our words is a dingling word
+                    var notifyMessage = string.Format(
+                        "{0} mentioned {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
 
-                NotifyUser(true, true, notifyMessage, channel.Id);
-                channel.FlashTab();
+                    NotifyUser(true, true, notifyMessage, channel.Id);
+                    channel.FlashTab();
+                }
+                message.IsOfInterest = true;
             }
 
             #endregion

@@ -14,10 +14,12 @@
     <utilities:GenderImageConverter x:Key="GenderImageConverter" />
     <utilities:ChannelTypeToImageConverter x:Key="ChannelTypeToImageConverter" />
     <utilities:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter" />
+    <utilities:MessageInterestedColorConverter x:Key="MessageInterestedColorConverter"/>
     
     <!-- These will be replaced with their instance values by the container -->
     <utilities:GenderColorConverter x:Key="GenderColorConverter" />
     <utilities:NameplateColorConverter x:Key="NameplateColorConverter"/>
+    <utilities:NameplateMessageColorConverter x:Key="NameplateMessageColorConverter"/>
     <utilities:BbFlowConverter x:Key="BbFlowConverter" />
     <utilities:BbCodePostConverter x:Key="BbPostConverter"/>
     <utilities:BbCodeConverter x:Key="BbCodeConverter"/>
