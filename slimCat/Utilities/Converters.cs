@@ -926,7 +926,6 @@ namespace slimCat.Utilities
                 // if the post is a /me "command"
                 text = text.Substring("/me".Length);
                 inlines.Add(new Italic(Parse(text)));
-                inlines.Add(new Run("*"));
             }
             else if (text.StartsWith("/post"))
             {
@@ -944,15 +943,13 @@ namespace slimCat.Utilities
                 text = text.Substring("/warn ".Length);
                 inlines.Add(new Run(" warns, ")
                     {
-                        FontWeight = FontWeights.Bold,
-                        Background = Locator.Find<Brush>("ForegroundBrush"),
-                        Foreground = Locator.Find<Brush>("BackgroundBrush")
+                        FontWeight = FontWeights.Medium,
+                        Foreground = Locator.Find<Brush>("ModeratorBrush")
                     });
 
                 var toAdd = Parse(text);
-                toAdd.Background = Locator.Find<Brush>("ForegroundBrush");
-                toAdd.Foreground = Locator.Find<Brush>("BackgroundBrush");
-                toAdd.FontWeight = FontWeights.Bold;
+                toAdd.Foreground = Locator.Find<Brush>("ModeratorBrush");
+                toAdd.FontWeight = FontWeights.Medium;
 
                 inlines.Add(toAdd);
             }
