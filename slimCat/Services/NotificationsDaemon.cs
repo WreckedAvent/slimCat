@@ -230,7 +230,7 @@ namespace slimCat.Services
             if (channel.IsSelected && WindowIsFocused)
                 return;
 
-            if (ApplicationSettings.NotInterested.Contains(message.Poster.Name))
+            if (manager.IsOnList(message.Poster.Name, ListKind.NotInterested))
                 return;
 
             var notifyLevel = message.Type == MessageType.Ad
