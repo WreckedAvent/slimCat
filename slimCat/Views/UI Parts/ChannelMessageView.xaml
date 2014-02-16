@@ -9,37 +9,49 @@
            Padding="0"
            Foreground="{StaticResource ForegroundBrush}"
            FontFamily="Segoe UI, Verdanda"
+           IsHyphenationEnabled="True"
            FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
            d:DataContext="{models:IMessage}">
+    <Span Background="{Binding Converter={StaticResource MessageInterestedColorConverter}, Mode=OneWay}">
+        <Run Text="{Binding TimeStamp, Mode=OneTime}"
+             FontSize="12"
+             Foreground="{Binding Converter={StaticResource NameplateMessageColorConverter}, Mode=OneWay}"/>
+
+        <InlineUIContainer BaselineAlignment="Bottom">
+            <Rectangle Height="15" Width="15" Margin="0"
+                       Fill="{Binding Path=Poster, Converter={StaticResource GenderColorConverter}, Mode=OneWay}">
+                <Rectangle.OpacityMask>
+                    <ImageBrush
+                        ImageSource="{Binding Path=Poster.Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
+                </Rectangle.OpacityMask>
+            </Rectangle>
+        </InlineUIContainer>
+
+        <Hyperlink CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}"
+                   Command="{Binding Path=DataContext.NavigateTo, RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
+                   Style="{StaticResource UsernameStyle}"
+                   Foreground="{Binding Converter={StaticResource NameplateMessageColorConverter}, Mode=OneWay}">
+            <Run Text="{Binding Path=Poster.Name, Mode=OneTime}" />
+            <Hyperlink.InputBindings>
+                <MouseBinding MouseAction="RightClick"
+                              Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
+                                        RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
+                              CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}" />
+            </Hyperlink.InputBindings>
+        </Hyperlink>
+    </Span>
     
-    <Run Text="{Binding TimeStamp, Mode=OneTime}"
-         FontSize="12"
-         Foreground="{Binding Path=Poster, Converter={StaticResource NameplateColorConverter}, Mode=OneWay}"/>
-
-    <InlineUIContainer BaselineAlignment="Bottom">
-        <Rectangle Height="15" Width="15" Margin="0"
-                   Fill="{Binding Path=Poster, Converter={StaticResource GenderColorConverter}, Mode=OneWay}">
-            <Rectangle.OpacityMask>
-                <ImageBrush
-                    ImageSource="{Binding Path=Poster.Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
-            </Rectangle.OpacityMask>
-        </Rectangle>
-    </InlineUIContainer>
-
-    <Hyperlink CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}"
-               Command="{Binding Path=DataContext.NavigateTo, RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
-               Style="{StaticResource UsernameStyle}"
-               Background="{Binding Converter={StaticResource MessageInterestedColorConverter}, Mode=OneWay}"
-               Foreground="{Binding Converter={StaticResource NameplateMessageColorConverter}, Mode=OneWay}">
-        <Run Text="{Binding Path=Poster.Name, Mode=OneTime}" />
-        <Hyperlink.InputBindings>
-            <MouseBinding MouseAction="RightClick"
-                          Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
-                                    RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
-                          CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}" />
-        </Hyperlink.InputBindings>
-    </Hyperlink>
-
-    <Span
+    <Span 
         lib:SpanHelper.InlineSource="{Binding Mode=OneTime, Converter={StaticResource BbFlowConverter}, IsAsync=True}" />
+    
+    <LineBreak/>
+    
+    <Line Stroke="{Binding Converter={StaticResource DelimiterColorConverter}}" 
+          HorizontalAlignment="Left" 
+          X1="0" 
+          X2="1"
+          Height="1"
+          Stretch="Fill"
+          MaxWidth="2000"
+          Margin="0,1,0,0"/>
 </Paragraph>

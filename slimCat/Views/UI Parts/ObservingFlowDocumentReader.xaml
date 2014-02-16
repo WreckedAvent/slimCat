@@ -3,13 +3,12 @@
     x:Class="slimCat.Views.ObservingFlowDocumentReader"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    HorizontalAlignment="Stretch"
-    UseLayoutRounding="True"
+    HorizontalAlignment="Left"
+    UseLayoutRounding="False"
     Foreground="{StaticResource HighlightBrush}"
     Background="Transparent"
     VerticalScrollBarVisibility="Auto">
     <FlowDocument PagePadding="2,5"
-                  IsOptimalParagraphEnabled="True"
                   IsHyphenationEnabled="True"
                   Loaded="OnLoad"
                   x:Name="Messages" />

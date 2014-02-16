@@ -1374,7 +1374,26 @@ namespace slimCat.Utilities
 
             var message = (IMessage) value;
 
-            return Application.Current.FindResource(message.IsOfInterest ? "ForegroundBrush" : "BackgroundBrush");
+            return Application.Current.FindResource(message.IsOfInterest ? "HighlightBrush" : "BackgroundBrush");
+        }
+    }
+
+    public sealed class MessageDelimiterColorConverter : OneWayConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is IMessage))
+                return new SolidColorBrush(Colors.Transparent);
+
+            var message = (IMessage)value;
+
+            if (message.IsOfInterest)
+                return Application.Current.FindResource("HighlightBrush");
+
+            if (message.Type != MessageType.Normal)
+                return Application.Current.FindResource("BrightBackgroundBrush");
+
+            return new SolidColorBrush(Colors.Transparent);
         }
     }
 
