@@ -161,12 +161,14 @@ namespace slimCat.Services
                     return;
                 }
 
-                var latest = DateToFileName();
+                if (isFolder) Process.Start(workingPath);
 
-                if (!isFolder && File.Exists(Path.Combine(workingPath, latest)))
-                    Process.Start(Path.Combine(workingPath, latest));
-                else
-                    Process.Start(workingPath);
+                var latest = new DirectoryInfo(workingPath)
+                    .GetFiles()
+                    .OrderByDescending(x => x.LastWriteTime)
+                    .FirstOrDefault();
+
+                Process.Start(latest != null ? latest.FullName : workingPath);
             }
         }
 
