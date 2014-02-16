@@ -955,7 +955,7 @@ namespace slimCat.Utilities
             }
             else
             {
-                var isSelf = message != null && ChatModel.CurrentCharacter.NameEquals(message.Poster.Name);
+                var isSelf = message != null && ChatModel != null  && ChatModel.CurrentCharacter.NameEquals(message.Poster.Name);
 
                 inlines.Add(new Run(": "));
 

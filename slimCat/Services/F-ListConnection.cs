@@ -38,7 +38,7 @@ namespace slimCat.Services
     ///     F-list connection is used to authenticate the user's details and then get the API ticket.
     ///     Responds to LoginEvent, fires off LoginCompleteEvent
     /// </summary>
-    internal class ListConnection : IListConnection
+    internal class FlistService : IListConnection
     {
         private readonly IBrowser browser;
         private readonly ITicketProvider ticketProvider;
@@ -55,7 +55,7 @@ namespace slimCat.Services
 
         #region Constructors and Destructors
 
-        public ListConnection(IAccount model, IEventAggregator eventagg, IBrowser browser,
+        public FlistService(IAccount model, IEventAggregator eventagg, IBrowser browser,
             ITicketProvider ticketProvider)
         {
             this.browser = browser;

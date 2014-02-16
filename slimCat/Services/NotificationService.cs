@@ -47,7 +47,7 @@ namespace slimCat.Services
     ///     notifications class.
     ///     It responds to NewMessageEvent, NewPmEvent, NewUpdateEvent
     /// </summary>
-    public class NotificationsDaemon : DispatcherObject, IDisposable
+    public class NotificationService : DispatcherObject, IDisposable
     {
         #region Fields
 
@@ -69,7 +69,7 @@ namespace slimCat.Services
         #region Constructors and Destructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="NotificationsDaemon" /> class.
+        ///     Initializes a new instance of the <see cref="NotificationService" /> class.
         /// </summary>
         /// <param name="eventagg">
         ///     The eventagg.
@@ -78,7 +78,7 @@ namespace slimCat.Services
         ///     The cm.
         /// </param>
         /// <param name="manager"></param>
-        public NotificationsDaemon(IEventAggregator eventagg, IChatModel cm, ICharacterManager manager)
+        public NotificationService(IEventAggregator eventagg, IChatModel cm, ICharacterManager manager)
         {
             events = eventagg;
             this.cm = cm;
@@ -331,9 +331,7 @@ namespace slimCat.Services
             {
                 var respondWith = "[b]Auto Reply[/b]: {0}".FormatWith(cm.AutoReplyMessage);
 
-                events.GetEvent<UserCommandEvent>().Publish(
-                    CommandDefinitions.CreateCommand(
-                        CommandDefinitions.ClientSendPm, new[] {respondWith, channel.Id}).ToDictionary());
+                events.SendUserCommand(CommandDefinitions.ClientSendPm, new[] {respondWith, channel.Id});
 
                 channel.HasAutoRepliedTo = true;
             }

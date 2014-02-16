@@ -382,57 +382,29 @@ namespace slimCat.Models
         private static readonly IDictionary<string, string> CommandAliases =
             new Dictionary<string, string>
                 {
+                    // user commands
                     {"pm", "priv"},
                     {"tell", "priv"},
                     {"msg", "priv"},
-                    {
-                        // user commands
-                        "online",
-                        "status"
-                    },
+                    { "online", "status"},
                     {"away", "status"},
                     {"busy", "status"},
-                    {
-                        "looking",
-                        "status"
-                    },
+                    {"looking", "status"},
                     {"dnd", "status"},
-                    {
-                        // channel mod
-                        "cop", "promote"
-                    },
-                    {
-                        "cdeop", "demote"
-                    },
-                    {
-                        // admin - global mod
-                        "op",
-                        "chatpromote"
-                    },
-                    {
-                        "deop",
-                        "chatdemote"
-                    },
-                    {
-                        "gkick",
-                        "chatkick"
-                    },
-                    {
-                        "createchannel",
-                        "makechannel"
-                    },
-                    {
-                        "accountban",
-                        "chatban"
-                    },
-                    {
-                        "hr",
-                        "handlereport"
-                    },
-                    {
-                        "r",
-                        "handlelatest"
-                    },
+                    {"idle", "status"},
+
+                    // channel mod
+                    { "cop", "promote" },
+                    { "cdeop", "demote" },
+
+                    // admin - global mod
+                    { "op", "chatpromote" },
+                    { "deop", "chatdemote" },
+                    { "gkick", "chatkick"  },
+                    { "createchannel", "makechannel" },
+                    { "accountban", "chatban" },
+                    { "hr", "handlereport" },
+                    { "r", "handlelatest" },
                 };
 
         /// <summary>
@@ -441,9 +413,8 @@ namespace slimCat.Models
         private static readonly IDictionary<string, CommandOverride> CommandOverrides = new Dictionary
             <string, CommandOverride>
             {
+                 // commmand to override, command parameter to override, value to override with
                 {
-                    // format ->
-                    // commmand to override, command parameter to override, value to override with
                     "online", new CommandOverride(A.Status, "online")
                 },
                 {
@@ -457,6 +428,9 @@ namespace slimCat.Models
                 },
                 {
                     "dnd", new CommandOverride(A.Status, "dnd")
+                },
+                {
+                    "idle", new CommandOverride(A.Status, "idle")
                 },
                 {
                     "ignore", new CommandOverride(A.Action, A.ActionAdd)
@@ -497,11 +471,6 @@ namespace slimCat.Models
         /// <param name="channel">
         ///     The channel, if applicable.
         /// </param>
-        /// <returns>
-        ///     The <see cref="CommandDataModel" />.
-        /// </returns>
-        /// <exception cref="ArgumentException">
-        /// </exception>
         public static CommandDataModel CreateCommand(
             string familiarName, IList<string> args = null, string channel = null)
         {
@@ -517,8 +486,9 @@ namespace slimCat.Models
                 var overrideArg = overide.ArgumentName;
                 var position = model.ArgumentNames.IndexOf(overrideArg);
 
-                if (args == null)
-                    args = new List<string>();
+                args = args == null 
+                    ? new List<string>() 
+                    : new List<string>(args);
 
                 if (position != -1 && !(position > args.Count))
                     args.Insert(position, overide.ArgumentValue);
@@ -573,11 +543,6 @@ namespace slimCat.Models
         /// <param name="familiarName">
         ///     The familiar name.
         /// </param>
-        /// <returns>
-        ///     The <see cref="CommandModel" />.
-        /// </returns>
-        /// <exception cref="ArgumentException">
-        /// </exception>
         public static CommandModel GetCommandModelFromName(string familiarName)
         {
             if (!IsValidCommand(familiarName))
@@ -595,9 +560,6 @@ namespace slimCat.Models
         /// <param name="familiarName">
         ///     The familiar name.
         /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         public static bool IsValidCommand(string familiarName)
         {
             return CommandAliases.ContainsKey(familiarName) || Commands.ContainsKey(familiarName);
@@ -609,9 +571,6 @@ namespace slimCat.Models
         /// <param name="familiarName">
         ///     The familiar name.
         /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         private static bool HasCommandOverride(string familiarName)
         {
             return CommandOverrides.ContainsKey(familiarName);

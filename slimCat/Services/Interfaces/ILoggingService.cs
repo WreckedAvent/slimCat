@@ -17,8 +17,6 @@
 
 #endregion
 
-
-// TODO: This needs to become a singleton resolved by the container
 namespace slimCat.Services
 {
     #region Usings
@@ -31,7 +29,7 @@ namespace slimCat.Services
     /// <summary>
     ///     Represents a logging mechanism.
     /// </summary>
-    public interface ILogger
+    public interface ILoggingService
     {
         #region Public Methods and Operators
 
@@ -44,9 +42,6 @@ namespace slimCat.Services
         /// <param name="id">
         ///     The ID.
         /// </param>
-        /// <returns>
-        ///     The <see cref="IEnumerable{T}" />.
-        /// </returns>
         IEnumerable<string> GetLogs(string title, string id);
 
         /// <summary>

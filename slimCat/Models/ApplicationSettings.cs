@@ -40,9 +40,10 @@ namespace slimCat.Models
         /// </summary>
         static ApplicationSettings()
         {
-            Volume = 1; // 0.5 sometimes crashes people for some reason beyond me
+            Volume = 1;
             ShowNotificationsGlobal = true;
             AllowLogging = true;
+            AllowAdDedup = true;
 
             GlobalNotifyTerms = string.Empty;
             SavedChannels = new List<string>();
@@ -60,7 +61,15 @@ namespace slimCat.Models
 
             SpellCheckEnabled = true;
             FriendsAreAccountWide = true;
+
+            AutoAwayTime = 60;
+            AutoIdleTime = 30;
+
+            AllowAutoIdle = true;
+            AllowStatusAutoReset = true;
+            AllowAutoBusy = true;
         }
+
 
         #endregion
 
@@ -75,6 +84,41 @@ namespace slimCat.Models
         ///     Gets or sets a value indiciating whether to allow user-inputted colors to be displayed.
         /// </summary>
         public static bool AllowColors { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether to allow automatic idle status update.
+        /// </summary>
+        public static bool AllowAutoIdle { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether to allow automatic away status update.
+        /// </summary>
+        public static bool AllowAutoAway { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether to allow idle and away to be automatically reset on activity.
+        /// </summary>
+        public static bool AllowStatusAutoReset { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether to allow busy to be set automatically when the user is in a full-screen application.
+        /// </summary>
+        public static bool AllowAutoBusy { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the time before a status is automatically set to idle.
+        /// </summary>
+        public static int AutoIdleTime { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the time before a status is automatically set to away.
+        /// </summary>
+        public static int AutoAwayTime { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether to allow ad deduplication.
+        /// </summary>
+        public static bool AllowAdDedup { get; set; }
 
         /// <summary>
         ///     Gets or sets the global notify terms.

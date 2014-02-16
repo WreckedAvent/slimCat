@@ -72,11 +72,15 @@ namespace slimCat.Models
         /// </summary>
         bool IsInteresting { get; set; }
 
-
         /// <summary>
         ///     Gets or sets a value indicating whether to ignore updates for this character.
         /// </summary>
         bool IgnoreUpdates { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the last ad this character sent.
+        /// </summary>
+        string LastAd { get; set; }
 
         #endregion
 

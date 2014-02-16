@@ -51,7 +51,8 @@
                     HorizontalAlignment="Center" />
             <ToggleButton Content="Save Login"
                           IsChecked="{Binding SaveLogin}"
-                          Margin="5,0,0,0" />
+                          Margin="5,0,0,0"
+                          ToolTip="Allows slimCat to locally store your username and password for quicker future logins"/>
         </WrapPanel>
     </StackPanel>
 </UserControl>

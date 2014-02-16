@@ -68,18 +68,20 @@ namespace slimCatTest
 
             var contain = Mock.Of<IUnityContainer>();
             var regman = Mock.Of<IRegionManager>();
+            var auto = Mock.Of<IAutomationService>();
 
             eventAggregator = new EventAggregator();
 
             // we shouldn't reference this in tests
-            new CommandInterceptor(
+            new CommandService(
                 chatModel.Object,
                 chatConnection.Object,
                 channelManager.Object,
                 contain,
                 regman,
                 eventAggregator,
-                characterManager.Object);
+                characterManager.Object,
+                auto);
         }
 
         #endregion

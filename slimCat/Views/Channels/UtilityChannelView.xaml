@@ -111,96 +111,221 @@
                           CanContentScroll="False">
                 <StackPanel>
                     <Expander Header="Settings">
-                        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
+                        <StackPanel Margin="10,0,0,0">
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0"/>
+                            
+                            <Expander Header="General">
+                                <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
+                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0"/>
+                                    
+                                    <CheckBox IsChecked="{Binding AllowLogging}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows slimCat to store any kind of log file.">
+                                        Allow Logging
+                                    </CheckBox>
 
-                            <!--
-                        <StackPanel Margin="0,5,0,10">
-                            <TextBlock Text="Notifications Volume" Margin="5,0,0,0" />
-                            <Slider Value="{Binding Volume}"
-                                    LargeChange=".20"
-                                    SmallChange=".10"
-                                    Minimum="0"
-                                    Maximum="1"
-                                    Width="200"
-                                    TickFrequency=".10"
-                                    TickPlacement="BottomRight"
-                                    HorizontalAlignment="Left"
-                                    Margin="5,0,0,0" />
-                        </StackPanel>-->
+                                    <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Determines if friends on characters other than the one you are currently signed in with are treated as friends or normal characters.">
+                                        Friends Are Account Wide
+                                    </CheckBox>
 
-                            <CheckBox IsChecked="{Binding ShowNotifications}"
-                                      VerticalAlignment="Center"
-                                      Margin="0,5">
-                                Allow Toast Notifications
-                            </CheckBox>
-                            <CheckBox IsChecked="{Binding AllowLogging}"
-                                      VerticalAlignment="Center"
-                                      Margin="0,5">
-                                Allow Logging
-                            </CheckBox>
+                                    <CheckBox IsChecked="{Binding SpellCheckEnabled}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows slimCat to spell-check the messages you type out">
+                                        Allow Spell Check
+                                    </CheckBox>
 
-                            <CheckBox IsChecked="{Binding AllowColors}"
-                                      VerticalAlignment="Center"
-                                      Margin="0,5">
-                                Allow BBCode Colors
-                            </CheckBox>
+                                    <StackPanel Margin="0,15,0,0"
+                                                Visibility="{Binding SpellCheckEnabled, Converter={StaticResource BoolConverter}}"
+                                                ToolTip="Determines what language dictionary spell-checking uses">
+                                        <TextBlock Text="Spell check language" />
+                                        <ComboBox ItemsSource="{Binding Path=LanguageNames}"
+                                                  SelectedValue="{Binding Path=Language}"
 
-                            <CheckBox IsChecked="{Binding AllowSoundWhenTabIsFocused}"
-                                      VerticalAlignment="Center"
-                                      Margin="0,5">
-                                Allow Sound when Tab is Focused
-                            </CheckBox>
+                                                  HorizontalAlignment="Left"
+                                                  Width="200"
+                                                  DisplayMemberPath="Key"
+                                                  SelectedValuePath="Value" />
+                                    </StackPanel>
 
-                            <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
-                                      VerticalAlignment="Center"
-                                      Margin="0,5">
-                                Friends are account wide
-                            </CheckBox>
+                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0"/>
 
-                            <CheckBox IsChecked="{Binding SpellCheckEnabled}"
-                                      VerticalAlignment="Center"
-                                      Margin="0,5">
-                                Allow Spell Check
-                            </CheckBox>
+                                </StackPanel>
+                            </Expander>
+                    
+                            <Expander Header="Notifications">
+                                <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
+                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0"/>
+                                    
+                                    <CheckBox IsChecked="{Binding ShowNotifications}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows slimCat to display small windows on the bottom-right of your screen alerting you of events and updates">
+                                        Allow Toast Notifications
+                                    </CheckBox>
 
-                            <StackPanel Margin="0,15,0,5"
-                                        Visibility="{Binding SpellCheckEnabled, Converter={StaticResource BoolConverter}}">
-                                <TextBlock Text="Spell check language" />
-                                <ComboBox ItemsSource="{Binding Path=LanguageNames}"
-                                          SelectedValue="{Binding Path=Language}"
+                                    <CheckBox IsChecked="{Binding AllowSoundWhenTabIsFocused}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows slimCat to play sounds even if the window and tab are focused">
+                                        Allow Sound when Tab is Focused
+                                    </CheckBox>
 
-                                          DisplayMemberPath="Key"
-                                          SelectedValuePath="Value" />
-                            </StackPanel>
+                                    <StackPanel Margin="0,15,0,0"
+                                                ToolTip="Defines a global set of words that slimCat will check messages against and alert you if they match">
+                                        <TextBlock Text="Global Notify Words (comma seperated)"/>
+                                        <TextBox
+                                            Text="{Binding Path=GlobalNotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            TextWrapping="Wrap"
+                                            Width="200"
+                                            AcceptsReturn="True"
+                                            MaxLines="5"
+                                            HorizontalAlignment="Left"
+                                            FontSize="12" />
+                                    </StackPanel>
 
-                            <StackPanel Margin="0,15,0,5">
-                                <TextBlock Text="Gender Color Settings" />
-                                <ComboBox ItemsSource="{Binding Path=GenderSettings}"
-                                          SelectedValue="{Binding Path=GenderColorSettings}"
+                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0"/>
 
-                                          DisplayMemberPath="Key"
-                                          SelectedValuePath="Value" />
-                            </StackPanel>
+                                </StackPanel>
+                            </Expander>
 
-                            <WrapPanel Margin="0,15,0,0">
-                                <TextBlock Margin="0,0,5,0">Message font size</TextBlock>
-                                <TextBox
-                                    Text="{Binding Path=FontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                    VerticalAlignment="Center"
-                                    FontSize="12" />
-                            </WrapPanel>
+                            <Expander Header="Appearance">
+                                <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
+                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0"/>
+                                    
+                                    <CheckBox IsChecked="{Binding AllowColors}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows slimCat to parse bbcode [color] tags as present the text as colored output">
+                                        Allow BBCode Colors
+                                    </CheckBox>
 
-                            <TextBlock Text="Global Notify Words (comma seperated)" Margin="0,15,0,0" />
-                            <TextBox
-                                Text="{Binding Path=GlobalNotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                TextWrapping="Wrap"
-                                FontSize="12" />
+                                    <StackPanel Margin="0,15,0,0"
+                                                ToolTip="Changes the size of the font for messages displayed in channels">
+                                        <WrapPanel>
+                                            <TextBlock Text="Backlog Font Size: "/>
+                                            <TextBlock Text="{Binding Path=FontSize}"/>
+                                        </WrapPanel>
+                                        <Slider Value="{Binding FontSize}"
+                                                LargeChange="4"
+                                                SmallChange="1"
+                                                Minimum="8"
+                                                Maximum="20"
+                                                Width="200"
+                                                TickFrequency="1"
+                                                TickPlacement="BottomRight"
+                                                HorizontalAlignment="Left"
+                                                Margin="5,0,0,0" />
+                                    </StackPanel>
+
+                                    <StackPanel Margin="0,15,0,5"
+                                                ToolTip="Determines how slimCat applies gender coloring to users">
+                                        <TextBlock Text="Gender Color Settings" />
+                                        <ComboBox ItemsSource="{Binding Path=GenderSettings}"
+                                                  SelectedValue="{Binding Path=GenderColorSettings}"
+
+                                                  HorizontalAlignment="Left"
+                                                  Width="200"
+                                                  DisplayMemberPath="Key"
+                                                  SelectedValuePath="Value" />
+                                    </StackPanel>
+
+                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0"/>
+
+                                </StackPanel>
+                            </Expander>
+
+                            <Expander Header="Automation">
+                                <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
+                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0"/>
+                                    
+                                    <CheckBox IsChecked="{Binding AllowAdDedpulication}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows slimCat to automatically ignore ads which have already been posted verbatim">
+                                        Ignore Duplicate Ads
+                                    </CheckBox>
+
+                                    <CheckBox IsChecked="{Binding AllowAutoStatusReset}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows slimCat to automatically reset your status from 'away' or 'idle' to 'online' when you perform actions">
+                                        Allow Status Auto Rest
+                                    </CheckBox>
+
+                                    <CheckBox IsChecked="{Binding AllowAutoBusy}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows slimCat to automatically set your status to 'busy' you have a full-screen application open for a period of time">
+                                        Allow Automatic Busy
+                                    </CheckBox>
+
+                                    <CheckBox IsChecked="{Binding AllowAutoIdle}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows slimCat to automatically set your status to 'idle' if you have no activity for a given period of time">
+                                        Allow Automatic Idle
+                                    </CheckBox>
+
+                                    <StackPanel Margin="0,15,0,0" 
+                                                Visibility="{Binding AllowAutoIdle, Converter={StaticResource BoolConverter}}">
+                                        <WrapPanel>
+                                            <TextBlock Text="Time Until Idle (minutes): "/>
+                                            <TextBlock Text="{Binding Path=AutoIdleTime}"/>
+                                        </WrapPanel>
+                                        <Slider Value="{Binding AutoIdleTime}"
+                                                LargeChange="20"
+                                                SmallChange="5"
+                                                Minimum="5"
+                                                Maximum="60"
+                                                Width="200"
+                                                TickFrequency="5"
+                                                TickPlacement="BottomRight"
+                                                HorizontalAlignment="Left"
+                                                Margin="5,0,0,0" />
+                                    </StackPanel>
+
+                                    <CheckBox IsChecked="{Binding AllowAutoAway}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows slimCat to automatically set your status to 'away' if you have no activity for a given period of time">
+                                        Allow Automatic Away
+                                    </CheckBox>
+
+                                    <StackPanel Margin="0,15,0,15" 
+                                                Visibility="{Binding AllowAutoAway, Converter={StaticResource BoolConverter}}">
+                                        <WrapPanel>
+                                            <TextBlock Text="Time Until Away (minutes): "/>
+                                            <TextBlock Text="{Binding Path=AutoAwayTime}"/>
+                                        </WrapPanel>
+                                        <Slider Value="{Binding AutoAwayTime}"
+                                                LargeChange="20"
+                                                SmallChange="5"
+                                                Minimum="60"
+                                                Maximum="120"
+                                                Width="200"
+                                                TickFrequency="5"
+                                                TickPlacement="BottomRight"
+                                                HorizontalAlignment="Left"
+                                                Margin="5,0,0,0" />
+                                    </StackPanel>
+
+                                </StackPanel>
+                            </Expander>
+                            
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0"/>
                         </StackPanel>
                     </Expander>
 
                     <Expander Header="Update"
                               Visibility="{Binding HasNewUpdate, Mode=OneWay, Converter={StaticResource BoolConverter}}">
                         <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,15"/>
+                            
                             <TextBlock>
                                 <Run Text="There is a new update available!" />
                                 <LineBreak />
@@ -211,16 +336,21 @@
 
                                 <Hyperlink CommandParameter="{Binding Path=UpdateLink, Mode=OneWay}">Download Now</Hyperlink>
                             </TextBlock>
-
+                            
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0"/>
                         </StackPanel>
                     </Expander>
 
                     <Expander Header="Help">
                         <WrapPanel>
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,15"/>
+                            
                             <TextBlock Foreground="{StaticResource ForegroundBrush}" TextWrapping="Wrap">
                                 For trouble shooting, support, feature suggestions, bug reports, or other inquiries, please send a note to or PM
                                 <ContentControl Content="{Binding Path=slimCat}"/>
                             </TextBlock>
+                            
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0"/>
                         </WrapPanel>
                     </Expander>
                 </StackPanel>

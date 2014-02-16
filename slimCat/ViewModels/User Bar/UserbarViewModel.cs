@@ -378,7 +378,7 @@ namespace slimCat.ViewModels
                                         channel => !channel.Id.Equals("Home", StringComparison.OrdinalIgnoreCase)))
                                 ApplicationSettings.SavedChannels.Add(channel.Id);
 
-                            SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+                            SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
                             Events.GetEvent<ErrorEvent>()
                                 .Publish("Channels saved.");
                         }));
@@ -466,10 +466,7 @@ namespace slimCat.ViewModels
 
         private void TabCloseEvent(object args)
         {
-            var toSend =
-                CommandDefinitions.CreateCommand("close", null, args as string).ToDictionary();
-
-            Events.GetEvent<UserCommandEvent>().Publish(toSend);
+            Events.SendUserCommand("close", null, args as string);
         }
 
         private void OnExpanded(object args = null)
@@ -487,16 +484,8 @@ namespace slimCat.ViewModels
 
         private void SendStatusChangedCommand()
         {
-            var torSend =
-                CommandDefinitions.CreateCommand(
-                    "status",
-                    new List<string>
-                        {
-                            ChatModel.CurrentCharacter.Status.ToString(),
-                            ChatModel.CurrentCharacter.StatusMessage
-                        }).ToDictionary();
-
-            Events.GetEvent<UserCommandEvent>().Publish(torSend);
+            var character = ChatModel.CurrentCharacter;
+            Events.SendUserCommand("status", new []{character.Status.ToString(), character.StatusMessage});
         }
 
         // this will update the connection bars to show the user about how good our connection is to the server

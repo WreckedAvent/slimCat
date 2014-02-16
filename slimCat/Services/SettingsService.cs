@@ -34,7 +34,7 @@ namespace slimCat.Services
     /// <summary>
     ///     Allows interaction with persistant settings.
     /// </summary>
-    public static class SettingsDaemon
+    public static class SettingsService
     {
         #region Constants
 

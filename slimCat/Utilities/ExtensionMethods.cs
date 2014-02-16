@@ -25,6 +25,7 @@ namespace slimCat.Utilities
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows.Documents;
+    using Microsoft.Practices.Prism.Events;
     using Models;
 
     #endregion
@@ -117,6 +118,11 @@ namespace slimCat.Utilities
         public static T ToEnum<T>(this string str)
         {
             return (T) Enum.Parse(typeof (T), str, true);
+        }
+
+        public static void SendUserCommand(this IEventAggregator events, string commandName, IList<string> arguments = null, string channel = null)
+        {
+            events.GetEvent<UserCommandEvent>().Publish(CommandDefinitions.CreateCommand(commandName, arguments, channel).ToDictionary());
         }
 
         #endregion

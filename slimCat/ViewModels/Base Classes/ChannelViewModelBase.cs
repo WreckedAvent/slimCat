@@ -214,10 +214,7 @@ namespace slimCat.ViewModels
 
         public void OpenLogEvent(object args, bool isFolder)
         {
-            var toSend =
-                CommandDefinitions.CreateCommand(isFolder ? "openlogfolder" : "openlog").ToDictionary();
-
-            Events.GetEvent<UserCommandEvent>().Publish(toSend);
+            Events.SendUserCommand(isFolder ? "openlogfolder" : "openlog");
         }
 
         #endregion

@@ -43,11 +43,13 @@ namespace slimCat.Services
     ///     The message daemon is the service layer responsible for managing what the user sees and the commands the user
     ///     sends.
     /// </summary>
-    public class MessageDaemon : DispatcherObject, IChannelManager
+    public class MessageService : DispatcherObject, IChannelManager
     {
+
         #region Fields
 
         private readonly IListConnection api;
+
         private readonly ICharacterManager characterManager;
 
         private readonly IDictionary<string, CommandHandler> commands;
@@ -64,21 +66,28 @@ namespace slimCat.Services
 
         private ChannelModel lastSelected;
 
-        private ILogger logger;
+        private readonly ILoggingService logger;
+
+        private readonly IAutomationService automation;
 
         #endregion
 
         #region Constructors and Destructors
 
-        public MessageDaemon(
+        public MessageService(
             IRegionManager regman,
             IUnityContainer contain,
             IEventAggregator events,
             IChatModel model,
             IChatConnection connection,
             IListConnection api,
-            ICharacterManager manager)
+            ICharacterManager manager,
+            ILoggingService logger, 
+            IAutomationService automation)
         {
+            this.logger = logger;
+            this.automation = automation;
+
             try
             {
                 region = regman.ThrowIfNull("regman");
@@ -140,15 +149,6 @@ namespace slimCat.Services
         #region Delegates
 
         private delegate void CommandHandler(IDictionary<string, object> command);
-
-        #endregion
-
-        #region Properties
-
-        private ILogger Logger
-        {
-            get { return logger ?? (logger = new LoggingDaemon(model.CurrentCharacter.Name)); }
-        }
 
         #endregion
 
@@ -218,7 +218,7 @@ namespace slimCat.Services
                         if (channel.Settings.LoggingEnabled && ApplicationSettings.AllowLogging)
                         {
                             // check if the user wants logging for this channel
-                            Logger.LogMessage(channel.Title, channel.Id, thisMessage);
+                            logger.LogMessage(channel.Title, channel.Id, thisMessage);
                         }
 
                         if (poster == Arguments.ThisCharacter)
@@ -244,7 +244,7 @@ namespace slimCat.Services
         {
             IEnumerable<string> history = new List<string>();
             if (!id.Equals("Home"))
-                history = Logger.GetLogs(string.IsNullOrWhiteSpace(name) ? id : name, id);
+                history = logger.GetLogs(string.IsNullOrWhiteSpace(name) ? id : name, id);
 
             var toJoin = model.CurrentPms.FirstByIdOrNull(id)
                          ?? (ChannelModel) model.CurrentChannels.FirstByIdOrNull(id);
@@ -434,7 +434,7 @@ namespace slimCat.Services
 
         private void OnOpenLogRequested(IDictionary<string, object> command)
         {
-            Logger.OpenLog(false, model.CurrentChannel.Title, model.CurrentChannel.Id);
+            logger.OpenLog(false, model.CurrentChannel.Title, model.CurrentChannel.Id);
         }
 
         private void OnOpenLogFolderRequested(IDictionary<string, object> command)
@@ -443,10 +443,10 @@ namespace slimCat.Services
             {
                 var toOpen = command.Get(Arguments.Channel);
                 if (!string.IsNullOrWhiteSpace(toOpen))
-                    Logger.OpenLog(true, toOpen, toOpen);
+                    logger.OpenLog(true, toOpen, toOpen);
             }
             else
-                Logger.OpenLog(true, model.CurrentChannel.Title, model.CurrentChannel.Id);
+                logger.OpenLog(true, model.CurrentChannel.Title, model.CurrentChannel.Id);
         }
 
         private void OnChannelCodeRequested(IDictionary<string, object> command)
@@ -499,7 +499,7 @@ namespace slimCat.Services
                 if (channel != null)
                 {
                     RequestNavigate(target);
-                    Dispatcher.Invoke((Action) NotificationsDaemon.ShowWindow);
+                    Dispatcher.Invoke((Action) NotificationService.ShowWindow);
                     return;
                 }
             }
@@ -516,7 +516,7 @@ namespace slimCat.Services
                 // so tell our system to join the Pm Tab
                 JoinChannel(ChannelType.PrivateMessage, newCharacterUpdate.TargetCharacter.Name);
 
-                Dispatcher.Invoke((Action) NotificationsDaemon.ShowWindow);
+                Dispatcher.Invoke((Action) NotificationService.ShowWindow);
                 return;
             }
 
@@ -532,13 +532,13 @@ namespace slimCat.Services
                 // if it's null, then we've got an invite to a new channel
                 var toSend = new {channel = doStuffWith.TargetChannel.Id};
                 connection.SendMessage(toSend, Commands.ChannelJoin);
-                Dispatcher.Invoke((Action) NotificationsDaemon.ShowWindow);
+                Dispatcher.Invoke((Action) NotificationService.ShowWindow);
                 return;
             }
 
             var chanType = newChannel.Type;
             JoinChannel(chanType, doStuffWith.TargetChannel.Id);
-            Dispatcher.Invoke((Action) NotificationsDaemon.ShowWindow);
+            Dispatcher.Invoke((Action) NotificationService.ShowWindow);
         }
 
         private void OnInviteToChannelRequested(IDictionary<string, object> command)
@@ -797,6 +797,8 @@ namespace slimCat.Services
 
         private void RequestNavigate(string channelId)
         {
+            automation.UserDidAction();
+
             if (lastSelected != null)
             {
                 if (lastSelected.Id.Equals(channelId, StringComparison.OrdinalIgnoreCase))

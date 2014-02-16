@@ -109,7 +109,7 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.SpellCheckEnabled = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+                SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
                 OnPropertyChanged("SpellCheckEnabled");
             }
         }
@@ -120,7 +120,7 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.Langauge = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+                SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
                 OnPropertyChanged("Language");
             }
         }
@@ -337,10 +337,7 @@ namespace slimCat.ViewModels
 
         protected void RequestChannelJoinEvent(object args)
         {
-            var command =
-                CommandDefinitions.CreateCommand("join", new List<string> {args as string}).ToDictionary();
-
-            Events.GetEvent<UserCommandEvent>().Publish(command);
+            Events.SendUserCommand("join", new [] {args as string});
         }
 
         protected void RequestPmEvent(object args)
@@ -352,10 +349,7 @@ namespace slimCat.ViewModels
                 return;
             }
 
-            var command =
-                CommandDefinitions.CreateCommand("priv", new List<string> {tabName}).ToDictionary();
-
-            Events.GetEvent<UserCommandEvent>().Publish(command);
+            Events.SendUserCommand("priv", new []{tabName});
         }
 
         private void StartLinkInDefaultBrowser(object linkToOpen)
@@ -441,33 +435,18 @@ namespace slimCat.ViewModels
 
         private void FindLogEvent(object args)
         {
-            var name = args as string;
-
-            var command =
-                CommandDefinitions.CreateCommand("openlogfolder", null, name).ToDictionary();
-
-            Events.GetEvent<UserCommandEvent>().Publish(command);
+            Events.SendUserCommand("openlogfolder", null, args as string);
         }
 
         private void HandleReportEvent(object args)
         {
-            var name = args as string;
-
-            var command =
-                CommandDefinitions.CreateCommand("handlereport", new List<string> {name}).ToDictionary();
-
-            Events.GetEvent<UserCommandEvent>().Publish(command);
+            Events.SendUserCommand("handlereport", new []{args as string});
         }
 
         private void IgnoreEvent(object args, bool remove = false)
         {
-            var name = args as string;
 
-            var command =
-                CommandDefinitions.CreateCommand(remove ? "unignore" : "ignore", new List<string> {name})
-                    .ToDictionary();
-
-            Events.GetEvent<UserCommandEvent>().Publish(command);
+            Events.SendUserCommand(remove ? "unignore" : "ignore", new []{args as string});
             OnRightClickMenuUpdated(RightClickMenuViewModel.Target); // updates the ignore/unignore text
         }
 
@@ -481,9 +460,7 @@ namespace slimCat.ViewModels
 
         private void IgnoreUpdatesEvent(object args)
         {
-            Events.GetEvent<UserCommandEvent>().Publish(
-                CommandDefinitions.CreateCommand("ignoreUpdates", new[] {args as string}).ToDictionary());
-
+            Events.SendUserCommand("ignoreUpdates", new[] {args as string});
             OnRightClickMenuUpdated(RightClickMenuViewModel.Target); // updates the ignore/unignore text
         }
 
@@ -504,13 +481,7 @@ namespace slimCat.ViewModels
 
         private void KickOrBanEvent(object args, bool isBan)
         {
-            var name = args as string;
-
-            var command =
-                CommandDefinitions.CreateCommand(isBan ? "ban" : "kick", new[] {name}, ChatModel.CurrentChannel.Id)
-                    .ToDictionary();
-
-            Events.GetEvent<UserCommandEvent>().Publish(command);
+            Events.SendUserCommand(isBan ? "ban" : "kick", new []{args as string}, ChatModel.CurrentChannel.Id);
         }
 
         private void RemoveIgnoreEvent(object args)

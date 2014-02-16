@@ -55,20 +55,22 @@ namespace slimCat.Utilities
                 RegisterSingleton<IAccount, AccountModel>();
                 RegisterSingleton<IBrowser, Browser>();
                 RegisterSingleton<ITicketProvider, TicketProvider>();
-                RegisterSingleton<IListConnection, ListConnection>();
-                RegisterSingleton<IChatConnection, ChatConnection>();
+                RegisterSingleton<IListConnection, FlistService>();
+                RegisterSingleton<IChatConnection, FchatService>();
                 RegisterSingleton<IChatModel, ChatModel>();
-                RegisterSingleton<IChannelManager, MessageDaemon>();
+                RegisterSingleton<IChannelManager, MessageService>();
                 RegisterSingleton<IThemeLocator, ApplicationThemeLocator>();
                 RegisterSingleton<ICharacterManager, GlobalCharacterManager>();
                 RegisterSingleton<IPermissionService, PermissionService>();
+                RegisterSingleton<IAutomationService, AutomationService>();
+                RegisterSingleton<ILoggingService, LoggingService>();
 
                 Register<Application, Application>(Application.Current);
                 Register<WebSocket, WebSocket>(new WebSocket(Constants.ServerHost));
 
                 // these are services that are not directly used by our singletons or modules
-                Instantiate<NotificationsDaemon>();
-                Instantiate<CommandInterceptor>();
+                Instantiate<NotificationService>();
+                Instantiate<CommandService>();
 
                 // some resources that are dependant on our singletons
                 Application.Current.Resources.Add("BbCodeConverter", Container.Resolve<BbCodeConverter>());

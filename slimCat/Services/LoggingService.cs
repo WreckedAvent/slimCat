@@ -27,6 +27,7 @@ namespace slimCat.Services
     using System.IO;
     using System.Linq;
     using System.Web;
+    using Microsoft.Practices.Prism.Events;
     using Models;
     using Utilities;
 
@@ -53,35 +54,43 @@ namespace slimCat.Services
         LineBreak
     }
 
-    public class LoggingDaemon : ILogger
+    public class LoggingService : ILoggingService
     {
-        #region Fields
-
-        private readonly string currentCharacter;
-        private readonly string fullPath;
-
-        #endregion
+        private readonly IEventAggregator eventAggregator;
 
         #region Constructors and Destructors
 
-        public LoggingDaemon(string characterName)
+        public LoggingService(IEventAggregator eventAggregator)
         {
-            currentCharacter = characterName;
+            this.eventAggregator = eventAggregator;
 
-            fullPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "slimCat", currentCharacter);
-
-            if (!Directory.Exists(fullPath))
-                Directory.CreateDirectory(fullPath);
+            eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Subscribe(OnCharacterSelected);
         }
 
+        private void OnCharacterSelected(string character)
+        {
+            CurrentCharacter = character;
+
+            FullPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "slimCat", CurrentCharacter);
+
+            if (!Directory.Exists(FullPath))
+                Directory.CreateDirectory(FullPath);
+        }
+
+        #endregion
+
+        #region Properties
+        private string CurrentCharacter { get; set; }
+
+        private string FullPath { get; set; }
         #endregion
 
         #region Public Methods and Operators
 
         public IEnumerable<string> GetLogs(string title, string id)
         {
-            var loggingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
+            var loggingPath = StaticFunctions.MakeSafeFolderPath(CurrentCharacter, title, id);
             var toReturn = new List<string>();
 
             if (!Directory.Exists(loggingPath))
@@ -150,14 +159,14 @@ namespace slimCat.Services
         public void OpenLog(bool isFolder = false, string title = null, string id = null)
         {
             if (id == null)
-                Process.Start(fullPath);
+                Process.Start(FullPath);
             else
             {
-                var workingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
+                var workingPath = StaticFunctions.MakeSafeFolderPath(CurrentCharacter, title, id);
 
                 if (!Directory.Exists(workingPath))
                 {
-                    Process.Start(fullPath);
+                    Process.Start(FullPath);
                     return;
                 }
 
@@ -239,7 +248,7 @@ namespace slimCat.Services
 
         private StreamWriter AccessLog(string title, string id)
         {
-            var loggingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
+            var loggingPath = StaticFunctions.MakeSafeFolderPath(CurrentCharacter, title, id);
 
             var fileName = DateToFileName();
 

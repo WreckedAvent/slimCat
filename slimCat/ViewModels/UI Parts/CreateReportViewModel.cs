@@ -26,6 +26,7 @@ namespace slimCat.ViewModels
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Models;
+    using Utilities;
 
     #endregion
 
@@ -146,11 +147,8 @@ namespace slimCat.ViewModels
 
         private void OnSendReport(object args)
         {
-            var command =
-                CommandDefinitions.CreateCommand(
-                    "report", new List<string> {Target, Complaint}, CurrentTab).ToDictionary();
+            events.SendUserCommand("report", new []{target, complaint}, CurrentTab);
 
-            events.GetEvent<UserCommandEvent>().Publish(command);
             IsOpen = !IsOpen;
             target = null;
             Complaint = null;

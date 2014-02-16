@@ -158,7 +158,7 @@ namespace slimCat.ViewModels
 
                 update.Enabled = true;
 
-                var newSettings = SettingsDaemon.GetChannelSettings(
+                var newSettings = SettingsService.GetChannelSettings(
                     cm.CurrentCharacter.Name, Model.Title, Model.Id, Model.Type);
                 Model.Settings = newSettings;
 
@@ -168,7 +168,7 @@ namespace slimCat.ViewModels
                         OnPropertyChanged("HasNotifyTerms");
                         if (!ChannelSettings.IsChangingSettings)
                         {
-                            SettingsDaemon.UpdateSettingsFile(
+                            SettingsService.UpdateSettingsFile(
                                 ChannelSettings, cm.CurrentCharacter.Name, Model.Title, Model.Id);
                         }
                     };
@@ -464,12 +464,7 @@ namespace slimCat.ViewModels
             if (messageToSend == null)
                 UpdateError("There is no ad to auto-post!");
 
-            var toSend =
-                CommandDefinitions.CreateCommand(
-                    CommandDefinitions.ClientSendChannelAd, new List<string> {messageToSend}, Model.Id)
-                    .ToDictionary();
-
-            Events.GetEvent<UserCommandEvent>().Publish(toSend);
+            Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new []{messageToSend}, Model.Id);
             timeLeftAd = DateTimeOffset.Now.AddMinutes(10).AddSeconds(2);
 
             isInCoolDownAd = true;
@@ -589,11 +584,7 @@ namespace slimCat.ViewModels
                 ? CommandDefinitions.ClientSendChannelMessage
                 : CommandDefinitions.ClientSendChannelAd;
 
-            var toSend =
-                CommandDefinitions.CreateCommand(command, new List<string> {Message}, Model.Id)
-                    .ToDictionary();
-
-            Events.GetEvent<UserCommandEvent>().Publish(toSend);
+            Events.SendUserCommand(command, new []{Message}, Model.Id);
 
             if (!autoPostAds || IsDisplayingChat)
                 Message = null;

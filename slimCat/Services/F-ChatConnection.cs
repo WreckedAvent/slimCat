@@ -40,7 +40,7 @@ namespace slimCat.Services
     /// <summary>
     ///     Maintains the connection to F-Chat's server. Used to send/receive commands.
     /// </summary>
-    public class ChatConnection : IChatConnection, IDisposable
+    public class FchatService : IChatConnection, IDisposable
     {
         #region Fields
 
@@ -64,7 +64,7 @@ namespace slimCat.Services
         #region Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ChatConnection" /> class.
+        ///     Initializes a new instance of the <see cref="FchatService" /> class.
         ///     Chat connection is used to communicate with F-Chat using websockets.
         /// </summary>
         /// <param name="user">
@@ -75,7 +75,7 @@ namespace slimCat.Services
         /// </param>
         /// <param name="socket"></param>
         /// <param name="provider"></param>
-        public ChatConnection(IAccount user, IEventAggregator eventagg, WebSocket socket, ITicketProvider provider)
+        public FchatService(IAccount user, IEventAggregator eventagg, WebSocket socket, ITicketProvider provider)
         {
             this.socket = socket;
             this.provider = provider;
@@ -318,11 +318,7 @@ namespace slimCat.Services
             isAuthenticated = false;
 
             events.GetEvent<ReconnectingEvent>().Publish((int) staggerTimer.Interval/1000);
-            events.GetEvent<UserCommandEvent>().Publish(new Dictionary<string, object>
-                {
-                    {Constants.Arguments.Type, "join"},
-                    {Constants.Arguments.Channel, "Home"}
-                });
+            events.SendUserCommand("join", new []{"home"});
         }
 
         private void DoReconnect()

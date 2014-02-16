@@ -141,6 +141,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="lib\FlashWindowHelper.cs" />
+    <Compile Include="lib\FullScreenHelper.cs" />
     <Compile Include="lib\TextBlockHelper.cs" />
     <Compile Include="Models\ApplicationThemeLocator.cs" />
     <Compile Include="Models\CharacterManagerBase.cs" />
@@ -173,16 +174,18 @@
     <Compile Include="Models\ReportModel.cs" />
     <Compile Include="Models\Enums\StatusType.cs" />
     <Compile Include="Models\Enums\TypingStatus.cs" />
+    <Compile Include="Services\AutomationService.cs" />
     <Compile Include="Services\Browser.cs" />
+    <Compile Include="Services\Interfaces\IAutomationService.cs" />
     <Compile Include="Services\Interfaces\IBrowser.cs" />
     <Compile Include="Services\Interfaces\IChannelManager.cs" />
     <Compile Include="Services\Interfaces\IChatConnection.cs" />
     <Compile Include="Services\Interfaces\IListConnection.cs" />
-    <Compile Include="Services\Interfaces\ILogger.cs" />
+    <Compile Include="Services\Interfaces\ILoggingService.cs" />
     <Compile Include="Services\Interfaces\IPermissionService.cs" />
     <Compile Include="Services\Interfaces\ITicketProvider.cs" />
     <Compile Include="Services\PermissionService.cs" />
-    <Compile Include="Services\SettingsDaemon.cs" />
+    <Compile Include="Services\SettingsService.cs" />
     <Compile Include="Services\TicketProvider.cs" />
     <Compile Include="Utilities\CacheCount.cs" />
     <Compile Include="Utilities\Constants.cs" />
@@ -197,11 +200,11 @@
     <Compile Include="Models\MessageModel.cs" />
     <Compile Include="Models\PMChannelModel.cs" />
     <Compile Include="Models\ApplicationSettings.cs" />
-    <Compile Include="Services\CommandInterceptor.cs" />
+    <Compile Include="Services\CommandService.cs" />
     <Compile Include="Services\F-ChatConnection.cs" />
-    <Compile Include="Services\LoggingDaemon.cs" />
-    <Compile Include="Services\MessageDaemon.cs" />
-    <Compile Include="Services\NotificationsDaemon.cs" />
+    <Compile Include="Services\LoggingService.cs" />
+    <Compile Include="Services\MessageService.cs" />
+    <Compile Include="Services\NotificationService.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Utilities\Bootstrapper.cs" />
     <Compile Include="Utilities\CommandParser.cs" />

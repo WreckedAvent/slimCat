@@ -43,54 +43,34 @@ namespace slimCat.Services
     ///     It also coordinates them to prevent collisions.
     ///     This intercepts just about every single command that the server sends.
     /// </summary>
-    public class CommandInterceptor : ViewModelBase
+    public class CommandService : ViewModelBase
     {
         #region Fields
 
         private readonly IChatConnection connection;
         private readonly object locker = new object();
         private readonly IChannelManager manager;
+        private readonly IAutomationService automation;
 
         private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
 
         #endregion
 
         #region Constructors and Destructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="CommandInterceptor" /> class.
-        /// </summary>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
-        /// <param name="conn">
-        ///     The conn.
-        /// </param>
-        /// <param name="manager">
-        ///     The manager.
-        /// </param>
-        /// <param name="contain">
-        ///     The contain.
-        /// </param>
-        /// <param name="regman">
-        ///     The regman.
-        /// </param>
-        /// <param name="eventagg">
-        ///     The eventagg.
-        /// </param>
-        /// <param name="characterManager"></param>
-        public CommandInterceptor(
+        public CommandService(
             IChatModel cm,
             IChatConnection conn,
             IChannelManager manager,
             IUnityContainer contain,
             IRegionManager regman,
             IEventAggregator eventagg,
-            ICharacterManager characterManager)
+            ICharacterManager characterManager,
+            IAutomationService automation)
             : base(contain, regman, eventagg, cm, characterManager)
         {
             connection = conn;
             this.manager = manager;
+            this.automation = automation;
 
             Events.GetEvent<CharacterSelectedLoginEvent>()
                 .Subscribe(GetCharacter, ThreadOption.BackgroundThread, true);
@@ -305,6 +285,9 @@ namespace slimCat.Services
 
             var character = CharacterManager.Find(characterName);
             var ofInterest = CharacterManager.IsOfInterest(characterName);
+
+            character.LastAd = null;
+            character.LastReport = null;
 
             CharacterManager.SignOff(characterName);
 
@@ -623,6 +606,12 @@ namespace slimCat.Services
             var character = command.Get(Constants.Arguments.Character);
             var message = command.Get(Constants.Arguments.Message);
             var channel = command.Get(Constants.Arguments.Channel);
+
+            // dedupe logic
+            if (isAd && automation.IsDuplicateAd(character, message))
+            {
+                return;
+            }
 
             if (!CharacterManager.IsOnList(character, ListKind.Ignored))
                 manager.AddMessage(message, channel, character, isAd ? MessageType.Ad : MessageType.Normal);

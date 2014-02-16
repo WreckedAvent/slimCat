@@ -99,7 +99,7 @@ namespace slimCat.ViewModels
                             typingLengthCache = Message != null ? Message.Length : 0;
                     };
 
-                Model.Settings = SettingsDaemon.GetChannelSettings(
+                Model.Settings = SettingsService.GetChannelSettings(
                     cm.CurrentCharacter.Name, Model.Title, Model.Id, Model.Type);
 
                 ChannelSettings.Updated += (s, e) =>
@@ -107,7 +107,7 @@ namespace slimCat.ViewModels
                         OnPropertyChanged("ChannelSettings");
                         if (!ChannelSettings.IsChangingSettings)
                         {
-                            SettingsDaemon.UpdateSettingsFile(
+                            SettingsService.UpdateSettingsFile(
                                 ChannelSettings, cm.CurrentCharacter.Name, Model.Title, Model.Id);
                         }
                     };
@@ -299,12 +299,7 @@ namespace slimCat.ViewModels
                 return;
             }
 
-            var toSend =
-                CommandDefinitions.CreateCommand(
-                    CommandDefinitions.ClientSendPm, new List<string> {Message, ConversationWith.Name})
-                    .ToDictionary();
-
-            Events.GetEvent<UserCommandEvent>().Publish(toSend);
+            Events.SendUserCommand(CommandDefinitions.ClientSendPm, new []{Message, ConversationWith.Name});
             Message = string.Empty;
 
             isInCoolDown = true;
@@ -335,12 +330,7 @@ namespace slimCat.ViewModels
 
         private void SendTypingNotification(TypingStatus type)
         {
-            var toSend =
-                CommandDefinitions.CreateCommand(
-                    CommandDefinitions.ClientSendTypingStatus,
-                    new List<string> {type.ToString(), ConversationWith.Name}).ToDictionary();
-
-            Events.GetEvent<UserCommandEvent>().Publish(toSend);
+            Events.SendUserCommand(CommandDefinitions.ClientSendTypingStatus, new []{type.ToString(), ConversationWith.Name});
         }
 
         private bool UpdateIsOurCharacter(NotificationModel param)

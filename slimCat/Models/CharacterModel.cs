@@ -169,6 +169,8 @@ namespace slimCat.Models
             }
         }
 
+        public string LastAd { get; set; }
+
         #endregion
 
         #region Public Methods and Operators

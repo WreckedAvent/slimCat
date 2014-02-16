@@ -24,9 +24,10 @@ namespace slimCat.ViewModels
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Text;
-    using System.Timers;
+    using System.Windows.Forms;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
@@ -34,6 +35,7 @@ namespace slimCat.ViewModels
     using Services;
     using Utilities;
     using Views;
+    using Timer = System.Timers.Timer;
 
     #endregion
 
@@ -42,6 +44,7 @@ namespace slimCat.ViewModels
     /// </summary>
     public class UtilityChannelViewModel : ChannelViewModelBase
     {
+
         #region Constants
 
         private const string NewVersionLink = "https://dl.dropbox.com/u/29984849/slimCat/latest.csv";
@@ -58,6 +61,8 @@ namespace slimCat.ViewModels
 
         private StringBuilder flavorText;
 
+        private readonly IAutomationService automation;
+
         private bool inStagger;
 
         #endregion
@@ -66,9 +71,10 @@ namespace slimCat.ViewModels
 
         public UtilityChannelViewModel(
             string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
-            ICharacterManager manager)
+            ICharacterManager manager, IAutomationService automation)
             : base(contain, regman, events, cm, manager)
         {
+            this.automation = automation;
             try
             {
                 Model = Container.Resolve<GeneralChannelModel>(name);
@@ -121,6 +127,7 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
+        #region Header
         public static string ClientIdString
         {
             get
@@ -128,132 +135,6 @@ namespace slimCat.ViewModels
                 return string.Format("{0} {1} ({2})", Constants.ClientId, Constants.ClientName, Constants.ClientVer);
             }
         }
-
-        public static IEnumerable<KeyValuePair<string, string>> LanguageNames
-        {
-            get
-            {
-                return new Dictionary<string, string>
-                    {
-                        {"American English", "en-US"},
-                        {"British English", "en-GB"},
-                        {"French", "fr"},
-                        {"German", "de"},
-                        {"Spanish", "es"}
-                    };
-            }
-        }
-
-        public static IEnumerable<KeyValuePair<string, GenderColorSettings>> GenderSettings
-        {
-            get
-            {
-                return new Dictionary<string, GenderColorSettings>
-                    {
-                        {"No Coloring", GenderColorSettings.None},
-                        {"Minimal Coloring", GenderColorSettings.GenderOnly},
-                        {"Moderate Coloring", GenderColorSettings.GenderAndHerm},
-                        {"Full Coloring", GenderColorSettings.Full}
-                    };
-            }
-        }
-
-        public bool AllowColors
-        {
-            get { return ApplicationSettings.AllowColors; }
-
-            set
-            {
-                ApplicationSettings.AllowColors = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
-            }
-        }
-
-        public bool AllowLogging
-        {
-            get { return ApplicationSettings.AllowLogging; }
-
-            set
-            {
-                ApplicationSettings.AllowLogging = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
-            }
-        }
-
-        /// <summary>
-        ///     Gets or sets a value indiciating whether friends are account wide, or character-specific
-        /// </summary>
-        public bool FriendsAreAccountWide
-        {
-            get { return ApplicationSettings.FriendsAreAccountWide; }
-
-            set
-            {
-                ApplicationSettings.FriendsAreAccountWide = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
-            }
-        }
-
-        public int FontSize
-        {
-            get { return ApplicationSettings.FontSize; }
-            set
-            {
-                if (value >= 8 && value <= 20)
-                    ApplicationSettings.FontSize = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
-            }
-        }
-
-        public ICharacter slimCat
-        {
-            get { return CharacterManager.Find("slimCat"); }
-        }
-
-
-        public string ConnectFlavorText
-        {
-            get
-            {
-                if (ChatModel.IsAuthenticated) return string.Empty;
-
-                return flavorText + connectDotDot.ToString()
-                       + (!inStagger ? "\nRequest sent " + ConnectTime + " seconds ago" : string.Empty)
-                       + (DelayTime > 0 ? "\nWaiting " + --DelayTime + " seconds until reconnecting" : string.Empty);
-            }
-        }
-
-        public int ConnectTime { get; set; }
-
-
-        public string GlobalNotifyTerms
-        {
-            get { return ApplicationSettings.GlobalNotifyTerms; }
-
-            set
-            {
-                ApplicationSettings.GlobalNotifyTerms = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
-            }
-        }
-
-        public GenderColorSettings GenderColorSettings
-        {
-            get { return ApplicationSettings.GenderColorSettings; }
-            set
-            {
-                ApplicationSettings.GenderColorSettings = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
-            }
-        }
-
-        public bool HasNewUpdate { get; set; }
-
-        public bool IsConnecting
-        {
-            get { return !ChatModel.IsAuthenticated; }
-        }
-
         public string LastMessageReceived
         {
             get { return HelperConverter.DateTimeToRough(ChatModel.LastMessageReceived, true, false); }
@@ -288,6 +169,229 @@ namespace slimCat.ViewModels
         {
             get { return HelperConverter.DateTimeToRough(ChatModel.ServerUpTime, true, false); }
         }
+        public int OnlineCountPrime()
+        {
+            return OnlineCount;
+        }
+        #endregion
+
+        #region General
+        public static IEnumerable<KeyValuePair<string, string>> LanguageNames
+        {
+            get
+            {
+                return new Dictionary<string, string>
+                    {
+                        {"American English", "en-US"},
+                        {"British English", "en-GB"},
+                        {"French", "fr"},
+                        {"German", "de"},
+                        {"Spanish", "es"}
+                    };
+            }
+        }
+
+        public bool AllowLogging
+        {
+            get { return ApplicationSettings.AllowLogging; }
+
+            set
+            {
+                ApplicationSettings.AllowLogging = value;
+                Save();
+            }
+        }
+
+        public bool FriendsAreAccountWide
+        {
+            get { return ApplicationSettings.FriendsAreAccountWide; }
+
+            set
+            {
+                ApplicationSettings.FriendsAreAccountWide = value;
+                Save();
+            }
+        }
+        #endregion
+
+        #region Appearance
+        public static IEnumerable<KeyValuePair<string, GenderColorSettings>> GenderSettings
+        {
+            get
+            {
+                return new Dictionary<string, GenderColorSettings>
+                    {
+                        {"No Coloring", GenderColorSettings.None},
+                        {"Minimal Coloring", GenderColorSettings.GenderOnly},
+                        {"Moderate Coloring", GenderColorSettings.GenderAndHerm},
+                        {"Full Coloring", GenderColorSettings.Full}
+                    };
+            }
+        }
+
+        public bool AllowColors
+        {
+            get { return ApplicationSettings.AllowColors; }
+
+            set
+            {
+                ApplicationSettings.AllowColors = value;
+                Save();
+            }
+        }
+        public int FontSize
+        {
+            get { return ApplicationSettings.FontSize; }
+            set
+            {
+                if (value >= 8 && value <= 20)
+                    ApplicationSettings.FontSize = value;
+
+                Save();
+            }
+        }
+        public GenderColorSettings GenderColorSettings
+        {
+            get { return ApplicationSettings.GenderColorSettings; }
+            set
+            {
+                ApplicationSettings.GenderColorSettings = value;
+                Save();
+            }
+        }
+        #endregion
+
+        #region Automation
+
+        public bool AllowAutoIdle
+        {
+            get { return ApplicationSettings.AllowAutoIdle; }
+            set
+            {
+                ApplicationSettings.AllowAutoIdle = value;
+                OnPropertyChanged("AllowAutoIdle");
+                automation.ResetStatusTimers();
+                Save();
+            }
+        }
+
+        public int AutoIdleTime
+        {
+            get { return ApplicationSettings.AutoIdleTime; }
+            set
+            {
+                ApplicationSettings.AutoIdleTime = value; 
+                OnPropertyChanged("AutoIdleTime");
+                automation.ResetStatusTimers();
+                Save();
+            }
+        }
+        public bool AllowAutoAway
+        {
+            get { return ApplicationSettings.AllowAutoAway; }
+            set
+            {
+                ApplicationSettings.AllowAutoAway = value;
+                OnPropertyChanged("AllowAutoAway");
+                automation.ResetStatusTimers();
+                Save();
+            }
+        }
+
+        public int AutoAwayTime
+        {
+            get { return ApplicationSettings.AutoAwayTime; }
+            set
+            {
+                ApplicationSettings.AutoAwayTime = value;
+                OnPropertyChanged("AutoAwayTime");
+                automation.ResetStatusTimers();
+                Save();
+            }
+        }
+
+        public bool AllowAutoStatusReset
+        {
+            get { return ApplicationSettings.AllowStatusAutoReset; }
+            set
+            {
+                ApplicationSettings.AllowStatusAutoReset = value;
+                automation.ResetStatusTimers();
+                Save();
+            }
+        }
+
+        public bool AllowAdDedpulication
+        {
+            get { return ApplicationSettings.AllowAdDedup; }
+            set
+            {
+                ApplicationSettings.AllowAdDedup = value;
+
+                // remove all stored ads
+                if (!value)
+                {
+                    var characters = CharacterManager.Characters.Where(x => x.LastAd != null).ToList();
+                    characters.Each(x => x.LastAd = null);
+                }
+
+                Save();
+            }
+        }
+
+        public bool AllowAutoBusy
+        {
+            get { return ApplicationSettings.AllowAutoBusy; }
+            set
+            {
+                ApplicationSettings.AllowAutoBusy = value;
+                Save();
+            }
+        }
+        #endregion
+
+        #region Help
+        public ICharacter slimCat
+        {
+            get { return CharacterManager.Find("slimCat"); }
+        }
+        #endregion
+
+        #region Reconnect
+        public int DelayTime { get; set; }
+
+        public bool IsConnecting
+        {
+            get { return !ChatModel.IsAuthenticated; }
+        }
+
+        public string ConnectFlavorText
+        {
+            get
+            {
+                if (ChatModel.IsAuthenticated) return string.Empty;
+
+                return flavorText + connectDotDot.ToString()
+                       + (!inStagger ? "\nRequest sent " + ConnectTime + " seconds ago" : string.Empty)
+                       + (DelayTime > 0 ? "\nWaiting " + --DelayTime + " seconds until reconnecting" : string.Empty);
+            }
+        }
+
+        public int ConnectTime { get; set; }
+        #endregion
+
+        #region Notifications
+        public string GlobalNotifyTerms
+        {
+            get { return ApplicationSettings.GlobalNotifyTerms; }
+
+            set
+            {
+                ApplicationSettings.GlobalNotifyTerms = value;
+                SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+            }
+        }
+
 
         public bool ShowNotifications
         {
@@ -296,24 +400,7 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.ShowNotificationsGlobal = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
-            }
-        }
-
-        public string UpdateBuildTime { get; set; }
-
-        public string UpdateLink { get; set; }
-
-        public string UpdateName { get; set; }
-
-        public double Volume
-        {
-            get { return ApplicationSettings.Volume; }
-
-            set
-            {
-                ApplicationSettings.Volume = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+                SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
             }
         }
 
@@ -324,23 +411,32 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.PlaySoundEvenWhenTabIsFocused = value;
-                SettingsDaemon.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+                SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
             }
         }
+        #endregion
+
+        #region Update
+        public bool HasNewUpdate { get; set; }
+
+        public string UpdateBuildTime { get; set; }
+
+        public string UpdateLink { get; set; }
+
+        public string UpdateName { get; set; }
+        #endregion
 
         #endregion
 
         #region Public Methods and Operators
-
-        public int DelayTime { get; set; }
 
         public void LoggedInEvent(bool? _)
         {
             updateTimer.Elapsed -= UpdateConnectText;
             OnPropertyChanged("IsConnecting");
 
-
-            SettingsDaemon.ReadApplicationSettingsFromXml(ChatModel.CurrentCharacter.Name, CharacterManager);
+            SettingsService.ReadApplicationSettingsFromXml(ChatModel.CurrentCharacter.Name, CharacterManager);
+            automation.ResetStatusTimers();
 
             try
             {
@@ -418,11 +514,6 @@ namespace slimCat.ViewModels
             OnPropertyChanged("IsConnecting");
         }
 
-        public int OnlineCountPrime()
-        {
-            return OnlineCount;
-        }
-
         public void UpdateConnectText(object sender, EventArgs e)
         {
             if (ChatModel.IsAuthenticated)
@@ -457,6 +548,11 @@ namespace slimCat.ViewModels
         protected override void SendMessage()
         {
             UpdateError("Cannot send messages to this channel!");
+        }
+
+        private void Save()
+        {
+            SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
         }
 
         #endregion

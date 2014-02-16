@@ -198,7 +198,7 @@ namespace slimCat.Models
             savedCollection.Clear();
             currentCollection.List.Each(savedCollection.Add);
 
-            SettingsDaemon.SaveApplicationSettingsToXml(currentCharacter);
+            SettingsService.SaveApplicationSettingsToXml(currentCharacter);
         }
 
         private void UpdateIgnoreUpdatesMark(string name, bool isAdd)
