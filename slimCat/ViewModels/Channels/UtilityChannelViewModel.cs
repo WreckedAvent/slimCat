@@ -506,8 +506,7 @@ namespace slimCat.ViewModels
                         args = reader.ReadToEnd().Split(',');
                 }
 
-                if (args[0].Equals(Constants.FriendlyName, StringComparison.OrdinalIgnoreCase))
-                    return;
+                HasNewUpdate = !args[0].Equals(Constants.FriendlyName, StringComparison.OrdinalIgnoreCase);
 
                 var updateDelayTimer = new Timer(10*1000);
                 updateDelayTimer.Elapsed += (s, e) =>
@@ -519,9 +518,9 @@ namespace slimCat.ViewModels
                         updateDelayTimer.Stop();
                         updateDelayTimer = null;
                     };
-                updateDelayTimer.Start();
 
-                HasNewUpdate = true;
+                if (HasNewUpdate)
+                    updateDelayTimer.Start();
 
                 UpdateName = args[0];
                 UpdateLink = args[1];
