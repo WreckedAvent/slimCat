@@ -32,15 +32,25 @@ namespace slimCat.Models
         {
             List = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             OnlineList = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            TemporaryAdd = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            TemporaryRemove = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
         public HashSet<string> List { get; private set; }
+
         public HashSet<string> OnlineList { get; private set; }
 
-        public bool Add(string name)
+        private HashSet<string> TemporaryAdd { get; set; }
+
+        private HashSet<string> TemporaryRemove { get; set; } 
+
+        public bool Add(string name, bool isTemporary = false)
         {
             OnlineList.Add(name);
-            return List.Add(name);
+
+            return isTemporary
+                ? TemporaryRemove.Remove(name) || TemporaryAdd.Add(name) 
+                : List.Add(name);
         }
 
         public void Set(IEnumerable<string> collection)
@@ -59,13 +69,26 @@ namespace slimCat.Models
 
         public bool SignOn(string name)
         {
-            return List.Contains(name) && OnlineList.Add(name);
+            return IsOnList(name)
+                && OnlineList.Add(name);
         }
 
-        public bool Remove(string name)
+        public bool Remove(string name, bool isTemporary = false)
         {
             OnlineList.Remove(name);
-            return List.Remove(name);
+
+            return isTemporary 
+                ? TemporaryAdd.Remove(name) || TemporaryRemove.Add(name) 
+                : List.Remove(name);
+        }
+
+        public bool IsOnList(string name, bool onlineOnly = false)
+        {
+            var isOnList = onlineOnly
+                ? OnlineList.Contains(name)
+                : List.Contains(name) || TemporaryAdd.Contains(name);
+
+            return isOnList && !TemporaryRemove.Contains(name);
         }
     }
 }

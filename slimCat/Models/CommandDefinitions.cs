@@ -132,6 +132,8 @@ namespace slimCat.Models
                 },
                 {"tempignore", new CommandModel("tempignore", "tempignore", new[] {A.Character})},
                 {"tempunignore", new CommandModel("tempunignore", "tempunignore", new[] {A.Character})},
+                {"tempinteresting", new CommandModel("tempinteresting", "tempinteresting", new[] {A.Character})},
+                {"tempnotinteresting", new CommandModel("tempnotinteresting", "tempnotinteresting", new[] {A.Character})},
                 {
                     "unignore",
                     new CommandModel("unignore", C.UserIgnore, new[] {A.Character, A.Action},

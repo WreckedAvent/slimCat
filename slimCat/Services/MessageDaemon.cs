@@ -122,6 +122,8 @@ namespace slimCat.Services
                         {Commands.AdminAlert, OnReportRequested},
                         {"tempignore", OnTemporaryIgnoreRequested},
                         {"tempunignore", OnTemporaryIgnoreRequested},
+                        {"tempinteresting", OnTemporaryInterestingRequested},
+                        {"tempnotinteresting", OnTemporaryInterestingRequested},
                         {"handlelatest", OnHandleLatestReportRequested},
                         {"handlereport", OnHandleLatestReportByUserRequested}
                     };
@@ -686,7 +688,22 @@ namespace slimCat.Services
         {
             var character = command.Get(Arguments.Character).ToLower().Trim();
             var add = command.Get(Arguments.Type) == "tempignore";
-            // TODO: temporary ignore
+
+            if (add)
+                characterManager.Add(character, ListKind.Ignored, true);
+            else
+                characterManager.Remove(character, ListKind.Ignored, true);
+        }
+
+        private void OnTemporaryInterestingRequested(IDictionary<string, object> command)
+        {
+            var character = command.Get(Arguments.Character).ToLower().Trim();
+            var add = command.Get(Arguments.Type) == "tempinteresting";
+
+            if (add)
+                characterManager.Add(character, ListKind.Interested, true);
+            else
+                characterManager.Add(character, ListKind.NotInterested, true);
         }
 
         private void OnHandleLatestReportRequested(IDictionary<string, object> command)

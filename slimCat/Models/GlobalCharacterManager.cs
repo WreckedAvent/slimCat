@@ -156,10 +156,10 @@ namespace slimCat.Models
 
         public override bool Add(string name, ListKind listKind, bool isTemporary = false)
         {
-            var toReturn = base.Add(name, listKind);
+            var toReturn = base.Add(name, listKind, isTemporary);
 
             if (listKind == ListKind.Interested || listKind == ListKind.NotInterested)
-                SyncInterestedMarks(name, listKind, true);
+                SyncInterestedMarks(name, listKind, true, isTemporary);
 
             if (!isTemporary)
                 TrySyncSavedLists(listKind);
@@ -172,10 +172,10 @@ namespace slimCat.Models
 
         public override bool Remove(string name, ListKind listKind, bool isTemporary = false)
         {
-            var toReturn = base.Remove(name, listKind);
+            var toReturn = base.Remove(name, listKind, isTemporary);
 
             if (listKind == ListKind.Interested || listKind == ListKind.NotInterested)
-                SyncInterestedMarks(name, listKind, false);
+                SyncInterestedMarks(name, listKind, false, isTemporary);
 
             if (!isTemporary)
                 TrySyncSavedLists(listKind);
@@ -208,7 +208,7 @@ namespace slimCat.Models
                 toModify.IgnoreUpdates = isAdd;
         }
 
-        private void SyncInterestedMarks(string name, ListKind listKind, bool isAdd)
+        private void SyncInterestedMarks(string name, ListKind listKind, bool isAdd, bool isTemporary)
         {
             lock (Locker)
             {
@@ -218,13 +218,13 @@ namespace slimCat.Models
                 Action<CollectionPair> addRemove = c =>
                     {
                         if (isAdd)
-                            c.Add(name);
+                            c.Add(name, isTemporary);
                         else
-                            c.Remove(name);
+                            c.Remove(name, isTemporary);
                     };
 
                 if (isAdd) // if we're adding to one, then we have to remove from the other
-                    oppositeList.Remove(name);
+                    oppositeList.Remove(name, isTemporary);
 
                 // now we do the actual action on the list specified
                 addRemove(sameList);

@@ -74,7 +74,7 @@ namespace slimCat.Models
             lock (Locker)
             {
                 CollectionPair toModify;
-                return CollectionDictionary.TryGetValue(listKind, out toModify) && toModify.Remove(name);
+                return CollectionDictionary.TryGetValue(listKind, out toModify) && toModify.Remove(name, isTemporary);
             }
         }
 
@@ -83,7 +83,7 @@ namespace slimCat.Models
             lock (Locker)
             {
                 CollectionPair toModify;
-                return CollectionDictionary.TryGetValue(listKind, out toModify) && toModify.Add(name);
+                return CollectionDictionary.TryGetValue(listKind, out toModify) && toModify.Add(name, isTemporary);
             }
         }
 
@@ -147,13 +147,7 @@ namespace slimCat.Models
                     return characters.ContainsKey(name);
 
                 CollectionPair list;
-                if (CollectionDictionary.TryGetValue(listKind, out list))
-                {
-                    return onlineOnly
-                        ? list.OnlineList.Contains(name)
-                        : list.List.Contains(name);
-                }
-                return false;
+                return CollectionDictionary.TryGetValue(listKind, out list) && list.IsOnList(name, onlineOnly);
             }
         }
 
