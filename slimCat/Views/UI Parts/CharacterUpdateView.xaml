@@ -7,7 +7,9 @@
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
            xmlns:models="clr-namespace:slimCat.Models"
            mc:Ignorable="d"
+           
            d:DataContext="{d:DesignInstance Type=models:CharacterUpdateModel}"
+           
            Margin="0,2"
            Padding="0"
            Foreground="{StaticResource ForegroundBrush}"
@@ -16,13 +18,8 @@
            ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
 
     <InlineUIContainer BaselineAlignment="Bottom">
-        <Rectangle Height="15" Width="15" Margin="0">
-            <Rectangle.Fill>
-                <MultiBinding Converter="{StaticResource GenderColorConverter}" Mode="OneWay">
-                    <Binding Path="TargetCharacter.Gender" />
-                    <Binding Path="TargetCharacter.IsInteresting" />
-                </MultiBinding>
-            </Rectangle.Fill>
+        <Rectangle Height="15" Width="15" Margin="0"
+                   Fill="{Binding Path=Poster, Converter={StaticResource GenderColorConverter}, Mode=OneWay}">
             <Rectangle.OpacityMask>
                 <ImageBrush
                     ImageSource="{Binding Path=TargetCharacter.Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
@@ -31,13 +28,8 @@
     </InlineUIContainer>
 
     <Hyperlink CommandParameter="{Binding Path=TargetCharacter.Name, Mode=OneTime}"
-               Style="{StaticResource UsernameStyle}">
-        <Hyperlink.Foreground>
-            <MultiBinding Converter="{StaticResource NameplateColorConverter}" Mode="OneWay">
-                <Binding Path="TargetCharacter.Gender" />
-                <Binding Path="TargetCharacter.IsInteresting" />
-            </MultiBinding>
-        </Hyperlink.Foreground>
+               Style="{StaticResource UsernameStyle}"
+               Foreground="{Binding Path=Poster, Converter={StaticResource NameplateColorConverter}, Mode=OneWay}">
         <Run Text="{Binding Path=TargetCharacter.Name, Mode=OneTime}" />
         <Hyperlink.InputBindings>
             <MouseBinding MouseAction="RightClick"

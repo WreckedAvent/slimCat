@@ -61,6 +61,7 @@ namespace slimCat.Utilities
                 RegisterSingleton<IChannelManager, MessageDaemon>();
                 RegisterSingleton<IThemeLocator, ApplicationThemeLocator>();
                 RegisterSingleton<ICharacterManager, GlobalCharacterManager>();
+                RegisterSingleton<IPermissionService, PermissionService>();
 
                 Register<Application, Application>(Application.Current);
                 Register<WebSocket, WebSocket>(new WebSocket(Constants.ServerHost));
@@ -73,6 +74,8 @@ namespace slimCat.Utilities
                 Application.Current.Resources.Add("BbCodeConverter", Container.Resolve<BbCodeConverter>());
                 Application.Current.Resources.Add("BbFlowConverter", Container.Resolve<BbFlowConverter>());
                 Application.Current.Resources.Add("BbPostConverter", Container.Resolve<BbCodePostConverter>());
+                Application.Current.Resources.Add("GenderColorConverter", Container.Resolve<GenderColorConverter>());
+                Application.Current.Resources.Add("NameplateColorConverter", Container.Resolve<NameplateColorConverter>());
             }
             catch (Exception ex)
             {

@@ -11,7 +11,7 @@
     <Color x:Key="HighlightColor">#D89900</Color>
 
     <!-- Contrast color is used in some places where a contrasting color is needed, such as for the friend's nameplates -->
-    <Color x:Key="ContrastColor">#6DDA00</Color>
+    <Color x:Key="ContrastColor">#9BD560</Color>
 
     <!-- Background is used as the basis for every UI element. -->
     <Color x:Key="BackgroundColor">#101010</Color>
@@ -27,9 +27,12 @@
     <Color x:Key="CuntColor">#00D8D2</Color>
     <Color x:Key="MaleHermColor">#007FFF</Color>
     <Color x:Key="TransgenderColor">#EE8822</Color>
+    <Color x:Key="ModeratorColor">#BE9D56</Color>
+    <Color x:Key="NotAvailableColor">Silver</Color>
     <Color x:Key="ShemaleColor">#D80040</Color>
-    <Color x:Key="HermColor">#A800D9</Color>
+    <Color x:Key="HermColor">#BB53D9</Color>
 
+    <SolidColorBrush x:Key="SelfBrush" Color="{StaticResource ForegroundColor}" Opacity="0.70"/>
 
     <!-- Do not modify below this line unless you know what you are doing. -->
 
@@ -47,4 +50,6 @@
     <SolidColorBrush x:Key="TransgenderBrush" Color="{StaticResource TransgenderColor}" />
     <SolidColorBrush x:Key="CuntBrush" Color="{StaticResource CuntColor}" />
     <SolidColorBrush x:Key="ShemaleBrush" Color="{StaticResource ShemaleColor}" />
+    <SolidColorBrush x:Key="ModeratorBrush" Color="{StaticResource ModeratorColor}"/>
+    <SolidColorBrush x:Key="NotAvailableBrush" Color="{StaticResource NotAvailableColor}"/>
 </ResourceDictionary>

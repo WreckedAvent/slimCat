@@ -34,6 +34,7 @@ namespace slimCat.Utilities
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using Models;
+    using Services;
 
     #endregion
 
@@ -175,7 +176,7 @@ namespace slimCat.Utilities
 
         #region Properties
 
-        private IChatModel ChatModel { get; set; }
+        internal IChatModel ChatModel { get; set; }
 
         #endregion
 
@@ -893,11 +894,15 @@ namespace slimCat.Utilities
     /// </summary>
     public sealed class BbFlowConverter : BbCodeBaseConverter, IValueConverter
     {
+        private readonly IPermissionService permissions;
+
         #region Constructors
 
-        public BbFlowConverter(IChatModel chatModel, ICharacterManager characterManager, IThemeLocator locator)
+        public BbFlowConverter(IChatModel chatModel, ICharacterManager characterManager, IThemeLocator locator,
+            IPermissionService permissions)
             : base(chatModel, characterManager, locator)
         {
+            this.permissions = permissions;
         }
 
         #endregion
@@ -911,7 +916,9 @@ namespace slimCat.Utilities
             if (value == null)
                 return null;
 
-            var text = value as string ?? value.ToString(); // this is the beef of the message
+            var message = value as IMessage; // this is the beef of the message
+            var text = message == null ? value as string : message.Message;
+
             text = HttpUtility.HtmlDecode(text); // translate the HTML characters
 
             if (text.StartsWith("/me"))
@@ -929,22 +936,39 @@ namespace slimCat.Utilities
                 inlines.Insert(0, Parse(text));
                 inlines.Insert(1, new Run(" ~"));
             }
-            else if (text.StartsWith("/warn"))
+            else if (text.StartsWith("/warn") 
+                && message != null
+                && permissions.IsModerator(message.Poster.Name))
             {
                 // or a warn "command"
                 text = text.Substring("/warn ".Length);
-                inlines.Add(new Run(" warns, "));
+                inlines.Add(new Run(" warns, ")
+                    {
+                        FontWeight = FontWeights.Bold,
+                        Background = Locator.Find<Brush>("ForegroundBrush"),
+                        Foreground = Locator.Find<Brush>("BackgroundBrush")
+                    });
 
                 var toAdd = Parse(text);
-                toAdd.Foreground = Locator.Find<Brush>("HighlightBrush");
-                toAdd.FontWeight = FontWeights.ExtraBold;
+                toAdd.Background = Locator.Find<Brush>("ForegroundBrush");
+                toAdd.Foreground = Locator.Find<Brush>("BackgroundBrush");
+                toAdd.FontWeight = FontWeights.Bold;
 
-                inlines.Add(Parse(text));
+                inlines.Add(toAdd);
             }
             else
             {
+                var isSelf = message != null && ChatModel.CurrentCharacter.NameEquals(message.Poster.Name);
+
                 inlines.Add(new Run(": "));
-                inlines.Add(Parse(text));
+
+                var toAdd = Parse(text);
+                if (isSelf)
+                {
+                    toAdd.Foreground = Locator.Find<Brush>("SelfBrush");
+                }
+
+                inlines.Add(toAdd);
             }
 
             return inlines;
@@ -1000,8 +1024,17 @@ namespace slimCat.Utilities
     /// <summary>
     ///     Contains common logic for turning values into gender colors.
     /// </summary>
-    public abstract class GenderColorConverterBase : OneWayMultiConverter
+    public abstract class GenderColorConverterBase : OneWayConverter
     {
+        internal readonly IPermissionService Permissions;
+        private readonly ICharacterManager manager;
+
+        protected GenderColorConverterBase(IPermissionService permissions, ICharacterManager manager)
+        {
+            Permissions = permissions;
+            this.manager = manager;
+        }
+
         private readonly IDictionary<Gender, Gender> genderFallbacks = new Dictionary<Gender, Gender>
             {
                 {Gender.Male, Gender.Male},
@@ -1026,14 +1059,36 @@ namespace slimCat.Utilities
                 {Gender.None, "Highlight"}
             };
 
-        protected SolidColorBrush GetBrush(Gender? gender)
+        protected SolidColorBrush GetBrush(ICharacter character)
         {
-            return (SolidColorBrush) TryGet(GetGenderName(gender), true);
+            if (Permissions.IsModerator(character.Name))
+                return (SolidColorBrush) Application.Current.FindResource("ModeratorBrush");
+
+            if (manager.IsOnList(character.Name, ListKind.NotInterested))
+                return (SolidColorBrush) Application.Current.FindResource("NotAvailableBrush");
+
+            if (character.Status == StatusType.Crown 
+                || character.Status == StatusType.Online 
+                || character.Status == StatusType.Looking)
+                return (SolidColorBrush) TryGet(GetGenderName(character.Gender), true);
+
+            return (SolidColorBrush) Application.Current.FindResource("NotAvailableBrush");
         }
 
-        protected Color GetColor(Gender? gender)
+        protected Color GetColor(ICharacter character)
         {
-            return (Color) TryGet(GetGenderName(gender), false);
+            if (Permissions.IsModerator(character.Name))
+                return (Color) Application.Current.FindResource("ModeratorColor");
+
+            if (manager.IsOnList(character.Name, ListKind.NotInterested))
+                return (Color) Application.Current.FindResource("NotAvailableColor");
+
+            if (character.Status == StatusType.Crown 
+                || character.Status == StatusType.Online 
+                || character.Status == StatusType.Looking)
+                return (Color) TryGet(GetGenderName(character.Gender), false);
+
+            return (Color) Application.Current.FindResource("NotAvailableColor");
         }
 
         protected static Object TryGet(string name, bool isBrush)
@@ -1073,18 +1128,27 @@ namespace slimCat.Utilities
     /// </summary>
     public sealed class GenderColorConverter : GenderColorConverterBase
     {
-        public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        public GenderColorConverter(IPermissionService permissions, ICharacterManager manager)
+            :base(permissions, manager)
+        { 
+        }
+
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var gender = values[0] as Gender?;
-            var isInteresting = values[1] as bool?;
+            if (!(value is ICharacter))
+                return Application.Current.FindResource("ForegroundBrush");
+
+            var character = (ICharacter) value;
+            var gender = character.Gender;
+            var isInteresting = character.IsInteresting;
 
             Color baseColor;
             var brightColor = (Color) TryGet("Foreground", false);
 
-            if (isInteresting.HasValue && isInteresting.Value)
+            if (isInteresting)
                 baseColor = (Color) TryGet("Contrast", false);
             else
-                baseColor = GetColor(gender);
+                baseColor = GetColor(character);
 
             var stops = new List<GradientStop>
                 {
@@ -1240,15 +1304,22 @@ namespace slimCat.Utilities
     /// </summary>
     public sealed class NameplateColorConverter : GenderColorConverterBase
     {
-        public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        public NameplateColorConverter(IPermissionService permissions, ICharacterManager manager)
+            :base(permissions, manager)
         {
-            var gender = values[0] as Gender?;
-            var interesting = values[1] as bool?;
+        }
 
-            if (interesting.HasValue && interesting.Value)
-                return TryGet("Contrast", true);
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is ICharacter))
+                return Application.Current.FindResource("ForegroundBrush");
 
-            return GetBrush(gender);
+            var character = (ICharacter) value;
+            var interesting = character.IsInteresting;
+
+            return interesting 
+                ? TryGet("Contrast", true) 
+                : GetBrush(character);
         }
     }
 

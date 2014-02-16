@@ -11,24 +11,14 @@
            FontFamily="Segoe UI, Verdanda"
            FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
            d:DataContext="{models:IMessage}">
+    
     <Run Text="{Binding TimeStamp, Mode=OneTime}"
-         FontSize="12">
-        <Run.Foreground>
-            <MultiBinding Converter="{StaticResource NameplateColorConverter}" Mode="OneWay">
-                <Binding Path="Poster.Gender" />
-                <Binding Path="Poster.IsInteresting" />
-            </MultiBinding>
-        </Run.Foreground>
-    </Run>
+         FontSize="12"
+         Foreground="{Binding Path=Poster, Converter={StaticResource NameplateColorConverter}, Mode=OneWay}"/>
 
     <InlineUIContainer BaselineAlignment="Bottom">
-        <Rectangle Height="15" Width="15" Margin="0">
-            <Rectangle.Fill>
-                <MultiBinding Converter="{StaticResource GenderColorConverter}" Mode="OneWay">
-                    <Binding Path="Poster.Gender" />
-                    <Binding Path="Poster.IsInteresting" />
-                </MultiBinding>
-            </Rectangle.Fill>
+        <Rectangle Height="15" Width="15" Margin="0"
+                   Fill="{Binding Path=Poster, Converter={StaticResource GenderColorConverter}, Mode=OneWay}">
             <Rectangle.OpacityMask>
                 <ImageBrush
                     ImageSource="{Binding Path=Poster.Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
@@ -38,13 +28,8 @@
 
     <Hyperlink CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}"
                Command="{Binding Path=DataContext.NavigateTo, RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
-               Style="{StaticResource UsernameStyle}">
-        <Hyperlink.Foreground>
-            <MultiBinding Converter="{StaticResource NameplateColorConverter}" Mode="OneWay">
-                <Binding Path="Poster.Gender" />
-                <Binding Path="Poster.IsInteresting" />
-            </MultiBinding>
-        </Hyperlink.Foreground>
+               Style="{StaticResource UsernameStyle}"
+               Foreground="{Binding Path=Poster, Converter={StaticResource NameplateColorConverter}, Mode=OneWay}">
         <Run Text="{Binding Path=Poster.Name, Mode=OneTime}" />
         <Hyperlink.InputBindings>
             <MouseBinding MouseAction="RightClick"
@@ -55,5 +40,5 @@
     </Hyperlink>
 
     <Span
-        lib:SpanHelper.InlineSource="{Binding Message, Mode=OneTime, Converter={StaticResource BbFlowConverter}, IsAsync=True}" />
+        lib:SpanHelper.InlineSource="{Binding Mode=OneTime, Converter={StaticResource BbFlowConverter}, IsAsync=True}" />
 </Paragraph>

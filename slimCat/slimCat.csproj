@@ -179,7 +179,9 @@
     <Compile Include="Services\Interfaces\IChatConnection.cs" />
     <Compile Include="Services\Interfaces\IListConnection.cs" />
     <Compile Include="Services\Interfaces\ILogger.cs" />
+    <Compile Include="Services\Interfaces\IPermissionService.cs" />
     <Compile Include="Services\Interfaces\ITicketProvider.cs" />
+    <Compile Include="Services\PermissionService.cs" />
     <Compile Include="Services\SettingsDaemon.cs" />
     <Compile Include="Services\TicketProvider.cs" />
     <Compile Include="Utilities\CacheCount.cs" />
