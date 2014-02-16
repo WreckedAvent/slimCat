@@ -64,15 +64,6 @@ namespace slimCat.Services
 
             idleTimer.Interval = ApplicationSettings.AutoIdleTime*OneMinute;
             awayTimer.Interval = ApplicationSettings.AutoAwayTime*OneMinute;
-
-            if (ApplicationSettings.AllowAutoIdle)
-                idleTimer.Start();
-
-            if (ApplicationSettings.AllowAutoAway)
-                awayTimer.Start();
-
-            if (ApplicationSettings.AllowAutoBusy)
-                fullscreenTimer.Start();
         }
 
         public bool IsDuplicateAd(string name, string message)

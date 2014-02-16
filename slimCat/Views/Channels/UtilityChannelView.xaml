@@ -383,7 +383,7 @@
                     </Expander>
                     
                     <Expander Header="Recent Tabs">
-                        <StackPanel>
+                        <StackPanel Margin="10,0,0,0">
                             <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0" />
                             <Expander Header="Conversations">
                                 <ListBox ItemsSource="{Binding RecentCharacters}"
@@ -404,7 +404,8 @@
 
                     <Expander Header="Update"
                               Visibility="{Binding HasNewUpdate, Mode=OneWay, Converter={StaticResource BoolConverter}}">
-                        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
+                        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
+                                    Margin="10,0,0,0">
                             <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,15" />
 
                             <TextBlock>
@@ -415,15 +416,32 @@
                                 <Run Text="{Binding Path=UpdateBuildTime, Mode=OneWay}" />
                                 <LineBreak />
 
-                                <Hyperlink CommandParameter="{Binding Path=UpdateLink, Mode=OneWay}">Download Now</Hyperlink>
+                                <Hyperlink CommandParameter="{Binding Path=UpdateLink, Mode=OneWay}">Download</Hyperlink>
                             </TextBlock>
 
                             <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0" />
                         </StackPanel>
                     </Expander>
+                    
+                    <Expander Header="Change Log">
+                        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}" 
+                                    Margin="10,0,0,0">
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,15" />
 
+                            <TextBlock>
+                                    <Run Text="Change log of " />
+                                    <Run Text="{Binding Path=UpdateName, Mode=OneWay}"/>
+                                    <LineBreak/>
+                                
+                                    <Hyperlink CommandParameter="{Binding Path=ChangeLog, Mode=OneWay}">View</Hyperlink>
+                            </TextBlock>
+
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0" />
+                        </StackPanel>
+                    </Expander>
+                    
                     <Expander Header="Help">
-                        <WrapPanel>
+                        <WrapPanel Margin="10,0,0,0">
                             <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,15" />
 
                             <TextBlock Foreground="{StaticResource ForegroundBrush}" TextWrapping="Wrap">

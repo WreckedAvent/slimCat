@@ -443,6 +443,8 @@ namespace slimCat.ViewModels
 
         public string UpdateName { get; set; }
 
+        public string ChangeLog { get; set; }
+
         #endregion
 
         #region Recent Tabs
@@ -524,6 +526,7 @@ namespace slimCat.ViewModels
                 UpdateName = args[0];
                 UpdateLink = args[1];
                 UpdateBuildTime = args[2];
+                ChangeLog = args[3];
 
                 OnPropertyChanged("HasNewUpdate");
                 OnPropertyChanged("UpdateName");

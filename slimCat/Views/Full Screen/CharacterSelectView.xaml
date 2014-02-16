@@ -37,7 +37,7 @@
                             </Border>
 
                             <TextBlock Text="{Binding Path=Name}"
-                                       Padding="1"
+                                       Padding="2"
                                        FontSize="20"
                                        FontWeight="Medium"
                                        Foreground="{StaticResource ForegroundBrush}"
