@@ -29,16 +29,17 @@
                 <Setter.Value>
                     <DataTemplate DataType="models:ICharacter">
                         <StackPanel>
-                            <Border BorderThickness="0,0,0,2"
-                                    BorderBrush="{StaticResource DepressedBrush}">
+                            <Border BorderThickness="0,0,0,1"
+                                    BorderBrush="{StaticResource HighlightBrush}">
                                 <Image Source="{Binding Path=Avatar}"
                                        Height="75"
                                        Width="75" />
                             </Border>
 
                             <TextBlock Text="{Binding Path=Name}"
-                                       Padding="6"
+                                       Padding="1"
                                        FontSize="20"
+                                       FontWeight="Medium"
                                        Foreground="{StaticResource ForegroundBrush}"
                                        HorizontalAlignment="Center" />
                         </StackPanel>
@@ -65,7 +66,7 @@
 
         <ScrollViewer Grid.Row="1">
             <ListBox ItemsSource="{Binding Characters}"
-                     HorizontalAlignment="Stretch"
+                     HorizontalAlignment="Center"
                      SelectedItem="{Binding Path=CurrentCharacter, Mode=TwoWay}" />
         </ScrollViewer>
 

@@ -23,6 +23,7 @@ namespace slimCat.Utilities
 
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Windows.Documents;
     using Microsoft.Practices.Prism.Events;
@@ -120,11 +121,61 @@ namespace slimCat.Utilities
             return (T) Enum.Parse(typeof (T), str, true);
         }
 
+        /// <summary>
+        ///     Sends the command as the current user.
+        /// </summary>
+        /// <param name="events">The events.</param>
+        /// <param name="commandName">Name of the command.</param>
+        /// <param name="arguments">The arguments.</param>
+        /// <param name="channel">The channel.</param>
         public static void SendUserCommand(this IEventAggregator events, string commandName,
             IList<string> arguments = null, string channel = null)
         {
             events.GetEvent<UserCommandEvent>()
                 .Publish(CommandDefinitions.CreateCommand(commandName, arguments, channel).ToDictionary());
+        }
+
+        /// <summary>
+        ///     Backlogs the item in the specified collections. Removes items from the start of the list until it is under the max
+        ///     count.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">The collection.</param>
+        /// <param name="item">The item to add.</param>
+        /// <param name="maxCount">The maximum count.</param>
+        public static void Backlog<T>(this IList<T> collection, T item, int maxCount)
+        {
+            if (maxCount > 0)
+            {
+                while (collection.Count > maxCount)
+                {
+                    collection.RemoveAt(0);
+                }
+            }
+
+            collection.Add(item);
+        }
+
+        public static void BacklogWithUpdate<T>(this IList<T> collection, T item, int maxCount)
+        {
+            var index = collection.IndexOf(item);
+            if (index == -1)
+            {
+                collection.Backlog(item, maxCount);
+                return;
+            }
+
+            collection.RemoveAt(index);
+
+            if (maxCount > 0)
+            {
+                while (collection.Count > maxCount)
+                {
+                    collection.RemoveAt(0);
+                }
+            }
+
+            collection.Add(item);
         }
 
         #endregion

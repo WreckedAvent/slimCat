@@ -52,6 +52,59 @@
                 </ContentControl.ContentTemplate>
             </ContentControl>
         </DataTemplate>
+        
+        <Style TargetType="ListBox" x:Key="AvatarBoxStyle">
+
+            <Setter Property="BorderThickness" Value="0" />
+
+            <Setter Property="Background" Value="Transparent" />
+            
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <WrapPanel
+                            Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" />
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+            
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate DataType="models:CharacterModel">
+                        <StackPanel>
+                            <Border BorderThickness="0,0,0,1"
+                                    BorderBrush="{StaticResource HighlightBrush}">
+                                <Image Source="{Binding Path=Avatar}"
+                                                   Height="75"
+                                                   Width="75" />
+                            </Border>
+
+                            <TextBlock Text="{Binding Path=Name}"
+                                       Padding="2"
+                                       FontSize="14"
+                                       FontWeight="Medium"
+                                       MaxWidth="100"
+                                       TextWrapping="Wrap"
+                                       IsHyphenationEnabled="True"
+                                       Foreground="{StaticResource ForegroundBrush}"
+                                       HorizontalAlignment="Center" />
+
+                            <StackPanel.InputBindings>
+                                <MouseBinding MouseAction="RightClick"
+                                              Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
+                                                                RelativeSource={RelativeSource AncestorType={x:Type Grid},AncestorLevel=2}}"
+                                              CommandParameter="{Binding Path=Name, Mode=OneTime}" />
+
+                                <MouseBinding MouseAction="LeftClick"
+                                              Command="{Binding Path=DataContext.RequestPmCommand,
+                                                                RelativeSource={RelativeSource AncestorType={x:Type Grid},AncestorLevel=2}}"
+                                              CommandParameter="{Binding Path=Name, Mode=OneTime}" />
+                            </StackPanel.InputBindings>
+                        </StackPanel>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
 
     <Grid TextBlock.FontSize="16">
@@ -325,6 +378,26 @@
                                 </StackPanel>
                             </Expander>
 
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0" />
+                        </StackPanel>
+                    </Expander>
+                    
+                    <Expander Header="Recent Tabs">
+                        <StackPanel>
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0" />
+                            <Expander Header="Conversations">
+                                <ListBox ItemsSource="{Binding RecentCharacters}"
+                                         Style="{StaticResource AvatarBoxStyle}"
+                                         HorizontalAlignment="Left"
+                                         VerticalContentAlignment="Top"
+                                         HorizontalContentAlignment="Left"/>
+                            </Expander>
+                            <Expander Header="Channels">
+                                <ListBox ItemsSource="{Binding RecentChannels}"
+                                         ItemTemplate="{StaticResource ChannelTemplate}"
+                                         HorizontalContentAlignment="Left"
+                                         HorizontalAlignment="Left"/>
+                            </Expander>
                             <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0" />
                         </StackPanel>
                     </Expander>

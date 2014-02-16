@@ -44,6 +44,8 @@ namespace slimCat.Services
     /// </summary>
     public class MessageService : DispatcherObject, IChannelManager
     {
+        private const int MaxRecentTabs = 10;
+
         #region Fields
 
         private readonly IListConnection api;
@@ -251,6 +253,17 @@ namespace slimCat.Services
 
                 toJoin = model.CurrentPms.FirstByIdOrNull(id)
                          ?? (ChannelModel) model.CurrentChannels.FirstByIdOrNull(id);
+            }
+
+            if (toJoin is PmChannelModel)
+            {
+                ApplicationSettings.RecentCharacters.BacklogWithUpdate(toJoin.Id, MaxRecentTabs);
+                SettingsService.SaveApplicationSettingsToXml(model.CurrentCharacter.Name);
+            }
+            else if (id != "Home")
+            {
+                ApplicationSettings.RecentChannels.BacklogWithUpdate(toJoin.Id, MaxRecentTabs);
+                SettingsService.SaveApplicationSettingsToXml(model.CurrentCharacter.Name);
             }
 
             if (history.Any())

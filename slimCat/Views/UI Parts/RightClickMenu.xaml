@@ -12,7 +12,7 @@
        IsOpen="{Binding Path=RightClickMenuViewModel.IsOpen}"
        Placement="MousePoint"
        UseLayoutRounding="True"
-       MaxWidth="220"
+       MaxWidth="250"
 
        d:DataContext="{d:DesignInstance vm:GeneralChannelViewModel}">
     <Border BorderBrush="{StaticResource HighlightBrush}"
@@ -33,8 +33,9 @@
                                 TextBlock.TextAlignment="Right"
                                 Margin="10,-6,0,0">
                         <TextBlock Text="{Binding Path=Target.Name}"
-                                   MaxWidth="125"
+                                   MaxWidth="150"
                                    TextWrapping="Wrap"
+                                   IsHyphenationEnabled="True"
                                    FontSize="20" />
                         <TextBlock Text="{Binding Path=TargetGender}" />
                         <TextBlock Text="{Binding Path=TargetStatus}" />

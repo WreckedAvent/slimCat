@@ -176,6 +176,7 @@ namespace slimCat.ViewModels
 
         #endregion
 
+        #region Settings
         #region General
 
         public static IEnumerable<KeyValuePair<string, string>> LanguageNames
@@ -359,40 +360,6 @@ namespace slimCat.ViewModels
 
         #endregion
 
-        #region Help
-
-        public ICharacter slimCat
-        {
-            get { return CharacterManager.Find("slimCat"); }
-        }
-
-        #endregion
-
-        #region Reconnect
-
-        public int DelayTime { get; set; }
-
-        public bool IsConnecting
-        {
-            get { return !ChatModel.IsAuthenticated; }
-        }
-
-        public string ConnectFlavorText
-        {
-            get
-            {
-                if (ChatModel.IsAuthenticated) return string.Empty;
-
-                return flavorText + connectDotDot.ToString()
-                       + (!inStagger ? "\nRequest sent " + ConnectTime + " seconds ago" : string.Empty)
-                       + (DelayTime > 0 ? "\nWaiting " + --DelayTime + " seconds until reconnecting" : string.Empty);
-            }
-        }
-
-        public int ConnectTime { get; set; }
-
-        #endregion
-
         #region Notifications
 
         public string GlobalNotifyTerms
@@ -430,6 +397,41 @@ namespace slimCat.ViewModels
         }
 
         #endregion
+        #endregion
+
+        #region Help
+
+        public ICharacter slimCat
+        {
+            get { return CharacterManager.Find("slimCat"); }
+        }
+
+        #endregion
+
+        #region Reconnect
+
+        public int DelayTime { get; set; }
+
+        public bool IsConnecting
+        {
+            get { return !ChatModel.IsAuthenticated; }
+        }
+
+        public string ConnectFlavorText
+        {
+            get
+            {
+                if (ChatModel.IsAuthenticated) return string.Empty;
+
+                return flavorText + connectDotDot.ToString()
+                       + (!inStagger ? "\nRequest sent " + ConnectTime + " seconds ago" : string.Empty)
+                       + (DelayTime > 0 ? "\nWaiting " + --DelayTime + " seconds until reconnecting" : string.Empty);
+            }
+        }
+
+        public int ConnectTime { get; set; }
+
+        #endregion
 
         #region Update
 
@@ -440,6 +442,40 @@ namespace slimCat.ViewModels
         public string UpdateLink { get; set; }
 
         public string UpdateName { get; set; }
+
+        #endregion
+
+        #region Recent Tabs
+
+        public IList<ICharacter> RecentCharacters
+        {
+            get
+            {
+                var characters = ApplicationSettings.RecentCharacters;
+
+                var toReturn = characters
+                    .Select(x => CharacterManager.Find(x))
+                    .Reverse()
+                    .ToList();
+
+                toReturn.Each(x => x.GetAvatar());
+
+                return toReturn;
+            }
+        }
+
+        public IList<ChannelModel> RecentChannels
+        {
+            get
+            {
+                var channels = ApplicationSettings.RecentChannels;
+
+                return channels
+                    .Select(x => ChatModel.FindChannel(x))
+                    .Reverse()
+                    .ToList();
+            }
+        } 
 
         #endregion
 

@@ -271,14 +271,7 @@ namespace slimCat.Models
         /// </param>
         public virtual void AddMessage(IMessage message, bool isOfInterest = false)
         {
-            while (messages.Count >= settings.MaxBackLogItems)
-            {
-                messages[0].Dispose();
-                messages[0] = null;
-                messages.RemoveAt(0);
-            }
-
-            messages.Add(message);
+            messages.Backlog(message, settings.MaxBackLogItems);
 
             if (isSelected)
                 lastRead = messages.Count;

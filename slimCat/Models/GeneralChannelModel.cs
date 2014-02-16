@@ -44,23 +44,6 @@ namespace slimCat.Models
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="GeneralChannelModel" /> class.
-        /// </summary>
-        /// <param name="channelName">
-        ///     The channel_name.
-        /// </param>
-        /// <param name="type">
-        ///     The type.
-        /// </param>
-        /// <param name="users">
-        ///     The users.
-        /// </param>
-        /// <param name="mode">
-        ///     The mode.
-        /// </param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// </exception>
         public GeneralChannelModel(
             string channelName, ChannelType type, int users = 0, ChannelMode mode = ChannelMode.Both)
             : base(channelName, type, mode)
@@ -247,13 +230,7 @@ namespace slimCat.Models
         {
             var messageCollection = message.Type == MessageType.Ad ? Ads : Messages;
 
-            while (messageCollection.Count >= Settings.MaxBackLogItems)
-            {
-                messageCollection[0].Dispose();
-                messageCollection.RemoveAt(0);
-            }
-
-            messageCollection.Add(message);
+            messageCollection.Backlog(message, Settings.MaxBackLogItems);
 
             if (IsSelected)
             {

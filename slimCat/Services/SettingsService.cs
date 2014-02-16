@@ -154,6 +154,11 @@ namespace slimCat.Services
 
                             var collection = ApplicationSettings.SavedChannels;
 
+                            if (property.Name.Equals("recentChannels", StringComparison.OrdinalIgnoreCase))
+                                collection = ApplicationSettings.RecentChannels;
+                            else if (property.Name.Equals("recentCharacters", StringComparison.OrdinalIgnoreCase))
+                                collection = ApplicationSettings.RecentCharacters;
+
                             if (property.Name.Equals("interested", StringComparison.OrdinalIgnoreCase))
                                 cm.Set(element.Elements().Select(x => x.Value), ListKind.Interested);
                             else if (property.Name.Equals("notinterested", StringComparison.OrdinalIgnoreCase))
@@ -252,7 +257,7 @@ namespace slimCat.Services
                             var label = "item";
                             if (property.Name.ToLower().Contains("channel"))
                                 label = "channel";
-                            else if (property.Name.ToLower().Contains("interested"))
+                            else if (property.Name.ToLower().Contains("interested") || property.Name.ToLower().Contains("character"))
                                 label = "character";
 
                             toAdd.Add(new XElement(label, item));

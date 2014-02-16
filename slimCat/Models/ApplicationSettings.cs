@@ -25,6 +25,7 @@ namespace slimCat.Models
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using Utilities;
 
     #endregion
 
@@ -34,10 +35,6 @@ namespace slimCat.Models
     public static class ApplicationSettings
     {
         #region Constructors and Destructors
-
-        /// <summary>
-        ///     Initializes static members of the <see cref="ApplicationSettings" /> class.
-        /// </summary>
         static ApplicationSettings()
         {
             Volume = 1;
@@ -50,6 +47,8 @@ namespace slimCat.Models
             Interested = new List<string>();
             NotInterested = new List<string>();
             IgnoreUpdates = new List<string>();
+            RecentChannels = new List<string>(10);
+            RecentCharacters = new List<string>(20);
 
             PortableMode = Environment.GetCommandLineArgs().Contains("portable", StringComparer.OrdinalIgnoreCase);
             FontSize = 13;
@@ -153,6 +152,16 @@ namespace slimCat.Models
         ///     Gets the list of characters interesting to this user.
         /// </summary>
         public static IList<string> Interested { get; private set; }
+
+        /// <summary>
+        ///     Gets or sets the recent characters.
+        /// </summary>
+        public static IList<string> RecentCharacters { get; private set; }
+
+        /// <summary>
+        ///     Gets or sets the recent channels.
+        /// </summary>
+        public static IList<string> RecentChannels { get; private set; }
 
         /// <summary>
         ///     Gets the list of channels saved to our user .
