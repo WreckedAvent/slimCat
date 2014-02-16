@@ -7,9 +7,9 @@
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
            xmlns:models="clr-namespace:slimCat.Models"
            mc:Ignorable="d"
-           
+
            d:DataContext="{d:DesignInstance Type=models:CharacterUpdateModel}"
-           
+
            Margin="0,2"
            Padding="0"
            Foreground="{StaticResource ForegroundBrush}"

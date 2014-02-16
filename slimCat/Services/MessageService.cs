@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MessageDaemon.cs">
+// <copyright file="MessageService.cs">
 //    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
 //   
 //    This source is subject to the Simplified BSD License.
@@ -35,7 +35,6 @@ namespace slimCat.Services
     using ViewModels;
     using Views;
     using Commands = Utilities.Constants.ClientCommands;
-    using Arguments = Utilities.Constants.Arguments;
 
     #endregion
 
@@ -45,10 +44,10 @@ namespace slimCat.Services
     /// </summary>
     public class MessageService : DispatcherObject, IChannelManager
     {
-
         #region Fields
 
         private readonly IListConnection api;
+        private readonly IAutomationService automation;
 
         private readonly ICharacterManager characterManager;
 
@@ -59,16 +58,13 @@ namespace slimCat.Services
         private readonly IUnityContainer container;
 
         private readonly IEventAggregator events;
+        private readonly ILoggingService logger;
 
         private readonly IChatModel model;
 
         private readonly IRegionManager region;
 
         private ChannelModel lastSelected;
-
-        private readonly ILoggingService logger;
-
-        private readonly IAutomationService automation;
 
         #endregion
 
@@ -82,7 +78,7 @@ namespace slimCat.Services
             IChatConnection connection,
             IListConnection api,
             ICharacterManager manager,
-            ILoggingService logger, 
+            ILoggingService logger,
             IAutomationService automation)
         {
             this.logger = logger;
@@ -200,7 +196,7 @@ namespace slimCat.Services
             string message, string channelName, string poster, MessageType messageType = MessageType.Normal)
         {
             var sender =
-                characterManager.Find(poster == Arguments.ThisCharacter ? model.CurrentCharacter.Name : poster);
+                characterManager.Find(poster == Constants.Arguments.ThisCharacter ? model.CurrentCharacter.Name : poster);
 
             var channel = model.CurrentChannels.FirstByIdOrNull(channelName)
                           ?? (ChannelModel) model.CurrentPms.FirstByIdOrNull(channelName);
@@ -221,7 +217,7 @@ namespace slimCat.Services
                             logger.LogMessage(channel.Title, channel.Id, thisMessage);
                         }
 
-                        if (poster == Arguments.ThisCharacter)
+                        if (poster == Constants.Arguments.ThisCharacter)
                             return;
 
                         // don't push events for our own messages
@@ -231,8 +227,8 @@ namespace slimCat.Services
                                 .Publish(
                                     new Dictionary<string, object>
                                         {
-                                            {Arguments.Message, thisMessage},
-                                            {Arguments.Channel, channel}
+                                            {Constants.Arguments.Message, thisMessage},
+                                            {Constants.Arguments.Channel, channel}
                                         });
                         }
                         else
@@ -324,7 +320,7 @@ namespace slimCat.Services
 
         private void OnPrivRequested(IDictionary<string, object> command)
         {
-            var characterName = command.Get(Arguments.Character);
+            var characterName = command.Get(Constants.Arguments.Character);
             if (characterName.Equals(model.CurrentCharacter.Name, StringComparison.OrdinalIgnoreCase))
                 events.GetEvent<ErrorEvent>().Publish("Hmmm... talking to yourself?");
             else
@@ -338,30 +334,30 @@ namespace slimCat.Services
 
         private void OnPriRequested(IDictionary<string, object> command)
         {
-            AddMessage(command.Get(Arguments.Message), command.Get("recipient"),
-                Arguments.ThisCharacter);
+            AddMessage(command.Get(Constants.Arguments.Message), command.Get("recipient"),
+                Constants.Arguments.ThisCharacter);
             connection.SendMessage(command);
         }
 
         private void OnMsgRequested(IDictionary<string, object> command)
         {
-            AddMessage(command.Get(Arguments.Message), command.Get(Arguments.Channel),
-                Arguments.ThisCharacter);
+            AddMessage(command.Get(Constants.Arguments.Message), command.Get(Constants.Arguments.Channel),
+                Constants.Arguments.ThisCharacter);
             connection.SendMessage(command);
         }
 
         private void OnLrpRequested(IDictionary<string, object> command)
         {
-            AddMessage(command.Get(Arguments.Message), command.Get(Arguments.Channel),
-                Arguments.ThisCharacter,
+            AddMessage(command.Get(Constants.Arguments.Message), command.Get(Constants.Arguments.Channel),
+                Constants.Arguments.ThisCharacter,
                 MessageType.Ad);
             connection.SendMessage(command);
         }
 
         private void OnStatusChangeRequested(IDictionary<string, object> command)
         {
-            var statusmsg = command.Get(Arguments.StatusMessage);
-            var status = command.Get(Arguments.Status).ToEnum<StatusType>();
+            var statusmsg = command.Get(Constants.Arguments.StatusMessage);
+            var status = command.Get(Constants.Arguments.Status).ToEnum<StatusType>();
 
             model.CurrentCharacter.Status = status;
             model.CurrentCharacter.StatusMessage = statusmsg;
@@ -370,12 +366,12 @@ namespace slimCat.Services
 
         private void OnCloseRequested(IDictionary<string, object> command)
         {
-            RemoveChannel(command.Get(Arguments.Channel));
+            RemoveChannel(command.Get(Constants.Arguments.Channel));
         }
 
         private void OnJoinRequested(IDictionary<string, object> command)
         {
-            var args = command.Get(Arguments.Channel);
+            var args = command.Get(Constants.Arguments.Channel);
 
             if (model.CurrentChannels.FirstByIdOrNull(args) != null)
             {
@@ -395,13 +391,13 @@ namespace slimCat.Services
 
         private void OnIgnoreRequested(IDictionary<string, object> command)
         {
-            var args = command.Get(Arguments.Character);
+            var args = command.Get(Constants.Arguments.Character);
 
-            var action = command.Get(Arguments.Action);
+            var action = command.Get(Constants.Arguments.Action);
 
-            if (action == Arguments.ActionAdd)
+            if (action == Constants.Arguments.ActionAdd)
                 characterManager.Add(args, ListKind.Ignored);
-            else if (action == Arguments.ActionDelete)
+            else if (action == Constants.Arguments.ActionDelete)
                 characterManager.Remove(args, ListKind.Ignored);
             else
                 return;
@@ -412,7 +408,7 @@ namespace slimCat.Services
                         characterManager.Find(args),
                         new CharacterUpdateModel.ListChangedEventArgs
                             {
-                                IsAdded = action == Arguments.ActionAdd,
+                                IsAdded = action == Constants.Arguments.ActionAdd,
                                 ListArgument = CharacterUpdateModel.ListChangedEventArgs.ListType.Ignored
                             }));
 
@@ -439,9 +435,9 @@ namespace slimCat.Services
 
         private void OnOpenLogFolderRequested(IDictionary<string, object> command)
         {
-            if (command.ContainsKey(Arguments.Channel))
+            if (command.ContainsKey(Constants.Arguments.Channel))
             {
-                var toOpen = command.Get(Arguments.Channel);
+                var toOpen = command.Get(Constants.Arguments.Channel);
                 if (!string.IsNullOrWhiteSpace(toOpen))
                     logger.OpenLog(true, toOpen, toOpen);
             }
@@ -486,10 +482,10 @@ namespace slimCat.Services
                     return;
                 }
 
-                if (kind != null && kind.Equals(Arguments.Report))
+                if (kind != null && kind.Equals(Constants.Arguments.Report))
                 {
                     command.Clear();
-                    command[Arguments.Name] = target;
+                    command[Constants.Arguments.Name] = target;
                     OnHandleLatestReportByUserRequested(command);
                 }
 
@@ -543,7 +539,7 @@ namespace slimCat.Services
 
         private void OnInviteToChannelRequested(IDictionary<string, object> command)
         {
-            if (command.ContainsKey(Arguments.Character) && command.Get(Arguments.Character).Equals(
+            if (command.ContainsKey(Constants.Arguments.Character) && command.Get(Constants.Arguments.Character).Equals(
                 model.CurrentCharacter.Name, StringComparison.OrdinalIgnoreCase))
             {
                 events.GetEvent<ErrorEvent>().Publish("You don't need my help to talk to yourself.");
@@ -583,7 +579,7 @@ namespace slimCat.Services
 
         private void OnMarkInterestedRequested(IDictionary<string, object> command)
         {
-            var args = command.Get(Arguments.Character);
+            var args = command.Get(Constants.Arguments.Character);
             var isAdd = !characterManager.IsOnList(args, ListKind.Interested);
             if (isAdd)
                 characterManager.Add(args, ListKind.Interested);
@@ -604,7 +600,7 @@ namespace slimCat.Services
 
         private void OnMarkNotInterestedRequested(IDictionary<string, object> command)
         {
-            var args = command.Get(Arguments.Character);
+            var args = command.Get(Constants.Arguments.Character);
 
             var isAdd = !characterManager.IsOnList(args, ListKind.NotInterested);
             if (isAdd)
@@ -626,7 +622,7 @@ namespace slimCat.Services
 
         private void OnIgnoreUpdatesRequested(IDictionary<string, object> command)
         {
-            var args = command.Get(Arguments.Character);
+            var args = command.Get(Constants.Arguments.Character);
 
             var isAdd = !characterManager.IsOnList(args, ListKind.IgnoreUpdates);
             if (isAdd)
@@ -637,25 +633,25 @@ namespace slimCat.Services
 
         private void OnReportRequested(IDictionary<string, object> command)
         {
-            if (!command.ContainsKey(Arguments.Report))
-                command.Add(Arguments.Report, string.Empty);
+            if (!command.ContainsKey(Constants.Arguments.Report))
+                command.Add(Constants.Arguments.Report, string.Empty);
 
             var logId = -1; // no log
 
             // report format: "Current Tab/Channel: <channel> | Reporting User: <reported user> | <report body>
             var reportText = string.Format(
                 "Current Tab/Channel: {0} | Reporting User: {1} | {2}",
-                command.Get(Arguments.Channel),
-                command.Get(Arguments.Name),
-                command.Get(Arguments.Report));
+                command.Get(Constants.Arguments.Channel),
+                command.Get(Constants.Arguments.Name),
+                command.Get(Constants.Arguments.Report));
 
             // upload log
-            var channelText = command.Get(Arguments.Channel);
+            var channelText = command.Get(Constants.Arguments.Channel);
             if (!string.IsNullOrWhiteSpace(channelText) && !channelText.Equals("None"))
             {
                 // we could just use _model.SelectedChannel, but the user might change tabs immediately after reporting, creating a race condition
                 ChannelModel channel;
-                if (channelText == command.Get(Arguments.Name))
+                if (channelText == command.Get(Constants.Arguments.Name))
                     channel = model.CurrentPms.FirstByIdOrNull(channelText);
                 else
                     channel = model.CurrentChannels.FirstByIdOrNull(channelText);
@@ -665,8 +661,8 @@ namespace slimCat.Services
                     var report = new ReportModel
                         {
                             Reporter = model.CurrentCharacter,
-                            Reported = command.Get(Arguments.Name),
-                            Complaint = command.Get(Arguments.Report),
+                            Reported = command.Get(Constants.Arguments.Name),
+                            Complaint = command.Get(Constants.Arguments.Report),
                             Tab = channelText
                         };
 
@@ -674,20 +670,20 @@ namespace slimCat.Services
                 }
             }
 
-            command.Remove(Arguments.Name);
-            command[Arguments.Report] = reportText;
-            command[Arguments.LogId] = logId;
+            command.Remove(Constants.Arguments.Name);
+            command[Constants.Arguments.Report] = reportText;
+            command[Constants.Arguments.LogId] = logId;
 
-            if (!command.ContainsKey(Arguments.Action))
-                command[Arguments.Action] = Arguments.ActionReport;
+            if (!command.ContainsKey(Constants.Arguments.Action))
+                command[Constants.Arguments.Action] = Constants.Arguments.ActionReport;
 
             connection.SendMessage(command);
         }
 
         private void OnTemporaryIgnoreRequested(IDictionary<string, object> command)
         {
-            var character = command.Get(Arguments.Character).ToLower().Trim();
-            var add = command.Get(Arguments.Type) == "tempignore";
+            var character = command.Get(Constants.Arguments.Character).ToLower().Trim();
+            var add = command.Get(Constants.Arguments.Type) == "tempignore";
 
             if (add)
                 characterManager.Add(character, ListKind.Ignored, true);
@@ -697,8 +693,8 @@ namespace slimCat.Services
 
         private void OnTemporaryInterestingRequested(IDictionary<string, object> command)
         {
-            var character = command.Get(Arguments.Character).ToLower().Trim();
-            var add = command.Get(Arguments.Type) == "tempinteresting";
+            var character = command.Get(Constants.Arguments.Character).ToLower().Trim();
+            var add = command.Get(Constants.Arguments.Type) == "tempinteresting";
 
             if (add)
                 characterManager.Add(character, ListKind.Interested, true);
@@ -720,15 +716,15 @@ namespace slimCat.Services
 
             var args = latest.Arguments as CharacterUpdateModel.ReportFiledEventArgs;
 
-            command.Add(Arguments.Type, Commands.AdminAlert);
-            if (args != null) command.Add(Arguments.CallId, args.CallId);
-            command.Add(Arguments.Action, Arguments.ActionConfirm);
+            command.Add(Constants.Arguments.Type, Commands.AdminAlert);
+            if (args != null) command.Add(Constants.Arguments.CallId, args.CallId);
+            command.Add(Constants.Arguments.Action, Constants.Arguments.ActionConfirm);
 
             JoinChannel(ChannelType.PrivateMessage, latest.TargetCharacter.Name);
 
             var logId = -1;
-            if (command.ContainsKey(Arguments.LogId))
-                int.TryParse(command.Get(Arguments.LogId), out logId);
+            if (command.ContainsKey(Constants.Arguments.LogId))
+                int.TryParse(command.Get(Constants.Arguments.LogId), out logId);
 
             if (logId != -1)
                 Process.Start(Constants.UrlConstants.ReadLog + logId);
@@ -738,9 +734,9 @@ namespace slimCat.Services
 
         private void OnHandleLatestReportByUserRequested(IDictionary<string, object> command)
         {
-            if (command.ContainsKey(Arguments.Name))
+            if (command.ContainsKey(Constants.Arguments.Name))
             {
-                var target = characterManager.Find(command.Get(Arguments.Name));
+                var target = characterManager.Find(command.Get(Constants.Arguments.Name));
 
                 if (!target.HasReport)
                 {
@@ -749,16 +745,16 @@ namespace slimCat.Services
                     return;
                 }
 
-                command[Arguments.Type] = Commands.AdminAlert;
-                command.Add(Arguments.CallId, target.LastReport.CallId);
-                if (!command.ContainsKey(Arguments.Action))
-                    command[Arguments.Action] = Arguments.ActionConfirm;
+                command[Constants.Arguments.Type] = Commands.AdminAlert;
+                command.Add(Constants.Arguments.CallId, target.LastReport.CallId);
+                if (!command.ContainsKey(Constants.Arguments.Action))
+                    command[Constants.Arguments.Action] = Constants.Arguments.ActionConfirm;
 
                 JoinChannel(ChannelType.PrivateMessage, target.Name);
 
                 var logId = -1;
-                if (command.ContainsKey(Arguments.LogId))
-                    int.TryParse(command.Get(Arguments.LogId), out logId);
+                if (command.ContainsKey(Constants.Arguments.LogId))
+                    int.TryParse(command.Get(Constants.Arguments.LogId), out logId);
 
                 if (logId != -1)
                     Process.Start(Constants.UrlConstants.ReadLog + logId);
@@ -771,7 +767,7 @@ namespace slimCat.Services
 
         private void CommandRecieved(IDictionary<string, object> command)
         {
-            var type = command.Get(Arguments.Type);
+            var type = command.Get(Constants.Arguments.Type);
 
             if (type == null)
                 return;
@@ -813,7 +809,7 @@ namespace slimCat.Services
 
                             if (toUpdate == null)
                                 lastSelected = null;
-                            else 
+                            else
                                 toUpdate.IsSelected = false;
                         });
             }

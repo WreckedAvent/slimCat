@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="LoggingDaemon.cs">
+// <copyright file="LoggingService.cs">
 //    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
 //   
 //    This source is subject to the Simplified BSD License.
@@ -81,9 +81,11 @@ namespace slimCat.Services
         #endregion
 
         #region Properties
+
         private string CurrentCharacter { get; set; }
 
         private string FullPath { get; set; }
+
         #endregion
 
         #region Public Methods and Operators
@@ -99,8 +101,8 @@ namespace slimCat.Services
 
             var file =
                 new DirectoryInfo(loggingPath)
-                .GetFiles("*.txt")
-                .OrderByDescending(x => x.LastWriteTime).FirstOrDefault();
+                    .GetFiles("*.txt")
+                    .OrderByDescending(x => x.LastWriteTime).FirstOrDefault();
 
             if (file == null) return toReturn;
 
@@ -172,7 +174,7 @@ namespace slimCat.Services
 
                 if (isFolder)
                 {
-                    Process.Start(workingPath); 
+                    Process.Start(workingPath);
                     return;
                 }
 

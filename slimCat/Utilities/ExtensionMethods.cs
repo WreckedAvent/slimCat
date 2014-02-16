@@ -38,7 +38,7 @@ namespace slimCat.Utilities
         #region Public Methods and Operators
 
         /// <summary>
-        ///     Returns the first channel model with the given Id, or <see langword="null"/> if none exist.
+        ///     Returns the first channel model with the given Id, or <see langword="null" /> if none exist.
         /// </summary>
         public static T FirstByIdOrNull<T>(this ICollection<T> model, string id) where T : ChannelModel
         {
@@ -46,7 +46,7 @@ namespace slimCat.Utilities
         }
 
         /// <summary>
-        ///     Throws an <see cref="ArgumentNullException"/> if the value provided is null.
+        ///     Throws an <see cref="ArgumentNullException" /> if the value provided is null.
         /// </summary>
         public static T ThrowIfNull<T>(this T x, string name) where T : class
         {
@@ -120,9 +120,11 @@ namespace slimCat.Utilities
             return (T) Enum.Parse(typeof (T), str, true);
         }
 
-        public static void SendUserCommand(this IEventAggregator events, string commandName, IList<string> arguments = null, string channel = null)
+        public static void SendUserCommand(this IEventAggregator events, string commandName,
+            IList<string> arguments = null, string channel = null)
         {
-            events.GetEvent<UserCommandEvent>().Publish(CommandDefinitions.CreateCommand(commandName, arguments, channel).ToDictionary());
+            events.GetEvent<UserCommandEvent>()
+                .Publish(CommandDefinitions.CreateCommand(commandName, arguments, channel).ToDictionary());
         }
 
         #endregion

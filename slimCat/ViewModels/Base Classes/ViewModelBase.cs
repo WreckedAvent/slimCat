@@ -337,7 +337,7 @@ namespace slimCat.ViewModels
 
         protected void RequestChannelJoinEvent(object args)
         {
-            Events.SendUserCommand("join", new [] {args as string});
+            Events.SendUserCommand("join", new[] {args as string});
         }
 
         protected void RequestPmEvent(object args)
@@ -349,7 +349,7 @@ namespace slimCat.ViewModels
                 return;
             }
 
-            Events.SendUserCommand("priv", new []{tabName});
+            Events.SendUserCommand("priv", new[] {tabName});
         }
 
         private void StartLinkInDefaultBrowser(object linkToOpen)
@@ -440,13 +440,12 @@ namespace slimCat.ViewModels
 
         private void HandleReportEvent(object args)
         {
-            Events.SendUserCommand("handlereport", new []{args as string});
+            Events.SendUserCommand("handlereport", new[] {args as string});
         }
 
         private void IgnoreEvent(object args, bool remove = false)
         {
-
-            Events.SendUserCommand(remove ? "unignore" : "ignore", new []{args as string});
+            Events.SendUserCommand(remove ? "unignore" : "ignore", new[] {args as string});
             OnRightClickMenuUpdated(RightClickMenuViewModel.Target); // updates the ignore/unignore text
         }
 
@@ -481,7 +480,7 @@ namespace slimCat.ViewModels
 
         private void KickOrBanEvent(object args, bool isBan)
         {
-            Events.SendUserCommand(isBan ? "ban" : "kick", new []{args as string}, ChatModel.CurrentChannel.Id);
+            Events.SendUserCommand(isBan ? "ban" : "kick", new[] {args as string}, ChatModel.CurrentChannel.Id);
         }
 
         private void RemoveIgnoreEvent(object args)

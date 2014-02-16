@@ -195,9 +195,8 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
-
         /// <summary>
-        /// Sets the new target.
+        ///     Sets the new target.
         /// </summary>
         /// <param name="newTarget">The new target.</param>
         /// <param name="thisHasReports">if set to <c>true</c> the character has reports.</param>

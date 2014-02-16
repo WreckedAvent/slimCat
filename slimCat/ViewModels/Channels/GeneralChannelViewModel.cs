@@ -85,6 +85,7 @@ namespace slimCat.ViewModels
         #endregion
 
         #region Constructors and Destructor
+
         public GeneralChannelViewModel(
             string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
             ICharacterManager manager)
@@ -289,7 +290,11 @@ namespace slimCat.ViewModels
 
         public bool CanDisplayAds
         {
-            get { return (Model.Mode == ChannelMode.Both || Model.Mode == ChannelMode.Ads) && Model.Type != ChannelType.PrivateMessage; }
+            get
+            {
+                return (Model.Mode == ChannelMode.Both || Model.Mode == ChannelMode.Ads) &&
+                       Model.Type != ChannelType.PrivateMessage;
+            }
         }
 
         public bool CanDisplayChat
@@ -464,7 +469,7 @@ namespace slimCat.ViewModels
             if (messageToSend == null)
                 UpdateError("There is no ad to auto-post!");
 
-            Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new []{messageToSend}, Model.Id);
+            Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new[] {messageToSend}, Model.Id);
             timeLeftAd = DateTimeOffset.Now.AddMinutes(10).AddSeconds(2);
 
             isInCoolDownAd = true;
@@ -584,7 +589,7 @@ namespace slimCat.ViewModels
                 ? CommandDefinitions.ClientSendChannelMessage
                 : CommandDefinitions.ClientSendChannelAd;
 
-            Events.SendUserCommand(command, new []{Message}, Model.Id);
+            Events.SendUserCommand(command, new[] {Message}, Model.Id);
 
             if (!autoPostAds || IsDisplayingChat)
                 Message = null;

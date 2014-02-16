@@ -19,7 +19,11 @@
 
 namespace slimCat.Services
 {
+    #region Usings
+
     using Models;
+
+    #endregion
 
     public class PermissionService : IPermissionService
     {
@@ -41,8 +45,8 @@ namespace slimCat.Services
         {
             if (IsAdmin(name)) return true;
 
-            return CurrentChannel != null 
-                && CurrentChannel.CharacterManager.IsOnList(name, ListKind.Moderator, false);
+            return CurrentChannel != null
+                   && CurrentChannel.CharacterManager.IsOnList(name, ListKind.Moderator, false);
         }
 
         public bool IsAdmin(string name)

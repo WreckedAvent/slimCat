@@ -9,13 +9,13 @@
                   xmlns:models="clr-namespace:slimCat.Models"
 
                   d:DataContext="{d:DesignInstance vm:UtilityChannelViewModel}">
-    
+
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type models:CharacterModel}">
             <ContentControl Margin="0"
                             Content="{Binding}"
                             HorizontalAlignment="Left"
-                            TextBlock.TextAlignment="Left" >
+                            TextBlock.TextAlignment="Left">
                 <ContentControl.ContentTemplate>
                     <DataTemplate DataType="models:CharacterModel">
                         <Grid>
@@ -25,25 +25,26 @@
                             </Grid.ColumnDefinitions>
 
                             <Rectangle Height="15" Width="15"
-                           Fill="{Binding Converter={StaticResource GenderColorConverter}, Mode=OneWay}">
+                                       Fill="{Binding Converter={StaticResource GenderColorConverter}, Mode=OneWay}">
                                 <Rectangle.OpacityMask>
-                                    <ImageBrush ImageSource="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
+                                    <ImageBrush
+                                        ImageSource="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
                                 </Rectangle.OpacityMask>
                             </Rectangle>
 
                             <TextBlock TextWrapping="Wrap"
-                           Grid.Column="1">
-                    <Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
-                               Style="{StaticResource UsernameStyle}"
-                               Foreground="{Binding Converter={StaticResource NameplateColorConverter}, Mode=OneWay}">
-                        <Run Text="{Binding Path=Name, Mode=OneTime}" />
-                        <Hyperlink.InputBindings>
-                            <MouseBinding MouseAction="RightClick"
-                                          Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
+                                       Grid.Column="1">
+                                <Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
+                                           Style="{StaticResource UsernameStyle}"
+                                           Foreground="{Binding Converter={StaticResource NameplateColorConverter}, Mode=OneWay}">
+                                    <Run Text="{Binding Path=Name, Mode=OneTime}" />
+                                    <Hyperlink.InputBindings>
+                                        <MouseBinding MouseAction="RightClick"
+                                                      Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
                                                             RelativeSource={RelativeSource AncestorType={x:Type Grid},AncestorLevel=2}}"
-                                          CommandParameter="{Binding Path=Name, Mode=OneTime}" />
-                        </Hyperlink.InputBindings>
-                    </Hyperlink>
+                                                      CommandParameter="{Binding Path=Name, Mode=OneTime}" />
+                                    </Hyperlink.InputBindings>
+                                </Hyperlink>
                             </TextBlock>
 
                         </Grid>
@@ -52,7 +53,7 @@
             </ContentControl>
         </DataTemplate>
     </UserControl.Resources>
-    
+
     <Grid TextBlock.FontSize="16">
         <Border HorizontalAlignment="Center"
                 VerticalAlignment="Center"
@@ -107,17 +108,18 @@
                 </Expander>
             </Border>
 
-            <ScrollViewer Grid.Row="1" 
+            <ScrollViewer Grid.Row="1"
                           CanContentScroll="False">
                 <StackPanel>
                     <Expander Header="Settings">
                         <StackPanel Margin="10,0,0,0">
-                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0"/>
-                            
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0" />
+
                             <Expander Header="General">
                                 <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
-                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0"/>
-                                    
+                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
+                                          Margin="0,0,0,0" />
+
                                     <CheckBox IsChecked="{Binding AllowLogging}"
                                               VerticalAlignment="Center"
                                               Margin="0,15,0,0"
@@ -152,15 +154,17 @@
                                                   SelectedValuePath="Value" />
                                     </StackPanel>
 
-                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0"/>
+                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
+                                          Margin="0,15,0,0" />
 
                                 </StackPanel>
                             </Expander>
-                    
+
                             <Expander Header="Notifications">
                                 <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
-                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0"/>
-                                    
+                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
+                                          Margin="0,0,0,0" />
+
                                     <CheckBox IsChecked="{Binding ShowNotifications}"
                                               VerticalAlignment="Center"
                                               Margin="0,15,0,0"
@@ -177,7 +181,7 @@
 
                                     <StackPanel Margin="0,15,0,0"
                                                 ToolTip="Defines a global set of words that slimCat will check messages against and alert you if they match">
-                                        <TextBlock Text="Global Notify Words (comma seperated)"/>
+                                        <TextBlock Text="Global Notify Words (comma seperated)" />
                                         <TextBox
                                             Text="{Binding Path=GlobalNotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             TextWrapping="Wrap"
@@ -188,15 +192,17 @@
                                             FontSize="12" />
                                     </StackPanel>
 
-                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0"/>
+                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
+                                          Margin="0,15,0,0" />
 
                                 </StackPanel>
                             </Expander>
 
                             <Expander Header="Appearance">
                                 <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
-                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0"/>
-                                    
+                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
+                                          Margin="0,0,0,0" />
+
                                     <CheckBox IsChecked="{Binding AllowColors}"
                                               VerticalAlignment="Center"
                                               Margin="0,15,0,0"
@@ -207,8 +213,8 @@
                                     <StackPanel Margin="0,15,0,0"
                                                 ToolTip="Changes the size of the font for messages displayed in channels">
                                         <WrapPanel>
-                                            <TextBlock Text="Backlog Font Size: "/>
-                                            <TextBlock Text="{Binding Path=FontSize}"/>
+                                            <TextBlock Text="Backlog Font Size: " />
+                                            <TextBlock Text="{Binding Path=FontSize}" />
                                         </WrapPanel>
                                         <Slider Value="{Binding FontSize}"
                                                 LargeChange="4"
@@ -234,15 +240,17 @@
                                                   SelectedValuePath="Value" />
                                     </StackPanel>
 
-                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0"/>
+                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
+                                          Margin="0,15,0,0" />
 
                                 </StackPanel>
                             </Expander>
 
                             <Expander Header="Automation">
                                 <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
-                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0"/>
-                                    
+                                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
+                                          Margin="0,0,0,0" />
+
                                     <CheckBox IsChecked="{Binding AllowAdDedpulication}"
                                               VerticalAlignment="Center"
                                               Margin="0,15,0,0"
@@ -271,11 +279,11 @@
                                         Allow Automatic Idle
                                     </CheckBox>
 
-                                    <StackPanel Margin="0,15,0,0" 
+                                    <StackPanel Margin="0,15,0,0"
                                                 Visibility="{Binding AllowAutoIdle, Converter={StaticResource BoolConverter}}">
                                         <WrapPanel>
-                                            <TextBlock Text="Time Until Idle (minutes): "/>
-                                            <TextBlock Text="{Binding Path=AutoIdleTime}"/>
+                                            <TextBlock Text="Time Until Idle (minutes): " />
+                                            <TextBlock Text="{Binding Path=AutoIdleTime}" />
                                         </WrapPanel>
                                         <Slider Value="{Binding AutoIdleTime}"
                                                 LargeChange="20"
@@ -296,11 +304,11 @@
                                         Allow Automatic Away
                                     </CheckBox>
 
-                                    <StackPanel Margin="0,15,0,15" 
+                                    <StackPanel Margin="0,15,0,15"
                                                 Visibility="{Binding AllowAutoAway, Converter={StaticResource BoolConverter}}">
                                         <WrapPanel>
-                                            <TextBlock Text="Time Until Away (minutes): "/>
-                                            <TextBlock Text="{Binding Path=AutoAwayTime}"/>
+                                            <TextBlock Text="Time Until Away (minutes): " />
+                                            <TextBlock Text="{Binding Path=AutoAwayTime}" />
                                         </WrapPanel>
                                         <Slider Value="{Binding AutoAwayTime}"
                                                 LargeChange="20"
@@ -316,16 +324,16 @@
 
                                 </StackPanel>
                             </Expander>
-                            
-                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0"/>
+
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0" />
                         </StackPanel>
                     </Expander>
 
                     <Expander Header="Update"
                               Visibility="{Binding HasNewUpdate, Mode=OneWay, Converter={StaticResource BoolConverter}}">
                         <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
-                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,15"/>
-                            
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,15" />
+
                             <TextBlock>
                                 <Run Text="There is a new update available!" />
                                 <LineBreak />
@@ -336,21 +344,21 @@
 
                                 <Hyperlink CommandParameter="{Binding Path=UpdateLink, Mode=OneWay}">Download Now</Hyperlink>
                             </TextBlock>
-                            
-                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0"/>
+
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0" />
                         </StackPanel>
                     </Expander>
 
                     <Expander Header="Help">
                         <WrapPanel>
-                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,15"/>
-                            
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,15" />
+
                             <TextBlock Foreground="{StaticResource ForegroundBrush}" TextWrapping="Wrap">
                                 For trouble shooting, support, feature suggestions, bug reports, or other inquiries, please send a note to or PM
-                                <ContentControl Content="{Binding Path=slimCat}"/>
+                                <ContentControl Content="{Binding Path=slimCat}" />
                             </TextBlock>
-                            
-                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0"/>
+
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0" />
                         </WrapPanel>
                     </Expander>
                 </StackPanel>

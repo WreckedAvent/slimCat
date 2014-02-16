@@ -15,7 +15,7 @@
     <Span Background="{Binding Converter={StaticResource MessageInterestedColorConverter}, Mode=OneWay}">
         <Run Text="{Binding TimeStamp, Mode=OneTime}"
              FontSize="12"
-             Foreground="{Binding Converter={StaticResource NameplateMessageColorConverter}, Mode=OneWay}"/>
+             Foreground="{Binding Converter={StaticResource NameplateMessageColorConverter}, Mode=OneWay}" />
 
         <InlineUIContainer BaselineAlignment="Bottom">
             <Rectangle Height="15" Width="15" Margin="0"
@@ -40,18 +40,18 @@
             </Hyperlink.InputBindings>
         </Hyperlink>
     </Span>
-    
-    <Span 
+
+    <Span
         lib:SpanHelper.InlineSource="{Binding Mode=OneTime, Converter={StaticResource BbFlowConverter}, IsAsync=True}" />
-    
-    <LineBreak/>
-    
-    <Line Stroke="{Binding Converter={StaticResource DelimiterColorConverter}}" 
-          HorizontalAlignment="Left" 
-          X1="0" 
+
+    <LineBreak />
+
+    <Line Stroke="{Binding Converter={StaticResource DelimiterColorConverter}}"
+          HorizontalAlignment="Left"
+          X1="0"
           X2="1"
           Height="1"
           Stretch="Fill"
           MaxWidth="2000"
-          Margin="0,1,0,0"/>
+          Margin="0,1,0,0" />
 </Paragraph>

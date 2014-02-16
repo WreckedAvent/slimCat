@@ -14,16 +14,16 @@
     <utilities:GenderImageConverter x:Key="GenderImageConverter" />
     <utilities:ChannelTypeToImageConverter x:Key="ChannelTypeToImageConverter" />
     <utilities:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter" />
-    <utilities:MessageInterestedColorConverter x:Key="MessageInterestedColorConverter"/>
-    <utilities:MessageDelimiterColorConverter x:Key="DelimiterColorConverter"/>
-    
+    <utilities:MessageInterestedColorConverter x:Key="MessageInterestedColorConverter" />
+    <utilities:MessageDelimiterColorConverter x:Key="DelimiterColorConverter" />
+
     <!-- These will be replaced with their instance values by the container -->
     <utilities:GenderColorConverter x:Key="GenderColorConverter" />
-    <utilities:NameplateColorConverter x:Key="NameplateColorConverter"/>
-    <utilities:NameplateMessageColorConverter x:Key="NameplateMessageColorConverter"/>
+    <utilities:NameplateColorConverter x:Key="NameplateColorConverter" />
+    <utilities:NameplateMessageColorConverter x:Key="NameplateMessageColorConverter" />
     <utilities:BbFlowConverter x:Key="BbFlowConverter" />
-    <utilities:BbCodePostConverter x:Key="BbPostConverter"/>
-    <utilities:BbCodeConverter x:Key="BbCodeConverter"/>
+    <utilities:BbCodePostConverter x:Key="BbPostConverter" />
+    <utilities:BbCodeConverter x:Key="BbCodeConverter" />
 
     <MouseBinding x:Key="RightClickOpenMenu"
                   MouseAction="RightClick"

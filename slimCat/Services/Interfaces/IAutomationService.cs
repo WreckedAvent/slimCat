@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IPermissionService.cs">
+// <copyright file="IAutomationService.cs">
 //    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
 //   
 //    This source is subject to the Simplified BSD License.
@@ -19,18 +19,12 @@
 
 namespace slimCat.Services
 {
-    public interface IPermissionService
+    public interface IAutomationService
     {
-        /// <summary>
-        ///     Determines whether the specified character is a moderator or greater.
-        /// </summary>
-        /// <param name="name">The character's name to check.</param>
-        bool IsModerator(string name);
+        void ResetStatusTimers();
 
-        /// <summary>
-        ///     Determines whether the specified character is an admin.
-        /// </summary>
-        /// <param name="name">The character's name to check.</param>
-        bool IsAdmin(string name);
+        bool IsDuplicateAd(string name, string message);
+
+        void UserDidAction();
     }
 }

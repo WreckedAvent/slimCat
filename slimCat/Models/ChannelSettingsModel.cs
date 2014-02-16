@@ -30,15 +30,15 @@ namespace slimCat.Models
     #endregion
 
     /// <summary>
-    /// Channel settings specific to each channel
+    ///     Channel settings specific to each channel
     /// </summary>
     public class ChannelSettingsModel
     {
         #region Fields
 
-        private bool enableLogging = true;
-
+        private int adNotifyLevel;
         private bool alertAboutUpdates = true;
+        private bool enableLogging = true;
 
         private RelayCommand expandSettings;
 
@@ -66,8 +66,6 @@ namespace slimCat.Models
 
         private int shouldFlashInterval = 1;
 
-        private int adNotifyLevel;
-
         #endregion
 
         #region Constructors and Destructors
@@ -94,7 +92,7 @@ namespace slimCat.Models
             {
                 MessageNotifyLevel = (int) NotifyLevel.NotificationAndSound;
                 MaxBackLogItems = 200;
-            } 
+            }
             else
                 MaxBackLogItems = 100;
         }
@@ -256,8 +254,8 @@ namespace slimCat.Models
                 messageLevel = value;
                 CallUpdate();
             }
-        }   
-     
+        }
+
         /// <summary>
         ///     0 for no notification ever
         ///     1 for a simple notification

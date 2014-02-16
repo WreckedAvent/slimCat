@@ -36,23 +36,25 @@
                         Margin="10">
                 <CheckBox IsChecked="{Binding Path=ChannelSettings.LoggingEnabled}">Allow Logging</CheckBox>
                 <CheckBox IsChecked="{Binding Path=ChannelSettings.AlertAboutUpdates}"
-                          Visibility="{Binding ShowAllSettings, Converter={StaticResource BoolConverter}}">Allow Updates</CheckBox>
+                          Visibility="{Binding ShowAllSettings, Converter={StaticResource BoolConverter}}">
+                    Allow Updates
+                </CheckBox>
 
                 <StackPanel Margin="0,15,0,0">
                     <WrapPanel>
                         <TextBlock Text="Max Backlog Items: " />
-                        <TextBlock Text="{Binding Path=ChannelSettings.MaxBackLogItems}"/>
+                        <TextBlock Text="{Binding Path=ChannelSettings.MaxBackLogItems}" />
                     </WrapPanel>
                     <Slider Value="{Binding Path=ChannelSettings.MaxBackLogItems}"
-                                    LargeChange="25"
-                                    SmallChange="10"
-                                    Minimum="50"
-                                    Maximum="250"
-                                    Width="300"
-                                    TickFrequency="25"
-                                    TickPlacement="BottomRight"
-                                    HorizontalAlignment="Left"
-                                    Margin="5,0,0,0" />
+                            LargeChange="25"
+                            SmallChange="10"
+                            Minimum="50"
+                            Maximum="250"
+                            Width="300"
+                            TickFrequency="25"
+                            TickPlacement="BottomRight"
+                            HorizontalAlignment="Left"
+                            Margin="5,0,0,0" />
                 </StackPanel>
 
                 <StackPanel Visibility="{Binding Path=CanDisplayChat, Converter={StaticResource BoolConverter}}">
@@ -84,30 +86,30 @@
                 <StackPanel Visibility="{Binding ShowAllSettings, Converter={StaticResource BoolConverter}}">
                     <StackPanel Visibility="{Binding Path=CanDisplayAds, Converter={StaticResource BoolConverter}}">
                         <TextBlock Text="New Ads"
-                               Margin="0,15,0,0" />
+                                   Margin="0,15,0,0" />
                         <Slider Maximum="3"
-                            Minimum="0"
-                            SmallChange="1"
-                            LargeChange="1"
-                            IsSnapToTickEnabled="True"
-                            TickFrequency="1"
-                            TickPlacement="BottomRight"
-                            Value="{Binding ChannelSettings.AdNotifyLevel}" />
+                                Minimum="0"
+                                SmallChange="1"
+                                LargeChange="1"
+                                IsSnapToTickEnabled="True"
+                                TickFrequency="1"
+                                TickPlacement="BottomRight"
+                                Value="{Binding ChannelSettings.AdNotifyLevel}" />
                         <WrapPanel>
                             <TextBlock
-                            Text="{Binding ChannelSettings.AdNotifyLevel, Converter={StaticResource NotifyLevelConverter}, ConverterParameter=flash}" />
+                                Text="{Binding ChannelSettings.AdNotifyLevel, Converter={StaticResource NotifyLevelConverter}, ConverterParameter=flash}" />
                             <Grid
-                            Visibility="{Binding ShowAllSettings, Converter={StaticResource BoolConverter}}">
+                                Visibility="{Binding ShowAllSettings, Converter={StaticResource BoolConverter}}">
                                 <Button
-                                Content="{Binding ChannelSettings.MessageNotifyOnlyForInteresting, Converter={StaticResource InterestedOnlyBoolConverter}}"
-                                Command="{Binding InvertCommand}"
-                                CommandParameter="Messages"
-                                Style="{StaticResource ImageContentButton}"
-                                Visibility="{Binding ChannelSettings.AdNotifyLevel, Converter={StaticResource GreaterThanZeroConverter}}" />
+                                    Content="{Binding ChannelSettings.MessageNotifyOnlyForInteresting, Converter={StaticResource InterestedOnlyBoolConverter}}"
+                                    Command="{Binding InvertCommand}"
+                                    CommandParameter="Messages"
+                                    Style="{StaticResource ImageContentButton}"
+                                    Visibility="{Binding ChannelSettings.AdNotifyLevel, Converter={StaticResource GreaterThanZeroConverter}}" />
                             </Grid>
                         </WrapPanel>
                     </StackPanel>
-                    
+
                     <TextBlock Text="Users joining/leaving"
                                Margin="0,20,0,0" />
                     <Slider Maximum="3"

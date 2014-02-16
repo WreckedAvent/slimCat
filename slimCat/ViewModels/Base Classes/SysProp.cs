@@ -47,7 +47,7 @@ namespace slimCat.ViewModels
         }
 
         /// <summary>
-        /// Verifies the name of the property.
+        ///     Verifies the name of the property.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
         /// <exception cref="System.Exception">Thrown if the name is not valid for the class.</exception>

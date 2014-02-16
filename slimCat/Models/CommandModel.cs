@@ -233,7 +233,7 @@ namespace slimCat.Models
         ///     Converts a command to a dictionary for sending over the wire.
         /// </summary>
         /// <returns>
-        ///     An <see cref="Dictionary{TKey,TValue}"/> which can be serialized to be sent to the server.
+        ///     An <see cref="Dictionary{TKey,TValue}" /> which can be serialized to be sent to the server.
         /// </returns>
         public IDictionary<string, object> ToDictionary()
         {

@@ -84,7 +84,7 @@ namespace slimCat.Models
                     new CommandModel("ignore", C.UserIgnore, new[] {A.Character, A.Action},
                         CommandModel.CommandTypes.TwoArgs)
                 },
-                {"ignoreUpdates", new CommandModel("ignoreUpdates", "ignoreUpdates", new []{A.Character})},
+                {"ignoreUpdates", new CommandModel("ignoreUpdates", "ignoreUpdates", new[] {A.Character})},
                 {"interesting", new CommandModel("interesting", "interesting", new[] {A.Character})},
                 {
                     "invite",
@@ -133,7 +133,9 @@ namespace slimCat.Models
                 {"tempignore", new CommandModel("tempignore", "tempignore", new[] {A.Character})},
                 {"tempunignore", new CommandModel("tempunignore", "tempunignore", new[] {A.Character})},
                 {"tempinteresting", new CommandModel("tempinteresting", "tempinteresting", new[] {A.Character})},
-                {"tempnotinteresting", new CommandModel("tempnotinteresting", "tempnotinteresting", new[] {A.Character})},
+                {
+                    "tempnotinteresting", new CommandModel("tempnotinteresting", "tempnotinteresting", new[] {A.Character})
+                },
                 {
                     "unignore",
                     new CommandModel("unignore", C.UserIgnore, new[] {A.Character, A.Action},
@@ -386,7 +388,7 @@ namespace slimCat.Models
                     {"pm", "priv"},
                     {"tell", "priv"},
                     {"msg", "priv"},
-                    { "online", "status"},
+                    {"online", "status"},
                     {"away", "status"},
                     {"busy", "status"},
                     {"looking", "status"},
@@ -394,17 +396,17 @@ namespace slimCat.Models
                     {"idle", "status"},
 
                     // channel mod
-                    { "cop", "promote" },
-                    { "cdeop", "demote" },
+                    {"cop", "promote"},
+                    {"cdeop", "demote"},
 
                     // admin - global mod
-                    { "op", "chatpromote" },
-                    { "deop", "chatdemote" },
-                    { "gkick", "chatkick"  },
-                    { "createchannel", "makechannel" },
-                    { "accountban", "chatban" },
-                    { "hr", "handlereport" },
-                    { "r", "handlelatest" },
+                    {"op", "chatpromote"},
+                    {"deop", "chatdemote"},
+                    {"gkick", "chatkick"},
+                    {"createchannel", "makechannel"},
+                    {"accountban", "chatban"},
+                    {"hr", "handlereport"},
+                    {"r", "handlelatest"},
                 };
 
         /// <summary>
@@ -413,7 +415,7 @@ namespace slimCat.Models
         private static readonly IDictionary<string, CommandOverride> CommandOverrides = new Dictionary
             <string, CommandOverride>
             {
-                 // commmand to override, command parameter to override, value to override with
+                // commmand to override, command parameter to override, value to override with
                 {
                     "online", new CommandOverride(A.Status, "online")
                 },
@@ -486,8 +488,8 @@ namespace slimCat.Models
                 var overrideArg = overide.ArgumentName;
                 var position = model.ArgumentNames.IndexOf(overrideArg);
 
-                args = args == null 
-                    ? new List<string>() 
+                args = args == null
+                    ? new List<string>()
                     : new List<string>(args);
 
                 if (position != -1 && !(position > args.Count))

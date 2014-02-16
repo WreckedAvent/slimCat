@@ -31,8 +31,7 @@ namespace slimCat.Services
 
         IAccount Account { get; }
 
-        void SetCredentials(string user, string pass);
-
         bool ShouldGetNewTicket { get; set; }
+        void SetCredentials(string user, string pass);
     }
 }

@@ -70,7 +70,6 @@ namespace slimCat.Models
             AllowAutoBusy = true;
         }
 
-
         #endregion
 
         #region Public Properties
@@ -101,7 +100,8 @@ namespace slimCat.Models
         public static bool AllowStatusAutoReset { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether to allow busy to be set automatically when the user is in a full-screen application.
+        ///     Gets or sets a value indicating whether to allow busy to be set automatically when the user is in a full-screen
+        ///     application.
         /// </summary>
         public static bool AllowAutoBusy { get; set; }
 

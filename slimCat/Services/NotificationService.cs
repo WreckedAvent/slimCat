@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="NotificationsDaemon.cs">
+// <copyright file="NotificationService.cs">
 //    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
 //   
 //    This source is subject to the Simplified BSD License.
@@ -336,9 +336,7 @@ namespace slimCat.Services
                 channel.HasAutoRepliedTo = true;
             }
             else if (channel.HasAutoRepliedTo && !cm.AutoReplyEnabled)
-            {
                 channel.HasAutoRepliedTo = false;
-            }
 
             if (WindowIsFocused)
             {

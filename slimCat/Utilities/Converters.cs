@@ -334,132 +334,6 @@ namespace slimCat.Utilities
             return toReturn;
         }
 
-        #region BBCode implementations
-        private Inline MakeUser(ParsedChunk arg)
-        {
-            var user = MakeUsernameLink(characterManager.Find(arg.Children.First().InnerText));
-            arg.Children.Clear();
-            return user;
-        }
-
-        private Inline MakeSuperscript(ParsedChunk arg)
-        {
-            var small = MakeSmall(arg);
-            small.BaselineAlignment = BaselineAlignment.Superscript;
-            return small;
-        }
-
-        private Inline MakeSubscript(ParsedChunk arg)
-        {
-            var small = MakeSmall(arg);
-            small.BaselineAlignment = BaselineAlignment.Subscript;
-            return small;
-        }
-
-        private Inline MakeSmall(ParsedChunk arg)
-        {
-            return new Span(WrapInRun(arg.InnerText)) {FontSize = 9};
-        }
-
-        private Inline MakeBig(ParsedChunk arg)
-        {
-            return new Span(WrapInRun(arg.InnerText)) {FontSize = 16};
-        }
-
-        private Inline MakeChannel(ParsedChunk arg)
-        {
-            var channel = MakeChannelLink(ChatModel.FindChannel(arg.Children.First().InnerText));
-            arg.Children.Clear();
-            return channel;
-        }
-
-        private Span MakeStrikeThrough(ParsedChunk arg)
-        {
-            return new Span(WrapInRun(arg.InnerText)) {TextDecorations = TextDecorations.Strikethrough};
-        }
-
-        private static Span MakeNormalText(ParsedChunk arg)
-        {
-            return new Span(WrapInRun(arg.InnerText));
-        }
-
-        private static Run WrapInRun(string text)
-        {
-            return new Run(text);
-        }
-
-        private Span MakeUrl(ParsedChunk arg)
-        {
-            var url = arg.Arguments;
-            var display = arg.Children != null
-                ? arg.Children.First().InnerText
-                : GetUrlDisplay(arg.Arguments);
-
-            if (url == null)
-            {
-                url = arg.InnerText ?? string.Empty;
-                display = arg.Children != null
-                    ? GetUrlDisplay(arg.Children.First().InnerText)
-                    : string.Empty;
-            }
-
-            if (arg.Children != null)
-                arg.Children.Clear();
-
-            return new Hyperlink(WrapInRun(display))
-                {
-                    CommandParameter = url,
-                    ToolTip = url,
-                    Style = Locator.FindStyle("Hyperlink")
-                };
-        }
-
-        private Inline MakeSession(ParsedChunk arg)
-        {
-            var channel = MakeChannelLink(ChatModel.FindChannel(arg.Children.First().InnerText, arg.Arguments));
-            arg.Children.Clear();
-            return channel;
-        }
-
-        private static Span MakeUnderline(ParsedChunk arg)
-        {
-            return new Underline(WrapInRun(arg.InnerText));
-        }
-
-        private static Span MakeBold(ParsedChunk arg)
-        {
-            return new Bold(WrapInRun(arg.InnerText));
-        }
-
-        private static Span MakeItalic(ParsedChunk arg)
-        {
-            return new Italic(WrapInRun(arg.InnerText));
-        }
-
-        private Span MakeColor(ParsedChunk arg)
-        {
-            var colorString = arg.Arguments;
-
-            if (!ApplicationSettings.AllowColors || colorString == null)
-                return MakeNormalText(arg);
-
-            try
-            {
-                var brush = new BrushConverter().ConvertFromString(colorString) as SolidColorBrush;
-
-                return brush == null
-                    ? new Span()
-                    : new Span {Foreground = brush};
-            }
-
-            catch (FormatException)
-            {
-            }
-
-            return new Span();
-        }
-        #endregion
-
         public static IList<ParsedChunk> ParseChunk(string input)
         {
             #region init
@@ -616,6 +490,134 @@ namespace slimCat.Utilities
             return toReturn;
         }
 
+        #region BBCode implementations
+
+        private Inline MakeUser(ParsedChunk arg)
+        {
+            var user = MakeUsernameLink(characterManager.Find(arg.Children.First().InnerText));
+            arg.Children.Clear();
+            return user;
+        }
+
+        private Inline MakeSuperscript(ParsedChunk arg)
+        {
+            var small = MakeSmall(arg);
+            small.BaselineAlignment = BaselineAlignment.Superscript;
+            return small;
+        }
+
+        private Inline MakeSubscript(ParsedChunk arg)
+        {
+            var small = MakeSmall(arg);
+            small.BaselineAlignment = BaselineAlignment.Subscript;
+            return small;
+        }
+
+        private Inline MakeSmall(ParsedChunk arg)
+        {
+            return new Span(WrapInRun(arg.InnerText)) {FontSize = 9};
+        }
+
+        private Inline MakeBig(ParsedChunk arg)
+        {
+            return new Span(WrapInRun(arg.InnerText)) {FontSize = 16};
+        }
+
+        private Inline MakeChannel(ParsedChunk arg)
+        {
+            var channel = MakeChannelLink(ChatModel.FindChannel(arg.Children.First().InnerText));
+            arg.Children.Clear();
+            return channel;
+        }
+
+        private Span MakeStrikeThrough(ParsedChunk arg)
+        {
+            return new Span(WrapInRun(arg.InnerText)) {TextDecorations = TextDecorations.Strikethrough};
+        }
+
+        private static Span MakeNormalText(ParsedChunk arg)
+        {
+            return new Span(WrapInRun(arg.InnerText));
+        }
+
+        private static Run WrapInRun(string text)
+        {
+            return new Run(text);
+        }
+
+        private Span MakeUrl(ParsedChunk arg)
+        {
+            var url = arg.Arguments;
+            var display = arg.Children != null
+                ? arg.Children.First().InnerText
+                : GetUrlDisplay(arg.Arguments);
+
+            if (url == null)
+            {
+                url = arg.InnerText ?? string.Empty;
+                display = arg.Children != null
+                    ? GetUrlDisplay(arg.Children.First().InnerText)
+                    : string.Empty;
+            }
+
+            if (arg.Children != null)
+                arg.Children.Clear();
+
+            return new Hyperlink(WrapInRun(display))
+                {
+                    CommandParameter = url,
+                    ToolTip = url,
+                    Style = Locator.FindStyle("Hyperlink")
+                };
+        }
+
+        private Inline MakeSession(ParsedChunk arg)
+        {
+            var channel = MakeChannelLink(ChatModel.FindChannel(arg.Children.First().InnerText, arg.Arguments));
+            arg.Children.Clear();
+            return channel;
+        }
+
+        private static Span MakeUnderline(ParsedChunk arg)
+        {
+            return new Underline(WrapInRun(arg.InnerText));
+        }
+
+        private static Span MakeBold(ParsedChunk arg)
+        {
+            return new Bold(WrapInRun(arg.InnerText));
+        }
+
+        private static Span MakeItalic(ParsedChunk arg)
+        {
+            return new Italic(WrapInRun(arg.InnerText));
+        }
+
+        private Span MakeColor(ParsedChunk arg)
+        {
+            var colorString = arg.Arguments;
+
+            if (!ApplicationSettings.AllowColors || colorString == null)
+                return MakeNormalText(arg);
+
+            try
+            {
+                var brush = new BrushConverter().ConvertFromString(colorString) as SolidColorBrush;
+
+                return brush == null
+                    ? new Span()
+                    : new Span {Foreground = brush};
+            }
+
+            catch (FormatException)
+            {
+            }
+
+            return new Span();
+        }
+
+        #endregion
+
         public class BbFinder
         {
             private const int NotFound = -1;
@@ -636,15 +638,13 @@ namespace slimCat.Utilities
             private BbTag ReturnAsTextBetween(int start, int end)
             {
                 if (end - start <= 1)
-                {
                     end = start + 2;
-                }
 
                 var toReturn = new BbTag
                     {
                         Type = BbCodeType.None,
                         Start = start,
-                        End = end - 1 
+                        End = end - 1
                     };
 
                 var rewindTo = Last != null ? Last.End : 0;
@@ -733,7 +733,7 @@ namespace slimCat.Utilities
             {
                 var toReturn = new BbTag
                     {
-                        Start = lastStart-1,
+                        Start = lastStart - 1,
                         End = currentPosition,
                         Type = BbCodeType.None
                     };
@@ -935,9 +935,9 @@ namespace slimCat.Utilities
                 inlines.Insert(0, Parse(text));
                 inlines.Insert(1, new Run(" ~"));
             }
-            else if (text.StartsWith("/warn") 
-                && message != null
-                && permissions.IsModerator(message.Poster.Name))
+            else if (text.StartsWith("/warn")
+                     && message != null
+                     && permissions.IsModerator(message.Poster.Name))
             {
                 // or a warn "command"
                 text = text.Substring("/warn ".Length);
@@ -955,15 +955,14 @@ namespace slimCat.Utilities
             }
             else
             {
-                var isSelf = message != null && ChatModel != null  && ChatModel.CurrentCharacter.NameEquals(message.Poster.Name);
+                var isSelf = message != null && ChatModel != null &&
+                             ChatModel.CurrentCharacter.NameEquals(message.Poster.Name);
 
                 inlines.Add(new Run(": "));
 
                 var toAdd = Parse(text);
                 if (isSelf)
-                {
                     toAdd.Foreground = Locator.Find<Brush>("SelfBrush");
-                }
 
                 inlines.Add(toAdd);
             }
@@ -1024,13 +1023,6 @@ namespace slimCat.Utilities
     public abstract class GenderColorConverterBase : OneWayConverter
     {
         internal readonly IPermissionService Permissions;
-        private readonly ICharacterManager manager;
-
-        protected GenderColorConverterBase(IPermissionService permissions, ICharacterManager manager)
-        {
-            Permissions = permissions;
-            this.manager = manager;
-        }
 
         private readonly IDictionary<Gender, Gender> genderFallbacks = new Dictionary<Gender, Gender>
             {
@@ -1056,6 +1048,14 @@ namespace slimCat.Utilities
                 {Gender.None, "Highlight"}
             };
 
+        private readonly ICharacterManager manager;
+
+        protected GenderColorConverterBase(IPermissionService permissions, ICharacterManager manager)
+        {
+            Permissions = permissions;
+            this.manager = manager;
+        }
+
         protected SolidColorBrush GetBrush(ICharacter character)
         {
             if (Permissions != null && Permissions.IsModerator(character.Name))
@@ -1064,8 +1064,8 @@ namespace slimCat.Utilities
             if (manager != null && manager.IsOnList(character.Name, ListKind.NotInterested))
                 return (SolidColorBrush) Application.Current.FindResource("NotAvailableBrush");
 
-            if (character.Status == StatusType.Crown 
-                || character.Status == StatusType.Online 
+            if (character.Status == StatusType.Crown
+                || character.Status == StatusType.Online
                 || character.Status == StatusType.Looking)
                 return (SolidColorBrush) TryGet(GetGenderName(character.Gender), true);
 
@@ -1080,8 +1080,8 @@ namespace slimCat.Utilities
             if (manager != null && manager.IsOnList(character.Name, ListKind.NotInterested))
                 return (Color) Application.Current.FindResource("NotAvailableColor");
 
-            if (character.Status == StatusType.Crown 
-                || character.Status == StatusType.Online 
+            if (character.Status == StatusType.Crown
+                || character.Status == StatusType.Online
                 || character.Status == StatusType.Looking)
                 return (Color) TryGet(GetGenderName(character.Gender), false);
 
@@ -1126,12 +1126,12 @@ namespace slimCat.Utilities
     public sealed class GenderColorConverter : GenderColorConverterBase
     {
         public GenderColorConverter(IPermissionService permissions, ICharacterManager manager)
-            :base(permissions, manager)
-        { 
+            : base(permissions, manager)
+        {
         }
 
         public GenderColorConverter()
-            :base(null, null)
+            : base(null, null)
         {
         }
 
@@ -1321,15 +1321,15 @@ namespace slimCat.Utilities
             if (!(value is ICharacter))
                 return Application.Current.FindResource("ForegroundBrush");
 
-            var character = (ICharacter)value;
+            var character = (ICharacter) value;
             var interesting = character.IsInteresting;
 
             return interesting
                 ? TryGet("Contrast", true)
                 : GetBrush(character);
         }
-    }    
-    
+    }
+
     /// <summary>
     ///     Converts a character's interested level to a nameplate color for a message. Accounts for message being of interest.
     /// </summary>
@@ -1350,7 +1350,7 @@ namespace slimCat.Utilities
             if (!(value is IMessage))
                 return Application.Current.FindResource("ForegroundBrush");
 
-            var message = (IMessage)value;
+            var message = (IMessage) value;
             var interesting = message.Poster.IsInteresting;
 
             if (message.IsOfInterest)
@@ -1385,7 +1385,7 @@ namespace slimCat.Utilities
             if (!(value is IMessage))
                 return new SolidColorBrush(Colors.Transparent);
 
-            var message = (IMessage)value;
+            var message = (IMessage) value;
 
             if (message.IsOfInterest)
                 return Application.Current.FindResource("HighlightBrush");
@@ -1405,7 +1405,7 @@ namespace slimCat.Utilities
         #region Public Methods and Operators
 
         /// <summary>
-        ///     Converts a <see cref="System.DateTimeOffset"/> to a rough time in the future.
+        ///     Converts a <see cref="System.DateTimeOffset" /> to a rough time in the future.
         /// </summary>
         /// <returns>A string in the "hours h minutes m seconds s" format.</returns>
         public static string DateTimeInFutureToRough(DateTimeOffset futureTime)
@@ -1432,7 +1432,7 @@ namespace slimCat.Utilities
         }
 
         /// <summary>
-        ///     Converts a <see cref="System.DateTimeOffset"/> to a rough time in the past.
+        ///     Converts a <see cref="System.DateTimeOffset" /> to a rough time in the past.
         /// </summary>
         /// <returns>A string in the "hours h minutes m seconds s ago" format.</returns>
         public static string DateTimeToRough(DateTimeOffset original, bool returnSeconds = false, bool appendAgo = true)
@@ -1474,7 +1474,7 @@ namespace slimCat.Utilities
         }
 
         /// <summary>
-        ///     Turns a <see cref="System.DateTimeOffset"/> to a timestamp.
+        ///     Turns a <see cref="System.DateTimeOffset" /> to a timestamp.
         /// </summary>
         /// <returns>A string in the format [hours:minutes]</returns>
         public static string ToTimeStamp(this DateTimeOffset time)
@@ -1486,7 +1486,7 @@ namespace slimCat.Utilities
         }
 
         /// <summary>
-        ///     Converts a POSIX/UNIX timecode to a <see cref="System.DateTimeOffset"/>.
+        ///     Converts a POSIX/UNIX timecode to a <see cref="System.DateTimeOffset" />.
         /// </summary>
         public static DateTimeOffset UnixTimeToDateTime(long time)
         {

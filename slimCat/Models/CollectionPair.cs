@@ -42,14 +42,14 @@ namespace slimCat.Models
 
         private HashSet<string> TemporaryAdd { get; set; }
 
-        private HashSet<string> TemporaryRemove { get; set; } 
+        private HashSet<string> TemporaryRemove { get; set; }
 
         public bool Add(string name, bool isTemporary = false)
         {
             OnlineList.Add(name);
 
             return isTemporary
-                ? TemporaryRemove.Remove(name) || TemporaryAdd.Add(name) 
+                ? TemporaryRemove.Remove(name) || TemporaryAdd.Add(name)
                 : List.Add(name);
         }
 
@@ -70,15 +70,15 @@ namespace slimCat.Models
         public bool SignOn(string name)
         {
             return IsOnList(name)
-                && OnlineList.Add(name);
+                   && OnlineList.Add(name);
         }
 
         public bool Remove(string name, bool isTemporary = false)
         {
             OnlineList.Remove(name);
 
-            return isTemporary 
-                ? TemporaryAdd.Remove(name) || TemporaryRemove.Add(name) 
+            return isTemporary
+                ? TemporaryAdd.Remove(name) || TemporaryRemove.Add(name)
                 : List.Remove(name);
         }
 

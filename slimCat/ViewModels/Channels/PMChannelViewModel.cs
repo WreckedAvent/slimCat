@@ -22,7 +22,6 @@ namespace slimCat.ViewModels
     #region Usings
 
     using System;
-    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Timers;
@@ -299,7 +298,7 @@ namespace slimCat.ViewModels
                 return;
             }
 
-            Events.SendUserCommand(CommandDefinitions.ClientSendPm, new []{Message, ConversationWith.Name});
+            Events.SendUserCommand(CommandDefinitions.ClientSendPm, new[] {Message, ConversationWith.Name});
             Message = string.Empty;
 
             isInCoolDown = true;
@@ -330,7 +329,8 @@ namespace slimCat.ViewModels
 
         private void SendTypingNotification(TypingStatus type)
         {
-            Events.SendUserCommand(CommandDefinitions.ClientSendTypingStatus, new []{type.ToString(), ConversationWith.Name});
+            Events.SendUserCommand(CommandDefinitions.ClientSendTypingStatus,
+                new[] {type.ToString(), ConversationWith.Name});
         }
 
         private bool UpdateIsOurCharacter(NotificationModel param)

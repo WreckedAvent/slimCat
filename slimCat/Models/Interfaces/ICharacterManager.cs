@@ -44,7 +44,7 @@ namespace slimCat.Models
         ICollection<ICharacter> Characters { get; }
 
         /// <summary>
-        ///     Gets the sorted characters. 
+        ///     Gets the sorted characters.
         /// </summary>
         /// <remarks>
         ///     Missing a sort implementation.
@@ -57,7 +57,7 @@ namespace slimCat.Models
         int CharacterCount { get; }
 
         /// <summary>
-        /// Finds the character with the specified name.
+        ///     Finds the character with the specified name.
         /// </summary>
         ICharacter Find(string name);
 

@@ -318,7 +318,7 @@ namespace slimCat.Services
             isAuthenticated = false;
 
             events.GetEvent<ReconnectingEvent>().Publish((int) staggerTimer.Interval/1000);
-            events.SendUserCommand("join", new []{"home"});
+            events.SendUserCommand("join", new[] {"home"});
         }
 
         private void DoReconnect()

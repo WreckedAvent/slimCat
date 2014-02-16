@@ -9,13 +9,13 @@
              xmlns:models="clr-namespace:slimCat.Models"
 
              d:DataContext="{d:DesignInstance vm:UsersTabViewModel}">
-    
+
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type models:CharacterModel}">
             <ContentControl Margin="0"
                             Content="{Binding}"
                             HorizontalAlignment="Left"
-                            TextBlock.TextAlignment="Left" >
+                            TextBlock.TextAlignment="Left">
                 <ContentControl.ContentTemplate>
                     <DataTemplate DataType="models:CharacterModel">
                         <Grid>
@@ -25,25 +25,26 @@
                             </Grid.ColumnDefinitions>
 
                             <Rectangle Height="15" Width="15"
-                           Fill="{Binding Converter={StaticResource GenderColorConverter}, Mode=OneWay}">
+                                       Fill="{Binding Converter={StaticResource GenderColorConverter}, Mode=OneWay}">
                                 <Rectangle.OpacityMask>
-                                    <ImageBrush ImageSource="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
+                                    <ImageBrush
+                                        ImageSource="{Binding Path=Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
                                 </Rectangle.OpacityMask>
                             </Rectangle>
 
                             <TextBlock TextWrapping="Wrap"
-                           Grid.Column="1">
-                    <Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
-                               Style="{StaticResource UsernameStyle}"
-                               Foreground="{Binding Converter={StaticResource NameplateColorConverter}, Mode=OneWay}">
-                        <Run Text="{Binding Path=Name, Mode=OneTime}" />
-                        <Hyperlink.InputBindings>
-                            <MouseBinding MouseAction="RightClick"
-                                          Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
+                                       Grid.Column="1">
+                                <Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
+                                           Style="{StaticResource UsernameStyle}"
+                                           Foreground="{Binding Converter={StaticResource NameplateColorConverter}, Mode=OneWay}">
+                                    <Run Text="{Binding Path=Name, Mode=OneTime}" />
+                                    <Hyperlink.InputBindings>
+                                        <MouseBinding MouseAction="RightClick"
+                                                      Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
                                                             RelativeSource={RelativeSource AncestorType={x:Type Grid},AncestorLevel=2}}"
-                                          CommandParameter="{Binding Path=Name, Mode=OneTime}" />
-                        </Hyperlink.InputBindings>
-                    </Hyperlink>
+                                                      CommandParameter="{Binding Path=Name, Mode=OneTime}" />
+                                    </Hyperlink.InputBindings>
+                                </Hyperlink>
                             </TextBlock>
 
                         </Grid>
@@ -52,7 +53,7 @@
             </ContentControl>
         </DataTemplate>
     </UserControl.Resources>
-    
+
     <Grid TextBlock.Foreground="{StaticResource ForegroundBrush}"
           TextBlock.FontSize="14">
 
@@ -101,7 +102,7 @@
 
             <ListBox ItemsSource="{Binding Path=SortedUsers, Mode=OneWay}"
                      Style="{StaticResource ContentListBox}"
-                     x:Name="PopupAnchor"/>
+                     x:Name="PopupAnchor" />
         </DockPanel>
     </Grid>
 </UserControl>

@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CommandInterceptor.cs">
+// <copyright file="CommandService.cs">
 //    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
 //   
 //    This source is subject to the Simplified BSD License.
@@ -47,16 +47,17 @@ namespace slimCat.Services
     {
         #region Fields
 
+        private readonly IAutomationService automation;
         private readonly IChatConnection connection;
         private readonly object locker = new object();
         private readonly IChannelManager manager;
-        private readonly IAutomationService automation;
 
         private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
 
         #endregion
 
         #region Constructors and Destructors
+
         public CommandService(
             IChatModel cm,
             IChatConnection conn,
@@ -298,7 +299,8 @@ namespace slimCat.Services
                         {
                             {Constants.Arguments.Character, character.Name},
                             {Constants.Arguments.Channel, channel.Id},
-                            {"ignoreUpdate", ofInterest} // ignore updates from characters we'll already get a sign-out notice for
+                            {"ignoreUpdate", ofInterest}
+                            // ignore updates from characters we'll already get a sign-out notice for
                         };
 
             leaveChannelCommands.Each(LeaveChannelCommand);
@@ -609,9 +611,7 @@ namespace slimCat.Services
 
             // dedupe logic
             if (isAd && automation.IsDuplicateAd(character, message))
-            {
                 return;
-            }
 
             if (!CharacterManager.IsOnList(character, ListKind.Ignored))
                 manager.AddMessage(message, channel, character, isAd ? MessageType.Ad : MessageType.Normal);

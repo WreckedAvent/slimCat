@@ -29,15 +29,6 @@ namespace slimCat.lib
 
     public class FullScreenHelper
     {
-        [StructLayout(LayoutKind.Sequential)]
-        public struct Rect
-        {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-        }
-
         private static IntPtr desktopHandle;
         private static IntPtr shellHandle;
 
@@ -73,6 +64,15 @@ namespace slimCat.lib
                 runningFullScreen = true;
 
             return runningFullScreen;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Rect
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
         }
     }
 }

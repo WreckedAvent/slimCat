@@ -81,6 +81,7 @@ namespace slimCat.ViewModels
         #endregion
 
         #region Public Properties
+
         public ICommand ClearNotificationsCommand
         {
             get

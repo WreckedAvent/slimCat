@@ -27,7 +27,7 @@ namespace slimCat.ViewModels
     using System.Linq;
     using System.Net;
     using System.Text;
-    using System.Windows.Forms;
+    using System.Timers;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
@@ -35,7 +35,6 @@ namespace slimCat.ViewModels
     using Services;
     using Utilities;
     using Views;
-    using Timer = System.Timers.Timer;
 
     #endregion
 
@@ -44,7 +43,6 @@ namespace slimCat.ViewModels
     /// </summary>
     public class UtilityChannelViewModel : ChannelViewModelBase
     {
-
         #region Constants
 
         private const string NewVersionLink = "https://dl.dropbox.com/u/29984849/slimCat/latest.csv";
@@ -53,6 +51,7 @@ namespace slimCat.ViewModels
 
         #region Fields
 
+        private readonly IAutomationService automation;
         private readonly StringBuilder connectDotDot;
 
         private readonly CacheCount minuteOnlineCount;
@@ -60,8 +59,6 @@ namespace slimCat.ViewModels
         private readonly Timer updateTimer = new Timer(1000); // every second
 
         private StringBuilder flavorText;
-
-        private readonly IAutomationService automation;
 
         private bool inStagger;
 
@@ -128,6 +125,7 @@ namespace slimCat.ViewModels
         #region Public Properties
 
         #region Header
+
         public static string ClientIdString
         {
             get
@@ -135,6 +133,7 @@ namespace slimCat.ViewModels
                 return string.Format("{0} {1} ({2})", Constants.ClientId, Constants.ClientName, Constants.ClientVer);
             }
         }
+
         public string LastMessageReceived
         {
             get { return HelperConverter.DateTimeToRough(ChatModel.LastMessageReceived, true, false); }
@@ -169,13 +168,16 @@ namespace slimCat.ViewModels
         {
             get { return HelperConverter.DateTimeToRough(ChatModel.ServerUpTime, true, false); }
         }
+
         public int OnlineCountPrime()
         {
             return OnlineCount;
         }
+
         #endregion
 
         #region General
+
         public static IEnumerable<KeyValuePair<string, string>> LanguageNames
         {
             get
@@ -212,9 +214,11 @@ namespace slimCat.ViewModels
                 Save();
             }
         }
+
         #endregion
 
         #region Appearance
+
         public static IEnumerable<KeyValuePair<string, GenderColorSettings>> GenderSettings
         {
             get
@@ -239,6 +243,7 @@ namespace slimCat.ViewModels
                 Save();
             }
         }
+
         public int FontSize
         {
             get { return ApplicationSettings.FontSize; }
@@ -250,6 +255,7 @@ namespace slimCat.ViewModels
                 Save();
             }
         }
+
         public GenderColorSettings GenderColorSettings
         {
             get { return ApplicationSettings.GenderColorSettings; }
@@ -259,6 +265,7 @@ namespace slimCat.ViewModels
                 Save();
             }
         }
+
         #endregion
 
         #region Automation
@@ -280,12 +287,13 @@ namespace slimCat.ViewModels
             get { return ApplicationSettings.AutoIdleTime; }
             set
             {
-                ApplicationSettings.AutoIdleTime = value; 
+                ApplicationSettings.AutoIdleTime = value;
                 OnPropertyChanged("AutoIdleTime");
                 automation.ResetStatusTimers();
                 Save();
             }
         }
+
         public bool AllowAutoAway
         {
             get { return ApplicationSettings.AllowAutoAway; }
@@ -348,16 +356,20 @@ namespace slimCat.ViewModels
                 Save();
             }
         }
+
         #endregion
 
         #region Help
+
         public ICharacter slimCat
         {
             get { return CharacterManager.Find("slimCat"); }
         }
+
         #endregion
 
         #region Reconnect
+
         public int DelayTime { get; set; }
 
         public bool IsConnecting
@@ -378,9 +390,11 @@ namespace slimCat.ViewModels
         }
 
         public int ConnectTime { get; set; }
+
         #endregion
 
         #region Notifications
+
         public string GlobalNotifyTerms
         {
             get { return ApplicationSettings.GlobalNotifyTerms; }
@@ -414,9 +428,11 @@ namespace slimCat.ViewModels
                 SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
             }
         }
+
         #endregion
 
         #region Update
+
         public bool HasNewUpdate { get; set; }
 
         public string UpdateBuildTime { get; set; }
@@ -424,6 +440,7 @@ namespace slimCat.ViewModels
         public string UpdateLink { get; set; }
 
         public string UpdateName { get; set; }
+
         #endregion
 
         #endregion
@@ -458,7 +475,9 @@ namespace slimCat.ViewModels
                 updateDelayTimer.Elapsed += (s, e) =>
                     {
                         Events.GetEvent<ErrorEvent>()
-                            .Publish("{0} is now available! \nPlease Update with the link in the home tab.".FormatWith(args[0]));
+                            .Publish(
+                                "{0} is now available! \nPlease Update with the link in the home tab.".FormatWith(
+                                    args[0]));
                         updateDelayTimer.Stop();
                         updateDelayTimer = null;
                     };

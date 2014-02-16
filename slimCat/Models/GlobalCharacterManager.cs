@@ -33,17 +33,17 @@ namespace slimCat.Models
     public class GlobalCharacterManager : CharacterManagerBase
     {
         private readonly IAccount account;
-        private readonly IEventAggregator eventAggregator;
-        private readonly IDictionary<ListKind, IList<string>> savedCollections;
 
         private readonly CollectionPair bookmarks = new CollectionPair();
+        private readonly IEventAggregator eventAggregator;
         private readonly CollectionPair friends = new CollectionPair();
-        private readonly CollectionPair localFriends = new CollectionPair(); 
+        private readonly CollectionPair ignoreUpdates = new CollectionPair();
         private readonly CollectionPair ignored = new CollectionPair();
         private readonly CollectionPair interested = new CollectionPair();
+        private readonly CollectionPair localFriends = new CollectionPair();
         private readonly CollectionPair moderators = new CollectionPair();
         private readonly CollectionPair notInterested = new CollectionPair();
-        private readonly CollectionPair ignoreUpdates = new CollectionPair();
+        private readonly IDictionary<ListKind, IList<string>> savedCollections;
         private string currentCharacter;
 
         public GlobalCharacterManager(IAccount account, IEventAggregator eventAggregator)

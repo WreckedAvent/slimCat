@@ -485,7 +485,7 @@ namespace slimCat.ViewModels
         private void SendStatusChangedCommand()
         {
             var character = ChatModel.CurrentCharacter;
-            Events.SendUserCommand("status", new []{character.Status.ToString(), character.StatusMessage});
+            Events.SendUserCommand("status", new[] {character.Status.ToString(), character.StatusMessage});
         }
 
         // this will update the connection bars to show the user about how good our connection is to the server

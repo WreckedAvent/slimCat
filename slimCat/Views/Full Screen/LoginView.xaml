@@ -19,14 +19,14 @@
                    Margin="20"
                    TextWrapping="Wrap" />
         <StackPanel MaxWidth="400">
-            <TextBlock Foreground="{StaticResource DepressedBrush}" 
+            <TextBlock Foreground="{StaticResource DepressedBrush}"
                        Margin="10,0">
                 Username
             </TextBlock>
             <TextBox Text="{Binding AccountName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      Margin="10, 0, 10, 10" />
-            
-            <TextBlock Foreground="{StaticResource DepressedBrush}" 
+
+            <TextBlock Foreground="{StaticResource DepressedBrush}"
                        Margin="10,10,0,0">
                 Password
             </TextBlock>
@@ -52,7 +52,7 @@
             <ToggleButton Content="Save Login"
                           IsChecked="{Binding SaveLogin}"
                           Margin="5,0,0,0"
-                          ToolTip="Allows slimCat to locally store your username and password for quicker future logins"/>
+                          ToolTip="Allows slimCat to locally store your username and password for quicker future logins" />
         </WrapPanel>
     </StackPanel>
 </UserControl>

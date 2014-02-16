@@ -41,6 +41,7 @@ namespace slimCat.Models
         private BitmapImage avatar;
 
         private Gender gender;
+        private bool ignoreUpdates;
         private bool isInteresting;
 
         private ReportModel lastReport;
@@ -49,7 +50,6 @@ namespace slimCat.Models
         private StatusType status;
 
         private string statusMessage = string.Empty;
-        private bool ignoreUpdates;
 
         #endregion
 

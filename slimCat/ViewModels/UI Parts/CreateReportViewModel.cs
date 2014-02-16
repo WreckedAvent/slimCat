@@ -21,7 +21,6 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using System.Collections.Generic;
     using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
@@ -147,7 +146,7 @@ namespace slimCat.ViewModels
 
         private void OnSendReport(object args)
         {
-            events.SendUserCommand("report", new []{target, complaint}, CurrentTab);
+            events.SendUserCommand("report", new[] {target, complaint}, CurrentTab);
 
             IsOpen = !IsOpen;
             target = null;
