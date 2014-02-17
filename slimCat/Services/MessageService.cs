@@ -166,7 +166,10 @@ namespace slimCat.Services
                 container.Resolve<PmChannelViewModel>(new ParameterOverride("name", temp.Id));
 
                 Dispatcher.Invoke((Action) (() => model.CurrentPms.Add(temp)));
-                // then add it to the model's data
+                // then add it to the model's data               
+                
+                ApplicationSettings.RecentCharacters.BacklogWithUpdate(id, MaxRecentTabs);
+                SettingsService.SaveApplicationSettingsToXml(model.CurrentCharacter.Name);
             }
             else
             {
@@ -187,6 +190,9 @@ namespace slimCat.Services
                     Dispatcher.Invoke((Action) (() => model.CurrentChannels.Add(temp)));
 
                     container.Resolve<GeneralChannelViewModel>(new ParameterOverride("name", id));
+
+                    ApplicationSettings.RecentChannels.BacklogWithUpdate(id, MaxRecentTabs);
+                    SettingsService.SaveApplicationSettingsToXml(model.CurrentCharacter.Name);
                 }
 
                 if (!model.CurrentChannels.Contains(temp))
@@ -253,17 +259,6 @@ namespace slimCat.Services
 
                 toJoin = model.CurrentPms.FirstByIdOrNull(id)
                          ?? (ChannelModel) model.CurrentChannels.FirstByIdOrNull(id);
-            }
-
-            if (toJoin is PmChannelModel)
-            {
-                ApplicationSettings.RecentCharacters.BacklogWithUpdate(toJoin.Id, MaxRecentTabs);
-                SettingsService.SaveApplicationSettingsToXml(model.CurrentCharacter.Name);
-            }
-            else if (id != "Home")
-            {
-                ApplicationSettings.RecentChannels.BacklogWithUpdate(toJoin.Id, MaxRecentTabs);
-                SettingsService.SaveApplicationSettingsToXml(model.CurrentCharacter.Name);
             }
 
             if (history.Any())
