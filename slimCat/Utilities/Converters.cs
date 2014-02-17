@@ -1397,6 +1397,17 @@ namespace slimCat.Utilities
         }
     }
 
+    public sealed class CharacterStatusOpacityConverter : OneWayConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is StatusType))
+                return 1.0;
+
+            return ((StatusType) value) == StatusType.Offline ? 0.4 : 1;
+        }
+    }
+
     /// <summary>
     ///     Various conversion methods.
     /// </summary>

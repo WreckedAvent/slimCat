@@ -87,6 +87,8 @@ namespace slimCat.Services
         {
             if (!ApplicationSettings.AllowAutoBusy) return;
 
+            if (cm.CurrentCharacter == null) return;
+
             if (cm.CurrentCharacter.Status != StatusType.Online
                 && cm.CurrentCharacter.Status != StatusType.Idle
                 && cm.CurrentCharacter.Status != StatusType.Away) return;
@@ -103,6 +105,8 @@ namespace slimCat.Services
             if (obj.Get(Constants.Arguments.Type) == Constants.ClientCommands.UserStatus)
                 return;
 
+            if (cm.CurrentCharacter == null) return;
+
             ResetStatusTimers();
 
             if (!ApplicationSettings.AllowStatusAutoReset) return;
@@ -116,7 +120,7 @@ namespace slimCat.Services
 
         private void AwayTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            if (cm.CurrentCharacter.Status == StatusType.Away) return;
+            if (cm.CurrentCharacter == null || cm.CurrentCharacter.Status == StatusType.Away) return;
 
             cm.CurrentCharacter.Status = StatusType.Away;
             events.SendUserCommand("away", new[] {cm.CurrentCharacter.StatusMessage});

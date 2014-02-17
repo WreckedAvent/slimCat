@@ -71,7 +71,7 @@
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate DataType="models:CharacterModel">
-                        <StackPanel>
+                        <StackPanel Opacity="{Binding Path=Status, Converter={StaticResource CharacterStatusOpacityConverter}}">
                             <Border BorderThickness="0,0,0,1"
                                     BorderBrush="{StaticResource HighlightBrush}">
                                 <Image Source="{Binding Path=Avatar}"
