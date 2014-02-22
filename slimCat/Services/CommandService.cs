@@ -141,7 +141,7 @@ namespace slimCat.Services
 
         private void BroadcastCommand(IDictionary<string, object> command)
         {
-            var message = command.Get(Constants.Arguments.Command);
+            var message = command.Get(Constants.Arguments.Message);
             var posterName = command.Get(Constants.Arguments.Character);
             var poster = CharacterManager.Find(posterName);
 
