@@ -145,6 +145,14 @@ namespace slimCat.Services
             var posterName = command.Get(Constants.Arguments.Character);
             var poster = CharacterManager.Find(posterName);
 
+            // message should be in the format:
+            // [b]Broadcast from username:[/b] message
+            // but this is redundant with slimCat, so cut out the first bit
+            var indexOfClosingTag = message.IndexOf("[/b]", StringComparison.OrdinalIgnoreCase);
+
+            if (indexOfClosingTag != -1)
+                message = message.Substring(indexOfClosingTag + "[/b] ".Length); 
+
             Events.GetEvent<NewUpdateEvent>()
                 .Publish(
                     new CharacterUpdateModel(poster, new CharacterUpdateModel.BroadcastEventArgs {Message = message}));
