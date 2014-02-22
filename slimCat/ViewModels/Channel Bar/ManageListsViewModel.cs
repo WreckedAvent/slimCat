@@ -48,21 +48,18 @@ namespace slimCat.ViewModels
 
         private readonly GenderSettingsModel genderSettings;
 
-        private IList<ICharacter> bookmarks;
-
-        private IList<ICharacter> friends;
-
-        private IList<ICharacter> ignored;
-
-        private IList<ICharacter> interested;
-
-        private IList<ICharacter> notInterested;
-
-        private IList<ICharacter> roomBans;
-
-        private IList<ICharacter> roomMods;
-
         private bool showOffline;
+
+        private readonly IDictionary<ListKind, string> listKinds = new Dictionary<ListKind, string>
+            {
+                {ListKind.Banned, "Banned"},
+                {ListKind.Bookmark, "Bookmarks"},
+                {ListKind.Friend, "Friends"},
+                {ListKind.Moderator, "Moderators"},
+                {ListKind.Interested, "Interested"},
+                {ListKind.NotInterested, "NotInterested"},
+                {ListKind.Ignored, "Ignored"}
+            };
 
         #endregion
 
@@ -111,6 +108,30 @@ namespace slimCat.ViewModels
                         var thisUpdate = args as CharacterUpdateModel;
                         if (thisUpdate == null)
                             return;
+
+                        var name = thisUpdate.TargetCharacter.Name;
+
+                        var joinLeaveArguments = thisUpdate.Arguments as CharacterUpdateModel.JoinLeaveEventArgs;
+                        if (joinLeaveArguments != null)
+                        {
+                            if (manager.IsOnList(name, ListKind.Moderator, false))
+                                OnPropertyChanged("Moderators");
+                            if (manager.IsOnList(name, ListKind.Banned, false))
+                                OnPropertyChanged("Banned");
+                            return;
+                        }
+
+                        var signInOutArguments = thisUpdate.Arguments as CharacterUpdateModel.LoginStateChangedEventArgs;
+                        if (signInOutArguments != null)
+                        {
+                            listKinds.Each(x =>
+                                {
+                                    if (manager.IsOnList(name, x.Key, false))
+                                        OnPropertyChanged(x.Value);
+                                });
+
+                            return;
+                        }
 
                         var thisArguments = thisUpdate.Arguments as CharacterUpdateModel.ListChangedEventArgs;
                         if (thisArguments == null)
