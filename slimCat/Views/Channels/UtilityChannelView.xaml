@@ -179,6 +179,13 @@
                                               ToolTip="Allows slimCat to store any kind of log file.">
                                         Allow Logging
                                     </CheckBox>
+                                    
+                                    <CheckBox IsChecked="{Binding AllowMinimizeToSystemTray}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows slimCat to minimize itself to system tray on closing the window, instead of exiting.">
+                                        Allow Minimize to System Tray
+                                    </CheckBox>
 
                                     <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
                                               VerticalAlignment="Center"

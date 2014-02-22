@@ -216,6 +216,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool AllowMinimizeToSystemTray
+        {
+            get { return ApplicationSettings.AllowMinimizeToTray; }
+            set
+            {
+                ApplicationSettings.AllowMinimizeToTray = value;
+                Save();
+            }
+        }
+
         #endregion
 
         #region Appearance

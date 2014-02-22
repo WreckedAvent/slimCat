@@ -68,16 +68,6 @@ namespace slimCat.Services
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="NotificationService" /> class.
-        /// </summary>
-        /// <param name="eventagg">
-        ///     The eventagg.
-        /// </param>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
-        /// <param name="manager"></param>
         public NotificationService(IEventAggregator eventagg, IChatModel cm, ICharacterManager manager)
         {
             events = eventagg;
@@ -94,6 +84,8 @@ namespace slimCat.Services
                     {
                         Application.Current.MainWindow.Closing += (s, e) =>
                             {
+                                if (!ApplicationSettings.AllowMinimizeToTray) return;
+
                                 e.Cancel = true;
                                 HideWindow();
                             };

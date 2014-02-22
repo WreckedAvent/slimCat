@@ -67,6 +67,8 @@ namespace slimCat.Models
             AllowAutoIdle = true;
             AllowStatusAutoReset = true;
             AllowAutoBusy = true;
+
+            AllowMinimizeToTray = true;
         }
 
         #endregion
@@ -118,6 +120,11 @@ namespace slimCat.Models
         ///     Gets or sets a value indicating whether to allow ad deduplication.
         /// </summary>
         public static bool AllowAdDedup { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether to allow the client to minimize to tray on close.
+        /// </summary>
+        public static bool AllowMinimizeToTray { get; set; }
 
         /// <summary>
         ///     Gets or sets the global notify terms.
