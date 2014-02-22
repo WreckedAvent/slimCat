@@ -1064,6 +1064,9 @@ namespace slimCat.Utilities
             if (manager != null && manager.IsOnList(character.Name, ListKind.NotInterested))
                 return (SolidColorBrush) Application.Current.FindResource("NotAvailableBrush");
 
+            if (!ApplicationSettings.AllowStatusDiscolor)
+                return (SolidColorBrush) TryGet(GetGenderName(character.Gender), true);
+
             if (character.Status == StatusType.Crown
                 || character.Status == StatusType.Online
                 || character.Status == StatusType.Looking)
@@ -1079,6 +1082,9 @@ namespace slimCat.Utilities
 
             if (manager != null && manager.IsOnList(character.Name, ListKind.NotInterested))
                 return (Color) Application.Current.FindResource("NotAvailableColor");
+
+            if (!ApplicationSettings.AllowStatusDiscolor)
+                return (Color) TryGet(GetGenderName(character.Gender), false);
 
             if (character.Status == StatusType.Crown
                 || character.Status == StatusType.Online

@@ -299,7 +299,14 @@
                                                   DisplayMemberPath="Key"
                                                   SelectedValuePath="Value" />
                                     </StackPanel>
-
+                                    
+                                    <CheckBox IsChecked="{Binding AllowStatusDiscolor}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows slimCat to discolor users who have a status of busy, idle, away, or do not disturb.">
+                                        Allow Status Discoloring
+                                    </CheckBox>
+                                    
                                     <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
                                           Margin="0,15,0,0" />
 

@@ -254,6 +254,16 @@ namespace slimCat.ViewModels
                 Save();
             }
         }
+        public bool AllowStatusDiscolor
+        {
+            get { return ApplicationSettings.AllowStatusDiscolor; }
+
+            set
+            {
+                ApplicationSettings.AllowStatusDiscolor = value;
+                Save();
+            }
+        }
 
         public int FontSize
         {

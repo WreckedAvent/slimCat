@@ -69,6 +69,7 @@ namespace slimCat.Models
             AllowAutoBusy = true;
 
             AllowMinimizeToTray = true;
+            AllowStatusDiscolor = true;
         }
 
         #endregion
@@ -125,6 +126,11 @@ namespace slimCat.Models
         ///     Gets or sets a value indicating whether to allow the client to minimize to tray on close.
         /// </summary>
         public static bool AllowMinimizeToTray { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether a user's status to discolor their gender color.
+        /// </summary>
+        public static bool AllowStatusDiscolor { get; set; }
 
         /// <summary>
         ///     Gets or sets the global notify terms.
