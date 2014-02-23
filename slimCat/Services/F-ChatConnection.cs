@@ -187,7 +187,7 @@ namespace slimCat.Services
 
         private void ConnectToChat(string character)
         {
-            Character = character.ThrowIfNull("character");
+            if (character == null) return;
 
             events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(ConnectToChat);
 
