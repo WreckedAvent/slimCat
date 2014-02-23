@@ -1357,12 +1357,8 @@ namespace slimCat.Utilities
                 return Application.Current.FindResource("ForegroundBrush");
 
             var message = (IMessage) value;
-            var interesting = message.Poster.IsInteresting;
 
-            if (message.IsOfInterest)
-                return TryGet("Background", true);
-
-            return interesting
+            return message.Poster.IsInteresting
                 ? TryGet("Contrast", true)
                 : GetBrush(message.Poster);
         }
@@ -1400,6 +1396,32 @@ namespace slimCat.Utilities
                 return Application.Current.FindResource("BrightBackgroundBrush");
 
             return new SolidColorBrush(Colors.Transparent);
+        }
+    }
+
+    public sealed class MessageThicknessConverter : OneWayConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            const int top = 0;
+            const int left = 0;
+
+            var bottom = 0;
+            var right = 0;
+
+            var message = value as IMessage;
+            if (message == null) return new Thickness(left, top, right, bottom);
+
+            if (message.Type == MessageType.Ad)
+                bottom = 1;
+
+            if (message.IsOfInterest)
+            {
+                right = 8;
+                bottom = 2;
+            }
+
+            return new Thickness(left, top, right, bottom);
         }
     }
 

@@ -17,6 +17,7 @@
     <utilities:MessageInterestedColorConverter x:Key="MessageInterestedColorConverter" />
     <utilities:MessageDelimiterColorConverter x:Key="DelimiterColorConverter" />
     <utilities:CharacterStatusOpacityConverter x:Key="CharacterStatusOpacityConverter"/>
+    <utilities:MessageThicknessConverter x:Key="MessageThicknessConverter"/>
 
     <!-- These will be replaced with their instance values by the container -->
     <utilities:GenderColorConverter x:Key="GenderColorConverter" />

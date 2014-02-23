@@ -9,11 +9,6 @@
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsFocused" Value="False">
-                <Setter Property="Effect">
-                    <Setter.Value>
-                        <BlurEffect Radius="1.25" />
-                    </Setter.Value>
-                </Setter>
                 <Setter Property="BorderBrush" TargetName="Border" Value="{StaticResource DepressedBrush}" />
             </Trigger>
             <Trigger Property="IsFocused" Value="True">
