@@ -101,7 +101,6 @@ namespace slimCat.Services
             InitializeLog();
 
             autoPingTimer.Elapsed += (s, e) => TrySend(Constants.ClientCommands.SystemPing);
-            autoPingTimer.Start();
 
             staggerTimer = new Timer(GetNextConnectDelay()); // first reconnect is 5 seconds
             staggerTimer.Elapsed += (s, e) => DoReconnect();
@@ -205,6 +204,7 @@ namespace slimCat.Services
             socket.Open();
 
             timeoutTimer.Start();
+            autoPingTimer.Start();
         }
 
         private void TrySend(string type, object args = null)
@@ -329,6 +329,7 @@ namespace slimCat.Services
         /// </summary>
         private void AttemptReconnect()
         {
+            
             if (staggerTimer.Enabled || socket.State == WebSocketState.Open) return;
 
             staggerTimer.Start();
@@ -336,6 +337,7 @@ namespace slimCat.Services
 
             events.GetEvent<ReconnectingEvent>().Publish((int) staggerTimer.Interval/1000);
             events.SendUserCommand("join", new[] {"home"});
+            autoPingTimer.Stop();
         }
 
         private void DoReconnect()
