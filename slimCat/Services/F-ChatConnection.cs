@@ -52,6 +52,7 @@ namespace slimCat.Services
         private readonly Random random = new Random();
         private readonly Queue<KeyValuePair<string, object>> resendQueue = new Queue<KeyValuePair<string, object>>();
         private readonly Timer staggerTimer;
+        private readonly Timer timeoutTimer;
 
         private bool isAuthenticated;
         private StreamWriter logger;
@@ -104,6 +105,20 @@ namespace slimCat.Services
 
             staggerTimer = new Timer(GetNextConnectDelay()); // first reconnect is 5 seconds
             staggerTimer.Elapsed += (s, e) => DoReconnect();
+
+            timeoutTimer = new Timer(60 * 1000); // 60 seconds
+            timeoutTimer.Elapsed += (s, e) => OnTimeout();
+        }
+
+        private void OnTimeout()
+        {
+            if (socket.State == WebSocketState.Connecting)
+            {
+                socket.Close();
+                DoReconnect();
+            }
+
+            timeoutTimer.Stop();
         }
 
         #endregion
@@ -188,6 +203,8 @@ namespace slimCat.Services
 
             // start connection
             socket.Open();
+
+            timeoutTimer.Start();
         }
 
         private void TrySend(string type, object args = null)
