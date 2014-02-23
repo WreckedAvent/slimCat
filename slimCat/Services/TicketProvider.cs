@@ -42,6 +42,8 @@ namespace slimCat.Services
         private Dictionary<string, object> loginCredentials;
         private bool shouldGetNewTicket;
 
+        private const string siteIsDisabled = "The site has been disabled for maintenance, check back later.";
+
         public TicketProvider(IBrowser browser)
         {
             this.browser = browser;
@@ -97,6 +99,9 @@ namespace slimCat.Services
                 throw new InvalidOperationException("Set login credentials before logging in!");
 
             var buffer = browser.GetResponse(Constants.UrlConstants.GetTicket, loginCredentials);
+
+            if (buffer.Equals(siteIsDisabled, StringComparison.OrdinalIgnoreCase))
+                throw new Exception("Site API disabled for maitenence.");
 
             // assign the data to our account model
             dynamic result = SimpleJson.DeserializeObject(buffer);
