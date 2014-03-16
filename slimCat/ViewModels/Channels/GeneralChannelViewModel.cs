@@ -196,6 +196,14 @@ namespace slimCat.ViewModels
             set
             {
                 autoPostAds = value;
+
+                // set the interval time to however many minutes in miliseconds
+                // plus two seconds in miliseconds
+                if (!isInCoolDownAd)
+                {
+                    adFlood.Interval = Model.Settings.AutopostTime*60*1000 + 2000;
+                }
+
                 OnPropertyChanged("AutoPost");
             }
         }
@@ -467,13 +475,19 @@ namespace slimCat.ViewModels
         {
             var messageToSend = IsDisplayingChat ? adMessage : Message;
             if (messageToSend == null)
+            {
                 UpdateError("There is no ad to auto-post!");
+                AutoPost = false;
+                isInCoolDownAd = false;
+                return;
+            }
 
             Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new[] {messageToSend}, Model.Id);
-            timeLeftAd = DateTimeOffset.Now.AddMinutes(10).AddSeconds(2);
+            timeLeftAd = DateTimeOffset.Now.AddMilliseconds(adFlood.Interval);
 
             isInCoolDownAd = true;
             adFlood.Start();
+
             OnPropertyChanged("CanPost");
             OnPropertyChanged("CannotPost");
         }
@@ -603,7 +617,7 @@ namespace slimCat.ViewModels
             }
             else
             {
-                timeLeftAd = DateTime.Now.AddMinutes(10).AddSeconds(2);
+                timeLeftAd = DateTime.Now.AddMilliseconds(adFlood.Interval);
 
                 isInCoolDownAd = true;
                 OnPropertyChanged("CanPost");

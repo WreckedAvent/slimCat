@@ -37,7 +37,9 @@ namespace slimCat.Models
         #region Fields
 
         private int adNotifyLevel;
+
         private bool alertAboutUpdates = true;
+
         private bool enableLogging = true;
 
         private RelayCommand expandSettings;
@@ -65,6 +67,8 @@ namespace slimCat.Models
         private bool promoteDemoteNotifyOnlyForInteresting;
 
         private int shouldFlashInterval = 1;
+        
+        private int autopostTime = 10;
 
         #endregion
 
@@ -226,7 +230,7 @@ namespace slimCat.Models
         }
 
         /// <summary>
-        ///     If we log each message
+        ///     Gets or sets a value indicating whether or not we log each message.
         /// </summary>
         public bool LoggingEnabled
         {
@@ -235,6 +239,20 @@ namespace slimCat.Models
             set
             {
                 enableLogging = value;
+                CallUpdate();
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the time between ad auto-posting. 
+        ///     Time in minutes.
+        /// </summary>
+        public int AutopostTime
+        {
+            get { return autopostTime; }
+            set
+            {
+                autopostTime = value;
                 CallUpdate();
             }
         }
@@ -304,7 +322,7 @@ namespace slimCat.Models
         }
 
         /// <summary>
-        ///     If a term notification dings when the term appears in a character's name
+        ///     If a term notification dings when the term appears in a character's name.
         /// </summary>
         public bool NotifyIncludesCharacterNames
         {
@@ -318,7 +336,7 @@ namespace slimCat.Models
         }
 
         /// <summary>
-        ///     Raw terms which will ding the user when mentioned
+        ///     Raw terms which will ding the user when mentioned.
         /// </summary>
         public string NotifyTerms
         {
