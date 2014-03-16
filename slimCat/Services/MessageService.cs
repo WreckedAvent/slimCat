@@ -25,6 +25,7 @@ namespace slimCat.Services
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using System.Web;
     using System.Windows;
     using System.Windows.Threading;
     using Microsoft.Practices.Prism.Events;
@@ -246,6 +247,7 @@ namespace slimCat.Services
 
         public void JoinChannel(ChannelType type, string id, string name = "")
         {
+            name = HttpUtility.HtmlDecode(name);
             IEnumerable<string> history = new List<string>();
             if (!id.Equals("Home"))
                 history = logger.GetLogs(string.IsNullOrWhiteSpace(name) ? id : name, id);
