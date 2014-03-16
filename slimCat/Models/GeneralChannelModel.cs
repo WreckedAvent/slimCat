@@ -173,21 +173,25 @@ namespace slimCat.Models
                 var messageNotifyMatters = Mode == ChannelMode.Chat || Mode == ChannelMode.Both;
                 var adNotifyMatters = Mode == ChannelMode.Ads || Mode == ChannelMode.Both;
 
-                var returnEarly = false;
+                var doNotFlash = false;
 
                 if (messageNotifyMatters)
-                    returnEarly = Settings.MessageNotifyLevel == 0;
+                    doNotFlash = Settings.MessageNotifyLevel == 0;
 
                 if (adNotifyMatters)
-                    returnEarly = Settings.AdNotifyLevel == 0;
+                    doNotFlash = doNotFlash && Settings.AdNotifyLevel == 0;
 
-                if (returnEarly)
+                if (doNotFlash)
                     return false; // terminate early upon user request
 
+                // base.NeedsAttention will check if our messages are of interest, but not ads
                 if (Settings.MessageNotifyOnlyForInteresting)
                     return base.NeedsAttention;
 
-                return base.NeedsAttention || (UnreadAds >= Settings.FlashInterval);
+                if (adNotifyMatters)
+                    return base.NeedsAttention || UnreadAds >= 1;
+
+                return base.NeedsAttention;
             }
         }
 
