@@ -147,7 +147,7 @@ namespace slimCat.Utilities
         {
             if (maxCount > 0)
             {
-                while (collection.Count > maxCount)
+                while (collection.Count >= maxCount)
                 {
                     collection.RemoveAt(0);
                 }

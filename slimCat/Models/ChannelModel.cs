@@ -275,7 +275,7 @@ namespace slimCat.Models
 
             if (isSelected)
                 lastRead = messages.Count;
-            else if (messages.Count == settings.MaxBackLogItems)
+            else if (messages.Count >= settings.MaxBackLogItems)
             {
                 UnreadContainsInteresting = UnreadContainsInteresting || isOfInterest;
                 lastRead--;
