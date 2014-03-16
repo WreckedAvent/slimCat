@@ -81,6 +81,8 @@ namespace slimCat.Utilities
                     Container.Resolve<NameplateColorConverter>()); 
                 Application.Current.Resources.Add("NameplateMessageColorConverter",
                      Container.Resolve<NameplateMessageColorConverter>());
+                Application.Current.Resources.Add("ForegroundBrushConverter", 
+                    Container.Resolve<ForegroundBrushConverter>());
             }
             catch (Exception ex)
             {

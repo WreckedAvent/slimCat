@@ -33,6 +33,7 @@ namespace slimCat.Utilities
     using System.Windows.Documents;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
+    using System.Windows.Navigation;
     using Models;
     using Services;
 
@@ -955,16 +956,9 @@ namespace slimCat.Utilities
             }
             else
             {
-                var isSelf = message != null && ChatModel != null &&
-                             ChatModel.CurrentCharacter.NameEquals(message.Poster.Name);
-
                 inlines.Add(new Run(": "));
 
-                var toAdd = Parse(text);
-                if (isSelf)
-                    toAdd.Foreground = Locator.Find<Brush>("SelfBrush");
-
-                inlines.Add(toAdd);
+                inlines.Add(Parse(text));
             }
 
             return inlines;
@@ -1433,6 +1427,36 @@ namespace slimCat.Utilities
                 return 1.0;
 
             return ((StatusType) value) == StatusType.Offline ? 0.4 : 1;
+        }
+    }
+
+    public sealed class ForegroundBrushConverter : OneWayConverter
+    {
+        private readonly IChatModel chatModel;
+        private readonly IThemeLocator locator;
+
+        public ForegroundBrushConverter(IChatModel chatModel, IThemeLocator locator)
+        {
+            this.chatModel = chatModel;
+            this.locator = locator;
+        }
+
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Brush defaultBrush;
+            if (locator != null) defaultBrush = locator.Find<Brush>("ForegroundBrush");
+            else defaultBrush = (Brush) Application.Current.FindResource("ForegroundBrush");
+
+            if (value == null || chatModel == null) return defaultBrush;
+
+            var message = value as IMessage; // this is the beef of the message
+
+            if (message == null) return defaultBrush;
+
+            if (chatModel.CurrentCharacter.NameEquals(message.Poster.Name) && locator != null)
+                return locator.Find<Brush>("SelfBrush");
+
+            return defaultBrush;
         }
     }
 

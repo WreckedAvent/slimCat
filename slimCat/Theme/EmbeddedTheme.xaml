@@ -26,6 +26,7 @@
     <utilities:BbFlowConverter x:Key="BbFlowConverter" />
     <utilities:BbCodePostConverter x:Key="BbPostConverter" />
     <utilities:BbCodeConverter x:Key="BbCodeConverter" />
+    <utilities:ForegroundBrushConverter x:Key="ForegroundBrushConverter" />
 
     <MouseBinding x:Key="RightClickOpenMenu"
                   MouseAction="RightClick"
