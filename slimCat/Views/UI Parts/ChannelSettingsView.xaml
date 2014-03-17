@@ -153,7 +153,7 @@
                     </WrapPanel>
 
                     <WrapPanel Margin="0,15,0,0">
-                        <TextBlock Text="Ad Auto-Post Delay (minutes): " />
+                        <TextBlock Text="Ad Auto-Post Delay (minutes)*: " />
                         <TextBlock Text="{Binding Path=ChannelSettings.AutopostTime}" />
                     </WrapPanel>
                     <Slider Maximum="120"
@@ -163,6 +163,7 @@
                             TickFrequency="10"
                             TickPlacement="BottomRight"
                             Value="{Binding ChannelSettings.AutopostTime}" />
+                    <TextBlock Text="* Shuts off after 5 auto posts."></TextBlock>
                 </StackPanel>
 
                 <TextBlock Margin="0,20,0,0">Notify terms (seperate with commas):</TextBlock>

@@ -119,6 +119,16 @@
                                VerticalAlignment="Center"
                                Margin="2,0,0,0"
                                Visibility="{Binding Path=CannotPost, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
+                    <TextBlock Text="/"
+                               Foreground="{StaticResource HighlightBrush}"
+                               VerticalAlignment="Center"
+                               Margin="2,0,0,0"
+                               Visibility="{Binding Path=CanShowAutoTimeLeft, Mode=OneWay, Converter={StaticResource BoolConverter}}"/>
+                    <TextBlock Foreground="{StaticResource HighlightBrush}"
+                               Text="{Binding Path=AutoTimeLeft, Mode=OneWay}"
+                               VerticalAlignment="Center"
+                               Margin="2,0,0,0"
+                               Visibility="{Binding Path=CanShowAutoTimeLeft, Mode=OneWay, Converter={StaticResource BoolConverter}}"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal"
