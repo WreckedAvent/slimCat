@@ -68,6 +68,10 @@ namespace slimCat.ViewModels
 
         private bool autoPostAds;
 
+        private int autoPostCount;
+
+        private DateTimeOffset autoTimeLeft;
+
         private bool hasNewAds;
 
         private bool hasNewMessages;
@@ -88,11 +92,7 @@ namespace slimCat.ViewModels
 
         private DateTimeOffset timeLeftAd;
 
-        private DateTimeOffset autoTimeLeft;
-
         private Timer updateTimer = new Timer(1000);
-
-        private int autoPostCount;
 
         #endregion
 
@@ -194,7 +194,6 @@ namespace slimCat.ViewModels
                 PropertyChanged += OnPropertyChanged;
 
                 Events.GetEvent<NewUpdateEvent>().Subscribe(UpdateChat);
-
             }
             catch (Exception ex)
             {
@@ -218,9 +217,7 @@ namespace slimCat.ViewModels
                 // set the interval time to however many minutes in miliseconds
                 // plus two seconds in miliseconds
                 if (!isInCoolDownAd)
-                {
                     adFloodTimer.Interval = Model.Settings.AutopostTime*60*1000 + 2000;
-                }
 
                 OnPropertyChanged("AutoPost");
                 OnPropertyChanged("CanShowAutoTimeLeft");
@@ -511,7 +508,15 @@ namespace slimCat.ViewModels
                 return;
             }
 
-            Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new[] {messageToSend}, Model.Id);
+            var last = Model.Ads.Last();
+            if (last != null)
+            {
+                if (!last.Poster.NameEquals(ChatModel.CurrentCharacter.Name))
+                    Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new[] {messageToSend}, Model.Id);
+            }
+            else
+                Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new[] {messageToSend}, Model.Id);
+
             adFloodTimer.Interval = Model.Settings.AutopostTime*60*1000 + 2000;
             timeLeftAd = DateTimeOffset.Now.AddMilliseconds(adFloodTimer.Interval);
 
@@ -525,7 +530,7 @@ namespace slimCat.ViewModels
 
             if (autoPostCount < MaxAutoPosts) return;
 
-            autoTimeLeft = DateTime.Now.AddMilliseconds(adFloodTimer.Interval * (MaxAutoPosts - autoPostCount));
+            autoTimeLeft = DateTime.Now.AddMilliseconds(adFloodTimer.Interval*(MaxAutoPosts - autoPostCount));
             AutoPost = false;
             OnPropertyChanged("CanShowAutoTimeLeft");
             autoPostCount = 0;
@@ -657,7 +662,7 @@ namespace slimCat.ViewModels
             else
             {
                 timeLeftAd = DateTime.Now.AddMilliseconds(adFloodTimer.Interval);
-                autoTimeLeft = DateTime.Now.AddMilliseconds(adFloodTimer.Interval * MaxAutoPosts);
+                autoTimeLeft = DateTime.Now.AddMilliseconds(adFloodTimer.Interval*MaxAutoPosts);
 
                 isInCoolDownAd = true;
                 OnPropertyChanged("CanPost");
