@@ -420,27 +420,27 @@ namespace slimCat.Services
                         ? ((CharacterUpdateModel.NoteEventArgs) args).Link
                         : ((CharacterUpdateModel.CommentEventArgs) args).Link;
 
-                    NotifyUser(false, false, notification.ToString(), link, null, model.TargetCharacter);
+                    NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), link, null, model.TargetCharacter);
                 }
                 else if (args is CharacterUpdateModel.ListChangedEventArgs)
                 {
                     AddNotification(model);
-                    NotifyUser(false, false, notification.ToString(), targetCharacter, null, model.TargetCharacter);
+                    NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, null, model.TargetCharacter);
                 }
                 else if (args is CharacterUpdateModel.ReportHandledEventArgs)
                 {
                     AddNotification(model);
-                    NotifyUser(true, true, notification.ToString(), targetCharacter, null, model.TargetCharacter);
+                    NotifyUser(true, true, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, null, model.TargetCharacter);
                 }
                 else if (args is CharacterUpdateModel.ReportFiledEventArgs)
                 {
                     AddNotification(model);
-                    NotifyUser(true, true, notification.ToString(), targetCharacter, "report", model.TargetCharacter);
+                    NotifyUser(true, true, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, "report", model.TargetCharacter);
                 }
                 else if (args is CharacterUpdateModel.BroadcastEventArgs)
                 {
                     AddNotification(model);
-                    NotifyUser(true, true, notification.ToString(), targetCharacter, null, model.TargetCharacter);
+                    NotifyUser(true, true, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, null, model.TargetCharacter);
                 }
                 else if (IsOfInterest(targetCharacter, false) && !model.TargetCharacter.IgnoreUpdates)
                 {
@@ -453,7 +453,7 @@ namespace slimCat.Services
                             return; // don't make a toast if we have their tab focused as it is redundant
                     }
 
-                    NotifyUser(false, false, notification.ToString(), targetCharacter, null, model.TargetCharacter);
+                    NotifyUser(false, false, "{0}\n{0} {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, null, model.TargetCharacter);
                 }
             }
             else

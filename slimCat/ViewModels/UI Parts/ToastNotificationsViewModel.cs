@@ -180,9 +180,18 @@ namespace slimCat.ViewModels
 
         public void UpdateNotification(string newContent)
         {
-            var split = newContent.Split(splitChars,2);
-            Title = split[0];
-            Content = split[1];
+            if (newContent.Contains('\n'))
+            {
+                var split = newContent.Split(splitChars, 2);
+                Title = split[0];
+                Content = split[1];
+            }
+            else
+            {
+                Content = newContent;
+                Title = "slimCat notification";
+            }
+
             ShowNotifications();
             view.OnContentChanged();
         }
