@@ -463,7 +463,7 @@ namespace slimCat.Services
                 if (!channelUpdate.TargetChannel.Settings.AlertAboutUpdates) return;
 
                 AddNotification(notification);
-                NotifyUser(false, false, notification.ToString(), channelUpdate.TargetChannel.Id);
+                NotifyUser(false, false, "{0}\n{0} {1}".FormatWith(channelUpdate.TargetChannel.Title, notification.ToString()), channelUpdate.TargetChannel.Id);
             }
         }
 
