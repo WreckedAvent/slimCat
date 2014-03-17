@@ -64,6 +64,10 @@ namespace slimCat.Services
 
             idleTimer.Interval = ApplicationSettings.AutoIdleTime*OneMinute;
             awayTimer.Interval = ApplicationSettings.AutoAwayTime*OneMinute;
+
+            idleTimer.Start();
+            awayTimer.Start();
+            fullscreenTimer.Start();
         }
 
         public bool IsDuplicateAd(string name, string message)
@@ -102,7 +106,7 @@ namespace slimCat.Services
 
         private void OnUserCommandSent(IDictionary<string, object> obj)
         {
-            if (obj.Get(Constants.Arguments.Type) == Constants.ClientCommands.UserStatus)
+            if (obj.ContainsKey(Constants.Arguments.Status))
                 return;
 
             if (cm.CurrentCharacter == null) return;
