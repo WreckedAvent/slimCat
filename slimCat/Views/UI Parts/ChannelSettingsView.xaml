@@ -152,18 +152,21 @@
                             Visibility="{Binding ChannelSettings.PromoteDemoteNotifyLevel, Converter={StaticResource GreaterThanZeroConverter}}" />
                     </WrapPanel>
 
-                    <WrapPanel Margin="0,15,0,0">
-                        <TextBlock Text="Ad Auto-Post Delay (minutes)*: " />
-                        <TextBlock Text="{Binding Path=ChannelSettings.AutopostTime}" />
-                    </WrapPanel>
-                    <Slider Maximum="120"
-                            Minimum="10"
-                            SmallChange="5"
-                            LargeChange="10"
-                            TickFrequency="10"
-                            TickPlacement="BottomRight"
-                            Value="{Binding ChannelSettings.AutopostTime}" />
-                    <TextBlock Text="* Shuts off after 5 auto posts."></TextBlock>
+                    <StackPanel Margin="0,15,0,0"
+                                Visibility="{Binding Path=CanDisplayAds, Converter={StaticResource BoolConverter}}">
+                        <WrapPanel>
+                            <TextBlock Text="Ad Auto-Post Delay (minutes)*: " />
+                            <TextBlock Text="{Binding Path=ChannelSettings.AutopostTime}" />
+                        </WrapPanel>
+                        <Slider Maximum="120"
+                                Minimum="10"
+                                SmallChange="5"
+                                LargeChange="10"
+                                TickFrequency="10"
+                                TickPlacement="BottomRight"
+                                Value="{Binding ChannelSettings.AutopostTime}" />
+                        <TextBlock Text="* Shuts off after 5 auto posts."/>
+                    </StackPanel>
                 </StackPanel>
 
                 <TextBlock Margin="0,20,0,0">Notify terms (seperate with commas):</TextBlock>

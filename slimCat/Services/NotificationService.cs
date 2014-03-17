@@ -453,7 +453,7 @@ namespace slimCat.Services
                             return; // don't make a toast if we have their tab focused as it is redundant
                     }
 
-                    NotifyUser(false, false, "{0}\n{0} {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, null, model.TargetCharacter);
+                    NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, null, model.TargetCharacter);
                 }
             }
             else
