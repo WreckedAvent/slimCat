@@ -22,8 +22,11 @@ namespace slimCat.ViewModels
     #region Usings
 
     using System;
+    using System.Linq;
     using System.Timers;
+    using System.Windows.Automation.Peers;
     using System.Windows.Input;
+    using System.Windows.Media.Imaging;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Models;
@@ -40,6 +43,8 @@ namespace slimCat.ViewModels
 
         private const int CutoffLength = 300;
 
+        private readonly char[] splitChars = {'\n'};
+
         #endregion
 
         #region Fields
@@ -55,6 +60,9 @@ namespace slimCat.ViewModels
         private RelayCommand snap;
 
         private NotificationsView view;
+
+        private ICharacter targetCharacter;
+        private string title;
 
         #endregion
 
@@ -106,6 +114,32 @@ namespace slimCat.ViewModels
         /// </summary>
         public string Target { get; set; }
 
+        public ICharacter TargetCharacter
+        {
+            get { return targetCharacter; }
+            set
+            {
+                targetCharacter = value;
+                OnPropertyChanged("TargetCharacter");
+                OnPropertyChanged("ShouldShowAvatar");
+            }
+        }
+
+        public bool ShouldShowAvatar
+        {
+            get { return targetCharacter != null; }
+        }
+
+        public string Title
+        {
+            get { return title; }
+            private set
+            {
+                title = value;
+                OnPropertyChanged("Title");
+            }
+        }
+
         #endregion
 
         #region Public Methods and Operators
@@ -146,7 +180,9 @@ namespace slimCat.ViewModels
 
         public void UpdateNotification(string newContent)
         {
-            Content = newContent;
+            var split = newContent.Split(splitChars,2);
+            Title = split[0];
+            Content = split[1];
             ShowNotifications();
             view.OnContentChanged();
         }
