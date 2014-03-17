@@ -26,22 +26,23 @@
                 Background="{StaticResource BackgroundBrush}"
                 Padding="0">
             <StackPanel Margin="5">
-                <DockPanel HorizontalAlignment="Stretch" Width="350">
-                    <v:CloseButtonView Command="{Binding HideCommand}"
-                                       Margin="0,0,15,0"
-                                       HorizontalAlignment="Right"
-                                       DockPanel.Dock="Right" />
-                    <TextBlock Text="{Binding Path=Title}"
-                               FontSize="16"
-                               Foreground="{StaticResource HighlightBrush}" />
-                </DockPanel>
-                
-                <DockPanel>
+                <Border BorderThickness="0,0,0,1"
+                        Margin="0,0,0,2"
+                        BorderBrush="{StaticResource HighlightBrush}">
+                    <DockPanel HorizontalAlignment="Stretch" Width="350">
+                        <v:CloseButtonView Command="{Binding HideCommand}"
+                                           Margin="0,0,15,0"
+                                           HorizontalAlignment="Right"
+                                           DockPanel.Dock="Right" />
+                        <TextBlock Text="{Binding Path=Title}"
+                                   FontSize="16"
+                                   Foreground="{StaticResource HighlightBrush}" />
+                    </DockPanel>
+                </Border>
+
+                <DockPanel Margin="0,2,0,0">
                     <Border DockPanel.Dock="Left"
-                            BorderThickness="0,0,0,0"
-                            Margin="0,0,5,0"
-                            HorizontalAlignment="Left"
-                            BorderBrush="{StaticResource HighlightBrush}"
+                            Margin="0,2,5,0"
                             Visibility="{Binding Path=ShouldShowAvatar, Converter={StaticResource BoolConverter}}">
                         <Image Source="{Binding Path=TargetCharacter.Avatar}"
                                        Height="75"
