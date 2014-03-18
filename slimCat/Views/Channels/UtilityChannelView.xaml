@@ -329,7 +329,7 @@
                                               VerticalAlignment="Center"
                                               Margin="0,15,0,0"
                                               ToolTip="Allows slimCat to automatically reset your status from 'away' or 'idle' to 'online' when you perform actions">
-                                        Allow Status Auto Rest
+                                        Allow Status Auto Reset
                                     </CheckBox>
 
                                     <CheckBox IsChecked="{Binding AllowAutoBusy}"
