@@ -69,7 +69,7 @@ namespace slimCat.ViewModels
             get
             {
                 if (Target != null)
-                    return manager.IsOfInterest(Target.Name);
+                    return manager.IsOfInterest(Target.Name, false);
 
                 return false;
             }

@@ -92,6 +92,8 @@ namespace slimCat.Models
 
         public override bool IsOfInterest(string name, bool onlineOnly = true)
         {
+            if (name == null) return false;
+
             lock (Locker)
             {
                 var isOfInterest = false;
