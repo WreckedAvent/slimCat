@@ -676,7 +676,8 @@ namespace slimCat.Services
                             Tab = channelText
                         };
 
-                    logId = api.UploadLog(report, channel.Messages);
+                    
+                    logId = api.UploadLog(report, channel.Messages.Union(channel.Ads));
                 }
             }
 
