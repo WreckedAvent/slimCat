@@ -231,6 +231,13 @@
                                               ToolTip="Allows slimCat to display small windows on the bottom-right of your screen alerting you of events and updates">
                                         Allow Toast Notifications
                                     </CheckBox>
+                                    
+                                    <CheckBox IsChecked="{Binding CheckOwnName}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Determines whether or not slimCat will automatically notify you when someone mentions your character's name">
+                                        Allow Current Name Highlighting
+                                    </CheckBox>
 
                                     <CheckBox IsChecked="{Binding AllowSoundWhenTabIsFocused}"
                                               VerticalAlignment="Center"

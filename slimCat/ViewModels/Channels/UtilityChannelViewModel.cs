@@ -393,6 +393,15 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool CheckOwnName
+        {
+            get { return ApplicationSettings.CheckForOwnName; }
+            set
+            {
+                ApplicationSettings.CheckForOwnName = value;
+                SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+            }
+        }
 
         public bool ShowNotifications
         {

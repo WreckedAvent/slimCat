@@ -34,6 +34,7 @@ namespace slimCat.Models
     public static class ApplicationSettings
     {
         #region Constructors and Destructors
+
         static ApplicationSettings()
         {
             Volume = 1;
@@ -69,6 +70,8 @@ namespace slimCat.Models
 
             AllowMinimizeToTray = true;
             AllowStatusDiscolor = true;
+
+            CheckForOwnName = true;
         }
 
         #endregion
@@ -130,6 +133,11 @@ namespace slimCat.Models
         ///     Gets or sets a value indicating whether a user's status to discolor their gender color.
         /// </summary>
         public static bool AllowStatusDiscolor { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether all messages should be checked for the current character's name.
+        /// </summary>
+        public static bool CheckForOwnName { get; set; }
 
         /// <summary>
         ///     Gets or sets the global notify terms.

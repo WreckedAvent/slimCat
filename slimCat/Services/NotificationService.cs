@@ -276,6 +276,7 @@ namespace slimCat.Services
                 }
             }
 
+            if (ApplicationSettings.CheckForOwnName) 
             {
                 // Now our character's name is always added
                 var name = cm.CurrentCharacter.Name.ToLower();
