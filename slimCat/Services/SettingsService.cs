@@ -59,9 +59,6 @@ namespace slimCat.Services
         /// <param name="chanType">
         ///     The chan Type.
         /// </param>
-        /// <returns>
-        ///     The <see cref="ChannelSettingsModel" />.
-        /// </returns>
         public static ChannelSettingsModel GetChannelSettings(
             string currentCharacter, string title, string id, ChannelType chanType)
         {
@@ -96,9 +93,6 @@ namespace slimCat.Services
         /// <param name="id">
         ///     The id.
         /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         public static bool HasChannelSettings(string currentCharacter, string title, string id)
         {
             var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
@@ -110,7 +104,10 @@ namespace slimCat.Services
         ///     Updates the application settings from file
         /// </summary>
         /// <param name="currentCharacter">
-        ///     The current Character.
+        ///     The current character.
+        /// </param>
+        /// <param name="cm">
+        ///     The current character manager.
         /// </param>
         public static void ReadApplicationSettingsFromXml(string currentCharacter, ICharacterManager cm)
         {
@@ -192,9 +189,6 @@ namespace slimCat.Services
         /// <param name="decrypt">
         ///     The decrypt.
         /// </param>
-        /// <returns>
-        ///     The <see cref="T" />.
-        /// </returns>
         public static T ReadObjectFromXml<T>(string fileName, T baseObject, bool decrypt = false) where T : new()
         {
             var type = baseObject.GetType();

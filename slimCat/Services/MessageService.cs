@@ -706,10 +706,10 @@ namespace slimCat.Services
             var character = command.Get(Constants.Arguments.Character).ToLower().Trim();
             var add = command.Get(Constants.Arguments.Type) == "tempinteresting";
 
-            if (add)
-                characterManager.Add(character, ListKind.Interested, true);
-            else
-                characterManager.Add(character, ListKind.NotInterested, true);
+            characterManager.Add(
+                character,
+                add ? ListKind.Interested : ListKind.NotInterested,
+                true);
         }
 
         private void OnHandleLatestReportRequested(IDictionary<string, object> command)

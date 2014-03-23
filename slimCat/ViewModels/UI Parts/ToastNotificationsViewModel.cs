@@ -24,9 +24,7 @@ namespace slimCat.ViewModels
     using System;
     using System.Linq;
     using System.Timers;
-    using System.Windows.Automation.Peers;
     using System.Windows.Input;
-    using System.Windows.Media.Imaging;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Models;

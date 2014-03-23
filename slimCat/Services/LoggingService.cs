@@ -56,14 +56,10 @@ namespace slimCat.Services
 
     public class LoggingService : ILoggingService
     {
-        private readonly IEventAggregator eventAggregator;
-
         #region Constructors and Destructors
 
         public LoggingService(IEventAggregator eventAggregator)
         {
-            this.eventAggregator = eventAggregator;
-
             eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Subscribe(OnCharacterSelected);
         }
 

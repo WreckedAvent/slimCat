@@ -553,7 +553,6 @@
 
     <Style x:Key="ImageContentToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource ToggleImageButtonBase}">
         <Setter Property="Padding" Value="0" />
-        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="2,0" />
         <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
         <Style.Triggers>
