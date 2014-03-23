@@ -90,7 +90,8 @@ namespace slimCat.Services
         private void FullscreenTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
             if (cm.CurrentCharacter == null 
-                || !ApplicationSettings.AllowAutoBusy) return;
+                || !ApplicationSettings.AllowAutoBusy
+                || cm.CurrentCharacter.Status == StatusType.Busy) return;
 
             if (cm.CurrentCharacter.Status != StatusType.Online
                 && cm.CurrentCharacter.Status != StatusType.Idle
