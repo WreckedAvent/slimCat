@@ -588,7 +588,7 @@ namespace slimCat.Utilities
 
         private Inline MakeSession(ParsedChunk arg)
         {
-            if (arg.Children == null || arg.Children.Any() || string.IsNullOrEmpty(arg.Arguments))
+            if (arg.Children == null || !arg.Children.Any() || string.IsNullOrEmpty(arg.Arguments))
                 return MakeNormalText(arg);
 
             var channel = MakeChannelLink(ChatModel.FindChannel(arg.Children.First().InnerText, arg.Arguments));
