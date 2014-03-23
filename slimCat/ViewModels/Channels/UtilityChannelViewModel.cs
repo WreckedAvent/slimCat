@@ -452,6 +452,12 @@ namespace slimCat.ViewModels
             {
                 if (ChatModel.IsAuthenticated) return string.Empty;
 
+                if (inStagger && DelayTime == 0)
+                {
+                    inStagger = false;
+                    ConnectTime = 0;
+                }
+
                 return flavorText + connectDotDot.ToString()
                        + (!inStagger ? "\nRequest sent " + ConnectTime + " seconds ago" : string.Empty)
                        + (DelayTime > 0 ? "\nWaiting " + --DelayTime + " seconds until reconnecting" : string.Empty);

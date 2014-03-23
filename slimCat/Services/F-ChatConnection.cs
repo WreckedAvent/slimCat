@@ -60,6 +60,8 @@ namespace slimCat.Services
         private int retryAttemptCount;
         private WebSocket socket;
 
+        private const int TimeoutTimeMs = 30*1000; // 30 seconds
+
         #endregion
 
         #region Constructors
@@ -105,17 +107,17 @@ namespace slimCat.Services
             staggerTimer = new Timer(GetNextConnectDelay()); // first reconnect is 5 seconds
             staggerTimer.Elapsed += (s, e) => DoReconnect();
 
-            timeoutTimer = new Timer(60 * 1000); // 60 seconds
+            timeoutTimer = new Timer(TimeoutTimeMs); // 30 seconds
             timeoutTimer.Elapsed += (s, e) => OnTimeout();
         }
 
         private void OnTimeout()
         {
-            if (socket.State == WebSocketState.Connecting)
-            {
-                socket.Close();
-                DoReconnect();
-            }
+            if (socket.State != WebSocketState.Connecting) return;
+
+            socket = new WebSocket(Constants.ServerHost);
+
+            DoReconnect();
 
             timeoutTimer.Stop();
         }
@@ -203,9 +205,6 @@ namespace slimCat.Services
 
             // start connection
             socket.Open();
-
-            timeoutTimer.Start();
-            autoPingTimer.Start();
         }
 
         private void TrySend(string type, object args = null)
@@ -240,6 +239,7 @@ namespace slimCat.Services
 
             events.GetEvent<ConnectionClosedEvent>().Publish(string.Empty);
             AttemptReconnect();
+            autoPingTimer.Stop();
         }
 
         /// <summary>
@@ -251,8 +251,12 @@ namespace slimCat.Services
             {
                 isAuthenticated = true;
                 events.GetEvent<LoginAuthenticatedEvent>().Publish(null);
+
                 SendQueue();
                 retryAttemptCount = 0;
+
+                timeoutTimer.Stop();
+                autoPingTimer.Start();
             }
 
             var commandType = e.Message.Substring(0, 3); // type of command sent
@@ -330,7 +334,6 @@ namespace slimCat.Services
         /// </summary>
         private void AttemptReconnect()
         {
-            
             if (staggerTimer.Enabled || socket.State == WebSocketState.Open) return;
 
             staggerTimer.Start();
@@ -339,6 +342,9 @@ namespace slimCat.Services
             events.GetEvent<ReconnectingEvent>().Publish((int) staggerTimer.Interval/1000);
             events.SendUserCommand("join", new[] {"home"});
             autoPingTimer.Stop();
+
+            timeoutTimer.Interval = staggerTimer.Interval + (TimeoutTimeMs);
+            timeoutTimer.Start();
         }
 
         private void DoReconnect()
