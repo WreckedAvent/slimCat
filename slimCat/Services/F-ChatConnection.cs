@@ -193,7 +193,7 @@ namespace slimCat.Services
 
             events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(ConnectToChat);
 
-            if (socket.State == WebSocketState.Open || socket.State == WebSocketState.Connecting) return;
+            if (socket.State == WebSocketState.Open) return;
 
             socket = new WebSocket(Constants.ServerHost);
 

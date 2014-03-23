@@ -459,8 +459,8 @@ namespace slimCat.ViewModels
                 }
 
                 return flavorText + connectDotDot.ToString()
-                       + (!inStagger ? "\nRequest sent " + ConnectTime + " seconds ago" : string.Empty)
-                       + (DelayTime > 0 ? "\nWaiting " + --DelayTime + " seconds until reconnecting" : string.Empty);
+                       + (!inStagger ? "\nRequest sent " + ConnectTime + " second(s) ago" : string.Empty)
+                       + (DelayTime > 0 ? "\nWaiting " + --DelayTime + " second(s) until reconnecting" : string.Empty);
             }
         }
 
