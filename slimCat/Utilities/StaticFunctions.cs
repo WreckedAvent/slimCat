@@ -28,7 +28,6 @@ namespace slimCat.Utilities
     using System.Linq;
     using System.Web;
     using System.Windows;
-    using System.Windows.Documents;
     using System.Windows.Media;
     using Models;
 

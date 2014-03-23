@@ -495,9 +495,16 @@ namespace slimCat.Utilities
 
         private Inline MakeUser(ParsedChunk arg)
         {
-            var user = MakeUsernameLink(characterManager.Find(arg.Children.First().InnerText));
-            arg.Children.Clear();
-            return user;
+            if (arg.Children != null && arg.Children.Any())
+            {
+                var user = MakeUsernameLink(characterManager.Find(arg.Children.First().InnerText));
+                arg.Children.Clear();
+                return user;
+            }
+
+            return !string.IsNullOrEmpty(arg.Arguments) 
+                ? MakeUsernameLink(characterManager.Find(arg.Arguments)) 
+                : MakeNormalText(arg);
         }
 
         private Inline MakeSuperscript(ParsedChunk arg)
@@ -526,9 +533,16 @@ namespace slimCat.Utilities
 
         private Inline MakeChannel(ParsedChunk arg)
         {
-            var channel = MakeChannelLink(ChatModel.FindChannel(arg.Children.First().InnerText));
-            arg.Children.Clear();
-            return channel;
+            if (arg.Children != null && arg.Children.Any())
+            {
+                var channel = MakeChannelLink(ChatModel.FindChannel(arg.Children.First().InnerText));
+                arg.Children.Clear();
+                return channel;
+            }
+
+            return !string.IsNullOrEmpty(arg.Arguments)
+                ? MakeChannelLink(ChatModel.FindChannel(arg.Arguments))
+                : MakeNormalText(arg);
         }
 
         private Span MakeStrikeThrough(ParsedChunk arg)
@@ -574,6 +588,9 @@ namespace slimCat.Utilities
 
         private Inline MakeSession(ParsedChunk arg)
         {
+            if (arg.Children == null || arg.Children.Any() || string.IsNullOrEmpty(arg.Arguments))
+                return MakeNormalText(arg);
+
             var channel = MakeChannelLink(ChatModel.FindChannel(arg.Children.First().InnerText, arg.Arguments));
             arg.Children.Clear();
             return channel;
