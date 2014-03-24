@@ -581,7 +581,8 @@
                 Margin="{TemplateBinding Property=Margin}"
                 Background="{TemplateBinding Property=Background}"
                 BorderBrush="{TemplateBinding Property=BorderBrush}"
-                BorderThickness="2">
+                BorderThickness="2"
+                Cursor="Hand">
             <Grid HorizontalAlignment="Left"
                   Margin="5">
                 <Grid.ColumnDefinitions>
@@ -637,6 +638,7 @@
                           BorderBrush="{TemplateBinding Property=BorderBrush}"
                           Template="{StaticResource SimpleExpanderButton}"
                           Content="{TemplateBinding Header}"
+                          Cursor="Hand"
                           IsChecked="{Binding Path=IsExpanded,
                           RelativeSource={RelativeSource TemplatedParent}}"
                           OverridesDefaultStyle="True"
