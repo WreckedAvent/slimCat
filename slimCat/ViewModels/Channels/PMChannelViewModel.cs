@@ -330,7 +330,7 @@ namespace slimCat.ViewModels
         private void SendTypingNotification(TypingStatus type)
         {
             Events.SendUserCommand(CommandDefinitions.ClientSendTypingStatus,
-                new[] {type.ToString(), ConversationWith.Name});
+                new[] {type.ToString().ToLower(), ConversationWith.Name});
         }
 
         private bool UpdateIsOurCharacter(NotificationModel param)
