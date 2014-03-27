@@ -220,8 +220,7 @@ namespace slimCat.Services
             }
 
             channel.Mode = mode;
-            dynamic users = command[Constants.Arguments.MultipleUsers];
-            // dynamic lets us deal with odd syntax TODO: switch to strong-type
+            var users = (JsonArray) command[Constants.Arguments.MultipleUsers];
             foreach (IDictionary<string, object> character in users)
             {
                 var name = character.Get(Constants.Arguments.Identity);
@@ -235,7 +234,7 @@ namespace slimCat.Services
 
         private void ChannelListCommand(IDictionary<string, object> command, bool isPublic)
         {
-            dynamic arr = command[Constants.Arguments.MultipleChannels];
+            var arr = (JsonArray) command[Constants.Arguments.MultipleChannels];
             lock (ChatModel.AllChannels)
             {
                 foreach (IDictionary<string, object> channel in arr)
@@ -397,7 +396,7 @@ namespace slimCat.Services
 
         private void InitialCharacterListCommand(IDictionary<string, object> command)
         {
-            dynamic arr = command[Constants.Arguments.MultipleCharacters]; // dynamic for ease-of-use
+            var arr = (JsonArray) command[Constants.Arguments.MultipleCharacters];
             foreach (JsonArray character in arr)
             {
                 ICharacter temp = new CharacterModel();
