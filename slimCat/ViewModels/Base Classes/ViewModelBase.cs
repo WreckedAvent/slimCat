@@ -406,8 +406,8 @@ namespace slimCat.ViewModels
 
         private bool CanIgnoreUpdate(object obj)
         {
-            return CharacterManager.IsOfInterest(obj as string) ||
-                   CharacterManager.IsOnList(obj as string, ListKind.IgnoreUpdates);
+            return CharacterManager.IsOfInterest(obj as string, false) ||
+                   CharacterManager.IsOnList(obj as string, ListKind.IgnoreUpdates, false);
         }
 
         #endregion
