@@ -46,6 +46,7 @@ namespace slimCat.Services
 
         private readonly Timer autoPingTimer = new Timer(45*1000); // every 45 seconds
         private readonly int[] errsThatDisconnect;
+        private readonly int[] errsThatPreventReconnect;
         private readonly IEventAggregator events;
 
         private readonly ITicketProvider provider;
@@ -97,7 +98,18 @@ namespace slimCat.Services
                     Constants.Errors.BannedFromServer,
                     Constants.Errors.BadLoginInfo,
                     Constants.Errors.TooManyConnections,
-                    Constants.Errors.UnknownLoginMethod
+                    Constants.Errors.UnknownLoginMethod,
+                    Constants.Errors.TimedOutFromServer
+                };
+
+            errsThatPreventReconnect = new[]
+                {
+                    Constants.Errors.BannedFromServer,
+                    Constants.Errors.TooManyConnections,
+                    Constants.Errors.KickedFromServer,
+                    Constants.Errors.UnknownLoginMethod,
+                    Constants.Errors.SimultaneousLoginKick,
+                    Constants.Errors.TimedOutFromServer
                 };
 
             InitializeLog();
@@ -286,7 +298,22 @@ namespace slimCat.Services
                 int err;
                 int.TryParse(json.Get("number"), out err);
 
-                if (errsThatDisconnect.Contains(err)) isAuthenticated = false;
+                if (errsThatDisconnect.Contains(err))
+                {
+                    isAuthenticated = false;
+                }
+
+                if (errsThatPreventReconnect.Contains(err))
+                {
+                    MessageBox.Show(
+                    "Fatal Error: slimCat will no longer auto-reconnect.\n Reason:{0}".FormatWith(json.Get("message")),
+                    "slimCat Fatal Error", 
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+
+                    Environment.FailFast(null);
+                }
 
                 if (err == Constants.Errors.BadLoginInfo)
                 {
@@ -352,7 +379,8 @@ namespace slimCat.Services
             if (retryAttemptCount >= 21)
             {
                 MessageBox.Show(
-                    "slimCat will no longer auto-reconnect. Please wait a few minutes then restart the client.",
+                    "Fatal Error: Reconnect attempts exhausted. \nslimCat will no longer auto-reconnect."
+                    + "Please wait a few minutes then restart the client.",
                     "Reconnect attempts exhausted!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.FailFast(null);
             }

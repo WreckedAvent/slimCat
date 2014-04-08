@@ -187,7 +187,7 @@ namespace slimCat.Utilities
             public const int InvalidRoll = 36;
             // 37
             public const int InvalidTimeout = 38;
-            public const int Timeout = 39;
+            public const int TimedOutFromServer = 39;
             public const int KickedFromServer = 40;
             public const int AlreadyBannedFromChannel = 41;
             public const int CannotUnbanFromChannel = 42;
