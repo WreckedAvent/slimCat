@@ -81,7 +81,7 @@ namespace slimCat.Utilities
                     file.WriteLine("====================================");
                     file.Flush();
 
-                    ShowErrorBox("An error has occured!", message);
+                    ShowErrorBox(message, "An error has occured!");
                 }
             }
             catch (IOException)
@@ -96,8 +96,8 @@ namespace slimCat.Utilities
             const MessageBoxOptions options = (MessageBoxOptions) (topMostOption | getsForegroundOption);
 
             MessageBox.Show(
-                title,
                 message,
+                title,
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error,
                 MessageBoxDefaultButton.Button1,
