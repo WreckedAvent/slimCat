@@ -569,10 +569,15 @@ namespace slimCat.Utilities
 
             if (url == null)
             {
-                url = arg.InnerText ?? string.Empty;
+                url = arg.InnerText;
                 display = arg.Children != null
                     ? GetUrlDisplay(arg.Children.First().InnerText)
                     : string.Empty;
+            }
+
+            if (url == null && arg.Children != null)
+            {
+                url = arg.Children.First().InnerText;
             }
 
             if (arg.Children != null)
