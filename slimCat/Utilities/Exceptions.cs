@@ -89,7 +89,7 @@ namespace slimCat.Utilities
             }
         }
 
-        public static void ShowErrorBox(string title, string message)
+        public static void ShowErrorBox(string message, string title)
         {
             const int topMostOption = 0x40000;
             const int getsForegroundOption = 0x010000;
