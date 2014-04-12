@@ -24,6 +24,8 @@ namespace slimCat.Views
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Windows;
+    using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Markup;
     using Models;
@@ -41,18 +43,18 @@ namespace slimCat.Views
         private static readonly IDictionary<Key, Tuple<string, bool>> AcceptedKeys =
             new Dictionary<Key, Tuple<string, bool>>
                 {
-                    // accepted shorcut keys.
+                    // accepted shortcut keys.
                     {Key.B, new Tuple<string, bool>("b", false)},
                     {Key.S, new Tuple<string, bool>("s", false)},
                     {Key.I, new Tuple<string, bool>("i", false)},
                     {Key.U, new Tuple<string, bool>("u", false)},
                     {Key.L, new Tuple<string, bool>("url", true)},
                     {Key.Up, new Tuple<string, bool>("sup", false)},
-                    {Key.Down, new Tuple<string, bool>("sub", false)}
-                    
+                    {Key.Down, new Tuple<string, bool>("sub", false)},
+                    {Key.O, new Tuple<string, bool>("icon", false)},
+                    {Key.P, new Tuple<string, bool>("user", false)}
+
                     // format: 
-                    
-                    
                     // target key, matching bbtag, if the bbtag takes arguments
                 };
 
@@ -156,7 +158,23 @@ namespace slimCat.Views
                 }
             }
         }
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (!ApplicationSettings.AllowGreedyTextboxFocus)
+            {
+                var element = FocusManager.GetFocusedElement(Application.Current.MainWindow);
+                if (element is ListBoxItem) return;
+            }
 
+            Entry.Focus();
+        }
+
+        private void OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyboardDevice.Modifiers != ModifierKeys.Control) return;
+
+            if (e.Key == Key.Up || e.Key == Key.Down) e.Handled = true;
+        }
         #endregion
     }
 }

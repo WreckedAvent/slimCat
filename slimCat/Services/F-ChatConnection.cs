@@ -26,7 +26,6 @@ namespace slimCat.Services
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
-    using System.Windows.Forms;
     using Microsoft.Practices.Prism.Events;
     using Models;
     using SimpleJson;

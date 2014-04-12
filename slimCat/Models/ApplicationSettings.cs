@@ -84,7 +84,7 @@ namespace slimCat.Models
         public static bool AllowLogging { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value indiciating whether to allow user-inputted colors to be displayed.
+        ///     Gets or sets a value indicating whether to allow user-inputted colors to be displayed.
         /// </summary>
         public static bool AllowColors { get; set; }
 
@@ -123,6 +123,12 @@ namespace slimCat.Models
         ///     Gets or sets a value indicating whether to allow ad deduplication.
         /// </summary>
         public static bool AllowAdDedup { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether the text entry box gets input greedily.
+        ///     If true, then anytime one is initialized, it will gain focus. 
+        /// </summary>
+        public static bool AllowGreedyTextboxFocus { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether to allow the client to minimize to tray on close.
@@ -196,7 +202,7 @@ namespace slimCat.Models
         // Localization
 
         /// <summary>
-        ///     Gets or sets a value indicate whether to spell check the users' input.
+        ///     Gets or sets a value indicating whether to spell check the user's input.
         /// </summary>
         public static bool SpellCheckEnabled { get; set; }
 

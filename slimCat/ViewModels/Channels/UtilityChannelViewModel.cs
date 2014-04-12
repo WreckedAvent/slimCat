@@ -226,6 +226,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool AllowGreedyTextboxFocus
+        {
+            get { return ApplicationSettings.AllowGreedyTextboxFocus; }
+            set
+            {
+                ApplicationSettings.AllowGreedyTextboxFocus = value;
+                Save();
+            }
+        }
+
         #endregion
 
         #region Appearance
