@@ -25,13 +25,14 @@ namespace slimCat.Services
     using System.Collections.Generic;
     using System.Linq;
     using Models;
-    using SimpleJson;
+    using Models.Api;
     using Utilities;
 
     #endregion
 
     internal class TicketProvider : ITicketProvider
     {
+        private const string siteIsDisabled = "The site has been disabled for maintenance, check back later.";
         private readonly IBrowser browser;
 
         private IAccount lastAccount;
@@ -41,8 +42,6 @@ namespace slimCat.Services
 
         private Dictionary<string, object> loginCredentials;
         private bool shouldGetNewTicket;
-
-        private const string siteIsDisabled = "The site has been disabled for maintenance, check back later.";
 
         public TicketProvider(IBrowser browser)
         {
@@ -101,38 +100,35 @@ namespace slimCat.Services
             var buffer = browser.GetResponse(Constants.UrlConstants.GetTicket, loginCredentials);
 
             if (buffer.Equals(siteIsDisabled, StringComparison.OrdinalIgnoreCase))
-                throw new Exception("Site API disabled for maitenence.");
+                throw new Exception("Site API disabled for maintenance.");
 
             // assign the data to our account model
-            dynamic result = SimpleJson.DeserializeObject(buffer);
+            var result = buffer.DeserializeTo<ApiAuthResponse>();
 
-            var hasError = !string.IsNullOrWhiteSpace((string) result.error);
+            var hasError = !string.IsNullOrWhiteSpace(result.Error);
 
-            lastTicket = (string) result.ticket;
+            lastTicket = result.Ticket;
 
             if (hasError)
-                throw new Exception(result.error);
+                throw new Exception(result.Error);
 
-            foreach (var item in result.characters)
-                lastAccount.Characters.Add((string) item);
+            foreach (var item in result.Characters.OrderBy(x => x))
+                lastAccount.Characters.Add(item);
 
-            foreach (var item in result.friends)
+            foreach (var friend in result.Friends)
             {
-                if (lastAccount.AllFriends.ContainsKey(item["source_name"]))
-                    lastAccount.AllFriends[item["source_name"]].Add((string) item["dest_name"]);
+                if (lastAccount.AllFriends.ContainsKey(friend.From))
+                    lastAccount.AllFriends[friend.From].Add(friend.To);
                 else
                 {
-                    var list = new List<string> {(string) item["dest_name"]};
+                    var list = new List<string> {friend.To};
 
-                    lastAccount.AllFriends.Add(item["source_name"], list);
+                    lastAccount.AllFriends.Add(friend.From, list);
                 }
             }
 
-            foreach (var item in result.bookmarks)
-            {
-                if (!lastAccount.Bookmarks.Contains(item["name"] as string))
-                    lastAccount.Bookmarks.Add(item["name"] as string);
-            }
+            foreach (var bookmark in result.Bookmarks.Where(bookmark => !lastAccount.Bookmarks.Contains(bookmark.Name)))
+                lastAccount.Bookmarks.Add(bookmark.Name);
 
             lastInfoRetrieval = DateTime.Now;
             ShouldGetNewTicket = false;
