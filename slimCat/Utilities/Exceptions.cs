@@ -81,12 +81,27 @@ namespace slimCat.Utilities
                     file.WriteLine("====================================");
                     file.Flush();
 
-                    MessageBox.Show(message, "An error has occured!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ShowErrorBox(message, "An error has occured!");
                 }
             }
             catch (IOException)
             {
             }
+        }
+
+        public static void ShowErrorBox(string title, string message)
+        {
+            const int topMostOption = 0x40000;
+            const int getsForegroundOption = 0x010000;
+            const MessageBoxOptions options = (MessageBoxOptions) (topMostOption | getsForegroundOption);
+
+            MessageBox.Show(
+                title,
+                message,
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error,
+                MessageBoxDefaultButton.Button1,
+                options);
         }
 
         /// <summary>

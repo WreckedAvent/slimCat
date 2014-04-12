@@ -295,8 +295,7 @@ namespace slimCat.Services
             if (json.Get(Constants.Arguments.Command) == Constants.ServerCommands.SystemError
                 && json.ContainsKey("number"))
             {
-                int err;
-                int.TryParse(json.Get("number"), out err);
+                var err = Convert.ToInt32((long) json["number"]);
 
                 if (errsThatDisconnect.Contains(err))
                 {
@@ -305,14 +304,11 @@ namespace slimCat.Services
 
                 if (errsThatPreventReconnect.Contains(err))
                 {
-                    MessageBox.Show(
-                    "Fatal Error: slimCat will no longer auto-reconnect.\n Reason:{0}".FormatWith(json.Get("message")),
-                    "slimCat Fatal Error", 
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    Exceptions.ShowErrorBox(
+                        "slimCat will now exit. \nReason: {0}".FormatWith(json.Get("message")),
+                        "slimCat Fatal Error");
 
-
-                    Environment.FailFast(null);
+                    Environment.Exit(-1);
                 }
 
                 if (err == Constants.Errors.BadLoginInfo)
@@ -378,11 +374,12 @@ namespace slimCat.Services
         {
             if (retryAttemptCount >= 21)
             {
-                MessageBox.Show(
-                    "Fatal Error: Reconnect attempts exhausted. \nslimCat will no longer auto-reconnect."
+                Exceptions.ShowErrorBox(
+                    "slimCat will now exit. \nReason: Reconnect Attempts exhausted. \n\n"
                     + "Please wait a few minutes then restart the client.",
-                    "Reconnect attempts exhausted!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Environment.FailFast(null);
+                    "Reconnect attempts exhausted!");
+
+                Environment.Exit(-2);
             }
 
             ConnectToChat(Character);
