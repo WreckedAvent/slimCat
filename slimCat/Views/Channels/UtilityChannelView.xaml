@@ -200,20 +200,21 @@
                                               ToolTip="Determines if friends on characters other than the one you are currently signed in with are treated as friends or normal characters.">
                                         Friends Are Account Wide
                                     </CheckBox>
-                                    
-                                    <CheckBox IsChecked="{Binding AllowGreedyTextboxFocus}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
-                                              ToolTip="Allows textboxes to gain focus regardless of how the tab was switched into.">
-                                        Allow Greedy Texbox Focusing
-                                    </CheckBox>
 
                                     <CheckBox IsChecked="{Binding AllowTexboxDisable}"
                                               VerticalAlignment="Center"
                                               Margin="0,15,0,0"
-                                              ToolTip="Allows textboxes to disable itself as a spam filter after sending a message.">
+                                              ToolTip="Allows the entry box to automatically disable itself after sending a message.">
                                         Allow Texbox Disabling
                                     </CheckBox>
+                                    
+                                    <CheckBox IsChecked="{Binding AllowGreedyTextboxFocus}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows the entry box to automatically focus itself after switching tabs.">
+                                        Allow Texbox Focusing
+                                    </CheckBox>
+
 
                                     <StackPanel Margin="0,15,0,0"
                                                 Visibility="{Binding SpellCheckEnabled, Converter={StaticResource BoolConverter}}"
