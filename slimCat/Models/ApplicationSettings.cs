@@ -71,6 +71,9 @@ namespace slimCat.Models
             AllowMinimizeToTray = true;
             AllowStatusDiscolor = true;
 
+            AllowTextboxDisable = true;
+            AllowGreedyTextboxFocus = false;
+
             CheckForOwnName = true;
         }
 
@@ -126,9 +129,14 @@ namespace slimCat.Models
 
         /// <summary>
         ///     Gets or sets a value indicating whether the text entry box gets input greedily.
-        ///     If true, then anytime one is initialized, it will gain focus. 
+        ///     If true, then anytime one is initialized, it will gain focus.
         /// </summary>
         public static bool AllowGreedyTextboxFocus { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether to disable the textbox after sending a message.
+        /// </summary>
+        public static bool AllowTextboxDisable { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether to allow the client to minimize to tray on close.

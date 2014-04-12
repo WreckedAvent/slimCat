@@ -228,8 +228,10 @@ namespace slimCat.ViewModels
         {
             get
             {
-                return (IsDisplayingChat && !isInCoolDownMessage)
-                       || (IsDisplayingAds && !isInCoolDownAd);
+                var canPostChat = isDisplayingChat && (!isInCoolDownMessage || !ApplicationSettings.AllowTextboxDisable);
+                var canPostAd = IsDisplayingAds && !isInCoolDownAd;
+
+                return canPostChat || canPostAd;
             }
         }
 

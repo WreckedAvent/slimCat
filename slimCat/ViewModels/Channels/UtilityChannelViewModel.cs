@@ -235,6 +235,15 @@ namespace slimCat.ViewModels
                 Save();
             }
         }
+        public bool AllowTexboxDisable
+        {
+            get { return ApplicationSettings.AllowTextboxDisable; }
+            set
+            {
+                ApplicationSettings.AllowTextboxDisable = value;
+                Save();
+            }
+        }
 
         #endregion
 
