@@ -173,7 +173,7 @@ namespace slimCat.Models
                 var messageNotifyMatters = Mode == ChannelMode.Chat || Mode == ChannelMode.Both;
                 var adNotifyMatters = Mode == ChannelMode.Ads || Mode == ChannelMode.Both;
 
-                var doNotFlash = false;
+                var doNotFlash = true;
 
                 if (messageNotifyMatters)
                     doNotFlash = Settings.MessageNotifyLevel == 0;
