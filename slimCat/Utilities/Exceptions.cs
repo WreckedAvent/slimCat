@@ -81,7 +81,7 @@ namespace slimCat.Utilities
                     file.WriteLine("====================================");
                     file.Flush();
 
-                    ShowErrorBox(message, "An error has occured!");
+                    ShowErrorBox("An error has occured!", message);
                 }
             }
             catch (IOException)
