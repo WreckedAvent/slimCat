@@ -25,6 +25,7 @@ namespace slimCat.Models
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Utilities;
     using C = Utilities.Constants.ClientCommands;
     using A = Utilities.Constants.Arguments;
 
@@ -510,7 +511,7 @@ namespace slimCat.Models
                         if (args != null && args.Count > 1)
                         {
                             throw new ArgumentException(
-                                "This command takes a parameter which must be a single word", "args");
+                                "The {0} command takes a parameter which must be a single word".FormatWith(familiarName));
                         }
 
                         break;
@@ -518,19 +519,19 @@ namespace slimCat.Models
                     case CommandModel.CommandTypes.OnlyChannel:
                     case CommandModel.CommandTypes.NoArgs:
                         if (args != null && args[0] != null)
-                            throw new ArgumentException("This command doesn't take an argument", "args");
+                            throw new ArgumentException("The {0} command doesn't take an argument".FormatWith(familiarName));
 
                         break;
 
                     case CommandModel.CommandTypes.TwoArgs:
                         if (args != null && args.Count > 2)
-                            throw new ArgumentException("This command takes only two parameters", "args");
+                            throw new ArgumentException("The {0} command takes only two parameters".FormatWith(familiarName));
 
                         break;
 
                     case CommandModel.CommandTypes.SingleArgsAndChannel:
                         if (channel == null)
-                            throw new ArgumentException("This command needs an associated channel", "args");
+                            throw new ArgumentException("The {0} command needs an associated channel".FormatWith(familiarName));
 
                         break;
                 }

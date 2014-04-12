@@ -312,6 +312,10 @@ namespace slimCat.ViewModels
                 else
                     UpdateError(string.Format("I don't know the {0} command.", messageToCommand.Type));
             }
+            catch (ArgumentException ex)
+            {
+                UpdateError(ex.Message);
+            }
             catch (InvalidOperationException ex)
             {
                 UpdateError(ex.Message);

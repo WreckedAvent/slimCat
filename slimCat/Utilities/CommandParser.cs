@@ -100,7 +100,7 @@ namespace slimCat.Utilities
         #region Public Properties
 
         /// <summary>
-        ///     Gets a value indicating whether has command.
+        ///     Gets a value indicating whether the current input has a command.
         /// </summary>
         public bool HasCommand
         {
@@ -108,7 +108,7 @@ namespace slimCat.Utilities
         }
 
         /// <summary>
-        ///     Gets a value indicating whether is valid.
+        ///     Gets a value indicating whether the current input has a valid command.
         /// </summary>
         public bool IsValid
         {
@@ -116,7 +116,7 @@ namespace slimCat.Utilities
         }
 
         /// <summary>
-        ///     Gets a value indicating whether requires global mod.
+        ///     Gets a value indicating whether the current command requires at least global mod permissions.
         /// </summary>
         public bool RequiresGlobalMod
         {
@@ -133,7 +133,7 @@ namespace slimCat.Utilities
         }
 
         /// <summary>
-        ///     Gets a value indicating whether requires mod.
+        ///     Gets a value indicating whether the current command requires at least channel mod permissions.
         /// </summary>
         public bool RequiresMod
         {
@@ -162,29 +162,20 @@ namespace slimCat.Utilities
         #region Public Methods and Operators
 
         /// <summary>
-        ///     The has non command.
+        ///     Determines if the input is a command which is not sent to the server, but still handled
+        ///     differently from normal input.
         /// </summary>
         /// <param name="input">
         ///     The input.
         /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         public static bool HasNonCommand(string input)
         {
             return CommandDefinitions.NonCommandCommands.Any(input.StartsWith);
         }
 
         /// <summary>
-        ///     The to dictionary.
+        ///     Turns a user command to a send-able dictionary.
         /// </summary>
-        /// <returns>
-        ///     The
-        ///     <see>
-        ///         <cref>IDictionary</cref>
-        ///     </see>
-        ///     .
-        /// </returns>
         public IDictionary<string, object> ToDictionary()
         {
             return
