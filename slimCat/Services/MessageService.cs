@@ -263,7 +263,7 @@ namespace slimCat.Services
                          ?? (ChannelModel) model.CurrentChannels.FirstByIdOrNull(id);
             }
 
-            if (history.Any())
+            if (history.Any() && history.Count() > 1)
             {
                 Dispatcher.BeginInvoke(
                     (Action) (() => history.Select(item => new MessageModel(item)).Each(

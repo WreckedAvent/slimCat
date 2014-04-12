@@ -689,8 +689,10 @@ namespace slimCat.ViewModels
 
         private void OnAdsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (IsDisplayingChat)
-                OtherTabHasMessages = e.NewItems != null && e.NewItems.Count > 0;
+            if (!IsDisplayingChat) return;
+
+            OtherTabHasMessages = e.NewItems != null && e.NewItems.Count > 0;
+            if (Model.Ads.All(x => x.IsHistoryMessage)) OtherTabHasMessages = false;
         }
 
         private void OnMessagesChanged(object sender, NotifyCollectionChangedEventArgs e)
