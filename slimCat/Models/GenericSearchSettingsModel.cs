@@ -84,6 +84,7 @@ namespace slimCat.Models
                 if (isChangingSettings == value)
                     return;
 
+                Log(value? "showing modal" : "hiding modal");
                 isChangingSettings = value;
                 CallUpdate();
             }
@@ -331,6 +332,11 @@ namespace slimCat.Models
         {
             if (Updated != null)
                 Updated(this, new EventArgs());
+        }
+
+        private void Log(string text)
+        {
+            Logging.Log(text, "channel setting");
         }
 
         #endregion

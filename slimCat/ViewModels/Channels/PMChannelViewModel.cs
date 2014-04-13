@@ -113,6 +113,8 @@ namespace slimCat.ViewModels
 
                 messageManager = new FilteredCollection<IMessage, IViewableObject>(
                     Model.Messages, message => true);
+
+                LoggingSection = "pm channel vm";
             }
             catch (Exception ex)
             {

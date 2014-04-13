@@ -123,7 +123,7 @@ namespace slimCat.Services
                             new MenuItem("Sounds Enabled", ToggleSound)
                                 {
                                     Checked =
-                                        ApplicationSettings.Volume > 0.0,
+                                        ApplicationSettings.AllowSound
                                 });
                         iconMenu.MenuItems.Add(
                             new MenuItem("Toasts Enabled", ToggleToast)
@@ -196,8 +196,7 @@ namespace slimCat.Services
 
         private void DingTheCrapOutOfTheUser()
         {
-            if ((DateTime.Now - lastDingLinged) <= TimeSpan.FromSeconds(1) ||
-                Math.Abs(ApplicationSettings.Volume) < 0.01)
+            if ((DateTime.Now - lastDingLinged) <= TimeSpan.FromSeconds(1) || !ApplicationSettings.AllowSound)
                 return;
 
             Log("Playing sound");
@@ -529,11 +528,9 @@ namespace slimCat.Services
 
         private void ToggleSound(object sender, EventArgs e)
         {
-            var temp = ApplicationSettings.Volume;
-            ApplicationSettings.Volume = soundSaveVolume;
-            soundSaveVolume = temp;
+            ApplicationSettings.AllowSound = !ApplicationSettings.AllowSound;
 
-            icon.ContextMenu.MenuItems[2].Checked = ApplicationSettings.Volume > 0.0;
+            icon.ContextMenu.MenuItems[2].Checked = ApplicationSettings.AllowSound;
         }
 
         private void ToggleToast(object sender, EventArgs e)

@@ -164,6 +164,32 @@
             <ScrollViewer Grid.Row="1"
                           CanContentScroll="False">
                 <StackPanel>
+                    <Expander Visibility="{Binding HasNewUpdate, Mode=OneWay, Converter={StaticResource BoolConverter}}">
+                        <Expander.Header>
+                            <TextBlock Foreground="{StaticResource  HighlightBrush}"
+                                       FontSize="20">
+                                Update
+                            </TextBlock>
+                        </Expander.Header>
+                        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
+                                    Margin="10,0,0,0">
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,15" />
+
+                            <TextBlock>
+                                <Run Text="There is a new update available!" />
+                                <LineBreak />
+                                <Run Text="{Binding Path=UpdateName, Mode=OneWay}" />
+                                <Run Text=" @" />
+                                <Run Text="{Binding Path=UpdateBuildTime, Mode=OneWay}" />
+                                <LineBreak />
+
+                                <Hyperlink CommandParameter="{Binding Path=UpdateLink, Mode=OneWay}">Download</Hyperlink>
+                            </TextBlock>
+
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0" />
+                        </StackPanel>
+                    </Expander>
+                    
                     <Expander Header="Settings">
                         <StackPanel Margin="10,0,0,0">
                             <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0" />
@@ -243,10 +269,17 @@
                                     <CheckBox IsChecked="{Binding ShowNotifications}"
                                               VerticalAlignment="Center"
                                               Margin="0,15,0,0"
-                                              ToolTip="Allows slimCat to display small windows on the bottom-right of your screen alerting you of events and updates">
+                                              ToolTip="Allows slimCat to display small windows on the bottom-right of your screen for new notifications">
                                         Allow Toast Notifications
                                     </CheckBox>
-                                    
+
+                                    <CheckBox IsChecked="{Binding AllowSound}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows slimCat to play sounds during toasts when applicable">
+                                        Allow Sound
+                                    </CheckBox>
+
                                     <CheckBox IsChecked="{Binding CheckOwnName}"
                                               VerticalAlignment="Center"
                                               Margin="0,15,0,0"
@@ -437,28 +470,7 @@
                             <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0" />
                         </StackPanel>
                     </Expander>
-
-                    <Expander Header="Update"
-                              Visibility="{Binding HasNewUpdate, Mode=OneWay, Converter={StaticResource BoolConverter}}">
-                        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
-                                    Margin="10,0,0,0">
-                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,15" />
-
-                            <TextBlock>
-                                <Run Text="There is a new update available!" />
-                                <LineBreak />
-                                <Run Text="{Binding Path=UpdateName, Mode=OneWay}" />
-                                <Run Text=" @" />
-                                <Run Text="{Binding Path=UpdateBuildTime, Mode=OneWay}" />
-                                <LineBreak />
-
-                                <Hyperlink CommandParameter="{Binding Path=UpdateLink, Mode=OneWay}">Download</Hyperlink>
-                            </TextBlock>
-
-                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0" />
-                        </StackPanel>
-                    </Expander>
-                    
+           
                     <Expander Header="Change Log">
                         <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}" 
                                     Margin="10,0,0,0">

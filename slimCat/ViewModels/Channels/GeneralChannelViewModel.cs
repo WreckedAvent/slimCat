@@ -194,6 +194,8 @@ namespace slimCat.ViewModels
                 PropertyChanged += OnPropertyChanged;
 
                 Events.GetEvent<NewUpdateEvent>().Subscribe(UpdateChat);
+
+                LoggingSection = "general chan vm";
             }
             catch (Exception ex)
             {
@@ -299,6 +301,8 @@ namespace slimCat.ViewModels
                 if (isDisplayingChat == value)
                     return;
 
+                Log("now showing " + (isDisplayingChat ? "chat" : "ads"));
+
                 isDisplayingChat = value;
 
                 var temp = Message;
@@ -346,6 +350,8 @@ namespace slimCat.ViewModels
             {
                 if (isSearching == value)
                     return;
+
+                Log("now " + (isSearching ? "searching" : "chatting"));
 
                 isSearching = value;
                 OnPropertyChanged("IsSearching");
@@ -514,10 +520,16 @@ namespace slimCat.ViewModels
             if (last != null)
             {
                 if (!last.Poster.NameEquals(ChatModel.CurrentCharacter.Name))
+                {
                     Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new[] {messageToSend}, Model.Id);
+                    Log("sending auto-ad");
+                }
             }
             else
+            {
                 Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new[] {messageToSend}, Model.Id);
+                Log("sending auto-ad");
+            }
 
             adFloodTimer.Interval = Model.Settings.AutopostTime*60*1000 + 2000;
             timeLeftAd = DateTimeOffset.Now.AddMilliseconds(adFloodTimer.Interval);
@@ -660,6 +672,7 @@ namespace slimCat.ViewModels
                 OnPropertyChanged("CanPost");
 
                 messageFloodTimer.Enabled = true;
+                Log("sending message");
             }
             else
             {
@@ -673,6 +686,7 @@ namespace slimCat.ViewModels
                 OnPropertyChanged("CanShowAutoTimeLeft");
 
                 adFloodTimer.Start();
+                Log("sending ad");
             }
         }
 

@@ -112,6 +112,8 @@ namespace slimCat.ViewModels
                 Events.GetEvent<LoginAuthenticatedEvent>().Subscribe(LoggedInEvent);
                 Events.GetEvent<LoginFailedEvent>().Subscribe(LoginFailedEvent);
                 Events.GetEvent<ReconnectingEvent>().Subscribe(LoginReconnectingEvent);
+
+                LoggingSection = "utility channel vm";
             }
             catch (Exception ex)
             {
@@ -408,7 +410,17 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.GlobalNotifyTerms = value;
-                SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+                Save();
+            }
+        }
+
+        public bool AllowSound
+        {
+            get { return ApplicationSettings.AllowSound; }
+            set
+            {
+                ApplicationSettings.AllowSound = value;
+                Save();
             }
         }
 
@@ -418,7 +430,7 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.CheckForOwnName = value;
-                SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+                Save();
             }
         }
 
@@ -429,7 +441,7 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.ShowNotificationsGlobal = value;
-                SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+                Save();
             }
         }
 
@@ -440,7 +452,7 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.PlaySoundEvenWhenTabIsFocused = value;
-                SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+                Save();
             }
         }
 
@@ -547,48 +559,7 @@ namespace slimCat.ViewModels
             SettingsService.ReadApplicationSettingsFromXml(ChatModel.CurrentCharacter.Name, CharacterManager);
             automation.ResetStatusTimers();
 
-            try
-            {
-                string[] args;
-                using (var client = new WebClient())
-                using (var stream = client.OpenRead(NewVersionLink))
-                {
-                    if (stream == null)
-                        return;
-
-                    using (var reader = new StreamReader(stream))
-                        args = reader.ReadToEnd().Split(',');
-                }
-
-                HasNewUpdate = !args[0].Equals(Constants.FriendlyName, StringComparison.OrdinalIgnoreCase);
-
-                var updateDelayTimer = new Timer(10*1000);
-                updateDelayTimer.Elapsed += (s, e) =>
-                    {
-                        Events.GetEvent<ErrorEvent>()
-                            .Publish(
-                                "{0} is now available! \nPlease Update with the link in the home tab.".FormatWith(
-                                    args[0]));
-                        updateDelayTimer.Stop();
-                        updateDelayTimer = null;
-                    };
-
-                if (HasNewUpdate)
-                    updateDelayTimer.Start();
-
-                UpdateName = args[0];
-                UpdateLink = args[1];
-                UpdateBuildTime = args[2];
-                ChangeLog = args[3];
-
-                OnPropertyChanged("HasNewUpdate");
-                OnPropertyChanged("UpdateName");
-                OnPropertyChanged("UpdateLink");
-                OnPropertyChanged("UpdateBuildTime");
-            }
-            catch (WebException)
-            {
-            }
+            CheckForUpdates();
         }
 
         public void LoginFailedEvent(string error)
@@ -664,6 +635,53 @@ namespace slimCat.ViewModels
         private void Save()
         {
             SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+        }
+
+        private void CheckForUpdates()
+        {
+            try
+            {
+                string[] args;
+                using (var client = new WebClient())
+                using (var stream = client.OpenRead(NewVersionLink))
+                {
+                    if (stream == null)
+                        return;
+
+                    using (var reader = new StreamReader(stream))
+                        args = reader.ReadToEnd().Split(',');
+                }
+
+                HasNewUpdate = !args[0].Equals(Constants.FriendlyName, StringComparison.OrdinalIgnoreCase);
+
+                var updateDelayTimer = new Timer(10 * 1000);
+                updateDelayTimer.Elapsed += (s, e) =>
+                    {
+                        Events.GetEvent<ErrorEvent>()
+                            .Publish(
+                                "{0} is now available! \nPlease Update with the link in the home tab.".FormatWith(
+                                    args[0]));
+                        updateDelayTimer.Stop();
+                        updateDelayTimer = null;
+                        Model.FlashTab();
+                    };
+
+                if (HasNewUpdate)
+                    updateDelayTimer.Start();
+
+                UpdateName = args[0];
+                UpdateLink = args[1];
+                UpdateBuildTime = args[2];
+                ChangeLog = args[3];
+
+                OnPropertyChanged("HasNewUpdate");
+                OnPropertyChanged("UpdateName");
+                OnPropertyChanged("UpdateLink");
+                OnPropertyChanged("UpdateBuildTime");
+            }
+            catch (WebException)
+            {
+            }
         }
 
         #endregion

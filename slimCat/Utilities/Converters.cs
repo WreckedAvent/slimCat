@@ -1260,7 +1260,7 @@ namespace slimCat.Utilities
 
             if (parsed >= ChannelSettingsModel.NotifyLevel.NotificationAndSound)
             {
-                if (ApplicationSettings.Volume > 0.0)
+                if (ApplicationSettings.AllowSound)
                 {
                     if (ApplicationSettings.ShowNotificationsGlobal)
                         verboseNotificationKind += " with sound";

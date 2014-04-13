@@ -37,7 +37,7 @@ namespace slimCat.Models
 
         static ApplicationSettings()
         {
-            Volume = 1;
+            AllowSound = true;
             ShowNotificationsGlobal = true;
             AllowLogging = true;
             AllowAdDedup = true;
@@ -128,6 +128,11 @@ namespace slimCat.Models
         public static bool AllowAdDedup { get; set; }
 
         /// <summary>
+        ///     Gets or sets a value indicating whether sound is allowed in notifications.
+        /// </summary>
+        public static bool AllowSound { get; set; }
+
+        /// <summary>
         ///     Gets or sets a value indicating whether the text entry box gets input greedily.
         ///     If true, then anytime one is initialized, it will gain focus.
         /// </summary>
@@ -176,11 +181,6 @@ namespace slimCat.Models
         public static bool ShowNotificationsGlobal { get; set; }
 
         public static bool PortableMode { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the volume.
-        /// </summary>
-        public static double Volume { get; set; }
 
         /// <summary>
         ///     Gets the list of characters interesting to this user.
