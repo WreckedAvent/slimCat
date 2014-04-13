@@ -83,5 +83,18 @@ namespace slimCat.Services
                     return answerReader.ReadToEnd(); // read our response
             }
         }
+
+        public string GetResponse(string host)
+        {
+            using (var client = new WebClient())
+            using (var stream = client.OpenRead(host))
+            {
+                if (stream == null)
+                    return null;
+
+                using (var reader = new StreamReader(stream))
+                    return reader.ReadToEnd();
+            }
+        }
     }
 }

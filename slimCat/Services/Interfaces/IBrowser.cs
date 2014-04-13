@@ -41,5 +41,7 @@ namespace slimCat.Services
         /// </returns>
         string GetResponse(string host, IEnumerable<KeyValuePair<string, object>> arguments,
             bool useCookies = false);
+
+        string GetResponse(string host);
     }
 }

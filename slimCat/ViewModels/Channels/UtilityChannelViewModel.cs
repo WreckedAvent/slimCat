@@ -43,15 +43,10 @@ namespace slimCat.ViewModels
     /// </summary>
     public class UtilityChannelViewModel : ChannelViewModelBase
     {
-        #region Constants
-
-        private const string NewVersionLink = "https://dl.dropbox.com/u/29984849/slimCat/latest.csv";
-
-        #endregion
-
         #region Fields
 
         private readonly IAutomationService automation;
+        private readonly IBrowser browser;
         private readonly StringBuilder connectDotDot;
 
         private readonly CacheCount minuteOnlineCount;
@@ -68,10 +63,9 @@ namespace slimCat.ViewModels
 
         public UtilityChannelViewModel(
             string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
-            ICharacterManager manager, IAutomationService automation)
+            ICharacterManager manager, IAutomationService automation, IBrowser browser)
             : base(contain, regman, events, cm, manager)
         {
-            this.automation = automation;
             try
             {
                 Model = Container.Resolve<GeneralChannelModel>(name);
@@ -112,6 +106,9 @@ namespace slimCat.ViewModels
                 Events.GetEvent<LoginAuthenticatedEvent>().Subscribe(LoggedInEvent);
                 Events.GetEvent<LoginFailedEvent>().Subscribe(LoginFailedEvent);
                 Events.GetEvent<ReconnectingEvent>().Subscribe(LoginReconnectingEvent);
+
+                this.automation = automation;
+                this.browser = browser;
 
                 LoggingSection = "utility channel vm";
             }
@@ -641,16 +638,9 @@ namespace slimCat.ViewModels
         {
             try
             {
-                string[] args;
-                using (var client = new WebClient())
-                using (var stream = client.OpenRead(NewVersionLink))
-                {
-                    if (stream == null)
-                        return;
-
-                    using (var reader = new StreamReader(stream))
-                        args = reader.ReadToEnd().Split(',');
-                }
+                var resp = browser.GetResponse(Constants.NewVersionUrl);
+                if (resp == null) return;
+                var args = resp.Split(',');
 
                 HasNewUpdate = !args[0].Equals(Constants.FriendlyName, StringComparison.OrdinalIgnoreCase);
 

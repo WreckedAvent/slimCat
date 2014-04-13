@@ -22,13 +22,18 @@ namespace slimCat.ViewModels
     #region Usings
 
     using System;
+    using System.Net;
+    using System.Threading;
+    using System.Timers;
     using System.Windows.Input;
+    using System.Windows.Threading;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
     using Properties;
+    using Services;
     using Utilities;
     using Views;
 
@@ -41,6 +46,8 @@ namespace slimCat.ViewModels
     /// </summary>
     public class LoginViewModel : ViewModelBase
     {
+        private readonly IBrowser browser;
+
         #region Constants
 
         internal const string LoginViewName = "LoginView";
@@ -63,12 +70,15 @@ namespace slimCat.ViewModels
 
         public LoginViewModel(
             IUnityContainer contain, IRegionManager regman, IAccount acc, IEventAggregator events, IChatModel cm,
-            ICharacterManager lists)
+            ICharacterManager lists, IBrowser browser)
             : base(contain, regman, events, cm, lists)
         {
             try
             {
                 model = acc.ThrowIfNull("acc");
+                this.browser = browser;
+                CheckForUpdates();
+
                 LoggingSection = "login vm";
             }
             catch (Exception ex)
@@ -152,6 +162,12 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool HasNewUpdate { get; set; }
+
+        public string UpdateName { get; set; }
+
+        public string UpdateLink { get; set; }
+
         #endregion
 
         #region Public Methods and Operators
@@ -218,6 +234,38 @@ namespace slimCat.ViewModels
                 }
             }
         }
+
+        private void CheckForUpdates()
+        {
+            new Thread(() =>
+                {
+                    Thread.CurrentThread.IsBackground = true;
+                    try
+                    {
+                        var resp = browser.GetResponse(Constants.NewVersionUrl);
+                        if (resp == null) return;
+                        var args = resp.Split(',');
+
+                        Dispatcher.BeginInvoke((Action) delegate
+                            {
+                                HasNewUpdate =
+                                    !args[0].Equals(Constants.FriendlyName, StringComparison.OrdinalIgnoreCase);
+
+                                UpdateName = args[0] + " update";
+                                UpdateLink = args[1];
+
+                                OnPropertyChanged("HasNewUpdate");
+                                OnPropertyChanged("UpdateName");
+                                OnPropertyChanged("UpdateLink");
+                            });
+                    }
+                    catch (WebException)
+                    {
+                    }
+                }).Start();
+   
+        }
+
 
         #endregion
     }

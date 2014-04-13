@@ -46,6 +46,11 @@ namespace slimCat.Utilities
         /// </summary>
         public const string ServerHost = "wss://chat.f-list.net:9799/";
 
+        /// <summary>
+        ///     The the url for checking for new updates.
+        /// </summary>
+        public const string NewVersionUrl = "https://dl.dropbox.com/u/29984849/slimCat/latest.csv";
+
         #endregion
 
         #region Static Fields
