@@ -22,6 +22,7 @@ namespace slimCat.ViewModels
     #region Usings
 
     using Models;
+    using Utilities;
 
     #endregion
 
@@ -102,6 +103,10 @@ namespace slimCat.ViewModels
 
             set
             {
+                if (isOpen == value) return;
+
+                Logging.LogLine((value ? "Opening" : "Closing") + " modal", "right-click vm");
+
                 isOpen = value;
                 OnPropertyChanged("IsOpen");
             }
@@ -204,6 +209,8 @@ namespace slimCat.ViewModels
         {
             Target = newTarget;
             Target.GetAvatar();
+
+            Logging.LogLine("target set to \"{0}\"".FormatWith(Target.Name), "right-click vm");
 
             hasReports = thisHasReports;
 

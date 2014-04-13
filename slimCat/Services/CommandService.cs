@@ -49,9 +49,13 @@ namespace slimCat.Services
         #region Fields
 
         private readonly IAutomationService automation;
+
         private readonly IChatConnection connection;
+
         private readonly object locker = new object();
+
         private readonly string[] noisyTypes;
+
         private readonly IChannelManager manager;
 
         private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
@@ -77,7 +81,7 @@ namespace slimCat.Services
 
             Events.GetEvent<CharacterSelectedLoginEvent>()
                 .Subscribe(GetCharacter, ThreadOption.BackgroundThread, true);
-            Events.GetEvent<ChatCommandEvent>().Subscribe(EnqueAction, ThreadOption.BackgroundThread, true);
+            Events.GetEvent<ChatCommandEvent>().Subscribe(EnqueueAction, ThreadOption.BackgroundThread, true);
             Events.GetEvent<ConnectionClosedEvent>().Subscribe(WipeState, ThreadOption.PublisherThread, true);
 
             ChatModel.CurrentAccount = connection.Account;
@@ -91,6 +95,8 @@ namespace slimCat.Services
                     Commands.PrivateChannelList,
                     Commands.UserList
                 };
+
+            LoggingSection = "cmnd serv";
         }
 
         #endregion
@@ -141,7 +147,7 @@ namespace slimCat.Services
 
         private void AdMessageCommand(IDictionary<string, object> command)
         {
-            MessageRecieved(command, true);
+            MessageReceived(command, true);
         }
 
         private void AdminsCommand(IDictionary<string, object> command)
@@ -177,7 +183,7 @@ namespace slimCat.Services
 
             if (channel == null)
             {
-                RequeCommand(command);
+                RequeueCommand(command);
                 return;
             }
 
@@ -201,7 +207,7 @@ namespace slimCat.Services
 
             if (channel == null)
             {
-                RequeCommand(command);
+                RequeueCommand(command);
                 return;
             }
 
@@ -227,7 +233,7 @@ namespace slimCat.Services
 
             if (channel == null)
             {
-                RequeCommand(command);
+                RequeueCommand(command);
                 return;
             }
 
@@ -282,7 +288,7 @@ namespace slimCat.Services
 
         private void ChannelMessageCommand(IDictionary<string, object> command)
         {
-            MessageRecieved(command, false);
+            MessageReceived(command, false);
         }
 
         private void ChannelOperatorListCommand(IDictionary<string, object> command)
@@ -292,7 +298,7 @@ namespace slimCat.Services
 
             if (channel == null)
             {
-                RequeCommand(command);
+                RequeueCommand(command);
                 return;
             }
 
@@ -351,7 +357,7 @@ namespace slimCat.Services
             }
         }
 
-        private void EnqueAction(IDictionary<string, object> data)
+        private void EnqueueAction(IDictionary<string, object> data)
         {
             que.Enqueue(data);
 
@@ -434,12 +440,7 @@ namespace slimCat.Services
 
             var commandType = command.Get(Constants.Arguments.Command);
 
-            if (!noisyTypes.Contains(commandType))
-            {
-                Logging.Log(commandType, "cmnd serv");
-                Logging.LogObject(command);
-                Logging.Log();
-            }
+            if (!noisyTypes.Contains(commandType)) { Log(commandType); }
 
             switch (commandType)
             {
@@ -523,7 +524,7 @@ namespace slimCat.Services
             Events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(ChatModel.FindChannel(id, title), args));
         }
 
-        private void JoinChannelCommand(IDictionary<string, object> command)
+        new private void JoinChannelCommand(IDictionary<string, object> command)
         {
             var title = command.Get(Constants.Arguments.Title);
             var channelName = command.Get(Constants.Arguments.Channel);
@@ -561,7 +562,7 @@ namespace slimCat.Services
             }
         }
 
-        private void KickCommand(IDictionary<string, object> command)
+        new private void KickCommand(IDictionary<string, object> command)
         {
             var kicker = command.Get("operator");
             var channelId = command.Get(Constants.Arguments.Channel);
@@ -630,7 +631,7 @@ namespace slimCat.Services
             Dispatcher.Invoke((Action) delegate { ChatModel.IsAuthenticated = true; });
         }
 
-        private void MessageRecieved(IDictionary<string, object> command, bool isAd)
+        private void MessageReceived(IDictionary<string, object> command, bool isAd)
         {
             var character = command.Get(Constants.Arguments.Character);
             var message = command.Get(Constants.Arguments.Message);
@@ -1069,6 +1070,8 @@ namespace slimCat.Services
 
         private void WipeState(string message)
         {
+            Log("Resetting");
+
             CharacterManager.Clear();
             ChatModel.CurrentChannels.Each(x => x.CharacterManager.Clear());
 
@@ -1085,7 +1088,7 @@ namespace slimCat.Services
                 }));
         }
 
-        private void RequeCommand(IDictionary<string, object> command)
+        private void RequeueCommand(IDictionary<string, object> command)
         {
             Logging.Log("command fail");
 
@@ -1098,16 +1101,8 @@ namespace slimCat.Services
 
             retryAttempts++;
             command["retryAttempt"] = retryAttempts;
-            EnqueAction(command);
+            EnqueueAction(command);
         }
-
-        [Conditional("DEBUG")]
-        private void Log(string text)
-        {
-            Logging.Log(text, "cmnd serv");
-            Logging.Log();
-        }
-
         #endregion
     }
 }

@@ -28,6 +28,7 @@ namespace slimCat.ViewModels
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Models;
+    using Utilities;
 
     #endregion
 
@@ -79,6 +80,10 @@ namespace slimCat.ViewModels
 
             set
             {
+                if (isOpen == value) return;
+
+                Logging.LogLine((value ? "Opening" : "Closing") + " modal", "channel manage vm");
+
                 isOpen = value;
                 OnPropertyChanged("IsManaging");
 

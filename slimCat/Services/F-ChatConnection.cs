@@ -24,7 +24,6 @@ namespace slimCat.Services
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.IO;
     using System.Linq;
     using Microsoft.Practices.Prism.Events;
     using Models;
@@ -44,21 +43,27 @@ namespace slimCat.Services
         #region Fields
 
         private readonly Timer autoPingTimer = new Timer(45*1000); // every 45 seconds
+
         private readonly int[] errsThatDisconnect;
         private readonly int[] errsThatPreventReconnect;
+
         private readonly string[] noisyTypes;
+
         private readonly IEventAggregator events;
 
         private readonly ITicketProvider provider;
+
         private readonly Random random = new Random();
+
         private readonly Queue<KeyValuePair<string, object>> resendQueue = new Queue<KeyValuePair<string, object>>();
+
         private readonly Timer staggerTimer;
         private readonly Timer timeoutTimer;
 
         private bool isAuthenticated;
-        private StreamWriter logger;
 
         private int retryAttemptCount;
+
         private WebSocket socket;
 
         private const int TimeoutTimeMs = 30*1000; // 30 seconds
@@ -161,8 +166,6 @@ namespace slimCat.Services
 
             var ser = SimpleJson.SerializeObject(command);
 
-            Log(type, ser);
-
             TrySend(type, ser);
         }
 
@@ -174,8 +177,6 @@ namespace slimCat.Services
 
             var ser = SimpleJson.SerializeObject(command);
 
-            Log(type, ser);
-
             TrySend(type, ser);
         }
 
@@ -183,8 +184,6 @@ namespace slimCat.Services
         {
             if (commandType.Length > 3 || commandType.Length < 3)
                 throw new ArgumentOutOfRangeException("commandType", "Command type must be 3 characters long");
-
-            Log(commandType);
 
             TrySend(commandType);
         }
@@ -198,9 +197,6 @@ namespace slimCat.Services
 
         protected virtual void Dispose(bool isManagedDispose)
         {
-            if (isManagedDispose && logger != null)
-                logger.Dispose();
-
             socket.Close();
         }
 
@@ -214,6 +210,8 @@ namespace slimCat.Services
             events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(ConnectToChat);
 
             if (socket.State == WebSocketState.Open) return;
+
+            Logging.LogLine("opening socket", "chat");
 
             socket = new WebSocket(Constants.ServerHost);
 
@@ -231,6 +229,14 @@ namespace slimCat.Services
         {
             if (socket.State == WebSocketState.Open)
             {
+                if (args is string)
+                {
+                    var objArgs = SimpleJson.DeserializeObject(args as string);
+                    Log(type, objArgs);
+                }
+                else
+                    Log(type, args);
+
                 if (args != null)
                     socket.Send(type + " " + args);
                 else
@@ -239,6 +245,7 @@ namespace slimCat.Services
                 return;
             }
 
+            Log("requeuing " + type);
             resendQueue.Enqueue(new KeyValuePair<string, object>(type, args));
 
             if (socket.State != WebSocketState.Connecting)
@@ -250,6 +257,8 @@ namespace slimCat.Services
         /// </summary>
         private void ConnectionClosed(object s, EventArgs e)
         {
+            Logging.LogLine("socket closed", "chat");
+
             if (!isAuthenticated)
             {
                 events.GetEvent<LoginFailedEvent>().Publish("Server closed the connection");
@@ -334,6 +343,8 @@ namespace slimCat.Services
         /// </summary>
         private void ConnectionError(object sender, ErrorEventArgs e)
         {
+            Logging.LogLine("socket exception", "chat");
+
             events.GetEvent<LoginFailedEvent>().Publish(e.Exception.Message);
             AttemptReconnect();
         }
@@ -343,6 +354,8 @@ namespace slimCat.Services
         /// </summary>
         private void ConnectionOpened(object sender, EventArgs e)
         {
+            Logging.LogLine("connection opened", "chat");
+
             // Handshake completed, send login command
             object authRequest =
                 new
@@ -380,6 +393,8 @@ namespace slimCat.Services
 
         private void DoReconnect()
         {
+            Logging.LogLine("Attempting reconnect #" + retryAttemptCount+1);
+
             if (retryAttemptCount >= 21)
             {
                 Exceptions.ShowErrorBox(

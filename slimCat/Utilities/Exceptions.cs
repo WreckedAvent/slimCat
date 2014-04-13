@@ -35,14 +35,41 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The default message.
         /// </summary>
-        private const string DefaultMessage = "Uh-oh! Something bad happened."
-                                              +
-                                              "\nPlease submit stacktrace.log found in your slimCat installation folder to slimCat on F-list for debugging purposes.";
+        private const string DefaultMessage = "Uh-oh! Something bad happened." +
+                                              "\n\nPlease submit the stacktrace.log file found in your slimCat installation folder to slimCat on F-list for debugging purposes.";
 
+        private const string DefaultDebugMessage = "Uh-oh! Something bad happened." +
+                                              "\n\nPlease submit the trace.log file found in your slimCat installation folder to slimCat on F-list for debugging purposes.";
         #endregion
 
         #region Public Methods and Operators
 
+
+
+#if DEBUG
+        /// <summary>
+        ///     Writes the given exception to a log file in a uniform way.
+        /// </summary>
+        /// <param name="ex">
+        ///     Exception to be traced
+        /// </param>
+        /// <param name="message">
+        ///     The message.
+        /// </param>
+        public static void HandleException(Exception ex, string message = DefaultDebugMessage)
+        {
+            Logging.LogHeader("Exception at " + DateTime.UtcNow);
+
+            Logging.LogLine("Version: " + Constants.FriendlyName);
+            Logging.Log(ex.ToString());
+
+            Logging.LogHeader("End exception");
+
+            ShowErrorBox(message, "An error has occured!");
+        }
+#endif
+
+#if !DEBUG
         /// <summary>
         ///     Writes the given exception to a log file in a uniform way.
         /// </summary>
@@ -53,7 +80,7 @@ namespace slimCat.Utilities
         ///     The message.
         /// </param>
         public static void HandleException(Exception ex, string message = DefaultMessage)
-        {
+        {            
             try
             {
                 using (var file = new StreamWriter(@"Stacktrace.log", true))
@@ -88,12 +115,13 @@ namespace slimCat.Utilities
             {
             }
         }
+#endif
 
         public static void ShowErrorBox(string message, string title)
         {
             const int topMostOption = 0x40000;
             const int getsForegroundOption = 0x010000;
-            const MessageBoxOptions options = (MessageBoxOptions) (topMostOption | getsForegroundOption);
+            const MessageBoxOptions options = (MessageBoxOptions)(topMostOption | getsForegroundOption);
 
             MessageBox.Show(
                 message,

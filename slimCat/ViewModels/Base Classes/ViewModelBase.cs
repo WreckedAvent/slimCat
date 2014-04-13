@@ -284,6 +284,12 @@ namespace slimCat.ViewModels
 
         #endregion
 
+        #region Properties
+
+        internal string LoggingSection { get; set; }
+
+        #endregion
+
         #region Public Methods and Operators
 
         public abstract void Initialize();
@@ -354,6 +360,7 @@ namespace slimCat.ViewModels
 
         private void StartLinkInDefaultBrowser(object linkToOpen)
         {
+            Log("Opening link " + linkToOpen);
             var interpret = linkToOpen as string;
             if (interpret != null && (!interpret.Contains(".") || interpret.Contains(" ")))
                 interpret = "http://www.f-list.net/c/" + HttpUtility.UrlEncode(interpret);
@@ -486,6 +493,25 @@ namespace slimCat.ViewModels
         private void RemoveIgnoreEvent(object args)
         {
             IgnoreEvent(args, true);
+        }
+
+        internal void LogEmptyLine()
+        {
+            Logging.Log();
+        }
+
+        [Conditional("DEBUG")]
+        internal void Log(string text = null, bool isVerbose = false)
+        {
+            Logging.LogLine(text, LoggingSection, isVerbose);
+        }
+
+        [Conditional("DEBUG")]
+        internal void Log(string text, object obj, bool isVerbose = false)
+        {
+            Logging.Log(text, LoggingSection, isVerbose);
+            Logging.LogObject(obj);
+            LogEmptyLine();
         }
 
         #endregion

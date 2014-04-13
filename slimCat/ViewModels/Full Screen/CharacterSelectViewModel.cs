@@ -74,6 +74,8 @@ namespace slimCat.ViewModels
 
                 Events.GetEvent<LoginCompleteEvent>()
                     .Subscribe(HandleLoginComplete, ThreadOption.UIThread, true);
+
+                LoggingSection = "character select vm";
             }
             catch (Exception ex)
             {
@@ -175,6 +177,7 @@ namespace slimCat.ViewModels
             RelayMessage = "Awesome! Connecting to F-Chat ...";
             IsConnecting = true;
             Events.GetEvent<CharacterSelectedLoginEvent>().Publish(CurrentCharacter.Name);
+            Log("Character {0} selected".FormatWith(CurrentCharacter.Name));
         }
 
         private void HandleLoginComplete(bool should)
@@ -184,6 +187,7 @@ namespace slimCat.ViewModels
 
             RelayMessage = "Done! Now pick a character.";
             RegionManager.RequestNavigate(Shell.MainRegion, new Uri(CharacterSelectViewName, UriKind.Relative));
+            Log("Requesting character select view");
         }
 
         #endregion

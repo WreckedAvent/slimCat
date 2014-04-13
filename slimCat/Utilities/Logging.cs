@@ -1,19 +1,45 @@
-﻿namespace slimCat.Utilities
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Logging.cs">
+//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//   
+//    This source is subject to the Simplified BSD License.
+//    Please see the License.txt file for more information.
+//    All other rights reserved.
+//    
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//    PARTICULAR PURPOSE.
+// </copyright>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace slimCat.Utilities
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using SimpleJson;
 
+    #endregion
+
     public static class Logging
     {
+        #region Fields
         private const string LargeSeparator = "===================================";
         private static readonly TraceSwitch DefaultSwitch = new TraceSwitch("Default", string.Empty);
         private static readonly object Locker = new object();
+        #endregion
 
+        #region Methods
         /// <summary>
-        /// Logs the header with the given text.
+        ///     Logs the header with the given text.
         /// </summary>
         /// <param name="text">The text of the header.</param>
         [Conditional("DEBUG")]
@@ -21,7 +47,6 @@
         {
             lock (Locker)
             {
-
                 Trace.WriteLine(LargeSeparator);
                 Trace.WriteLine(text);
                 Trace.WriteLine(LargeSeparator);
@@ -29,6 +54,12 @@
             }
         }
 
+        /// <summary>
+        ///     Logs the specified text.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="group">The group.</param>
+        /// <param name="isVerbose">if set to <c>true</c> the log is treated as unnecessary verbose logging.</param>
         [Conditional("DEBUG")]
         public static void Log(string text = null, string group = null, bool isVerbose = false)
         {
@@ -43,6 +74,25 @@
             }
         }
 
+        /// <summary>
+        ///     Logs the specified text.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="group">The group.</param>
+        /// <param name="isVerbose">if set to <c>true</c> the log is treated as unnecessary verbose logging.</param>
+        [Conditional("DEBUG")]
+        public static void LogLine(string text = null, string group = null, bool isVerbose = false)
+        {
+            Log(text, group, isVerbose);
+            Log();
+        }
+
+        /// <summary>
+        ///     Logs the object. Arrays and dictionaries are logged with their contents.
+        /// </summary>
+        /// <param name="obj">The object to log.</param>
+        /// <param name="useComma">if set to <c>true</c>, commas are added at the end of literals.</param>
+        /// <param name="isVerbose">if set to <c>true</c> the log is treated as unnecessary verbose logging.</param>
         [Conditional("DEBUG")]
         public static void LogObject(object obj, bool useComma = false, bool isVerbose = false)
         {
@@ -62,7 +112,7 @@
                     if (dict.Keys.Count(x => x != Constants.Arguments.Command) == 1 && dict.Values.First() is string)
                     {
                         var temp = "{" + (" {0}: \"{1}\" ".FormatWith(dict.Keys.First(), dict.Values.First())) + "}";
-                        Trace.WriteLine(temp + (useComma? "," : ""));
+                        Trace.WriteLine(temp + (useComma ? "," : ""));
                         return;
                     }
 
@@ -76,9 +126,7 @@
                     }
 
                     if (dict.Keys.Count > 10)
-                    {
                         Trace.WriteLine("... ");
-                    }
 
                     Trace.Unindent();
 
@@ -106,14 +154,10 @@
                     Trace.Indent();
 
                     foreach (var o in arr.Take(10))
-                    {
                         LogObject(o, true);
-                    }
 
                     if (arr.Count > 10)
-                    {
                         Trace.WriteLine(" ... ");
-                    }
 
                     Trace.Unindent();
                     Trace.WriteLine(useComma ? "]," : "]");
@@ -132,5 +176,6 @@
         {
             return "[{0}]".FormatWith(DateTime.Now.ToString("mm:ss.ff"));
         }
+        #endregion
     }
 }

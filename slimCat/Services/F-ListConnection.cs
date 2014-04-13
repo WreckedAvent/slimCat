@@ -133,11 +133,13 @@ namespace slimCat.Services
                     int.TryParse(result.log_id, out logId);
                 }
 
+                Log("Uploaded report log in tab {0} with id of {1}".FormatWith(report.Tab, logId));
                 return logId;
             }
             catch (Exception)
             {
                 // when dealing with the web it's always possible something could mess up
+                Log("Failed to get id for report log in tab {0}".FormatWith(report.Tab));
                 return -1;
             }
         }
@@ -159,6 +161,7 @@ namespace slimCat.Services
             }
             catch (Exception ex)
             {
+                Log("Could not get ticket: {0}".FormatWith(ex.Message));
                 model.Error = "Can't connect to F-List! \nError: " + ex.Message;
                 events.GetEvent<LoginCompleteEvent>().Publish(false);
             }
@@ -215,6 +218,11 @@ namespace slimCat.Services
                 default:
                     return;
             }
+        }
+
+        private void Log(string text)
+        {
+            Logging.Log(text, "site");
         }
 
         #endregion

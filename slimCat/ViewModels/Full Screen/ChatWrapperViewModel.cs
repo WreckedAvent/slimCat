@@ -53,6 +53,8 @@ namespace slimCat.ViewModels
             {
                 Events.GetEvent<CharacterSelectedLoginEvent>()
                     .Subscribe(HandleCurrentCharacter, ThreadOption.UIThread, true);
+
+                LoggingSection = "chat wrapper vm";
             }
             catch (Exception ex)
             {
@@ -86,6 +88,7 @@ namespace slimCat.ViewModels
         {
             RegionManager.RequestNavigate(
                 Shell.MainRegion, new Uri(ChatWrapperView, UriKind.Relative), NavigationCompleted);
+            Log("Requesting main chat view");
         }
 
         private void NavigationCompleted(NavigationResult result)

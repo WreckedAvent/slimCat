@@ -21,7 +21,9 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Timers;
     using lib;
     using Microsoft.Practices.Prism.Events;
@@ -32,6 +34,7 @@ namespace slimCat.Services
 
     public class AutomationService : IAutomationService
     {
+        #region Fields
         private const int OneMinute = 1000*60;
         private readonly Timer awayTimer;
         private readonly IChatModel cm;
@@ -39,7 +42,9 @@ namespace slimCat.Services
         private readonly Timer fullscreenTimer = new Timer(2*OneMinute);
         private readonly Timer idleTimer;
         private readonly ICharacterManager manager;
+        #endregion
 
+        #region Constructors
         public AutomationService(IEventAggregator events, ICharacterManager manager, IChatModel cm)
         {
             this.events = events;
@@ -55,7 +60,9 @@ namespace slimCat.Services
 
             events.GetEvent<UserCommandEvent>().Subscribe(OnUserCommandSent);
         }
+        #endregion
 
+        #region Methods
         public void ResetStatusTimers()
         {
             idleTimer.Stop();
@@ -76,7 +83,10 @@ namespace slimCat.Services
 
             var character = manager.Find(name);
             if (character.LastAd != null && character.LastAd == message)
+            {
+                Logging.Log("Duplicate ad from " + name);
                 return true;
+            }
 
             character.LastAd = message;
             return false;
@@ -99,6 +109,7 @@ namespace slimCat.Services
 
             if (!FullScreenHelper.ForegroundIsFullScreen()) return;
 
+            Log("Setting user status to busy");
             cm.CurrentCharacter.Status = StatusType.Busy;
             events.SendUserCommand("busy", new[] {cm.CurrentCharacter.StatusMessage});
             fullscreenTimer.Stop();
@@ -118,6 +129,7 @@ namespace slimCat.Services
             if (cm.CurrentCharacter.Status != StatusType.Idle
                 && cm.CurrentCharacter.Status != StatusType.Away) return;
 
+            Log("Resetting user status to online");
             cm.CurrentCharacter.Status = StatusType.Online;
             events.SendUserCommand("online", new[] {cm.CurrentCharacter.StatusMessage});
         }
@@ -128,6 +140,7 @@ namespace slimCat.Services
                 || cm.CurrentCharacter.Status == StatusType.Away
                 || !ApplicationSettings.AllowAutoAway) return;
 
+            Log("Setting user status to away");
             cm.CurrentCharacter.Status = StatusType.Away;
             events.SendUserCommand("away", new[] {cm.CurrentCharacter.StatusMessage});
 
@@ -140,10 +153,18 @@ namespace slimCat.Services
                 || cm.CurrentCharacter.Status != StatusType.Online 
                 || !ApplicationSettings.AllowAutoIdle) return;
 
+            Log("Setting user status to idle");
             cm.CurrentCharacter.Status = StatusType.Idle;
             events.SendUserCommand("idle", new[] {cm.CurrentCharacter.StatusMessage});
 
             idleTimer.Stop();
         }
+
+        [Conditional("DEBUG")]
+        private void Log(string text)
+        {
+            Logging.Log(text, "auto serv");
+        }
+        #endregion
     }
 }

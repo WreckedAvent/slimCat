@@ -28,12 +28,13 @@ namespace slimCat.ViewModels
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Models;
+    using Utilities;
     using Views;
 
     #endregion
 
     /// <summary>
-    ///     A light-weight viewmodel for toastnofications
+    ///     A light-weight viewmodel for toast notifications
     /// </summary>
     public sealed class ToastNotificationsViewModel : SysProp
     {
@@ -60,6 +61,7 @@ namespace slimCat.ViewModels
         private NotificationsView view;
 
         private ICharacter targetCharacter;
+
         private string title;
 
         #endregion
@@ -183,11 +185,13 @@ namespace slimCat.ViewModels
                 var split = newContent.Split(splitChars, 2);
                 Title = split[0];
                 Content = split[1];
+                Logging.LogLine("Showing toast \"{0}\"".FormatWith(title), "toast vm");
             }
             else
             {
                 Content = newContent;
                 Title = "slimCat notification";
+                Logging.LogLine("Showing toast", "toast vm");
             }
 
             ShowNotifications();

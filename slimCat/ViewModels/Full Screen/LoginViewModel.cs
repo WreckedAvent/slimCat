@@ -69,6 +69,7 @@ namespace slimCat.ViewModels
             try
             {
                 model = acc.ThrowIfNull("acc");
+                LoggingSection = "login vm";
             }
             catch (Exception ex)
             {
@@ -162,6 +163,7 @@ namespace slimCat.ViewModels
                 Container.RegisterType<object, LoginView>(LoginViewName);
 
                 RegionManager.RequestNavigate(Shell.MainRegion, new Uri(LoginViewName, UriKind.Relative));
+                Log("Requesting login view");
             }
             catch (Exception ex)
             {
@@ -186,6 +188,7 @@ namespace slimCat.ViewModels
             RequestSent = true;
             Events.GetEvent<LoginEvent>().Publish(true);
             Events.GetEvent<LoginCompleteEvent>().Subscribe(HandleLogin, ThreadOption.UIThread);
+            Log("Sending login request");
         }
 
         private void HandleLogin(bool gotTicket)
@@ -196,9 +199,11 @@ namespace slimCat.ViewModels
             {
                 RequestSent = false;
                 RelayMessage = "Oops!" + " " + model.Error;
+                Log("Login unsuccessful");
             }
             else
             {
+                Log("Login successful");
                 if (SaveLogin)
                 {
                     Settings.Default.UserName = model.AccountName;

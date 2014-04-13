@@ -249,7 +249,6 @@ namespace slimCat.ViewModels
             Events.GetEvent<UserCommandEvent>().Publish(command);
         }
 
-
         protected abstract void SendMessage();
 
         protected void UpdateError(string newError)

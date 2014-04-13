@@ -45,11 +45,12 @@ namespace slimCat.Services
     /// </summary>
     public class MessageService : DispatcherObject, IChannelManager
     {
-        private const int MaxRecentTabs = 10;
-
         #region Fields
 
+        private const int MaxRecentTabs = 10;
+
         private readonly IListConnection api;
+
         private readonly IAutomationService automation;
 
         private readonly ICharacterManager characterManager;
@@ -61,6 +62,7 @@ namespace slimCat.Services
         private readonly IUnityContainer container;
 
         private readonly IEventAggregator events;
+
         private readonly ILoggingService logger;
 
         private readonly IChatModel model;
@@ -96,8 +98,6 @@ namespace slimCat.Services
                 this.connection = connection.ThrowIfNull("connection");
                 this.api = api.ThrowIfNull("api");
                 characterManager = manager.ThrowIfNull("characterManager");
-
-                this.model.SelectedChannelChanged += (s, e) => RequestNavigate(this.model.CurrentChannel.Id);
 
                 this.events.GetEvent<ChatOnDisplayEvent>()
                     .Subscribe(BuildHomeChannel, ThreadOption.UIThread, true);
@@ -155,7 +155,7 @@ namespace slimCat.Services
 
         public void AddChannel(ChannelType type, string id, string name)
         {
-            Log(id != name 
+            Log((id != name && !string.IsNullOrEmpty(name))
                 ? "Making {0} Channel {1} \"{2}\"".FormatWith(type, id, name)
                 : "Making {0} Channel {1}".FormatWith(type, id));
 
@@ -254,7 +254,7 @@ namespace slimCat.Services
             name = HttpUtility.HtmlDecode(name);
             IEnumerable<string> history = new List<string>();
 
-            Log(id != name
+            Log((id != name && !string.IsNullOrEmpty(name))
                 ? "Joining {0} Channel {1} \"{2}\"".FormatWith(type, id, name)
                 : "Joining {0} Channel {1}".FormatWith(type, id));
 
@@ -796,7 +796,8 @@ namespace slimCat.Services
 
             try
             {
-                Logging.Log("/" + type, "user cmnd");
+                var useSlash = type.ToLower().Equals(type);
+                Logging.Log((useSlash ? "/" : "") + type, "user cmnd");
                 Logging.LogObject(command);
                 Logging.Log();
 
@@ -877,8 +878,7 @@ namespace slimCat.Services
         [Conditional("DEBUG")]
         private void Log(string text)
         {
-            Logging.Log(text, "msg serv");
-            Logging.Log();
+            Logging.LogLine(text, "msg serv");
         }
         #endregion
     }

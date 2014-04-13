@@ -93,7 +93,11 @@ namespace slimCat.ViewModels
 
             set
             {
+                if (isOpen == value) return;
+
+                Logging.LogLine((value ? "Opening" : "Closing") + " modal", "create report vm");
                 isOpen = value;
+
                 if (!value)
                     Complaint = null;
 

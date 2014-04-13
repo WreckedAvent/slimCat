@@ -200,6 +200,7 @@ namespace slimCat.Services
                 Math.Abs(ApplicationSettings.Volume) < 0.01)
                 return;
 
+            Log("Playing sound");
             (new SoundPlayer(Environment.CurrentDirectory + @"\sounds\" + "newmessage.wav")).Play();
             lastDingLinged = DateTime.Now;
         }
@@ -315,7 +316,14 @@ namespace slimCat.Services
         private void FlashWindow()
         {
             if (!WindowIsFocused)
+            {
+                Log("Flashing window");
                 Application.Current.MainWindow.FlashWindow();
+            }
+            else
+            {
+                Log("Wanted to flash window, but window was focused");
+            }
         }
 
         private void HandleNewMessage(IMessage message)
@@ -332,6 +340,7 @@ namespace slimCat.Services
                 events.SendUserCommand(CommandDefinitions.ClientSendPm, new[] {respondWith, channel.Id});
 
                 channel.HasAutoRepliedTo = true;
+                Log("Auto replied to {0}".FormatWith(channel.Id));
             }
             else if (channel.HasAutoRepliedTo && !cm.AutoReplyEnabled)
                 channel.HasAutoRepliedTo = false;
@@ -558,6 +567,10 @@ namespace slimCat.Services
             }
         }
 
+        private void Log(string text)
+        {
+            Logging.Log(text, "notify serv");
+        }
         #endregion
     }
 }

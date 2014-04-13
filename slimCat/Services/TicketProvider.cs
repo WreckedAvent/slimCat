@@ -23,6 +23,7 @@ namespace slimCat.Services
 
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using Models;
     using Models.Api;
@@ -32,6 +33,7 @@ namespace slimCat.Services
 
     internal class TicketProvider : ITicketProvider
     {
+        #region Fields
         private const string siteIsDisabled = "The site has been disabled for maintenance, check back later.";
         private readonly IBrowser browser;
 
@@ -42,24 +44,27 @@ namespace slimCat.Services
 
         private Dictionary<string, object> loginCredentials;
         private bool shouldGetNewTicket;
+        #endregion
 
+        #region Constructors
         public TicketProvider(IBrowser browser)
         {
             this.browser = browser;
         }
+        #endregion
 
+        #region Properties
         public bool ShouldGetNewTicket
         {
             set { shouldGetNewTicket = value; }
             get { return shouldGetNewTicket || lastInfoRetrieval.AddMinutes(4).AddSeconds(30) < DateTime.Now; }
         }
 
-
         public string Ticket
         {
             get
             {
-                if (!ShouldGetNewTicket)
+                if (ShouldGetNewTicket)
                     GetNewTicket();
 
                 return lastTicket;
@@ -76,7 +81,9 @@ namespace slimCat.Services
                 return lastAccount;
             }
         }
+        #endregion
 
+        #region Methods
         public void SetCredentials(string user, string pass)
         {
             loginCredentials = new Dictionary<string, object>
@@ -94,6 +101,7 @@ namespace slimCat.Services
 
         private void GetNewTicket()
         {
+            Log("Getting new ticket");
             if (lastAccount == null || lastAccount.Password == null)
                 throw new InvalidOperationException("Set login credentials before logging in!");
 
@@ -132,11 +140,19 @@ namespace slimCat.Services
 
             lastInfoRetrieval = DateTime.Now;
             ShouldGetNewTicket = false;
+            Log("Successfully got a new ticket: " + result.Ticket.Substring(result.Ticket.Length-6));
         }
 
         private void ReAuthenticate()
         {
             browser.GetResponse(Constants.UrlConstants.Login, loginCredentials, true);
         }
+
+        [Conditional("DEBUG")]
+        private void Log(string text)
+        {
+            Logging.LogLine(text, "ticket serv");
+        }
+        #endregion
     }
 }
