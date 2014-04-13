@@ -46,6 +46,7 @@ namespace slimCat.Services
         private readonly Timer autoPingTimer = new Timer(45*1000); // every 45 seconds
         private readonly int[] errsThatDisconnect;
         private readonly int[] errsThatPreventReconnect;
+        private readonly string[] noisyTypes;
         private readonly IEventAggregator events;
 
         private readonly ITicketProvider provider;
@@ -111,7 +112,15 @@ namespace slimCat.Services
                     Constants.Errors.TimedOutFromServer
                 };
 
-            InitializeLog();
+            noisyTypes = new[]
+                {
+                    Constants.ServerCommands.UserJoin,
+                    Constants.ServerCommands.UserLeave,
+                    Constants.ServerCommands.UserStatus,
+                    Constants.ServerCommands.PublicChannelList,
+                    Constants.ServerCommands.PrivateChannelList,
+                    Constants.ServerCommands.UserList
+                };
 
             autoPingTimer.Elapsed += (s, e) => TrySend(Constants.ClientCommands.SystemPing);
 
@@ -423,32 +432,15 @@ namespace slimCat.Services
         [Conditional("DEBUG")]
         private void Log(string type, object payload = null, bool isSent = true)
         {
-            logger.WriteLine("[{0}] {1} {2}{3}",
-                DateTime.Now.ToString("h:mm:ss.ff tt"),
-                isSent ? "sent" : "received",
-                type,
-                payload != null ? ":" : string.Empty);
-
-            var dict = payload as IDictionary<string, object>;
-            if (dict != null)
+            if (noisyTypes.Contains(type) || (type == "IDN" && isSent))
             {
-                foreach (var pair in dict.Where(pair => pair.Key != Constants.Arguments.Command))
-                    logger.WriteLine("{0}: {1}", pair.Key, pair.Value);
+                Logging.Log(type, "chat {0}".FormatWith(isSent ? "OUT" : "IN"), true);
+                return;
             }
-            else if (payload != null)
-                logger.WriteLine(payload);
 
-            logger.WriteLine();
-            logger.Flush();
-        }
-
-        [Conditional("DEBUG")]
-        private void InitializeLog()
-        {
-            if (!Directory.Exists(@"Debug"))
-                Directory.CreateDirectory("Debug");
-
-            logger = new StreamWriter(@"Debug\Rawchat " + DateTime.Now.Ticks + ".log", true);
+            Logging.Log(type, "chat {0}".FormatWith(isSent ? "OUT" : "IN"));
+            Logging.LogObject(payload);
+            Logging.Log();
         }
 
         #endregion

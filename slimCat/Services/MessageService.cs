@@ -103,7 +103,7 @@ namespace slimCat.Services
                     .Subscribe(BuildHomeChannel, ThreadOption.UIThread, true);
                 this.events.GetEvent<RequestChangeTabEvent>()
                     .Subscribe(RequestNavigate, ThreadOption.UIThread, true);
-                this.events.GetEvent<UserCommandEvent>().Subscribe(CommandRecieved, ThreadOption.UIThread, true);
+                this.events.GetEvent<UserCommandEvent>().Subscribe(CommandReceived, ThreadOption.UIThread, true);
 
                 commands = new Dictionary<string, CommandHandler>
                     {
@@ -155,6 +155,10 @@ namespace slimCat.Services
 
         public void AddChannel(ChannelType type, string id, string name)
         {
+            Log(id != name 
+                ? "Making {0} Channel {1} \"{2}\"".FormatWith(type, id, name)
+                : "Making {0} Channel {1}".FormatWith(type, id));
+
             if (type == ChannelType.PrivateMessage)
             {
                 var character = characterManager.Find(id);
@@ -249,6 +253,11 @@ namespace slimCat.Services
         {
             name = HttpUtility.HtmlDecode(name);
             IEnumerable<string> history = new List<string>();
+
+            Log(id != name
+                ? "Joining {0} Channel {1} \"{2}\"".FormatWith(type, id, name)
+                : "Joining {0} Channel {1}".FormatWith(type, id));
+
             if (!id.Equals("Home"))
                 history = logger.GetLogs(string.IsNullOrWhiteSpace(name) ? id : name, id);
 
@@ -281,6 +290,8 @@ namespace slimCat.Services
 
         public void RemoveChannel(string name)
         {
+            Log("Removing Channel " + name);
+
             RequestNavigate("Home");
 
             if (model.CurrentChannels.Any(param => param.Id == name))
@@ -776,7 +787,7 @@ namespace slimCat.Services
             OnHandleLatestReportRequested(command);
         }
 
-        private void CommandRecieved(IDictionary<string, object> command)
+        private void CommandReceived(IDictionary<string, object> command)
         {
             var type = command.Get(Constants.Arguments.Type);
 
@@ -785,6 +796,10 @@ namespace slimCat.Services
 
             try
             {
+                Logging.Log("/" + type, "user cmnd");
+                Logging.LogObject(command);
+                Logging.Log();
+
                 CommandHandler handler;
                 commands.TryGetValue(type, out handler);
                 if (handler == null)
@@ -805,6 +820,8 @@ namespace slimCat.Services
         private void RequestNavigate(string channelId)
         {
             automation.UserDidAction();
+
+            Log("Requested " + channelId);
 
             if (lastSelected != null)
             {
@@ -857,6 +874,12 @@ namespace slimCat.Services
             lastSelected = channelModel;
         }
 
+        [Conditional("DEBUG")]
+        private void Log(string text)
+        {
+            Logging.Log(text, "msg serv");
+            Logging.Log();
+        }
         #endregion
     }
 }

@@ -35,7 +35,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -198,6 +198,7 @@
     <Compile Include="Utilities\CacheCount.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\KeepToCurrentScrollViewer.cs" />
+    <Compile Include="Utilities\Logging.cs" />
     <Compile Include="Utilities\StaticFunctions.cs" />
     <Compile Include="Utilities\FilteredCollection.cs" />
     <Compile Include="ViewModels\Channel Bar\GlobalTabViewModel.cs" />

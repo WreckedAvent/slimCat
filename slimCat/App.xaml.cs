@@ -21,6 +21,8 @@ namespace slimCat
 {
     #region Usings
 
+    using System.Diagnostics;
+    using System.IO;
     using System.Windows;
     using Utilities;
 
@@ -39,6 +41,7 @@ namespace slimCat
         public App()
         {
             Dispatcher.UnhandledException += Exceptions.HandleException;
+            InitLog();
         }
 
         #endregion
@@ -49,6 +52,14 @@ namespace slimCat
 
             var bstrap = new Bootstrapper();
             bstrap.Run();
+        }
+
+        [Conditional("DEBUG")]
+        private void InitLog()
+        {
+            if (File.Exists("trace.log")) File.Delete("trace.log");
+
+            Logging.LogHeader("starting " + Constants.FriendlyName);
         }
     }
 }

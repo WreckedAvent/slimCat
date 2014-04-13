@@ -23,6 +23,7 @@ namespace slimCat.Services
 
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Timers;
     using System.Web;
@@ -50,6 +51,7 @@ namespace slimCat.Services
         private readonly IAutomationService automation;
         private readonly IChatConnection connection;
         private readonly object locker = new object();
+        private readonly string[] noisyTypes;
         private readonly IChannelManager manager;
 
         private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
@@ -79,6 +81,16 @@ namespace slimCat.Services
             Events.GetEvent<ConnectionClosedEvent>().Subscribe(WipeState, ThreadOption.PublisherThread, true);
 
             ChatModel.CurrentAccount = connection.Account;
+
+            noisyTypes = new[]
+                {
+                    Commands.UserJoin,
+                    Commands.UserLeave,
+                    Commands.UserStatus,
+                    Commands.PublicChannelList,
+                    Commands.PrivateChannelList,
+                    Commands.UserList
+                };
         }
 
         #endregion
@@ -181,7 +193,7 @@ namespace slimCat.Services
                 .Publish(new ChannelUpdateModel(channel, new ChannelUpdateModel.ChannelTypeBannedListEventArgs()));
         }
 
-        private void ChannelDesciptionCommand(IDictionary<string, object> command)
+        private void ChannelDescriptionCommand(IDictionary<string, object> command)
         {
             var channelName = command.Get(Constants.Arguments.Channel);
             var channel = ChatModel.CurrentChannels.FirstOrDefault(x => x.Id == channelName);
@@ -418,10 +430,18 @@ namespace slimCat.Services
         {
             ChatModel.LastMessageReceived = DateTimeOffset.Now;
 
-            if (command == null || string.IsNullOrWhiteSpace(command.Get(Constants.Arguments.Command)))
-                return null;
+            if (command == null) return null;
 
-            switch (command.Get(Constants.Arguments.Command))
+            var commandType = command.Get(Constants.Arguments.Command);
+
+            if (!noisyTypes.Contains(commandType))
+            {
+                Logging.Log(commandType, "cmnd serv");
+                Logging.LogObject(command);
+                Logging.Log();
+            }
+
+            switch (commandType)
             {
                 case Commands.SystemAuthenticate:
                     return LoginCommand;
@@ -456,7 +476,7 @@ namespace slimCat.Services
                 case Commands.ChannelInitialize:
                     return ChannelInitializedCommand;
                 case Commands.ChannelDescription:
-                    return ChannelDesciptionCommand;
+                    return ChannelDescriptionCommand;
                 case Commands.SystemError:
                 case Commands.SystemMessage:
                     return ErrorCommand;
@@ -1052,6 +1072,8 @@ namespace slimCat.Services
             CharacterManager.Clear();
             ChatModel.CurrentChannels.Each(x => x.CharacterManager.Clear());
 
+            ChatModel.CurrentCharacter.Status = StatusType.Online;
+            ChatModel.CurrentCharacter.StatusMessage = string.Empty;
 
             Dispatcher.Invoke((Action) (() =>
                 {
@@ -1065,6 +1087,8 @@ namespace slimCat.Services
 
         private void RequeCommand(IDictionary<string, object> command)
         {
+            Logging.Log("command fail");
+
             object value;
             if (!command.TryGetValue("retryAttempt", out value))
                 value = 0;
@@ -1075,6 +1099,13 @@ namespace slimCat.Services
             retryAttempts++;
             command["retryAttempt"] = retryAttempts;
             EnqueAction(command);
+        }
+
+        [Conditional("DEBUG")]
+        private void Log(string text)
+        {
+            Logging.Log(text, "cmnd serv");
+            Logging.Log();
         }
 
         #endregion
