@@ -137,10 +137,12 @@ namespace slimCat.ViewModels
 
                 updateTick.Enabled = true;
                 updateTick.Elapsed += UpdateConnectionBars;
+
+                LoggingSection = "userbar vm";
             }
             catch (Exception ex)
             {
-                ex.Source = "Userbar ViewCM, init";
+                ex.Source = "Userbar vm, init";
                 Exceptions.HandleException(ex);
             }
         }
@@ -264,6 +266,9 @@ namespace slimCat.ViewModels
 
             set
             {
+                if (hasNewChanMessage == value) return;
+
+                if (value) Log("Displaying new channel message");
                 hasNewChanMessage = value;
                 OnPropertyChanged("HasNewMessage");
                 OnPropertyChanged("HasUpdate");
@@ -277,6 +282,9 @@ namespace slimCat.ViewModels
 
             set
             {
+                if (hasNewPm == value) return;
+
+                if (value) Log("Displaying new pm");
                 hasNewPm = value;
                 OnPropertyChanged("HasNewPm");
                 OnPropertyChanged("HasUpdate");
@@ -370,6 +378,7 @@ namespace slimCat.ViewModels
                 return saveChannels ?? (saveChannels = new RelayCommand(
                     args =>
                         {
+                            Log("Saving channels");
                             ApplicationSettings.SavedChannels.Clear();
 
                             foreach (
@@ -474,12 +483,14 @@ namespace slimCat.ViewModels
             PmsAreExpanded = PmsAreExpanded || HasNewPm;
             ChannelsAreExpanded = ChannelsAreExpanded || HasNewMessage;
             IsExpanded = !IsExpanded;
+            Log(IsExpanded ? "Expanding" : "Hiding");
         }
 
         private void RequestNavigate(bool? payload)
         {
             Events.GetEvent<ChatOnDisplayEvent>().Unsubscribe(RequestNavigate);
             RegionManager.Regions[ChatWrapperView.UserbarRegion].Add(Container.Resolve<UserbarView>());
+            Log("Requesting userbar view");
         }
 
         private void SendStatusChangedCommand()

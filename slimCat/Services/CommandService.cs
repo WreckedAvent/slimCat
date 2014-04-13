@@ -86,8 +86,6 @@ namespace slimCat.Services
 
             noisyTypes = new[]
                 {
-                    Commands.UserJoin,
-                    Commands.UserLeave,
                     Commands.UserStatus,
                     Commands.PublicChannelList,
                     Commands.PrivateChannelList,
@@ -296,7 +294,8 @@ namespace slimCat.Services
         private void ChannelOperatorListCommand(IDictionary<string, object> command)
         {
             var channelName = command.Get(Constants.Arguments.Channel);
-            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelName);
+            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelName)
+                        ?? ChatModel.AllChannels.FirstByIdOrNull(channelName);
 
             if (channel == null)
             {
