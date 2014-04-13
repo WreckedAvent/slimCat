@@ -163,7 +163,7 @@ namespace slimCat.Services
         [Conditional("DEBUG")]
         private void Log(string text)
         {
-            Logging.Log(text, "auto serv");
+            Logging.LogLine(text, "auto serv");
         }
         #endregion
     }

@@ -878,6 +878,7 @@ namespace slimCat.Services
             channelModel.IsSelected = true;
             model.CurrentChannel = channelModel;
 
+            Log("Requesting " + channelModel.Id + " channel view");
             Dispatcher.Invoke(
                 (Action) delegate
                     {

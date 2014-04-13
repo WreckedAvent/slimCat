@@ -28,6 +28,7 @@ namespace slimCat.Services
     using System.Net.Cache;
     using System.Text;
     using System.Web;
+    using Utilities;
 
     #endregion
 
@@ -40,6 +41,8 @@ namespace slimCat.Services
         {
             const string contentType = "application/x-www-form-urlencoded";
             const string requestType = "POST";
+
+            Logging.LogLine("POSTing to " + host + " " + arguments.GetHashCode(), "browser serv");
 
             var isFirst = true;
 
