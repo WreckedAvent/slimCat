@@ -84,7 +84,7 @@ namespace slimCat.Utilities
         public static void LogLine(string text = null, string group = null, bool isVerbose = false)
         {
             Log(text, group, isVerbose);
-            Log();
+            Log(null, null, isVerbose);
         }
 
         /// <summary>

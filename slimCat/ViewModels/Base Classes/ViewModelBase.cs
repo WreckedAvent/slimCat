@@ -495,10 +495,6 @@ namespace slimCat.ViewModels
             IgnoreEvent(args, true);
         }
 
-        internal void LogEmptyLine()
-        {
-            Logging.Log();
-        }
 
         [Conditional("DEBUG")]
         internal void Log(string text = null, bool isVerbose = false)
@@ -511,7 +507,7 @@ namespace slimCat.ViewModels
         {
             Logging.Log(text, LoggingSection, isVerbose);
             Logging.LogObject(obj);
-            LogEmptyLine();
+            Logging.Log(null, null, isVerbose);
         }
 
         #endregion

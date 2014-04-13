@@ -86,6 +86,8 @@ namespace slimCat.Services
 
             noisyTypes = new[]
                 {
+                    Commands.UserJoin,
+                    Commands.UserLeave,
                     Commands.UserStatus,
                     Commands.PublicChannelList,
                     Commands.PrivateChannelList,
@@ -441,8 +443,7 @@ namespace slimCat.Services
 
             var commandType = command.Get(Constants.Arguments.Command);
 
-            if (!noisyTypes.Contains(commandType))
-                Log(commandType + " " + command.GetHashCode());
+            Log(commandType + " " + command.GetHashCode(), noisyTypes.Contains(commandType));
 
             switch (commandType)
             {

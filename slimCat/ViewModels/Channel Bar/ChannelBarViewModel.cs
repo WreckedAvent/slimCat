@@ -87,6 +87,8 @@ namespace slimCat.ViewModels
                             HasUpdate = true;
                         }
                     };
+
+                LoggingSection = "channel bar vm";
             }
             catch (Exception ex)
             {
@@ -127,9 +129,10 @@ namespace slimCat.ViewModels
 
             set
             {
+                if (value) Log("displaying update");
                 hasUpdate = value;
                 OnPropertyChanged("HasUpdate");
-                OnPropertyChanged("ExpandString"); // bug fix where the exclaimation point would never show
+                OnPropertyChanged("ExpandString");
             }
         }
 
@@ -139,6 +142,9 @@ namespace slimCat.ViewModels
 
             set
             {
+                if (isExpanded == value) return;
+
+                Log(value ? "Expanding" : "Hiding");
                 isExpanded = value;
                 OnPropertyChanged("IsExpanded");
                 OnPropertyChanged("ExpandString");
@@ -220,6 +226,8 @@ namespace slimCat.ViewModels
                 // this isn't really a selected state
                 currentSelected = newSelected;
             }
+
+            Log("Requesting " + args + " tab view");
 
             switch (args as string)
             {
