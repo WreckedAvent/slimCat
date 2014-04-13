@@ -47,6 +47,7 @@ namespace slimCat.Services
         private readonly int[] errsThatDisconnect;
         private readonly int[] errsThatPreventReconnect;
 
+        // these are types of commands which produce a lot not useful noise in debug logs
         private readonly string[] noisyTypes;
 
         private readonly IEventAggregator events;
@@ -124,7 +125,9 @@ namespace slimCat.Services
                     Constants.ServerCommands.UserStatus,
                     Constants.ServerCommands.PublicChannelList,
                     Constants.ServerCommands.PrivateChannelList,
-                    Constants.ServerCommands.UserList
+                    Constants.ServerCommands.UserList,
+                    Constants.ServerCommands.ChannelMessage,
+                    Constants.ServerCommands.ChannelAd
                 };
 
             autoPingTimer.Elapsed += (s, e) => TrySend(Constants.ClientCommands.SystemPing);
@@ -447,14 +450,13 @@ namespace slimCat.Services
         [Conditional("DEBUG")]
         private void Log(string type, object payload = null, bool isSent = true)
         {
-            if (noisyTypes.Contains(type) || (type == "IDN" && isSent))
+            Logging.Log(type + (payload != null ? " " + payload.GetHashCode() :""), "chat {0}".FormatWith(isSent ? "OUT" : "IN"));
+
+            if (!(noisyTypes.Contains(type) || (type == "IDN" && isSent)))
             {
-                Logging.Log(type, "chat {0}".FormatWith(isSent ? "OUT" : "IN"), true);
-                return;
+                Logging.LogObject(payload);
             }
 
-            Logging.Log(type, "chat {0}".FormatWith(isSent ? "OUT" : "IN"));
-            Logging.LogObject(payload);
             Logging.Log();
         }
 

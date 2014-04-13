@@ -113,6 +113,7 @@ namespace slimCat.Services
                         {Commands.ChannelAd, OnLrpRequested},
                         {Commands.UserStatus, OnStatusChangeRequested},
                         {"close", OnCloseRequested},
+                        {"forceclose", OnForceChannelCloseRequested},
                         {"join", OnJoinRequested},
                         {Commands.UserIgnore, OnIgnoreRequested},
                         {"clear", OnClearRequested},
@@ -133,7 +134,8 @@ namespace slimCat.Services
                         {"tempinteresting", OnTemporaryInterestingRequested},
                         {"tempnotinteresting", OnTemporaryInterestingRequested},
                         {"handlelatest", OnHandleLatestReportRequested},
-                        {"handlereport", OnHandleLatestReportByUserRequested}
+                        {"handlereport", OnHandleLatestReportByUserRequested},
+                        {"rejoin", OnChannelRejoinRequested }
                     };
             }
             catch (Exception ex)
@@ -142,7 +144,6 @@ namespace slimCat.Services
                 Exceptions.HandleException(ex);
             }
         }
-
         #endregion
 
         #region Delegates
@@ -290,13 +291,18 @@ namespace slimCat.Services
 
         public void RemoveChannel(string name)
         {
+            RemoveChannel(name, false);
+        }
+
+        public void RemoveChannel(string name, bool force)
+        {
             Log("Removing Channel " + name);
 
             RequestNavigate("Home");
 
             if (model.CurrentChannels.Any(param => param.Id == name))
             {
-                var temp = model.CurrentChannels.First(param => param.Id == name);
+                var temp = model.CurrentChannels.FirstByIdOrNull(name);
                 temp.Description = null;
 
                 Dispatcher.Invoke(
@@ -307,9 +313,14 @@ namespace slimCat.Services
             }
             else if (model.CurrentPms.Any(param => param.Id == name))
             {
-                var temp = model.CurrentPms.First(param => param.Id == name);
+                var temp = model.CurrentPms.FirstByIdOrNull(name);
 
                 model.CurrentPms.Remove(temp);
+            }
+            else if (force)
+            {
+                object toSend = new { channel = name };
+                connection.SendMessage(toSend, Commands.ChannelLeave);
             }
             else
                 throw new ArgumentOutOfRangeException("name", "Could not find the channel requested to remove");
@@ -722,6 +733,21 @@ namespace slimCat.Services
                 character,
                 add ? ListKind.Interested : ListKind.NotInterested,
                 true);
+        }
+
+        private void OnChannelRejoinRequested(IDictionary<string, object> command)
+        {
+            var channelName = command.Get(Constants.Arguments.Channel);
+            RemoveChannel(channelName, true);
+
+            var toSend = new { channel = channelName };
+            connection.SendMessage(toSend, Commands.ChannelJoin);
+        }
+
+        private void OnForceChannelCloseRequested(IDictionary<string, object> command)
+        {
+            var channelName = command.Get(Constants.Arguments.Channel);
+            RemoveChannel(channelName, true);
         }
 
         private void OnHandleLatestReportRequested(IDictionary<string, object> command)

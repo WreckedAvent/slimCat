@@ -79,7 +79,8 @@ namespace slimCat.Models
                 {"code", new CommandModel("code", "code", null, CommandModel.CommandTypes.NoArgs)},
                 {"clear", new CommandModel("clear", "clear", null, CommandModel.CommandTypes.NoArgs)},
                 {"clearall", new CommandModel("clearall", "clearall", null, CommandModel.CommandTypes.NoArgs)},
-                {"close", new CommandModel("close", "close", new[] {"channel"}, CommandModel.CommandTypes.OnlyChannel)},
+                {"close", new CommandModel("close", "close", new[] {A.Channel}, CommandModel.CommandTypes.OnlyChannel)},
+                {"forceclose", new CommandModel("forceclose", "forceclose", new [] {A.Channel}) },
                 {
                     "ignore",
                     new CommandModel("ignore", C.UserIgnore, new[] {A.Character, A.Action},
@@ -114,6 +115,7 @@ namespace slimCat.Models
                     new CommandModel("openlogfolder", "_logger_open_folder", null, CommandModel.CommandTypes.OnlyChannel)
                 },
                 {"priv", new CommandModel("priv", "priv", new[] {A.Character})},
+                {"rejoin", new CommandModel("rejoin", "rejoin", new [] {A.Channel}) },
                 {"removebookmark", new CommandModel("removebookmark", "bookmark-remove", new[] {A.Name})},
                 {"removefriend", new CommandModel("removefriend", "friend-remove", new[] {"dest_name"})},
                 {

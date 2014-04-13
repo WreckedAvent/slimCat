@@ -174,7 +174,7 @@ namespace slimCat.Utilities
 
         public static string GetTimestamp()
         {
-            return "[{0}]".FormatWith(DateTime.Now.ToString("mm:ss.ff"));
+            return "[{0}]".FormatWith(DateTime.Now.ToString("mm:ss.ffff"));
         }
         #endregion
     }
