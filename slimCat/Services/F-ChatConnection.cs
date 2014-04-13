@@ -346,7 +346,7 @@ namespace slimCat.Services
         /// </summary>
         private void ConnectionError(object sender, ErrorEventArgs e)
         {
-            Logging.LogLine("socket exception", "chat");
+            Logging.LogLine("socket exception: " + e.Exception.Message, "chat");
 
             events.GetEvent<LoginFailedEvent>().Publish(e.Exception.Message);
             AttemptReconnect();
@@ -396,7 +396,7 @@ namespace slimCat.Services
 
         private void DoReconnect()
         {
-            Logging.LogLine("Attempting reconnect #" + retryAttemptCount+1);
+            Logging.LogLine("Attempting reconnect #" + (retryAttemptCount+1), "chat");
 
             if (retryAttemptCount >= 21)
             {
