@@ -361,6 +361,7 @@ namespace slimCat.Services
 
         private void EnqueueAction(IDictionary<string, object> data)
         {
+            if (data == null) return;
             var command = data.Get(Constants.Arguments.Command);
 
             // try and prioritize these commands as they will impact the flow of channel joining
