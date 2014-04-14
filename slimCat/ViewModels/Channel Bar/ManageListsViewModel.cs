@@ -139,21 +139,21 @@ namespace slimCat.ViewModels
 
                         switch (thisArguments.ListArgument)
                         {
-                            case CharacterUpdateModel.ListChangedEventArgs.ListType.Interested:
+                            case ListKind.Interested:
                                 OnPropertyChanged("Interested");
                                 OnPropertyChanged("NotInterested");
                                 break;
-                            case CharacterUpdateModel.ListChangedEventArgs.ListType.Ignored:
+                            case ListKind.Ignored:
                                 OnPropertyChanged("Ignored");
                                 break;
-                            case CharacterUpdateModel.ListChangedEventArgs.ListType.NotInterested:
+                            case ListKind.NotInterested:
                                 OnPropertyChanged("NotInterested");
                                 OnPropertyChanged("Interested");
                                 break;
-                            case CharacterUpdateModel.ListChangedEventArgs.ListType.Bookmarks:
+                            case ListKind.Bookmark:
                                 OnPropertyChanged("Bookmarks");
                                 break;
-                            case CharacterUpdateModel.ListChangedEventArgs.ListType.Friends:
+                            case ListKind.Friend:
                                 OnPropertyChanged("Friends");
                                 break;
                         }

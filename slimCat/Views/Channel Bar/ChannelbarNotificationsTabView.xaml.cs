@@ -21,6 +21,7 @@ namespace slimCat.Views
 {
     #region Usings
 
+    using System.Windows;
     using ViewModels;
 
     #endregion
@@ -30,6 +31,8 @@ namespace slimCat.Views
     /// </summary>
     public partial class NotificationsTabView
     {
+        private NotificationsTabViewModel vm;
+
         #region Constructors and Destructors
 
         /// <summary>
@@ -42,8 +45,19 @@ namespace slimCat.Views
         {
             InitializeComponent();
             DataContext = vm;
+            this.vm = vm;
         }
 
         #endregion
+
+        private void OnUnload(object sender, RoutedEventArgs e)
+        {
+            PopupAnchor.MessageSource = null;
+        }
+
+        private void OnLoad(object sender, RoutedEventArgs e)
+        {
+            PopupAnchor.MessageSource = vm.CurrentNotifications;
+        }
     }
 }

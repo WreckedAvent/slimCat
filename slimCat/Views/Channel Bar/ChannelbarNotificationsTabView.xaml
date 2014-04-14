@@ -25,7 +25,9 @@
                    Visibility="{Binding Path=HasNoNotifications, Converter={StaticResource BoolConverter}}" />
 
         <v:ObservingFlowDocumentReader x:Name="PopupAnchor"
-                                       MessageSource="{Binding Path=CurrentNotifications, Mode=OneWay}" />
+                                       MessageSource="{Binding Path=CurrentNotifications, Mode=OneWay}"
+                                       Unloaded="OnUnload"
+                                       Loaded="OnLoad"/>
 
     </DockPanel>
 </UserControl>

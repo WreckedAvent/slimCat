@@ -442,7 +442,7 @@ namespace slimCat.Services
                         new CharacterUpdateModel.ListChangedEventArgs
                             {
                                 IsAdded = action == Constants.Arguments.ActionAdd,
-                                ListArgument = CharacterUpdateModel.ListChangedEventArgs.ListType.Ignored
+                                ListArgument = ListKind.Ignored
                             }));
 
             connection.SendMessage(command);
@@ -626,8 +626,7 @@ namespace slimCat.Services
                         new CharacterUpdateModel.ListChangedEventArgs
                             {
                                 IsAdded = isAdd,
-                                ListArgument =
-                                    CharacterUpdateModel.ListChangedEventArgs.ListType.Interested
+                                ListArgument = ListKind.Interested
                             }));
         }
 
@@ -648,8 +647,7 @@ namespace slimCat.Services
                         new CharacterUpdateModel.ListChangedEventArgs
                             {
                                 IsAdded = isAdd,
-                                ListArgument =
-                                    CharacterUpdateModel.ListChangedEventArgs.ListType.NotInterested
+                                ListArgument = ListKind.NotInterested
                             }));
         }
 

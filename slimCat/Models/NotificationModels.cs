@@ -321,25 +321,6 @@ namespace slimCat.Models
         /// </summary>
         public class ListChangedEventArgs : CharacterUpdateEventArgs
         {
-            #region Enums
-
-            /// <summary>
-            ///     The list type.
-            /// </summary>
-            public enum ListType
-            {
-                Friends,
-
-                Bookmarks,
-
-                Ignored,
-
-                Interested,
-
-                NotInterested
-            }
-
-            #endregion
 
             #region Public Properties
 
@@ -356,7 +337,7 @@ namespace slimCat.Models
             /// <summary>
             ///     Gets or sets the list argument.
             /// </summary>
-            public ListType ListArgument { get; set; }
+            public ListKind ListArgument { get; set; }
 
             #endregion
 
@@ -370,7 +351,7 @@ namespace slimCat.Models
             /// </returns>
             public override string ToString()
             {
-                var listKind = ListArgument != ListType.NotInterested
+                var listKind = ListArgument != ListKind.NotInterested
                     ? ListArgument.ToString()
                     : "not interested";
 

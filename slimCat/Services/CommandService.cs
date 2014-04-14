@@ -27,6 +27,7 @@ namespace slimCat.Services
     using System.Timers;
     using System.Web;
     using System.Windows;
+    using System.Windows.Forms.VisualStyles;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
@@ -274,18 +275,13 @@ namespace slimCat.Services
                     if (number < 0)
                         number = 0;
 
-                    Dispatcher.Invoke(
-                        (Action)
-                            (() =>
-                                ChatModel.AllChannels.Add(
-                                    new GeneralChannelModel(
-                                        name, isPublic ? ChannelType.Public : ChannelType.Private, (int) number, mode)
-                                        {
-                                            Title =
-                                                isPublic
-                                                    ? name
-                                                    : title
-                                        })));
+                    var model = new GeneralChannelModel(name, isPublic ? ChannelType.Public : ChannelType.Private, (int)number, mode)
+                    {
+                        Title = isPublic ? name : title
+                    };
+
+                    Dispatcher.Invoke((Action) (() => ChatModel.AllChannels.Add(model)));
+
                 }
             }
         }
@@ -367,6 +363,7 @@ namespace slimCat.Services
             // try and prioritize these commands as they will impact the flow of channel joining
             if (command == Commands.ChannelJoin || command == Commands.ChannelInitialize)
             {
+
                 Invoke(data);
                 return;
             }
@@ -544,39 +541,48 @@ namespace slimCat.Services
 
         new private void JoinChannelCommand(IDictionary<string, object> command)
         {
-            var title = command.Get(Constants.Arguments.Title);
-            var channelName = command.Get(Constants.Arguments.Channel);
-
-            var id = command.Get<IDictionary<string, object>>(Constants.Arguments.Character);
-            var identity = id.Get(Constants.Arguments.Identity);
-
-            // JCH is used in a few situations. It is used when others join a channel and when we join a channel
-
-            // if this is a situation where we are joining a channel...
-            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelName);
-            if (channel == null)
+            // JCH now works outside the queue, which means it collide with other commands
+            // this try catch removes crashes when these (rare) collisions happen
+            try
             {
-                var kind = ChannelType.Public;
-                if (channelName.Contains("ADH-"))
-                    kind = ChannelType.Private;
+                var title = command.Get(Constants.Arguments.Title);
+                var channelName = command.Get(Constants.Arguments.Channel);
 
-                manager.JoinChannel(kind, channelName, title);
-            }
-            else
-            {
-                var toAdd = CharacterManager.Find(identity);
-                if (channel.CharacterManager.SignOn(toAdd))
+                var id = command.Get<IDictionary<string, object>>(Constants.Arguments.Character);
+                var identity = id.Get(Constants.Arguments.Identity);
+
+                // JCH is used in a few situations. It is used when others join a channel and when we join a channel
+
+                // if this is a situation where we are joining a channel...
+                var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelName);
+                if (channel == null)
                 {
-                    Events.GetEvent<NewUpdateEvent>().Publish(
-                        new CharacterUpdateModel(
-                            toAdd,
-                            new CharacterUpdateModel.JoinLeaveEventArgs
-                                {
-                                    Joined = true,
-                                    TargetChannel = channel.Title,
-                                    TargetChannelId = channel.Id
-                                }));
+                    var kind = ChannelType.Public;
+                    if (channelName.Contains("ADH-"))
+                        kind = ChannelType.Private;
+
+                    manager.JoinChannel(kind, channelName, title);
                 }
+                else
+                {
+                    var toAdd = CharacterManager.Find(identity);
+                    if (channel.CharacterManager.SignOn(toAdd))
+                    {
+                        Events.GetEvent<NewUpdateEvent>().Publish(
+                            new CharacterUpdateModel(
+                                toAdd,
+                                new CharacterUpdateModel.JoinLeaveEventArgs
+                                    {
+                                        Joined = true,
+                                        TargetChannel = channel.Title,
+                                        TargetChannelId = channel.Id
+                                    }));
+                    }
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                RequeueCommand(command);
             }
         }
 
@@ -884,23 +890,45 @@ namespace slimCat.Services
         {
             var type = command.Get(Constants.Arguments.Type);
 
-            if (type != null && type.Equals("note"))
+            if (type == null) return;
+
+            var doListAction = new Action<string, ListKind, bool>((name, listKind, isAdd) =>
+                {
+                    if (isAdd)
+                        CharacterManager.Add(name, listKind);
+                    else
+                        CharacterManager.Remove(name, listKind);
+
+                    var update = new CharacterUpdateModel(
+                        CharacterManager.Find(name),
+                        new CharacterUpdateModel.ListChangedEventArgs
+                    {
+                        IsAdded = isAdd,
+                        ListArgument = listKind
+                    });
+
+                    Events.GetEvent<NewUpdateEvent>().Publish(update);
+                });
+
+            if (type.Equals("note"))
             {
                 var senderName = command.Get(Constants.Arguments.Sender);
                 var subject = command.Get("subject");
                 var id = (long) command["id"];
 
-                var sender = CharacterManager.Find(senderName);
+                var update = new CharacterUpdateModel(
+                    CharacterManager.Find(senderName),
+                    new CharacterUpdateModel.NoteEventArgs
+                        {
+                            Subject = subject,
+                            NoteId = id
+                        });
 
-                Events.GetEvent<NewUpdateEvent>()
-                    .Publish(
-                        new CharacterUpdateModel(
-                            sender, new CharacterUpdateModel.NoteEventArgs {Subject = subject, NoteId = id}));
+                Events.GetEvent<NewUpdateEvent>().Publish(update);
             }
-            else if (type != null && type.Equals("comment"))
+            else if (type.Equals("comment"))
             {
                 var name = command.Get(Constants.Arguments.Name);
-                var character = CharacterManager.Find(name);
 
                 // sometimes ID is sent as a string. Sometimes it is sent as a number.
                 // so even though it's THE SAME COMMAND we have to treat *each* number differently
@@ -913,18 +941,38 @@ namespace slimCat.Services
                 var commentType =
                     command.Get("target_type").ToEnum<CharacterUpdateModel.CommentEventArgs.CommentTypes>();
 
-                Events.GetEvent<NewUpdateEvent>()
-                    .Publish(
-                        new CharacterUpdateModel(
-                            character,
-                            new CharacterUpdateModel.CommentEventArgs
-                                {
-                                    CommentId = commentId,
-                                    CommentType = commentType,
-                                    ParentId = parentId,
-                                    TargetId = targetId,
-                                    Title = title
-                                }));
+                var update = new CharacterUpdateModel(
+                    CharacterManager.Find(name),
+                    new CharacterUpdateModel.CommentEventArgs
+                        {
+                            CommentId = commentId,
+                            CommentType = commentType,
+                            ParentId = parentId,
+                            TargetId = targetId,
+                            Title = title
+                        });
+
+                Events.GetEvent<NewUpdateEvent>().Publish(update);
+            }
+            else if (type.Equals("trackadd"))
+            {
+                var name = command.Get(Constants.Arguments.Name);
+                doListAction(name, ListKind.Bookmark, true);
+            }
+            else if (type.Equals("trackrem"))
+            {
+                var name = command.Get(Constants.Arguments.Name);
+                doListAction(name, ListKind.Bookmark, false);
+            }
+            else if (type.Equals("friendadd"))
+            {
+                var name = command.Get(Constants.Arguments.Name);
+                doListAction(name, ListKind.Friend, true);
+            }
+            else if (type.Equals("friendremove"))
+            {
+                var name = command.Get(Constants.Arguments.Name);
+                doListAction(name, ListKind.Friend, false);
             }
         }
 

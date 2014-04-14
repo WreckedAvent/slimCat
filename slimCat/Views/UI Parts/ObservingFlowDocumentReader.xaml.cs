@@ -141,7 +141,7 @@ namespace slimCat.Views
                     break;
 
                 case NotifyCollectionChangedAction.Reset:
-                    Messages.Blocks.Clear();
+                    Dispatcher.Invoke((Action) (() => Messages.Blocks.Clear()));
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
