@@ -31,6 +31,7 @@ namespace slimCat.Services
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
+    using Models.Api;
     using SimpleJson;
     using Utilities;
     using ViewModels;
@@ -54,6 +55,7 @@ namespace slimCat.Services
         private readonly object locker = new object();
 
         private readonly IChannelManager manager;
+
         private readonly string[] noisyTypes;
 
         private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
@@ -352,19 +354,31 @@ namespace slimCat.Services
 
                 var workingData = que.Dequeue();
 
-                var toInvoke = InterpretCommand(workingData);
-                if (toInvoke != null)
-                    toInvoke.Invoke(workingData);
-
+                Invoke(workingData);
                 DoAction();
             }
         }
 
         private void EnqueueAction(IDictionary<string, object> data)
         {
-            que.Enqueue(data);
+            var command = data.Get(Constants.Arguments.Command);
 
+            // try and prioritize these commands as they will impact the flow of channel joining
+            if (command == Commands.ChannelJoin || command == Commands.ChannelInitialize)
+            {
+                Invoke(data);
+                return;
+            }
+
+            que.Enqueue(data);
             DoAction();
+        }
+
+        private void Invoke(IDictionary<string, object> command)
+        {
+            var toInvoke = InterpretCommand(command);
+            if (toInvoke != null)
+                toInvoke.Invoke(command);
         }
 
         private void ErrorCommand(IDictionary<string, object> command)
