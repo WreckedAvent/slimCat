@@ -25,6 +25,7 @@ namespace slimCat.Services
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using System.Threading;
     using System.Web;
     using System.Windows;
     using System.Windows.Threading;
@@ -677,40 +678,46 @@ namespace slimCat.Services
                 command.Get(Constants.Arguments.Name),
                 command.Get(Constants.Arguments.Report));
 
-            // upload log
-            var channelText = command.Get(Constants.Arguments.Channel);
-            if (!string.IsNullOrWhiteSpace(channelText) && !channelText.Equals("None"))
-            {
-                // we could just use _model.SelectedChannel, but the user might change tabs immediately after reporting, creating a race condition
-                ChannelModel channel;
-                if (channelText == command.Get(Constants.Arguments.Name))
-                    channel = model.CurrentPms.FirstByIdOrNull(channelText);
-                else
-                    channel = model.CurrentChannels.FirstByIdOrNull(channelText);
-
-                if (channel != null)
+            // upload on a worker thread to avoid blocking
+            new Thread(() =>
                 {
-                    var report = new ReportModel
+                    Thread.CurrentThread.IsBackground = true;
+
+                    var channelText = command.Get(Constants.Arguments.Channel);
+                    if (!string.IsNullOrWhiteSpace(channelText) && !channelText.Equals("None"))
+                    {
+                        // we could just use _model.SelectedChannel, but the user might change tabs immediately after reporting, creating a race condition
+                        ChannelModel channel;
+                        if (channelText == command.Get(Constants.Arguments.Name))
+                            channel = model.CurrentPms.FirstByIdOrNull(channelText);
+                        else
+                            channel = model.CurrentChannels.FirstByIdOrNull(channelText);
+
+                        if (channel != null)
                         {
-                            Reporter = model.CurrentCharacter,
-                            Reported = command.Get(Constants.Arguments.Name),
-                            Complaint = command.Get(Constants.Arguments.Report),
-                            Tab = channelText
-                        };
+                            var report = new ReportModel
+                            {
+                                Reporter = model.CurrentCharacter,
+                                Reported = command.Get(Constants.Arguments.Name),
+                                Complaint = command.Get(Constants.Arguments.Report),
+                                Tab = channelText
+                            };
 
-                    
-                    logId = api.UploadLog(report, channel.Messages.Union(channel.Ads));
-                }
-            }
 
-            command.Remove(Constants.Arguments.Name);
-            command[Constants.Arguments.Report] = reportText;
-            command[Constants.Arguments.LogId] = logId;
+                            logId = api.UploadLog(report, channel.Messages.Union(channel.Ads));
+                        }
+                    }
 
-            if (!command.ContainsKey(Constants.Arguments.Action))
-                command[Constants.Arguments.Action] = Constants.Arguments.ActionReport;
+                    command.Remove(Constants.Arguments.Name);
+                    command[Constants.Arguments.Report] = reportText;
+                    command[Constants.Arguments.LogId] = logId;
 
-            connection.SendMessage(command);
+                    if (!command.ContainsKey(Constants.Arguments.Action))
+                        command[Constants.Arguments.Action] = Constants.Arguments.ActionReport;
+
+                    connection.SendMessage(command);
+                }).Start();
+
         }
 
         private void OnTemporaryIgnoreRequested(IDictionary<string, object> command)

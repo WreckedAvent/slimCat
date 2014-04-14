@@ -56,13 +56,12 @@ namespace slimCat.Services
         private readonly IEventAggregator events;
 
         private readonly NotifyIcon icon = new NotifyIcon();
+
         private readonly ICharacterManager manager;
 
         private readonly ToastNotificationsViewModel toast;
 
         private DateTime lastDingLinged;
-
-        private double soundSaveVolume;
 
         #endregion
 

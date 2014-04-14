@@ -71,6 +71,8 @@ namespace slimCat.Services
             if (useCookies)
                 req.CookieContainer = loginCookies;
 
+            string toReturn;
+
             using (var postStream = req.GetRequestStream())
                 postStream.Write(toPost, 0, toPost.Length);
 
@@ -80,8 +82,10 @@ namespace slimCat.Services
                 if (answerStream == null)
                     return null;
                 using (var answerReader = new StreamReader(answerStream))
-                    return answerReader.ReadToEnd(); // read our response
+                    toReturn = answerReader.ReadToEnd(); // read our response
             }
+
+            return toReturn;
         }
 
         public string GetResponse(string host)

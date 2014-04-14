@@ -151,6 +151,7 @@
     <Compile Include="lib\FullScreenHelper.cs" />
     <Compile Include="lib\TextBlockHelper.cs" />
     <Compile Include="Models\Api\ApiAuthResponse.cs" />
+    <Compile Include="Models\Api\ApiUploadLogResponse.cs" />
     <Compile Include="Models\ApplicationThemeLocator.cs" />
     <Compile Include="Models\CharacterManagerBase.cs" />
     <Compile Include="Models\CollectionPair.cs" />

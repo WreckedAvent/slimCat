@@ -29,6 +29,7 @@ namespace slimCat.Services
     using Microsoft.Practices.Prism;
     using Microsoft.Practices.Prism.Events;
     using Models;
+    using Models.Api;
     using SimpleJson;
     using Utilities;
 
@@ -40,8 +41,6 @@ namespace slimCat.Services
     /// </summary>
     internal class FlistService : IListConnection
     {
-        private readonly IBrowser browser;
-        private readonly ITicketProvider ticketProvider;
 
         #region Fields
 
@@ -50,6 +49,10 @@ namespace slimCat.Services
         private readonly IAccount model;
 
         private string selectedCharacter;
+
+        private readonly IBrowser browser;
+
+        private readonly ITicketProvider ticketProvider;
 
         #endregion
 
@@ -91,29 +94,18 @@ namespace slimCat.Services
                 var logId = -1;
 
                 // log upload format doesn't allow much HTML or anything other than line breaks.
-                var sb =
-                    new StringBuilder(
-                        string.Format(
-                            "{0} log upload \nAll times in 24hr {1} \n\n",
-                            Constants.FriendlyName,
-                            TimeZone.CurrentTimeZone.StandardName));
+                var sb = new StringBuilder();
+                sb.Append("==================================\n");
+                sb.Append("{0} log upload \n{1} in {2}\nreported user: {3}\ntime stamps in 24hr UTC\n"
+                    .FormatWith(Constants.FriendlyName,
+                                DateTime.UtcNow.ToShortDateString(),
+                                report.Tab,
+                                report.Reported));
+                sb.Append("==================================\n");
 
-                var messages =
-                    log.Select(
-                        m => string.Format("{0} {1}: {2} \n", m.PostedTime.ToTimeStamp(), m.Poster.Name, m.Message));
-
-                var i = 0;
-                foreach (var m in messages)
-                {
-                    sb.Append(m);
-                    if (i >= 24)
-                    {
-                        sb.Append("\n\n"); // legibility
-                        i = 0;
-                    }
-
-                    i++;
-                }
+                log.Where(x => !x.IsHistoryMessage)
+                    .Select(m => string.Format("{0} {1}: {2} \n", m.PostedTime.ToUniversalTime().ToTimeStamp(), m.Poster.Name, m.Message))
+                    .Each(m => sb.Append(m));
 
                 var toUpload = new Dictionary<string, object>
                     {
@@ -125,12 +117,11 @@ namespace slimCat.Services
                     };
 
                 var buffer = browser.GetResponse(Constants.UrlConstants.UploadLog, toUpload, true);
-                dynamic result = SimpleJson.DeserializeObject(buffer);
+                var result = buffer.DeserializeTo<ApiUploadLogResponse>();
 
-                if (result.log_id != null)
+                if (result.LogId != null)
                 {
-                    // sometimes log_id appears to be a string
-                    int.TryParse(result.log_id, out logId);
+                    int.TryParse(result.LogId, out logId);
                 }
 
                 Log("Uploaded report log in tab {0} with id of {1}".FormatWith(report.Tab, logId));

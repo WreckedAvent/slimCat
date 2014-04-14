@@ -42,6 +42,7 @@ namespace slimCat.Services
 
         private string lastTicket;
 
+        private Dictionary<string, object> ticketCredentials;
         private Dictionary<string, object> loginCredentials;
         private bool shouldGetNewTicket;
         #endregion
@@ -86,9 +87,15 @@ namespace slimCat.Services
         #region Methods
         public void SetCredentials(string user, string pass)
         {
-            loginCredentials = new Dictionary<string, object>
+            ticketCredentials = new Dictionary<string, object>
                 {
                     {"account", user.ToLower()},
+                    {"password", pass},
+                };
+
+            loginCredentials = new Dictionary<string, object>
+                {
+                    {"username", user.ToLower()},
                     {"password", pass},
                 };
 
@@ -105,7 +112,7 @@ namespace slimCat.Services
             if (lastAccount == null || lastAccount.Password == null)
                 throw new InvalidOperationException("Set login credentials before logging in!");
 
-            var buffer = browser.GetResponse(Constants.UrlConstants.GetTicket, loginCredentials);
+            var buffer = browser.GetResponse(Constants.UrlConstants.GetTicket, ticketCredentials);
 
             if (buffer.Equals(siteIsDisabled, StringComparison.OrdinalIgnoreCase))
                 throw new Exception("Site API disabled for maintenance.");
