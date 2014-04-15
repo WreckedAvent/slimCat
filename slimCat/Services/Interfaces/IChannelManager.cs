@@ -67,6 +67,13 @@ namespace slimCat.Services
         /// </param>
         void RemoveChannel(string name);
 
+        /// <summary>
+        ///     Adds the channel model if it doesn't exist, but doesn't select it or pull down history/settings. 
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="name">The name.</param>
+        void QuickJoinChannel(string id, string name);
+
         #endregion
     }
 }

@@ -52,6 +52,7 @@
         <ListBox ItemsSource="{Binding Path=SortedChannels, Mode=OneWay, IsAsync=True}"
                  ItemTemplate="{StaticResource ChannelTemplate}"
                  x:Name="PopupAnchor"
+                 Loaded="OnLoaded"
                  Style="{StaticResource ContentListBox}" />
     </DockPanel>
 </UserControl>

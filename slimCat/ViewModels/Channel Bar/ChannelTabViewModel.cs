@@ -28,6 +28,8 @@ namespace slimCat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
+    using Services;
+    using Utilities;
     using Views;
 
     #endregion
@@ -37,6 +39,7 @@ namespace slimCat.ViewModels
     /// </summary>
     public class ChannelsTabViewModel : ChannelbarViewModelCommon
     {
+
         #region Constants
 
         public const string ChannelsTabView = "ChannelsTabView";
@@ -45,9 +48,6 @@ namespace slimCat.ViewModels
 
         #region Fields
 
-        /// <summary>
-        ///     The show only alphabet.
-        /// </summary>
         public bool ShowOnlyAlphabet;
 
         private bool showPrivate = true;
@@ -58,22 +58,23 @@ namespace slimCat.ViewModels
 
         private int thresh = 5;
 
+        private readonly IChannelListUpdater updater;
+
         #endregion
 
         #region Constructors and Destructors
 
         public ChannelsTabViewModel(
             IChatModel cm, IUnityContainer contain, IRegionManager reggman, IEventAggregator events,
-            ICharacterManager manager)
+            ICharacterManager manager, IChannelListUpdater updater)
             : base(contain, reggman, events, cm, manager)
         {
+            this.updater = updater;
             Container.RegisterType<object, ChannelTabView>(ChannelsTabView);
 
-            SearchSettings.Updated += (s, e) =>
-                {
-                    OnPropertyChanged("SearchSettings");
-                    OnPropertyChanged("SortedChannels");
-                };
+            SearchSettings.Updated += Update;
+
+            cm.AllChannels.CollectionChanged += Update;
         }
 
         #endregion
@@ -122,6 +123,11 @@ namespace slimCat.ViewModels
             }
         }
 
+        public void UpdateChannels()
+        {    
+            updater.UpdateChannels();
+        }
+
         public IEnumerable<GeneralChannelModel> SortedChannels
         {
             get
@@ -164,12 +170,21 @@ namespace slimCat.ViewModels
 
         #endregion
 
-        #region Public Methods and Operators
-
-        public override void Initialize()
+        private void Update(object sender, EventArgs e)
         {
+            OnPropertyChanged("SearchSettings");
+            OnPropertyChanged("SortedChannels");
         }
 
-        #endregion
+        protected override void Dispose(bool isManaged)
+        {
+            if (isManaged)
+            {
+                ChatModel.AllChannels.CollectionChanged -= Update;
+                SearchSettings.Updated -= Update;
+
+            }
+            base.Dispose(isManaged);
+        }
     }
 }

@@ -191,8 +191,13 @@ namespace slimCat.Services
                 else
                 {
                     // our model should have a reference to other channels though
-                    temp = model.AllChannels.FirstOrDefault(param => param.Id == id)
-                           ?? new GeneralChannelModel(id, ChannelType.InviteOnly) {Title = name};
+                    temp = model.AllChannels.FirstOrDefault(param => param.Id == id);
+
+                    if (temp == null)
+                    {
+                        temp = new GeneralChannelModel(id, name, id == name ? ChannelType.Public : ChannelType.Private);
+                        Dispatcher.Invoke((Action) (() => model.AllChannels.Add(temp)));
+                    }
 
                     Dispatcher.Invoke((Action) (() => model.CurrentChannels.Add(temp)));
 
@@ -325,6 +330,27 @@ namespace slimCat.Services
             }
             else
                 throw new ArgumentOutOfRangeException("name", "Could not find the channel requested to remove");
+        }
+
+        public void QuickJoinChannel(string id, string name)
+        {
+            name = HttpUtility.HtmlDecode(name);
+            IEnumerable<string> history = new List<string>();
+
+            var type = (id != name) ? ChannelType.Public : ChannelType.Private;
+
+            Log((id != name && !string.IsNullOrEmpty(name))
+                ? "Quick Joining {0} Channel {1} \"{2}\"".FormatWith(type, id, name)
+                : "Quick Joining {0} Channel {1}".FormatWith(type, id));
+
+            var temp = new GeneralChannelModel(id, name, id == name ? ChannelType.Public : ChannelType.Private);
+            Dispatcher.Invoke((Action)(() =>
+                {
+                    model.AllChannels.Add(temp);
+                    model.CurrentChannels.Add(temp);
+                }));
+
+            container.Resolve<GeneralChannelViewModel>(new ParameterOverride("name", id));
         }
 
         #endregion

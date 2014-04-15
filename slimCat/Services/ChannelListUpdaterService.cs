@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ChannelbarChannelListView.xaml.cs">
+// <copyright file="TicketProvider.cs">
 //    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
 //   
 //    This source is subject to the Simplified BSD License.
@@ -17,42 +17,38 @@
 
 #endregion
 
-namespace slimCat.Views
+namespace slimCat.Services
 {
     #region Usings
-
-    using System.Windows;
-    using ViewModels;
+    using System;
+    using Utilities;
 
     #endregion
 
-    /// <summary>
-    ///     Interaction logic for ChanneListView.xaml
-    /// </summary>
-    public partial class ChannelTabView
+    public class ChannelListUpdaterService : IChannelListUpdater
     {
-        private ChannelsTabViewModel vm;
+        private readonly IChatConnection connection;
 
-        #region Constructors and Destructors
+        private DateTime lastUpdate;
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ChannelTabView" /> class.
-        /// </summary>
-        /// <param name="vm">
-        ///     The vm.
-        /// </param>
-        public ChannelTabView(ChannelsTabViewModel vm)
+        public ChannelListUpdaterService(IChatConnection connection)
         {
-            InitializeComponent();
-            DataContext = vm;
-            this.vm = vm;
+            this.connection = connection;
         }
 
-        #endregion
-
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        public void UpdateChannels()
         {
-            vm.UpdateChannels();
+            if (lastUpdate.AddHours(2) > DateTime.Now) return;
+
+            connection.SendMessage(Constants.ClientCommands.PublicChannelList);
+            connection.SendMessage(Constants.ClientCommands.PrivateChannelList);
+            lastUpdate = DateTime.Now;
         }
+
+    }
+
+    public interface IChannelListUpdater
+    {
+        void UpdateChannels();
     }
 }

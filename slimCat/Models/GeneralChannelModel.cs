@@ -84,6 +84,43 @@ namespace slimCat.Models
             }
         }
 
+        public GeneralChannelModel(string name, string title, ChannelType type)
+            : base(name, type, ChannelMode.Both)
+        {
+            try
+            {
+                UserCount = 0;
+
+                CharacterManager = new ChannelCharacterManager();
+                Settings = new ChannelSettingsModel();
+                Title = title;
+
+                // the message count now faces the user, so when we reset it it now requires a UI update
+                Messages.CollectionChanged += (s, e) =>
+                    {
+                        if (e.Action != NotifyCollectionChangedAction.Reset)
+                            return;
+
+                        LastReadCount = Messages.Count;
+                        UpdateBindings();
+                    };
+
+                Ads.CollectionChanged += (s, e) =>
+                    {
+                        if (e.Action != NotifyCollectionChangedAction.Reset)
+                            return;
+
+                        LastReadAdCount = Ads.Count;
+                        UpdateBindings();
+                    };
+            }
+            catch (Exception ex)
+            {
+                ex.Source = "General Channel Model, init";
+                Exceptions.HandleException(ex);
+            }
+        }
+
         #endregion
 
         #region Public Properties

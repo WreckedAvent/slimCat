@@ -27,12 +27,10 @@ namespace slimCat.Services
     using System.Timers;
     using System.Web;
     using System.Windows;
-    using System.Windows.Forms.VisualStyles;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
-    using Models.Api;
     using SimpleJson;
     using Utilities;
     using ViewModels;
@@ -60,6 +58,8 @@ namespace slimCat.Services
         private readonly string[] noisyTypes;
 
         private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
+
+        private readonly HashSet<string> autoJoinedChannels = new HashSet<string>();
 
         #endregion
 
@@ -280,7 +280,18 @@ namespace slimCat.Services
                         Title = isPublic ? name : title
                     };
 
-                    Dispatcher.Invoke((Action) (() => ChatModel.AllChannels.Add(model)));
+                    Dispatcher.Invoke((Action) (() =>
+                        {
+                            var current = ChatModel.AllChannels.FirstByIdOrNull(name);
+                            if (current == null)
+                            {
+                                ChatModel.AllChannels.Add(model);
+                                return;
+                            }
+
+                            current.Mode = mode;
+                            current.UserCount = (int)number;
+                        }));
 
                 }
             }
@@ -358,13 +369,10 @@ namespace slimCat.Services
         private void EnqueueAction(IDictionary<string, object> data)
         {
             if (data == null) return;
-            var command = data.Get(Constants.Arguments.Command);
 
-            // try and prioritize these commands as they will impact the flow of channel joining
-            if (command == Commands.ChannelJoin || command == Commands.ChannelInitialize)
+            if (autoJoinedChannels.Count != 0 && data.Get(Constants.Arguments.Command) == Commands.ChannelJoin)
             {
-
-                Invoke(data);
+                AutoJoinChannelCommand(data);
                 return;
             }
 
@@ -539,50 +547,59 @@ namespace slimCat.Services
             Events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(ChatModel.FindChannel(id, title), args));
         }
 
+        private void AutoJoinChannelCommand(IDictionary<string, object> command)
+        {
+            var title = command.Get(Constants.Arguments.Title);
+            var id = command.Get(Constants.Arguments.Channel);
+
+            var characterDict = command.Get<IDictionary<string, object>>(Constants.Arguments.Character);
+            var character = characterDict.Get(Constants.Arguments.Identity);
+
+            if (character != ChatModel.CurrentCharacter.Name || !autoJoinedChannels.Contains(id))
+            {
+                JoinChannelCommand(command);
+                return;
+            }
+
+            manager.QuickJoinChannel(id, title);
+            autoJoinedChannels.Remove(id);
+        }
+
         new private void JoinChannelCommand(IDictionary<string, object> command)
         {
-            // JCH now works outside the queue, which means it collide with other commands
-            // this try catch removes crashes when these (rare) collisions happen
-            try
+            var title = command.Get(Constants.Arguments.Title);
+            var id = command.Get(Constants.Arguments.Channel);
+
+            var characterDict = command.Get<IDictionary<string, object>>(Constants.Arguments.Character);
+            var character = characterDict.Get(Constants.Arguments.Identity);
+
+            // JCH is used in a few situations. It is used when others join a channel and when we join a channel
+
+            // if this is a situation where we are joining a channel...
+            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(id);
+            if (channel == null)
             {
-                var title = command.Get(Constants.Arguments.Title);
-                var channelName = command.Get(Constants.Arguments.Channel);
+                var kind = ChannelType.Public;
+                if (id.Contains("ADH-"))
+                    kind = ChannelType.Private;
 
-                var id = command.Get<IDictionary<string, object>>(Constants.Arguments.Character);
-                var identity = id.Get(Constants.Arguments.Identity);
-
-                // JCH is used in a few situations. It is used when others join a channel and when we join a channel
-
-                // if this is a situation where we are joining a channel...
-                var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelName);
-                if (channel == null)
-                {
-                    var kind = ChannelType.Public;
-                    if (channelName.Contains("ADH-"))
-                        kind = ChannelType.Private;
-
-                    manager.JoinChannel(kind, channelName, title);
-                }
-                else
-                {
-                    var toAdd = CharacterManager.Find(identity);
-                    if (channel.CharacterManager.SignOn(toAdd))
-                    {
-                        Events.GetEvent<NewUpdateEvent>().Publish(
-                            new CharacterUpdateModel(
-                                toAdd,
-                                new CharacterUpdateModel.JoinLeaveEventArgs
-                                    {
-                                        Joined = true,
-                                        TargetChannel = channel.Title,
-                                        TargetChannelId = channel.Id
-                                    }));
-                    }
-                }
+                manager.JoinChannel(kind, id, title);
             }
-            catch (InvalidOperationException ex)
+            else
             {
-                RequeueCommand(command);
+                var toAdd = CharacterManager.Find(character);
+                if (!channel.CharacterManager.SignOn(toAdd)) return;
+
+                var update = new CharacterUpdateModel(
+                    toAdd,
+                    new CharacterUpdateModel.JoinLeaveEventArgs
+                        {
+                            Joined = true,
+                            TargetChannel = channel.Title,
+                            TargetChannelId = channel.Id
+                        });
+
+                Events.GetEvent<NewUpdateEvent>().Publish(update);
             }
         }
 
@@ -648,11 +665,36 @@ namespace slimCat.Services
         {
             ChatModel.ClientUptime = DateTimeOffset.Now;
 
-            connection.SendMessage(Constants.ClientCommands.PublicChannelList);
+            //connection.SendMessage(Constants.ClientCommands.PublicChannelList);
+            //connection.SendMessage(Constants.ClientCommands.PrivateChannelList);
             connection.SendMessage(Constants.ClientCommands.SystemUptime);
-            connection.SendMessage(Constants.ClientCommands.PrivateChannelList);
 
             Dispatcher.Invoke((Action) delegate { ChatModel.IsAuthenticated = true; });
+
+            // auto join
+            var waitTimer = new Timer(200);
+            var channels = from c in ApplicationSettings.SavedChannels
+                           where !string.IsNullOrWhiteSpace(c)
+                           select new { channel = c };
+
+            var walk = channels.ToList().GetEnumerator();
+
+            if (walk.MoveNext())
+            {
+                waitTimer.Elapsed += (s, e) =>
+                    {
+                        Log("Auto joining " + walk.Current);
+                        autoJoinedChannels.Add(walk.Current.channel);
+                        connection.SendMessage(walk.Current, Constants.ClientCommands.ChannelJoin);
+                        if (walk.MoveNext())
+                            return;
+
+                        waitTimer.Stop();
+                        waitTimer.Dispose();
+                    };
+            }
+
+            waitTimer.Start();
         }
 
         private void MessageReceived(IDictionary<string, object> command, bool isAd)
@@ -861,29 +903,6 @@ namespace slimCat.Services
         private void PublicChannelListCommand(IDictionary<string, object> command)
         {
             ChannelListCommand(command, true);
-
-            // Per Kira's statements this avoids spamming the server
-            var waitTimer = new Timer(350);
-            var channels = from c in ApplicationSettings.SavedChannels
-                where !string.IsNullOrWhiteSpace(c)
-                select new {channel = c};
-            var walk = channels.ToList().GetEnumerator();
-
-            if (walk.MoveNext())
-            {
-                waitTimer.Elapsed += (s, e) =>
-                    {
-                        Log("Auto joining " + walk.Current);
-                        connection.SendMessage(walk.Current, Constants.ClientCommands.ChannelJoin);
-                        if (walk.MoveNext())
-                            return;
-
-                        waitTimer.Stop();
-                        waitTimer.Dispose();
-                    };
-            }
-
-            waitTimer.Start();
         }
 
         private void RealTimeBridgeCommand(IDictionary<string, object> command)
