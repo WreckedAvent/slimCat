@@ -127,7 +127,7 @@ namespace slimCat.ViewModels
             {
                 if (value) Log("displaying update");
                 needsAttention = value;
-                OnPropertyChanged("HasUpdate");
+                OnPropertyChanged("NeedsAttention");
                 OnPropertyChanged("ExpandString");
             }
         }
@@ -137,7 +137,7 @@ namespace slimCat.ViewModels
             get { return hasUpdate; }
             set
             {
-                if (value == hasUpdate) return;
+                if (value == hasUpdate && needsAttention == value) return;
 
                 NeedsAttention = (value && !IsExpanded);
                 hasUpdate = value;
