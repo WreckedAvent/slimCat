@@ -204,6 +204,15 @@
                                     <v:PmSelectView />
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
+                            <ListBox.ItemContainerStyle>
+                                <Style>
+                                    <Setter Property="ListBoxItem.AllowDrop" Value="True"/>
+                                    <EventSetter Event="ListBoxItem.PreviewMouseMove" Handler="OnPreviewMouseMove"/>
+                                    <EventSetter Event="ListBoxItem.Drop" Handler="OnPmModelDragDrop"/>
+                                    <EventSetter Event="ListBoxItem.PreviewDragEnter" Handler="CheckAsPm"/>
+                                    <EventSetter Event="ListBoxItem.PreviewDragOver" Handler="CheckAsPm"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
                         </ListBox>
                     </Expander>
                     <Expander Header="Channels"
@@ -216,6 +225,15 @@
                                     <v:ChannelSelectView />
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
+                            <ListBox.ItemContainerStyle>
+                                <Style>
+                                    <Setter Property="ListBoxItem.AllowDrop" Value="True"/>
+                                    <EventSetter Event="ListBoxItem.PreviewMouseMove" Handler="OnPreviewMouseMove"/>
+                                    <EventSetter Event="ListBoxItem.Drop" Handler="OnChannelModelDragDrop"/>
+                                    <EventSetter Event="ListBoxItem.PreviewDragEnter" Handler="CheckAsChannel"/>
+                                    <EventSetter Event="ListBoxItem.PreviewDragOver" Handler="CheckAsChannel"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
                         </ListBox>
                     </Expander>
                 </StackPanel>

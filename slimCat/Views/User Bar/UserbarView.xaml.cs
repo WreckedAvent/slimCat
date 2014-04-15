@@ -21,6 +21,10 @@ namespace slimCat.Views
 {
     #region Usings
 
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+    using Models;
     using ViewModels;
 
     #endregion
@@ -30,6 +34,8 @@ namespace slimCat.Views
     /// </summary>
     public partial class UserbarView
     {
+        private UserbarViewModel vm;
+
         #region Constructors and Destructors
 
         /// <summary>
@@ -42,8 +48,95 @@ namespace slimCat.Views
         {
             InitializeComponent();
             DataContext = vm;
+            this.vm = vm;
         }
 
         #endregion
+
+        private void OnPreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            var draggedItem = sender as ListBoxItem;
+            if (draggedItem == null) return;
+            if (e.LeftButton != MouseButtonState.Pressed) return;
+            if (e.OriginalSource is CloseButtonView) return;
+
+            draggedItem.IsSelected = true;
+            DragDrop.DoDragDrop(draggedItem, draggedItem.DataContext, DragDropEffects.Move);
+        }
+
+        private void OnChannelModelDragDrop(object sender, DragEventArgs e)
+        {
+            var droppedData = e.Data.GetData(typeof(GeneralChannelModel)) as GeneralChannelModel;
+            var target = ((ListBoxItem)(sender)).DataContext as GeneralChannelModel;
+
+            if (droppedData == null || target == null) return;
+
+            var coll = vm.ChatModel.CurrentChannels;
+
+            var oldIndex = coll.IndexOf(droppedData);
+            var newIndex = coll.IndexOf(target);
+
+            if (oldIndex < newIndex)
+            {
+                coll.Insert(newIndex + 1, droppedData);
+                coll.RemoveAt(oldIndex);
+            }
+            else
+            {
+                var remIdx = oldIndex + 1;
+                if (coll.Count + 1 <= remIdx) return;
+
+                coll.Insert(newIndex, droppedData);
+                coll.RemoveAt(remIdx);
+            }
+
+            vm.ChannelSelected = newIndex;
+        }
+        private void OnPmModelDragDrop(object sender, DragEventArgs e)
+        {
+            var droppedData = e.Data.GetData(typeof(PmChannelModel)) as PmChannelModel;
+            var target = ((ListBoxItem)(sender)).DataContext as PmChannelModel;
+
+            if (droppedData == null || target == null) return;
+
+            var coll = vm.ChatModel.CurrentPms;
+
+            var oldIndex = coll.IndexOf(droppedData);
+            var newIndex = coll.IndexOf(target);
+
+            if (oldIndex < newIndex)
+            {
+                coll.Insert(newIndex + 1, droppedData);
+                coll.RemoveAt(oldIndex);
+            }
+            else
+            {
+                var remIdx = oldIndex + 1;
+                if (coll.Count + 1 <= remIdx) return;
+
+                coll.Insert(newIndex, droppedData);
+                coll.RemoveAt(remIdx);
+            }
+
+            vm.PmSelected = newIndex;
+        }
+
+        private void CheckAsChannel(object sender, DragEventArgs e)
+        {
+            var possible = e.Data.GetData(typeof (GeneralChannelModel)) as GeneralChannelModel;
+            if (possible != null) return;
+
+            e.Effects = DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private void CheckAsPm(object sender, DragEventArgs e)
+        {
+            var possible = e.Data.GetData(typeof(PmChannelModel)) as PmChannelModel;
+            if (possible != null) return;
+
+            e.Effects = DragDropEffects.None;
+            e.Handled = true;
+        }
     }
 }
