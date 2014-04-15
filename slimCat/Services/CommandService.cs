@@ -912,7 +912,7 @@ namespace slimCat.Services
 
             if (type == null) return;
 
-            var doListAction = new Action<string, ListKind, bool>((name, listKind, isAdd) =>
+            var doListAction = new Action<string, ListKind, bool, bool>((name, listKind, isAdd, giveUpdate) =>
                 {
                     if (isAdd)
                         CharacterManager.Add(name, listKind);
@@ -927,7 +927,8 @@ namespace slimCat.Services
                         ListArgument = listKind
                     });
 
-                    Events.GetEvent<NewUpdateEvent>().Publish(update);
+                    if (giveUpdate)
+                        Events.GetEvent<NewUpdateEvent>().Publish(update);
                 });
 
             if (type.Equals("note"))
@@ -977,22 +978,22 @@ namespace slimCat.Services
             else if (type.Equals("trackadd"))
             {
                 var name = command.Get(Constants.Arguments.Name);
-                doListAction(name, ListKind.Bookmark, true);
+                doListAction(name, ListKind.Bookmark, true, true);
             }
             else if (type.Equals("trackrem"))
             {
                 var name = command.Get(Constants.Arguments.Name);
-                doListAction(name, ListKind.Bookmark, false);
+                doListAction(name, ListKind.Bookmark, false, true);
             }
             else if (type.Equals("friendadd"))
             {
                 var name = command.Get(Constants.Arguments.Name);
-                doListAction(name, ListKind.Friend, true);
+                doListAction(name, ListKind.Friend, true, true);
             }
             else if (type.Equals("friendremove"))
             {
                 var name = command.Get(Constants.Arguments.Name);
-                doListAction(name, ListKind.Friend, false);
+                doListAction(name, ListKind.Friend, false, false);
             }
         }
 
