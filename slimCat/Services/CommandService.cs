@@ -664,9 +664,6 @@ namespace slimCat.Services
         private void LoginCommand(IDictionary<string, object> command)
         {
             ChatModel.ClientUptime = DateTimeOffset.Now;
-
-            //connection.SendMessage(Constants.ClientCommands.PublicChannelList);
-            //connection.SendMessage(Constants.ClientCommands.PrivateChannelList);
             connection.SendMessage(Constants.ClientCommands.SystemUptime);
 
             Dispatcher.Invoke((Action) delegate { ChatModel.IsAuthenticated = true; });
