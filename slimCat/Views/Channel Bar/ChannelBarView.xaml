@@ -21,7 +21,7 @@
                 Content="{Binding Path=ExpandString, Mode=OneWay}"
                 BorderThickness="0"
                 Padding="0"
-                Background="{Binding Path=HasUpdate, Mode=OneWay, Converter={StaticResource ColorConverter}}"
+                Background="{Binding Path=NeedsAttention, Mode=OneWay, Converter={StaticResource ColorConverter}}"
                 Command="{Binding Path=ToggleBarCommand}" />
 
         <Grid Margin="15,20"
@@ -51,7 +51,8 @@
 
                     <v:NotificationsButtonView CommandParameter="Notifications"
                                                x:Name="NotificationButton"
-                                               Command="{Binding Path=ChangeTabCommand}" />
+                                               Command="{Binding Path=ChangeTabCommand}"
+                                               v:Properties.NeedsAttention="{Binding Path=HasUpdate}"/>
                 </WrapPanel>
             </Border>
 

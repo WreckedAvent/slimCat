@@ -278,6 +278,7 @@
     <Compile Include="Views\UI Parts\Buttons\ManageListsButtonView.xaml.cs">
       <DependentUpon>ManageListsButtonView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UI Parts\Buttons\Properties.cs" />
     <Compile Include="Views\UI Parts\Buttons\PinButtonView.xaml.cs">
       <DependentUpon>PinButtonView.xaml</DependentUpon>
     </Compile>

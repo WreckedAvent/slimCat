@@ -51,13 +51,15 @@ namespace slimCat.ViewModels
 
         private string currentSelected;
 
-        private bool hasUpdate;
+        private bool needsAttention;
 
         private bool isExpanded = true;
 
         private RelayCommand @select;
 
         private RelayCommand toggle;
+
+        private bool hasUpdate;
 
         #endregion
 
@@ -79,14 +81,7 @@ namespace slimCat.ViewModels
                 Container.Resolve<GlobalTabViewModel>();
                 Container.Resolve<ManageListsTabView>();
 
-                ChatModel.Notifications.CollectionChanged += (s, e) =>
-                    {
-                        if (!IsExpanded)
-                        {
-                            // removed checking logic, allow the notifications daemon to worry about that
-                            HasUpdate = true;
-                        }
-                    };
+                ChatModel.Notifications.CollectionChanged += (s, e) => HasUpdate = true;
 
                 LoggingSection = "channel bar vm";
             }
@@ -116,23 +111,36 @@ namespace slimCat.ViewModels
         {
             get
             {
-                if (HasUpdate && !IsExpanded)
+                if (NeedsAttention && !IsExpanded)
                     return "!";
 
                 return IsExpanded ? ">" : "<";
             }
         }
 
-        public bool HasUpdate
+        public bool NeedsAttention
         {
-            get { return hasUpdate; }
+            get { return needsAttention; }
 
             set
             {
                 if (value) Log("displaying update");
-                hasUpdate = value;
+                needsAttention = value;
                 OnPropertyChanged("HasUpdate");
                 OnPropertyChanged("ExpandString");
+            }
+        }
+
+        public bool HasUpdate
+        {
+            get { return hasUpdate; }
+            set
+            {
+                if (value == hasUpdate) return;
+
+                NeedsAttention = (value && !IsExpanded);
+                hasUpdate = value;
+                OnPropertyChanged("HasUpdate");
             }
         }
 
@@ -163,7 +171,7 @@ namespace slimCat.ViewModels
                             if (IsExpanded)
                             {
                                 // this shoots us to the notifications tab if we have something to see there
-                                if (hasUpdate)
+                                if (HasUpdate)
                                 {
                                     NavigateToTabEvent("Notifications");
 
@@ -245,8 +253,8 @@ namespace slimCat.ViewModels
 
                 case "Notifications":
                 {
-                    RegionManager.Regions[TabViewRegion].RequestNavigate(
-                        NotificationsTabViewModel.NotificationsTabView);
+                    RegionManager.Regions[TabViewRegion].RequestNavigate(NotificationsTabViewModel.NotificationsTabView);
+                    HasUpdate = false;
                     break;
                 }
 

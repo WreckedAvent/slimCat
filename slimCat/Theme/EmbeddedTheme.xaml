@@ -4,6 +4,7 @@
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:models="clr-namespace:slimCat.Models"
+                    xmlns:v="clr-namespace:slimCat.Views"
                     mc:Ignorable="d">
 
     <SolidColorBrush Color="{StaticResource ForegroundColor}" Opacity="0.9" x:Key="HistoryBrush" />
@@ -181,4 +182,29 @@
             <CheckBox IsChecked="{Binding ShowIgnored}">Ignored</CheckBox>
         </StackPanel>
     </ControlTemplate>
+    
+    <Style x:Key="ActivatingToggleButton" 
+           TargetType="ToggleButton" 
+           BasedOn="{StaticResource ImageContentToggleButton}">
+        <Style.Triggers>
+            <Trigger Property="v:Properties.NeedsAttention" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource HighlightBrush}"/>
+            </Trigger>
+            <Trigger Property="v:Properties.NeedsAttention" Value="False">
+                <Setter Property="Foreground" Value="{StaticResource DepressedBrush}"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>
