@@ -22,6 +22,7 @@ namespace slimCat.ViewModels
     #region Usings
 
     using System;
+    using System.Linq;
     using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
@@ -81,7 +82,7 @@ namespace slimCat.ViewModels
                 Container.Resolve<GlobalTabViewModel>();
                 Container.Resolve<ManageListsTabView>();
 
-                ChatModel.Notifications.CollectionChanged += (s, e) => HasUpdate = true;
+                ChatModel.Notifications.CollectionChanged += (s, e) => HasUpdate = ChatModel.Notifications.Any();
 
                 LoggingSection = "channel bar vm";
             }
