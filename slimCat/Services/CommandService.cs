@@ -377,7 +377,14 @@ namespace slimCat.Services
             }
             if (data.Get(Constants.Arguments.Command) == Commands.ChannelJoin)
             {
-                Invoke(data);
+                var characterDict = data.Get<IDictionary<string, object>>(Constants.Arguments.Character);
+                var character = characterDict.Get(Constants.Arguments.Identity);
+
+                if (character == ChatModel.CurrentCharacter.Name)
+                {
+                    QuickJoinChannelCommand(data);
+                    return;
+                }
             }
 
             que.Enqueue(data);
@@ -567,6 +574,27 @@ namespace slimCat.Services
 
             manager.QuickJoinChannel(id, title);
             autoJoinedChannels.Remove(id);
+        }
+
+        private void QuickJoinChannelCommand(IDictionary<string, object> command)
+        {
+            var title = command.Get(Constants.Arguments.Title);
+            var id = command.Get(Constants.Arguments.Channel);
+
+            var characterDict = command.Get<IDictionary<string, object>>(Constants.Arguments.Character);
+            var character = characterDict.Get(Constants.Arguments.Identity);
+
+            if (character != ChatModel.CurrentCharacter.Name)
+            {
+                RequeueCommand(command);
+                return;
+            }
+
+            var kind = ChannelType.Public;
+            if (id.Contains("ADH-"))
+                kind = ChannelType.Private;
+
+            manager.JoinChannel(kind, id, title);
         }
 
         new private void JoinChannelCommand(IDictionary<string, object> command)
