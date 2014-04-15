@@ -304,12 +304,13 @@ namespace slimCat.Services
         {
             Log("Removing Channel " + name);
 
-            RequestNavigate("Home");
-
             if (model.CurrentChannels.Any(param => param.Id == name))
             {
                 var temp = model.CurrentChannels.FirstByIdOrNull(name);
                 temp.Description = null;
+
+                var index = model.CurrentChannels.IndexOf(temp);
+                RequestNavigate(model.CurrentChannels[index-1].Id);
 
                 Dispatcher.Invoke(
                     (Action) (() => model.CurrentChannels.Remove(temp)));
@@ -320,6 +321,8 @@ namespace slimCat.Services
             else if (model.CurrentPms.Any(param => param.Id == name))
             {
                 var temp = model.CurrentPms.FirstByIdOrNull(name);
+                var index = model.CurrentPms.IndexOf(temp);
+                RequestNavigate(index != 0 ? model.CurrentPms[index - 1].Id : "Home");
 
                 model.CurrentPms.Remove(temp);
             }

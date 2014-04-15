@@ -375,6 +375,10 @@ namespace slimCat.Services
                 AutoJoinChannelCommand(data);
                 return;
             }
+            if (data.Get(Constants.Arguments.Command) == Commands.ChannelJoin)
+            {
+                Invoke(data);
+            }
 
             que.Enqueue(data);
             DoAction();

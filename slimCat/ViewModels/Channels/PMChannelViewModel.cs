@@ -138,6 +138,16 @@ namespace slimCat.ViewModels
             get { return !isInCoolDown; }
         }
 
+        public bool CanDisplayChat
+        {
+            get { return false; }
+        }
+
+        public bool CanDisplayAds
+        {
+            get { return false; }
+        }
+
         public ICharacter ConversationWith
         {
             get { return CharacterManager.Find(Model.Id); }

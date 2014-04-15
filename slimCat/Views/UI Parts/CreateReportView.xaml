@@ -17,25 +17,33 @@
             TextBlock.Foreground="{StaticResource ForegroundBrush}"
             DataContext="{Binding Path=CreateReportViewModel}">
         <StackPanel Margin="10">
-            <TextBlock FontSize="18"
-                       Margin="0,0,0,10">
-                Creating a report is serious business.
+            <TextBlock FontSize="20"
+                       Margin="0,0,0,10"
+                       HorizontalAlignment="Left">
+                Creating Report
             </TextBlock>
-            <TextBlock>
+            <TextBlock HorizontalAlignment="Left"
+                       FontSize="16"
+                       Margin="0,0,0,10">
                 You are reporting
                 <Run Text="{Binding Path=Target}" />
             </TextBlock>
+            <TextBlock Foreground="{StaticResource DepressedBrush}"
+                       Margin="0,0,10,0"
+                       HorizontalAlignment="Left">
+                Report Text
+            </TextBlock>
             <TextBox Text="{Binding Path=Complaint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      MaxHeight="100"
-                     MaxWidth="300"
+                     MaxWidth="200"
                      FontSize="12"
                      MinHeight="100"
                      AcceptsReturn="True"
-                     Margin="10"
+                     Margin="0"
                      TextWrapping="Wrap" />
-            <DockPanel Margin="10,0,10,0">
-                <Button Command="{Binding CloseCommand}" DockPanel.Dock="Left" Margin="5" Width="Auto">Cancel</Button>
-                <Button Command="{Binding SendReportCommand}" DockPanel.Dock="Right" Margin="5">Send</Button>
+            <DockPanel Margin="0,10,0,0">
+                <Button Command="{Binding CloseCommand}" DockPanel.Dock="Left" Margin="0,0,5,5" Width="Auto">Cancel</Button>
+                <Button Command="{Binding SendReportCommand}" DockPanel.Dock="Right" Margin="5,0,0,5">Send</Button>
             </DockPanel>
         </StackPanel>
     </Border>
