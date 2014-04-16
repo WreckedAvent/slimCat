@@ -48,6 +48,7 @@ namespace slimCat.Views
                     {Key.S, new Tuple<string, bool>("s", false)},
                     {Key.I, new Tuple<string, bool>("i", false)},
                     {Key.U, new Tuple<string, bool>("u", false)},
+                    {Key.N, new Tuple<string, bool>("noparse", false)},
                     {Key.L, new Tuple<string, bool>("url", true)},
                     {Key.Up, new Tuple<string, bool>("sup", false)},
                     {Key.Down, new Tuple<string, bool>("sub", false)},
