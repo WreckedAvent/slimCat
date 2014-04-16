@@ -135,7 +135,7 @@ namespace slimCat.ViewModels
 
         public bool CanPost
         {
-            get { return !isInCoolDown; }
+            get { return !isInCoolDown || !ApplicationSettings.AllowTextboxDisable; }
         }
 
         public bool CanDisplayChat
