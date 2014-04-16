@@ -43,6 +43,8 @@ namespace slimCat.ViewModels
     /// </summary>
     public class UtilityChannelViewModel : ChannelViewModelBase
     {
+        private readonly IIconService iconService;
+
         #region Fields
 
         private readonly IAutomationService automation;
@@ -63,7 +65,7 @@ namespace slimCat.ViewModels
 
         public UtilityChannelViewModel(
             string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
-            ICharacterManager manager, IAutomationService automation, IBrowser browser)
+            ICharacterManager manager, IAutomationService automation, IBrowser browser, IIconService iconService)
             : base(contain, regman, events, cm, manager)
         {
             try
@@ -109,6 +111,12 @@ namespace slimCat.ViewModels
 
                 this.automation = automation;
                 this.browser = browser;
+                this.iconService = iconService;
+                this.iconService.SettingsChanged += (s, e) =>
+                    {
+                        OnPropertyChanged("AllowSound");
+                        OnPropertyChanged("ShowNotifications");
+                    };
 
                 LoggingSection = "utility channel vm";
             }
@@ -416,7 +424,9 @@ namespace slimCat.ViewModels
             get { return ApplicationSettings.AllowSound; }
             set
             {
-                ApplicationSettings.AllowSound = value;
+                if (ApplicationSettings.AllowSound == value) return;
+
+                iconService.ToggleSound();
                 Save();
             }
         }
@@ -437,7 +447,9 @@ namespace slimCat.ViewModels
 
             set
             {
-                ApplicationSettings.ShowNotificationsGlobal = value;
+                if (ApplicationSettings.ShowNotificationsGlobal == value) return;
+
+                iconService.ToggleToasts();
                 Save();
             }
         }

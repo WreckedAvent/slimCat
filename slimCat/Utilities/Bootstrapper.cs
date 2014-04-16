@@ -65,6 +65,7 @@ namespace slimCat.Utilities
                 RegisterSingleton<IAutomationService, AutomationService>();
                 RegisterSingleton<ILoggingService, LoggingService>();
                 RegisterSingleton<IChannelListUpdater, ChannelListUpdaterService>();
+                RegisterSingleton<IIconService, IconService>();
 
                 Register<Application, Application>(Application.Current);
                 Register<WebSocket, WebSocket>(new WebSocket(Constants.ServerHost));

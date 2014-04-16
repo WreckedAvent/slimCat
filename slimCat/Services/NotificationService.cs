@@ -55,8 +55,6 @@ namespace slimCat.Services
 
         private readonly IEventAggregator events;
 
-        private readonly NotifyIcon icon = new NotifyIcon();
-
         private readonly ICharacterManager manager;
 
         private readonly ToastNotificationsViewModel toast;
@@ -77,69 +75,6 @@ namespace slimCat.Services
             events.GetEvent<NewMessageEvent>().Subscribe(HandleNewChannelMessage, true);
             events.GetEvent<NewPmEvent>().Subscribe(HandleNewMessage, true);
             events.GetEvent<NewUpdateEvent>().Subscribe(HandleNotification, true);
-
-            events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(
-                args =>
-                    {
-                        Application.Current.MainWindow.Closing += (s, e) =>
-                            {
-                                if (!ApplicationSettings.AllowMinimizeToTray) return;
-
-                                e.Cancel = true;
-                                HideWindow();
-                            };
-
-                        Application.Current.MainWindow.MouseLeave +=
-                            (s, e) => events.GetEvent<ErrorEvent>().Publish(null);
-
-                        this.cm.SelectedChannelChanged += (s, e) => events.GetEvent<ErrorEvent>().Publish(null);
-
-                        icon.Icon = new Icon(Environment.CurrentDirectory + @"\icons\catIcon.ico");
-                        icon.DoubleClick += (s, e) => ShowWindow();
-
-                        icon.BalloonTipClicked += (s, e) =>
-                            {
-                                Settings.Default.ShowStillRunning = false;
-                                Settings.Default.Save();
-                            };
-
-                        var iconMenu = new ContextMenu();
-
-                        iconMenu.MenuItems.Add(
-                            new MenuItem(
-                                string.Format(
-                                    "{0} {1} ({2}) - {3}",
-                                    Constants.ClientId,
-                                    Constants.ClientName,
-                                    Constants.ClientVer,
-                                    args))
-                                {
-                                    Enabled = false
-                                });
-                        iconMenu.MenuItems.Add(new MenuItem("-"));
-
-                        iconMenu.MenuItems.Add(
-                            new MenuItem("Sounds Enabled", ToggleSound)
-                                {
-                                    Checked =
-                                        ApplicationSettings.AllowSound
-                                });
-                        iconMenu.MenuItems.Add(
-                            new MenuItem("Toasts Enabled", ToggleToast)
-                                {
-                                    Checked =
-                                        ApplicationSettings
-                                            .ShowNotificationsGlobal
-                                });
-                        iconMenu.MenuItems.Add(new MenuItem("-"));
-
-                        iconMenu.MenuItems.Add("Show", (s, e) => ShowWindow());
-                        iconMenu.MenuItems.Add("Exit", (s, e) => ShutDown());
-
-                        icon.Text = string.Format("{0} - {1}", Constants.ClientId, args);
-                        icon.ContextMenu = iconMenu;
-                        icon.Visible = true;
-                    });
         }
 
         #endregion
@@ -168,13 +103,6 @@ namespace slimCat.Services
 
             Application.Current.MainWindow.Activate();
         }
-
-        public void ShutDown()
-        {
-            icon.Dispose();
-            Dispatcher.InvokeShutdown();
-        }
-
         #endregion
 
         #region Methods
@@ -184,7 +112,6 @@ namespace slimCat.Services
             if (!isManagedDispose)
                 return;
 
-            icon.Dispose();
             toast.Dispose();
         }
 
@@ -480,21 +407,6 @@ namespace slimCat.Services
             return cm.CurrentPms.Any(x => x.Id.Equals(name)) || manager.IsOfInterest(name, onlineOnly);
         }
 
-        private void HideWindow()
-        {
-            Application.Current.MainWindow.Hide();
-            icon.Visible = true;
-            if (Settings.Default.ShowStillRunning)
-            {
-                icon.ShowBalloonTip(
-                    5,
-                    "slimCat",
-                    "slimCat is still running in the background." +
-                    "\nClick on this to silence this notification (forever and ever).",
-                    ToolTipIcon.Info);
-            }
-        }
-
         private void NotifyUser(
             bool bingLing = false,
             bool flashWindow = false,
@@ -523,19 +435,6 @@ namespace slimCat.Services
                 };
 
             Dispatcher.Invoke(notify);
-        }
-
-        private void ToggleSound(object sender, EventArgs e)
-        {
-            ApplicationSettings.AllowSound = !ApplicationSettings.AllowSound;
-
-            icon.ContextMenu.MenuItems[2].Checked = ApplicationSettings.AllowSound;
-        }
-
-        private void ToggleToast(object sender, EventArgs e)
-        {
-            ApplicationSettings.ShowNotificationsGlobal = !ApplicationSettings.ShowNotificationsGlobal;
-            icon.ContextMenu.MenuItems[3].Checked = ApplicationSettings.ShowNotificationsGlobal;
         }
 
         private void ConvertNotificationLevelToAction(
