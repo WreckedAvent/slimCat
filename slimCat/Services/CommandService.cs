@@ -702,11 +702,13 @@ namespace slimCat.Services
 
             // auto join
             var waitTimer = new Timer(200);
-            var channels = from c in ApplicationSettings.SavedChannels
+            var channels = (from c in ApplicationSettings.SavedChannels
                            where !string.IsNullOrWhiteSpace(c)
-                           select new { channel = c };
+                           select new { channel = c })
+                           .Distinct()
+                           .ToList();
 
-            var walk = channels.ToList().GetEnumerator();
+            var walk = channels.GetEnumerator();
 
             if (walk.MoveNext())
             {
@@ -940,7 +942,7 @@ namespace slimCat.Services
 
             if (type == null) return;
 
-            var doListAction = new Action<string, ListKind, bool, bool>((name, listKind, isAdd, giveUpdate) =>
+            var doListAction = new Action<string, ListKind, bool, bool>((name, listKind, isAdd, giveUpdate) => Dispatcher.Invoke((Action) delegate
                 {
                     if (isAdd)
                         CharacterManager.Add(name, listKind);
@@ -950,14 +952,14 @@ namespace slimCat.Services
                     var update = new CharacterUpdateModel(
                         CharacterManager.Find(name),
                         new CharacterUpdateModel.ListChangedEventArgs
-                    {
-                        IsAdded = isAdd,
-                        ListArgument = listKind
-                    });
+                            {
+                                IsAdded = isAdd,
+                                ListArgument = listKind
+                            });
 
                     if (giveUpdate)
                         Events.GetEvent<NewUpdateEvent>().Publish(update);
-                });
+                }));
 
             if (type.Equals("note"))
             {
