@@ -912,6 +912,23 @@ namespace slimCat.Services
             channelModel.IsSelected = true;
             model.CurrentChannel = channelModel;
 
+            if (!channelModel.Messages.Any() && !channelModel.Ads.Any())
+            {
+                IEnumerable<string> history = new List<string>();
+
+                if (!channelId.Equals("Home"))
+                    history = logger.GetLogs(channelModel.Title, channelModel.Id);
+
+                if (history.Any() && history.Count() > 1)
+                {
+                    Dispatcher.Invoke((Action)(() => 
+                        history
+                            .Select(item => new MessageModel(item))
+                            .Each(item => channelModel.AddMessage(item)
+                    )));
+                }
+            }
+
             Log("Requesting " + channelModel.Id + " channel view");
             Dispatcher.Invoke(
                 (Action) delegate
