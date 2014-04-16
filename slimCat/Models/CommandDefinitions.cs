@@ -510,23 +510,21 @@ namespace slimCat.Models
                 switch (model.CommandType)
                 {
                     case CommandModel.CommandTypes.SingleWord:
-                        if (args != null && args.Count > 1)
-                        {
+                        if (args == null || args.Count > 1)
                             throw new ArgumentException(
                                 "The {0} command takes a parameter which must be a single word".FormatWith(familiarName));
-                        }
 
                         break;
 
                     case CommandModel.CommandTypes.OnlyChannel:
                     case CommandModel.CommandTypes.NoArgs:
-                        if (args != null && args[0] != null)
+                        if (args == null || !string.IsNullOrEmpty(args[0]))
                             throw new ArgumentException("The {0} command doesn't take an argument".FormatWith(familiarName));
 
                         break;
 
                     case CommandModel.CommandTypes.TwoArgs:
-                        if (args != null && args.Count > 2)
+                        if (args == null || args.Count > 2)
                             throw new ArgumentException("The {0} command takes only two parameters".FormatWith(familiarName));
 
                         break;
@@ -535,6 +533,11 @@ namespace slimCat.Models
                         if (channel == null)
                             throw new ArgumentException("The {0} command needs an associated channel".FormatWith(familiarName));
 
+                        break;
+
+                    case CommandModel.CommandTypes.SingleSentence:
+                        if (args == null || args.All(string.IsNullOrEmpty))
+                            throw new ArgumentException("The {0} command needs an argument.".FormatWith(familiarName));
                         break;
                 }
 
