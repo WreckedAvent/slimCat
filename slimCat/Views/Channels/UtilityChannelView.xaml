@@ -219,13 +219,6 @@
                                               ToolTip="Determines if friends on characters other than the one you are currently signed in with are treated as friends or normal characters.">
                                         Friends Are Account Wide
                                     </CheckBox>
-                                    
-                                    <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
-                                              ToolTip="Determines if friends on characters other than the one you are currently signed in with are treated as friends or normal characters.">
-                                        Friends Are Account Wide
-                                    </CheckBox>
 
                                     <CheckBox IsChecked="{Binding AllowTexboxDisable}"
                                               VerticalAlignment="Center"
