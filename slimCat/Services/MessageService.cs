@@ -383,11 +383,12 @@ namespace slimCat.Services
         private void OnPrivRequested(IDictionary<string, object> command)
         {
             var characterName = command.Get(Constants.Arguments.Character);
-            if (characterName.Equals(model.CurrentCharacter.Name, StringComparison.OrdinalIgnoreCase))
+            if (model.CurrentCharacter.NameEquals(characterName))
                 events.GetEvent<ErrorEvent>().Publish("Hmmm... talking to yourself?");
             else
             {
                 var guess = characterManager.SortedCharacters.OrderBy(x => x.Name)
+                    .Where(x => !x.NameEquals(model.CurrentCharacter.Name))
                     .FirstOrDefault(c => c.Name.StartsWith(characterName, true, null));
 
                 JoinChannel(ChannelType.PrivateMessage, guess == null ? characterName : guess.Name);
