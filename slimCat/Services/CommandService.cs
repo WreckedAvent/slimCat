@@ -1203,6 +1203,8 @@ namespace slimCat.Services
                     {
                         ChatModel.CurrentChannels.RemoveAt(1);
                     }
+
+                    ChatModel.CurrentPms.Each(pm => pm.TypingStatus = TypingStatus.Clear);
                 }));
         }
 
