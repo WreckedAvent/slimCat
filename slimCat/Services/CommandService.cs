@@ -949,8 +949,12 @@ namespace slimCat.Services
                     else
                         CharacterManager.Remove(name, listKind);
 
+                    var character = CharacterManager.Find(name);
+
+                    character.IsInteresting = CharacterManager.IsOfInterest(name);
+
                     var update = new CharacterUpdateModel(
-                        CharacterManager.Find(name),
+                        character,
                         new CharacterUpdateModel.ListChangedEventArgs
                             {
                                 IsAdded = isAdd,
