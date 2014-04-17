@@ -147,7 +147,7 @@ namespace slimCat.ViewModels
                 var channel = ChatModel.CurrentChannel as GeneralChannelModel;
 
                 if (channel != null)
-                    isLocalMod = channel.CharacterManager.IsOnList(ChatModel.CurrentCharacter.Name, ListKind.Moderator);
+                    isLocalMod = channel.CharacterManager.IsOnList(ChatModel.CurrentCharacter.Name, ListKind.Moderator, false);
 
                 return ChatModel.IsGlobalModerator || isLocalMod;
             }
