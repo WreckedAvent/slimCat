@@ -416,11 +416,10 @@ namespace slimCat.Services
 
         private void SendQueue()
         {
-            while (resendQueue.Count > 0)
-            {
-                var current = resendQueue.Dequeue();
-                TrySend(current.Key, current.Value);
-            }
+            // disable resend queue for now.
+            // previous attempts could result in an infinite loop;
+            // not really worth the small gain.
+            resendQueue.Clear();
         }
 
         private int GetNextConnectDelay()
