@@ -84,7 +84,12 @@ namespace slimCat.Models
             lock (Locker)
             {
                 CollectionPair toModify;
-                return CollectionDictionary.TryGetValue(listKind, out toModify) && toModify.Remove(name, isTemporary);
+                var toReturn = CollectionDictionary.TryGetValue(listKind, out toModify) && toModify.Remove(name, isTemporary);
+
+                if (toReturn && listKind != ListKind.Online) 
+                    toModify.SignOff(name);
+
+                return toReturn;
             }
         }
 
@@ -93,7 +98,12 @@ namespace slimCat.Models
             lock (Locker)
             {
                 CollectionPair toModify;
-                return CollectionDictionary.TryGetValue(listKind, out toModify) && toModify.Add(name, isTemporary);
+                var toReturn = CollectionDictionary.TryGetValue(listKind, out toModify) && toModify.Add(name, isTemporary);
+
+                if (toReturn && listKind != ListKind.Online && IsOnList(name, ListKind.Online))
+                    toModify.SignOn(name);
+
+                return toReturn;
             }
         }
 
@@ -138,8 +148,13 @@ namespace slimCat.Models
             lock (Locker)
             {
                 CollectionPair list;
-                if (CollectionDictionary.TryGetValue(listKind, out list))
-                    list.Set(names);
+                if (!CollectionDictionary.TryGetValue(listKind, out list)) return;
+
+                var namesCollection = names as IList<string> ?? names.ToList();
+                list.Set(namesCollection);
+
+                if (CharacterCount > 0 && listKind != ListKind.Online)
+                    namesCollection.Each(name => list.SignOn(name));
             }
         }
 
