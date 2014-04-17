@@ -289,7 +289,7 @@
 
                                     <StackPanel Margin="0,15,0,0"
                                                 ToolTip="Defines a global set of words that slimCat will check messages against and alert you if they match">
-                                        <TextBlock Text="Global Notify Words (comma seperated)" />
+                                        <TextBlock Text="Global Notify Words (comma separated)" />
                                         <TextBox
                                             Text="{Binding Path=GlobalNotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             TextWrapping="Wrap"

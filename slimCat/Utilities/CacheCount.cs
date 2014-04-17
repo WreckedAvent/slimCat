@@ -40,7 +40,7 @@ namespace slimCat.Utilities
 
         private Func<int> getNewCount;
 
-        private bool intialized;
+        private bool initialized;
 
         private int newCount;
 
@@ -110,7 +110,7 @@ namespace slimCat.Utilities
         /// </returns>
         public string GetDisplayString()
         {
-            if (!intialized)
+            if (!initialized)
                 return string.Empty;
 
             var change = newCount - oldCount;
@@ -180,7 +180,7 @@ namespace slimCat.Utilities
         /// </summary>
         public void Update()
         {
-            if (intialized)
+            if (initialized)
             {
                 oldCount = newCount;
 
@@ -197,7 +197,7 @@ namespace slimCat.Utilities
                 oldCount = newCount = getNewCount();
 
                 if (!(oldCount == 0 || newCount == 0))
-                    intialized = true;
+                    initialized = true;
             }
         }
 

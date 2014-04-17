@@ -21,7 +21,6 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Practices.Prism.Events;
@@ -115,11 +114,6 @@ namespace slimCat.ViewModels
         private bool MeetsFilter(ICharacter character)
         {
             return character.MeetsFilters(GenderSettings, SearchSettings, CharacterManager, null);
-        }
-
-        private void OnChannelListUpdated(object sender, EventArgs e)
-        {
-            OnPropertyChanged("SortedUsers");
         }
 
         private string RelationshipToUser(ICharacter character)

@@ -24,9 +24,7 @@ namespace slimCat.ViewModels
     using System;
     using System.Net;
     using System.Threading;
-    using System.Timers;
     using System.Windows.Input;
-    using System.Windows.Threading;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;

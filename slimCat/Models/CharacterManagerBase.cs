@@ -32,6 +32,8 @@ namespace slimCat.Models
 
     public abstract class CharacterManagerBase : ICharacterManager
     {
+        #region Fields
+
         protected readonly object Locker = new object();
 
         private readonly ConcurrentDictionary<string, ICharacter> characters =
@@ -40,6 +42,10 @@ namespace slimCat.Models
         protected Dictionary<ListKind, CollectionPair> CollectionDictionary = new Dictionary<ListKind, CollectionPair>();
         protected HashSet<CollectionPair> Collections = new HashSet<CollectionPair>();
         protected HashSet<CollectionPair> OfInterestCollections = new HashSet<CollectionPair>();
+
+        #endregion
+
+        #region Properties
 
         public ConcurrentDictionary<string, ICharacter> CharacterDictionary
         {
@@ -60,6 +66,10 @@ namespace slimCat.Models
         {
             get { return characters.Values; }
         }
+
+        #endregion
+
+        #region Public Methods
 
         public ICharacter Find(string name)
         {
@@ -176,5 +186,7 @@ namespace slimCat.Models
         {
             characters.Clear();
         }
+
+        #endregion
     }
 }

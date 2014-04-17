@@ -39,7 +39,7 @@ namespace slimCat.ViewModels
 
     /// <summary>
     ///     The UserbarViewCM allows the user to navigate the current conversations they have open.
-    ///     It responds to the ChatOnDisplayEvent to paritally create the chat wrapper.
+    ///     It responds to the ChatOnDisplayEvent to partially create the chat wrapper.
     /// </summary>
     public class UserbarViewModel : ViewModelBase
     {

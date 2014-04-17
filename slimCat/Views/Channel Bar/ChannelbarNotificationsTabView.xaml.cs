@@ -31,7 +31,7 @@ namespace slimCat.Views
     /// </summary>
     public partial class NotificationsTabView
     {
-        private NotificationsTabViewModel vm;
+        private readonly NotificationsTabViewModel vm;
 
         #region Constructors and Destructors
 

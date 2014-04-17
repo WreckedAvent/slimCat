@@ -112,7 +112,7 @@ namespace slimCat
     }
 
     /// <summary>
-    ///     This event is used when our intial connection fails
+    ///     This event is used when our initial connection fails
     /// </summary>
     public class LoginFailedEvent : CompositePresentationEvent<string>
     {

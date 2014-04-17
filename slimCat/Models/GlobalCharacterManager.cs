@@ -32,6 +32,8 @@ namespace slimCat.Models
 
     public class GlobalCharacterManager : CharacterManagerBase
     {
+        #region Fields
+
         private readonly IAccount account;
 
         private readonly CollectionPair bookmarks = new CollectionPair();
@@ -45,6 +47,10 @@ namespace slimCat.Models
         private readonly CollectionPair notInterested = new CollectionPair();
         private readonly IDictionary<ListKind, IList<string>> savedCollections;
         private string currentCharacter;
+
+        #endregion
+
+        #region Constructors
 
         public GlobalCharacterManager(IAccount account, IEventAggregator eventAggregator)
         {
@@ -90,6 +96,10 @@ namespace slimCat.Models
             eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Subscribe(Initialize);
         }
 
+        #endregion
+
+        #region Public Methods
+
         public override bool IsOfInterest(string name, bool onlineOnly = true)
         {
             if (name == null) return false;
@@ -128,21 +138,6 @@ namespace slimCat.Models
                 characters = characters.Where(x => localFriends.List.Contains(x.Name)).ToList();
 
             return characters;
-        }
-
-        public override void Clear()
-        {
-            Collections.Each(x => x.Set(new List<string>()));
-            base.Clear();
-        }
-
-        private void Initialize(string name)
-        {
-            currentCharacter = name;
-            bookmarks.Set(account.Bookmarks);
-            friends.Set(account.AllFriends.Select(x => x.Key));
-            localFriends.Set(account.AllFriends.Where(x => x.Value.Contains(name)).Select(x => x.Key));
-            eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(Initialize);
         }
 
         public override bool SignOn(ICharacter character)
@@ -186,6 +181,18 @@ namespace slimCat.Models
                 UpdateIgnoreUpdatesMark(name, false);
 
             return toReturn;
+        }
+
+        #endregion
+
+        #region Methods
+        private void Initialize(string name)
+        {
+            currentCharacter = name;
+            bookmarks.Set(account.Bookmarks);
+            friends.Set(account.AllFriends.Select(x => x.Key));
+            localFriends.Set(account.AllFriends.Where(x => x.Value.Contains(name)).Select(x => x.Key));
+            eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(Initialize);
         }
 
         private void TrySyncSavedLists(ListKind listKind)
@@ -236,5 +243,7 @@ namespace slimCat.Models
                     toModify.IsInteresting = isInteresting && isAdd;
             }
         }
+
+        #endregion
     }
 }

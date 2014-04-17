@@ -27,11 +27,11 @@ namespace slimCat.Views
     #endregion
 
     /// <summary>
-    ///     Interaction logic for ChanneListView.xaml
+    ///     Interaction logic for ChannelListView.xaml
     /// </summary>
     public partial class ChannelTabView
     {
-        private ChannelsTabViewModel vm;
+        private readonly ChannelsTabViewModel vm;
 
         #region Constructors and Destructors
 

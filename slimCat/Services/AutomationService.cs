@@ -21,7 +21,6 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Timers;

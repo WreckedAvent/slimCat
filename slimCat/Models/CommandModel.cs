@@ -49,8 +49,8 @@ namespace slimCat.Models
         /// <summary>
         ///     Initializes a new instance of the <see cref="CommandModel" /> class.
         /// </summary>
-        /// <param name="familarName">
-        ///     The familar name.
+        /// <param name="familiarName">
+        ///     The familiar name.
         /// </param>
         /// <param name="serverName">
         ///     The server name.
@@ -65,13 +65,13 @@ namespace slimCat.Models
         ///     The permission level.
         /// </param>
         public CommandModel(
-            string familarName,
+            string familiarName,
             string serverName,
             IList<string> paramaterNames = null,
             CommandTypes typeOfCommand = CommandTypes.SingleSentence,
             PermissionLevel permissionLevel = PermissionLevel.User)
         {
-            familiarName = familarName;
+            this.familiarName = familiarName;
             this.serverName = serverName;
             type = typeOfCommand;
             permissions = permissionLevel;

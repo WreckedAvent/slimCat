@@ -29,7 +29,6 @@ namespace slimCat.ViewModels
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
-    using Utilities;
     using Views;
 
     #endregion

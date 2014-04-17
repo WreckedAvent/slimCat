@@ -460,7 +460,7 @@ namespace slimCat.Utilities
         /// <returns>
         ///     The <see cref="string" />.
         /// </returns>
-        public static string StripPunctationAtEnd(this string fullString)
+        public static string StripPunctuationAtEnd(this string fullString)
         {
             if (string.IsNullOrWhiteSpace(fullString) || fullString.Length <= 1)
                 return fullString;

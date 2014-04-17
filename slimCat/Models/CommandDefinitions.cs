@@ -418,7 +418,7 @@ namespace slimCat.Models
         private static readonly IDictionary<string, CommandOverride> CommandOverrides = new Dictionary
             <string, CommandOverride>
             {
-                // commmand to override, command parameter to override, value to override with
+                // command to override, command parameter to override, value to override with
                 {
                     "online", new CommandOverride(A.Status, "online")
                 },

@@ -33,7 +33,6 @@ namespace slimCat.Utilities
     using System.Windows.Documents;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
-    using System.Windows.Navigation;
     using Models;
     using Services;
 

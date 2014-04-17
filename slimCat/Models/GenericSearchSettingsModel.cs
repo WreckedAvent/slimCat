@@ -29,7 +29,7 @@ namespace slimCat.Models
     #endregion
 
     /// <summary>
-    ///     Search settings to be used with a search text box tool cahin
+    ///     Search settings to be used with a search text box tool chain
     /// </summary>
     public class GenericSearchSettingsModel
     {

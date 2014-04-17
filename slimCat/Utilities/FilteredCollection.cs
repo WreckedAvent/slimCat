@@ -32,7 +32,7 @@ namespace slimCat.Utilities
     #endregion
 
     /// <summary>
-    ///     A filtered observable collection which syncronizes with another collection
+    ///     A filtered observable collection which synchronizes with another collection
     /// </summary>
     /// <typeparam name="T">The type of collection to filter</typeparam>
     /// <typeparam name="TR">The type of collection to return</typeparam>

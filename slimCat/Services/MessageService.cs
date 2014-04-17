@@ -125,7 +125,7 @@ namespace slimCat.Services
                         {"_snap_to_last_update", OnNotificationFocusRequested},
                         {Commands.UserInvite, OnInviteToChannelRequested},
                         {"who", OnWhoInformationRequested},
-                        {"getdescription", OnChannelDescripionRequested},
+                        {"getdescription", OnChannelDescriptionRequested},
                         {"interesting", OnMarkInterestedRequested},
                         {"notinteresting", OnMarkNotInterestedRequested},
                         {"ignoreUpdates", OnIgnoreUpdatesRequested},
@@ -620,7 +620,7 @@ namespace slimCat.Services
                     + model.CurrentCharacter.Name + " be!");
         }
 
-        private void OnChannelDescripionRequested(IDictionary<string, object> command)
+        private void OnChannelDescriptionRequested(IDictionary<string, object> command)
         {
             if (model.CurrentChannel.Id.Equals("Home", StringComparison.OrdinalIgnoreCase))
             {

@@ -35,8 +35,8 @@ namespace slimCat.ViewModels
     #endregion
 
     /// <summary>
-    ///     The ChannebarViewModel is a wrapper to hold the other viewmodels which form the gist of the interaction network.
-    ///     It responds to the ChatOnDisplayEvent to paritally create the chat wrapper.
+    ///     The ChannelbarViewModel is a wrapper to hold the other viewmodels which form the gist of the interaction network.
+    ///     It responds to the ChatOnDisplayEvent to partially create the chat wrapper.
     /// </summary>
     public class ChannelbarViewModel : ChannelbarViewModelCommon
     {

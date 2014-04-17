@@ -23,17 +23,14 @@ namespace slimCat.Services
 
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
     using System.Linq;
     using System.Media;
     using System.Web;
     using System.Windows;
-    using System.Windows.Forms;
     using System.Windows.Threading;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Models;
-    using Properties;
     using Utilities;
     using ViewModels;
     using Application = System.Windows.Application;
@@ -168,7 +165,7 @@ namespace slimCat.Services
                         channel.Id,
                         null,
                         message.Poster);
-                    return; // and if we do, there is no need to evalutae further
+                    return; // and if we do, there is no need to evaluate further
                 }
             }
 

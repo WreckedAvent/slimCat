@@ -29,7 +29,7 @@ namespace slimCat.ViewModels
     #endregion
 
     /// <summary>
-    ///     This is a master class which provides access to the Dispather and NotifyPropertyChanged
+    ///     This is a master class which provides access to the Dispatcher and NotifyPropertyChanged
     /// </summary>
     public abstract class SysProp : DispatcherObject, IDisposable, INotifyPropertyChanged
     {

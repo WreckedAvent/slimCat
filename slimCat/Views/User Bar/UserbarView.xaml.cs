@@ -34,7 +34,7 @@ namespace slimCat.Views
     /// </summary>
     public partial class UserbarView
     {
-        private UserbarViewModel vm;
+        private readonly UserbarViewModel vm;
 
         #region Constructors and Destructors
 

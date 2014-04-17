@@ -43,7 +43,7 @@ namespace slimCat.Services
         ///     the log to upload
         /// </param>
         /// <returns>
-        ///     an int corresonding to the logid the server assigned
+        ///     an int corresponding to the logid the server assigned
         /// </returns>
         int UploadLog(ReportModel report, IEnumerable<IMessage> log);
 

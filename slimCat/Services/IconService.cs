@@ -35,9 +35,9 @@ namespace slimCat.Services
     public class IconService : DispatcherObject, IDisposable, IIconService
     {
         #region Fields
-        private IEventAggregator events;
+        private readonly IEventAggregator events;
 
-        private IChatModel cm;
+        private readonly IChatModel cm;
 
         private readonly NotifyIcon icon = new NotifyIcon();
 

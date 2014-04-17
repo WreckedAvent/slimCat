@@ -107,7 +107,7 @@ namespace slimCat.Models
         }
 
         /// <summary>
-        ///     An ID is used to unambigiously identify the channel or character's name
+        ///     An ID is used to unambiguously identify the channel or character's name
         /// </summary>
         public string Id
         {

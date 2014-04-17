@@ -441,7 +441,7 @@ namespace slimCat.Services
 
             var characters = command.Get<JsonArray>(Constants.Arguments.MultipleCharacters);
             if (characters != null)
-                characters.Select(x => x as string).Each(doAction);
+                CharacterManager.Set(characters.Select(x => x as string), ListKind.Ignored);
 
             // todo: add notification for this
         }
