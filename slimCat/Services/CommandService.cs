@@ -1098,28 +1098,34 @@ namespace slimCat.Services
 
         private void StatusChangedCommand(IDictionary<string, object> command)
         {
-            var character = command.Get(Constants.Arguments.Character);
+            var target = command.Get(Constants.Arguments.Character);
             var status = command.Get(Constants.Arguments.Status).ToEnum<StatusType>();
             var statusMessage = command.Get(Constants.Arguments.StatusMessage);
 
-            var temp = CharacterManager.Find(character);
+            var character = CharacterManager.Find(target);
             var statusChanged = false;
             var statusMessageChanged = false;
+            var oldStatus = character.Status;
 
-            if (temp.Status != status)
+            if (character.Status != status)
             {
                 statusChanged = true;
-                temp.Status = status;
+                character.Status = status;
             }
 
-            if (temp.StatusMessage != statusMessage)
+            if (character.StatusMessage != statusMessage)
             {
                 statusMessageChanged = true;
-                temp.StatusMessage = statusMessage;
+                character.StatusMessage = statusMessage;
             }
 
-            // fixes a bug wherein webclients could send a do-nothing update
             if (!statusChanged && !statusMessageChanged)
+                return;
+
+            if (status == StatusType.Idle)
+                return;
+
+            if (oldStatus == StatusType.Idle && status == StatusType.Online)
                 return;
 
             var args = new CharacterUpdateModel.StatusChangedEventArgs
@@ -1134,7 +1140,7 @@ namespace slimCat.Services
                             : null
                 };
 
-            Events.GetEvent<NewUpdateEvent>().Publish(new CharacterUpdateModel(temp, args));
+            Events.GetEvent<NewUpdateEvent>().Publish(new CharacterUpdateModel(character, args));
         }
 
         private void TypingStatusCommand(IDictionary<string, object> command)

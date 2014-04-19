@@ -291,15 +291,16 @@ namespace slimCat.Services
                 autoPingTimer.Start();
             }
 
-            var commandType = e.Message.Substring(0, 3); // type of command sent
-
-            var message = e.Message; // actual arguments sent
-
             if (e.Message.Length <= 3)
             {
                 events.GetEvent<ChatCommandEvent>().Publish(null);
                 return;
             }
+
+            var commandType = e.Message.Substring(0, 3); // type of command sent
+
+            var message = e.Message; // actual arguments sent
+
 
             // if it has arguments...
             message = message.Remove(0, 4); // chop off the command type
