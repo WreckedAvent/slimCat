@@ -73,6 +73,7 @@ namespace slimCat.Utilities
                 // these are services that are not directly used by our singletons or modules
                 Instantiate<NotificationService>();
                 Instantiate<CommandService>();
+                Instantiate<IIconService>();
 
                 // some resources that are dependant on our singletons
                 Application.Current.Resources.Add("BbCodeConverter", Container.Resolve<BbCodeConverter>());

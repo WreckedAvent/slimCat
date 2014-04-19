@@ -50,18 +50,7 @@ namespace slimCat.Services
             events = eventagg;
             cm = chatModel;
 
-            Application.Current.MainWindow.Closing += (s, e) =>
-            {
-                if (!ApplicationSettings.AllowMinimizeToTray) return;
-
-                e.Cancel = true;
-                HideWindow();
-            };
-
-            Application.Current.MainWindow.MouseLeave += (s, e) => events.GetEvent<ErrorEvent>().Publish(null);
-
-            cm.SelectedChannelChanged += (s, e) => events.GetEvent<ErrorEvent>().Publish(null);
-            BuildIcon();
+            eventagg.GetEvent<CharacterSelectedLoginEvent>().Subscribe(OnCharacterSelected);
         }
         #endregion
 
@@ -109,7 +98,7 @@ namespace slimCat.Services
         #endregion
 
         #region Methods
-        private void BuildIcon()
+        private void BuildIcon(string character)
         {
             icon.Icon = new Icon(Environment.CurrentDirectory + @"\icons\catIcon.ico");
             icon.DoubleClick += (s, e) => ShowWindow();
@@ -129,7 +118,7 @@ namespace slimCat.Services
                         Constants.ClientId,
                         Constants.ClientName,
                         Constants.ClientVer,
-                        cm.CurrentCharacter.Name))
+                        character))
             {
                 Enabled = false
             });
@@ -143,9 +132,26 @@ namespace slimCat.Services
             iconMenu.MenuItems.Add("Show", (s, e) => ShowWindow());
             iconMenu.MenuItems.Add("Exit", (s, e) => ShutDown());
 
-            icon.Text = string.Format("{0} - {1}", Constants.ClientId, cm.CurrentCharacter.Name);
+            icon.Text = string.Format("{0} - {1}", Constants.ClientId, character);
             icon.ContextMenu = iconMenu;
             icon.Visible = true;
+        }
+
+        private void OnCharacterSelected(string character)
+        {
+            Application.Current.MainWindow.Closing += (s, e) =>
+            {
+                if (!ApplicationSettings.AllowMinimizeToTray) return;
+
+                e.Cancel = true;
+                HideWindow();
+            };
+
+            Application.Current.MainWindow.MouseLeave += (s, e) => events.GetEvent<ErrorEvent>().Publish(null);
+
+            cm.SelectedChannelChanged += (s, e) => events.GetEvent<ErrorEvent>().Publish(null);
+
+            BuildIcon(character);
         }
 
         private MenuItem AllowSound
