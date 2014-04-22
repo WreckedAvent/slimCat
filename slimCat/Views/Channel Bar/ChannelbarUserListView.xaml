@@ -7,7 +7,9 @@
              xmlns:vm="clr-namespace:slimCat.ViewModels"
              xmlns:v="clr-namespace:slimCat.Views"
              xmlns:models="clr-namespace:slimCat.Models"
-
+             MaxWidth="225"
+             MinWidth="180"
+             
              d:DataContext="{d:DesignInstance vm:UsersTabViewModel}">
 
     <UserControl.Resources>

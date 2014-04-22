@@ -6,7 +6,8 @@
              mc:Ignorable="d"
              xmlns:vm="clr-namespace:slimCat.ViewModels"
              xmlns:v="clr-namespace:slimCat.Views"
-             MaxWidth="300"
+             MaxWidth="225"
+             MinWidth="180"
 
              d:DataContext="{d:DesignInstance vm:ChannelsTabViewModel}">
     <DockPanel>

@@ -88,7 +88,9 @@
 
             <TextBlock TextWrapping="Wrap"
                        Grid.Column="1"
-                       Margin="2,0,0,0">
+                       Margin="2,0,0,0"
+                       TextAlignment="Left"
+                       MaxWidth="165">
                 <Hyperlink CommandParameter="{Binding Path=Id, Mode=OneTime}"
                            Style="{StaticResource ChannelStyle}">
                     <Run Text="{Binding Path=Title, Mode=OneTime}" />

@@ -7,6 +7,8 @@
              xmlns:vm="clr-namespace:slimCat.ViewModels"
              xmlns:models="clr-namespace:slimCat.Models"
              xmlns:v="clr-namespace:slimCat.Views"
+             MaxWidth="225"
+             MinWidth="180"
 
              d:DataContext="{d:DesignInstance vm:ManageListsViewModel}">
 

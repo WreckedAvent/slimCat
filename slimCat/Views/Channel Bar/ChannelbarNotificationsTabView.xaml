@@ -7,11 +7,11 @@
              xmlns:vm="clr-namespace:slimCat.ViewModels"
              xmlns:v="clr-namespace:slimCat.Views"
 
-             MaxWidth="175"
-
              d:DataContext="{d:DesignInstance vm:NotificationsTabViewModel}">
 
-    <DockPanel>
+    <DockPanel
+             MaxWidth="180"
+             MinWidth="150">
         <v:RightClickMenu />
         <v:CreateReportView />
         <v:RestartButtonView Command="{Binding Path=ClearNotificationsCommand}"

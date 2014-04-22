@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              xmlns:vm="clr-namespace:slimCat.ViewModels"
              xmlns:prism="http://www.codeplex.com/prism"
-             MaxWidth="225"
+             MaxWidth="275"
 
              d:DataContext="{d:DesignInstance vm:ChannelbarViewModel}">
 
