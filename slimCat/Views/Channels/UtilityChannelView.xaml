@@ -234,7 +234,13 @@
                                         Allow Texbox Focusing
                                     </CheckBox>
 
-
+                                    <CheckBox IsChecked="{Binding SpellCheckEnabled}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows slimCat to spell-check the messages you type out">
+                                        Allow Spell Check
+                                    </CheckBox>
+                                    
                                     <StackPanel Margin="0,15,0,0"
                                                 Visibility="{Binding SpellCheckEnabled, Converter={StaticResource BoolConverter}}"
                                                 ToolTip="Determines what language dictionary spell-checking uses">
@@ -286,7 +292,7 @@
                                               ToolTip="Allows slimCat to play sounds even if the window and tab are focused">
                                         Allow Sound when Tab is Focused
                                     </CheckBox>
-
+                                    
                                     <StackPanel Margin="0,15,0,0"
                                                 ToolTip="Defines a global set of words that slimCat will check messages against and alert you if they match">
                                         <TextBlock Text="Global Notify Words (comma separated)" />
