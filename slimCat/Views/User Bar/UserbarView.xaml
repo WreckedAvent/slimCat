@@ -207,7 +207,7 @@
                             <ListBox.ItemContainerStyle>
                                 <Style>
                                     <Setter Property="ListBoxItem.AllowDrop" Value="True"/>
-                                    <EventSetter Event="ListBoxItem.PreviewMouseMove" Handler="OnPreviewMouseMove"/>
+                                    <EventSetter Event="ListBoxItem.PreviewMouseLeftButtonDown" Handler="OnPreviewMouseClick"/>
                                     <EventSetter Event="ListBoxItem.Drop" Handler="OnPmModelDragDrop"/>
                                     <EventSetter Event="ListBoxItem.PreviewDragEnter" Handler="CheckAsPm"/>
                                     <EventSetter Event="ListBoxItem.PreviewDragOver" Handler="CheckAsPm"/>
@@ -228,7 +228,7 @@
                             <ListBox.ItemContainerStyle>
                                 <Style>
                                     <Setter Property="ListBoxItem.AllowDrop" Value="True"/>
-                                    <EventSetter Event="ListBoxItem.PreviewMouseMove" Handler="OnPreviewMouseMove"/>
+                                    <EventSetter Event="ListBoxItem.PreviewMouseLeftButtonDown" Handler="OnPreviewMouseClick"/>
                                     <EventSetter Event="ListBoxItem.Drop" Handler="OnChannelModelDragDrop"/>
                                     <EventSetter Event="ListBoxItem.PreviewDragEnter" Handler="CheckAsChannel"/>
                                     <EventSetter Event="ListBoxItem.PreviewDragOver" Handler="CheckAsChannel"/>

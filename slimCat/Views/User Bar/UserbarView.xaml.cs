@@ -24,6 +24,7 @@ namespace slimCat.Views
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
+    using System.Windows.Shapes;
     using Models;
     using ViewModels;
 
@@ -53,12 +54,12 @@ namespace slimCat.Views
 
         #endregion
 
-        private void OnPreviewMouseMove(object sender, MouseEventArgs e)
+        private void OnPreviewMouseClick(object sender, MouseEventArgs e)
         {
             var draggedItem = sender as ListBoxItem;
             if (draggedItem == null) return;
             if (e.LeftButton != MouseButtonState.Pressed) return;
-            if (e.OriginalSource is CloseButtonView) return;
+            if (e.OriginalSource is Rectangle) return;
 
             draggedItem.IsSelected = true;
             DragDrop.DoDragDrop(draggedItem, draggedItem.DataContext, DragDropEffects.Move);
