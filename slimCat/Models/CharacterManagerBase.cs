@@ -143,7 +143,7 @@ namespace slimCat.Models
             }
         }
 
-        public void Set(IEnumerable<string> names, ListKind listKind)
+        public virtual void Set(IEnumerable<string> names, ListKind listKind)
         {
             lock (Locker)
             {

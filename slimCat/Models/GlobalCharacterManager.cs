@@ -158,11 +158,11 @@ namespace slimCat.Models
             if (listKind == ListKind.Interested || listKind == ListKind.NotInterested)
                 SyncInterestedMarks(name, listKind, true, isTemporary);
 
-            if (!isTemporary)
-                TrySyncSavedLists(listKind);
-
             if (listKind == ListKind.IgnoreUpdates)
                 UpdateIgnoreUpdatesMark(name, true);
+
+            if (!isTemporary)
+                TrySyncSavedLists(listKind);
 
             return toReturn;
         }
@@ -174,13 +174,21 @@ namespace slimCat.Models
             if (listKind == ListKind.Interested || listKind == ListKind.NotInterested)
                 SyncInterestedMarks(name, listKind, false, isTemporary);
 
-            if (!isTemporary)
-                TrySyncSavedLists(listKind);
-
             if (listKind == ListKind.IgnoreUpdates)
                 UpdateIgnoreUpdatesMark(name, false);
 
+            if (!isTemporary)
+                TrySyncSavedLists(listKind);
+
             return toReturn;
+        }
+
+        public override void Set(IEnumerable<string> names, ListKind listKind)
+        {
+            base.Set(names, listKind);
+
+            if (savedCollections.Select(x => x.Key).Contains(listKind))
+                TrySyncSavedLists(listKind, false);
         }
 
         #endregion
@@ -195,11 +203,10 @@ namespace slimCat.Models
             eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(Initialize);
         }
 
-        private void TrySyncSavedLists(ListKind listKind)
+        private void TrySyncSavedLists(ListKind listKind, bool save = true)
         {
             IList<string> savedCollection;
             if (!savedCollections.TryGetValue(listKind, out savedCollection)) return;
-
 
             CollectionPair currentCollection;
             if (!CollectionDictionary.TryGetValue(listKind, out currentCollection)) return;
@@ -207,7 +214,8 @@ namespace slimCat.Models
             savedCollection.Clear();
             currentCollection.List.Each(savedCollection.Add);
 
-            SettingsService.SaveApplicationSettingsToXml(currentCharacter);
+            if (save)
+                SettingsService.SaveApplicationSettingsToXml(currentCharacter);
         }
 
         private void UpdateIgnoreUpdatesMark(string name, bool isAdd)
@@ -240,7 +248,9 @@ namespace slimCat.Models
 
                 ICharacter toModify;
                 if (CharacterDictionary.TryGetValue(name, out toModify))
-                    toModify.IsInteresting = isInteresting && isAdd;
+                {
+                    toModify.IsInteresting = (isInteresting && isAdd) || IsOfInterest(name, false);
+                }
             }
         }
 
