@@ -21,6 +21,7 @@ namespace slimCat.Views
 {
     #region Usings
 
+    using System;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
@@ -36,6 +37,8 @@ namespace slimCat.Views
     public partial class UserbarView
     {
         private readonly UserbarViewModel vm;
+
+        private Point lastPoint;
 
         #region Constructors and Destructors
 
@@ -61,8 +64,7 @@ namespace slimCat.Views
             if (e.LeftButton != MouseButtonState.Pressed) return;
             if (e.OriginalSource is Rectangle) return;
 
-            draggedItem.IsSelected = true;
-            DragDrop.DoDragDrop(draggedItem, draggedItem.DataContext, DragDropEffects.Move);
+            lastPoint = e.GetPosition(this);
         }
 
         private void OnChannelModelDragDrop(object sender, DragEventArgs e)
@@ -93,6 +95,7 @@ namespace slimCat.Views
 
             vm.ChannelSelected = newIndex;
         }
+
         private void OnPmModelDragDrop(object sender, DragEventArgs e)
         {
             var droppedData = e.Data.GetData(typeof(PmChannelModel)) as PmChannelModel;
@@ -138,6 +141,21 @@ namespace slimCat.Views
 
             e.Effects = DragDropEffects.None;
             e.Handled = true;
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            var draggedItem = sender as ListBoxItem;
+            if (draggedItem == null) return;
+            if (e.LeftButton != MouseButtonState.Pressed) return;
+            if (e.OriginalSource is Rectangle) return;
+
+            var current = e.GetPosition(this);
+
+            if (Math.Abs(lastPoint.Y - current.Y) >= SystemParameters.MinimumVerticalDragDistance)
+            {
+                DragDrop.DoDragDrop(draggedItem, draggedItem.DataContext, DragDropEffects.Move);
+            }
         }
     }
 }
