@@ -226,16 +226,16 @@
                                     <v:ChannelSelectView />
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
-                            <ListBox.ItemContainerStyle>
-                                <Style>
-                                    <Setter Property="ListBoxItem.AllowDrop" Value="True"/>
-                                    <EventSetter Event="ListBoxItem.PreviewMouseLeftButtonDown" Handler="OnPreviewMouseClick"/>
-                                    <EventSetter Event="ListBoxItem.Drop" Handler="OnChannelModelDragDrop"/>
-                                    <EventSetter Event="ListBoxItem.MouseMove" Handler="OnMouseMove"/>
-                                    <EventSetter Event="ListBoxItem.PreviewDragEnter" Handler="CheckAsChannel"/>
-                                    <EventSetter Event="ListBoxItem.PreviewDragOver" Handler="CheckAsChannel"/>
-                                </Style>
-                            </ListBox.ItemContainerStyle>
+                                <ListBox.ItemContainerStyle>
+                                    <Style>
+                                        <Setter Property="ListBoxItem.AllowDrop" Value="True"/>
+                                        <EventSetter Event="ListBoxItem.PreviewMouseLeftButtonDown" Handler="OnPreviewMouseClick"/>
+                                        <EventSetter Event="ListBoxItem.Drop" Handler="OnChannelModelDragDrop"/>
+                                        <EventSetter Event="ListBoxItem.MouseMove" Handler="OnMouseMove"/>
+                                        <EventSetter Event="ListBoxItem.PreviewDragEnter" Handler="CheckAsChannel"/>
+                                        <EventSetter Event="ListBoxItem.PreviewDragOver" Handler="CheckAsChannel"/>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
                         </ListBox>
                     </Expander>
                 </StackPanel>

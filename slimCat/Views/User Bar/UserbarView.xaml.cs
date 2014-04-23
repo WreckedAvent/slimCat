@@ -22,6 +22,7 @@ namespace slimCat.Views
     #region Usings
 
     using System;
+    using System.Collections.Generic;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
@@ -67,14 +68,13 @@ namespace slimCat.Views
             lastPoint = e.GetPosition(this);
         }
 
-        private void OnChannelModelDragDrop(object sender, DragEventArgs e)
+        private void OnDragDrop<T>(object sender, DragEventArgs e, IList<T> coll, bool isChannel)
+            where T : ChannelModel
         {
-            var droppedData = e.Data.GetData(typeof(GeneralChannelModel)) as GeneralChannelModel;
-            var target = ((ListBoxItem)(sender)).DataContext as GeneralChannelModel;
+            var droppedData = e.Data.GetData(typeof(T)) as T;
+            var target = ((ListBoxItem)(sender)).DataContext as T;
 
             if (droppedData == null || target == null) return;
-
-            var coll = vm.ChatModel.CurrentChannels;
 
             var oldIndex = coll.IndexOf(droppedData);
             var newIndex = coll.IndexOf(target);
@@ -93,54 +93,40 @@ namespace slimCat.Views
                 coll.RemoveAt(remIdx);
             }
 
-            vm.ChannelSelected = newIndex;
+            if (isChannel)
+                vm.ChannelSelected = newIndex;
+            else
+                vm.PmSelected = newIndex;
+        }
+
+        private void CheckAs<T>(object sender, DragEventArgs e)
+            where T : ChannelModel
+        {
+            var possible = e.Data.GetData(typeof(T)) as T;
+            if (possible != null) return;
+
+            e.Effects = DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private void OnChannelModelDragDrop(object sender, DragEventArgs e)
+        {
+            OnDragDrop(sender, e, vm.ChatModel.CurrentChannels, true);
         }
 
         private void OnPmModelDragDrop(object sender, DragEventArgs e)
         {
-            var droppedData = e.Data.GetData(typeof(PmChannelModel)) as PmChannelModel;
-            var target = ((ListBoxItem)(sender)).DataContext as PmChannelModel;
-
-            if (droppedData == null || target == null) return;
-
-            var coll = vm.ChatModel.CurrentPms;
-
-            var oldIndex = coll.IndexOf(droppedData);
-            var newIndex = coll.IndexOf(target);
-
-            if (oldIndex < newIndex)
-            {
-                coll.Insert(newIndex + 1, droppedData);
-                coll.RemoveAt(oldIndex);
-            }
-            else
-            {
-                var remIdx = oldIndex + 1;
-                if (coll.Count + 1 <= remIdx) return;
-
-                coll.Insert(newIndex, droppedData);
-                coll.RemoveAt(remIdx);
-            }
-
-            vm.PmSelected = newIndex;
+            OnDragDrop(sender, e, vm.ChatModel.CurrentPms, false);
         }
 
         private void CheckAsChannel(object sender, DragEventArgs e)
         {
-            var possible = e.Data.GetData(typeof (GeneralChannelModel)) as GeneralChannelModel;
-            if (possible != null) return;
-
-            e.Effects = DragDropEffects.None;
-            e.Handled = true;
+            CheckAs<GeneralChannelModel>(sender, e);
         }
 
         private void CheckAsPm(object sender, DragEventArgs e)
         {
-            var possible = e.Data.GetData(typeof(PmChannelModel)) as PmChannelModel;
-            if (possible != null) return;
-
-            e.Effects = DragDropEffects.None;
-            e.Handled = true;
+            CheckAs<PmChannelModel>(sender, e);
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
