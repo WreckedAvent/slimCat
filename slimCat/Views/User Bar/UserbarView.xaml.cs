@@ -71,6 +71,8 @@ namespace slimCat.Views
             if (e.OriginalSource is Rectangle) return;
 
             lastPoint = e.GetPosition(this);
+            draggedItem.IsSelected = true;
+            e.Handled = true;
         }
 
         private void OnDragDrop<T>(object sender, DragEventArgs e, IList<T> coll, bool isChannel)
@@ -142,7 +144,6 @@ namespace slimCat.Views
             if (e.OriginalSource is Rectangle) return;
 
             var current = e.GetPosition(this);
-            e.Handled = true;
 
             if (Math.Abs(lastPoint.Y - current.Y) >= minDragDistance)
             {
