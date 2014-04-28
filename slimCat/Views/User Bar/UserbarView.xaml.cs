@@ -37,9 +37,13 @@ namespace slimCat.Views
     /// </summary>
     public partial class UserbarView
     {
+        #region Fields
         private readonly UserbarViewModel vm;
 
         private Point lastPoint;
+
+        private double minDragDistance;
+        #endregion
 
         #region Constructors and Destructors
 
@@ -54,6 +58,7 @@ namespace slimCat.Views
             InitializeComponent();
             DataContext = vm;
             this.vm = vm;
+            minDragDistance = Math.Max(SystemParameters.MinimumVerticalDragDistance, 10);
         }
 
         #endregion
@@ -137,8 +142,9 @@ namespace slimCat.Views
             if (e.OriginalSource is Rectangle) return;
 
             var current = e.GetPosition(this);
+            e.Handled = true;
 
-            if (Math.Abs(lastPoint.Y - current.Y) >= SystemParameters.MinimumVerticalDragDistance)
+            if (Math.Abs(lastPoint.Y - current.Y) >= minDragDistance)
             {
                 DragDrop.DoDragDrop(draggedItem, draggedItem.DataContext, DragDropEffects.Move);
             }
