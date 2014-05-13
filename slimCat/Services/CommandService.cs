@@ -1160,8 +1160,6 @@ namespace slimCat.Services
         {
             var time = (long) command["starttime"];
             ChatModel.ServerUpTime = HelperConverter.UnixTimeToDateTime(time);
-
-            Events.SendUserCommand("online", new[] {string.Empty});
         }
 
         private void UserLoggedInCommand(IDictionary<string, object> command)
