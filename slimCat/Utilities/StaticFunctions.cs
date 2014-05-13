@@ -81,7 +81,7 @@ namespace slimCat.Utilities
                 return new Tuple<string, string>(string.Empty, string.Empty);
 
             // this checks for if the match is a whole word
-            if (startIndex != 0)
+            if (startIndex > 0 && startIndex + 1 < fullString.Length)
             {
                 // this weeds out matches such as 'big man' from matching 'i'
                 var prevChar = fullString[startIndex - 1];
