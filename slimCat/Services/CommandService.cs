@@ -1233,7 +1233,15 @@ namespace slimCat.Services
 
             retryAttempts++;
             command["retryAttempt"] = retryAttempts;
-            EnqueueAction(command);
+
+            var delay = new Timer(2000 * retryAttempts);
+            delay.Elapsed += (s, e) =>
+            {
+                EnqueueAction(command);
+                delay.Stop();
+                delay.Dispose();
+            };
+            delay.Start();
         }
 
         #endregion
