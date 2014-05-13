@@ -561,6 +561,8 @@ namespace slimCat.Utilities
 
         private Span MakeUrl(ParsedChunk arg)
         {
+            if (arg.Arguments == null && arg.Children == null) return MakeNormalText(arg);
+
             var url = arg.Arguments;
             var display = arg.Children != null
                 ? arg.Children.First().InnerText
