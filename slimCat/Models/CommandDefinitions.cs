@@ -486,7 +486,9 @@ namespace slimCat.Models
             {
                 var model = GetCommandModelFromName(familiarName);
 
-                if ((args == null || args.All(string.IsNullOrWhiteSpace)) && model.CommandType != CommandModel.CommandTypes.NoArgs)
+                if ((args == null || args.All(string.IsNullOrWhiteSpace)) 
+                    && model.CommandType != CommandModel.CommandTypes.NoArgs 
+                    && model.CommandType != CommandModel.CommandTypes.TwoArgs)
                     throw new ArgumentException("The {0} command needs an argument.".FormatWith(familiarName));
 
                 var overide = CommandOverrides[familiarName];
