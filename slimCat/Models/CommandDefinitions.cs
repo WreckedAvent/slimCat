@@ -485,6 +485,10 @@ namespace slimCat.Models
             if (HasCommandOverride(familiarName))
             {
                 var model = GetCommandModelFromName(familiarName);
+
+                if ((args == null || args.All(string.IsNullOrWhiteSpace)) && model.CommandType != CommandModel.CommandTypes.NoArgs)
+                    throw new ArgumentException("The {0} command needs an argument.".FormatWith(familiarName));
+
                 var overide = CommandOverrides[familiarName];
 
                 // this inserts the override into the correct location for the toDictionary method
@@ -518,7 +522,7 @@ namespace slimCat.Models
 
                     case CommandModel.CommandTypes.OnlyChannel:
                     case CommandModel.CommandTypes.NoArgs:
-                        if (args != null && !string.IsNullOrEmpty(args[0]))
+                        if (args != null && !string.IsNullOrWhiteSpace(args[0]))
                             throw new ArgumentException("The {0} command doesn't take an argument".FormatWith(familiarName));
 
                         break;
@@ -536,7 +540,7 @@ namespace slimCat.Models
                         break;
 
                     case CommandModel.CommandTypes.SingleSentence:
-                        if (args == null || args.All(string.IsNullOrEmpty))
+                        if (args == null || args.All(string.IsNullOrWhiteSpace))
                             throw new ArgumentException("The {0} command needs an argument.".FormatWith(familiarName));
                         break;
                 }
