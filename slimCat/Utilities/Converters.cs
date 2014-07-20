@@ -238,9 +238,10 @@ namespace slimCat.Utilities
         /// </example>
         private static string GetUrlDisplay(string args)
         {
+            if (args == null) return args;
+
             var match = ValidStartTerms.FirstOrDefault(args.StartsWith);
-            if (match == null)
-                return args;
+            if (match == null) return args;
 
             var stripped = args.Substring(match.Length);
 
@@ -325,7 +326,15 @@ namespace slimCat.Utilities
                 };
 
             var converter = converters[chunk.Type];
-            var toReturn = converter(chunk);
+            Inline toReturn;
+            try
+            {
+                toReturn = converter(chunk);
+            }
+            catch
+            {
+                toReturn = MakeNormalText(chunk);
+            }
 
             var span = toReturn as Span;
             if (chunk.Children != null && chunk.Children.Any() && span != null)
