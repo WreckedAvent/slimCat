@@ -7,6 +7,7 @@
                   xmlns:vm="clr-namespace:slimCat.ViewModels"
                   xmlns:v="clr-namespace:slimCat.Views"
                   xmlns:models="clr-namespace:slimCat.Models"
+                  xmlns:lib="clr-namespace:slimCat.Libraries"
 
                   d:DataContext="{d:DesignInstance vm:UtilityChannelViewModel}">
 
@@ -497,6 +498,30 @@
                             </TextBlock>
 
                             <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0" />
+                        </WrapPanel>
+                    </Expander>
+                    
+                    <Expander Header="BBCode Preview">
+                        <WrapPanel>
+                            <TextBlock Margin="0"
+                                       FontSize="14"
+                                       Foreground="{StaticResource ForegroundBrush}"
+                                       TextWrapping="Wrap">
+                                <lib:TextBlockHelper.InlineList>
+                                    <Binding Converter="{StaticResource BbCodeConverter}"
+                                             IsAsync="True"
+                                             Mode="OneWay"
+                                             Path="Message" />
+                                </lib:TextBlockHelper.InlineList>
+                            </TextBlock>
+                            
+                            <TextBlock Margin="0"
+                                       FontSize="14"
+                                       Foreground="{StaticResource ForegroundBrush}"
+                                       TextWrapping="Wrap"
+                                       Visibility="{Binding Path=Message, Mode=OneWay, Converter={StaticResource NotEmptyConverter}}">
+                                Enter some text in the entry box below to see it previewed here.
+                            </TextBlock>
                         </WrapPanel>
                     </Expander>
                 </StackPanel>
