@@ -158,6 +158,7 @@
         <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
