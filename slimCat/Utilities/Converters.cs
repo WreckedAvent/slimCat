@@ -146,6 +146,21 @@ namespace slimCat.Utilities
     }
 
     /// <summary>
+    ///     If string is empty, return invisible.
+    /// </summary>
+    public class EmptyConverter : OneWayConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var parsed = (string)value;
+
+            return string.IsNullOrEmpty(parsed)
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+        }
+    }
+
+    /// <summary>
     ///     The common logic for parsing bbcode.
     /// </summary>
     public abstract class BbCodeBaseConverter

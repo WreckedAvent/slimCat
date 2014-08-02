@@ -17,10 +17,10 @@
     <Color x:Key="BackgroundColor">#101010</Color>
 
     <!-- Depressed color is used primarily used for borders and UI controls which cannot be interacted with. -->
-    <Color x:Key="DepressedColor">#535353</Color>
+    <Color x:Key="DepressedColor">#535363</Color>
 
     <!-- Bright background is used for some odds and ends, most notably the 'expand' bars on either side of the screen. -->
-    <Color x:Key="BrightBackgroundColor">#323232</Color>
+    <Color x:Key="BrightBackgroundColor">#323234</Color>
 
     <Color x:Key="MaleColor">#6DBAD8</Color>
     <Color x:Key="FemaleColor">#DA6CB0</Color>

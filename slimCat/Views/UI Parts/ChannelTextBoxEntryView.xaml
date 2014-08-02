@@ -14,6 +14,12 @@
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         
+        <TextBlock Foreground="{StaticResource HighlightBrush}"
+                   Visibility="{Binding Error, Mode=OneWay, Converter={StaticResource EmptyConverter}}"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   Text="{Binding Error}"/>
+        
         <TextBox Text="{Binding Path=Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  TextWrapping="Wrap"
                  FontSize="13"
@@ -25,7 +31,8 @@
                  SpellCheck.IsEnabled="{Binding SpellCheckEnabled, Mode=OneWay}"
                  TabIndex="0"
                  Loaded="OnLoaded"
-                 x:Name="Entry">
+                 x:Name="Entry"
+                 Grid.Row="1">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}" />
                 <KeyBinding Key="Up" Modifiers="Alt" Command="{Binding NavigateUpCommand}" />
@@ -48,12 +55,5 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-
-        <TextBlock Foreground="{StaticResource HighlightBrush}"
-                   Visibility="{Binding HasError, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                   FontSize="16"
-                   FontWeight="Bold"
-                   Text="{Binding Error}"
-                   Grid.Row="1"/>
     </Grid>
 </UserControl>

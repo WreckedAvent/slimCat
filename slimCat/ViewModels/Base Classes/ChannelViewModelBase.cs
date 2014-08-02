@@ -129,13 +129,7 @@ namespace slimCat.ViewModels
             {
                 error = value;
                 OnPropertyChanged("Error");
-                OnPropertyChanged("HasError");
             }
-        }
-
-        public bool HasError
-        {
-            get { return !string.IsNullOrWhiteSpace(Error); }
         }
 
         public ICommand InsertLineBreakCommand
