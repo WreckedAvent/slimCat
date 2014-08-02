@@ -72,6 +72,8 @@ namespace slimCat.ViewModels
 
         private RelayCommand sendText;
 
+        private bool showPreview;
+
         #endregion
 
         #region Constructors and Destructors
@@ -148,6 +150,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool ShowPreview
+        {
+            get { return showPreview; }
+            set
+            {
+                showPreview = value;
+                OnPropertyChanged("ShowPreview");
+            }
+        }
+
         public ChannelModel Model
         {
             get { return model; }
@@ -164,13 +176,13 @@ namespace slimCat.ViewModels
             get
             {
                 return navDown
-                       ?? (navDown = new RelayCommand(args => RequestNavigateDirectionalEvent(false)));
+                       ?? (navDown = new RelayCommand(_ => RequestNavigateDirectionalEvent(false)));
             }
         }
 
         public ICommand NavigateUpCommand
         {
-            get { return navUp ?? (navUp = new RelayCommand(args => RequestNavigateDirectionalEvent(true))); }
+            get { return navUp ?? (navUp = new RelayCommand(_ => RequestNavigateDirectionalEvent(true))); }
         }
 
         public ICommand OpenLogCommand
@@ -185,7 +197,7 @@ namespace slimCat.ViewModels
 
         public ICommand SendMessageCommand
         {
-            get { return sendText ?? (sendText = new RelayCommand(param => ParseAndSend())); }
+            get { return sendText ?? (sendText = new RelayCommand(_ => ParseAndSend())); }
         }
 
         #endregion

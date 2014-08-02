@@ -5,21 +5,43 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              xmlns:vm="clr-namespace:slimCat.ViewModels"
-             xmlns:s="clr-namespace:System;assembly=mscorlib"
-             
+             xmlns:lib="clr-namespace:slimCat.Libraries"
+
              d:DataContext="{d:DesignInstance vm:ChannelViewModelBase}">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
         <TextBlock Foreground="{StaticResource HighlightBrush}"
                    Visibility="{Binding Error, Mode=OneWay, Converter={StaticResource EmptyConverter}}"
                    FontSize="16"
                    FontWeight="Bold"
-                   Text="{Binding Error}"/>
-        
+                   Text="{Binding Error}"
+                   TextWrapping="Wrap"/>
+
+        <ScrollViewer MaxHeight="200"
+                      Visibility="{Binding ShowPreview, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                      CanContentScroll="False"
+                      Grid.Row="1">
+            <StackPanel>
+                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0" />
+
+                <TextBlock Margin="0"
+                           FontSize="14"
+                           Foreground="{StaticResource ForegroundBrush}"
+                           TextWrapping="Wrap">
+                    <lib:TextBlockHelper.InlineList>
+                        <Binding Converter="{StaticResource BbCodeConverter}"
+                                 Mode="OneWay"
+                                 Path="Message" />
+                    </lib:TextBlockHelper.InlineList>
+                </TextBlock>
+            </StackPanel>
+        </ScrollViewer>
+
         <TextBox Text="{Binding Path=Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  TextWrapping="Wrap"
                  FontSize="13"
@@ -32,7 +54,7 @@
                  TabIndex="0"
                  Loaded="OnLoaded"
                  x:Name="Entry"
-                 Grid.Row="1">
+                 Grid.Row="2">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}" />
                 <KeyBinding Key="Up" Modifiers="Alt" Command="{Binding NavigateUpCommand}" />

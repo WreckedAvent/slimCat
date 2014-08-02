@@ -282,6 +282,9 @@
     <Compile Include="Views\UI Parts\Buttons\ChannelTypeSwitchButton.xaml.cs">
       <DependentUpon>ChannelTypeSwitchButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UI Parts\Buttons\MarkupButtonView.xaml.cs">
+      <DependentUpon>MarkupButtonView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UI Parts\Buttons\ManageListsButtonView.xaml.cs">
       <DependentUpon>ManageListsButtonView.xaml</DependentUpon>
     </Compile>
@@ -431,6 +434,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UI Parts\Buttons\ChannelTypeSwitchButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\UI Parts\Buttons\MarkupButtonView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -687,6 +694,7 @@
     <Content Include="icons\female.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="icons\markup.png" />
     <Content Include="icons\more.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

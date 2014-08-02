@@ -151,6 +151,10 @@
                             HorizontalAlignment="Right"
                             Margin="0"
                             Grid.Column="1">
+                    <v:MarkupButtonView Margin="4"
+                                        VerticalAlignment="Center"
+                                        IsChecked="{Binding Path=ShowPreview, Mode=TwoWay}"/>
+                    
                     <v:MoreButtonView Command="{Binding SwitchCommand}"
                                       Visibility="{Binding Path=CanSwitch, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                                       BorderBrush="{Binding Path=OtherTabHasMessages, Mode=OneWay, Converter={StaticResource ColorConverter}}"

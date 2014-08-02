@@ -500,36 +500,20 @@
                             <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0" />
                         </WrapPanel>
                     </Expander>
-                    
-                    <Expander Header="BBCode Preview">
-                        <WrapPanel>
-                            <TextBlock Margin="0"
-                                       FontSize="14"
-                                       Foreground="{StaticResource ForegroundBrush}"
-                                       TextWrapping="Wrap">
-                                <lib:TextBlockHelper.InlineList>
-                                    <Binding Converter="{StaticResource BbCodeConverter}"
-                                             IsAsync="True"
-                                             Mode="OneWay"
-                                             Path="Message" />
-                                </lib:TextBlockHelper.InlineList>
-                            </TextBlock>
-                            
-                            <TextBlock Margin="0"
-                                       FontSize="14"
-                                       Foreground="{StaticResource ForegroundBrush}"
-                                       TextWrapping="Wrap"
-                                       Visibility="{Binding Path=Message, Mode=OneWay, Converter={StaticResource NotEmptyConverter}}">
-                                Enter some text in the entry box below to see it previewed here.
-                            </TextBlock>
-                        </WrapPanel>
-                    </Expander>
                 </StackPanel>
             </ScrollViewer>
 
             <v:RightClickMenu Grid.Row="1" />
-            <v:ChannelTextBoxEntryView Grid.Row="2"
-                                       Margin="0,0,0,10" />
+            <StackPanel Grid.Row="2">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Margin="0">
+                    <v:MarkupButtonView Margin="4"
+                                        VerticalAlignment="Center"
+                                        IsChecked="{Binding Path=ShowPreview, Mode=TwoWay}"/>
+                </StackPanel>
+                <v:ChannelTextBoxEntryView Margin="0,0,0,10" />
+            </StackPanel>
         </Grid>
     </Grid>
 </v:DisposableView>

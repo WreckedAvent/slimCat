@@ -138,6 +138,10 @@
                             Margin="0"
                             Grid.Column="1">
 
+                    <v:MarkupButtonView Margin="4"
+                                        VerticalAlignment="Center"
+                                        IsChecked="{Binding Path=ShowPreview, Mode=TwoWay}"/>
+                    
                     <v:AutoButtonView IsChecked="{Binding Path=AutoPost, Mode=TwoWay}"
                                       Visibility="{Binding Path=ShouldShowAutoPost, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                                       Margin="4"
