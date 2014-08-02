@@ -24,7 +24,7 @@
                 Background="{Binding Path=NeedsAttention, Mode=OneWay, Converter={StaticResource ColorConverter}}"
                 Command="{Binding Path=ToggleBarCommand}" />
 
-        <Grid Margin="15,20"
+        <Grid Margin="15,18,15,20"
               Visibility="{Binding Path=IsExpanded, Converter={StaticResource BoolConverter}}">
 
             <Grid.RowDefinitions>

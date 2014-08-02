@@ -101,7 +101,9 @@
                     </StackPanel>
                 </Expander>
                 <WrapPanel HorizontalAlignment="Right"
-                           VerticalAlignment="Top">
+                           VerticalAlignment="Top"
+                           Margin="6,6,6,2"
+                           Background="{StaticResource BackgroundBrush}">
                     <v:RestartButtonView Command="{Binding Path=ClearLogCommand}" />
                     <v:FolderButtonView Command="{Binding Path=OpenLogFolderCommand}" />
                     <v:FileButtonView Command="{Binding Path=OpenLogCommand}" />

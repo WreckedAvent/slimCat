@@ -4,11 +4,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource ImageContentButton}"
         ToolTip="Switch to chatting mode"
-        Margin="2,12,2,0">
+        Margin="2,7,2,0">
     <Button.Content>
         <Rectangle Fill="{Binding ElementName=ChatButton, Path=Foreground}"
-                   Height="12"
-                   Width="15">
+                   Height="18"
+                   Width="21">
             <Rectangle.OpacityMask>
                 <ImageBrush ImageSource="pack://application:,,,/icons/chat.png" />
             </Rectangle.OpacityMask>

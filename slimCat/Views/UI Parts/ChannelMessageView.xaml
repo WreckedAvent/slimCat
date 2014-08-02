@@ -24,7 +24,7 @@
             Foreground="{Binding Converter={StaticResource NameplateMessageColorConverter}, Mode=OneWay}" />
 
     <InlineUIContainer BaselineAlignment="Bottom">
-        <Rectangle Height="15" Width="15" Margin="0"
+        <Rectangle Height="15" Width="15"
                     Fill="{Binding Path=Poster, Converter={StaticResource GenderColorConverter}, Mode=OneWay}">
             <Rectangle.OpacityMask>
                 <ImageBrush

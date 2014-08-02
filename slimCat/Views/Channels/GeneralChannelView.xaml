@@ -47,7 +47,9 @@
                     </ScrollViewer>
                 </Expander>
                 <WrapPanel HorizontalAlignment="Right"
-                           VerticalAlignment="Top">
+                           VerticalAlignment="Top"
+                           Margin="6,6,6,2"
+                           Background="{StaticResource BackgroundBrush}">
                     <v:EditButtonView Command="{Binding Path=ChannelManagementViewModel.OpenChannelManagementCommand}"
                                       Visibility="{Binding Path=HasPermissions, Converter={StaticResource BoolConverter}}" />
                     <v:RestartButtonView Command="{Binding Path=ClearLogCommand}" />

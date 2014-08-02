@@ -32,9 +32,9 @@ namespace slimCat.Utilities
         public const string ClientId = "slimCat";
 
         /// <summary>
-        ///     The client's name.
+        ///     The client's name. Must be a type of cat.
         /// </summary>
-        public const string ClientName = "Ocelot";
+        public const string ClientName = "Puma";
 
         /// <summary>
         ///     The client's version.

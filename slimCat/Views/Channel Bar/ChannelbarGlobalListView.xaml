@@ -22,11 +22,11 @@
                     <DataTemplate DataType="models:CharacterModel">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="15" />
+                                <ColumnDefinition Width="18" />
                                 <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Rectangle Height="15" Width="15"
+                            <Rectangle Height="16" Width="16"
                                        Fill="{Binding Converter={StaticResource GenderColorConverter}, Mode=OneWay}">
                                 <Rectangle.OpacityMask>
                                     <ImageBrush

@@ -10,8 +10,8 @@
         Margin="3,0">
     <Button.Content>
         <Rectangle Fill="{Binding ElementName=CloseButton, Path=Foreground}"
-                   Height="11"
-                   Width="15">
+                   Height="14"
+                   Width="20">
             <Rectangle.OpacityMask>
                 <ImageBrush ImageSource="pack://application:,,,/icons/close.png" />
             </Rectangle.OpacityMask>

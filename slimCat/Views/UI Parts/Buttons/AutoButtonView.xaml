@@ -4,11 +4,11 @@
               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
               Style="{StaticResource ImageContentToggleButton}"
               ToolTip="Automatically repost Ads every 10 minutes"
-              Margin="2,10,2,0">
+              Margin="2,7,2,0">
     <ToggleButton.Content>
         <Rectangle Fill="{Binding ElementName=AutoButton, Path=Foreground}"
-                   Height="15"
-                   Width="15">
+                   Height="18"
+                   Width="18">
             <Rectangle.OpacityMask>
                 <ImageBrush ImageSource="pack://application:,,,/icons/auto.png" />
             </Rectangle.OpacityMask>

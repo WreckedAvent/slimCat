@@ -4,11 +4,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource ImageContentButton}"
         ToolTip="Switch between viewing this channel's Ads and normal messages"
-        Margin="2,10,2,0">
+        Margin="2,7,2,0">
     <Button.Content>
         <Rectangle Fill="{Binding ElementName=MoreButton, Path=Foreground}"
-                   Height="15"
-                   Width="15">
+                   Height="18"
+                   Width="18">
             <Rectangle.OpacityMask>
                 <ImageBrush ImageSource="pack://application:,,,/icons/more.png" />
             </Rectangle.OpacityMask>

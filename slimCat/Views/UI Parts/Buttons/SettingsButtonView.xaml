@@ -4,11 +4,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{StaticResource ImageContentButton}"
         ToolTip="Open Settings Configuration"
-        Margin="2,10,2,0">
+        Margin="2">
     <Button.Content>
         <Rectangle Fill="{Binding ElementName=SettingsButton, Path=Foreground}"
-                   Height="15"
-                   Width="15">
+                   Height="18"
+                   Width="18">
             <Rectangle.OpacityMask>
                 <ImageBrush ImageSource="pack://application:,,,/icons/settings.png" />
             </Rectangle.OpacityMask>

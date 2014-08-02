@@ -147,6 +147,8 @@ namespace slimCat.Services
                 HideWindow();
             };
 
+            cm.SelectedChannelChanged += (s, e) => events.GetEvent<ErrorEvent>().Publish(null);
+
             BuildIcon(character);
         }
 
