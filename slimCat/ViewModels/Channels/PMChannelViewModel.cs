@@ -90,9 +90,10 @@ namespace slimCat.ViewModels
             try
             {
                 model = Container.Resolve<PmChannelModel>(name);
-                noteService = notes;
-                model.Notes.AddRange(notes.GetNotes(name));
                 Model = model;
+
+                noteService = notes;
+                notes.GetNotes(name);
 
                 Model.PropertyChanged += OnModelPropertyChanged;
 
@@ -457,7 +458,6 @@ namespace slimCat.ViewModels
             OnPropertyChanged("CanShowNoteTimeLeft");
             OnPropertyChanged("CanPost");
 
-            model.Notes.Add(new MessageModel(ChatModel.CurrentCharacter, Message));
             Message = string.Empty;
         }
 

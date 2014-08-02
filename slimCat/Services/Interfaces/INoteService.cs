@@ -31,7 +31,7 @@ namespace slimCat.Services
         /// <summary>
         ///     Gets the note conversation of a given character.
         /// </summary>
-        IList<IMessage> GetNotes(string character);
+        void GetNotes(string character);
 
         /// <summary>
         ///     Updates the note cache for a given character, so they're refreshed next time viewed.

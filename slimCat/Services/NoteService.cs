@@ -17,6 +17,8 @@
 
 #endregion
 
+using System.Windows;
+
 namespace slimCat.Services
 {
     #region Usings
@@ -43,7 +45,9 @@ namespace slimCat.Services
 
     using Newtonsoft.Json.Linq;
 
-    using System.ComponentModel;
+    using Microsoft.Practices.Unity;
+
+    using Microsoft.Practices.Prism;
 
     #endregion
 
@@ -65,43 +69,50 @@ namespace slimCat.Services
         private readonly IChatModel cm;
 
         private readonly IEventAggregator events;
+
+        private readonly IUnityContainer container;
         #endregion
 
         #region Constructors
-        public NoteService(IBrowser browser, ICharacterManager characterMan, IChatModel cm, IEventAggregator eventagg)
+        public NoteService(IUnityContainer contain, IBrowser browser, ICharacterManager characterMan, IChatModel cm, IEventAggregator eventagg)
         {
             this.browser = browser;
             characterManager = characterMan;
             this.cm = cm;
             events = eventagg;
+            container = contain;
         }
         #endregion
 
         #region Public Methods
-        public IList<IMessage> GetNotes(string characterName)
+        public void GetNotes(string characterName)
         {
+            if (characterName.Equals(cm.CurrentCharacter.Name))
+                return;
+
             Conversation cache;
             if (noteCache.TryGetValue(characterName, out cache))
-            {
-                return cache.Messages;
-            }
+                return;
 
             var notes = new List<IMessage>();
 
             var resp = browser.GetResponse(Constants.UrlConstants.ViewHistory + characterName, true);
 
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.OptionCheckSyntax = false;
+            var htmlDoc = new HtmlDocument
+            {
+                OptionCheckSyntax = false
+            };
+
             HtmlNode.ElementsFlags.Remove("option");
             htmlDoc.LoadHtml(resp);
 
             if (htmlDoc.DocumentNode == null)
-                return notes;
+                return;
 
             var result = htmlDoc.DocumentNode.SelectNodes(NoteXpath);
 
             if (result == null || result.Count == 0)
-                return notes;
+                return;
 
             var title = string.Empty;
             {
@@ -114,7 +125,7 @@ namespace slimCat.Services
                         .Select(x => x.Value)
                         .FirstOrDefault();
 
-                    title = value == null ? title : value;
+                    title = value ?? title;
                 }
             }
 
@@ -129,7 +140,7 @@ namespace slimCat.Services
                         .Select(x => x.Value)
                         .FirstOrDefault();
 
-                    sourceId = value == null ? sourceId : value;
+                    sourceId = value ?? sourceId;
                 }
             }
 
@@ -142,11 +153,16 @@ namespace slimCat.Services
                     HttpUtility.HtmlDecode(split[2]),
                     FromAgoString(split[1].Trim()));
             })
-            .Each(x => notes.Add(x));
+            .Each(notes.Add);
 
-            noteCache.Add(characterName, new Conversation { Messages = notes, Subject = title, SourceId = sourceId});
+            Application.Current.Dispatcher.BeginInvoke((Action) delegate
+            {
+                noteCache.Add(characterName, new Conversation {Messages = notes, Subject = title, SourceId = sourceId});
 
-            return notes;
+                var model = container.Resolve<PmChannelModel>(characterName);
+                model.Notes.Clear();
+                model.Notes.AddRange(notes);
+            });
         }
 
         public void UpdateNoteCache(string characterName)
@@ -167,21 +183,25 @@ namespace slimCat.Services
                 { "source",  conversation.SourceId }
             };
 
-            var worker = new BackgroundWorker();
-            worker.DoWork += (o, arg) =>
+            Application.Current.Dispatcher.BeginInvoke((Action)delegate
             {
 
                 var resp = browser.GetResponse(Constants.UrlConstants.SendNote, args, true);
                 var json = (JObject)JsonConvert.DeserializeObject(resp);
 
                 JToken errorMessage;
+                var error = string.Empty;
                 if (json.TryGetValue("error", out errorMessage))
                 {
-                    var value = errorMessage.ToString();
-                    events.GetEvent<ErrorEvent>().Publish(value);
+                    error = errorMessage.ToString();
+                    events.GetEvent<ErrorEvent>().Publish(error);
                 }
-            };
-            worker.RunWorkerAsync();
+
+                if (!string.IsNullOrEmpty(error)) return;
+
+                var model = container.Resolve<PmChannelModel>(characterName);
+                model.Notes.Add(new MessageModel(cm.CurrentCharacter, message));
+            });
         }
 
         private DateTime FromAgoString(string timeAgo)
