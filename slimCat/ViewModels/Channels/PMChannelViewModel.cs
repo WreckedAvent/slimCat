@@ -50,7 +50,13 @@ namespace slimCat.ViewModels
 
         private Timer cooldownTimer = new Timer(500);
 
+        private Timer noteCooldownTimer = new Timer(20050);
+
+        private Timer noteCooldownUpdateTick = new Timer(1000);
+
         private bool isInCoolDown;
+
+        private bool isInNoteCoolDown;
 
         private bool isTyping;
 
@@ -67,6 +73,10 @@ namespace slimCat.ViewModels
         private RelayCommand @switch;
 
         private PmChannelModel model;
+
+        private string noteMessage;
+
+        private DateTimeOffset noteTimeLeft;
 
         #endregion
 
@@ -92,40 +102,54 @@ namespace slimCat.ViewModels
                     .Subscribe(OnNewUpdateEvent, ThreadOption.PublisherThread, true, UpdateIsOurCharacter);
 
                 cooldownTimer.Elapsed += (s, e) =>
-                    {
-                        isInCoolDown = false;
-                        cooldownTimer.Enabled = false;
-                        OnPropertyChanged("CanPost");
-                    };
+                {
+                    isInCoolDown = false;
+                    cooldownTimer.Enabled = false;
+                    OnPropertyChanged("CanPost");
+                };
+
+                noteCooldownTimer.Elapsed += (s, e) =>
+                {
+                    isInNoteCoolDown = false;
+                    noteCooldownTimer.Enabled = false;
+                    noteCooldownUpdateTick.Enabled = false;
+                    OnPropertyChanged("CanPost");
+                    OnPropertyChanged("CanShowNoteTimeLeft");
+                };
+
+                noteCooldownUpdateTick.Elapsed += (s, e) =>
+                {
+                    OnPropertyChanged("NoteTimeLeft");
+                };
 
                 checkTick.Elapsed += (s, e) =>
+                {
+                    if (!IsTyping)
+                        checkTick.Enabled = false;
+
+                    if (!string.IsNullOrEmpty(Message) && typingLengthCache == Message.Length)
                     {
-                        if (!IsTyping)
-                            checkTick.Enabled = false;
+                        IsTyping = false;
+                        SendTypingNotification(TypingStatus.Paused);
+                        checkTick.Enabled = false;
+                    }
 
-                        if (!string.IsNullOrEmpty(Message) && typingLengthCache == Message.Length)
-                        {
-                            IsTyping = false;
-                            SendTypingNotification(TypingStatus.Paused);
-                            checkTick.Enabled = false;
-                        }
-
-                        if (IsTyping)
-                            typingLengthCache = Message != null ? Message.Length : 0;
-                    };
+                    if (IsTyping)
+                        typingLengthCache = Message != null ? Message.Length : 0;
+                };
 
                 Model.Settings = SettingsService.GetChannelSettings(
                     cm.CurrentCharacter.Name, Model.Title, Model.Id, Model.Type);
 
                 ChannelSettings.Updated += (s, e) =>
+                {
+                    OnPropertyChanged("ChannelSettings");
+                    if (!ChannelSettings.IsChangingSettings)
                     {
-                        OnPropertyChanged("ChannelSettings");
-                        if (!ChannelSettings.IsChangingSettings)
-                        {
-                            SettingsService.UpdateSettingsFile(
-                                ChannelSettings, cm.CurrentCharacter.Name, Model.Title, Model.Id);
-                        }
-                    };
+                        SettingsService.UpdateSettingsFile(
+                            ChannelSettings, cm.CurrentCharacter.Name, Model.Title, Model.Id);
+                    }
+                };
 
                 messageManager = new FilteredCollection<IMessage, IViewableObject>(
                     Model.Messages, message => true);
@@ -154,7 +178,11 @@ namespace slimCat.ViewModels
 
         public bool CanPost
         {
-            get { return !isInCoolDown || !ApplicationSettings.AllowTextboxDisable; }
+            get
+            {
+                var isCooling = isViewingChat ? isInCoolDown : isInNoteCoolDown;
+                return !isCooling || !ApplicationSettings.AllowTextboxDisable;
+            }
         }
 
         public bool CanDisplayChat
@@ -217,11 +245,27 @@ namespace slimCat.ViewModels
 
                 messageManager.OriginalCollection = value ? model.Messages : model.Notes;
 
+                var temp = Message;
+                Message = noteMessage;
+                noteMessage = temp;
+
                 OnPropertyChanged("IsViewingChat");
                 OnPropertyChanged("Title");
                 OnPropertyChanged("CurrentMessages");
                 OnPropertyChanged("MaxMessageLength");
+                OnPropertyChanged("CanPost");
+                OnPropertyChanged("CanShowNoteTimeLeft");
             }
+        }
+
+        public bool CanShowNoteTimeLeft
+        {
+            get { return !IsViewingChat && isInNoteCoolDown; }
+        }
+
+        public string NoteTimeLeft
+        {
+            get { return HelperConverter.DateTimeInFutureToRough(noteTimeLeft) + "remaining"; }
         }
 
         public bool ShouldShowPostLength
@@ -346,6 +390,14 @@ namespace slimCat.ViewModels
 
         protected override void SendMessage()
         {
+            if (IsViewingChat)
+                SendPrivateMessage();
+            else
+                SendNote();
+        }
+
+        private void SendPrivateMessage()
+        {
             if (Message.Length > 50000)
             {
                 UpdateError("I can't let you post that. That's way too big. Try again, buddy.");
@@ -364,7 +416,7 @@ namespace slimCat.ViewModels
                 return;
             }
 
-            Events.SendUserCommand(CommandDefinitions.ClientSendPm, new[] {Message, ConversationWith.Name});
+            Events.SendUserCommand(CommandDefinitions.ClientSendPm, new[] { Message, ConversationWith.Name });
             Message = string.Empty;
 
             isInCoolDown = true;
@@ -372,6 +424,41 @@ namespace slimCat.ViewModels
             OnPropertyChanged("CanPost");
             IsTyping = false;
             checkTick.Enabled = false;
+        }
+
+        private void SendNote()
+        {
+            if (Message.Length > 200000)
+            {
+                UpdateError("You expect me to post all of that? Try something shorter!");
+                return;
+            }
+
+
+            if (isInNoteCoolDown)
+            {
+                UpdateError("Spamming isn't nice!");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Message))
+            {
+                UpdateError("Hmm. I can't send nothing.");
+                return;
+            }
+
+            noteService.SendNote(Message, ConversationWith.Name);
+            isInNoteCoolDown = true;
+            noteCooldownTimer.Enabled = true;
+            noteCooldownUpdateTick.Enabled = true;
+
+            noteTimeLeft = DateTime.Now.AddMilliseconds(noteCooldownTimer.Interval);
+            OnPropertyChanged("NoteTimeLeft");
+            OnPropertyChanged("CanShowNoteTimeLeft");
+            OnPropertyChanged("CanPost");
+
+            model.Notes.Add(new MessageModel(ChatModel.CurrentCharacter, Message));
+            Message = string.Empty;
         }
 
         private void OnNewUpdateEvent(NotificationModel param)
@@ -395,6 +482,8 @@ namespace slimCat.ViewModels
 
         private void SendTypingNotification(TypingStatus type)
         {
+            if (!IsViewingChat) return;
+
             Events.SendUserCommand(CommandDefinitions.ClientSendTypingStatus,
                 new[] {type.ToString().ToLower(), ConversationWith.Name});
         }

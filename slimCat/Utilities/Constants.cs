@@ -317,6 +317,10 @@ namespace slimCat.Utilities
             ///     The url for the upload log script.
             /// </summary>
             public const string UploadLog = Domain + @"/fchat/submitLog.php";
+
+            public const string ViewHistory = Domain + @"/history.php?name=";
+
+            public const string SendNote = Domain + @"/json/notes-send.json";
         }
     }
 }

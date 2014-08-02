@@ -1589,6 +1589,11 @@ namespace slimCat.Utilities
         /// <returns>A string in the format [hours:minutes]</returns>
         public static string ToTimeStamp(this DateTimeOffset time)
         {
+            if (time.AddDays(1) < DateTime.Now)
+            {
+                return "[" + time.ToString("d") + "]";
+            }
+
             var minute = time.Minute;
             var minuteFix = minute.ToString(CultureInfo.InvariantCulture).Insert(0, minute < 10 ? "0" : string.Empty);
 

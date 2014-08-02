@@ -37,6 +37,14 @@ namespace slimCat.Services
 
     using System.Web;
 
+    using Microsoft.Practices.Prism.Events;
+
+    using Newtonsoft.Json;
+
+    using Newtonsoft.Json.Linq;
+
+    using System.ComponentModel;
+
     #endregion
 
     public class NoteService : INoteService
@@ -44,36 +52,47 @@ namespace slimCat.Services
         #region Fields
         private readonly IBrowser browser;
 
-        private const string NoteUrl = "https://www.f-list.net/history.php?name=";
-
         private const string NoteXpath = "//div[contains(@class, 'panel') and contains(@class, 'FormattedBlock')]";
 
-        private IDictionary<string, IList<IMessage>> noteCache = new Dictionary<string, IList<IMessage>>();
+        private const string NoteTitleXpath = "//input[@id='SendNoteTitle']";
+
+        private const string NoteIdXpath = "//select/option[normalize-space(.)='{0}']";
+
+        private IDictionary<string, Conversation> noteCache = new Dictionary<string, Conversation>();
 
         private readonly ICharacterManager characterManager;
+
+        private readonly IChatModel cm;
+
+        private readonly IEventAggregator events;
         #endregion
 
         #region Constructors
-        public NoteService(IBrowser browser, ICharacterManager characterMan)
+        public NoteService(IBrowser browser, ICharacterManager characterMan, IChatModel cm, IEventAggregator eventagg)
         {
             this.browser = browser;
             characterManager = characterMan;
+            this.cm = cm;
+            events = eventagg;
         }
         #endregion
 
         #region Public Methods
         public IList<IMessage> GetNotes(string characterName)
         {
-            IList<IMessage> notes;
-            if (noteCache.TryGetValue(characterName, out notes))
+            Conversation cache;
+            if (noteCache.TryGetValue(characterName, out cache))
             {
-                return notes;
+                return cache.Messages;
             }
-            notes = new List<IMessage>();
 
-            var resp = browser.GetResponse(NoteUrl + characterName, true);
+            var notes = new List<IMessage>();
+
+            var resp = browser.GetResponse(Constants.UrlConstants.ViewHistory + characterName, true);
 
             var htmlDoc = new HtmlDocument();
+            htmlDoc.OptionCheckSyntax = false;
+            HtmlNode.ElementsFlags.Remove("option");
             htmlDoc.LoadHtml(resp);
 
             if (htmlDoc.DocumentNode == null)
@@ -83,6 +102,36 @@ namespace slimCat.Services
 
             if (result == null || result.Count == 0)
                 return notes;
+
+            var title = string.Empty;
+            {
+                var titleInput = htmlDoc.DocumentNode.SelectSingleNode(NoteTitleXpath);
+
+                if (titleInput != null)
+                {
+                    var value = titleInput.Attributes
+                        .Where(x => x.Name == "value")
+                        .Select(x => x.Value)
+                        .FirstOrDefault();
+
+                    title = value == null ? title : value;
+                }
+            }
+
+            var sourceId = string.Empty;
+            {
+                var sourceIdInput = htmlDoc.DocumentNode.SelectSingleNode(string.Format(NoteIdXpath, cm.CurrentCharacter.Name));
+
+                if (sourceIdInput != null)
+                {
+                    var value = sourceIdInput.Attributes
+                        .Where(x => x.Name.Equals("value"))
+                        .Select(x => x.Value)
+                        .FirstOrDefault();
+
+                    sourceId = value == null ? sourceId : value;
+                }
+            }
 
             result.Select(x =>
             {
@@ -95,14 +144,44 @@ namespace slimCat.Services
             })
             .Each(x => notes.Add(x));
 
-            noteCache.Add(characterName, notes);
+            noteCache.Add(characterName, new Conversation { Messages = notes, Subject = title, SourceId = sourceId});
 
             return notes;
         }
 
-        public void RemoveNoteCache(string characterName)
+        public void UpdateNoteCache(string characterName)
         {
             noteCache.Remove(characterName);
+            GetNotes(characterName);
+        }
+
+        public void SendNote(string message, string characterName)
+        {
+            var conversation = noteCache[characterName];
+
+            var args = new Dictionary<string, object>()
+            {
+                { "title", conversation.Subject },
+                { "message", message },
+                { "dest", characterName },
+                { "source",  conversation.SourceId }
+            };
+
+            var worker = new BackgroundWorker();
+            worker.DoWork += (o, arg) =>
+            {
+
+                var resp = browser.GetResponse(Constants.UrlConstants.SendNote, args, true);
+                var json = (JObject)JsonConvert.DeserializeObject(resp);
+
+                JToken errorMessage;
+                if (json.TryGetValue("error", out errorMessage))
+                {
+                    var value = errorMessage.ToString();
+                    events.GetEvent<ErrorEvent>().Publish(value);
+                }
+            };
+            worker.RunWorkerAsync();
         }
 
         private DateTime FromAgoString(string timeAgo)
@@ -143,4 +222,12 @@ namespace slimCat.Services
         } 
         #endregion
     }
+
+    class Conversation
+    {
+        public IList<IMessage> Messages { get; set; }
+        public string SourceId { get; set; }
+        public string Subject { get; set; }
+    }
+
 }

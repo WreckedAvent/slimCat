@@ -18,12 +18,13 @@
 #endregion
 
 using slimCat.Models;
+
 using System.Collections.Generic;
 
 namespace slimCat.Services
 {
     /// <summary>
-    ///     Represents an endpoint for bi-directional HTTP requests.
+    ///     Represents endpoints for sending and retrieving notes.
     /// </summary>
     public interface INoteService
     {
@@ -33,8 +34,14 @@ namespace slimCat.Services
         IList<IMessage> GetNotes(string character);
 
         /// <summary>
-        ///     Removes the note cache for a given character, so they're refreshed next time viewed.
+        ///     Updates the note cache for a given character, so they're refreshed next time viewed.
         /// </summary>
-        void RemoveNoteCache(string character);
+        void UpdateNoteCache(string character);
+
+        /// <summary>
+        ///     Sends the specified message to the specified character via note.
+        ///     The last message in the conversation is used for the title.
+        /// </summary>
+        void SendNote(string message, string characterName);
     }
 }
