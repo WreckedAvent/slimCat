@@ -92,7 +92,14 @@ namespace slimCat.Services
 
             Conversation cache;
             if (noteCache.TryGetValue(characterName, out cache))
+            {
+                var model = container.Resolve<PmChannelModel>(characterName);
+                if (model == null) return;
+
+                model.Notes.Clear();
+                model.Notes.AddRange(cache.Messages);
                 return;
+            }
 
             var notes = new List<IMessage>();
 
@@ -166,7 +173,9 @@ namespace slimCat.Services
                             SourceId = sourceId
                         });
 
-                    var model = container.Resolve<PmChannelModel>(characterName);
+                    var model = cm.CurrentPms.FirstByIdOrNull(characterName);
+                    if (model == null) return;
+
                     model.Notes.Clear();
                     model.Notes.AddRange(notes);
                 });
@@ -215,12 +224,14 @@ namespace slimCat.Services
 
                 if (!string.IsNullOrEmpty(error)) return;
 
-                var model = container.Resolve<PmChannelModel>(characterName);
+                var model = cm.CurrentPms.FirstByIdOrNull(characterName);
+                if (model == null) return;
+
                 model.Notes.Add(new MessageModel(cm.CurrentCharacter, message));
             });
         }
 
-        private DateTime FromAgoString(string timeAgo)
+        private static DateTime FromAgoString(string timeAgo)
         {
             // captures a string like '8m, 25d, 8h, 55m'
             const string regex = @"(\d+y|\d+mo|\d+d|\d+h|\d+m),? *";
