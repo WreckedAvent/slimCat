@@ -637,7 +637,7 @@ namespace slimCat.ViewModels
 
         protected override void SendMessage()
         {
-            UpdateError("Cannot send messages to this channel!");
+            UpdateError("Cannot send messages to the home tab!");
         }
 
         private void Save()

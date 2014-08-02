@@ -5,9 +5,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              xmlns:vm="clr-namespace:slimCat.ViewModels"
-
+             xmlns:s="clr-namespace:System;assembly=mscorlib"
+             
              d:DataContext="{d:DesignInstance vm:ChannelViewModelBase}">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        
         <TextBox Text="{Binding Path=Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  TextWrapping="Wrap"
                  FontSize="13"
@@ -43,18 +49,11 @@
             </TextBox.Style>
         </TextBox>
 
-        <Popup PlacementTarget="{Binding ElementName=Entry}"
-               IsOpen="{Binding HasError, Mode=OneWay}"
-               AllowsTransparency="True">
-            <Border BorderBrush="{StaticResource HighlightBrush}"
-                    BorderThickness="1"
-                    Padding="5"
-                    Background="{StaticResource ForegroundBrush}">
-                <TextBlock Foreground="{StaticResource DepressedBrush}"
-                           FontSize="16"
-                           FontWeight="Bold"
-                           Text="{Binding Error}" />
-            </Border>
-        </Popup>
+        <TextBlock Foreground="{StaticResource HighlightBrush}"
+                   Visibility="{Binding HasError, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                   FontSize="16"
+                   FontWeight="Bold"
+                   Text="{Binding Error}"
+                   Grid.Row="1"/>
     </Grid>
 </UserControl>

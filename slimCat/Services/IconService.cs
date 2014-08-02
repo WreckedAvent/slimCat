@@ -147,10 +147,6 @@ namespace slimCat.Services
                 HideWindow();
             };
 
-            Application.Current.MainWindow.MouseLeave += (s, e) => events.GetEvent<ErrorEvent>().Publish(null);
-
-            cm.SelectedChannelChanged += (s, e) => events.GetEvent<ErrorEvent>().Publish(null);
-
             BuildIcon(character);
         }
 
