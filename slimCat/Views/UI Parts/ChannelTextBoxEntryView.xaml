@@ -6,6 +6,7 @@
              mc:Ignorable="d"
              xmlns:vm="clr-namespace:slimCat.ViewModels"
              xmlns:lib="clr-namespace:slimCat.Libraries"
+             xmlns:v="clr-namespace:slimCat.Views"
 
              d:DataContext="{d:DesignInstance vm:ChannelViewModelBase}">
     <Grid>
@@ -14,13 +15,17 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
-        <TextBlock Foreground="{StaticResource HighlightBrush}"
-                   Visibility="{Binding Error, Mode=OneWay, Converter={StaticResource EmptyConverter}}"
-                   FontSize="16"
-                   FontWeight="Bold"
-                   Text="{Binding Error}"
-                   TextWrapping="Wrap"/>
+
+        <DockPanel Visibility="{Binding Error, Mode=OneWay, Converter={StaticResource EmptyConverter}}">
+            <v:CloseButtonView DockPanel.Dock="Right"
+                                   Command="{Binding ClearErrorCommand}"/>
+            
+            <TextBlock Foreground="{StaticResource HighlightBrush}"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       Text="{Binding Error}"
+                       TextWrapping="Wrap"/>
+        </DockPanel>
 
         <ScrollViewer MaxHeight="200"
                       Visibility="{Binding ShowPreview, Mode=OneWay, Converter={StaticResource BoolConverter}}"
@@ -28,7 +33,7 @@
                       Grid.Row="1">
             <StackPanel>
                 <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0" />
-
+                
                 <TextBlock Margin="0"
                            FontSize="14"
                            Foreground="{StaticResource ForegroundBrush}"

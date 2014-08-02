@@ -6,7 +6,7 @@
         Background="Transparent"
         HorizontalAlignment="Right"
         VerticalAlignment="Center"
-        ToolTip="Close this tab"
+        ToolTip="Remove this element"
         Margin="3,0">
     <Button.Content>
         <Rectangle Fill="{Binding ElementName=CloseButton, Path=Foreground}"
