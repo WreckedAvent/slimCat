@@ -566,6 +566,8 @@ namespace slimCat.ViewModels
 
             SettingsService.ReadApplicationSettingsFromXml(ChatModel.CurrentCharacter.Name, CharacterManager);
             automation.ResetStatusTimers();
+            OnPropertyChanged("RecentChannels");
+            OnPropertyChanged("RecentCharacters");
 
             CheckForUpdates();
         }

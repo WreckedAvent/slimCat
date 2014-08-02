@@ -215,9 +215,18 @@ namespace slimCat.ViewModels
         {
             get
             {
-                return string.IsNullOrEmpty(noteSubject) 
-                    ? noteService.GetLastSubject(ConversationWith.Name) 
-                    : noteSubject;
+                if (string.IsNullOrEmpty(noteSubject))
+                {
+                    noteSubject = noteService.GetLastSubject(ConversationWith.Name);
+                }
+
+                if (string.IsNullOrEmpty(noteSubject) && !showSubject)
+                {
+                    showSubject = true;
+                    OnPropertyChanged("CanShowSubject");
+                }
+
+                return noteSubject;
             }
             set
             {
