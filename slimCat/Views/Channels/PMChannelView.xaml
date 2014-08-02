@@ -72,7 +72,9 @@
                                    TextAlignment="Left"
                                    HorizontalAlignment="Left">
                             <v:ChannelTypeButtonView IsEnabled="False" Margin="0,0,0,3" />
-                            <ContentControl Content="{Binding Path=ConversationWith}" />
+                            <ContentControl Content="{Binding Path=ConversationWith}" />                            
+                            <ContentControl Content="{Binding Path=Title, Mode=OneWay}"
+                                            Foreground="{StaticResource ForegroundBrush}" />
                         </TextBlock>
                     </Expander.Header>
                     <StackPanel TextBlock.FontSize="14">
@@ -119,20 +121,35 @@
 
         <StackPanel Grid.Row="2"
                     Orientation="Vertical">
-            <WrapPanel Orientation="Horizontal"
-                       HorizontalAlignment="Left">
-                <TextBlock Foreground="{StaticResource HighlightBrush}"
-                           Visibility="{Binding Path=ShouldShowPostLength, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                           VerticalAlignment="Center"
-                           Margin="2,0,4,0">
-                    <Run Text="{Binding Path=Message.Length, Mode=OneWay}" />
-                    <Run Text="/" />
-                    <Run Text="50,000" />
-                </TextBlock>
-                <TextBlock Foreground="{StaticResource HighlightBrush}"
-                           Text="{Binding Path=TypingString}" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <WrapPanel Orientation="Horizontal"
+                           HorizontalAlignment="Left">
+                    <TextBlock Foreground="{StaticResource HighlightBrush}"
+                               Visibility="{Binding Path=ShouldShowPostLength, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                               VerticalAlignment="Center"
+                               Margin="2,0,4,0">
+                        <Run Text="{Binding Path=Message.Length, Mode=OneWay}" />
+                        <Run Text="/" />
+                        <Run Text="50,000" />
+                        </TextBlock>
+                        <TextBlock Foreground="{StaticResource HighlightBrush}"
+                                   Text="{Binding Path=TypingString}" />
 
-            </WrapPanel>
+                </WrapPanel>
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Margin="0"
+                            Grid.Column="1">
+                    <v:MoreButtonView Command="{Binding SwitchCommand}"
+                                      Visibility="{Binding Path=CanSwitch, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                                      BorderBrush="{Binding Path=OtherTabHasMessages, Mode=OneWay, Converter={StaticResource ColorConverter}}"
+                                      Margin="4" />
+                </StackPanel>
+            </Grid>
             <v:RightClickMenu />
             <v:CreateReportView />
             <v:ChannelTextBoxEntryView Margin="0,0,0,10"

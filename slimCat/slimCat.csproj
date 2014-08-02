@@ -85,6 +85,9 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>lib\HtmlAgilityPack.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.Prism, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Microsoft.Practices.Prism.dll</HintPath>
@@ -188,6 +191,7 @@
     <Compile Include="Services\ChannelListUpdaterService.cs" />
     <Compile Include="Services\IconService.cs" />
     <Compile Include="Services\Interfaces\IAutomationService.cs" />
+    <Compile Include="Services\Interfaces\INoteService.cs" />
     <Compile Include="Services\Interfaces\IBrowser.cs" />
     <Compile Include="Services\Interfaces\IChannelManager.cs" />
     <Compile Include="Services\Interfaces\IChatConnection.cs" />
@@ -195,6 +199,7 @@
     <Compile Include="Services\Interfaces\ILoggingService.cs" />
     <Compile Include="Services\Interfaces\IPermissionService.cs" />
     <Compile Include="Services\Interfaces\ITicketProvider.cs" />
+    <Compile Include="Services\NoteService.cs" />
     <Compile Include="Services\PermissionService.cs" />
     <Compile Include="Services\SettingsService.cs" />
     <Compile Include="Services\TicketProvider.cs" />

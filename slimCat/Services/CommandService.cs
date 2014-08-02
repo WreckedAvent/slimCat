@@ -55,6 +55,8 @@ namespace slimCat.Services
 
         private readonly IChannelManager manager;
 
+        private readonly INoteService notes;
+
         private readonly string[] noisyTypes;
 
         private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
@@ -73,12 +75,14 @@ namespace slimCat.Services
             IRegionManager regman,
             IEventAggregator eventagg,
             ICharacterManager characterManager,
-            IAutomationService automation)
+            IAutomationService automation,
+            INoteService notes)
             : base(contain, regman, eventagg, cm, characterManager)
         {
             connection = conn;
             this.manager = manager;
             this.automation = automation;
+            this.notes = notes;
 
             Events.GetEvent<CharacterSelectedLoginEvent>()
                 .Subscribe(GetCharacter, ThreadOption.BackgroundThread, true);
@@ -979,6 +983,7 @@ namespace slimCat.Services
                             NoteId = id
                         });
 
+                notes.RemoveNoteCache(senderName);
                 Events.GetEvent<NewUpdateEvent>().Publish(update);
             }
             else if (type.Equals("comment"))

@@ -19,6 +19,7 @@
 
 namespace slimCat.Models
 {
+    using System;
     #region Usings
 
     using System.Windows.Documents;
@@ -50,6 +51,14 @@ namespace slimCat.Models
                 : MessageType.Ad;
 
             Message = message;
+        }
+
+        public MessageModel(ICharacter poster, string message, DateTimeOffset posted)
+            : base(posted)
+        {
+            Poster = poster;
+            Message = message;
+            Type = MessageType.Normal;
         }
 
         #endregion

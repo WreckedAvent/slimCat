@@ -47,6 +47,11 @@ namespace slimCat.Models
             posted = DateTimeOffset.Now;
         }
 
+        protected MessageBase(DateTimeOffset posted)
+        {
+            this.posted = posted;
+        }
+
         #endregion
 
         #region Public Properties

@@ -84,16 +84,21 @@ namespace slimCat.Services
             }
         }
 
-        public string GetResponse(string host)
+        public string GetResponse(string host, bool useCookies = false)
         {
-            using (var client = new WebClient())
-            using (var stream = client.OpenRead(host))
-            {
-                if (stream == null)
-                    return null;
+            var req = (HttpWebRequest)WebRequest.Create(host);
+            req.Method = "GET";
 
-                using (var reader = new StreamReader(stream))
-                    return reader.ReadToEnd();
+            if (useCookies)
+                req.CookieContainer = loginCookies;
+
+            using (var rep = (HttpWebResponse)req.GetResponse())
+            using (var answerStream = rep.GetResponseStream())
+            {
+                if (answerStream == null)
+                    return null;
+                using (var answerReader = new StreamReader(answerStream))
+                    return answerReader.ReadToEnd(); // read our response
             }
         }
     }

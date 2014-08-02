@@ -22,7 +22,12 @@ namespace slimCat.Models
     #region Usings
 
     using System.Text;
+
     using System.Timers;
+
+    using Services;
+
+    using System.Collections.ObjectModel;
 
     #endregion
 
@@ -34,10 +39,14 @@ namespace slimCat.Models
         #region Fields
 
         private StringBuilder isTypingString;
+
         private ICharacter targetCharacter;
 
         private TypingStatus typing;
+
         private Timer updateTick;
+
+        private ObservableCollection<IMessage> notes = new ObservableCollection<IMessage>();
 
         #endregion
 
@@ -61,17 +70,17 @@ namespace slimCat.Models
             Settings = new ChannelSettingsModel(true);
 
             updateTick.Elapsed += (s, e) =>
+            {
+                if (isTypingString.Length < 3)
+                    isTypingString.Append(".");
+                else
                 {
-                    if (isTypingString.Length < 3)
-                        isTypingString.Append(".");
-                    else
-                    {
-                        isTypingString.Clear();
-                        isTypingString.Append(".");
-                    }
+                    isTypingString.Clear();
+                    isTypingString.Append(".");
+                }
 
-                    OnPropertyChanged("TypingString");
-                };
+                OnPropertyChanged("TypingString");
+            };
         }
 
         #endregion
@@ -139,6 +148,11 @@ namespace slimCat.Models
         }
 
         public bool HasAutoRepliedTo { get; set; }
+
+        public ObservableCollection<IMessage> Notes
+        {
+            get { return notes; }
+        }
 
         #endregion
 

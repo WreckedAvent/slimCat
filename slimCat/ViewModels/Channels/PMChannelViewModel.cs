@@ -32,6 +32,10 @@ namespace slimCat.ViewModels
     using Services;
     using Utilities;
     using Views;
+    using System.Windows.Input;
+    using Libraries;
+    using Microsoft.Practices.Prism;
+    using System.Linq;
 
     #endregion
 
@@ -50,9 +54,19 @@ namespace slimCat.ViewModels
 
         private bool isTyping;
 
+        private bool isViewingChat = true;
+
         private FilteredCollection<IMessage, IViewableObject> messageManager;
 
+        private FilteredCollection<IMessage, IViewableObject> notesManager;
+
         private int typingLengthCache;
+
+        private INoteService noteService;
+
+        private RelayCommand @switch;
+
+        private PmChannelModel model;
 
         #endregion
 
@@ -60,13 +74,15 @@ namespace slimCat.ViewModels
 
         public PmChannelViewModel(
             string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
-            ICharacterManager manager)
+            ICharacterManager manager, INoteService notes)
             : base(contain, regman, events, cm, manager)
         {
             try
             {
-                var temp = Container.Resolve<PmChannelModel>(name);
-                Model = temp;
+                model = Container.Resolve<PmChannelModel>(name);
+                noteService = notes;
+                model.Notes.AddRange(notes.GetNotes(name));
+                Model = model;
 
                 Model.PropertyChanged += OnModelPropertyChanged;
 
@@ -113,6 +129,9 @@ namespace slimCat.ViewModels
 
                 messageManager = new FilteredCollection<IMessage, IViewableObject>(
                     Model.Messages, message => true);
+
+                notesManager = new FilteredCollection<IMessage, IViewableObject>(
+                    model.Notes, message => true);
 
                 LoggingSection = "pm channel vm";
             }
@@ -163,6 +182,11 @@ namespace slimCat.ViewModels
             get { return !string.IsNullOrEmpty(ChannelSettings.NotifyTerms); }
         }
 
+        public string Title
+        {
+            get { return isViewingChat ? "Chat" : "Notes"; }
+        }
+
         public bool HasStatus
         {
             get { return ConversationWith.StatusMessage.Length > 0; }
@@ -176,6 +200,21 @@ namespace slimCat.ViewModels
             {
                 isTyping = value;
                 OnPropertyChanged("ShouldShowPostLength");
+            }
+        }
+
+        public bool IsViewingChat
+        {
+            get { return isViewingChat; }
+            set
+            {
+                isViewingChat = value;
+
+                messageManager.OriginalCollection = value ? model.Messages : model.Notes;
+
+                OnPropertyChanged("IsViewingChat");
+                OnPropertyChanged("Title");
+                OnPropertyChanged("CurrentMessages");
             }
         }
 
@@ -240,6 +279,15 @@ namespace slimCat.ViewModels
                     default:
                         return string.Empty;
                 }
+            }
+        }
+
+        public ICommand SwitchCommand
+        {
+            get
+            {
+                return @switch
+                       ?? (@switch = new RelayCommand(param => IsViewingChat = !IsViewingChat));
             }
         }
 

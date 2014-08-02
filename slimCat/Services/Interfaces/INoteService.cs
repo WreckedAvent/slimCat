@@ -17,33 +17,24 @@
 
 #endregion
 
+using slimCat.Models;
+using System.Collections.Generic;
+
 namespace slimCat.Services
 {
-    #region Usings
-
-    using System.Collections.Generic;
-
-    using System.IO;
-
-    #endregion
-
     /// <summary>
     ///     Represents an endpoint for bi-directional HTTP requests.
     /// </summary>
-    public interface IBrowser
+    public interface INoteService
     {
         /// <summary>
-        ///     Gets the response from the host.
+        ///     Gets the note conversation of a given character.
         /// </summary>
-        /// <param name="host">The host of the endpoint.</param>
-        /// <param name="arguments">The arguments to serialize and send.</param>
-        /// <param name="useCookies">if set to <c>true</c> then cookies will be saved/used.</param>
-        /// <returns>
-        ///     The full response from the endpoint serialized to a string.
-        /// </returns>
-        string GetResponse(string host, IEnumerable<KeyValuePair<string, object>> arguments,
-            bool useCookies = false);
+        IList<IMessage> GetNotes(string character);
 
-        string GetResponse(string host, bool useCookies = false);
+        /// <summary>
+        ///     Removes the note cache for a given character, so they're refreshed next time viewed.
+        /// </summary>
+        void RemoveNoteCache(string character);
     }
 }
