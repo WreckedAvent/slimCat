@@ -134,7 +134,7 @@
                                Margin="2,0,4,0">
                         <Run Text="{Binding Path=Message.Length, Mode=OneWay}" />
                         <Run Text="/" />
-                        <Run Text="50,000" />
+                        <Run Text="{Binding Path=MaxMessageLength, Mode=OneWay}" />
                         </TextBlock>
                         <TextBlock Foreground="{StaticResource HighlightBrush}"
                                    Text="{Binding Path=TypingString}" />

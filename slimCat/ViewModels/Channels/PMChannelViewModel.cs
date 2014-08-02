@@ -203,6 +203,11 @@ namespace slimCat.ViewModels
             }
         }
 
+        public string MaxMessageLength
+        {
+            get { return isViewingChat ? "50,000" : "200,000"; }
+        }
+
         public bool IsViewingChat
         {
             get { return isViewingChat; }
@@ -215,6 +220,7 @@ namespace slimCat.ViewModels
                 OnPropertyChanged("IsViewingChat");
                 OnPropertyChanged("Title");
                 OnPropertyChanged("CurrentMessages");
+                OnPropertyChanged("MaxMessageLength");
             }
         }
 
