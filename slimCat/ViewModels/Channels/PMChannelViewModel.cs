@@ -34,8 +34,6 @@ namespace slimCat.ViewModels
     using Views;
     using System.Windows.Input;
     using Libraries;
-    using Microsoft.Practices.Prism;
-    using System.Linq;
 
     #endregion
 
@@ -64,19 +62,21 @@ namespace slimCat.ViewModels
 
         private FilteredCollection<IMessage, IViewableObject> messageManager;
 
-        private FilteredCollection<IMessage, IViewableObject> notesManager;
-
         private int typingLengthCache;
 
-        private INoteService noteService;
+        private readonly INoteService noteService;
 
         private RelayCommand @switch;
 
-        private PmChannelModel model;
+        private readonly PmChannelModel model;
 
         private string noteMessage;
 
         private DateTimeOffset noteTimeLeft;
+
+        private string noteSubject;
+
+        private bool showSubject;
 
         #endregion
 
@@ -94,6 +94,7 @@ namespace slimCat.ViewModels
 
                 noteService = notes;
                 notes.GetNotes(name);
+                NoteSubject = notes.GetLastSubject(name);
 
                 Model.PropertyChanged += OnModelPropertyChanged;
 
@@ -118,10 +119,7 @@ namespace slimCat.ViewModels
                     OnPropertyChanged("CanShowNoteTimeLeft");
                 };
 
-                noteCooldownUpdateTick.Elapsed += (s, e) =>
-                {
-                    OnPropertyChanged("NoteTimeLeft");
-                };
+                noteCooldownUpdateTick.Elapsed += (s, e) => OnPropertyChanged("NoteTimeLeft");
 
                 checkTick.Elapsed += (s, e) =>
                 {
@@ -154,9 +152,6 @@ namespace slimCat.ViewModels
 
                 messageManager = new FilteredCollection<IMessage, IViewableObject>(
                     Model.Messages, message => true);
-
-                notesManager = new FilteredCollection<IMessage, IViewableObject>(
-                    model.Notes, message => true);
 
                 LoggingSection = "pm channel vm";
             }
@@ -216,6 +211,21 @@ namespace slimCat.ViewModels
             get { return isViewingChat ? "Chat" : "Notes"; }
         }
 
+        public string NoteSubject
+        {
+            get
+            {
+                return string.IsNullOrEmpty(noteSubject) 
+                    ? noteService.GetLastSubject(ConversationWith.Name) 
+                    : noteSubject;
+            }
+            set
+            {
+                noteSubject = value;
+                OnPropertyChanged("NoteSubject");
+            }
+        }
+
         public bool HasStatus
         {
             get { return ConversationWith.StatusMessage.Length > 0; }
@@ -229,6 +239,16 @@ namespace slimCat.ViewModels
             {
                 isTyping = value;
                 OnPropertyChanged("ShouldShowPostLength");
+            }
+        }
+
+        public bool CanShowSubject
+        {
+            get { return !IsViewingChat && showSubject; }
+            set
+            {
+                showSubject = value;
+                OnPropertyChanged("CanShowSubject");
             }
         }
 
@@ -256,6 +276,7 @@ namespace slimCat.ViewModels
                 OnPropertyChanged("MaxMessageLength");
                 OnPropertyChanged("CanPost");
                 OnPropertyChanged("CanShowNoteTimeLeft");
+                OnPropertyChanged("CanShowSubject");
             }
         }
 
@@ -352,8 +373,13 @@ namespace slimCat.ViewModels
             {
                 checkTick.Dispose();
                 cooldownTimer.Dispose();
+                noteCooldownTimer.Dispose();
+                noteCooldownUpdateTick.Dispose();
+
                 checkTick = null;
                 cooldownTimer = null;
+                noteCooldownTimer = null;
+                noteCooldownUpdateTick = null;
 
                 StatusChanged = null;
                 Events.GetEvent<NewUpdateEvent>().Unsubscribe(OnNewUpdateEvent);
@@ -448,7 +474,7 @@ namespace slimCat.ViewModels
                 return;
             }
 
-            noteService.SendNote(Message, ConversationWith.Name);
+            noteService.SendNote(Message, ConversationWith.Name, NoteSubject);
             isInNoteCoolDown = true;
             noteCooldownTimer.Enabled = true;
             noteCooldownUpdateTick.Enabled = true;
@@ -457,6 +483,7 @@ namespace slimCat.ViewModels
             OnPropertyChanged("NoteTimeLeft");
             OnPropertyChanged("CanShowNoteTimeLeft");
             OnPropertyChanged("CanPost");
+            CanShowSubject = false;
 
             Message = string.Empty;
         }

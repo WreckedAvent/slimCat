@@ -282,6 +282,9 @@
     <Compile Include="Views\UI Parts\Buttons\ChannelTypeSwitchButton.xaml.cs">
       <DependentUpon>ChannelTypeSwitchButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UI Parts\Buttons\UpDownButtonView.xaml.cs">
+      <DependentUpon>UpDownButtonView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UI Parts\Buttons\MarkupButtonView.xaml.cs">
       <DependentUpon>MarkupButtonView.xaml</DependentUpon>
     </Compile>
@@ -434,6 +437,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UI Parts\Buttons\ChannelTypeSwitchButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\UI Parts\Buttons\UpDownButtonView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -673,6 +680,7 @@
     <Content Include="icons\document.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="icons\down.png" />
     <Content Include="icons\edit.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -728,6 +736,7 @@
     <Content Include="icons\transgender.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="icons\up.png" />
     <Content Include="icons\userlist.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

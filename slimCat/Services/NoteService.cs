@@ -109,11 +109,6 @@ namespace slimCat.Services
             if (htmlDoc.DocumentNode == null)
                 return;
 
-            var result = htmlDoc.DocumentNode.SelectNodes(NoteXpath);
-
-            if (result == null || result.Count == 0)
-                return;
-
             var title = string.Empty;
             {
                 var titleInput = htmlDoc.DocumentNode.SelectSingleNode(NoteTitleXpath);
@@ -144,40 +139,61 @@ namespace slimCat.Services
                 }
             }
 
-            result.Select(x =>
+
+            var result = htmlDoc.DocumentNode.SelectNodes(NoteXpath);
             {
-                var split = x.InnerText.Split(new[] { "sent,", "ago:" }, 3, StringSplitOptions.RemoveEmptyEntries);
+                if (result != null && result.Count > 0)
+                {
+                    result.Select(x =>
+                    {
+                        var split = x.InnerText.Split(new[] {"sent,", "ago:"}, 3, StringSplitOptions.RemoveEmptyEntries);
 
-                return new MessageModel(
-                    characterManager.Find(split[0].Trim()),
-                    HttpUtility.HtmlDecode(split[2]),
-                    FromAgoString(split[1].Trim()));
-            })
-            .Each(notes.Add);
+                        return new MessageModel(
+                            characterManager.Find(split[0].Trim()),
+                            HttpUtility.HtmlDecode(split[2]),
+                            FromAgoString(split[1].Trim()));
+                    })
+                    .Each(notes.Add);
+                }
 
-            Application.Current.Dispatcher.BeginInvoke((Action) delegate
-            {
-                noteCache.Add(characterName, new Conversation {Messages = notes, Subject = title, SourceId = sourceId});
+                Application.Current.Dispatcher.BeginInvoke((Action) delegate
+                {
+                    noteCache.Add(characterName,
+                        new Conversation
+                        {
+                            Messages = notes,
+                            Subject = title,
+                            SourceId = sourceId
+                        });
 
-                var model = container.Resolve<PmChannelModel>(characterName);
-                model.Notes.Clear();
-                model.Notes.AddRange(notes);
-            });
+                    var model = container.Resolve<PmChannelModel>(characterName);
+                    model.Notes.Clear();
+                    model.Notes.AddRange(notes);
+                });
+            }
         }
 
-        public void UpdateNoteCache(string characterName)
+        public void UpdateNotes(string characterName)
         {
             noteCache.Remove(characterName);
             GetNotes(characterName);
         }
 
-        public void SendNote(string message, string characterName)
+        public string GetLastSubject(string character)
+        {
+            Conversation conversation;
+            return noteCache.TryGetValue(character, out conversation) 
+                ? conversation.Subject 
+                : string.Empty;
+        }
+
+        public void SendNote(string message, string characterName, string subject)
         {
             var conversation = noteCache[characterName];
 
             var args = new Dictionary<string, object>()
             {
-                { "title", conversation.Subject },
+                { "title", subject ?? conversation.Subject },
                 { "message", message },
                 { "dest", characterName },
                 { "source",  conversation.SourceId }

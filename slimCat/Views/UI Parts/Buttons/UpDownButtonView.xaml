@@ -1,0 +1,30 @@
+﻿<ToggleButton x:Class="slimCat.Views.UpDownButtonView"
+             x:Name="UpDownButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             ToolTip="Toggle showing a bbcode previewer for your current message"
+             Style="{StaticResource ImageContentToggleButton}"
+             Margin="4,0,4,2">
+
+    <ToggleButton.Content>
+        <Grid>
+            <Rectangle Fill="{Binding ElementName=UpDownButton, Path=Foreground}"
+                       Height="15"
+                       Width="18"
+                       Visibility="{Binding ElementName=UpDownButton, Path=IsChecked, Converter={StaticResource OppositeBoolConverter}}">
+                <Rectangle.OpacityMask>
+                    <ImageBrush ImageSource="pack://application:,,,/icons/up.png" />
+                </Rectangle.OpacityMask>
+            </Rectangle>
+            
+            <Rectangle Fill="{Binding ElementName=UpDownButton, Path=Foreground}"
+                       Height="15"
+                       Width="18"
+                       Visibility="{Binding ElementName=UpDownButton, Path=IsChecked, Converter={StaticResource BoolConverter}}">
+                <Rectangle.OpacityMask>
+                    <ImageBrush ImageSource="pack://application:,,,/icons/down.png" />
+                </Rectangle.OpacityMask>
+            </Rectangle>
+        </Grid>
+    </ToggleButton.Content>
+</ToggleButton>

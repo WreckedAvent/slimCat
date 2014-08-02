@@ -17,10 +17,6 @@
 
 #endregion
 
-using slimCat.Models;
-
-using System.Collections.Generic;
-
 namespace slimCat.Services
 {
     /// <summary>
@@ -29,19 +25,24 @@ namespace slimCat.Services
     public interface INoteService
     {
         /// <summary>
-        ///     Gets the note conversation of a given character.
+        ///     Retrieves the notes for the specified character.
         /// </summary>
         void GetNotes(string character);
 
         /// <summary>
-        ///     Updates the note cache for a given character, so they're refreshed next time viewed.
+        ///     Updates the note backlog for a given character.
         /// </summary>
-        void UpdateNoteCache(string character);
+        void UpdateNotes(string character);
 
         /// <summary>
         ///     Sends the specified message to the specified character via note.
         ///     The last message in the conversation is used for the title.
         /// </summary>
-        void SendNote(string message, string characterName);
+        void SendNote(string message, string characterName, string subject = null);
+
+        /// <summary>
+        ///     Gets the subject line of the last conversation with the specified character.
+        /// </summary>
+        string GetLastSubject(string character);
     }
 }

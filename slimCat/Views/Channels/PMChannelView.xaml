@@ -151,6 +151,11 @@
                             HorizontalAlignment="Right"
                             Margin="0"
                             Grid.Column="1">
+                    <v:UpDownButtonView Margin="4"
+                                        VerticalAlignment="Center"
+                                        IsChecked="{Binding Path=CanShowSubject, Mode=TwoWay}"
+                                        Visibility="{Binding Path=IsViewingChat, Converter={StaticResource OppositeBoolConverter}}"/>
+                    
                     <v:MarkupButtonView Margin="4"
                                         VerticalAlignment="Center"
                                         IsChecked="{Binding Path=ShowPreview, Mode=TwoWay}"/>
@@ -163,6 +168,29 @@
             </Grid>
             <v:RightClickMenu />
             <v:CreateReportView />
+            
+            <Grid Visibility="{Binding Path=CanShowSubject, Mode=OneWay, Converter={StaticResource BoolConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <TextBlock Foreground="{StaticResource DepressedBrush}"
+                           Margin="10,0">
+                    Subject
+                </TextBlock>
+                <TextBox Text="{Binding NoteSubject, Mode=TwoWay}"
+                         Grid.Row="1"
+                         MaxLength="50"/>
+
+                <TextBlock Foreground="{StaticResource DepressedBrush}"
+                           Grid.Row="2"
+                           Margin="10,10,10,0">
+                    Body
+                </TextBlock>
+            </Grid>
+            
             <v:ChannelTextBoxEntryView Margin="0,0,0,10"
                                        IsEnabled="{Binding CanPost}" />
         </StackPanel>

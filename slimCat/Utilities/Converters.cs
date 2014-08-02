@@ -96,7 +96,7 @@ namespace slimCat.Utilities
         public override object Convert(object value, Type targetType, object paramater, CultureInfo culture)
         {
             var v = (bool) value;
-            return !v;
+            return !v ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 

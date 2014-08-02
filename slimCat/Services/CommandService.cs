@@ -983,7 +983,7 @@ namespace slimCat.Services
                             NoteId = id
                         });
 
-                notes.UpdateNoteCache(senderName);
+                notes.UpdateNotes(senderName);
                 Events.GetEvent<NewUpdateEvent>().Publish(update);
             }
             else if (type.Equals("comment"))
