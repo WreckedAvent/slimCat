@@ -23,6 +23,7 @@ namespace slimCat.Libraries
 
     using System;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Windows.Input;
 
     #endregion
@@ -30,6 +31,7 @@ namespace slimCat.Libraries
     /// <summary>
     ///     The relay command.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class RelayCommand : ICommand
     {
         #region Fields

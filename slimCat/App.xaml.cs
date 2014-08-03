@@ -22,6 +22,7 @@ namespace slimCat
     #region Usings
 
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Windows;
     using Utilities;
@@ -31,6 +32,7 @@ namespace slimCat
     /// <summary>
     ///     Interaction logic for App.xaml
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public partial class App
     {
         #region Constructors and Destructors

@@ -19,9 +19,12 @@
 
 namespace slimCat
 {
+    using System.Diagnostics.CodeAnalysis;
+
     /// <summary>
     ///     The shell has no meaningful purpose other than being a giant container.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public partial class Shell
     {
         #region Constants

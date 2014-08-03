@@ -22,6 +22,7 @@ namespace slimCat.Libraries
     #region Usings
 
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.InteropServices;
     using System.Windows;
     using System.Windows.Interop;
@@ -31,6 +32,7 @@ namespace slimCat.Libraries
     /// <summary>
     ///     The native methods.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class NativeMethods
     {
         #region Window Flashing API Stuff

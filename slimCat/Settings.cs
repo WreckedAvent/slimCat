@@ -22,7 +22,10 @@ namespace slimCat.Properties
     #region Usings
 
     using System.ComponentModel;
+
     using System.Configuration;
+
+    using System.Diagnostics.CodeAnalysis;
 
     #endregion
 
@@ -31,6 +34,7 @@ namespace slimCat.Properties
     // The PropertyChanged event is raised after a setting's value is changed.
     // The SettingsLoaded event is raised after the setting values are loaded.
     // The SettingsSaving event is raised before the setting values are saved.
+    [ExcludeFromCodeCoverage]
     internal sealed partial class Settings
     {
         #region Methods

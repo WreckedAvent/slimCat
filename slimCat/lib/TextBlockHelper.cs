@@ -22,6 +22,7 @@ namespace slimCat.Libraries
     #region Usings
 
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Documents;
@@ -31,6 +32,7 @@ namespace slimCat.Libraries
     /// <summary>
     ///     The text block helper.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class TextBlockHelper
     {
         #region Static Fields
@@ -105,6 +107,7 @@ namespace slimCat.Libraries
     /// <summary>
     ///     The span helper.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class SpanHelper
     {
         #region Static Fields

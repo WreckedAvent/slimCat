@@ -24,9 +24,11 @@ namespace slimCat.lib
     using System;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
+    using System.Diagnostics.CodeAnalysis;
 
     #endregion
 
+    [ExcludeFromCodeCoverage]
     public class FullScreenHelper
     {
         private static IntPtr desktopHandle;

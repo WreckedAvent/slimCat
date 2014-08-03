@@ -22,13 +22,17 @@ namespace slimCat.Libraries
     #region Usings
 
     using System.Windows;
+
     using System.Windows.Controls;
+
+    using System.Diagnostics.CodeAnalysis;
 
     #endregion
 
     /// <summary>
     ///     3rd party support to allow databinding for password boxes (because they don't natively)
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class PasswordBoxAssistant
     {
         #region Static Fields
