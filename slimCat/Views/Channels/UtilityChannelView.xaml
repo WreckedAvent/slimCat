@@ -207,6 +207,13 @@
                                         Allow Logging
                                     </CheckBox>
                                     
+                                    <CheckBox IsChecked="{Binding IsTemplateCharacter}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Determines if this character's settings are used as defaults for other characters.">
+                                        Is Template Character
+                                    </CheckBox>
+                                    
                                     <CheckBox IsChecked="{Binding AllowMinimizeToSystemTray}"
                                               VerticalAlignment="Center"
                                               Margin="0,15,0,0"

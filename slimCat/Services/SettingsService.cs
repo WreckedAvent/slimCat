@@ -40,6 +40,10 @@ namespace slimCat.Services
 
         private const string SettingsFileName = "!settings.xml";
 
+        private const string GlobalFolderName = "Global";
+
+        private const string DefaultsFolderName = "!Defaults";
+
         #endregion
 
         #region Public Methods and Operators
@@ -79,25 +83,6 @@ namespace slimCat.Services
 
                 // return a default if it's not legible
             }
-        }
-
-        /// <summary>
-        ///     The has channel settings.
-        /// </summary>
-        /// <param name="currentCharacter">
-        ///     The current character.
-        /// </param>
-        /// <param name="title">
-        ///     The title.
-        /// </param>
-        /// <param name="id">
-        ///     The id.
-        /// </param>
-        public static bool HasChannelSettings(string currentCharacter, string title, string id)
-        {
-            var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
-
-            return Directory.Exists(Path.Combine(path, SettingsFileName));
         }
 
         /// <summary>
@@ -265,6 +250,16 @@ namespace slimCat.Services
             File.Delete(fileName);
             using (var fs = File.OpenWrite(fileName))
                 root.Save(fs);
+
+            if (!ApplicationSettings.TemplateCharacter.Equals(currentCharacter)) return;
+
+            var workingPath = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, GlobalFolderName, GlobalFolderName);
+            if (!Directory.Exists(workingPath))
+                Directory.CreateDirectory(workingPath);
+
+            workingPath = Path.Combine(workingPath, SettingsFileName);
+
+            File.Copy(fileName, workingPath, true);
         }
 
         /// <summary>
@@ -319,6 +314,17 @@ namespace slimCat.Services
             workingPath = Path.Combine(workingPath, SettingsFileName);
 
             SerializeObjectToXml(newSettingsModel, workingPath);
+
+            if (!ApplicationSettings.TemplateCharacter.Equals(currentCharacter))
+                return;
+
+            workingPath = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, title, id);
+
+            if (!Directory.Exists(workingPath))
+                Directory.CreateDirectory(workingPath);
+
+            workingPath = Path.Combine(workingPath, SettingsFileName);
+            SerializeObjectToXml(newSettingsModel, workingPath);
         }
 
         #endregion
@@ -327,15 +333,57 @@ namespace slimCat.Services
 
         private static void MakeGlobalSettingsFileIfNotExist(string currentCharacter)
         {
-            var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
+            var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName);
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
             var workingPath = Path.Combine(path, SettingsFileName);
 
+            if (File.Exists(workingPath))
+                return;
+
+            if (CopyDefaultGlobalSettingsIfExist(currentCharacter))
+                return;
+
+            SaveApplicationSettingsToXml(currentCharacter);
+        }
+
+        private static ChannelSettingsModel GetDefaultSettings(string title, string id, bool isPm)
+        {
+            var path = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, title, id);
+            var baseObj = new ChannelSettingsModel(isPm);
+
+            if (!Directory.Exists(path))
+                return baseObj;
+
+            var workingPath = Path.Combine(path, SettingsFileName);
+
             if (!File.Exists(workingPath))
-                SaveApplicationSettingsToXml(currentCharacter);
+                return baseObj;
+
+            return ReadObjectFromXml(workingPath, new ChannelSettingsModel(isPm));
+        }
+
+        private static bool CopyDefaultGlobalSettingsIfExist(string currentCharacter)
+        {
+            var path = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, GlobalFolderName, GlobalFolderName);
+
+            if (!Directory.Exists(path))
+                return false;
+
+            var sourcePath = Path.Combine(path, SettingsFileName);
+
+            if (!File.Exists(sourcePath))
+                return false;
+
+            var destPath =
+                Path.Combine(StaticFunctions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName),
+                    SettingsFileName);
+
+            File.Copy(sourcePath, destPath);
+
+            return true;
         }
 
         private static void MakeSettingsFileIfNotExist(
@@ -352,8 +400,14 @@ namespace slimCat.Services
                 return;
 
             // make a new XML settings document
-            var newSettings = new ChannelSettingsModel(chanType == ChannelType.PrivateMessage);
+            var newSettings = GetDefaultSettings(title, id, chanType == ChannelType.PrivateMessage);
             SerializeObjectToXml(newSettings, workingPath);
+        }
+
+        private static string GetDefaultFileSettingsPath(string title, string id)
+        {
+            var defaultPath = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, title, id);
+            return Path.Combine(defaultPath, SettingsFileName);
         }
 
         #endregion

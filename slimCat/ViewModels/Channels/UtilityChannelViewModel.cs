@@ -200,6 +200,17 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool IsTemplateCharacter
+        {
+            get { return ApplicationSettings.TemplateCharacter.Equals(ChatModel.CurrentCharacter.Name); }
+            set
+            {
+                var newVale = value ? ChatModel.CurrentCharacter.Name : string.Empty;
+                ApplicationSettings.TemplateCharacter = newVale;
+                Save();
+            }
+        }
+
         public bool AllowLogging
         {
             get { return ApplicationSettings.AllowLogging; }
@@ -568,6 +579,7 @@ namespace slimCat.ViewModels
             automation.ResetStatusTimers();
             OnPropertyChanged("RecentChannels");
             OnPropertyChanged("RecentCharacters");
+            OnPropertyChanged("IsTemplateCharacter");
 
             CheckForUpdates();
         }

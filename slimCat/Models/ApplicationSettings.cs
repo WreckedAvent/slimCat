@@ -75,6 +75,7 @@ namespace slimCat.Models
             AllowGreedyTextboxFocus = false;
 
             CheckForOwnName = true;
+            TemplateCharacter = string.Empty;
         }
 
         #endregion
@@ -191,6 +192,11 @@ namespace slimCat.Models
         ///     Gets or sets the recent characters.
         /// </summary>
         public static IList<string> RecentCharacters { get; private set; }
+        
+        /// <summary>
+        ///     Gets or sets the name of the character the defines the user's defaults.
+        /// </summary>
+        public static string TemplateCharacter { get; set; }
 
         /// <summary>
         ///     Gets or sets the recent channels.
