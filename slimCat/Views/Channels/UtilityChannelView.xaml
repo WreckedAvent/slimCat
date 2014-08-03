@@ -211,7 +211,7 @@
                                               VerticalAlignment="Center"
                                               Margin="0,15,0,0"
                                               ToolTip="Determines if this character's settings are used as defaults for other characters.">
-                                        Is Template Character
+                                        Save Settings as Defaults
                                     </CheckBox>
                                     
                                     <CheckBox IsChecked="{Binding AllowMinimizeToSystemTray}"

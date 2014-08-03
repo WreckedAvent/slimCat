@@ -2,7 +2,7 @@
              x:Name="MarkupButton"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             ToolTip="Toggle showing a bbcode previewer for your current message"
+             ToolTip="Toggles showing a bbcode previewer for your current message"
              Style="{StaticResource ImageContentToggleButton}"
              Margin="4,0,4,2">
 

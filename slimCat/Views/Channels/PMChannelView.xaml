@@ -154,7 +154,8 @@
                     <v:UpDownButtonView Margin="4"
                                         VerticalAlignment="Center"
                                         IsChecked="{Binding Path=CanShowSubject, Mode=TwoWay}"
-                                        Visibility="{Binding Path=IsViewingChat, Converter={StaticResource OppositeBoolConverter}}"/>
+                                        Visibility="{Binding Path=IsViewingChat, Converter={StaticResource OppositeBoolConverter}}"
+                                        ToolTip="Toggles whether the note subject line is shown"/>
                     
                     <v:MarkupButtonView Margin="4"
                                         VerticalAlignment="Center"
@@ -163,7 +164,8 @@
                     <v:MoreButtonView Command="{Binding SwitchCommand}"
                                       Visibility="{Binding Path=CanSwitch, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                                       BorderBrush="{Binding Path=OtherTabHasMessages, Mode=OneWay, Converter={StaticResource ColorConverter}}"
-                                      Margin="4" />
+                                      Margin="4"
+                                      ToolTip="Switches between private messages and sending notes"/>
                 </StackPanel>
             </Grid>
             <v:RightClickMenu />
