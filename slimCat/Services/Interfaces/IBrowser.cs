@@ -23,8 +23,6 @@ namespace slimCat.Services
 
     using System.Collections.Generic;
 
-    using System.IO;
-
     #endregion
 
     /// <summary>

@@ -268,7 +268,7 @@ namespace slimCat.Utilities
         /// </example>
         private static string GetUrlDisplay(string args)
         {
-            if (args == null) return args;
+            if (args == null) return null;
 
             var match = ValidStartTerms.FirstOrDefault(args.StartsWith);
             if (match == null) return args;

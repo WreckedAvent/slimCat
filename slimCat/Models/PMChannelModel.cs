@@ -25,8 +25,6 @@ namespace slimCat.Models
 
     using System.Timers;
 
-    using Services;
-
     using System.Collections.ObjectModel;
 
     #endregion

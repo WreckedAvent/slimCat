@@ -7,7 +7,6 @@
                   xmlns:vm="clr-namespace:slimCat.ViewModels"
                   xmlns:v="clr-namespace:slimCat.Views"
                   xmlns:models="clr-namespace:slimCat.Models"
-                  xmlns:lib="clr-namespace:slimCat.Libraries"
 
                   d:DataContext="{d:DesignInstance vm:UtilityChannelViewModel}">
 

@@ -404,12 +404,6 @@ namespace slimCat.Services
             SerializeObjectToXml(newSettings, workingPath);
         }
 
-        private static string GetDefaultFileSettingsPath(string title, string id)
-        {
-            var defaultPath = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, title, id);
-            return Path.Combine(defaultPath, SettingsFileName);
-        }
-
         #endregion
     }
 }

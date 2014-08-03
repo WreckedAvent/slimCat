@@ -41,7 +41,7 @@ namespace slimCatTest
     #endregion
 
     [TestClass]
-    public class CommandInterceptorTest
+    public class CommandServiceTest
     {
         #region Fields
 
@@ -55,7 +55,7 @@ namespace slimCatTest
 
         #region Constructor
 
-        public CommandInterceptorTest()
+        public CommandServiceTest()
         {
             // TODO: maybe create a real container to handle this dependency injection
             chatModel = new Mock<IChatModel>();
@@ -69,6 +69,7 @@ namespace slimCatTest
             var contain = Mock.Of<IUnityContainer>();
             var regman = Mock.Of<IRegionManager>();
             var auto = Mock.Of<IAutomationService>();
+            var notes = Mock.Of<INoteService>();
 
             eventAggregator = new EventAggregator();
 
@@ -81,7 +82,8 @@ namespace slimCatTest
                 regman,
                 eventAggregator,
                 characterManager.Object,
-                auto);
+                auto,
+                notes);
         }
 
         #endregion
@@ -169,7 +171,7 @@ namespace slimCatTest
         #endregion
 
         [TestClass]
-        public class ChannelCommandTests : CommandInterceptorTest
+        public class ChannelCommandTests : CommandServiceTest
         {
             #region Fields
 
@@ -225,11 +227,14 @@ namespace slimCatTest
             {
                 SetupLists();
 
-                var users = new List<IDictionary<string, object>>
-                    {
-                        WithIdentity(First),
-                        WithIdentity(Second)
-                    };
+                var usersData = new List<IDictionary<string, object>>
+                {
+                    WithIdentity(First),
+                    WithIdentity(Second)
+                };
+
+                var users = new JsonArray();
+                users.AddRange(usersData);
 
                 MockCommand(
                     WithArgument(Arguments.Command, Commands.ChannelInitialize),
@@ -483,6 +488,8 @@ namespace slimCatTest
                 const string joinerName = "testing joiner character";
                 var joiner = CharacterWithName(joinerName);
 
+                chatModel.Setup(x => x.CurrentCharacter).Returns(new CharacterModel { Name = "Foo bar" });
+
                 LogInCharacter(joinerName);
 
                 ShouldCreateUpdate(x =>
@@ -508,6 +515,7 @@ namespace slimCatTest
             {
                 const string joinerName = "testing joiner character";
 
+                chatModel.Setup(x => x.CurrentCharacter).Returns(new CharacterModel { Name = joinerName });
                 chatModel.SetupGet(x => x.CurrentChannels).Returns(new ObservableCollection<GeneralChannelModel>());
                 channelManager.Setup(x => x.JoinChannel(ChannelType.Public, ChannelName, ChannelName));
 
@@ -558,7 +566,7 @@ namespace slimCatTest
         }
 
         [TestClass]
-        public class MessageCommandTests : CommandInterceptorTest
+        public class MessageCommandTests : CommandServiceTest
         {
             #region Fields
 

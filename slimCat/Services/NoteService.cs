@@ -200,7 +200,7 @@ namespace slimCat.Services
         {
             var conversation = noteCache[characterName];
 
-            var args = new Dictionary<string, object>()
+            var args = new Dictionary<string, object>
             {
                 { "title", subject ?? conversation.Subject },
                 { "message", message },
