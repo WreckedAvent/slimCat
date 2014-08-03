@@ -37,7 +37,7 @@ namespace slimCatTest
     [TestClass]
     public class ListManagerTests
     {
-        private const string currentCharacter = "current character";
+        private const string CurrentCharacter = "current character";
         private readonly ICharacter bookmarkCharacter;
         private readonly IList<string> bookmarks;
         private readonly IEventAggregator eventAggregator;
@@ -55,12 +55,12 @@ namespace slimCatTest
             interestedCharacter = new CharacterModel {Name = "Character Four"};
 
             bookmarks = new[] {bookmarkCharacter.Name};
-            var allFriends = new Dictionary<string, IList<string>> {{friendCharacter.Name, new[] {currentCharacter}}};
+            var allFriends = new Dictionary<string, IList<string>> {{friendCharacter.Name, new[] {CurrentCharacter}}};
 
             var account = Mock.Of<IAccount>(acc =>
                 acc.AllFriends == allFriends
                 && acc.Bookmarks == bookmarks
-                && acc.Characters == new ObservableCollection<string> {currentCharacter});
+                && acc.Characters == new ObservableCollection<string> {CurrentCharacter});
 
             eventAggregator = new EventAggregator();
             manager = new GlobalCharacterManager(account, eventAggregator);

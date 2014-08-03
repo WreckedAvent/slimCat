@@ -73,6 +73,9 @@
     <Compile Include="ParserTest.cs" />
     <Compile Include="MessageDaemonTest.cs" />
     <Compile Include="CommandServiceTest.cs" />
+    <Compile Include="ConverterTests.cs" />
+    <Compile Include="UserCommandTest.cs" />
+    <Compile Include="UtiltiesTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\slimCat\slimCat.csproj">

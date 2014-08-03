@@ -17,6 +17,8 @@
 
 #endregion
 
+using System.Text;
+
 namespace slimCat.Utilities
 {
     #region Usings
@@ -229,7 +231,7 @@ namespace slimCat.Utilities
                 var safeTitle = 
                     Path.GetInvalidPathChars()
                     .Union(Path.GetInvalidFileNameChars())
-                    .Except(new [] {'/', '\\'})
+                    .Union(new []{'/', '\\'})
                     .Aggregate(title,
                         (current, c) => current.Replace(c.ToString(CultureInfo.InvariantCulture), string.Empty));
 
@@ -454,12 +456,6 @@ namespace slimCat.Utilities
         ///     Strips the punctuation in a given string so long as it's at the end.
         ///     Words like it's will not be affected.
         /// </summary>
-        /// <param name="fullString">
-        ///     The full String.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="string" />.
-        /// </returns>
         public static string StripPunctuationAtEnd(this string fullString)
         {
             if (string.IsNullOrWhiteSpace(fullString) || fullString.Length <= 1)
@@ -472,7 +468,7 @@ namespace slimCat.Utilities
                 index--;
             }
 
-            return index == 0 ? string.Empty : fullString.Substring(0, index);
+            return index == 0 ? string.Empty : fullString.Substring(0, index + 1);
         }
 
         public static T FindChild<T>(DependencyObject parent)
