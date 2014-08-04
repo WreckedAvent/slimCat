@@ -17,12 +17,14 @@
 
 #endregion
 
-using System.Windows;
-
 namespace slimCat.Services
 {
     #region Usings
 
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.Windows.Controls;
+    using System.Windows.Forms;
     using HtmlAgilityPack;
 
     using Models;
@@ -48,6 +50,8 @@ namespace slimCat.Services
     using Microsoft.Practices.Unity;
 
     using Microsoft.Practices.Prism;
+    using Application = System.Windows.Application;
+    using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
     #endregion
 
@@ -62,7 +66,7 @@ namespace slimCat.Services
 
         private const string NoteIdXpath = "//select/option[normalize-space(.)='{0}']";
 
-        private IDictionary<string, Conversation> noteCache = new Dictionary<string, Conversation>();
+        private readonly IDictionary<string, Conversation> noteCache = new Dictionary<string, Conversation>();
 
         private readonly ICharacterManager characterManager;
 
@@ -71,6 +75,8 @@ namespace slimCat.Services
         private readonly IEventAggregator events;
 
         private readonly IUnityContainer container;
+
+        private readonly Regex amPmRegex = new Regex("sent,|(AM:)|(PM:)", RegexOptions.Compiled);
         #endregion
 
         #region Constructors
@@ -87,12 +93,15 @@ namespace slimCat.Services
         #region Public Methods
         public void GetNotes(string characterName)
         {
+            Log(string.Format("getting notes for {0}", characterName));
+
             if (characterName.Equals(cm.CurrentCharacter.Name))
                 return;
 
             Conversation cache;
             if (noteCache.TryGetValue(characterName, out cache))
             {
+                Log(string.Format("notes for {0} in cache already", characterName));
                 var model = container.Resolve<PmChannelModel>(characterName);
                 if (model == null) return;
 
@@ -128,12 +137,13 @@ namespace slimCat.Services
                         .FirstOrDefault();
 
                     title = value ?? title;
+                    Log("note subject to {0} is {1}".FormatWith(characterName, title));
                 }
             }
 
             var sourceId = string.Empty;
             {
-                var sourceIdInput = htmlDoc.DocumentNode.SelectSingleNode(string.Format(NoteIdXpath, cm.CurrentCharacter.Name));
+                var sourceIdInput = htmlDoc.DocumentNode.SelectSingleNode(NoteIdXpath.FormatWith(cm.CurrentCharacter.Name));
 
                 if (sourceIdInput != null)
                 {
@@ -143,6 +153,7 @@ namespace slimCat.Services
                         .FirstOrDefault();
 
                     sourceId = value ?? sourceId;
+                    Log("ID for sending notes to {0} is {1}".FormatWith(characterName, sourceId));
                 }
             }
 
@@ -151,34 +162,50 @@ namespace slimCat.Services
             {
                 if (result != null && result.Count > 0)
                 {
+                    Log("parsing note history for {0}, {1} items".FormatWith(characterName, result.Count));
                     result.Select(x =>
                     {
+                        Log(x.InnerText);
+                        var isFuzzyTime = true;
                         var split = x.InnerText.Split(new[] {"sent,", "ago:"}, 3, StringSplitOptions.RemoveEmptyEntries);
+                        if (split.Length < 3)
+                        {
+                            split = amPmRegex.Split(x.InnerText, 3).ToArray();
+                            split[1] = split[1] + split[2];
+                            split[2] = split[3];
+                            split[3] = null;
+
+                            isFuzzyTime = false;
+                        }
 
                         return new MessageModel(
                             characterManager.Find(split[0].Trim()),
                             HttpUtility.HtmlDecode(split[2]),
-                            FromAgoString(split[1].Trim()));
+                            isFuzzyTime ? FromFuzzyString(split[1].Trim()) : FromExactString(split[1].Trim()));
                     })
                     .Each(notes.Add);
                 }
 
-                Application.Current.Dispatcher.BeginInvoke((Action) delegate
+                noteCache.Add(characterName,
+                    new Conversation
+                    {
+                        Messages = notes,
+                        Subject = title,
+                        SourceId = sourceId
+                    });
+
+                try
                 {
-                    noteCache.Add(characterName,
-                        new Conversation
-                        {
-                            Messages = notes,
-                            Subject = title,
-                            SourceId = sourceId
-                        });
-
-                    var model = cm.CurrentPms.FirstByIdOrNull(characterName);
-                    if (model == null) return;
-
-                    model.Notes.Clear();
-                    model.Notes.AddRange(notes);
-                });
+                    var model = container.Resolve<PmChannelModel>(characterName);
+                    Application.Current.Dispatcher.Invoke((Action) delegate
+                    {
+                        model.Notes.Clear();
+                        model.Notes.AddRange(notes);
+                    });
+                }
+                catch
+                {
+                }
             }
         }
 
@@ -210,7 +237,6 @@ namespace slimCat.Services
 
             Application.Current.Dispatcher.BeginInvoke((Action)delegate
             {
-
                 var resp = browser.GetResponse(Constants.UrlConstants.SendNote, args, true);
                 var json = (JObject)JsonConvert.DeserializeObject(resp);
 
@@ -231,7 +257,7 @@ namespace slimCat.Services
             });
         }
 
-        private static DateTime FromAgoString(string timeAgo)
+        private static DateTime FromFuzzyString(string timeAgo)
         {
             // captures a string like '8m, 25d, 8h, 55m'
             const string regex = @"(\d+y|\d+mo|\d+d|\d+h|\d+m),? *";
@@ -266,7 +292,20 @@ namespace slimCat.Services
             }
 
             return toReturn;
-        } 
+        }
+
+        private static DateTime FromExactString(string date)
+        {
+            // "at 03 Aug,2014 6:35:49"
+            const string format = "'at' dd MMM,yyyy h:mm:ss tt:";
+            return DateTime.ParseExact(date, format, CultureInfo.InvariantCulture);
+        }
+
+        [Conditional("DEBUG")]
+        private static void Log(string text)
+        {
+            Logging.LogLine(text, "note serv");
+        }
         #endregion
     }
 
@@ -276,5 +315,4 @@ namespace slimCat.Services
         public string SourceId { get; set; }
         public string Subject { get; set; }
     }
-
 }

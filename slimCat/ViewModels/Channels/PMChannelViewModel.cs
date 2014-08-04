@@ -157,7 +157,7 @@ namespace slimCat.ViewModels
             }
             catch (Exception ex)
             {
-                ex.Source = "Utility Channel ViewModel, init";
+                ex.Source = "PM Channel ViewModel, init";
                 Exceptions.HandleException(ex);
             }
         }
