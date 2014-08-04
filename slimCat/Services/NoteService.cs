@@ -22,10 +22,11 @@ namespace slimCat.Services
     #region Usings
 
     using System.ComponentModel;
+    
     using System.Diagnostics;
+    
     using System.Globalization;
-    using System.Windows.Controls;
-    using System.Windows.Forms;
+
     using HtmlAgilityPack;
 
     using Models;
@@ -51,7 +52,9 @@ namespace slimCat.Services
     using Microsoft.Practices.Unity;
 
     using Microsoft.Practices.Prism;
+
     using Application = System.Windows.Application;
+
     using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
     #endregion

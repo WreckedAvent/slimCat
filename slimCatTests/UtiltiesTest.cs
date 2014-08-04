@@ -18,7 +18,6 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using slimCat.Models;
 using slimCat.Utilities;
 

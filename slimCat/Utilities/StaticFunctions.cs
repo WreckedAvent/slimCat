@@ -17,8 +17,6 @@
 
 #endregion
 
-using System.Text;
-
 namespace slimCat.Utilities
 {
     #region Usings
