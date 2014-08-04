@@ -21,6 +21,7 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using System.ComponentModel;
     using System.Diagnostics;
     using System.Globalization;
     using System.Windows.Controls;
@@ -110,6 +111,78 @@ namespace slimCat.Services
                 return;
             }
 
+            var worker = new BackgroundWorker();
+            worker.DoWork += GetNotesAsync;
+            worker.RunWorkerAsync(characterName);
+        }
+
+        public void UpdateNotes(string characterName)
+        {
+            noteCache.Remove(characterName);
+            GetNotes(characterName);
+        }
+
+        public string GetLastSubject(string character)
+        {
+            Conversation conversation;
+            return noteCache.TryGetValue(character, out conversation) 
+                ? conversation.Subject 
+                : string.Empty;
+        }
+
+        public void SendNote(string message, string characterName, string subject)
+        {
+            var conversation = noteCache[characterName];
+
+            var args = new Dictionary<string, object>
+            {
+                { "title", subject ?? conversation.Subject },
+                { "message", message },
+                { "dest", characterName },
+                { "source",  conversation.SourceId }
+            };
+
+            var worker = new BackgroundWorker();
+            worker.DoWork += SendNoteAsync;
+            worker.RunWorkerAsync(args);
+        }
+
+        private void SendNoteAsync(object sender, DoWorkEventArgs e)
+        {
+            var args = (IDictionary<string, object>) e.Argument;
+            var characterName = (string)args["dest"];
+            var message = (string)args["message"];
+            var subject = (string)args["title"];
+
+            var resp = browser.GetResponse(Constants.UrlConstants.SendNote, args, true);
+            var json = (JObject)JsonConvert.DeserializeObject(resp);
+
+            JToken errorMessage;
+            var error = string.Empty;
+            if (json.TryGetValue("error", out errorMessage))
+            {
+                error = errorMessage.ToString();
+                events.GetEvent<ErrorEvent>().Publish(error);
+            }
+
+            if (!string.IsNullOrEmpty(error)) return;
+
+            var model = cm.CurrentPms.FirstByIdOrNull(characterName);
+            if (model == null) return;
+
+            Application.Current.Dispatcher.BeginInvoke((Action)(() =>
+            {
+                model.Notes.Add(
+                    new MessageModel(cm.CurrentCharacter,
+                        message));
+                model.NoteSubject = subject;
+            }));
+        }
+
+        private void GetNotesAsync(object s, DoWorkEventArgs e)
+        {
+            var characterName = (string)e.Argument;
+
             var notes = new List<IMessage>();
 
             var resp = browser.GetResponse(Constants.UrlConstants.ViewHistory + characterName, true);
@@ -167,7 +240,7 @@ namespace slimCat.Services
                     {
                         Log(x.InnerText);
                         var isFuzzyTime = true;
-                        var split = x.InnerText.Split(new[] {"sent,", "ago:"}, 3, StringSplitOptions.RemoveEmptyEntries);
+                        var split = x.InnerText.Split(new[] { "sent,", "ago:" }, 3, StringSplitOptions.RemoveEmptyEntries);
                         if (split.Length < 3)
                         {
                             split = amPmRegex.Split(x.InnerText, 3).ToArray();
@@ -197,64 +270,17 @@ namespace slimCat.Services
                 try
                 {
                     var model = container.Resolve<PmChannelModel>(characterName);
-                    Application.Current.Dispatcher.Invoke((Action) delegate
+                    Application.Current.Dispatcher.Invoke((Action)delegate
                     {
                         model.Notes.Clear();
                         model.Notes.AddRange(notes);
+                        model.NoteSubject = title;
                     });
                 }
                 catch
                 {
                 }
             }
-        }
-
-        public void UpdateNotes(string characterName)
-        {
-            noteCache.Remove(characterName);
-            GetNotes(characterName);
-        }
-
-        public string GetLastSubject(string character)
-        {
-            Conversation conversation;
-            return noteCache.TryGetValue(character, out conversation) 
-                ? conversation.Subject 
-                : string.Empty;
-        }
-
-        public void SendNote(string message, string characterName, string subject)
-        {
-            var conversation = noteCache[characterName];
-
-            var args = new Dictionary<string, object>
-            {
-                { "title", subject ?? conversation.Subject },
-                { "message", message },
-                { "dest", characterName },
-                { "source",  conversation.SourceId }
-            };
-
-            Application.Current.Dispatcher.BeginInvoke((Action)delegate
-            {
-                var resp = browser.GetResponse(Constants.UrlConstants.SendNote, args, true);
-                var json = (JObject)JsonConvert.DeserializeObject(resp);
-
-                JToken errorMessage;
-                var error = string.Empty;
-                if (json.TryGetValue("error", out errorMessage))
-                {
-                    error = errorMessage.ToString();
-                    events.GetEvent<ErrorEvent>().Publish(error);
-                }
-
-                if (!string.IsNullOrEmpty(error)) return;
-
-                var model = cm.CurrentPms.FirstByIdOrNull(characterName);
-                if (model == null) return;
-
-                model.Notes.Add(new MessageModel(cm.CurrentCharacter, message));
-            });
         }
 
         private static DateTime FromFuzzyString(string timeAgo)

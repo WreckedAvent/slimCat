@@ -44,7 +44,9 @@ namespace slimCat.Models
 
         private Timer updateTick;
 
-        private ObservableCollection<IMessage> notes = new ObservableCollection<IMessage>();
+        private readonly ObservableCollection<IMessage> notes = new ObservableCollection<IMessage>();
+
+        private string noteSubject;
 
         #endregion
 
@@ -146,6 +148,16 @@ namespace slimCat.Models
         }
 
         public bool HasAutoRepliedTo { get; set; }
+
+        public string NoteSubject
+        {
+            get { return noteSubject; }
+            set
+            {
+                noteSubject = value;
+                OnPropertyChanged("NoteSubject");
+            }
+        }
 
         public ObservableCollection<IMessage> Notes
         {

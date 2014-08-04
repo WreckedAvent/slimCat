@@ -48,7 +48,7 @@ namespace slimCat.ViewModels
 
         private Timer cooldownTimer = new Timer(500);
 
-        private Timer noteCooldownTimer = new Timer(20050);
+        private Timer noteCooldownTimer = new Timer(21000);
 
         private Timer noteCooldownUpdateTick = new Timer(1000);
 
@@ -74,8 +74,6 @@ namespace slimCat.ViewModels
 
         private DateTimeOffset noteTimeLeft;
 
-        private string noteSubject;
-
         private bool showSubject;
 
         #endregion
@@ -94,7 +92,6 @@ namespace slimCat.ViewModels
 
                 noteService = notes;
                 notes.GetNotes(name);
-                NoteSubject = notes.GetLastSubject(name);
 
                 Model.PropertyChanged += OnModelPropertyChanged;
 
@@ -213,26 +210,8 @@ namespace slimCat.ViewModels
 
         public string NoteSubject
         {
-            get
-            {
-                if (string.IsNullOrEmpty(noteSubject))
-                {
-                    noteSubject = noteService.GetLastSubject(ConversationWith.Name);
-                }
-
-                if (string.IsNullOrEmpty(noteSubject) && !showSubject)
-                {
-                    showSubject = true;
-                    OnPropertyChanged("CanShowSubject");
-                }
-
-                return noteSubject;
-            }
-            set
-            {
-                noteSubject = value;
-                OnPropertyChanged("NoteSubject");
-            }
+            get { return model.NoteSubject; }
+            set { model.NoteSubject = value; }
         }
 
         public bool HasStatus
@@ -404,6 +383,11 @@ namespace slimCat.ViewModels
         {
             if (e.PropertyName == "TypingStatus" || e.PropertyName == "TypingString")
                 OnPropertyChanged("TypingString");
+
+            if (e.PropertyName != "NoteSubject") return;
+
+            OnPropertyChanged("NoteSubject");
+            CanShowSubject = string.IsNullOrEmpty(NoteSubject);
         }
 
         protected override void OnThisPropertyChanged(object sender, PropertyChangedEventArgs e)
