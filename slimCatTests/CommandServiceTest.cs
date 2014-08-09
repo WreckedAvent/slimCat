@@ -383,7 +383,7 @@ namespace slimCatTest
 
                 SetCurrentCharacterTo(kicked);
                 JoinCurrentChannel(kicked);
-                channelManager.Setup(x => x.RemoveChannel(ChannelName));
+                channelManager.Setup(x => x.RemoveChannel(ChannelName, false));
 
                 MockCommand(
                     WithArgument(Arguments.Command, Commands.ChannelKick),
