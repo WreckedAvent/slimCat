@@ -87,6 +87,11 @@ namespace slimCat.Services
         #region Methods
         public void SetCredentials(string user, string pass)
         {
+            if (lastAccount != null
+                && lastAccount.AccountName == user
+                && lastAccount.Password == pass)
+                return;
+
             ticketCredentials = new Dictionary<string, object>
                 {
                     {"account", user.ToLower()},
@@ -99,11 +104,14 @@ namespace slimCat.Services
                     {"password", pass},
                 };
 
-            lastAccount = lastAccount ?? new AccountModel();
-            lastAccount.AccountName = user;
-            lastAccount.Password = pass;
+            lastAccount = new AccountModel
+            {
+                AccountName = user, 
+                Password = pass
+            };
 
             ReAuthenticate();
+            ShouldGetNewTicket = true;
         }
 
         private void GetNewTicket()

@@ -23,6 +23,7 @@ namespace slimCat.ViewModels
 
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Windows.Input;
     using Libraries;
@@ -57,6 +58,9 @@ namespace slimCat.ViewModels
         private string relayMessage = "Next, Select a Character ...";
 
         private RelayCommand @select;
+
+        private RelayCommand switchAccount;
+
         private ICharacter selectedCharacter = new CharacterModel();
 
         #endregion
@@ -135,6 +139,19 @@ namespace slimCat.ViewModels
             }
         }
 
+        public ICommand SwitchAccountCommand
+        {
+            get
+            {
+                return switchAccount ??
+                       (switchAccount =
+                           new RelayCommand(
+                               _ =>
+                                   RegionManager.RequestNavigate(Shell.MainRegion,
+                                       new Uri(LoginViewModel.LoginViewName, UriKind.Relative))));
+            }
+        }
+
         public ICharacter CurrentCharacter
         {
             get { return selectedCharacter; }
@@ -174,7 +191,6 @@ namespace slimCat.ViewModels
 
         private void SendCharacterSelectEvent()
         {
-            RelayMessage = "Awesome! Connecting to F-Chat ...";
             IsConnecting = true;
             Events.GetEvent<CharacterSelectedLoginEvent>().Publish(CurrentCharacter.Name);
             Log("Character {0} selected".FormatWith(CurrentCharacter.Name));

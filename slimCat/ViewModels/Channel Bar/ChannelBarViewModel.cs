@@ -290,7 +290,10 @@ namespace slimCat.ViewModels
         private void RequestNavigate(bool? payload)
         {
             Events.GetEvent<ChatOnDisplayEvent>().Unsubscribe(RequestNavigate);
-            RegionManager.Regions[ChatWrapperView.ChannelbarRegion].Add(Container.Resolve<ChannelbarView>());
+            var region = RegionManager.Regions[ChatWrapperView.ChannelbarRegion];
+
+            if (!region.Views.Any())
+                region.Add(Container.Resolve<ChannelbarView>());
             Log("Requesting channel bar view");
         }
 

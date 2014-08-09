@@ -282,6 +282,9 @@
     <Compile Include="Views\UI Parts\Buttons\ChannelTypeSwitchButton.xaml.cs">
       <DependentUpon>ChannelTypeSwitchButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UI Parts\Buttons\LogoutButtionView.xaml.cs">
+      <DependentUpon>LogoutButtionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UI Parts\Buttons\UpDownButtonView.xaml.cs">
       <DependentUpon>UpDownButtonView.xaml</DependentUpon>
     </Compile>
@@ -437,6 +440,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\UI Parts\Buttons\ChannelTypeSwitchButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\UI Parts\Buttons\LogoutButtionView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -696,6 +703,7 @@
     <Content Include="icons\global.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="icons\logout.png" />
     <Content Include="icons\male.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -44,7 +44,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition />
-                            <RowDefinition Height="20" />
+                            <RowDefinition Height="24" />
                         </Grid.RowDefinitions>
 
                         <TextBlock Text="{Binding Path=ChatModel.CurrentCharacter.Name, Mode=OneWay}"
@@ -77,24 +77,31 @@
 
                         <WrapPanel HorizontalAlignment="Right"
                                    Grid.Row="2"
-                                   VerticalAlignment="Bottom">
-                            <WrapPanel.Resources>
-                                <Style TargetType="Rectangle">
-                                    <Setter Property="Fill" Value="{StaticResource ForegroundBrush}" />
-                                    <Setter Property="Width" Value="5" />
-                                    <Setter Property="Margin" Value="1,0" />
-                                    <Setter Property="VerticalAlignment" Value="Bottom" />
-                                </Style>
-                            </WrapPanel.Resources>
-                            <Rectangle Height="3"
-                                       Visibility="{Binding Path=ConnectionIsConnected, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
-                            <Rectangle Height="6"
-                                       Visibility="{Binding Path=ConnectionIsModerate, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
-                            <Rectangle Height="10"
-                                       Visibility="{Binding Path=ConnectionIsGood, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
-                            <Rectangle Height="15"
-                                       Visibility="{Binding Path=ConnectionIsPerfect, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
+                                   VerticalAlignment="Center">
+                            
+                            <WrapPanel Margin="0,0,0,2" VerticalAlignment="Bottom">
+                                <WrapPanel.Resources>
+                                    <Style TargetType="Rectangle">
+                                        <Setter Property="Fill" Value="{StaticResource ForegroundBrush}" />
+                                        <Setter Property="Width" Value="5" />
+                                        <Setter Property="Margin" Value="1,0" />
+                                        <Setter Property="VerticalAlignment" Value="Bottom" />
+                                    </Style>
+                                </WrapPanel.Resources>
+                                <Rectangle Height="3"
+                                           Visibility="{Binding Path=ConnectionIsConnected, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
+                                <Rectangle Height="6"
+                                           Visibility="{Binding Path=ConnectionIsModerate, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
+                                <Rectangle Height="10"
+                                           Visibility="{Binding Path=ConnectionIsGood, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
+                                <Rectangle Height="15"
+                                           Visibility="{Binding Path=ConnectionIsPerfect, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
+                            </WrapPanel>
+
+                            <v:LogoutButtonView Command="{Binding LogoutCommand}" />
+                            
                             <v:PinButtonView Command="{Binding SaveChannelsCommand}" />
+                            
                         </WrapPanel>
                     </Grid>
                 </DockPanel>

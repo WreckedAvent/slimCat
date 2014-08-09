@@ -70,10 +70,17 @@
                      SelectedItem="{Binding Path=CurrentCharacter, Mode=TwoWay}" />
         </ScrollViewer>
 
-        <Button Grid.Row="2"
-                Content="Login"
-                Margin="20"
-                HorizontalAlignment="Center"
-                Command="{Binding SelectCharacterCommand}" />
+        <StackPanel Grid.Row="2"
+                   Margin="20"
+                   HorizontalAlignment="Center">
+            <Button Content="Login"
+                    Command="{Binding SelectCharacterCommand}"
+                    Margin="0,5"/>
+            <Button Content="Switch Accounts"
+                    Command="{Binding SwitchAccountCommand}"
+                    Margin="0,5"/>
+        </StackPanel>
+
+        
     </Grid>
 </UserControl>

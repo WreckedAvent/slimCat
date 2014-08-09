@@ -16,11 +16,12 @@
         <v:CreateReportView />
         <v:RestartButtonView Command="{Binding Path=ClearNotificationsCommand}"
                              ToolTip="Clear all notifications"
-                             DockPanel.Dock="Top" />
+                             DockPanel.Dock="Top"
+                             Margin="0,10,0,0"/>
 
         <v:SearchBoxView DockPanel.Dock="Bottom" />
 
-        <TextBlock Text="No notifications ..."
+        <TextBlock Text="You don't have any notifications."
                    TextWrapping="Wrap"
                    Visibility="{Binding Path=HasNoNotifications, Converter={StaticResource BoolConverter}}" />
 

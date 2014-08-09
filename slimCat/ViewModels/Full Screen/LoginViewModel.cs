@@ -207,11 +207,10 @@ namespace slimCat.ViewModels
 
         private void HandleLogin(bool gotTicket)
         {
-            Events.GetEvent<LoginCompleteEvent>().Unsubscribe(HandleLogin);
+            RequestSent = false;
 
             if (!gotTicket)
             {
-                RequestSent = false;
                 RelayMessage = "Oops!" + " " + model.Error;
                 Log("Login unsuccessful");
             }
@@ -230,6 +229,8 @@ namespace slimCat.ViewModels
                     Settings.Default.Password = null;
                     Settings.Default.Save();
                 }
+
+                RelayMessage = Constants.FriendlyName;
             }
         }
 

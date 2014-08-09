@@ -42,12 +42,15 @@ namespace slimCat.ViewModels
     /// </summary>
     public class UtilityChannelViewModel : ChannelViewModelBase
     {
-        private readonly IIconService iconService;
 
         #region Fields
 
         private readonly IAutomationService automation;
+
+        private readonly IIconService iconService;
+
         private readonly IBrowser browser;
+
         private readonly StringBuilder connectDotDot;
 
         private readonly CacheCount minuteOnlineCount;

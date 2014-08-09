@@ -210,8 +210,6 @@ namespace slimCat.Services
             if (character == null) return;
             Character = character;
 
-            events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(ConnectToChat);
-
             if (socket.State == WebSocketState.Open) return;
 
             Logging.LogLine("opening socket", "chat");
@@ -443,6 +441,18 @@ namespace slimCat.Services
 
             // we're not going to reconnect at this point
             return 60*60*oneSecond;
+        }
+
+        public void Disconnect()
+        {
+            socket.Closed -= ConnectionClosed;
+            socket.Error -= ConnectionError;
+            socket.MessageReceived -= ConnectionMessageReceived;
+            socket.Close();
+
+            events.GetEvent<ConnectionClosedEvent>().Publish(string.Empty);
+            isAuthenticated = false;
+            autoPingTimer.Stop();
         }
 
         #region logging

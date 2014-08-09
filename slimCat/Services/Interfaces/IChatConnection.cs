@@ -67,6 +67,12 @@ namespace slimCat.Services
         /// <param name="command">The command.</param>
         void SendMessage(IDictionary<string, object> command);
 
+
+        /// <summary>
+        ///     Disconnects the current socket.
+        /// </summary>
+        void Disconnect();
+
         #endregion
     }
 }

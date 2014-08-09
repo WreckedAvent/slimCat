@@ -1,0 +1,17 @@
+﻿<Button x:Class="slimCat.Views.LogoutButtonView"
+        x:Name="LogoutButton"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource ImageContentButton}"
+        ToolTip="Disconnect from F-chat to select another character"
+        Margin="2">
+    <Button.Content>
+        <Rectangle Fill="{Binding ElementName=LogoutButton, Path=Foreground}"
+                   Height="18"
+                   Width="18">
+            <Rectangle.OpacityMask>
+                <ImageBrush ImageSource="pack://application:,,,/icons/logout.png" />
+            </Rectangle.OpacityMask>
+        </Rectangle>
+    </Button.Content>
+</Button>

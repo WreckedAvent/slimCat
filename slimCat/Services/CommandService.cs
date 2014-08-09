@@ -1188,7 +1188,6 @@ namespace slimCat.Services
 
         private void GetCharacter(string character)
         {
-            Events.GetEvent<CharacterSelectedLoginEvent>().Unsubscribe(GetCharacter);
             ChatModel.CurrentCharacter = new CharacterModel {Name = character, Status = StatusType.Online};
             ChatModel.CurrentCharacter.GetAvatar();
 
