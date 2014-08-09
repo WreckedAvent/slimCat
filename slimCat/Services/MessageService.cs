@@ -26,33 +26,24 @@ namespace slimCat.Services
     using System.Diagnostics;
     using System.Linq;
     using System.Threading;
-    using System.Web;
     using System.Windows;
     using System.Windows.Threading;
     using Microsoft.Practices.Prism.Events;
-    using Microsoft.Practices.Prism.Regions;
-    using Microsoft.Practices.Unity;
     using Models;
     using Utilities;
-    using ViewModels;
-    using Views;
     using Commands = Utilities.Constants.ClientCommands;
 
     #endregion
 
     /// <summary>
-    ///     The message daemon is the service layer responsible for managing what the user sees and the commands the user
-    ///     sends.
+    ///     The message service is responsible for handing user commands.
     /// </summary>
-    public class MessageService : DispatcherObject, IChannelManager
+    public class MessageService : DispatcherObject
     {
+
         #region Fields
 
-        private const int MaxRecentTabs = 10;
-
         private readonly IListConnection api;
-
-        private readonly IAutomationService automation;
 
         private readonly ICharacterManager characterManager;
 
@@ -60,50 +51,38 @@ namespace slimCat.Services
 
         private readonly IChatConnection connection;
 
-        private readonly IUnityContainer container;
-
         private readonly IEventAggregator events;
 
         private readonly ILoggingService logger;
 
         private readonly IChatModel model;
 
-        private readonly IRegionManager region;
-
-        private ChannelModel lastSelected;
+        private readonly IChannelManager channelManager;
 
         #endregion
 
         #region Constructors and Destructors
 
         public MessageService(
-            IRegionManager regman,
-            IUnityContainer contain,
             IEventAggregator events,
             IChatModel model,
             IChatConnection connection,
             IListConnection api,
             ICharacterManager manager,
             ILoggingService logger,
-            IAutomationService automation)
+            IChannelManager channelManager)
         {
-            this.logger = logger;
-            this.automation = automation;
 
             try
             {
-                region = regman.ThrowIfNull("regman");
-                container = contain.ThrowIfNull("contain");
                 this.events = events.ThrowIfNull("events");
                 this.model = model.ThrowIfNull("model");
                 this.connection = connection.ThrowIfNull("connection");
                 this.api = api.ThrowIfNull("api");
+                this.logger = logger.ThrowIfNull("logger");
+                this.channelManager = channelManager.ThrowIfNull("channelManager");
                 characterManager = manager.ThrowIfNull("characterManager");
 
-                this.events.GetEvent<ChatOnDisplayEvent>()
-                    .Subscribe(BuildHomeChannel, ThreadOption.UIThread, true);
-                this.events.GetEvent<RequestChangeTabEvent>()
-                    .Subscribe(RequestNavigate, ThreadOption.UIThread, true);
                 this.events.GetEvent<UserCommandEvent>().Subscribe(CommandReceived, ThreadOption.UIThread, true);
 
                 commands = new Dictionary<string, CommandHandler>
@@ -145,216 +124,12 @@ namespace slimCat.Services
                 Exceptions.HandleException(ex);
             }
         }
+
         #endregion
 
         #region Delegates
 
         private delegate void CommandHandler(IDictionary<string, object> command);
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public void AddChannel(ChannelType type, string id, string name)
-        {
-            Log((id != name && !string.IsNullOrEmpty(name))
-                ? "Making {0} Channel {1} \"{2}\"".FormatWith(type, id, name)
-                : "Making {0} Channel {1}".FormatWith(type, id));
-
-            if (type == ChannelType.PrivateMessage)
-            {
-                var character = characterManager.Find(id);
-
-                character.GetAvatar(); // make sure we have their picture
-
-                // model doesn't have a reference to PrivateMessage channels, build it manually
-                var temp = new PmChannelModel(character);
-                container.RegisterInstance(temp.Id, temp);
-                container.Resolve<PmChannelViewModel>(new ParameterOverride("name", temp.Id));
-
-                Dispatcher.Invoke((Action) (() => model.CurrentPms.Add(temp)));
-                // then add it to the model's data               
-                
-                ApplicationSettings.RecentCharacters.BacklogWithUpdate(id, MaxRecentTabs);
-                SettingsService.SaveApplicationSettingsToXml(model.CurrentCharacter.Name);
-            }
-            else
-            {
-                GeneralChannelModel temp;
-                if (type == ChannelType.Utility)
-                {
-                    // our model won't have a reference to home, so we build it manually
-                    temp = new GeneralChannelModel(id, ChannelType.Utility);
-                    container.RegisterInstance(id, temp);
-                    container.Resolve<UtilityChannelViewModel>(new ParameterOverride("name", id));
-                }
-                else
-                {
-                    // our model should have a reference to other channels though
-                    temp = model.AllChannels.FirstOrDefault(param => param.Id == id);
-
-                    if (temp == null)
-                    {
-                        temp = new GeneralChannelModel(id, name, id == name ? ChannelType.Public : ChannelType.Private);
-                        Dispatcher.Invoke((Action) (() => model.AllChannels.Add(temp)));
-                    }
-
-                    Dispatcher.Invoke((Action) (() => model.CurrentChannels.Add(temp)));
-
-                    container.Resolve<GeneralChannelViewModel>(new ParameterOverride("name", id));
-
-                    ApplicationSettings.RecentChannels.BacklogWithUpdate(id, MaxRecentTabs);
-                    SettingsService.SaveApplicationSettingsToXml(model.CurrentCharacter.Name);
-                }
-
-                if (!model.CurrentChannels.Contains(temp))
-                    Dispatcher.Invoke((Action) (() => model.CurrentChannels.Add(temp)));
-            }
-        }
-
-        public void AddMessage(
-            string message, string channelName, string poster, MessageType messageType = MessageType.Normal)
-        {
-            var sender =
-                characterManager.Find(poster == Constants.Arguments.ThisCharacter ? model.CurrentCharacter.Name : poster);
-
-            var channel = model.CurrentChannels.FirstByIdOrNull(channelName)
-                          ?? (ChannelModel) model.CurrentPms.FirstByIdOrNull(channelName);
-
-            if (channel == null)
-                return; // exception circumstance, swallow message
-
-            Dispatcher.Invoke(
-                (Action) delegate
-                    {
-                        var thisMessage = new MessageModel(sender, message, messageType);
-
-                        channel.AddMessage(thisMessage, characterManager.IsOfInterest(poster));
-
-                        if (channel.Settings.LoggingEnabled && ApplicationSettings.AllowLogging)
-                        {
-                            // check if the user wants logging for this channel
-                            logger.LogMessage(channel.Title, channel.Id, thisMessage);
-                        }
-
-                        if (poster == Constants.Arguments.ThisCharacter)
-                            return;
-
-                        // don't push events for our own messages
-                        if (channel is GeneralChannelModel)
-                        {
-                            events.GetEvent<NewMessageEvent>()
-                                .Publish(
-                                    new Dictionary<string, object>
-                                        {
-                                            {Constants.Arguments.Message, thisMessage},
-                                            {Constants.Arguments.Channel, channel}
-                                        });
-                        }
-                        else
-                            events.GetEvent<NewPmEvent>().Publish(thisMessage);
-                    });
-        }
-
-        public void JoinChannel(ChannelType type, string id, string name = "")
-        {
-            name = HttpUtility.HtmlDecode(name);
-            IEnumerable<string> history = new List<string>();
-
-            Log((id != name && !string.IsNullOrEmpty(name))
-                ? "Joining {0} Channel {1} \"{2}\"".FormatWith(type, id, name)
-                : "Joining {0} Channel {1}".FormatWith(type, id));
-
-            if (!id.Equals("Home"))
-                history = logger.GetLogs(string.IsNullOrWhiteSpace(name) ? id : name, id);
-
-            var toJoin = model.CurrentPms.FirstByIdOrNull(id)
-                         ?? (ChannelModel) model.CurrentChannels.FirstByIdOrNull(id);
-
-            if (toJoin == null)
-            {
-                AddChannel(type, id, name);
-
-                toJoin = model.CurrentPms.FirstByIdOrNull(id)
-                         ?? (ChannelModel) model.CurrentChannels.FirstByIdOrNull(id);
-            }
-
-            if (history.Any() && history.Count() > 1)
-            {
-                Dispatcher.BeginInvoke(
-                    (Action) (() => history.Select(item => new MessageModel(item)).Each(
-                        item =>
-                            {
-                                if (item.Type != MessageType.Normal)
-                                    toJoin.Ads.Add(item);
-                                else
-                                    toJoin.Messages.Add(item);
-                            })));
-            }
-
-            RequestNavigate(id);
-        }
-
-        public void RemoveChannel(string name)
-        {
-            RemoveChannel(name, false);
-        }
-
-        public void RemoveChannel(string name, bool force)
-        {
-            Log("Removing Channel " + name);
-
-            if (model.CurrentChannels.Any(param => param.Id == name))
-            {
-                var temp = model.CurrentChannels.FirstByIdOrNull(name);
-                temp.Description = null;
-
-                var index = model.CurrentChannels.IndexOf(temp);
-                RequestNavigate(model.CurrentChannels[index-1].Id);
-
-                Dispatcher.Invoke(
-                    (Action) (() => model.CurrentChannels.Remove(temp)));
-
-                object toSend = new {channel = name};
-                connection.SendMessage(toSend, Commands.ChannelLeave);
-            }
-            else if (model.CurrentPms.Any(param => param.Id == name))
-            {
-                var temp = model.CurrentPms.FirstByIdOrNull(name);
-                var index = model.CurrentPms.IndexOf(temp);
-                RequestNavigate(index != 0 ? model.CurrentPms[index - 1].Id : "Home");
-
-                model.CurrentPms.Remove(temp);
-            }
-            else if (force)
-            {
-                object toSend = new { channel = name };
-                connection.SendMessage(toSend, Commands.ChannelLeave);
-            }
-            else
-                throw new ArgumentOutOfRangeException("name", "Could not find the channel requested to remove");
-        }
-
-        public void QuickJoinChannel(string id, string name)
-        {
-            name = HttpUtility.HtmlDecode(name);
-            IEnumerable<string> history = new List<string>();
-
-            var type = (id != name) ? ChannelType.Public : ChannelType.Private;
-
-            Log((id != name && !string.IsNullOrEmpty(name))
-                ? "Quick Joining {0} Channel {1} \"{2}\"".FormatWith(type, id, name)
-                : "Quick Joining {0} Channel {1}".FormatWith(type, id));
-
-            var temp = new GeneralChannelModel(id, name, id == name ? ChannelType.Public : ChannelType.Private);
-            Dispatcher.Invoke((Action)(() =>
-                {
-                    model.AllChannels.Add(temp);
-                    model.CurrentChannels.Add(temp);
-                }));
-
-            container.Resolve<GeneralChannelViewModel>(new ParameterOverride("name", id));
-        }
 
         #endregion
 
@@ -372,14 +147,6 @@ namespace slimCat.Services
             channel.Ads.Clear();
         }
 
-        private void BuildHomeChannel(bool? payload)
-        {
-            events.GetEvent<ChatOnDisplayEvent>().Unsubscribe(BuildHomeChannel);
-
-            // we shouldn't need to know about this anymore
-            JoinChannel(ChannelType.Utility, "Home");
-        }
-
         private void OnPrivRequested(IDictionary<string, object> command)
         {
             var characterName = command.Get(Constants.Arguments.Character);
@@ -391,27 +158,33 @@ namespace slimCat.Services
                     .Where(x => !x.NameEquals(model.CurrentCharacter.Name))
                     .FirstOrDefault(c => c.Name.StartsWith(characterName, true, null));
 
-                JoinChannel(ChannelType.PrivateMessage, guess == null ? characterName : guess.Name);
+                channelManager.JoinChannel(ChannelType.PrivateMessage, guess == null ? characterName : guess.Name);
             }
         }
 
         private void OnPriRequested(IDictionary<string, object> command)
         {
-            AddMessage(command.Get(Constants.Arguments.Message), command.Get("recipient"),
+            channelManager.AddMessage(
+                command.Get(Constants.Arguments.Message), 
+                command.Get("recipient"),
                 Constants.Arguments.ThisCharacter);
             connection.SendMessage(command);
         }
 
         private void OnMsgRequested(IDictionary<string, object> command)
         {
-            AddMessage(command.Get(Constants.Arguments.Message), command.Get(Constants.Arguments.Channel),
+            channelManager.AddMessage(
+                command.Get(Constants.Arguments.Message),
+                command.Get(Constants.Arguments.Channel),
                 Constants.Arguments.ThisCharacter);
             connection.SendMessage(command);
         }
 
         private void OnLrpRequested(IDictionary<string, object> command)
         {
-            AddMessage(command.Get(Constants.Arguments.Message), command.Get(Constants.Arguments.Channel),
+            channelManager.AddMessage(
+                command.Get(Constants.Arguments.Message)
+                , command.Get(Constants.Arguments.Channel),
                 Constants.Arguments.ThisCharacter,
                 MessageType.Ad);
             connection.SendMessage(command);
@@ -429,24 +202,24 @@ namespace slimCat.Services
 
         private void OnCloseRequested(IDictionary<string, object> command)
         {
-            RemoveChannel(command.Get(Constants.Arguments.Channel));
+            channelManager.RemoveChannel(command.Get(Constants.Arguments.Channel));
         }
 
         private void OnJoinRequested(IDictionary<string, object> command)
         {
-            var args = command.Get(Constants.Arguments.Channel);
+            var channels = command.Get(Constants.Arguments.Channel);
 
-            if (model.CurrentChannels.FirstByIdOrNull(args) != null)
+            if (model.CurrentChannels.FirstByIdOrNull(channels) != null)
             {
-                RequestNavigate(args);
+                events.GetEvent<RequestChangeTabEvent>().Publish(channels);
                 return;
             }
 
             var guess =
                 model.AllChannels.OrderBy(channel => channel.Title)
-                    .FirstOrDefault(channel => channel.Title.StartsWith(args, true, null));
+                    .FirstOrDefault(channel => channel.Title.StartsWith(channels, true, null));
 
-            var toJoin = guess != null ? guess.Id : args;
+            var toJoin = guess != null ? guess.Id : channels;
             var toSend = new {channel = toJoin};
 
             connection.SendMessage(toSend, Commands.ChannelJoin);
@@ -557,7 +330,7 @@ namespace slimCat.Services
 
                 if (channel != null)
                 {
-                    RequestNavigate(target);
+                    events.GetEvent<RequestChangeTabEvent>().Publish(target);
                     Dispatcher.Invoke((Action) NotificationService.ShowWindow);
                     return;
                 }
@@ -573,7 +346,7 @@ namespace slimCat.Services
             if (newCharacterUpdate != null)
             {
                 // so tell our system to join the Pm Tab
-                JoinChannel(ChannelType.PrivateMessage, newCharacterUpdate.TargetCharacter.Name);
+                channelManager.JoinChannel(ChannelType.PrivateMessage, newCharacterUpdate.TargetCharacter.Name);
 
                 Dispatcher.Invoke((Action) NotificationService.ShowWindow);
                 return;
@@ -596,7 +369,7 @@ namespace slimCat.Services
             }
 
             var chanType = newChannel.Type;
-            JoinChannel(chanType, doStuffWith.TargetChannel.Id);
+            channelManager.JoinChannel(chanType, doStuffWith.TargetChannel.Id);
             Dispatcher.Invoke((Action) NotificationService.ShowWindow);
         }
 
@@ -773,7 +546,7 @@ namespace slimCat.Services
         private void OnChannelRejoinRequested(IDictionary<string, object> command)
         {
             var channelName = command.Get(Constants.Arguments.Channel);
-            RemoveChannel(channelName, true);
+            channelManager.RemoveChannel(channelName, true);
 
             var toSend = new { channel = channelName };
             connection.SendMessage(toSend, Commands.ChannelJoin);
@@ -782,7 +555,7 @@ namespace slimCat.Services
         private void OnForceChannelCloseRequested(IDictionary<string, object> command)
         {
             var channelName = command.Get(Constants.Arguments.Channel);
-            RemoveChannel(channelName, true);
+            channelManager.RemoveChannel(channelName, true);
         }
 
         private void OnHandleLatestReportRequested(IDictionary<string, object> command)
@@ -803,7 +576,7 @@ namespace slimCat.Services
             if (args != null) command.Add(Constants.Arguments.CallId, args.CallId);
             command.Add(Constants.Arguments.Action, Constants.Arguments.ActionConfirm);
 
-            JoinChannel(ChannelType.PrivateMessage, latest.TargetCharacter.Name);
+            channelManager.JoinChannel(ChannelType.PrivateMessage, latest.TargetCharacter.Name);
 
             var logId = -1;
             if (command.ContainsKey(Constants.Arguments.LogId))
@@ -833,7 +606,7 @@ namespace slimCat.Services
                 if (!command.ContainsKey(Constants.Arguments.Action))
                     command[Constants.Arguments.Action] = Constants.Arguments.ActionConfirm;
 
-                JoinChannel(ChannelType.PrivateMessage, target.Name);
+                channelManager.JoinChannel(ChannelType.PrivateMessage, target.Name);
 
                 var logId = -1;
                 if (command.ContainsKey(Constants.Arguments.LogId))
@@ -879,80 +652,6 @@ namespace slimCat.Services
             }
         }
 
-        private void RequestNavigate(string channelId)
-        {
-            automation.UserDidAction();
-
-            Log("Requested " + channelId);
-
-            if (lastSelected != null)
-            {
-                if (lastSelected.Id.Equals(channelId, StringComparison.OrdinalIgnoreCase))
-                    return;
-
-                Dispatcher.Invoke(
-                    (Action) delegate
-                        {
-                            var toUpdate = model.CurrentChannels.FirstByIdOrNull(lastSelected.Id)
-                                           ??
-                                           (ChannelModel) model.CurrentPms.FirstByIdOrNull(lastSelected.Id);
-
-                            if (toUpdate == null)
-                                lastSelected = null;
-                            else
-                                toUpdate.IsSelected = false;
-                        });
-            }
-
-            var channelModel = model.CurrentChannels.FirstByIdOrNull(channelId)
-                               ?? (ChannelModel) model.CurrentPms.FirstByIdOrNull(channelId);
-
-            if (channelModel == null)
-                throw new ArgumentOutOfRangeException("channelId", "Cannot navigate to unknown channel");
-
-            channelModel.IsSelected = true;
-            model.CurrentChannel = channelModel;
-
-            if (!channelModel.Messages.Any() && !channelModel.Ads.Any())
-            {
-                IEnumerable<string> history = new List<string>();
-
-                if (!channelId.Equals("Home"))
-                    history = logger.GetLogs(channelModel.Title, channelModel.Id);
-
-                if (history.Any() && history.Count() > 1)
-                {
-                    Dispatcher.Invoke((Action)(() => 
-                        history
-                            .Select(item => new MessageModel(item))
-                            .Each(item => channelModel.AddMessage(item)
-                    )));
-                }
-            }
-
-            Log("Requesting " + channelModel.Id + " channel view");
-            Dispatcher.Invoke(
-                (Action) delegate
-                    {
-                        foreach (var r in region.Regions[ChatWrapperView.ConversationRegion].Views)
-                        {
-                            var view = r as DisposableView;
-                            if (view != null)
-                            {
-                                var toDispose = view;
-                                toDispose.Dispose();
-                                region.Regions[ChatWrapperView.ConversationRegion].Remove(toDispose);
-                            }
-                            else
-                                region.Regions[ChatWrapperView.ConversationRegion].Remove(r);
-                        }
-
-                        region.Regions[ChatWrapperView.ConversationRegion].RequestNavigate(
-                            HelperConverter.EscapeSpaces(channelModel.Id));
-                    });
-
-            lastSelected = channelModel;
-        }
 
         [Conditional("DEBUG")]
         private void Log(string text)

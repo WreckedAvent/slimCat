@@ -58,7 +58,7 @@ namespace slimCat.Utilities
                 RegisterSingleton<IListConnection, FlistService>();
                 RegisterSingleton<IChatConnection, FchatService>();
                 RegisterSingleton<IChatModel, ChatModel>();
-                RegisterSingleton<IChannelManager, MessageService>();
+                RegisterSingleton<IChannelManager, ChannelService>();
                 RegisterSingleton<IThemeLocator, ApplicationThemeLocator>();
                 RegisterSingleton<ICharacterManager, GlobalCharacterManager>();
                 RegisterSingleton<IPermissionService, PermissionService>();
@@ -74,6 +74,7 @@ namespace slimCat.Utilities
                 // these are services that are not directly used by our singletons or modules
                 Instantiate<NotificationService>();
                 Instantiate<CommandService>();
+                Instantiate<MessageService>();
                 Instantiate<IIconService>();
 
                 // some resources that are dependant on our singletons

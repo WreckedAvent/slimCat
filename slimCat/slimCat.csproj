@@ -190,6 +190,7 @@
     <Compile Include="Services\AutomationService.cs" />
     <Compile Include="Services\Browser.cs" />
     <Compile Include="Services\ChannelListUpdaterService.cs" />
+    <Compile Include="Services\ChannelService.cs" />
     <Compile Include="Services\IconService.cs" />
     <Compile Include="Services\Interfaces\IAutomationService.cs" />
     <Compile Include="Services\Interfaces\INoteService.cs" />

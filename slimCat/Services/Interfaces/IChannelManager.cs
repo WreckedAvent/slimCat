@@ -62,10 +62,9 @@ namespace slimCat.Services
         /// <summary>
         ///     Used to leave a channel
         /// </summary>
-        /// <param name="name">
-        ///     The name.
-        /// </param>
-        void RemoveChannel(string name);
+        /// <param name="name">The name.</param>
+        /// <param name="force">Whether or not to ignore validation problems.</param>
+        void RemoveChannel(string name, bool force = false);
 
         /// <summary>
         ///     Adds the channel model if it doesn't exist, but doesn't select it or pull down history/settings. 
