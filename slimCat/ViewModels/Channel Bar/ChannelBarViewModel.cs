@@ -228,6 +228,12 @@ namespace slimCat.ViewModels
 
         private void NavigateToTabEvent(object args)
         {
+            if (currentSelected == "Notifications")
+            {
+                // if we just came from notifications, we have nothing new to see
+                HasUpdate = false;
+            }
+
             var newSelected = args as string;
 
             if (newSelected != "NoTab")
