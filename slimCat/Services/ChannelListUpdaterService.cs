@@ -21,6 +21,7 @@ namespace slimCat.Services
 {
     #region Usings
     using System;
+    using Microsoft.Practices.Prism.Events;
     using Utilities;
 
     #endregion
@@ -28,12 +29,21 @@ namespace slimCat.Services
     public class ChannelListUpdaterService : IChannelListUpdater
     {
         private readonly IChatConnection connection;
+        private readonly IEventAggregator eventAggregator;
 
         private DateTime lastUpdate;
 
-        public ChannelListUpdaterService(IChatConnection connection)
+        public ChannelListUpdaterService(IChatConnection connection, IEventAggregator eventAggregator)
         {
             this.connection = connection;
+            this.eventAggregator = eventAggregator;
+
+            eventAggregator.GetEvent<ConnectionClosedEvent>().Subscribe(OnWipeState);
+        }
+
+        private void OnWipeState(string o)
+        {
+            lastUpdate = new DateTime();
         }
 
         public void UpdateChannels()

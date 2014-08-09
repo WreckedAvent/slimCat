@@ -135,6 +135,9 @@ namespace slimCat.ViewModels
                 Events.GetEvent<NewMessageEvent>()
                     .Subscribe(param => UpdateFlashingTabs(), ThreadOption.UIThread, true);
 
+                Events.GetEvent<ConnectionClosedEvent>()
+                    .Subscribe(param => UpdateFlashingTabs(), ThreadOption.UIThread, true);
+
                 ChatModel.SelectedChannelChanged += (s, e) => UpdateFlashingTabs();
 
                 updateTick.Enabled = true;
