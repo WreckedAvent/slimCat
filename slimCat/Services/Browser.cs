@@ -67,6 +67,7 @@ namespace slimCat.Services
             req.Method = requestType;
             req.ContentType = contentType;
             req.ContentLength = toPost.Length;
+            req.UserAgent = Constants.FriendlyName;
 
             if (useCookies)
                 req.CookieContainer = loginCookies;
@@ -80,7 +81,7 @@ namespace slimCat.Services
                 if (answerStream == null)
                     return null;
                 using (var answerReader = new StreamReader(answerStream))
-                    return answerReader.ReadToEnd(); // read our response
+                    return answerReader.ReadToEnd(); 
             }
         }
 
@@ -92,13 +93,15 @@ namespace slimCat.Services
             if (useCookies)
                 req.CookieContainer = loginCookies;
 
+            req.UserAgent = Constants.FriendlyName;
+
             using (var rep = (HttpWebResponse)req.GetResponse())
             using (var answerStream = rep.GetResponseStream())
             {
                 if (answerStream == null)
                     return null;
                 using (var answerReader = new StreamReader(answerStream))
-                    return answerReader.ReadToEnd(); // read our response
+                    return answerReader.ReadToEnd();
             }
         }
     }
