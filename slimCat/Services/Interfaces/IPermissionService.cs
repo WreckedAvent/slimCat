@@ -32,5 +32,11 @@ namespace slimCat.Services
         /// </summary>
         /// <param name="name">The character's name to check.</param>
         bool IsAdmin(string name);
+
+        /// <summary>
+        ///     Determines whether the specified character is a channel moderator.
+        /// </summary>
+        /// <param name="name">The character's name to check.</param>
+        bool IsChannelModerator(string name);
     }
 }

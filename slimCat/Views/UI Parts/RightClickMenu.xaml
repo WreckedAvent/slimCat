@@ -39,6 +39,36 @@
                                    FontSize="20" />
                         <TextBlock Text="{Binding Path=TargetGender}" />
                         <TextBlock Text="{Binding Path=TargetStatus}" />
+                        <TextBlock Text="Global Mod" 
+                                   Foreground="{StaticResource ModeratorBrush}" 
+                                   Visibility="{Binding Path=IsGlobalModerator, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
+                        <TextBlock Text="Channel Mod" 
+                                   Foreground="{StaticResource ContrastBrush}" 
+                                   Visibility="{Binding Path=IsChannelModerator, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
+                        
+                        <TextBlock Text="Friend"
+                                   Foreground="{StaticResource ContrastBrush}"
+                                   Visibility="{Binding Path=IsFriend, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
+                        
+                        <TextBlock Text="Bookmarked"
+                                   Foreground="{StaticResource ContrastBrush}"
+                                   Visibility="{Binding Path=IsBookmarked, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
+
+                        <TextBlock Text="Is Interesting"
+                                   Foreground="{StaticResource ContrastBrush}"
+                                   Visibility="{Binding Path=IsOfInterest, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
+
+                        <TextBlock Text="Updates Ignored"
+                                   Foreground="{StaticResource NotAvailableBrush}"
+                                   Visibility="{Binding Path=IsUpdatesIgnored, Converter={StaticResource BoolConverter}}"></TextBlock>
+                        
+                        <TextBlock Text="Not Interesting"
+                                   Foreground="{StaticResource NotAvailableBrush}"
+                                   Visibility="{Binding Path=IsUninteresting, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
+                        
+                        <TextBlock Text="Ignored"
+                                   Foreground="{StaticResource NotAvailableBrush}"
+                                   Visibility="{Binding Path=IsIgnored, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
                     </StackPanel>
                 </DockPanel>
             </Border>
@@ -94,10 +124,10 @@
 
                 <Button Command="{Binding IgnoreCommand}"
                         Content="Ignore"
-                        Visibility="{Binding Path=RightClickMenuViewModel.CanIgnore, Converter={StaticResource BoolConverter}}" />
+                        Visibility="{Binding Path=RightClickMenuViewModel.IsIgnored, Converter={StaticResource OppositeBoolConverter}}" />
                 <Button Command="{Binding UnignoreCommand}"
                         Content="Unignore"
-                        Visibility="{Binding Path=RightClickMenuViewModel.CanUnignore, Converter={StaticResource BoolConverter}}" />
+                        Visibility="{Binding Path=RightClickMenuViewModel.IsIgnored, Converter={StaticResource BoolConverter}}" />
 
                 <Button Command="{Binding ReportCommand}"
                         Visibility="{Binding Path=RightClickMenuViewModel.HasReport, Converter={StaticResource OppositeBoolConverter}}"

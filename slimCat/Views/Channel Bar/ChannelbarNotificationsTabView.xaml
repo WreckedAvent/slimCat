@@ -21,7 +21,7 @@
 
         <v:SearchBoxView DockPanel.Dock="Bottom" />
 
-        <TextBlock Text="You don't have any notifications."
+        <TextBlock Text="No notifications."
                    TextWrapping="Wrap"
                    Visibility="{Binding Path=HasNoNotifications, Converter={StaticResource BoolConverter}}" />
 

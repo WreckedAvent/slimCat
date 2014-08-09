@@ -86,7 +86,7 @@ namespace slimCat.ViewModels
                 ChatModel = cm.ThrowIfNull("cm");
                 CharacterManager = manager.ThrowIfNull("manager");
 
-                RightClickMenuViewModel = new RightClickMenuViewModel(ChatModel.IsGlobalModerator, CharacterManager);
+                RightClickMenuViewModel = new RightClickMenuViewModel(ChatModel.IsGlobalModerator, CharacterManager, Container.Resolve<IPermissionService>());
                 CreateReportViewModel = new CreateReportViewModel(Events, ChatModel);
                 ChatModel.SelectedChannelChanged += OnSelectedChannelChanged;
 
@@ -453,7 +453,7 @@ namespace slimCat.ViewModels
         private void IgnoreEvent(object args, bool remove = false)
         {
             Events.SendUserCommand(remove ? "unignore" : "ignore", new[] {args as string});
-            OnRightClickMenuUpdated(RightClickMenuViewModel.Target); // updates the ignore/unignore text
+            OnRightClickMenuUpdated(RightClickMenuViewModel.Target);
         }
 
         private void InterestedEvent(object args, bool interestedIn = true)
@@ -462,12 +462,14 @@ namespace slimCat.ViewModels
                 .Publish(CommandDefinitions.CreateCommand(interestedIn
                     ? "interesting"
                     : "notinteresting", new[] {args as string}).ToDictionary());
+
+            OnRightClickMenuUpdated(RightClickMenuViewModel.Target);
         }
 
         private void IgnoreUpdatesEvent(object args)
         {
             Events.SendUserCommand("ignoreUpdates", new[] {args as string});
-            OnRightClickMenuUpdated(RightClickMenuViewModel.Target); // updates the ignore/unignore text
+            OnRightClickMenuUpdated(RightClickMenuViewModel.Target); 
         }
 
         private void IsInterestedEvent(object args)

@@ -49,6 +49,12 @@ namespace slimCat.Services
                    && CurrentChannel.CharacterManager.IsOnList(name, ListKind.Moderator, false);
         }
 
+        public bool IsChannelModerator(string name)
+        {
+            return CurrentChannel != null
+                   && CurrentChannel.CharacterManager.IsOnList(name, ListKind.Moderator, false);
+        }
+
         public bool IsAdmin(string name)
         {
             return manager.IsOnList(name, ListKind.Moderator, false);

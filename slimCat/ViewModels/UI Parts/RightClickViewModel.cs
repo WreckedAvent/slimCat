@@ -22,6 +22,7 @@ namespace slimCat.ViewModels
     #region Usings
 
     using Models;
+    using Services;
     using Utilities;
 
     #endregion
@@ -35,6 +36,7 @@ namespace slimCat.ViewModels
 
         private readonly bool isModerator;
         private readonly ICharacterManager manager;
+        private readonly IPermissionService permissionService;
 
         private bool hasReports;
 
@@ -44,26 +46,16 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public RightClickMenuViewModel(bool isModerator, ICharacterManager manager)
+        public RightClickMenuViewModel(bool isModerator, ICharacterManager manager, IPermissionService permissionService)
         {
             this.isModerator = isModerator;
             this.manager = manager;
+            this.permissionService = permissionService;
         }
 
         #endregion
 
         #region Public Properties
-
-        public bool CanIgnore
-        {
-            get
-            {
-                if (Target != null)
-                    return !manager.IsOnList(Target.Name, ListKind.Ignored);
-
-                return false;
-            }
-        }
 
         public bool CanIgnoreUpdates
         {
@@ -74,11 +66,6 @@ namespace slimCat.ViewModels
 
                 return false;
             }
-        }
-
-        public bool CanUnignore
-        {
-            get { return !CanIgnore; }
         }
 
         public bool HasReport
@@ -177,6 +164,90 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool IsChannelModerator
+        {
+            get
+            {
+                if (Target == null) return false;
+
+                return permissionService.IsChannelModerator(Target.Name);
+            }
+        }
+
+        public bool IsGlobalModerator
+        {
+            get
+            {
+                if (Target == null) return false;
+
+                return permissionService.IsAdmin(Target.Name);
+            }
+        }
+        public bool IsIgnored
+        {
+            get
+            {
+                if (Target != null)
+                    return manager.IsOnList(Target.Name, ListKind.Ignored, false);
+
+                return false;
+            }
+        }
+
+        public bool IsBookmarked
+        {
+            get
+            {
+                if (Target != null)
+                    return manager.IsOnList(Target.Name, ListKind.Bookmark, false);
+
+                return false;
+            }
+        }
+
+        public bool IsFriend
+        {
+            get
+            {
+                if (Target != null)
+                    return manager.IsOnList(Target.Name, ListKind.Friend, false);
+
+                return false;
+            }
+        }
+
+        public bool IsOfInterest
+        {
+            get
+            {
+                if (Target != null)
+                    return manager.IsOnList(Target.Name, ListKind.Interested, false);
+
+                return false;
+            }
+        }
+
+        public bool IsUninteresting
+        {
+            get
+            {
+                if (Target != null)
+                    return manager.IsOnList(Target.Name, ListKind.NotInterested, false);
+
+                return false;
+            }
+        }
+
+        public bool IsUpdatesIgnored
+        {
+            get
+            {
+                if (Target == null) return false;
+
+                return manager.IsOnList(Target.Name, ListKind.IgnoreUpdates, false);
+            }
+        }
+
         public string TargetStatus
         {
             get
@@ -217,11 +288,26 @@ namespace slimCat.ViewModels
             OnPropertyChanged("Target");
             OnPropertyChanged("CanIgnore");
             OnPropertyChanged("CanUnignore");
+
             OnPropertyChanged("TargetGender");
             OnPropertyChanged("TargetStatus");
+
             OnPropertyChanged("HasStatus");
             OnPropertyChanged("HasReport");
+
             OnPropertyChanged("CanIgnoreUpdates");
+
+            OnPropertyChanged("IsChannelModerator");
+            OnPropertyChanged("IsGlobalModerator");
+
+            OnPropertyChanged("IsIgnored");
+            OnPropertyChanged("IsBookmarked");
+            OnPropertyChanged("IsFriend");
+
+            OnPropertyChanged("IsOfInterest");
+            OnPropertyChanged("IsUninteresting");
+
+            OnPropertyChanged("IsUpdatesIgnored");
         }
 
         #endregion
