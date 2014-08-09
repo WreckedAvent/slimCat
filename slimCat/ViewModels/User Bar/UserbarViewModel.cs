@@ -43,6 +43,7 @@ namespace slimCat.ViewModels
     /// </summary>
     public class UserbarViewModel : ViewModelBase
     {
+
         #region Constants
 
         internal const string UserbarView = "UserbarView";
@@ -51,52 +52,51 @@ namespace slimCat.ViewModels
 
         #region Fields
 
+        private readonly IChatConnection chatConnection;
+
         private readonly IDictionary<string, StatusType> statusKinds = new Dictionary<string, StatusType>
+        {
             {
-                {
-                    "Online",
-                    StatusType
-                        .Online
-                },
-                {
-                    "Busy",
-                    StatusType
-                        .Busy
-                },
-                {
-                    "Do not Disturb",
-                    StatusType
-                        .Dnd
-                },
-                {
-                    "Looking For Play",
-                    StatusType
-                        .Looking
-                },
-                {
-                    "Away",
-                    StatusType
-                        .Away
-                }
-            };
+                "Online", StatusType.Online
+            },
+            {
+                "Busy",  StatusType.Busy
+            },
+            {
+                "Do not Disturb", StatusType.Dnd
+            },
+            {
+                "Looking For Play", StatusType .Looking
+            },
+            {
+                "Away", StatusType .Away
+            }
+        };
 
         private readonly Timer updateTick = new Timer(2500);
+
         private bool autoReplyEnabled;
 
         private bool channelsExpanded = true;
 
         private RelayCommand close;
 
+        private RelayCommand logout;
+
         private bool hasNewChanMessage;
 
         private bool hasNewPm;
+
         private bool isChangingAuto;
 
         private bool isChangingStatus;
 
         private bool isExpanded = true;
+
         private string newAutoReplyString = string.Empty;
+
         private string newStatusString = string.Empty;
+
         private StatusType newStatusType = StatusType.Online;
 
         private bool pmsExpanded = true;
@@ -110,6 +110,7 @@ namespace slimCat.ViewModels
         private RelayCommand toggle;
 
         private ICommand toggleAuto;
+
         private RelayCommand toggleStatus;
 
         #endregion
@@ -117,9 +118,10 @@ namespace slimCat.ViewModels
         #region Constructors and Destructors
 
         public UserbarViewModel(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
-            ICharacterManager manager)
+            ICharacterManager manager, IChatConnection chatConnection)
             : base(contain, regman, events, cm, manager)
         {
+            this.chatConnection = chatConnection;
             try
             {
                 ChatModel.CurrentPms.CollectionChanged += (s, e) => OnPropertyChanged("HasPms");
@@ -418,6 +420,11 @@ namespace slimCat.ViewModels
             get { return toggleAuto ?? (toggleAuto = new RelayCommand(ToggleAutoReplyEvent)); }
         }
 
+        public ICommand LogoutCommand
+        {
+            get { return logout ?? (logout = new RelayCommand(LogoutEvent)); }
+        }
+
         public bool IsChangingAuto
         {
             get { return isChangingAuto; }
@@ -450,6 +457,12 @@ namespace slimCat.ViewModels
         {
             IsChangingAuto = !IsChangingAuto;
             if (isChangingAuto) AutoReplyEnabled = !AutoReplyEnabled;
+        }
+
+        private void LogoutEvent(object o)
+        {
+            chatConnection.Disconnect();
+            RegionManager.RequestNavigate(Shell.MainRegion, new Uri(CharacterSelectViewModel.CharacterSelectViewName, UriKind.Relative));
         }
 
         #endregion
@@ -488,8 +501,10 @@ namespace slimCat.ViewModels
 
         private void RequestNavigate(bool? payload)
         {
-            Events.GetEvent<ChatOnDisplayEvent>().Unsubscribe(RequestNavigate);
-            RegionManager.Regions[ChatWrapperView.UserbarRegion].Add(Container.Resolve<UserbarView>());
+            var region = RegionManager.Regions[ChatWrapperView.UserbarRegion];
+
+            if (!region.Views.Any()) 
+                region.Add(Container.Resolve<UserbarView>());
             Log("Requesting userbar view");
         }
 
