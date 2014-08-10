@@ -26,8 +26,8 @@ namespace slimCat.Models
     using System.Collections.Generic;
     using System.Linq;
     using Utilities;
-    using C = Utilities.Constants.ClientCommands;
     using A = Utilities.Constants.Arguments;
+    using C = Utilities.Constants.ClientCommands;
 
     #endregion
 

@@ -21,6 +21,7 @@ namespace slimCat.Views
 {
     #region Usings
 
+    using Models;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -28,7 +29,6 @@ namespace slimCat.Views
     using System.Linq;
     using System.Windows;
     using System.Windows.Documents;
-    using Models;
     using Utilities;
 
     #endregion

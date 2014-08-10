@@ -21,9 +21,9 @@ namespace slimCat.Models
 {
     #region Usings
 
+    using Libraries;
     using System;
     using System.Windows.Input;
-    using Libraries;
     using Utilities;
 
     #endregion

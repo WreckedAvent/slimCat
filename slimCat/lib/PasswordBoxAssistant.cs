@@ -21,11 +21,9 @@ namespace slimCat.Libraries
 {
     #region Usings
 
-    using System.Windows;
-
-    using System.Windows.Controls;
-
     using System.Diagnostics.CodeAnalysis;
+    using System.Windows;
+    using System.Windows.Controls;
 
     #endregion
 

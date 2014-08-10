@@ -21,40 +21,23 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using System.ComponentModel;
-    
-    using System.Diagnostics;
-    
-    using System.Globalization;
-
     using HtmlAgilityPack;
-
-    using Models;
-
-    using Utilities;
-
-    using System;
-
-    using System.Collections.Generic;
-
-    using System.Linq;
-
-    using System.Text.RegularExpressions;
-
-    using System.Web;
-
-    using Microsoft.Practices.Prism.Events;
-
-    using Newtonsoft.Json;
-
-    using Newtonsoft.Json.Linq;
-
-    using Microsoft.Practices.Unity;
-
     using Microsoft.Practices.Prism;
-
+    using Microsoft.Practices.Prism.Events;
+    using Microsoft.Practices.Unity;
+    using Models;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+    using System.Web;
+    using Utilities;
     using Application = System.Windows.Application;
-
     using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
     #endregion

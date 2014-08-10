@@ -21,6 +21,8 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using Microsoft.Practices.Prism.Events;
+    using Models;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -28,8 +30,6 @@ namespace slimCat.Services
     using System.Threading;
     using System.Windows;
     using System.Windows.Threading;
-    using Microsoft.Practices.Prism.Events;
-    using Models;
     using Utilities;
     using Commands = Utilities.Constants.ClientCommands;
 

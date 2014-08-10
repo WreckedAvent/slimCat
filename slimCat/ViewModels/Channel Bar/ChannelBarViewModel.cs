@@ -21,14 +21,14 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using System;
-    using System.Linq;
-    using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
+    using System;
+    using System.Linq;
+    using System.Windows.Input;
     using Utilities;
     using Views;
 

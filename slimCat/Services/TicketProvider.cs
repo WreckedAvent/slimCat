@@ -21,12 +21,12 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using Models;
+    using Models.Api;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
-    using Models;
-    using Models.Api;
     using Utilities;
 
     #endregion

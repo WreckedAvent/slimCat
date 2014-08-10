@@ -21,17 +21,17 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using Microsoft.Practices.Prism.Events;
+    using Microsoft.Practices.Prism.Regions;
+    using Microsoft.Practices.Unity;
+    using Models;
+    using SimpleJson;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Timers;
     using System.Web;
     using System.Windows;
-    using Microsoft.Practices.Prism.Events;
-    using Microsoft.Practices.Prism.Regions;
-    using Microsoft.Practices.Unity;
-    using Models;
-    using SimpleJson;
     using Utilities;
     using ViewModels;
     using Commands = Utilities.Constants.ServerCommands;

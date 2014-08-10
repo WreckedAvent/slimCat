@@ -21,11 +21,11 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using System;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
+    using System;
     using Utilities;
     using Views;
 

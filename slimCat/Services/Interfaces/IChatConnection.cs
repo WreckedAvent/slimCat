@@ -21,8 +21,8 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using System.Collections.Generic;
     using Models;
+    using System.Collections.Generic;
 
     #endregion
 

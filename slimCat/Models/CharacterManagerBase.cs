@@ -21,11 +21,11 @@ namespace slimCat.Models
 {
     #region Usings
 
+    using SimpleJson;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
-    using SimpleJson;
     using Utilities;
 
     #endregion

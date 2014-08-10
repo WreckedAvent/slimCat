@@ -21,6 +21,8 @@ namespace slimCat.Utilities
 {
     #region Usings
 
+    using Models;
+    using Services;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -33,8 +35,6 @@ namespace slimCat.Utilities
     using System.Windows.Documents;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
-    using Models;
-    using Services;
 
     #endregion
 

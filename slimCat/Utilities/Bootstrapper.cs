@@ -21,14 +21,14 @@ namespace slimCat.Utilities
 {
     #region Usings
 
-    using System;
-    using System.Windows;
     using Microsoft.Practices.Prism.Modularity;
     using Microsoft.Practices.Prism.UnityExtensions;
     using Microsoft.Practices.ServiceLocation;
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
+    using System;
+    using System.Windows;
     using ViewModels;
     using WebSocket4Net;
 

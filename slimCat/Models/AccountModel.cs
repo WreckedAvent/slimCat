@@ -21,9 +21,9 @@ namespace slimCat.Models
 {
     #region Usings
 
+    using Properties;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using Properties;
 
     #endregion
 

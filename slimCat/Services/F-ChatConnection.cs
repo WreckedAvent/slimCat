@@ -21,13 +21,13 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using Microsoft.Practices.Prism.Events;
+    using Models;
+    using SimpleJson;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
-    using Microsoft.Practices.Prism.Events;
-    using Models;
-    using SimpleJson;
     using Utilities;
     using WebSocket4Net;
     using ErrorEventArgs = SuperSocket.ClientEngine.ErrorEventArgs;

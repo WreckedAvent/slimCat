@@ -21,12 +21,12 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Timers;
     using lib;
     using Microsoft.Practices.Prism.Events;
     using Models;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Timers;
     using Utilities;
 
     #endregion

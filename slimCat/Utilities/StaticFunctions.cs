@@ -21,6 +21,8 @@ namespace slimCat.Utilities
 {
     #region Usings
 
+    using Models;
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -29,8 +31,6 @@ namespace slimCat.Utilities
     using System.Web;
     using System.Windows;
     using System.Windows.Media;
-    using Newtonsoft.Json;
-    using Models;
 
     #endregion
 

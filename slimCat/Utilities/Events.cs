@@ -21,9 +21,9 @@ namespace slimCat
 {
     #region Usings
 
-    using System.Collections.Generic;
     using Microsoft.Practices.Prism.Events;
     using Models;
+    using System.Collections.Generic;
 
     #endregion
 

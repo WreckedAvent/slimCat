@@ -21,14 +21,14 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using Microsoft.Practices.Prism.Events;
+    using Models;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Web;
-    using Microsoft.Practices.Prism.Events;
-    using Models;
     using Utilities;
 
     #endregion

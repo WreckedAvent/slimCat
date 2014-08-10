@@ -21,11 +21,9 @@ namespace slimCat.Models
 {
     #region Usings
 
-    using System.Text;
-
-    using System.Timers;
-
     using System.Collections.ObjectModel;
+    using System.Text;
+    using System.Timers;
 
     #endregion
 

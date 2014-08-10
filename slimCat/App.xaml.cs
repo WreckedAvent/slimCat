@@ -21,12 +21,11 @@ namespace slimCat
 {
     #region Usings
 
-    using System;
+    using Properties;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Windows;
-    using Properties;
     using Utilities;
 
     #endregion

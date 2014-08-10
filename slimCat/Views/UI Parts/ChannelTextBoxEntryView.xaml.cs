@@ -21,6 +21,7 @@ namespace slimCat.Views
 {
     #region Usings
 
+    using Models;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -28,8 +29,6 @@ namespace slimCat.Views
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Markup;
-    using System.Windows.Media;
-    using Models;
     using ViewModels;
 
     #endregion

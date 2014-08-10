@@ -20,9 +20,9 @@
 namespace slimCat.Services
 {
     #region Usings
+    using Microsoft.Practices.Prism.Events;
     using System;
     using System.Timers;
-    using Microsoft.Practices.Prism.Events;
     using Utilities;
 
     #endregion

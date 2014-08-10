@@ -21,10 +21,6 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using System;
-    using System.Net;
-    using System.Threading;
-    using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
@@ -32,6 +28,10 @@ namespace slimCat.ViewModels
     using Models;
     using Properties;
     using Services;
+    using System;
+    using System.Net;
+    using System.Threading;
+    using System.Windows.Input;
     using Utilities;
     using Views;
 

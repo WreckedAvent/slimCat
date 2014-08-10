@@ -21,6 +21,9 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using Libraries;
+    using Microsoft.Practices.Prism.Events;
+    using Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -28,9 +31,6 @@ namespace slimCat.Services
     using System.Web;
     using System.Windows;
     using System.Windows.Threading;
-    using Libraries;
-    using Microsoft.Practices.Prism.Events;
-    using Models;
     using Utilities;
     using ViewModels;
     using Application = System.Windows.Application;

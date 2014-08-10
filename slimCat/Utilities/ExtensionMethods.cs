@@ -21,12 +21,12 @@ namespace slimCat.Utilities
 {
     #region Usings
 
+    using Microsoft.Practices.Prism.Events;
+    using Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows.Documents;
-    using Microsoft.Practices.Prism.Events;
-    using Models;
 
     #endregion
 
