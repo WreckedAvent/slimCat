@@ -21,10 +21,12 @@ namespace slimCat
 {
     #region Usings
 
+    using System;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Windows;
+    using Properties;
     using Utilities;
 
     #endregion
@@ -51,6 +53,16 @@ namespace slimCat
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var appVersion = assembly.GetName().Version;
+            var appVersionString = appVersion.ToString();
+
+            if (Settings.Default.ApplicationVersion != appVersion.ToString())
+            {
+                Settings.Default.Upgrade();
+                Settings.Default.ApplicationVersion = appVersionString;
+            }
 
             var bstrap = new Bootstrapper();
             bstrap.Run();
