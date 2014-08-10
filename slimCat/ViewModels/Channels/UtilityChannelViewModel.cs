@@ -722,6 +722,7 @@ namespace slimCat.ViewModels
                 OnPropertyChanged("UpdateName");
                 OnPropertyChanged("UpdateLink");
                 OnPropertyChanged("UpdateBuildTime");
+                OnPropertyChanged("ChangeLog");
             }
             catch (WebException)
             {
