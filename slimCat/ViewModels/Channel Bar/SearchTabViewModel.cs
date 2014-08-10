@@ -315,7 +315,9 @@ namespace slimCat.ViewModels
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase((string)value);
+            var toReturn = CultureInfo.CurrentCulture.TextInfo.ToTitleCase((string)value);
+
+            return toReturn.Equals("Furryprefs") ? "Furry Preference" : toReturn;
         }
     }
 }

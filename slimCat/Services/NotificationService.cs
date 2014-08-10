@@ -356,6 +356,9 @@ namespace slimCat.Services
                 }
                 else if (args is CharacterUpdateModel.ListChangedEventArgs)
                 {
+                    var type = (args as CharacterUpdateModel.ListChangedEventArgs).ListArgument;
+                    if (type == ListKind.SearchResult) return;
+
                     AddNotification(model);
                     NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, null, model.TargetCharacter);
                 }

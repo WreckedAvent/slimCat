@@ -156,6 +156,10 @@ namespace slimCat.ViewModels
                             case ListKind.Friend:
                                 OnPropertyChanged("Friends");
                                 break;
+                            case ListKind.SearchResult:
+                                OnPropertyChanged("SearchResults");
+                                OnPropertyChanged("HasSearchResults");
+                                break;
                         }
                     },
                 true);
@@ -167,6 +171,12 @@ namespace slimCat.ViewModels
                     OnPropertyChanged("HasBanned");
                     OnPropertyChanged("Banned");
                 };
+
+            Events.GetEvent<ChatSearchResultEvent>().Subscribe((_) =>
+            {
+                OnPropertyChanged("SearchResults");
+                OnPropertyChanged("HasSearchResults");
+            });
         }
 
         #endregion
@@ -195,6 +205,11 @@ namespace slimCat.ViewModels
             get { return CharacterManager.GetCharacters(ListKind.Friend, !showOffline).OrderBy(x => x.Name); }
         }
 
+        public IEnumerable<ICharacter> SearchResults
+        {
+            get { return CharacterManager.GetCharacters(ListKind.SearchResult, !showOffline).OrderBy(x => x.Name); }
+        }
+
         public GenderSettingsModel GenderSettings
         {
             get { return genderSettings; }
@@ -210,6 +225,11 @@ namespace slimCat.ViewModels
 
                 return false;
             }
+        }
+
+        public bool HasSearchResults
+        {
+            get { return SearchResults.Any(); }
         }
 
         public IEnumerable<ICharacter> Ignored

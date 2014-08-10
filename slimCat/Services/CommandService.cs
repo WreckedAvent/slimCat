@@ -563,6 +563,8 @@ namespace slimCat.Services
             {
                 CharacterManager.Add(character, ListKind.SearchResult);
             }
+            Events.GetEvent<ChatSearchResultEvent>().Publish(null);
+            Events.GetEvent<ErrorEvent>().Publish("Got search results successfully.");
         }
 
         private void InviteCommand(IDictionary<string, object> command)

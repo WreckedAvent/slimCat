@@ -45,10 +45,10 @@ namespace slimCat.Views
             DataContext = vm;
 
             vm.OnJumpToNotifications += (s, e) =>
-                {
-                    if (NotificationButton.IsChecked == false)
-                        NotificationButton.IsChecked = true;
-                };
+            {
+                if (NotificationButton.IsChecked == false)
+                    NotificationButton.IsChecked = true;
+            };
         }
 
         #endregion

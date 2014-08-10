@@ -99,9 +99,30 @@
             <ScrollViewer CanContentScroll="False">
                 <StackPanel
                     x:Name="PopupAnchor">
+                    
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource ContentListBox}">
+                            <Setter Property="ItemsPanel">
+                                <Setter.Value>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Vertical" IsItemsHost="True" />
+                                    </ItemsPanelTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <ItemsPresenter/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </StackPanel.Resources>
 
                     <v:RightClickMenu />
                     <v:CreateReportView />
+                    
+
 
                     <Expander>
                         <Expander.Header>
@@ -110,8 +131,7 @@
                                 <Run Text="{Binding Path=Friends.Count, Mode=OneWay}" />
                             </TextBlock>
                         </Expander.Header>
-                        <ListBox ItemsSource="{Binding Path=Friends, Mode=OneWay}"
-                                 Style="{StaticResource ContentListBox}" />
+                        <ListBox ItemsSource="{Binding Path=Friends, Mode=OneWay}" />
                     </Expander>
 
                     <Expander>
@@ -121,8 +141,7 @@
                                 <Run Text="{Binding Path=Bookmarks.Count, Mode=OneWay}" />
                             </TextBlock>
                         </Expander.Header>
-                        <ListBox ItemsSource="{Binding Path=Bookmarks, Mode=OneWay}"
-                                 Style="{StaticResource ContentListBox}" />
+                        <ListBox ItemsSource="{Binding Path=Bookmarks, Mode=OneWay}" />
                     </Expander>
 
                     <Expander
@@ -133,8 +152,7 @@
                                 <Run Text="{Binding Path=Moderators.Count, Mode=OneWay}" />
                             </TextBlock>
                         </Expander.Header>
-                        <ListBox ItemsSource="{Binding Path=Moderators, Mode=OneWay}"
-                                 Style="{StaticResource ContentListBox}" />
+                        <ListBox ItemsSource="{Binding Path=Moderators, Mode=OneWay}" />
                     </Expander>
 
                     <Expander>
@@ -144,8 +162,17 @@
                                 <Run Text="{Binding Path=Interested.Count, Mode=OneWay}" />
                             </TextBlock>
                         </Expander.Header>
-                        <ListBox ItemsSource="{Binding Path=Interested, Mode=OneWay}"
-                                 Style="{StaticResource ContentListBox}" />
+                        <ListBox ItemsSource="{Binding Path=Interested, Mode=OneWay}" />
+                    </Expander>
+
+                    <Expander Visibility="{Binding HasSearchResults, Converter={StaticResource BoolConverter}}">
+                        <Expander.Header>
+                            <TextBlock Foreground="{StaticResource ForegroundBrush}">
+                                <Run Text="Search Results -" />
+                                <Run Text="{Binding Path=SearchResults.Count, Mode=OneWay}" />
+                            </TextBlock>
+                        </Expander.Header>
+                        <ListBox ItemsSource="{Binding Path=SearchResults, Mode=OneWay}" />
                     </Expander>
 
                     <Expander>
@@ -155,8 +182,7 @@
                                 <Run Text="{Binding Path=NotInterested.Count, Mode=OneWay}" />
                             </TextBlock>
                         </Expander.Header>
-                        <ListBox ItemsSource="{Binding Path=NotInterested, Mode=OneWay}"
-                                 Style="{StaticResource ContentListBox}" />
+                        <ListBox ItemsSource="{Binding Path=NotInterested, Mode=OneWay}" />
                     </Expander>
 
                     <Expander>
@@ -166,8 +192,7 @@
                                 <Run Text="{Binding Path=Ignored.Count, Mode=OneWay}" />
                             </TextBlock>
                         </Expander.Header>
-                        <ListBox ItemsSource="{Binding Path=Ignored, Mode=OneWay}"
-                                 Style="{StaticResource ContentListBox}" />
+                        <ListBox ItemsSource="{Binding Path=Ignored, Mode=OneWay}" />
                     </Expander>
 
                     <Expander
@@ -178,8 +203,7 @@
                                 <Run Text="{Binding Path=Banned.Count, Mode=OneWay}" />
                             </TextBlock>
                         </Expander.Header>
-                        <ListBox ItemsSource="{Binding Path=Banned, Mode=OneWay}"
-                                 Style="{StaticResource ContentListBox}" />
+                        <ListBox ItemsSource="{Binding Path=Banned, Mode=OneWay}" />
                     </Expander>
                 </StackPanel>
             </ScrollViewer>

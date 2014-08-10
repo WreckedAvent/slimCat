@@ -61,6 +61,8 @@ namespace slimCat.ViewModels
         private RelayCommand toggle;
 
         private bool hasUpdate;
+        private bool hasNewSearchResults;
+        private bool hasNewNotifications;
 
         #endregion
 
@@ -84,6 +86,8 @@ namespace slimCat.ViewModels
                 Container.Resolve<SearchTabViewModel>();
 
                 ChatModel.Notifications.CollectionChanged += (s, e) => HasUpdate = ChatModel.Notifications.Any();
+
+                events.GetEvent<ChatSearchResultEvent>().Subscribe(_ => HasNewSearchResults = true);
 
                 LoggingSection = "channel bar vm";
             }
@@ -140,9 +144,22 @@ namespace slimCat.ViewModels
             {
                 if (value == hasUpdate && needsAttention == value) return;
 
-                NeedsAttention = (value && !IsExpanded);
+                NeedsAttention = ((value || hasNewSearchResults) && !IsExpanded);
                 hasUpdate = value;
                 OnPropertyChanged("HasUpdate");
+            }
+        }
+
+        public bool HasNewSearchResults
+        {
+            get { return hasNewSearchResults; }
+            set
+            {
+                if (value == hasNewSearchResults && needsAttention == value) return;
+
+                NeedsAttention = ((value || hasUpdate) && !IsExpanded);
+                hasNewSearchResults = value;
+                OnPropertyChanged("HasNewSearchResults");
             }
         }
 
@@ -275,6 +292,7 @@ namespace slimCat.ViewModels
                 case "ManageLists":
                 {
                     RegionManager.Regions[TabViewRegion].RequestNavigate(ManageListsViewModel.ManageListsTabView);
+                    HasNewSearchResults = false;
                     break;
                 }
 

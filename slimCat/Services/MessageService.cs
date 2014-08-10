@@ -230,13 +230,26 @@ namespace slimCat.Services
         {
             var character = command.Get(Constants.Arguments.Character);
 
-            if (characterManager.IsOnList(character, ListKind.SearchResult, false))
+            var isAdd = !characterManager.IsOnList(character, ListKind.SearchResult, false);
+
+            if (isAdd)
+            {
+                characterManager.Add(character, ListKind.SearchResult);
+            }
+            else
             {
                 characterManager.Remove(character, ListKind.SearchResult);
-                return;
             }
 
-            characterManager.Add(character, ListKind.SearchResult);
+            events.GetEvent<NewUpdateEvent>().Publish(
+                new CharacterUpdateModel(
+                    characterManager.Find(character),
+                    new CharacterUpdateModel.ListChangedEventArgs
+                    {
+                        IsAdded = isAdd,
+                        ListArgument = ListKind.SearchResult
+                    }));
+
         }
 
         private void OnIgnoreRequested(IDictionary<string, object> command)

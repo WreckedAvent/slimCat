@@ -6,7 +6,7 @@
              Margin="4,0,4,2">
 
     <RadioButton.Style>
-        <Style TargetType="RadioButton" BasedOn="{StaticResource ImageContentToggleButton}" />
+        <Style TargetType="RadioButton" BasedOn="{StaticResource ActivatingToggleButton}" />
     </RadioButton.Style>
 
     <RadioButton.Content>

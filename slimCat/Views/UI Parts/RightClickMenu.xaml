@@ -57,6 +57,10 @@
                         <TextBlock Text="Is Interesting"
                                    Foreground="{StaticResource ContrastBrush}"
                                    Visibility="{Binding Path=IsOfInterest, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
+                        
+                        <TextBlock Text="Search Result"
+                                   Foreground="{StaticResource ContrastBrush}"
+                                   Visibility="{Binding Path=CanRemoveSearchTag, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
 
                         <TextBlock Text="Updates Ignored"
                                    Foreground="{StaticResource NotAvailableBrush}"
@@ -121,6 +125,10 @@
                 <Button Command="{Binding IgnoreUpdateCommand}"
                         Content="{Binding Path=RightClickMenuViewModel.IgnoreUpdate}"
                         Visibility="{Binding Path=RightClickMenuViewModel.CanIgnoreUpdates, Converter={StaticResource BoolConverter}}" />
+
+                <Button Command="{Binding SearchTagCommand}"
+                        Content="Remove from Search Results"
+                        Visibility="{Binding Path=RightClickMenuViewModel.CanRemoveSearchTag, Converter={StaticResource BoolConverter}}" />
 
                 <Button Command="{Binding IgnoreCommand}"
                         Content="Ignore"

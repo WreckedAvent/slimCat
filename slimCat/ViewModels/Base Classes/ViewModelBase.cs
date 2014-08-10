@@ -70,6 +70,7 @@ namespace slimCat.ViewModels
         private RelayCommand report;
 
         private RelayCommand unignore;
+        private RelayCommand searchTag;
 
         #endregion
 
@@ -246,6 +247,12 @@ namespace slimCat.ViewModels
         {
             get { return isNotInterested ?? (isNotInterested = new RelayCommand(IsUninterestedEvent)); }
         }
+
+        public ICommand SearchTagCommand
+        {
+            get { return searchTag ?? (searchTag = new RelayCommand(SearchTagEvent)); }
+        }
+
 
         public ICommand OpenRightClickMenuCommand
         {
@@ -443,6 +450,12 @@ namespace slimCat.ViewModels
         private void FindLogEvent(object args)
         {
             Events.SendUserCommand("openlogfolder", null, args as string);
+        }
+
+        private void SearchTagEvent(object obj)
+        {
+            Events.SendUserCommand("searchtag", new []{obj as string});
+            OnRightClickMenuUpdated(RightClickMenuViewModel.Target);
         }
 
         private void HandleReportEvent(object args)

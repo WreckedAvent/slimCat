@@ -21,6 +21,7 @@ namespace slimCat
 {
     #region Usings
 
+    using System.Windows.Markup;
     using Microsoft.Practices.Prism.Events;
     using Models;
     using System.Collections.Generic;
@@ -129,6 +130,10 @@ namespace slimCat
     ///     this event is fired when our established connection fails
     /// </summary>
     public class ConnectionClosedEvent : CompositePresentationEvent<string>
+    {
+    }
+
+    public class ChatSearchResultEvent : CompositePresentationEvent<object>
     {
     }
 }
