@@ -47,27 +47,30 @@
             </StackPanel>
         </ScrollViewer>
 
-        <TextBox Text="{Binding Path=Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 TextWrapping="Wrap"
-                 FontSize="13"
-                 AcceptsReturn="True"
-                 KeyUp="OnKeyUp"
-                 PreviewKeyDown="OnPreviewKeyDown"
-                 ScrollViewer.CanContentScroll="True"
-                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                 SpellCheck.IsEnabled="{Binding SpellCheckEnabled, Mode=OneWay}"
-                 TabIndex="0"
-                 Loaded="OnLoaded"
-                 x:Name="Entry"
-                 Grid.Row="2">
-            <TextBox.InputBindings>
+        <v:ImageTextBox 
+            Text="{Binding Path=Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            TextWrapping="Wrap"
+            FontSize="13"
+            AcceptsReturn="True"
+            KeyUp="OnKeyUp"
+            PreviewKeyDown="OnPreviewKeyDown"
+            ScrollViewer.CanContentScroll="True"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            SpellCheck.IsEnabled="{Binding SpellCheckEnabled, Mode=OneWay}"
+            TabIndex="0"
+            Loaded="OnLoaded"
+            x:Name="Entry"
+            LabelText="{Binding EntryTextBoxLabel}"
+            IconSource="{Binding EntryTextBoxIcon}"
+            Grid.Row="2">
+            <v:ImageTextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}" />
                 <KeyBinding Key="Up" Modifiers="Alt" Command="{Binding NavigateUpCommand}" />
                 <KeyBinding Key="Down" Modifiers="Alt" Command="{Binding NavigateDownCommand}" />
                 <KeyBinding Key="Up" Modifiers="Control" Command="{x:Null}"/>
-            </TextBox.InputBindings>
-            <TextBox.Style>
-                <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            </v:ImageTextBox.InputBindings>
+            <v:ImageTextBox.Style>
+                <Style TargetType="{x:Type v:ImageTextBox}" BasedOn="{StaticResource {x:Type v:ImageTextBox}}">
                     <Style.Triggers>
                         <Trigger Property="IsFocused" Value="True">
                             <Setter Property="MinLines" Value="2" />
@@ -80,7 +83,7 @@
                         </Trigger>
                     </Style.Triggers>
                 </Style>
-            </TextBox.Style>
-        </TextBox>
+            </v:ImageTextBox.Style>
+        </v:ImageTextBox>
     </Grid>
 </UserControl>

@@ -351,6 +351,7 @@
     <Compile Include="Views\UI Parts\Buttons\RestartButtonView.xaml.cs">
       <DependentUpon>RestartButtonView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UI Parts\ImageTextBox.cs" />
     <Compile Include="Views\UI Parts\ObservingFlowDocumentReader.xaml.cs">
       <DependentUpon>ObservingFlowDocumentReader.xaml</DependentUpon>
     </Compile>
@@ -688,7 +689,9 @@
     <Content Include="icons\document.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="icons\down.png" />
+    <Content Include="icons\down.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="icons\edit.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -704,14 +707,18 @@
     <Content Include="icons\global.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="icons\logout.png" />
+    <Content Include="icons\logout.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="icons\male.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="icons\female.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="icons\markup.png" />
+    <Content Include="icons\markup.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="icons\more.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -739,13 +746,27 @@
     <Content Include="icons\search.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="icons\send_ad.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\send_chat.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\send_console.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\send_note.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="icons\settings.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="icons\transgender.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Resource Include="icons\up.png" />
+    <Content Include="icons\up.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="icons\userlist.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

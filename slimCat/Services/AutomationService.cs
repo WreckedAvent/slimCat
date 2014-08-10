@@ -81,7 +81,7 @@ namespace slimCat.Services
             if (!ApplicationSettings.AllowAdDedup) return false;
 
             var character = manager.Find(name);
-            if (character.LastAd != null && character.LastAd == message)
+            if (character.LastAd != null && (ApplicationSettings.AllowAggressiveAdDedup || character.LastAd == message))
             {
                 Logging.Log("Duplicate ad from " + name);
                 return true;

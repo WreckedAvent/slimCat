@@ -200,6 +200,16 @@ namespace slimCat.ViewModels
             get { return sendText ?? (sendText = new RelayCommand(_ => ParseAndSend())); }
         }
 
+        public virtual string EntryTextBoxIcon
+        {
+            get { return "pack://application:,,,/icons/send_chat.png"; }
+        }
+
+        public virtual string EntryTextBoxLabel
+        {
+            get { return "Chat here ..."; }
+        }
+
         #endregion
 
         #region Public Methods and Operators

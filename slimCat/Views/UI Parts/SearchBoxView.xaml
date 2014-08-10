@@ -4,6 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:models="clr-namespace:slimCat.Models"
+             xmlns:v="clr-namespace:slimCat.Views"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance models:GenericSearchSettingsModel}">
     <Grid>
@@ -12,13 +13,18 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <TextBox Text="{Binding Path=SearchString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 TextWrapping="Wrap"
-                 FontSize="12"
-                 ScrollViewer.CanContentScroll="True"
-                 AcceptsReturn="False"
-                 ToolTip="Search the above content for these terms. Seperate search terms with a comma as neccesary."
-                 ScrollViewer.VerticalScrollBarVisibility="Auto" />
+        <v:ImageTextBox 
+            Text="{Binding Path=SearchString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            TextWrapping="Wrap"
+            FontSize="13"
+            BorderThickness="2"
+            ScrollViewer.CanContentScroll="True"
+            AcceptsReturn="False"
+            ToolTip="Search the above content for these terms. Seperate search terms with a comma as neccesary."
+            LabelText="Search ..."
+            IconSource="pack://application:,,,/icons/search.png"
+            TextAlignment="Left"
+            ScrollViewer.VerticalScrollBarVisibility="Auto" />
 
         <Button Command="{Binding OpenSearchSettingsCommand}"
                 HorizontalAlignment="Center"
@@ -28,7 +34,7 @@
                 Style="{StaticResource ImageContentButton}">
             <Button.Content>
                 <Rectangle Fill="{Binding ElementName=FilterButton, Path=Foreground}"
-                           Height="20"
+                           Height="18"
                            Width="14"
                            Margin="4,0">
                     <Rectangle.OpacityMask>

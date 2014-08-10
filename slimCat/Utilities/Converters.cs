@@ -115,6 +115,18 @@ namespace slimCat.Utilities
         }
     }
 
+    public class ImagePathConverter : OneWayConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo info)
+        {
+            if (value == null) return null;
+
+            var uri = new Uri(value.ToString(), UriKind.RelativeOrAbsolute);
+            var imageBrush = new ImageBrush { ImageSource = new BitmapImage(uri) };
+            return imageBrush;
+        }
+    }
+
     /// <summary>
     ///     If greater than zero, return visible.
     /// </summary>

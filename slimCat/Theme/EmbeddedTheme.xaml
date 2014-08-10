@@ -21,6 +21,7 @@
     <utilities:MessageThicknessConverter x:Key="MessageThicknessConverter"/>
     <utilities:NotEmptyConverter x:Key="NotEmptyConverter"/>
     <utilities:EmptyConverter x:Key="EmptyConverter"/>
+    <utilities:ImagePathConverter x:Key="ImagePathConverter"/>
     
     <!-- These will be replaced with their instance values by the container -->
     <utilities:GenderColorConverter x:Key="GenderColorConverter" />
@@ -208,6 +209,66 @@
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
                 <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="{x:Type v:ImageTextBox}" 
+           TargetType="{x:Type v:ImageTextBox}" 
+           BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="Background" Value="{StaticResource ForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource DepressedBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="LabelTextColor" Value="{StaticResource DepressedBrush}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type v:ImageTextBox}">
+                    <Border x:Name="Border"
+                            Padding="2"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid x:Name="LayoutGrid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="22" />
+                            </Grid.ColumnDefinitions>
+                            <ScrollViewer x:Name="PART_ContentHost" Grid.Column="0" />
+                            <Label x:Name="LabelText"
+                                   Grid.Column="0"
+                                   Foreground="{StaticResource DepressedBrush}"
+                                   Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=LabelText}"
+                                   Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=HasText, Converter={StaticResource OppositeBoolConverter}}"
+                                   Padding="2,0,0,0"
+                                   FontStyle="Italic" />
+                            <Border x:Name="PART_SearchIconBorder"
+                                    Grid.Column="1"
+                                    BorderThickness="1"
+                                    Padding="1"
+                                    VerticalAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
+                                    BorderBrush="Transparent"
+                                    Background="Transparent">
+                                <Rectangle Fill="{StaticResource DepressedBrush}" 
+                                           Height="15" 
+                                           Width="18"
+                                           OpacityMask="{TemplateBinding IconSource, Converter={StaticResource ImagePathConverter}}"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="LabelText"></Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        
+        <Style.Triggers>
+            <Trigger Property="IsFocused" Value="True">
+                <Setter Property="BorderBrush" Value="{StaticResource HighlightBrush}"/>
             </Trigger>
         </Style.Triggers>
     </Style>

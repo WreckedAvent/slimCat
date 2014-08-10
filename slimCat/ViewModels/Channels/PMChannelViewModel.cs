@@ -265,6 +265,8 @@ namespace slimCat.ViewModels
                 OnPropertyChanged("CanPost");
                 OnPropertyChanged("CanShowNoteTimeLeft");
                 OnPropertyChanged("CanShowSubject");
+                OnPropertyChanged("EntryTextBoxIcon");
+                OnPropertyChanged("EntryTextBoxLabel");
             }
         }
 
@@ -348,6 +350,27 @@ namespace slimCat.ViewModels
             {
                 return @switch
                        ?? (@switch = new RelayCommand(param => IsViewingChat = !IsViewingChat));
+            }
+        }
+
+        public override string EntryTextBoxIcon
+        {
+            get
+            {
+                return isViewingChat
+                    ? "pack://application:,,,/icons/send_chat.png"
+                    : "pack://application:,,,/icons/send_note.png";
+            }
+        }
+
+        public override string EntryTextBoxLabel
+        {
+            get
+            {
+                return isViewingChat
+                    ? "Chat here ..."
+                    : "Write a pretty note here ...";
+
             }
         }
 

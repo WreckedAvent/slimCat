@@ -28,6 +28,7 @@ namespace slimCat.Views
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Markup;
+    using System.Windows.Media;
     using Models;
     using ViewModels;
 
@@ -77,10 +78,10 @@ namespace slimCat.Views
             InitializeComponent();
 
             Entry.FocusableChanged += (s, e) =>
-                {
-                    if ((bool) e.NewValue)
-                        Entry.Focus();
-                };
+            {
+                if ((bool) e.NewValue)
+                    Entry.Focus();
+            };
 
             Entry.Language = XmlLanguage.GetLanguage(ApplicationSettings.Langauge);
             vm = DataContext as ViewModelBase;

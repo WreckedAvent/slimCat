@@ -319,6 +319,8 @@ namespace slimCat.ViewModels
                 OnPropertyChanged("CannotPost");
                 OnPropertyChanged("ShouldShowAutoPost");
                 OnPropertyChanged("SwitchChannelTypeString");
+                OnPropertyChanged("EntryTextBoxLabel");
+                OnPropertyChanged("EntryTextBoxIcon");
                 OtherTabHasMessages = false;
             }
         }
@@ -468,6 +470,26 @@ namespace slimCat.ViewModels
         public string AutoTimeLeft
         {
             get { return HelperConverter.DateTimeInFutureToRough(autoTimeLeft) + "until disabled"; }
+        }
+
+        public override string EntryTextBoxIcon
+        {
+            get
+            {
+                return isDisplayingChat
+                    ? "pack://application:,,,/icons/send_chat.png"
+                    : "pack://application:,,,/icons/send_ad.png";
+            }
+        }
+
+        public override string EntryTextBoxLabel
+        {
+            get
+            {
+                return isDisplayingChat
+                    ? "Chat here ..."
+                    : "Write a pretty ad here ...";
+            }
         }
 
         #endregion

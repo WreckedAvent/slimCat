@@ -124,9 +124,14 @@ namespace slimCat.Models
         public static int AutoAwayTime { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether to allow ad deduplication.
+        ///     Gets or sets a value indicating whether to allow ad deduplication which only allows one identical post per user per session.
         /// </summary>
         public static bool AllowAdDedup { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether to allow ad deduplication which only allows one post per user per session.
+        /// </summary>
+        public static bool AllowAggressiveAdDedup { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether sound is allowed in notifications.

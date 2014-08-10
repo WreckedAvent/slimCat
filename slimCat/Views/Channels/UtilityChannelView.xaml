@@ -382,8 +382,16 @@
                                     <CheckBox IsChecked="{Binding AllowAdDedpulication}"
                                               VerticalAlignment="Center"
                                               Margin="0,15,0,0"
-                                              ToolTip="Allows slimCat to automatically ignore ads which have already been posted verbatim">
-                                        Ignore Duplicate Ads
+                                              ToolTip="Allows slimCat to automatically supress identical ads from the same user">
+                                        Disallow Duplicate Ads
+                                    </CheckBox>
+
+                                    <CheckBox IsChecked="{Binding AllowAggressiveAdDedpulication}"
+                                              VerticalAlignment="Center"
+                                              Visibility="{Binding Path=AllowAdDedpulication, Converter={StaticResource BoolConverter}}"
+                                              Margin="0,15,0,0"
+                                              ToolTip="Allows slimCat to automatically supress multiple ads from the same user">
+                                        Allow Only One Ad Per Person
                                     </CheckBox>
 
                                     <CheckBox IsChecked="{Binding AllowAutoStatusReset}"

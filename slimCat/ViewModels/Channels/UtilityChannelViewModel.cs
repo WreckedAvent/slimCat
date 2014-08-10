@@ -404,6 +404,18 @@ namespace slimCat.ViewModels
                 }
 
                 Save();
+                OnPropertyChanged("AllowAdDedpulication");
+            }
+        }
+
+        public bool AllowAggressiveAdDedpulication
+        {
+            get { return ApplicationSettings.AllowAggressiveAdDedup; }
+            set
+            {
+                ApplicationSettings.AllowAggressiveAdDedup = value;
+
+                Save();
             }
         }
 
@@ -566,6 +578,20 @@ namespace slimCat.ViewModels
                     .ToList();
             }
         } 
+
+        #endregion
+
+        #region Textbox
+
+        public override string EntryTextBoxIcon
+        {
+            get { return "pack://application:,,,/icons/send_console.png"; }
+        }
+
+        public override string EntryTextBoxLabel
+        {
+            get { return "Enter commands here ..."; }
+        }
 
         #endregion
 
