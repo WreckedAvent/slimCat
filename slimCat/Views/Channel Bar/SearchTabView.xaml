@@ -1,0 +1,111 @@
+﻿<UserControl x:Class="slimCat.Views.SearchTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:vm="clr-namespace:slimCat.ViewModels"
+             xmlns:v="clr-namespace:slimCat.Views"
+
+             d:DataContext="{d:DesignInstance vm:SearchTabViewModel}">
+    <UserControl.Resources>
+        <Style x:Key="HeaderContainerStyle" TargetType="{x:Type GroupItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Expander Header="{Binding Name}">
+                            <ItemsPresenter />
+                        </Expander>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="AddLinkStyle" TargetType="{x:Type Hyperlink}" BasedOn="{StaticResource {x:Type Hyperlink}}">
+            <Style.Setters>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Command" Value="{Binding Path=DataContext.AddSearchTermCommand, 
+                                RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
+                <Setter Property="CommandParameter" Value="{Binding}"></Setter>
+            </Style.Setters>
+        </Style>
+        <Style x:Key="RemoveLinkStyle" TargetType="{x:Type Hyperlink}" BasedOn="{StaticResource {x:Type Hyperlink}}">
+            <Style.Setters>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Command" Value="{Binding Path=DataContext.RemoveSearchTermCommand, 
+                                RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
+                <Setter Property="CommandParameter" Value="{Binding}"></Setter>
+            </Style.Setters>
+        </Style>
+    </UserControl.Resources>
+
+    <DockPanel  MaxWidth="180"
+                MinWidth="150">
+        <v:RestartButtonView Command="{Binding Path=ClearSearchTermsCommand}"
+                            ToolTip="Clear all search terms"
+                            DockPanel.Dock="Top"
+                            Margin="0,10,0,0"/>
+
+        <StackPanel DockPanel.Dock="Bottom">
+            <v:SearchBoxView  />
+            <Button FontSize="13" 
+                    Margin="0,5,0,0"
+                    Visibility="{Binding CanStartSearch, Converter={StaticResource BoolConverter}}">
+                Start Chat Search
+            </Button>
+        </StackPanel>
+
+        <ScrollViewer CanContentScroll="False">
+            <StackPanel>
+                <ListBox ItemsSource="{Binding Path=SelectedSearchTerms, Mode=OneWay}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock TextWrapping="Wrap">
+                                <Hyperlink Style="{StaticResource RemoveLinkStyle}">
+                                    <Run Text="{Binding Path=DisplayName, Mode=OneTime}" />
+                                </Hyperlink>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.Template>
+                        <ControlTemplate>
+                            <ItemsPresenter/>
+                        </ControlTemplate>
+                    </ListBox.Template>
+                </ListBox>
+
+                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,10" />
+
+                <ListBox ItemsSource="{Binding Path=AvailableSearchTerms, Mode=OneWay}">
+                    <ListBox.GroupStyle>
+                        <GroupStyle ContainerStyle="{StaticResource HeaderContainerStyle}"/>
+                    </ListBox.GroupStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock TextWrapping="Wrap">
+                                <Hyperlink Style="{StaticResource AddLinkStyle}">
+                                    <Run Text="{Binding Path=DisplayName, Mode=OneTime}" />
+                                </Hyperlink>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.Template>
+                        <ControlTemplate>
+                            <ItemsPresenter/>
+                        </ControlTemplate>
+                    </ListBox.Template>
+                </ListBox>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+
+</UserControl>

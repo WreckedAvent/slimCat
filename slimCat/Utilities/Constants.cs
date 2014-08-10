@@ -39,7 +39,9 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The client's version.
         /// </summary>
-        public const string ClientVer = "rc4.01";
+        public const string ClientVer = "4.01";
+
+        public const string AssemblyVer = ClientVer + ".*";
 
         /// <summary>
         ///     The endpoint for F-chat websocket communication.
@@ -321,6 +323,8 @@ namespace slimCat.Utilities
             public const string ViewHistory = Domain + @"/history.php?name=";
 
             public const string SendNote = Domain + @"/json/notes-send.json";
+
+            public const string SearchFields = Domain + @"/json/chat-search-getfields.json?ids=true";
         }
     }
 }

@@ -22,7 +22,8 @@
     <utilities:NotEmptyConverter x:Key="NotEmptyConverter"/>
     <utilities:EmptyConverter x:Key="EmptyConverter"/>
     <utilities:ImagePathConverter x:Key="ImagePathConverter"/>
-    
+    <utilities:NotNullConverter x:Key="NotNullConverter"/>
+
     <!-- These will be replaced with their instance values by the container -->
     <utilities:GenderColorConverter x:Key="GenderColorConverter" />
     <utilities:NameplateColorConverter x:Key="NameplateColorConverter" />

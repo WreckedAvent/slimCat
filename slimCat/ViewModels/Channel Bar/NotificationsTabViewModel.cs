@@ -132,6 +132,11 @@ namespace slimCat.ViewModels
             get { return notificationManager.Collection; }
         }
 
+        public ICommand OpenSearchSettingsCommand
+        {
+            get { return null; }
+        }
+
         #endregion
 
         #region Public Methods and Operators

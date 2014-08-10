@@ -27,6 +27,7 @@
             ScrollViewer.VerticalScrollBarVisibility="Auto" />
 
         <Button Command="{Binding OpenSearchSettingsCommand}"
+                Visibility="{Binding OpenSearchSettingsCommand, Converter={StaticResource NotNullConverter}}"
                 HorizontalAlignment="Center"
                 Grid.Column="1"
                 x:Name="FilterButton"

@@ -32,7 +32,6 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
 
-            <!-- Note, I decided to not use a tab control as it would look odd. -->
             <Border BorderThickness="0,0,0,1"
                     BorderBrush="{StaticResource HighlightBrush}">
                 <WrapPanel Margin="0,0,0,7">
@@ -53,6 +52,10 @@
                                                x:Name="NotificationButton"
                                                Command="{Binding Path=ChangeTabCommand}"
                                                v:Properties.NeedsAttention="{Binding Path=HasUpdate}"/>
+                    
+                    <v:ChatSearchButtonView 
+                                        CommandParameter="Search"
+                                        Command="{Binding ChangeTabCommand}"/>
                 </WrapPanel>
             </Border>
 

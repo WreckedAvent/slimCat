@@ -19,6 +19,7 @@
 
 #region Usings
 
+using slimCat.Utilities;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -29,11 +30,11 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("slimCat")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle(Constants.ClientId)]
+[assembly: AssemblyDescription(Constants.ClientId + " F-Chat client")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("slimCat Client")]
+[assembly: AssemblyProduct(Constants.ClientId + Constants.ClientName)]
 [assembly: AssemblyCopyright("Copyright ©  2012 - 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -71,5 +72,6 @@ using System.Windows;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("4.1.0")]
-[assembly: AssemblyFileVersion("4.1.0")]
+[assembly: AssemblyVersion(Constants.AssemblyVer)]
+[assembly: AssemblyFileVersion(Constants.ClientVer)]
+[assembly: AssemblyInformationalVersion(Constants.ClientVer)]

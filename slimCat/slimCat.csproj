@@ -151,6 +151,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="lib\DeferredAction.cs" />
     <Compile Include="lib\FlashWindowHelper.cs" />
     <Compile Include="lib\FullScreenHelper.cs" />
     <Compile Include="lib\TextBlockHelper.cs" />
@@ -187,6 +188,7 @@
     <Compile Include="Models\ReportModel.cs" />
     <Compile Include="Models\Enums\StatusType.cs" />
     <Compile Include="Models\Enums\TypingStatus.cs" />
+    <Compile Include="Models\SearchTermModel.cs" />
     <Compile Include="Services\AutomationService.cs" />
     <Compile Include="Services\Browser.cs" />
     <Compile Include="Services\ChannelListUpdaterService.cs" />
@@ -213,6 +215,7 @@
     <Compile Include="Utilities\FilteredCollection.cs" />
     <Compile Include="ViewModels\Channel Bar\GlobalTabViewModel.cs" />
     <Compile Include="ViewModels\Channel Bar\ManageListsViewModel.cs" />
+    <Compile Include="ViewModels\Channel Bar\SearchTabViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\ChannelManagementViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\CreateReportViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\RightClickViewModel.cs" />
@@ -250,20 +253,23 @@
     <Compile Include="ViewModels\Full Screen\LoginViewModel.cs" />
     <Compile Include="ViewModels\User Bar\UserbarViewModel.cs" />
     <Compile Include="ViewModels\Base Classes\ViewModelBase.cs" />
+    <Compile Include="Views\Channel Bar\SearchTabView.xaml.cs">
+      <DependentUpon>SearchTabView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Channel Bar\ChannelBarView.xaml.cs">
       <DependentUpon>ChannelBarView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Channel Bar\ChannelbarChannelListView.xaml.cs">
-      <DependentUpon>ChannelbarChannelListView.xaml</DependentUpon>
+    <Compile Include="Views\Channel Bar\ChannelListView.xaml.cs">
+      <DependentUpon>ChannelListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Channel Bar\ChannelbarNotificationsTabView.xaml.cs">
-      <DependentUpon>ChannelbarNotificationsTabView.xaml</DependentUpon>
+    <Compile Include="Views\Channel Bar\NotificationsTabView.xaml.cs">
+      <DependentUpon>NotificationsTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Channel Bar\ChannelbarUserListView.xaml.cs">
-      <DependentUpon>ChannelbarUserListView.xaml</DependentUpon>
+    <Compile Include="Views\Channel Bar\ChannelUserListView.xaml.cs">
+      <DependentUpon>ChannelUserListView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Channel Bar\ChannelbarGlobalListView.xaml.cs">
-      <DependentUpon>ChannelbarGlobalListView.xaml</DependentUpon>
+    <Compile Include="Views\Channel Bar\GlobalUserListView.xaml.cs">
+      <DependentUpon>GlobalUserListView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Channel Bar\ManageListsView.xaml.cs">
       <DependentUpon>ManageListsView.xaml</DependentUpon>
@@ -285,6 +291,9 @@
     </Compile>
     <Compile Include="Views\UI Parts\Buttons\LogoutButtionView.xaml.cs">
       <DependentUpon>LogoutButtionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UI Parts\Buttons\ChatSearchButton.xaml.cs">
+      <DependentUpon>ChatSearchButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UI Parts\Buttons\UpDownButtonView.xaml.cs">
       <DependentUpon>UpDownButtonView.xaml</DependentUpon>
@@ -409,15 +418,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Channel Bar\ChannelbarNotificationsTabView.xaml">
+    <Page Include="Views\Channel Bar\SearchTabView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Channel Bar\NotificationsTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Channel Bar\ChannelbarUserListView.xaml">
+    <Page Include="Views\Channel Bar\ChannelUserListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Channel Bar\ChannelbarGlobalListView.xaml">
+    <Page Include="Views\Channel Bar\GlobalUserListView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -446,6 +459,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\UI Parts\Buttons\LogoutButtionView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\UI Parts\Buttons\ChatSearchButton.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -569,7 +586,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Channel Bar\ChannelbarChannelListView.xaml">
+    <Page Include="Views\Channel Bar\ChannelListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

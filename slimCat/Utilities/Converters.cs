@@ -127,6 +127,14 @@ namespace slimCat.Utilities
         }
     }
 
+    public class NotNullConverter : OneWayConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value != null ? Visibility.Visible : Visibility.Collapsed;
+        }
+    }
+
     /// <summary>
     ///     If greater than zero, return visible.
     /// </summary>

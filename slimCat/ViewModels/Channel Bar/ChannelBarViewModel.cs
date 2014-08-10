@@ -81,6 +81,7 @@ namespace slimCat.ViewModels
                 Container.Resolve<NotificationsTabViewModel>();
                 Container.Resolve<GlobalTabViewModel>();
                 Container.Resolve<ManageListsTabView>();
+                Container.Resolve<SearchTabViewModel>();
 
                 ChatModel.Notifications.CollectionChanged += (s, e) => HasUpdate = ChatModel.Notifications.Any();
 
@@ -274,6 +275,12 @@ namespace slimCat.ViewModels
                 case "ManageLists":
                 {
                     RegionManager.Regions[TabViewRegion].RequestNavigate(ManageListsViewModel.ManageListsTabView);
+                    break;
+                }
+
+                case "Search":
+                {
+                    RegionManager.Regions[TabViewRegion].RequestNavigate(SearchTabViewModel.SearchTabView);
                     break;
                 }
 
