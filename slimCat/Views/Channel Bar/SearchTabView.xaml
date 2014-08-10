@@ -49,9 +49,8 @@
             <v:SearchBoxView  />
             <Button FontSize="13" 
                     Margin="0,5,0,0"
-                    Visibility="{Binding CanStartSearch, Converter={StaticResource BoolConverter}}">
-                Start Chat Search
-            </Button>
+                    Command="{Binding SendSearchCommand}"
+                    Content="{Binding SearchButtonText}"/>
         </StackPanel>
 
         <ScrollViewer CanContentScroll="False">

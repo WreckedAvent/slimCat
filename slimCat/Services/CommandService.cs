@@ -547,8 +547,21 @@ namespace slimCat.Services
                     return RealTimeBridgeCommand;
                 case Commands.AdminReport:
                     return NewReportCommand;
+                case Commands.SearchResult:
+                    return SearchResultCommand;
                 default:
                     return null;
+            }
+        }
+
+        private void SearchResultCommand(IDictionary<string, object> command)
+        {
+            var characters = (JsonArray) command[Constants.Arguments.MultipleCharacters];
+            CharacterManager.Set(new JsonArray(), ListKind.SearchResult);
+
+            foreach (string character in characters)
+            {
+                CharacterManager.Add(character, ListKind.SearchResult);
             }
         }
 

@@ -29,6 +29,7 @@ namespace slimCat.Models
         NotInterested,
         Ignored,
         Banned,
-        IgnoreUpdates
+        IgnoreUpdates,
+        SearchResult
     }
 }

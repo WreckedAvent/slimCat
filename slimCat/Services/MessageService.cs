@@ -115,7 +115,8 @@ namespace slimCat.Services
                         {"tempnotinteresting", OnTemporaryInterestingRequested},
                         {"handlelatest", OnHandleLatestReportRequested},
                         {"handlereport", OnHandleLatestReportByUserRequested},
-                        {"rejoin", OnChannelRejoinRequested }
+                        {"rejoin", OnChannelRejoinRequested },
+                        {"searchtag", OnSearchTagToggleRequested}
                     };
             }
             catch (Exception ex)
@@ -223,6 +224,19 @@ namespace slimCat.Services
             var toSend = new {channel = toJoin};
 
             connection.SendMessage(toSend, Commands.ChannelJoin);
+        }
+
+        private void OnSearchTagToggleRequested(IDictionary<string, object> command)
+        {
+            var character = command.Get(Constants.Arguments.Character);
+
+            if (characterManager.IsOnList(character, ListKind.SearchResult, false))
+            {
+                characterManager.Remove(character, ListKind.SearchResult);
+                return;
+            }
+
+            characterManager.Add(character, ListKind.SearchResult);
         }
 
         private void OnIgnoreRequested(IDictionary<string, object> command)

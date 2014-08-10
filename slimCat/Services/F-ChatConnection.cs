@@ -23,6 +23,7 @@ namespace slimCat.Services
 
     using Microsoft.Practices.Prism.Events;
     using Models;
+    using Newtonsoft.Json;
     using SimpleJson;
     using System;
     using System.Collections.Generic;
@@ -167,7 +168,7 @@ namespace slimCat.Services
             if (type.Length != 3)
                 throw new ArgumentOutOfRangeException("type", "Command type must be 3 characters long");
 
-            var ser = SimpleJson.SerializeObject(command);
+            var ser = JsonConvert.SerializeObject(command);
 
             TrySend(type, ser);
         }
@@ -178,7 +179,7 @@ namespace slimCat.Services
 
             command.Remove(Constants.Arguments.Type);
 
-            var ser = SimpleJson.SerializeObject(command);
+            var ser = JsonConvert.SerializeObject(command);
 
             TrySend(type, ser);
         }

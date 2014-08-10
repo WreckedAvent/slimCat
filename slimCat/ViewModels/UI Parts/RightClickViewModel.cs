@@ -267,6 +267,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool CanRemoveSearchTag
+        {
+            get
+            {
+                if (Target == null) return false;
+
+                return manager.IsOnList(Target.Name, ListKind.SearchResult);
+            }
+        }
+
         #endregion
 
         #region Public Methods and Operators
@@ -308,6 +318,7 @@ namespace slimCat.ViewModels
             OnPropertyChanged("IsUninteresting");
 
             OnPropertyChanged("IsUpdatesIgnored");
+            OnPropertyChanged("CanRemoveSearchTag");
         }
 
         #endregion

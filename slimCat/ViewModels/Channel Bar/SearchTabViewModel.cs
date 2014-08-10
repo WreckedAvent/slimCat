@@ -27,6 +27,7 @@ namespace slimCat.ViewModels
     using System.ComponentModel;
     using System.Globalization;
     using System.Linq;
+    using System.Timers;
     using System.Windows.Data;
     using lib;
     using Libraries;
@@ -48,6 +49,8 @@ namespace slimCat.ViewModels
     /// </summary>
     public class SearchTabViewModel : ChannelbarViewModelCommon
     {
+        private readonly IChatConnection connection;
+
         #region Constants
 
         public const string SearchTabView = "SearchTabView";
@@ -63,6 +66,8 @@ namespace slimCat.ViewModels
 
         private RelayCommand clearSearch;
 
+        private RelayCommand sendSearch;
+
         private readonly TimeSpan searchDebounce = TimeSpan.FromMilliseconds(250);
 
 
@@ -77,17 +82,21 @@ namespace slimCat.ViewModels
 
         private readonly ICollectionView availableView;
 
-
         private string searchString = string.Empty;
+
+        private bool isInSearchCoolDown = false;
+
+        private readonly Timer chatSearchCooldownTimer = new Timer(5500);
         #endregion
 
         #region Constructors and Destructors
 
         public SearchTabViewModel(
             IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg,
-            ICharacterManager manager, IBrowser browser)
+            ICharacterManager manager, IBrowser browser, IChatConnection connection)
             : base(contain, regman, eventagg, cm, manager)
         {
+            this.connection = connection;
             Container.RegisterType<object, SearchTabView>(SearchTabView);
 
             var worker = new BackgroundWorker();
@@ -104,6 +113,13 @@ namespace slimCat.ViewModels
             selectedView.SortDescriptions.Add(new SortDescription("DisplayName", ListSortDirection.Ascending));
 
             updateActiveViews = DeferredAction.Create(availableView.Refresh);
+
+            chatSearchCooldownTimer.Elapsed += (sender, args) =>
+            {
+                isInSearchCoolDown = false;
+                OnPropertyChanged("CanStartSearch");
+                chatSearchCooldownTimer.Stop();
+            };
         }
 
         #endregion
@@ -140,6 +156,11 @@ namespace slimCat.ViewModels
             get { return null; }
         }
 
+        public ICommand SendSearchCommand
+        {
+            get { return sendSearch ?? (sendSearch = new RelayCommand(SendSearchEvent, param => CanStartSearch)); }
+        }
+
         public string SearchString
         {
             get { return searchString; }
@@ -154,9 +175,29 @@ namespace slimCat.ViewModels
 
         public bool CanStartSearch
         {
-            get { return selectedSearchTerms.Any(); }
+            get
+            {
+                if (isInSearchCoolDown)
+                {
+                    SearchButtonText = "Must wait 5 seconds";
+                    OnPropertyChanged("SearchButtonText");
+                    return false;
+                }
+
+                if (!selectedSearchTerms.Any(term => term.Category.Equals("kinks")))
+                {
+                    SearchButtonText = "Must have at least one kink";
+                    OnPropertyChanged("SearchButtonText");
+                    return false;
+                }
+
+                SearchButtonText = "Start Chat Search";
+                OnPropertyChanged("SearchButtonText");
+                return true;
+            }
         }
 
+        public string SearchButtonText { get; set; }
         #endregion
 
         #region Methods
@@ -194,6 +235,25 @@ namespace slimCat.ViewModels
             OnPropertyChanged("CanStartSearch");
         }
 
+        private void SendSearchEvent(object obj)
+        {
+            var toSend = new Dictionary<string, IList<string>>();
+            
+            selectedSearchTerms.Each(term =>
+            {
+                if (!toSend.ContainsKey(term.Category))
+                    toSend[term.Category] = new List<string>();
+
+                toSend[term.Category].Add(term.UnderlyingValue ?? term.DisplayName);
+            });
+
+            connection.SendMessage(toSend, "FKS");
+
+            isInSearchCoolDown = true;
+            chatSearchCooldownTimer.Start();
+            OnPropertyChanged("CanStartSearch");
+        }
+
         private void PopulateSearchTerms(string jsonString)
         {
             JToken token = JObject.Parse(jsonString);
@@ -201,20 +261,31 @@ namespace slimCat.ViewModels
             var kinks = token["kinks"].Select(x =>
                 new SearchTermModel
                 {
-                    Category = "kink",
+                    Category = "kinks",
                     DisplayName = (string) x["name"],
                     UnderlyingValue = (string) x["fetish_id"]
                 });
 
-            var genders = SearchTermFromArray(token, "gender");
+            var genders = SearchTermFromArray(token, "genders");
 
-            var roles = SearchTermFromArray(token, "role");
+            var roles = SearchTermFromArray(token, "roles");
 
-            var orientations = SearchTermFromArray(token, "orientation");
+            var orientations = SearchTermFromArray(token, "orientations");
 
-            var positions = SearchTermFromArray(token, "position");
+            var positions = SearchTermFromArray(token, "positions");
 
-            var languages = SearchTermFromArray(token, "language");
+            var languages = SearchTermFromArray(token, "languages");
+
+            // oversight, this is not send per the endpoint, must hard-code
+            var furryPrefs = new[]
+            {
+                "No furry characters, just humans", "No humans, just furry characters", "Furries ok, Humans Preferred",
+                "Humans ok, Furries Preferred", "Furs and / or humans"
+            }.Select(x => new SearchTermModel
+            {
+                Category = "furryprefs",
+                DisplayName = x
+            });
 
             Dispatcher.BeginInvoke((Action)(() =>
                 availableSearchTerms
@@ -223,12 +294,13 @@ namespace slimCat.ViewModels
                     .AddRange(roles)
                     .AddRange(orientations)
                     .AddRange(positions)
-                    .AddRange(languages)));
+                    .AddRange(languages)
+                    .AddRange(furryPrefs)));
         }
 
         private static IEnumerable<SearchTermModel> SearchTermFromArray(JToken token, string category)
         {
-            return token[category + "s"].Select(x =>
+            return token[category].Select(x =>
                 new SearchTermModel
                 {
                     Category = category,
@@ -243,8 +315,7 @@ namespace slimCat.ViewModels
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var cased = CultureInfo.CurrentCulture.TextInfo.ToTitleCase((string)value);
-            return cased + "s";
+            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase((string)value);
         }
     }
 }

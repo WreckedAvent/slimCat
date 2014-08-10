@@ -133,6 +133,7 @@ namespace slimCat.Models
                     new CommandModel("status", C.UserStatus, new[] {A.Status, A.StatusMessage},
                         CommandModel.CommandTypes.TwoArgs)
                 },
+                {"searchtag", new CommandModel("searchtag", "searchtag", new[] {A.Character})},
                 {"tempignore", new CommandModel("tempignore", "tempignore", new[] {A.Character})},
                 {"tempunignore", new CommandModel("tempunignore", "tempunignore", new[] {A.Character})},
                 {"tempinteresting", new CommandModel("tempinteresting", "tempinteresting", new[] {A.Character})},
