@@ -192,6 +192,13 @@ namespace slimCat.ViewModels
                     return false;
                 }
 
+                if (selectedSearchTerms.Count(term => term.Category.Equals("kinks")) > 5)
+                {
+                    SearchButtonText = "Too many kinks";
+                    OnPropertyChanged("SearchButtonText");
+                    return false;
+                }
+
                 SearchButtonText = "Start Chat Search";
                 OnPropertyChanged("SearchButtonText");
                 return true;
