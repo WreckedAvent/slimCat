@@ -231,7 +231,7 @@
                                               VerticalAlignment="Center"
                                               Margin="0,15,0,0"
                                               ToolTip="Allows the entry box to automatically disable itself after sending a message.">
-                                        Allow Texbox Disabling
+                                        Allow Textbox Disabling
                                     </CheckBox>
                                     
                                     <CheckBox IsChecked="{Binding AllowGreedyTextboxFocus}"
