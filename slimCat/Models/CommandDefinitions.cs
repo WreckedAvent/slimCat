@@ -201,6 +201,15 @@ namespace slimCat.Models
                         CommandModel.PermissionLevel.Moderator)
                 },
                 {
+                    "killchannel",
+                    new CommandModel(
+                        "killchannel",
+                        C.ChannelKill,
+                        null,
+                        CommandModel.CommandTypes.OnlyChannel,
+                        CommandModel.PermissionLevel.Moderator)
+                },
+                {
                     "openroom",
                     new CommandModel(
                         "openroom",

@@ -60,11 +60,12 @@ namespace slimCat.Services
         void JoinChannel(ChannelType type, string id, string name = "");
 
         /// <summary>
-        ///     Used to leave a channel
+        ///     Used to leave a channel.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="force">Whether or not to ignore validation problems.</param>
-        void RemoveChannel(string name, bool force = false);
+        /// <param name="fromServer">Whether or not the leave was mandated by the server.</param>
+        void RemoveChannel(string name, bool force = false, bool fromServer = false);
 
         /// <summary>
         ///     Adds the channel model if it doesn't exist, but doesn't select it or pull down history/settings. 

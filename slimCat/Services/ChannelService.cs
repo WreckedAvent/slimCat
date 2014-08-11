@@ -254,10 +254,10 @@ namespace slimCat.Services
 
         public void RemoveChannel(string name)
         {
-            RemoveChannel(name, false);
+            RemoveChannel(name, false, false);
         }
 
-        public void RemoveChannel(string name, bool force)
+        public void RemoveChannel(string name, bool force, bool isServer)
         {
             Log("Removing Channel " + name);
 
@@ -271,6 +271,8 @@ namespace slimCat.Services
 
                 Dispatcher.Invoke(
                     (Action)(() => model.CurrentChannels.Remove(temp)));
+
+                if (isServer) return;
 
                 object toSend = new { channel = name };
                 connection.SendMessage(toSend, Commands.ChannelLeave);

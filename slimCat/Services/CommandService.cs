@@ -167,6 +167,13 @@ namespace slimCat.Services
         private void BroadcastCommand(IDictionary<string, object> command)
         {
             var message = command.Get(Constants.Arguments.Message);
+
+            if (!command.ContainsKey(Constants.Arguments.Character))
+            {
+                ErrorCommand(command);
+                return;
+            }
+
             var posterName = command.Get(Constants.Arguments.Character);
             var poster = CharacterManager.Find(posterName);
 
@@ -421,7 +428,7 @@ namespace slimCat.Services
             }
 
             // checks to ensure it's not a mod promote message
-            if (thisMessage.IndexOf("has been", StringComparison.OrdinalIgnoreCase) == -1)
+            if (thisMessage.IndexOf("has been promoted", StringComparison.OrdinalIgnoreCase) == -1)
                 Events.GetEvent<ErrorEvent>().Publish(thisMessage);
         }
 
@@ -702,13 +709,18 @@ namespace slimCat.Services
 
         private void LeaveChannelCommand(IDictionary<string, object> command)
         {
-            var channelName = command.Get(Constants.Arguments.Channel);
+            var channelId = command.Get(Constants.Arguments.Channel);
             var characterName = command.Get(Constants.Arguments.Character);
 
-            if (ChatModel.CurrentCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
-                return;
+            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelId);
+            if (ChatModel.CurrentCharacter.NameEquals(characterName))
+            {
+                if (channel != null)
+                    manager.RemoveChannel(channelId, false, true);
 
-            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelName);
+                return;
+            }
+
             if (channel == null)
                 return;
 
