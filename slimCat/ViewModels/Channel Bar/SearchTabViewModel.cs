@@ -27,6 +27,7 @@ namespace slimCat.ViewModels
     using System.ComponentModel;
     using System.Globalization;
     using System.Linq;
+    using System.Net;
     using System.Timers;
     using System.Windows.Data;
     using lib;
@@ -262,7 +263,7 @@ namespace slimCat.ViewModels
                 new SearchTermModel
                 {
                     Category = "kinks",
-                    DisplayName = (string) x["name"],
+                    DisplayName = WebUtility.HtmlDecode((string) x["name"]),
                     UnderlyingValue = (string) x["fetish_id"]
                 });
 
@@ -304,7 +305,7 @@ namespace slimCat.ViewModels
                 new SearchTermModel
                 {
                     Category = category,
-                    DisplayName = (string) x
+                    DisplayName = WebUtility.HtmlDecode((string) x)
                 });
         }
         #endregion
