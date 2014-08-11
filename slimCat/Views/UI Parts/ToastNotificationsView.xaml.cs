@@ -22,11 +22,14 @@ namespace slimCat.Views
     #region Usings
 
     using System;
+    using System.Drawing;
+    using System.Linq;
     using System.Windows;
     using System.Windows.Forms;
     using System.Windows.Media.Animation;
     using System.Windows.Threading;
     using ViewModels;
+    using Point = System.Windows.Point;
 
     #endregion
 
@@ -62,19 +65,28 @@ namespace slimCat.Views
                 DispatcherPriority.ApplicationIdle,
                 new Action(
                     () =>
+                    {
+                        Rectangle workingArea;
+                        if (lib.FullScreenHelper.ForegroundIsFullScreen() && Screen.AllScreens.Count(x => !x.Primary) >= 1)
                         {
-                            var workingArea = Screen.PrimaryScreen.WorkingArea;
-                            var presentationSource = PresentationSource.FromVisual(this);
-                            if (presentationSource == null
-                                || presentationSource.CompositionTarget == null)
-                                return;
+                            workingArea = Screen.AllScreens.First(x => !x.Primary).WorkingArea;
+                        }
+                        else
+                        {
+                            workingArea = Screen.PrimaryScreen.WorkingArea;
+                        }
 
-                            var transform = presentationSource.CompositionTarget.TransformFromDevice;
-                            var corner = transform.Transform(new Point(workingArea.Right, workingArea.Bottom));
+                        var presentationSource = PresentationSource.FromVisual(this);
+                        if (presentationSource == null
+                            || presentationSource.CompositionTarget == null)
+                            return;
 
-                            Left = corner.X - ActualWidth;
-                            Top = corner.Y - ActualHeight;
-                        }));
+                        var transform = presentationSource.CompositionTarget.TransformFromDevice;
+                        var corner = transform.Transform(new Point(workingArea.Right, workingArea.Bottom));
+
+                        Left = corner.X - ActualWidth;
+                        Top = corner.Y - ActualHeight;
+                    }));
         }
 
         /// <summary>
