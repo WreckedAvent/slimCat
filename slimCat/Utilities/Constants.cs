@@ -127,6 +127,7 @@ namespace slimCat.Utilities
             public const string ChannelMode = "RMO";
             public const string ChannelKind = "RST";
             public const string ChannelAd = "LRP";
+            public const string ChannelSetOwner = "CSO";
 
             public const string UserInvite = "CIU";
             public const string UserSearch = "FKS";
@@ -251,6 +252,7 @@ namespace slimCat.Utilities
             public const string ChannelAd = "LRP";
             public const string ChannelRoll = "RLL";
             public const string ChannelMode = "RMO";
+            public const string ChannelSetOwner = "CSO";
 
             public const string UserInvite = "CIU";
             public const string UserList = "LIS";

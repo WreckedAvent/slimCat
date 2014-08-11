@@ -900,6 +900,32 @@ namespace slimCat.Models
             #endregion
         }
 
+        public class ChannelOwnerChangedEventArgs : ChannelUpdateEventArgs
+        {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets the new owner.
+            /// </summary>
+            public string NewOwner { get; set; }
+            #endregion
+
+            #region Public Methods and Operators
+
+            /// <summary>
+            ///     The to string.
+            /// </summary>
+            /// <returns>
+            ///     The <see cref="string" />.
+            /// </returns>
+            public override string ToString()
+            {
+                return "is now owned by [user]{0}[/user]".FormatWith(NewOwner);
+            }
+
+            #endregion
+        }
+
         /// <summary>
         ///     Represents arguments which have a channel as their direct object
         /// </summary>

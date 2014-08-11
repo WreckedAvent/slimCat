@@ -549,9 +549,28 @@ namespace slimCat.Services
                     return NewReportCommand;
                 case Commands.SearchResult:
                     return SearchResultCommand;
+                case Commands.ChannelSetOwner:
+                    return SetNewOwnerCommand;
                 default:
                     return null;
             }
+        }
+
+        private void SetNewOwnerCommand(IDictionary<string, object> command)
+        {
+            var character = command.Get(Constants.Arguments.Character);
+            var channelId = command.Get(Constants.Arguments.Channel);
+
+            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelId);
+
+            if (channel == null) return;
+
+            var mods = channel.CharacterManager.GetNames(ListKind.Moderator, false).ToList();
+            mods[0] = character;
+            channel.CharacterManager.Set(mods, ListKind.Moderator);
+
+            var update = new ChannelUpdateModel(channel, new ChannelUpdateModel.ChannelOwnerChangedEventArgs{ NewOwner = character });
+            Events.GetEvent<NewUpdateEvent>().Publish(update);
         }
 
         private void SearchResultCommand(IDictionary<string, object> command)
