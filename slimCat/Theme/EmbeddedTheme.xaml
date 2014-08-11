@@ -259,8 +259,21 @@
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsFocused" Value="False">
+                            <Setter Property="BorderBrush" TargetName="Border" Value="{StaticResource DepressedBrush}" />
+                        </Trigger>
                         <Trigger Property="IsFocused" Value="True">
-                            <Setter Property="Visibility" Value="Collapsed" TargetName="LabelText"></Setter>
+                            <Setter Property="BorderBrush" TargetName="Border" Value="{StaticResource HighlightBrush}" />
+                            <Setter Property="Visibility" Value="Collapsed" TargetName="LabelText"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Focusable" Value="False" />
+                            <Setter Property="Background" TargetName="Border" Value="{StaticResource BackgroundBrush}" />
+                            <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
+                            <Setter Property="Content" TargetName="LabelText" Value="Sent"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
