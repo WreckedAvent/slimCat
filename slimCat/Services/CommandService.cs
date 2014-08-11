@@ -559,7 +559,7 @@ namespace slimCat.Services
             var characters = (JsonArray) command[Constants.Arguments.MultipleCharacters];
             CharacterManager.Set(new JsonArray(), ListKind.SearchResult);
 
-            foreach (string character in characters)
+            foreach (string character in characters.Where(x => !CharacterManager.IsOnList((string)x, ListKind.NotInterested)))
             {
                 CharacterManager.Add(character, ListKind.SearchResult);
             }
