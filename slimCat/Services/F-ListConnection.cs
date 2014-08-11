@@ -147,10 +147,10 @@ namespace slimCat.Services
                 model.Characters.Clear();
                 model.Characters.AddRange(acc.Characters);
 
-                acc.AllFriends.Clear();
+                model.AllFriends.Clear();
                 acc.AllFriends.Each(model.AllFriends.Add);
 
-                acc.Bookmarks.Clear();
+                model.Bookmarks.Clear();
                 acc.Bookmarks.Each(model.Bookmarks.Add);
 
                 events.GetEvent<LoginCompleteEvent>().Publish(true);
