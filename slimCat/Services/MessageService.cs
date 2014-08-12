@@ -22,6 +22,7 @@ namespace slimCat.Services
     #region Usings
 
     using Microsoft.Practices.Prism.Events;
+    using Microsoft.Practices.Prism.Regions;
     using Models;
     using System;
     using System.Collections.Generic;
@@ -31,6 +32,7 @@ namespace slimCat.Services
     using System.Windows;
     using System.Windows.Threading;
     using Utilities;
+    using ViewModels;
     using Commands = Utilities.Constants.ClientCommands;
 
     #endregion
@@ -40,6 +42,7 @@ namespace slimCat.Services
     /// </summary>
     public class MessageService : DispatcherObject
     {
+        private readonly IRegionManager regionManager;
 
         #region Fields
 
@@ -70,7 +73,8 @@ namespace slimCat.Services
             IListConnection api,
             ICharacterManager manager,
             ILoggingService logger,
-            IChannelManager channelManager)
+            IChannelManager channelManager,
+            IRegionManager regman)
         {
 
             try
@@ -81,6 +85,7 @@ namespace slimCat.Services
                 this.api = api.ThrowIfNull("api");
                 this.logger = logger.ThrowIfNull("logger");
                 this.channelManager = channelManager.ThrowIfNull("channelManager");
+                regionManager = regman.ThrowIfNull("regman");
                 characterManager = manager.ThrowIfNull("characterManager");
 
                 this.events.GetEvent<UserCommandEvent>().Subscribe(CommandReceived, ThreadOption.UIThread, true);
@@ -116,7 +121,8 @@ namespace slimCat.Services
                         {"handlelatest", OnHandleLatestReportRequested},
                         {"handlereport", OnHandleLatestReportByUserRequested},
                         {"rejoin", OnChannelRejoinRequested },
-                        {"searchtag", OnSearchTagToggleRequested}
+                        {"searchtag", OnSearchTagToggleRequested},
+                        {"logout", OnLogoutRequested}
                     };
             }
             catch (Exception ex)
@@ -322,6 +328,12 @@ namespace slimCat.Services
 
             Clipboard.SetData(DataFormats.Text, toCopy);
             events.GetEvent<ErrorEvent>().Publish("Channel's code copied to clipboard.");
+        }
+
+        private void OnLogoutRequested(IDictionary<string, object> command)
+        {
+            connection.Disconnect();
+            regionManager.RequestNavigate(Shell.MainRegion, new Uri(CharacterSelectViewModel.CharacterSelectViewName, UriKind.Relative));
         }
 
         private void OnNotificationFocusRequested(IDictionary<string, object> command)

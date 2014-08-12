@@ -99,7 +99,8 @@ namespace slimCat.ViewModels
                     {
                         var thisChannelUpdate = args as ChannelUpdateModel;
                         if (thisChannelUpdate != null
-                            && thisChannelUpdate.Arguments is ChannelUpdateModel.ChannelTypeBannedListEventArgs)
+                            && (thisChannelUpdate.Arguments is ChannelUpdateModel.ChannelTypeBannedListEventArgs
+                                || thisChannelUpdate.Arguments is ChannelUpdateModel.ChannelDisciplineEventArgs))
                         {
                             OnPropertyChanged("HasBanned");
                             OnPropertyChanged("Banned");

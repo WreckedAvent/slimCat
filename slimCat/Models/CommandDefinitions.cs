@@ -25,9 +25,12 @@ namespace slimCat.Models
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Web.UI.WebControls;
     using Utilities;
     using A = Utilities.Constants.Arguments;
     using C = Utilities.Constants.ClientCommands;
+    using T = CommandModel.CommandTypes;
+    using P = CommandModel.PermissionLevel;
 
     #endregion
 
@@ -61,367 +64,116 @@ namespace slimCat.Models
 
         #endregion
 
+        static CommandDefinitions()
+        {
+            UserCommands(
+                Define("addbookmark").As("bookmark-add").WithArgument(A.Name),
+                Define("addfriend").As("friend-add").WithArgument("dest_name"),
+                Define("bottle").As(C.ChannelRoll).WithArguments("dice", A.Channel),
+                Define("code").AsArgumentless(),
+                Define("clear").AsArgumentless(),
+                Define("clearall").AsArgumentless(),
+
+                Define("close").AsForChannels(),
+                Define("forceclose").AsForChannels(),
+                Define("ignore").As(C.UserIgnore).WithArguments(A.Character, A.Action),
+                Define("ignoreUpdates").AsForCharacters(),
+                Define("interesting").AsForCharacters(),
+
+                Define("invite").As(C.UserInvite).WithArguments(A.Character, A.Channel),
+                Define("join").AsForChannels(),
+                Define("lastupdate").As("_snap_to_last_update").AsArgumentless(),
+                Define("logheader").As("_logger_new_header").WithArgument("title"),
+                Define("logsection").As("_logger_new_section").WithArgument("title"),
+
+                Define("lognewline").As("_logger_new_line").AsArgumentless(),
+                Define("logout").AsArgumentless(),
+                Define("makeroom").As(C.ChannelCreate).AsForChannels(),
+                Define("notinteresting").AsForCharacters(),
+                Define("openlog").As("_logger_open_log").AsForChannels(),
+
+                Define("openlogfolder").As("_logger_open_folder").AsForChannels(),
+                Define("priv", "pm", "tell").AsForCharacters(),
+                Define("rejoin").AsForChannels(),
+                Define("removebookmark").As("bookmark-remove").WithArgument(A.Name),
+                Define("removefriend").As("friend-remove").WithArgument("dest_name"),
+
+                Define("roll").As(C.ChannelRoll).WithArguments("dice", A.Channel),
+                Define("report").As(C.AdminAlert).WithArguments(A.Name, A.Report, A.Channel),
+                Define("status", "online", "away", "busy", "idle", "dnd", "looking").As(C.UserStatus).WithArguments(A.Status, A.StatusMessage),
+                Define("setowner").As(C.ChannelSetOwner).WithArguments(A.Character, A.Channel),
+                Define("searchtag").AsForCharacters(),
+
+                Define("tempignore").AsForCharacters(),
+                Define("tempunignore").AsForCharacters(),
+                Define("tempnotinteresting").AsForCharacters(),
+                Define("unignore").As(C.UserIgnore).WithArguments(A.Character, A.Action),
+                Define("who").AsArgumentless()
+            );
+
+
+            ModeratorCommands(
+                Define("ban").As(C.ChannelBan).WithArguments(A.Character, A.Channel),
+                Define("banlist").As(C.ChannelBanList).AsForChannels(),
+                Define("closeroom").WithArguments("status", A.Channel),
+                Define("demote", "dop").As(C.ChannelDemote).WithArguments(A.Character, A.Channel),
+                Define("getdescription").WithArgument(A.Channel),
+
+                Define("kick").As(C.ChannelKick).WithArguments(A.Character, A.Channel),
+                Define("killchannel").As(C.ChannelKill).WithArgument(A.Channel),
+                Define("openroom").As(C.ChannelKind).WithArguments("status", A.Channel),
+                Define("promote", "cop").As(C.ChannelPromote).WithArguments(A.Character, A.Channel),
+                Define("setdescription").As(C.ChannelDescription).WithArguments("description", A.Channel),
+
+                Define("unban").As(C.ChannelUnban).WithArguments(A.Character, A.Channel),
+                Define("setmode").As(C.ChannelMode).WithArguments(A.Mode, A.Channel)
+            );
+
+
+            AdminCommands(
+                Define("chatban", "accountban").As(C.AdminBan).AsForCharacters(),
+                Define("chatkick", "gkick").As(C.AdminKick).AsForCharacters(),
+                Define("chatunban").As(C.AdminUnban).AsForCharacters(),
+                Define("reward").As(C.AdminReward).AsForCharacters(),
+                Define("timeout").As(C.AdminTimeout).WithArguments(A.Character, "time", "reason"),
+
+                Define("handlereport", "hr").WithArgument(A.Name),
+                Define("handlelatest", "r").WithArgument(A.Name),
+                Define("broadcast").As(C.AdminBroadcast).AsForCharacters(),
+                Define("chatdemote", "deop").As(C.AdminDemote).AsForCharacters(),
+                Define("chatpromote", "op").As(C.AdminPromote).AsForCharacters(),
+
+                Define("makechannel", "createchannel").As(C.SystemChannelCreate).AsForChannels()
+            );
+
+            SystemCommands(
+                Define(ClientSendTypingStatus).As(C.UserTyping).WithArguments("status", A.Character),
+                Define(ClientSendPm).As(C.UserMessage).WithArguments(A.Message, "receipient"),
+                Define(ClientSendChannelMessage).As(C.ChannelMessage).WithArguments(A.Message, A.Channel),
+                Define(ClientSendChannelAd).As(C.ChannelAd).WithArguments(A.Message, A.Channel)
+            );
+        }
+
         #region Static Fields
 
         /// <summary>
         ///     The commands.
         /// </summary>
-        public static readonly IDictionary<string, CommandModel> Commands = new Dictionary<string, CommandModel>
-            {
-                // user commands
-                {"addbookmark", new CommandModel("addbookmark", "bookmark-add", new[] {A.Name})},
-                {"addfriend", new CommandModel("addfriend", "friend-add", new[] {"dest_name"})},
-                {
-                    "bottle",
-                    new CommandModel("bottle", C.ChannelRoll, new[] {"dice"},
-                        CommandModel.CommandTypes.SingleArgsAndChannel)
-                },
-                {"code", new CommandModel("code", "code", null, CommandModel.CommandTypes.NoArgs)},
-                {"clear", new CommandModel("clear", "clear", null, CommandModel.CommandTypes.NoArgs)},
-                {"clearall", new CommandModel("clearall", "clearall", null, CommandModel.CommandTypes.NoArgs)},
-                {"close", new CommandModel("close", "close", new[] {A.Channel}, CommandModel.CommandTypes.OnlyChannel)},
-                {"forceclose", new CommandModel("forceclose", "forceclose", new [] {A.Channel}) },
-                {
-                    "ignore",
-                    new CommandModel("ignore", C.UserIgnore, new[] {A.Character, A.Action},
-                        CommandModel.CommandTypes.TwoArgs)
-                },
-                {"ignoreUpdates", new CommandModel("ignoreUpdates", "ignoreUpdates", new[] {A.Character})},
-                {"interesting", new CommandModel("interesting", "interesting", new[] {A.Character})},
-                {
-                    "invite",
-                    new CommandModel("invite", C.UserInvite, new[] {A.Character},
-                        CommandModel.CommandTypes.SingleArgsAndChannel)
-                },
-                {"join", new CommandModel("join", "join", new[] {A.Channel})},
-                {
-                    "lastupdate",
-                    new CommandModel("lastupdate", "_snap_to_last_update", null, CommandModel.CommandTypes.NoArgs)
-                },
-                {"logheader", new CommandModel("logheader", "_logger_new_header", new[] {"title"})},
-                {"logsection", new CommandModel("logsection", "_logger_new_section", new[] {"title"})},
-                {
-                    "lognewline",
-                    new CommandModel("lognewline", "_logger_new_line", null, CommandModel.CommandTypes.NoArgs)
-                },
-                {"makeroom", new CommandModel("makeroom", C.ChannelCreate, new[] {A.Channel})},
-                {"notinteresting", new CommandModel("notinteresting", "notinteresting", new[] {A.Character})},
-                {
-                    "openlog",
-                    new CommandModel("openlog", "_logger_open_log", null, CommandModel.CommandTypes.OnlyChannel)
-                },
-                {
-                    "openlogfolder",
-                    new CommandModel("openlogfolder", "_logger_open_folder", null, CommandModel.CommandTypes.OnlyChannel)
-                },
-                {"priv", new CommandModel("priv", "priv", new[] {A.Character})},
-                {"rejoin", new CommandModel("rejoin", "rejoin", new [] {A.Channel}) },
-                {"removebookmark", new CommandModel("removebookmark", "bookmark-remove", new[] {A.Name})},
-                {"removefriend", new CommandModel("removefriend", "friend-remove", new[] {"dest_name"})},
-                {
-                    "roll",
-                    new CommandModel("roll", C.ChannelRoll, new[] {"dice"},
-                        CommandModel.CommandTypes.SingleArgsAndChannel)
-                },
-                {
-                    "report",
-                    new CommandModel("report", C.AdminAlert, new[] {A.Name, A.Report},
-                        CommandModel.CommandTypes.TwoArgsAndChannel)
-                },
-                {
-                    "status",
-                    new CommandModel("status", C.UserStatus, new[] {A.Status, A.StatusMessage},
-                        CommandModel.CommandTypes.TwoArgs)
-                },
-                {"setowner", new CommandModel("setowner", C.ChannelSetOwner, new []{A.Character}, CommandModel.CommandTypes.SingleArgsAndChannel)},
-                {"searchtag", new CommandModel("searchtag", "searchtag", new[] {A.Character})},
-                {"tempignore", new CommandModel("tempignore", "tempignore", new[] {A.Character})},
-                {"tempunignore", new CommandModel("tempunignore", "tempunignore", new[] {A.Character})},
-                {"tempinteresting", new CommandModel("tempinteresting", "tempinteresting", new[] {A.Character})},
-                {
-                    "tempnotinteresting", new CommandModel("tempnotinteresting", "tempnotinteresting", new[] {A.Character})
-                },
-                {
-                    "unignore",
-                    new CommandModel("unignore", C.UserIgnore, new[] {A.Character, A.Action},
-                        CommandModel.CommandTypes.TwoArgs)
-                },
-                {"who", new CommandModel("who", "who", null, CommandModel.CommandTypes.NoArgs)},
-
-                // channel moderator commands
-                {
-                    "ban",
-                    new CommandModel(
-                        "ban",
-                        C.ChannelBan,
-                        new[] {A.Character},
-                        CommandModel.CommandTypes.SingleArgsAndChannel,
-                        CommandModel.PermissionLevel.Moderator)
-                },
-                {
-                    "banlist",
-                    new CommandModel(
-                        "banlist", C.ChannelBanList, null, CommandModel.CommandTypes.OnlyChannel,
-                        CommandModel.PermissionLevel.Moderator)
-                },
-                {
-                    "closeroom",
-                    new CommandModel(
-                        "closeroom",
-                        C.ChannelKind,
-                        new[] {"status"},
-                        CommandModel.CommandTypes.OnlyChannel,
-                        CommandModel.PermissionLevel.Moderator)
-                },
-                {
-                    "demote",
-                    new CommandModel(
-                        "demote",
-                        C.ChannelDemote,
-                        new[] {A.Character},
-                        CommandModel.CommandTypes.SingleArgsAndChannel,
-                        CommandModel.PermissionLevel.Moderator)
-                },
-                {
-                    "getdescription",
-                    new CommandModel(
-                        "getdescription",
-                        "getdescription",
-                        null,
-                        CommandModel.CommandTypes.NoArgs,
-                        CommandModel.PermissionLevel.Moderator)
-                },
-                {
-                    "kick",
-                    new CommandModel(
-                        "kick",
-                        C.ChannelKick,
-                        new[] {A.Character},
-                        CommandModel.CommandTypes.SingleArgsAndChannel,
-                        CommandModel.PermissionLevel.Moderator)
-                },
-                {
-                    "killchannel",
-                    new CommandModel(
-                        "killchannel",
-                        C.ChannelKill,
-                        null,
-                        CommandModel.CommandTypes.OnlyChannel,
-                        CommandModel.PermissionLevel.Moderator)
-                },
-                {
-                    "openroom",
-                    new CommandModel(
-                        "openroom",
-                        C.ChannelKind,
-                        new[] {"status"},
-                        CommandModel.CommandTypes.OnlyChannel,
-                        CommandModel.PermissionLevel.Moderator)
-                },
-                {
-                    "promote",
-                    new CommandModel(
-                        "promote",
-                        C.ChannelPromote,
-                        new[] {A.Character},
-                        CommandModel.CommandTypes.SingleArgsAndChannel,
-                        CommandModel.PermissionLevel.Moderator)
-                },
-                {
-                    "setdescription",
-                    new CommandModel(
-                        "setdescription",
-                        C.ChannelDescription,
-                        new[] {"description"},
-                        CommandModel.CommandTypes.SingleArgsAndChannel,
-                        CommandModel.PermissionLevel.Moderator)
-                },
-                {
-                    "unban",
-                    new CommandModel(
-                        "unban",
-                        C.ChannelUnban,
-                        new[] {A.Character},
-                        CommandModel.CommandTypes.SingleArgsAndChannel,
-                        CommandModel.PermissionLevel.Moderator)
-                },
-                {
-                    "setmode",
-                    new CommandModel(
-                        "setmode",
-                        C.ChannelMode,
-                        new[] {A.Mode},
-                        CommandModel.CommandTypes.SingleArgsAndChannel,
-                        CommandModel.PermissionLevel.Moderator)
-                },
-
-                // global op commands
-                {
-                    "chatban",
-                    new CommandModel(
-                        "chatban",
-                        C.AdminBan,
-                        new[] {A.Character},
-                        CommandModel.CommandTypes.SingleSentence,
-                        CommandModel.PermissionLevel.GlobalMod)
-                },
-                {
-                    "chatkick",
-                    new CommandModel(
-                        "chatkick",
-                        C.AdminKick,
-                        new[] {A.Character},
-                        CommandModel.CommandTypes.SingleSentence,
-                        CommandModel.PermissionLevel.GlobalMod)
-                },
-                {
-                    "chatunban",
-                    new CommandModel(
-                        "chatunban",
-                        C.AdminUnban,
-                        new[] {A.Character},
-                        CommandModel.CommandTypes.SingleSentence,
-                        CommandModel.PermissionLevel.GlobalMod)
-                },
-                {
-                    "reward",
-                    new CommandModel(
-                        "reward",
-                        C.AdminReward,
-                        new[] {A.Character},
-                        CommandModel.CommandTypes.SingleSentence,
-                        CommandModel.PermissionLevel.GlobalMod)
-                },
-                {
-                    "timeout",
-                    new CommandModel(
-                        "timeout",
-                        C.ChannelTimeOut,
-                        new[] {A.Character},
-                        CommandModel.CommandTypes.SingleSentence,
-                        CommandModel.PermissionLevel.GlobalMod)
-                },
-                {
-                    "handlereport",
-                    new CommandModel(
-                        "handlereport",
-                        "handlereport",
-                        new[] {A.Name},
-                        CommandModel.CommandTypes.SingleSentence,
-                        CommandModel.PermissionLevel.GlobalMod)
-                },
-                {
-                    "handlelatest",
-                    new CommandModel(
-                        "handlelatest",
-                        "handlelatest",
-                        null,
-                        CommandModel.CommandTypes.NoArgs,
-                        CommandModel.PermissionLevel.GlobalMod)
-                },
-            
-                // admin commands
-                {
-                    "broadcast",
-                    new CommandModel(
-                        "broadcast",
-                        C.AdminBroadcast,
-                        new[] {A.Character},
-                        CommandModel.CommandTypes.SingleSentence,
-                        CommandModel.PermissionLevel.GlobalMod)
-                },
-                {
-                    "chatdemote",
-                    new CommandModel(
-                        "chatdemote",
-                        C.AdminDemote,
-                        new[] {A.Character},
-                        CommandModel.CommandTypes.SingleSentence,
-                        CommandModel.PermissionLevel.GlobalMod)
-                },
-                {
-                    "chatpromote",
-                    new CommandModel(
-                        "chatpromote",
-                        C.AdminPromote,
-                        new[] {A.Character},
-                        CommandModel.CommandTypes.SingleSentence,
-                        CommandModel.PermissionLevel.GlobalMod)
-                },
-                {
-                    "makechannel",
-                    new CommandModel(
-                        "makechannel",
-                        C.SystemChannelCreate,
-                        new[] {A.Character},
-                        CommandModel.CommandTypes.SingleSentence,
-                        CommandModel.PermissionLevel.GlobalMod)
-                },
-
-                // client-only commands
-                {
-                    ClientSendTypingStatus,
-                    new CommandModel(
-                        ClientSendTypingStatus, "TPN", new[] {"status", A.Character}, CommandModel.CommandTypes.TwoArgs)
-                },
-                {
-                    ClientSendPm,
-                    new CommandModel(ClientSendPm, "PRI", new[] {A.Message, "recipient"},
-                        CommandModel.CommandTypes.TwoArgs)
-                },
-                {
-                    ClientSendChannelMessage,
-                    new CommandModel(
-                        ClientSendChannelMessage, "MSG", new[] {A.Message},
-                        CommandModel.CommandTypes.SingleArgsAndChannel)
-                },
-                {
-                    ClientSendChannelAd,
-                    new CommandModel(
-                        ClientSendChannelAd, C.ChannelAd, new[] {A.Message},
-                        CommandModel.CommandTypes.SingleArgsAndChannel)
-                },
-            };
+        public static readonly IDictionary<string, CommandModel> Commands = new Dictionary<string, CommandModel>();
 
         /// <summary>
         ///     The non command commands.
         /// </summary>
         public static readonly string[] NonCommandCommands =
-            {
-                // prevents long ugly checking in our viewmodels for these
-                "/me", "/warn", "/post"
-            };
+        {
+            // prevents long ugly checking in our viewmodels for these
+            "/me", "/warn", "/post"
+        };
 
         /// <summary>
         ///     The command aliases.
         /// </summary>
-        private static readonly IDictionary<string, string> CommandAliases =
-            new Dictionary<string, string>
-                {
-                    // user commands
-                    {"pm", "priv"},
-                    {"tell", "priv"},
-                    {"msg", "priv"},
-                    {"online", "status"},
-                    {"away", "status"},
-                    {"busy", "status"},
-                    {"looking", "status"},
-                    {"dnd", "status"},
-                    {"idle", "status"},
-
-                    // channel mod
-                    {"cop", "promote"},
-                    {"cdeop", "demote"},
-
-                    // admin - global mod
-                    {"op", "chatpromote"},
-                    {"deop", "chatdemote"},
-                    {"gkick", "chatkick"},
-                    {"createchannel", "makechannel"},
-                    {"accountban", "chatban"},
-                    {"hr", "handlereport"},
-                    {"r", "handlelatest"},
-                };
+        private static readonly IDictionary<string, string> CommandAliases = new Dictionary<string, string>();
 
         /// <summary>
         ///     The command overrides.
@@ -493,75 +245,52 @@ namespace slimCat.Models
             if (!IsValidCommand(familiarName))
                 throw new ArgumentException("Unknown command.", "familiarName");
 
-            if (HasCommandOverride(familiarName))
+            var model = GetCommandModelFromName(familiarName);
+
+            // having an empty argument is the same as none for our purposes 
+            if (args != null && string.IsNullOrEmpty(args[0]))
+                args = null;
+
+            CommandOverride commandOverride;
+            if (CommandOverrides.TryGetValue(familiarName, out commandOverride))
             {
-                var model = GetCommandModelFromName(familiarName);
-
-                var hasEmptyArguments = (args == null || args.All(string.IsNullOrWhiteSpace));
-                var needsArguments = (model.CommandType != CommandModel.CommandTypes.NoArgs
-                                   && model.CommandType != CommandModel.CommandTypes.TwoArgs);
-
-                if (hasEmptyArguments && needsArguments && model.ArgumentNames.Count != 1)
-                    throw new ArgumentException("The {0} command needs an argument.".FormatWith(familiarName));
-
-                var overide = CommandOverrides[familiarName];
-
-                // this inserts the override into the correct location for the toDictionary method
-                var overrideArg = overide.ArgumentName;
+                var overrideArg = commandOverride.ArgumentName;
                 var position = model.ArgumentNames.IndexOf(overrideArg);
 
-                args = args == null
-                    ? new List<string>()
-                    : new List<string>(args);
+                if (args == null) args = new List<string>();
 
                 if (position != -1 && !(position > args.Count))
-                    args.Insert(position, overide.ArgumentValue);
+                    args.Insert(position, commandOverride.ArgumentValue);
                 else
-                    args.Add(overide.ArgumentValue);
-
-                return new CommandDataModel(model, args.ToArray(), channel);
+                    args.Add(commandOverride.ArgumentValue);
             }
-            else
+
+            var toReturn = new CommandDataModel(model, args, channel);
+
+            // with no arguments we needn't do any validation
+            if (args == null && model.ArgumentNames == null) return toReturn;
+
+            var argsCount = (args != null ? args.Count : 0);
+            var modelArgsCount = (model.ArgumentNames != null ? model.ArgumentNames.Count : 0);
+
+            var difference =  argsCount - modelArgsCount;
+
+            // if we have parity in counts we don't have any issues
+            if (difference == 0) return toReturn;
+
+            // error out if we have more arguments than we should
+            if (difference > 0 || model.ArgumentNames == null)
             {
-                var model = GetCommandModelFromName(familiarName);
-
-                // basic syntax validation
-                switch (model.CommandType)
-                {
-                    case CommandModel.CommandTypes.SingleWord:
-                        if (args != null && args.Count > 1)
-                            throw new ArgumentException(
-                                "The {0} command takes a parameter which must be a single word".FormatWith(familiarName));
-
-                        break;
-
-                    case CommandModel.CommandTypes.OnlyChannel:
-                    case CommandModel.CommandTypes.NoArgs:
-                        if (args != null && !string.IsNullOrWhiteSpace(args[0]))
-                            throw new ArgumentException("The {0} command doesn't take an argument".FormatWith(familiarName));
-
-                        break;
-
-                    case CommandModel.CommandTypes.TwoArgs:
-                        if (args != null && args.Count > 2)
-                            throw new ArgumentException("The {0} command takes only two parameters".FormatWith(familiarName));
-
-                        break;
-
-                    case CommandModel.CommandTypes.SingleArgsAndChannel:
-                        if (channel == null)
-                            throw new ArgumentException("The {0} command needs an associated channel".FormatWith(familiarName));
-
-                        break;
-
-                    case CommandModel.CommandTypes.SingleSentence:
-                        if (args == null || args.All(string.IsNullOrWhiteSpace))
-                            throw new ArgumentException("The {0} command needs an argument.".FormatWith(familiarName));
-                        break;
-                }
-
-                return new CommandDataModel(model, args == null ? null : args.ToArray(), channel);
+                throw new ArgumentException("{0} takes {1} arguments, not {2}.".FormatWith(familiarName, modelArgsCount, argsCount));
             }
+
+            // error out if we have less arguments, but not if we are only missing the channel argument provided by the active channel
+            if (difference == -1 && model.ArgumentNames.Contains(A.Channel) && channel != null)
+            {
+                return toReturn;
+            }
+
+            throw new ArgumentException("{0} is missing the '{1}' argument".FormatWith(familiarName, model.ArgumentNames[difference + model.ArgumentNames.Count]));
         }
 
         /// <summary>
@@ -605,10 +334,46 @@ namespace slimCat.Models
 
         #endregion
 
+        private static FluentCommandBuilder Define(string commonName, params string[] aliases)
+        {
+            return new FluentCommandBuilder(commonName, aliases);
+        }
+
+        private static void UserCommands(params FluentCommandBuilder[] commands)
+        {
+            commands.Each(x => Commands.Add(x.Build()));
+            AddAliases(commands);
+        }
+
+        private static void ModeratorCommands(params FluentCommandBuilder[] commands)
+        {
+            commands.Select(x => x.ForModerators()).Each(x => Commands.Add(x.Build()));
+            AddAliases(commands);
+        }
+
+        private static void AdminCommands(params FluentCommandBuilder[] commands)
+        {
+            commands.Select(x => x.ForAdmins()).Each(x => Commands.Add(x.Build()));
+            AddAliases(commands);
+        }
+
+        private static void SystemCommands(params FluentCommandBuilder[] commands)
+        {
+            commands.Each(x => Commands.Add(x.Build()));
+            AddAliases(commands);
+        }
+
+        private static void AddAliases(params FluentCommandBuilder[] commands)
+        {
+            commands.Each(command => 
+                command.Aliases.Each(alias => 
+                    CommandAliases.Add(alias, command.CommonName)));
+        }
+
         /// <summary>
         ///     Represents a command argument override.
         /// </summary>
-        private struct CommandOverride
+        private class CommandOverride
         {
             #region Fields
 
@@ -642,6 +407,108 @@ namespace slimCat.Models
             }
 
             #endregion
+        }
+    }
+
+    class FluentCommandBuilder
+    {
+        public string CommonName { get; set; }
+        public T CommandType { get; set; }
+
+        public P PermissionLevel { get; set; }
+
+        public string RemoteName { get; set; }
+        public IList<string> Arguments { get; set; }
+
+        public IList<string> Aliases { get; set; } 
+
+        public FluentCommandBuilder(string commonName, params string[] aliases)
+        {
+            CommonName = commonName;
+            Arguments = new List<string>();
+            Aliases = aliases;
+            CommandType = T.SingleWord;
+            PermissionLevel = P.User;
+        }
+
+        public FluentCommandBuilder OfType(T type)
+        {
+            CommandType = type;
+            return this;
+        }
+
+        public FluentCommandBuilder AsArgumentless()
+        {
+            CommandType = T.NoArgs;
+            Arguments = null;
+            return this;
+        }
+
+        public FluentCommandBuilder WithArgument(string argument)
+        {
+            CommandType = T.SingleWord;
+            Arguments.Add(argument);
+
+            if (argument == A.Character)
+                CommandType = T.SingleSentence;
+
+            if (argument == A.Channel)
+                CommandType = T.OnlyChannel;
+
+            return this;
+        }
+
+        public FluentCommandBuilder WithArguments(string first, string second, string third = null)
+        {
+            if (first == A.Channel || second == A.Channel)
+                CommandType = T.SingleArgsAndChannel;
+            else
+                CommandType = T.TwoArgs;
+
+            if (third == A.Channel)
+                CommandType = T.TwoArgsAndChannel;
+
+            Arguments.Add(first);
+            Arguments.Add(second);
+
+            if (third != null)
+                Arguments.Add(third);
+
+            return this;
+        }
+
+        public FluentCommandBuilder AsForChannels()
+        {
+            return WithArgument(A.Channel);
+        }
+
+        public FluentCommandBuilder AsForCharacters()
+        {
+            return WithArgument(A.Character);
+        }
+
+        public FluentCommandBuilder ForModerators()
+        {
+            PermissionLevel = P.Moderator;
+            return this;
+        }
+
+        public FluentCommandBuilder ForAdmins()
+        {
+            PermissionLevel = P.GlobalMod;
+            return this;
+        }
+
+        public FluentCommandBuilder As(string name)
+        {
+            RemoteName = name;
+            return this;
+        }
+
+
+        public KeyValuePair<string, CommandModel> Build()
+        {
+            return new KeyValuePair<string, CommandModel>(CommonName, new CommandModel(CommonName, RemoteName ?? CommonName, Arguments, CommandType, PermissionLevel));
         }
     }
 }

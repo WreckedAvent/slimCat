@@ -22,6 +22,8 @@ namespace slimCat.Models
     #region Usings
 
     using System.Collections.Generic;
+    using System.Linq;
+    using Utilities;
 
     #endregion
 
@@ -242,21 +244,26 @@ namespace slimCat.Models
             if (arguments != null && arguments[0] != null)
             {
                 var count = 0;
-                foreach (var argumentName in commandInformation.ArgumentNames)
+                foreach (var argumentName in commandInformation.ArgumentNames.Take(arguments.Count))
                 {
                     toSend.Add(argumentName, arguments[count]);
                     count++;
                 }
             }
 
-            var isChannelCommand = commandInformation.CommandType
-                                   == CommandModel.CommandTypes.SingleArgsAndChannel
-                                   || commandInformation.CommandType == CommandModel.CommandTypes.OnlyChannel
-                                   || commandInformation.CommandType
-                                   == CommandModel.CommandTypes.TwoArgsAndChannel;
+            if (channelName == null 
+                || commandInformation.ArgumentNames == null 
+                || !commandInformation.ArgumentNames.Contains(Constants.Arguments.Channel))
+                return toSend;
 
-            if (channelName != null && isChannelCommand)
-                toSend.Add("channel", channelName);
+            object value;
+            if (toSend.TryGetValue(Constants.Arguments.Channel, out value))
+            {
+                if (!string.IsNullOrWhiteSpace(value as string))
+                    return toSend;
+            }
+
+            toSend[Constants.Arguments.Channel] = channelName;
 
             return toSend;
         }

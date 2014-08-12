@@ -34,6 +34,7 @@ namespace slimCat.Services
     using System.Windows;
     using Utilities;
     using ViewModels;
+    using Views;
     using Commands = Utilities.Constants.ServerCommands;
 
     #endregion
@@ -201,6 +202,28 @@ namespace slimCat.Services
                 return;
             }
 
+            var @event = new ChannelUpdateModel(channel, new ChannelUpdateModel.ChannelTypeBannedListEventArgs());
+
+            if (command.ContainsKey(Constants.Arguments.Message))
+            {
+                var msg = command.Get(Constants.Arguments.Message);
+                var banlist = msg.Split(new[]{",", ":", "has been"}, StringSplitOptions.RemoveEmptyEntries)
+                                 .Select(x => x.Trim())
+                                 .ToList();
+
+                if (msg.ContainsOrdinal("has been"))
+                {
+                    var character = banlist[0];
+                    channel.CharacterManager.Remove(character, ListKind.Banned);
+                    Events.GetEvent<NewUpdateEvent>().Publish(@event);
+                    return;
+                }
+
+                channel.CharacterManager.Set(banlist.Skip(1).Where(x => !string.IsNullOrWhiteSpace(x)), ListKind.Banned);
+                Events.GetEvent<NewUpdateEvent>().Publish(@event);
+                return;
+            }
+
             var message = channelId.Split(':');
             var banned = message[1].Trim();
 
@@ -209,8 +232,7 @@ namespace slimCat.Services
             else
                 channel.CharacterManager.Set(banned.Split(','), ListKind.Banned);
 
-            Events.GetEvent<NewUpdateEvent>()
-                .Publish(new ChannelUpdateModel(channel, new ChannelUpdateModel.ChannelTypeBannedListEventArgs()));
+            Events.GetEvent<NewUpdateEvent>().Publish(@event);
         }
 
         private void ChannelDescriptionCommand(IDictionary<string, object> command)
@@ -421,7 +443,7 @@ namespace slimCat.Services
             }
 
             // checks to see if this is a channel ban message
-            if (thisMessage.IndexOf("Channel bans", StringComparison.OrdinalIgnoreCase) != -1)
+            if (thisMessage.IndexOf("channel ban", StringComparison.OrdinalIgnoreCase) != -1)
             {
                 ChannelBanListCommand(command);
                 return;
@@ -686,23 +708,31 @@ namespace slimCat.Services
             var channelId = command.Get(Constants.Arguments.Channel);
             var kicked = command.Get(Constants.Arguments.Character);
             var isBan = command.Get(Constants.Arguments.Command) == Commands.ChannelBan;
-            var channel = ChatModel.FindChannel(channelId) as GeneralChannelModel;
+            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelId);
+
+            if (channel == null)
+                RequeueCommand(command);
 
             if (kicked.Equals(ChatModel.CurrentCharacter.Name, StringComparison.OrdinalIgnoreCase))
                 kicked = "you";
 
             var args = new ChannelUpdateModel.ChannelDisciplineEventArgs
-                {
-                    IsBan = isBan,
-                    Kicked = kicked,
-                    Kicker = kicker
-                };
+            {
+                IsBan = isBan,
+                Kicked = kicked,
+                Kicker = kicker
+            };
             var update = new ChannelUpdateModel(channel, args);
 
             if (kicked == "you")
                 manager.RemoveChannel(channelId);
             else
                 channel.CharacterManager.SignOff(kicked);
+
+            if (isBan)
+            {
+                channel.CharacterManager.Add(kicked, ListKind.Banned);
+            }
 
             Events.GetEvent<NewUpdateEvent>().Publish(update);
         }
