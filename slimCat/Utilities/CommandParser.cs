@@ -21,6 +21,9 @@ namespace slimCat.Utilities
 {
     #region Usings
 
+    using System.IO;
+    using System.Text.RegularExpressions;
+    using Microsoft.VisualBasic.FileIO;
     using Models;
     using System;
     using System.Collections.Generic;
@@ -35,12 +38,11 @@ namespace slimCat.Utilities
     {
         #region Fields
 
-        private readonly string args;
+        private IList<string> arguments;
 
-        private readonly string currentChan;
+        private readonly string currentChannel;
 
         private readonly bool hasCommand = true;
-        private readonly bool isInvalid;
 
         private readonly string type;
 
@@ -59,40 +61,43 @@ namespace slimCat.Utilities
         /// </param>
         public CommandParser(string rawInput, string currentChannel)
         {
-            if (!rawInput.StartsWith("/"))
-                hasCommand = false;
+            this.currentChannel = currentChannel;
 
-            if (!HasCommand)
-                return;
-
-            if (!rawInput.Trim().Contains(' '))
-                type = rawInput.Trim().Substring(1);
-            else
+            if (rawInput.Length <= 1 || !rawInput[0].Equals('/'))
             {
-                var firstSpace = rawInput.Substring(1).IndexOf(' ');
-                var parsedType = rawInput.Substring(1, firstSpace);
-
-                var arguments = rawInput.Substring(firstSpace + 2);
-
-                if (parsedType.Equals("status", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (!arguments.Contains(' '))
-                        isInvalid = true;
-                    else
-                    {
-                        parsedType = arguments.Substring(0, arguments.IndexOf(' '));
-                        arguments = arguments.Substring(arguments.IndexOf(' ') + 1);
-                    }
-                }
-
-                if (parsedType.Contains('_'))
-                    isInvalid = true;
-
-                type = parsedType;
-                args = arguments;
+                hasCommand = false;
+                return;
             }
 
-            currentChan = currentChannel;
+            var trimmed = rawInput.Trim().Substring(1);
+            if (!trimmed.Contains(' '))
+            {
+                type = trimmed;
+                return;
+            }
+
+            var spaceIndex = trimmed.IndexOf(' ');
+            type = trimmed.Substring(0, spaceIndex);
+            trimmed = trimmed.Substring(spaceIndex+1);
+
+            CommandModel model;
+            if (CommandDefinitions.Commands.TryGetValue(type, out model))
+            {
+                if (type == "status")
+                {
+                    arguments = trimmed.Split(new[] {' '}, 2, StringSplitOptions.RemoveEmptyEntries);
+                    return;
+                }
+
+                if (model.CommandType == CommandModel.CommandTypes.TwoArgs
+                    || model.CommandType == CommandModel.CommandTypes.TwoArgsAndChannel)
+                {
+                    ParseMultipleArguments(trimmed);
+                    return;
+                }
+            }
+
+            arguments = new[] {trimmed};
         }
 
         #endregion
@@ -105,48 +110,6 @@ namespace slimCat.Utilities
         public bool HasCommand
         {
             get { return hasCommand; }
-        }
-
-        /// <summary>
-        ///     Gets a value indicating whether the current input has a valid command.
-        /// </summary>
-        public bool IsValid
-        {
-            get { return !isInvalid && HasCommand && CommandDefinitions.IsValidCommand(Type); }
-        }
-
-        /// <summary>
-        ///     Gets a value indicating whether the current command requires at least global mod permissions.
-        /// </summary>
-        public bool RequiresGlobalMod
-        {
-            get
-            {
-                if (HasCommand && IsValid)
-                {
-                    return CommandDefinitions.Commands[Type].PermissionsLevel
-                           == CommandModel.PermissionLevel.GlobalMod;
-                }
-
-                return false;
-            }
-        }
-
-        /// <summary>
-        ///     Gets a value indicating whether the current command requires at least channel mod permissions.
-        /// </summary>
-        public bool RequiresMod
-        {
-            get
-            {
-                if (HasCommand && IsValid)
-                {
-                    return CommandDefinitions.GetCommandModelFromName(Type).PermissionsLevel
-                           == CommandModel.PermissionLevel.Moderator;
-                }
-
-                return false;
-            }
         }
 
         /// <summary>
@@ -178,11 +141,25 @@ namespace slimCat.Utilities
         /// </summary>
         public IDictionary<string, object> ToDictionary()
         {
-            return
-                CommandDefinitions.CreateCommand(Type, new List<string> {args}, currentChan)
-                    .ToDictionary();
+            return CommandDefinitions.CreateCommand(Type, arguments, currentChannel).ToDictionary();
         }
 
+        #endregion
+
+        #region Private Methods
+
+        private void ParseMultipleArguments(string input)
+        {
+            var parser = new TextFieldParser(new StringReader(input))
+            {
+                TextFieldType = FieldType.Delimited
+            };
+
+            parser.SetDelimiters(",");
+
+            arguments = parser.ReadFields().Select(x => x.Trim()).ToList();
+            parser.Close();
+        }
         #endregion
     }
 }

@@ -316,16 +316,8 @@ namespace slimCat.ViewModels
 
                 if (!messageToCommand.HasCommand)
                     SendMessage();
-                else if ((messageToCommand.RequiresMod && !HasPermissions)
-                         || (messageToCommand.Type.Equals("warn") && !HasPermissions))
-                {
-                    UpdateError(
-                        string.Format("I'm sorry Dave, I can't let you do the {0} command.", messageToCommand.Type));
-                }
-                else if (messageToCommand.IsValid)
-                    SendCommand(messageToCommand.ToDictionary());
                 else
-                    UpdateError(string.Format("I don't know the {0} command.", messageToCommand.Type));
+                    SendCommand(messageToCommand.ToDictionary());
             }
             catch (ArgumentException ex)
             {

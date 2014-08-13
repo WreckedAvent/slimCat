@@ -74,6 +74,7 @@
     <Compile Include="MessageDaemonTest.cs" />
     <Compile Include="CommandServiceTest.cs" />
     <Compile Include="ConverterTests.cs" />
+    <Compile Include="CommandParserTest.cs" />
     <Compile Include="UserCommandTest.cs" />
     <Compile Include="UtiltiesTest.cs" />
   </ItemGroup>

@@ -551,7 +551,6 @@ namespace slimCat.Services
                 case Commands.UserInvite:
                     return InviteCommand;
                 case Commands.ChannelKick:
-                    return KickCommand;
                 case Commands.ChannelBan:
                     return KickCommand;
                 case Commands.UserJoin:

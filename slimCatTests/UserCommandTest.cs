@@ -52,9 +52,10 @@ namespace slimCatTest
         [TestMethod]
         public void CorrectCommandWithNoArgumentsWorks()
         {
-            var cmnd = GetCommand("close");
-            Assert.AreEqual(1, cmnd.Keys.Count);
-            Assert.IsTrue(cmnd[type].Equals("close"));
+            var cmnd = GetCommand("close", null, "foo");
+            Assert.AreEqual(2, cmnd.Keys.Count);
+            Assert.AreEqual("close", cmnd[type]);
+            Assert.AreEqual("foo", cmnd["channel"]);
         }
 
         [TestMethod]

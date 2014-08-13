@@ -362,7 +362,7 @@ namespace slimCatTest
                     WithArgument(Arguments.Channel, channelModel.Id));
 
                 chatModel.VerifyGet(x => x.CurrentCharacter);
-                chatModel.Verify(x => x.FindChannel(ChannelName, null), Times.Exactly(1));
+                chatModel.Verify(x => x.CurrentChannels, Times.Exactly(1));
                 Assert.IsFalse(channelModel.CharacterManager.IsOnList(kicked, ListKind.Online));
             }
 
@@ -383,7 +383,7 @@ namespace slimCatTest
 
                 SetCurrentCharacterTo(kicked);
                 JoinCurrentChannel(kicked);
-                channelManager.Setup(x => x.RemoveChannel(ChannelName, false));
+                channelManager.Setup(x => x.RemoveChannel(ChannelName, false, false));
 
                 MockCommand(
                     WithArgument(Arguments.Command, Commands.ChannelKick),
@@ -392,7 +392,7 @@ namespace slimCatTest
                     WithArgument(Arguments.Channel, channelModel.Id));
 
                 chatModel.VerifyGet(x => x.CurrentCharacter);
-                chatModel.Verify(x => x.FindChannel(ChannelName, null), Times.Exactly(1));
+                chatModel.Verify(x => x.CurrentChannels, Times.Exactly(1));
                 channelManager.VerifyAll();
             }
 
@@ -421,8 +421,9 @@ namespace slimCatTest
                     WithArgument(Arguments.Channel, channelModel.Id));
 
                 chatModel.VerifyGet(x => x.CurrentCharacter);
-                chatModel.Verify(x => x.FindChannel(ChannelName, null), Times.Exactly(1));
+                chatModel.VerifyGet(x => x.CurrentChannels, Times.Exactly(1));
                 Assert.IsFalse(channelModel.CharacterManager.IsOnList(kicked, ListKind.Online));
+                Assert.IsTrue(channelModel.CharacterManager.IsOnList(kicked, ListKind.Banned));
             }
 
             #endregion

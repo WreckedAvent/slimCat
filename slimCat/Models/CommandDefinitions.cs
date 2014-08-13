@@ -25,7 +25,8 @@ namespace slimCat.Models
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Web.UI.WebControls;
+    using System.Reflection;
+    using System.Windows.Input;
     using Utilities;
     using A = Utilities.Constants.Arguments;
     using C = Utilities.Constants.ClientCommands;
@@ -42,24 +43,12 @@ namespace slimCat.Models
     {
         #region Constants
 
-        /// <summary>
-        ///     The client send channel ad.
-        /// </summary>
         public const string ClientSendChannelAd = "_send_channel_ad";
 
-        /// <summary>
-        ///     The client send channel message.
-        /// </summary>
         public const string ClientSendChannelMessage = "_send_channel_message";
 
-        /// <summary>
-        ///     The client send pm.
-        /// </summary>
         public const string ClientSendPm = "_send_private_message";
 
-        /// <summary>
-        ///     The client send typing status.
-        /// </summary>
         public const string ClientSendTypingStatus = "_send_typing_status";
 
         #endregion
@@ -125,17 +114,18 @@ namespace slimCat.Models
                 Define("promote", "cop").As(C.ChannelPromote).WithArguments(A.Character, A.Channel),
                 Define("setdescription").As(C.ChannelDescription).WithArguments("description", A.Channel),
 
+                Define("timeout").As(C.ChannelTimeOut).WithArguments(A.Character, "time", "reason"),
                 Define("unban").As(C.ChannelUnban).WithArguments(A.Character, A.Channel),
                 Define("setmode").As(C.ChannelMode).WithArguments(A.Mode, A.Channel)
             );
 
 
             AdminCommands(
-                Define("chatban", "accountban").As(C.AdminBan).AsForCharacters(),
+                Define("chatban", "accountban", "gban").As(C.AdminBan).AsForCharacters(),
                 Define("chatkick", "gkick").As(C.AdminKick).AsForCharacters(),
-                Define("chatunban").As(C.AdminUnban).AsForCharacters(),
+                Define("chatunban", "gunban").As(C.AdminUnban).AsForCharacters(),
                 Define("reward").As(C.AdminReward).AsForCharacters(),
-                Define("timeout").As(C.AdminTimeout).WithArguments(A.Character, "time", "reason"),
+                Define("chattimeout", "gtimeout").As(C.AdminTimeout).WithArguments(A.Character, "time", "reason"),
 
                 Define("handlereport", "hr").WithArgument(A.Name),
                 Define("handlelatest", "r").WithArgument(A.Name),
@@ -156,30 +146,18 @@ namespace slimCat.Models
 
         #region Static Fields
 
-        /// <summary>
-        ///     The commands.
-        /// </summary>
         public static readonly IDictionary<string, CommandModel> Commands = new Dictionary<string, CommandModel>();
 
-        /// <summary>
-        ///     The non command commands.
-        /// </summary>
         public static readonly string[] NonCommandCommands =
         {
             // prevents long ugly checking in our viewmodels for these
             "/me", "/warn", "/post"
         };
 
-        /// <summary>
-        ///     The command aliases.
-        /// </summary>
         private static readonly IDictionary<string, string> CommandAliases = new Dictionary<string, string>();
 
-        /// <summary>
-        ///     The command overrides.
-        /// </summary>
         private static readonly IDictionary<string, CommandOverride> CommandOverrides = new Dictionary
-            <string, CommandOverride>
+            <string, CommandOverride>(StringComparer.OrdinalIgnoreCase)
             {
                 // command to override, command parameter to override, value to override with
                 {
@@ -231,7 +209,7 @@ namespace slimCat.Models
         ///     Creates a command complete with its meta data.
         /// </summary>
         /// <param name="familiarName">
-        ///     The familiar name.
+        ///     The name of the command the user inputs.
         /// </param>
         /// <param name="args">
         ///     The arguments of the command.
@@ -257,7 +235,9 @@ namespace slimCat.Models
                 var overrideArg = commandOverride.ArgumentName;
                 var position = model.ArgumentNames.IndexOf(overrideArg);
 
-                if (args == null) args = new List<string>();
+                args = (args == null) 
+                    ? new List<string>() 
+                    : new List<string>(args);
 
                 if (position != -1 && !(position > args.Count))
                     args.Insert(position, commandOverride.ArgumentValue);
@@ -283,22 +263,21 @@ namespace slimCat.Models
             {
                 throw new ArgumentException("{0} takes {1} arguments, not {2}.".FormatWith(familiarName, modelArgsCount, argsCount));
             }
+            
+            var missingArgument = model.ArgumentNames[difference + model.ArgumentNames.Count];
 
             // error out if we have less arguments, but not if we are only missing the channel argument provided by the active channel
-            if (difference == -1 && model.ArgumentNames.Contains(A.Channel) && channel != null)
+            if (difference == -1)
             {
-                return toReturn;
+                if (missingArgument == A.Channel && channel != null && channel != "Home")
+                    return toReturn;
+                if (missingArgument == A.StatusMessage || missingArgument == "reason")
+                    return toReturn;
             }
 
-            throw new ArgumentException("{0} is missing the '{1}' argument".FormatWith(familiarName, model.ArgumentNames[difference + model.ArgumentNames.Count]));
+            throw new ArgumentException("{0} is missing the '{1}' argument".FormatWith(familiarName, missingArgument));
         }
 
-        /// <summary>
-        ///     The get command model from name.
-        /// </summary>
-        /// <param name="familiarName">
-        ///     The familiar name.
-        /// </param>
         public static CommandModel GetCommandModelFromName(string familiarName)
         {
             if (!IsValidCommand(familiarName))
@@ -310,26 +289,9 @@ namespace slimCat.Models
             return Commands[familiarName];
         }
 
-        /// <summary>
-        ///     The is valid command.
-        /// </summary>
-        /// <param name="familiarName">
-        ///     The familiar name.
-        /// </param>
         public static bool IsValidCommand(string familiarName)
         {
             return CommandAliases.ContainsKey(familiarName) || Commands.ContainsKey(familiarName);
-        }
-
-        /// <summary>
-        ///     The has command override.
-        /// </summary>
-        /// <param name="familiarName">
-        ///     The familiar name.
-        /// </param>
-        private static bool HasCommandOverride(string familiarName)
-        {
-            return CommandOverrides.ContainsKey(familiarName);
         }
 
         #endregion
@@ -375,38 +337,15 @@ namespace slimCat.Models
         /// </summary>
         private class CommandOverride
         {
-            #region Fields
-
-            /// <summary>
-            ///     The argument name.
-            /// </summary>
             public readonly string ArgumentName;
 
-            /// <summary>
-            ///     The argument value.
-            /// </summary>
             public readonly string ArgumentValue;
 
-            #endregion
-
-            #region Constructors and Destructors
-
-            /// <summary>
-            ///     Initializes a new instance of the <see cref="CommandOverride" /> struct.
-            /// </summary>
-            /// <param name="argName">
-            ///     The arg name.
-            /// </param>
-            /// <param name="argValue">
-            ///     The arg value.
-            /// </param>
             public CommandOverride(string argName, string argValue)
             {
                 ArgumentName = argName;
                 ArgumentValue = argValue;
             }
-
-            #endregion
         }
     }
 
