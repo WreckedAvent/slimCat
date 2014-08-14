@@ -199,11 +199,12 @@ namespace slimCat.Services
 
         private void OnStatusChangeRequested(IDictionary<string, object> command)
         {
-            var statusmsg = command.Get(Constants.Arguments.StatusMessage);
+            object statusmsg;
             var status = command.Get(Constants.Arguments.Status).ToEnum<StatusType>();
+            command.TryGetValue(Constants.Arguments.StatusMessage, out statusmsg);
 
             model.CurrentCharacter.Status = status;
-            model.CurrentCharacter.StatusMessage = statusmsg;
+            model.CurrentCharacter.StatusMessage = statusmsg as string ?? string.Empty;
             connection.SendMessage(command);
         }
 

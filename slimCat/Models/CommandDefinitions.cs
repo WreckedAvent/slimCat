@@ -60,7 +60,7 @@ namespace slimCat.Models
                 Define("addfriend").As("friend-add").WithArgument("dest_name"),
                 Define("bottle").As(C.ChannelRoll).WithArguments("dice", A.Channel),
                 Define("code").AsArgumentless(),
-                Define("clear").AsArgumentless(),
+                Define("clear").AsForChannels(),
                 Define("clearall").AsArgumentless(),
 
                 Define("close").AsForChannels(),
