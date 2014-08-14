@@ -74,7 +74,7 @@ namespace slimCatTest
             eventAggregator = new EventAggregator();
 
             // we shouldn't reference this in tests
-            new CommandService(
+            new ServerCommandService(
                 chatModel.Object,
                 chatConnection.Object,
                 channelManager.Object,
@@ -125,7 +125,7 @@ namespace slimCatTest
         }
 
         private static Tuple<CharacterUpdateModel, T> ShouldBeCharacterUpdate<T>(NotificationModel model)
-            where T : CharacterUpdateModel.CharacterUpdateEventArgs
+            where T : CharacterUpdateEventArgs
         {
             var x = model as CharacterUpdateModel;
             Assert.IsNotNull(x);
@@ -137,7 +137,7 @@ namespace slimCatTest
         }
 
         private static Tuple<ChannelUpdateModel, T> ShouldBeChannelUpdate<T>(NotificationModel model)
-            where T : ChannelUpdateModel.ChannelUpdateEventArgs
+            where T : ChannelUpdateEventArgs
         {
             var x = model as ChannelUpdateModel;
             Assert.IsNotNull(x);
@@ -277,7 +277,7 @@ namespace slimCatTest
 
                 ShouldCreateUpdate(x =>
                     {
-                        var result = ShouldBeChannelUpdate<ChannelUpdateModel.ChannelDescriptionChangedEventArgs>(x);
+                        var result = ShouldBeChannelUpdate<ChannelDescriptionChangedEventArgs>(x);
                         Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
                     });
 
@@ -319,7 +319,7 @@ namespace slimCatTest
             {
                 ShouldCreateUpdate(x =>
                     {
-                        var result = ShouldBeChannelUpdate<ChannelUpdateModel.ChannelModeUpdateEventArgs>(x);
+                        var result = ShouldBeChannelUpdate<ChannelModeUpdateEventArgs>(x);
                         Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
                         Assert.IsTrue(result.Item2.NewMode == ChannelMode.Ads);
                     });
@@ -345,7 +345,7 @@ namespace slimCatTest
 
                 ShouldCreateUpdate(x =>
                     {
-                        var result = ShouldBeChannelUpdate<ChannelUpdateModel.ChannelDisciplineEventArgs>(x);
+                        var result = ShouldBeChannelUpdate<ChannelDisciplineEventArgs>(x);
                         Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
                         Assert.IsTrue(result.Item2.IsBan == false);
                         Assert.IsTrue(result.Item2.Kicker == op);
@@ -374,7 +374,7 @@ namespace slimCatTest
 
                 ShouldCreateUpdate(x =>
                     {
-                        var result = ShouldBeChannelUpdate<ChannelUpdateModel.ChannelDisciplineEventArgs>(x);
+                        var result = ShouldBeChannelUpdate<ChannelDisciplineEventArgs>(x);
                         Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
                         Assert.IsTrue(result.Item2.IsBan == false);
                         Assert.IsTrue(result.Item2.Kicker == op);
@@ -404,7 +404,7 @@ namespace slimCatTest
 
                 ShouldCreateUpdate(x =>
                     {
-                        var result = ShouldBeChannelUpdate<ChannelUpdateModel.ChannelDisciplineEventArgs>(x);
+                        var result = ShouldBeChannelUpdate<ChannelDisciplineEventArgs>(x);
                         Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
                         Assert.IsTrue(result.Item2.IsBan);
                         Assert.IsTrue(result.Item2.Kicker == op);
@@ -438,7 +438,7 @@ namespace slimCatTest
 
                 ShouldCreateUpdate(x =>
                     {
-                        var result = ShouldBeCharacterUpdate<CharacterUpdateModel.PromoteDemoteEventArgs>(x);
+                        var result = ShouldBeCharacterUpdate<PromoteDemoteEventArgs>(x);
                         Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(promotee));
                         Assert.IsTrue(result.Item2.IsPromote);
                         Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
@@ -463,7 +463,7 @@ namespace slimCatTest
 
                 ShouldCreateUpdate(x =>
                     {
-                        var result = ShouldBeCharacterUpdate<CharacterUpdateModel.PromoteDemoteEventArgs>(x);
+                        var result = ShouldBeCharacterUpdate<PromoteDemoteEventArgs>(x);
                         Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(promotee));
                         Assert.IsFalse(result.Item2.IsPromote);
                         Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
@@ -495,7 +495,7 @@ namespace slimCatTest
 
                 ShouldCreateUpdate(x =>
                     {
-                        var result = ShouldBeCharacterUpdate<CharacterUpdateModel.JoinLeaveEventArgs>(x);
+                        var result = ShouldBeCharacterUpdate<JoinLeaveEventArgs>(x);
                         Assert.IsTrue(result.Item1.TargetCharacter.Equals(joiner));
                         Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
                         Assert.IsTrue(result.Item2.Joined);
@@ -548,7 +548,7 @@ namespace slimCatTest
 
                 ShouldCreateUpdate(x =>
                     {
-                        var result = ShouldBeCharacterUpdate<CharacterUpdateModel.JoinLeaveEventArgs>(x);
+                        var result = ShouldBeCharacterUpdate<JoinLeaveEventArgs>(x);
                         Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(leaverName));
                         Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
                         Assert.IsFalse(result.Item2.Joined);
@@ -748,7 +748,7 @@ namespace slimCatTest
 
                 ShouldCreateUpdate(x =>
                     {
-                        var result = ShouldBeCharacterUpdate<CharacterUpdateModel.BroadcastEventArgs>(x);
+                        var result = ShouldBeCharacterUpdate<BroadcastEventArgs>(x);
                         Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(Character));
                         Assert.IsTrue(result.Item2.Message.Equals(Message));
                     });

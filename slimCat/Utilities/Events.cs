@@ -21,7 +21,6 @@ namespace slimCat
 {
     #region Usings
 
-    using System.Windows.Markup;
     using Microsoft.Practices.Prism.Events;
     using Models;
     using System.Collections.Generic;

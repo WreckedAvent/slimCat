@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ChannelbarNotificationsTabView.xaml.cs">
+// <copyright file="BroadcastCommand.cs">
 //    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
 //   
 //    This source is subject to the Simplified BSD License.
@@ -17,30 +17,31 @@
 
 #endregion
 
-namespace slimCat.Views
+namespace slimCat.Services
 {
-    #region Usings
+    using Models;
+    using System.Collections.Generic;
+    using Utilities;
 
-    using ViewModels;
+    public partial class ServerCommandService
+    {
+        private void AdMessageCommand(IDictionary<string, object> command)
+        {
+            MessageReceived(command, true);
+        }
+    }
 
-    #endregion
-
-    /// <summary>
-    ///     Interaction logic for SearchTabView.xaml
-    /// </summary>
-    public partial class SearchTabView
+    public partial class UserCommandService
     {
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="SearchTabView" /> class.
-        /// </summary>
-        /// <param name="vm">
-        ///     The vm.
-        /// </param>
-        public SearchTabView(SearchTabViewModel vm)
+        private void OnLrpRequested(IDictionary<string, object> command)
         {
-            InitializeComponent();
-            DataContext = vm;
+            channelManager.AddMessage(
+                command.Get(Constants.Arguments.Message), 
+                command.Get(Constants.Arguments.Channel),
+                Constants.Arguments.ThisCharacter,
+                MessageType.Ad);
+            connection.SendMessage(command);
         }
     }
 }

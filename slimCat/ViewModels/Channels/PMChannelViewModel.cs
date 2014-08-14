@@ -513,7 +513,7 @@ namespace slimCat.ViewModels
             OnPropertyChanged("TypingString");
 
             var arguments = ((CharacterUpdateModel) param).Arguments;
-            if (!(arguments is CharacterUpdateModel.PromoteDemoteEventArgs))
+            if (!(arguments is PromoteDemoteEventArgs))
                 OnStatusChanged();
         }
 

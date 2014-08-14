@@ -152,6 +152,33 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Commands\Channel\DisciplineCommand.cs" />
+    <Compile Include="Commands\System\BridgeCommand.cs" />
+    <Compile Include="Commands\Character\LogInCommand.cs" />
+    <Compile Include="Commands\Channel\OwnerCommand.cs" />
+    <Compile Include="Commands\Channel\ModeCommand.cs" />
+    <Compile Include="Commands\Channel\ChannelTypeCommand.cs" />
+    <Compile Include="Commands\System\MessageCommand.cs" />
+    <Compile Include="Commands\Character\ListCommand.cs" />
+    <Compile Include="Commands\Character\IgnoreUpdatesCommand.cs" />
+    <Compile Include="Commands\Character\SearchCommand.cs" />
+    <Compile Include="Commands\Channel\InitializedCommand.cs" />
+    <Compile Include="Commands\System\WhoCommand.cs" />
+    <Compile Include="Commands\Channel\LeaveCommand.cs" />
+    <Compile Include="Commands\Character\IgnoreCommand.cs" />
+    <Compile Include="Commands\Character\InterestingCommand.cs" />
+    <Compile Include="Commands\Channel\OpenLogCommand.cs" />
+    <Compile Include="Commands\Channel\InviteCommand.cs" />
+    <Compile Include="Commands\Character\LogOutCommand.cs" />
+    <Compile Include="Commands\Channel\ModeratorCommand.cs" />
+    <Compile Include="Commands\Channel\ListCommand.cs" />
+    <Compile Include="Commands\Channel\ClearCommand.cs" />
+    <Compile Include="Commands\Channel\CodeCommand.cs" />
+    <Compile Include="Commands\Channel\ChannelRollCommand.cs" />
+    <Compile Include="Commands\Character\ReportCommand.cs" />
+    <Compile Include="Commands\Character\StatusCommand.cs" />
+    <Compile Include="Commands\Channel\JoinCommand.cs" />
+    <Compile Include="Commands\Character\PrivateMessageCommand.cs" />
     <Compile Include="lib\DeferredAction.cs" />
     <Compile Include="lib\FlashWindowHelper.cs" />
     <Compile Include="lib\FullScreenHelper.cs" />
@@ -159,7 +186,9 @@
     <Compile Include="Models\Api\ApiAuthResponse.cs" />
     <Compile Include="Models\Api\ApiUploadLogResponse.cs" />
     <Compile Include="Models\ApplicationThemeLocator.cs" />
+    <Compile Include="Models\ChannelUpdateModel.cs" />
     <Compile Include="Models\CharacterManagerBase.cs" />
+    <Compile Include="Models\CharacterUpdateModel.cs" />
     <Compile Include="Models\CollectionPair.cs" />
     <Compile Include="Models\Enums\ChannelMode.cs" />
     <Compile Include="Models\ChannelModel.cs" />
@@ -194,6 +223,11 @@
     <Compile Include="Services\Browser.cs" />
     <Compile Include="Services\ChannelListUpdaterService.cs" />
     <Compile Include="Services\ChannelService.cs" />
+    <Compile Include="Commands\Channel\BanListCommand.cs" />
+    <Compile Include="Commands\Channel\MessageCommand.cs" />
+    <Compile Include="Commands\Channel\AdCommand.cs" />
+    <Compile Include="Commands\Channel\DescriptionCommand.cs" />
+    <Compile Include="Commands\System\BroadcastCommand.cs" />
     <Compile Include="Services\IconService.cs" />
     <Compile Include="Services\Interfaces\IAutomationService.cs" />
     <Compile Include="Services\Interfaces\INoteService.cs" />
@@ -223,10 +257,10 @@
     <Compile Include="Models\MessageModel.cs" />
     <Compile Include="Models\PMChannelModel.cs" />
     <Compile Include="Models\ApplicationSettings.cs" />
-    <Compile Include="Services\CommandService.cs" />
+    <Compile Include="Services\ServerCommandService.cs" />
     <Compile Include="Services\F-ChatConnection.cs" />
     <Compile Include="Services\LoggingService.cs" />
-    <Compile Include="Services\MessageService.cs" />
+    <Compile Include="Services\UserCommandService.cs" />
     <Compile Include="Services\NotificationService.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Utilities\Bootstrapper.cs" />

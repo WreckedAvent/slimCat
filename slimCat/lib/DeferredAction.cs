@@ -1,8 +1,8 @@
 ﻿namespace slimCat.lib
 {
+    using System;
     using System.Threading;
     using System.Windows;
-    using System;
 
     /// <summary>
     /// Represents a timer which performs an action on the UI thread when time elapses.  Rescheduling is supported.

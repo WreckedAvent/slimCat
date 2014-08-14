@@ -87,12 +87,12 @@ namespace slimCat.ViewModels
                         if (thisNotification == null)
                             return;
 
-                        if (thisNotification.Arguments is CharacterUpdateModel.PromoteDemoteEventArgs)
+                        if (thisNotification.Arguments is PromoteDemoteEventArgs)
                             OnPropertyChanged("HasPermissions");
 
 
-                        else if (thisNotification.Arguments is CharacterUpdateModel.JoinLeaveEventArgs
-                                 || thisNotification.Arguments is CharacterUpdateModel.ListChangedEventArgs)
+                        else if (thisNotification.Arguments is JoinLeaveEventArgs
+                                 || thisNotification.Arguments is CharacterListChangedEventArgs)
                             OnPropertyChanged("SortedUsers");
                     });
         }

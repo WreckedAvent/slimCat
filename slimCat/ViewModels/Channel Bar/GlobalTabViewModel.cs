@@ -78,8 +78,8 @@ namespace slimCat.ViewModels
                         if (thisNotification == null)
                             return;
 
-                        if (thisNotification.Arguments is CharacterUpdateModel.ListChangedEventArgs
-                            || thisNotification.Arguments is CharacterUpdateModel.LoginStateChangedEventArgs)
+                        if (thisNotification.Arguments is CharacterListChangedEventArgs
+                            || thisNotification.Arguments is LoginStateChangedEventArgs)
                             OnPropertyChanged("SortedUsers");
                     });
         }

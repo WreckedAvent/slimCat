@@ -21,12 +21,11 @@ namespace slimCat.Utilities
 {
     #region Usings
 
-    using System.IO;
-    using System.Text.RegularExpressions;
     using Microsoft.VisualBasic.FileIO;
     using Models;
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
 
     #endregion

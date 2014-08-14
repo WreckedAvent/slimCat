@@ -305,7 +305,7 @@ namespace slimCat.Services
                 var args = model.Arguments;
 
                 // handle if the notification involves a character being promoted or demoted
-                var eventArgs = args as CharacterUpdateModel.PromoteDemoteEventArgs;
+                var eventArgs = args as PromoteDemoteEventArgs;
                 if (eventArgs != null)
                 {
                     var channelId = eventArgs.TargetChannelId;
@@ -325,10 +325,10 @@ namespace slimCat.Services
                     ConvertNotificationLevelToAction(
                         channel.Settings.PromoteDemoteNotifyLevel, channelId, model);
                 }
-                else if (args is CharacterUpdateModel.JoinLeaveEventArgs)
+                else if (args is JoinLeaveEventArgs)
                 {
                     // special check for this as it has settings per channel
-                    var target = ((CharacterUpdateModel.JoinLeaveEventArgs) args).TargetChannelId;
+                    var target = ((JoinLeaveEventArgs) args).TargetChannelId;
 
                     // find by ID, not name
                     var channel = cm.CurrentChannels.FirstByIdOrNull(target);
@@ -344,35 +344,35 @@ namespace slimCat.Services
 
                     ConvertNotificationLevelToAction(channel.Settings.JoinLeaveNotifyLevel, target, model);
                 }
-                else if (args is CharacterUpdateModel.NoteEventArgs || args is CharacterUpdateModel.CommentEventArgs)
+                else if (args is NoteEventArgs || args is CommentEventArgs)
                 {
                     AddNotification(model);
 
-                    var link = args is CharacterUpdateModel.NoteEventArgs
-                        ? ((CharacterUpdateModel.NoteEventArgs) args).Link
-                        : ((CharacterUpdateModel.CommentEventArgs) args).Link;
+                    var link = args is NoteEventArgs
+                        ? ((NoteEventArgs) args).Link
+                        : ((CommentEventArgs) args).Link;
 
                     NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), link, null, model.TargetCharacter);
                 }
-                else if (args is CharacterUpdateModel.ListChangedEventArgs)
+                else if (args is CharacterListChangedEventArgs)
                 {
-                    var type = (args as CharacterUpdateModel.ListChangedEventArgs).ListArgument;
+                    var type = (args as CharacterListChangedEventArgs).ListArgument;
                     if (type == ListKind.SearchResult) return;
 
                     AddNotification(model);
                     NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, null, model.TargetCharacter);
                 }
-                else if (args is CharacterUpdateModel.ReportHandledEventArgs)
+                else if (args is ReportHandledEventArgs)
                 {
                     AddNotification(model);
                     NotifyUser(true, true, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, null, model.TargetCharacter);
                 }
-                else if (args is CharacterUpdateModel.ReportFiledEventArgs)
+                else if (args is ReportFiledEventArgs)
                 {
                     AddNotification(model);
                     NotifyUser(true, true, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, "report", model.TargetCharacter);
                 }
-                else if (args is CharacterUpdateModel.BroadcastEventArgs)
+                else if (args is BroadcastEventArgs)
                 {
                     AddNotification(model);
                     NotifyUser(true, true, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, null, model.TargetCharacter);

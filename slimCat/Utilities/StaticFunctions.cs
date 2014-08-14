@@ -21,6 +21,7 @@ namespace slimCat.Utilities
 {
     #region Usings
 
+    using Microsoft.Practices.Prism.Events;
     using Models;
     using Newtonsoft.Json;
     using System;
@@ -39,38 +40,19 @@ namespace slimCat.Utilities
     /// </summary>
     public static class StaticFunctions
     {
-        #region Public Methods and Operators
-
-        /// <summary>
-        ///     The character is in list.
-        /// </summary>
         public static bool CharacterIsInList(this ICollection<ICharacter> collection, ICharacter toFind)
         {
             return collection.Any(character => character.Name.Equals(toFind.Name, StringComparison.OrdinalIgnoreCase));
         }
 
-        /// <summary>
-        ///     Checks if a string contains a term using ordinal string comparison
-        /// </summary>
+
         public static bool ContainsOrdinal(this string fullString, string checkterm, bool ignoreCase = true)
         {
             var comparer = ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
             return fullString.IndexOf(checkterm, comparer) >= 0;
         }
 
-        /// <summary>
-        ///     Checks if a given collection has a matching word or phrase. Returns the word and its context in a tuple.
-        ///     Empty if no match.
-        /// </summary>
-        /// <param name="fullString">
-        ///     The full String.
-        /// </param>
-        /// <param name="checkAgainst">
-        ///     The check Against.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="Tuple" />.
-        /// </returns>
+
         public static Tuple<string, string> FirstMatch(this string fullString, string checkAgainst)
         {
             var startIndex = fullString.IndexOf(checkAgainst, StringComparison.OrdinalIgnoreCase);
@@ -118,18 +100,6 @@ namespace slimCat.Utilities
                 : new Tuple<string, string>(string.Empty, string.Empty);
         }
 
-        /// <summary>
-        ///     returns the sentence (ish) around a word
-        /// </summary>
-        /// <param name="fullContent">
-        ///     The full Content.
-        /// </param>
-        /// <param name="specificWord">
-        ///     The specific Word.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="string" />.
-        /// </returns>
         public static string GetStringContext(string fullContent, string specificWord)
         {
             const int maxDistance = 150;
@@ -160,38 +130,13 @@ namespace slimCat.Utilities
                    + (end != fullContent.Length ? " ..." : string.Empty);
         }
 
-        /// <summary>
-        ///     Checks if checkAgainst contains any term in dingTerms
-        /// </summary>
-        /// <param name="checkAgainst">
-        ///     The check Against.
-        /// </param>
-        /// <param name="dingTerms">
-        ///     The ding Terms.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
+
         public static bool HasDingTermMatch(this string checkAgainst, IEnumerable<string> dingTerms)
         {
             return dingTerms.Any(term => FirstMatch(checkAgainst, term).Item1 != string.Empty);
         }
 
-        /// <summary>
-        ///     Checks if an IMessage is a message which trips our ding terms
-        /// </summary>
-        /// <param name="message">
-        ///     The message.
-        /// </param>
-        /// <param name="settings">
-        ///     The settings.
-        /// </param>
-        /// <param name="dingTerms">
-        ///     The ding Terms.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
+
         public static bool IsDingMessage(
             this IMessage message, ChannelSettingsModel settings, IEnumerable<string> dingTerms)
         {
@@ -204,21 +149,7 @@ namespace slimCat.Utilities
                    || safeMessage.HasDingTermMatch(enumeratedDingTerm);
         }
 
-        /// <summary>
-        ///     Makes a safe folder path to our channel
-        /// </summary>
-        /// <param name="character">
-        ///     The character.
-        /// </param>
-        /// <param name="title">
-        ///     The title.
-        /// </param>
-        /// <param name="id">
-        ///     The ID.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="string" />.
-        /// </returns>
+
         public static string MakeSafeFolderPath(string character, string title, string id)
         {
             var basePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -252,24 +183,6 @@ namespace slimCat.Utilities
                 : Path.Combine(basePath, "slimCat", character, folderName);
         }
 
-        /// <summary>
-        ///     The meets chat model lists.
-        /// </summary>
-        /// <param name="character">
-        ///     The character.
-        /// </param>
-        /// <param name="search">
-        ///     The search.
-        /// </param>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
-        /// <param name="channel">
-        ///     The channel.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         public static bool MeetsChatModelLists(
             this ICharacter character, GenericSearchSettingsModel search, ICharacterManager cm,
             GeneralChannelModel channel)
@@ -296,27 +209,6 @@ namespace slimCat.Utilities
                 : search.MeetsStatusFilter(character);
         }
 
-        /// <summary>
-        ///     The meets filters.
-        /// </summary>
-        /// <param name="character">
-        ///     The character.
-        /// </param>
-        /// <param name="genders">
-        ///     The genders.
-        /// </param>
-        /// <param name="search">
-        ///     The search.
-        /// </param>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
-        /// <param name="channel">
-        ///     The channel.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         public static bool MeetsFilters(
             this ICharacter character,
             GenderSettingsModel genders,
@@ -331,27 +223,6 @@ namespace slimCat.Utilities
                    && character.MeetsChatModelLists(search, cm, channel);
         }
 
-        /// <summary>
-        ///     The meets filters.
-        /// </summary>
-        /// <param name="message">
-        ///     The message.
-        /// </param>
-        /// <param name="genders">
-        ///     The genders.
-        /// </param>
-        /// <param name="search">
-        ///     The search.
-        /// </param>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
-        /// <param name="channel">
-        ///     The channel.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         public static bool MeetsFilters(
             this IMessage message,
             GenderSettingsModel genders,
@@ -367,55 +238,16 @@ namespace slimCat.Utilities
                    && message.Poster.MeetsChatModelLists(search, cm, channel);
         }
 
-        /// <summary>
-        ///     The name contains.
-        /// </summary>
-        /// <param name="character">
-        ///     The character.
-        /// </param>
-        /// <param name="searchString">
-        ///     The search string.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         public static bool NameContains(this ICharacter character, string searchString)
         {
             return character.Name.ToLower().Contains(searchString.ToLower());
         }
 
-        /// <summary>
-        ///     The name equals.
-        /// </summary>
-        /// <param name="character">
-        ///     The character.
-        /// </param>
-        /// <param name="compare">
-        ///     The compare.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
         public static bool NameEquals(this ICharacter character, string compare)
         {
             return character.Name.Equals(compare, StringComparison.OrdinalIgnoreCase);
         }
 
-        /// <summary>
-        ///     The relationship to user.
-        /// </summary>
-        /// <param name="character">
-        ///     The character.
-        /// </param>
-        /// <param name="cm">
-        ///     The cm.
-        /// </param>
-        /// <param name="channel">
-        ///     The channel.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="string" />.
-        /// </returns>
         public static string RelationshipToUser(this ICharacter character, ICharacterManager cm,
             GeneralChannelModel channel)
         {
@@ -450,10 +282,7 @@ namespace slimCat.Utilities
                 : "f";
         }
 
-        /// <summary>
-        ///     Strips the punctuation in a given string so long as it's at the end.
-        ///     Words like it's will not be affected.
-        /// </summary>
+
         public static string StripPunctuationAtEnd(this string fullString)
         {
             if (string.IsNullOrWhiteSpace(fullString) || fullString.Length <= 1)
@@ -488,19 +317,20 @@ namespace slimCat.Utilities
             return default(T);
         }
 
-        /// <summary>
-        ///     Deserializes the object.
-        /// </summary>
-        /// <typeparam name="T">
-        ///     The type of object to deserialize to.
-        /// </typeparam>
-        /// <param name="objectString">
-        ///     The object string.
-        /// </param>
+
         public static T DeserializeTo<T>(this string objectString)
         {
             return JsonConvert.DeserializeObject<T>(objectString);
         }
-        #endregion
+
+        public static void NewCharacterUpdate(this IEventAggregator events, ICharacter character, CharacterUpdateEventArgs e)
+        {
+            events.GetEvent<NewUpdateEvent>().Publish(new CharacterUpdateModel(character, e));
+        }
+
+        public static void NewChannelUpdate(this IEventAggregator events, ChannelModel channel, ChannelUpdateEventArgs e)
+        {
+            events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(channel, e));
+        }
     }
 }

@@ -99,8 +99,8 @@ namespace slimCat.ViewModels
                     {
                         var thisChannelUpdate = args as ChannelUpdateModel;
                         if (thisChannelUpdate != null
-                            && (thisChannelUpdate.Arguments is ChannelUpdateModel.ChannelTypeBannedListEventArgs
-                                || thisChannelUpdate.Arguments is ChannelUpdateModel.ChannelDisciplineEventArgs))
+                            && (thisChannelUpdate.Arguments is ChannelTypeBannedListEventArgs
+                                || thisChannelUpdate.Arguments is ChannelDisciplineEventArgs))
                         {
                             OnPropertyChanged("HasBanned");
                             OnPropertyChanged("Banned");
@@ -112,7 +112,7 @@ namespace slimCat.ViewModels
 
                         var name = thisUpdate.TargetCharacter.Name;
 
-                        var joinLeaveArguments = thisUpdate.Arguments as CharacterUpdateModel.JoinLeaveEventArgs;
+                        var joinLeaveArguments = thisUpdate.Arguments as JoinLeaveEventArgs;
                         if (joinLeaveArguments != null)
                         {
                             if (manager.IsOnList(name, ListKind.Moderator, false))
@@ -122,7 +122,7 @@ namespace slimCat.ViewModels
                             return;
                         }
 
-                        var signInOutArguments = thisUpdate.Arguments as CharacterUpdateModel.LoginStateChangedEventArgs;
+                        var signInOutArguments = thisUpdate.Arguments as LoginStateChangedEventArgs;
                         if (signInOutArguments != null)
                         {
                             listKinds.Each(x =>
@@ -134,7 +134,7 @@ namespace slimCat.ViewModels
                             return;
                         }
 
-                        var thisArguments = thisUpdate.Arguments as CharacterUpdateModel.ListChangedEventArgs;
+                        var thisArguments = thisUpdate.Arguments as CharacterListChangedEventArgs;
                         if (thisArguments == null)
                             return;
 

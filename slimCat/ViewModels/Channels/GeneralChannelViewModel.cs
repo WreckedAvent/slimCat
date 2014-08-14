@@ -777,7 +777,7 @@ namespace slimCat.ViewModels
             if (updateModel == null)
                 return;
 
-            var args = updateModel.Arguments as CharacterUpdateModel.ListChangedEventArgs;
+            var args = updateModel.Arguments as CharacterListChangedEventArgs;
             if (args == null)
                 return;
 

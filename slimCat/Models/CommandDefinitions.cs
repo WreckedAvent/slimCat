@@ -25,13 +25,11 @@ namespace slimCat.Models
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
-    using System.Windows.Input;
     using Utilities;
     using A = Utilities.Constants.Arguments;
     using C = Utilities.Constants.ClientCommands;
-    using T = CommandModel.CommandTypes;
     using P = CommandModel.PermissionLevel;
+    using T = CommandModel.CommandTypes;
 
     #endregion
 

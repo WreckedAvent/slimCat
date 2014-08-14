@@ -21,6 +21,15 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using lib;
+    using Libraries;
+    using Microsoft.Practices.Prism;
+    using Microsoft.Practices.Prism.Events;
+    using Microsoft.Practices.Prism.Regions;
+    using Microsoft.Practices.Unity;
+    using Models;
+    using Newtonsoft.Json.Linq;
+    using Services;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -30,16 +39,7 @@ namespace slimCat.ViewModels
     using System.Net;
     using System.Timers;
     using System.Windows.Data;
-    using lib;
-    using Libraries;
-    using Microsoft.Practices.Prism;
-    using Microsoft.Practices.Prism.Events;
-    using Microsoft.Practices.Prism.Regions;
-    using Microsoft.Practices.Unity;
-    using Models;
     using System.Windows.Input;
-    using Newtonsoft.Json.Linq;
-    using Services;
     using Utilities;
     using Views;
 

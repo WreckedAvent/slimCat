@@ -73,8 +73,8 @@ namespace slimCat.Utilities
 
                 // these are services that are not directly used by our singletons or modules
                 Instantiate<NotificationService>();
-                Instantiate<CommandService>();
-                Instantiate<MessageService>();
+                Instantiate<ServerCommandService>();
+                Instantiate<UserCommandService>();
                 Instantiate<IIconService>();
 
                 // some resources that are dependant on our singletons

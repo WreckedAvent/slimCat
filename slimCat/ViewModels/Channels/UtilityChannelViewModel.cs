@@ -98,7 +98,7 @@ namespace slimCat.ViewModels
                                 return;
 
                             var temp = param as CharacterUpdateModel;
-                            if (!(temp.Arguments is CharacterUpdateModel.LoginStateChangedEventArgs))
+                            if (!(temp.Arguments is LoginStateChangedEventArgs))
                                 return;
 
                             OnPropertyChanged("OnlineCount");
