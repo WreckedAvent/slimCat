@@ -157,7 +157,7 @@
     <Compile Include="Commands\Character\LogInCommand.cs" />
     <Compile Include="Commands\Channel\OwnerCommand.cs" />
     <Compile Include="Commands\Channel\ModeCommand.cs" />
-    <Compile Include="Commands\Channel\ChannelTypeCommand.cs" />
+    <Compile Include="Commands\Channel\TypeCommand.cs" />
     <Compile Include="Commands\System\MessageCommand.cs" />
     <Compile Include="Commands\Character\ListCommand.cs" />
     <Compile Include="Commands\Character\IgnoreUpdatesCommand.cs" />
@@ -174,7 +174,7 @@
     <Compile Include="Commands\Channel\ListCommand.cs" />
     <Compile Include="Commands\Channel\ClearCommand.cs" />
     <Compile Include="Commands\Channel\CodeCommand.cs" />
-    <Compile Include="Commands\Channel\ChannelRollCommand.cs" />
+    <Compile Include="Commands\Channel\RollCommand.cs" />
     <Compile Include="Commands\Character\ReportCommand.cs" />
     <Compile Include="Commands\Character\StatusCommand.cs" />
     <Compile Include="Commands\Channel\JoinCommand.cs" />

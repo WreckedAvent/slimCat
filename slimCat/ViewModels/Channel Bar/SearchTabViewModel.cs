@@ -21,7 +21,6 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using lib;
     using Libraries;
     using Microsoft.Practices.Prism;
     using Microsoft.Practices.Prism.Events;

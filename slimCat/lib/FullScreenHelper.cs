@@ -17,7 +17,7 @@
 
 #endregion
 
-namespace slimCat.lib
+namespace slimCat.Libraries
 {
     #region Usings
 

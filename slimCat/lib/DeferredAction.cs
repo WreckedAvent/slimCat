@@ -1,4 +1,4 @@
-﻿namespace slimCat.lib
+﻿namespace slimCat.Libraries
 {
     using System;
     using System.Threading;

@@ -161,3 +161,15 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+*.nupkg
+packages/Moq.4.2.1312.1622/lib/net35/Moq.xml
+packages/Moq.4.2.1312.1622/lib/net35/Moq.dll
+packages/Moq.4.2.1312.1622/lib/net40/Moq.dll
+packages/Moq.4.2.1312.1622/lib/net40/Moq.xml
+packages/Moq.4.2.1312.1622/lib/sl4/Moq.Silverlight.dll
+packages/Moq.4.2.1312.1622/lib/sl4/Moq.Silverlight.xml
+slimCat.sln.ide/edb.chk
+slimCat.sln.ide/edb.log
+*.jrs
+slimCat.sln.ide/storage.ide
+*.log

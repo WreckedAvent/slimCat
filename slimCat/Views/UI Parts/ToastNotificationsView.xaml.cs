@@ -67,7 +67,7 @@ namespace slimCat.Views
                     () =>
                     {
                         Rectangle workingArea;
-                        if (lib.FullScreenHelper.ForegroundIsFullScreen() && Screen.AllScreens.Count(x => !x.Primary) >= 1)
+                        if (Libraries.FullScreenHelper.ForegroundIsFullScreen() && Screen.AllScreens.Count(x => !x.Primary) >= 1)
                         {
                             workingArea = Screen.AllScreens.First(x => !x.Primary).WorkingArea;
                         }
