@@ -105,6 +105,12 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
+        <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
+            <Setter Property="Cursor" Value="Help"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,15,0,0"/>
+        </Style>
     </UserControl.Resources>
 
     <Grid TextBlock.FontSize="16">
@@ -200,52 +206,38 @@
                                           Margin="0,0,0,0" />
 
                                     <CheckBox IsChecked="{Binding AllowLogging}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
-                                              ToolTip="Allows slimCat to store any kind of log file.">
-                                        Allow Logging
+                                              ToolTip="Allows slimCat to store any kind of log file. This setting overrides any channel-specific setting if off.">
+                                        Automatically log each message
                                     </CheckBox>
                                     
                                     <CheckBox IsChecked="{Binding IsTemplateCharacter}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
                                               ToolTip="Determines if this character's settings are used as defaults for other characters.">
-                                        Save Settings as Defaults
+                                        Make this character's settings the default for others
                                     </CheckBox>
                                     
                                     <CheckBox IsChecked="{Binding AllowMinimizeToSystemTray}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
                                               ToolTip="Allows slimCat to minimize itself to system tray on closing the window, instead of exiting.">
-                                        Allow Minimize to System Tray
+                                        Minimize to system tray on close
                                     </CheckBox>
 
                                     <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
                                               ToolTip="Determines if friends on characters other than the one you are currently signed in with are treated as friends or normal characters.">
-                                        Friends Are Account Wide
+                                        Show friends from all of my characters
                                     </CheckBox>
 
                                     <CheckBox IsChecked="{Binding AllowTexboxDisable}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
-                                              ToolTip="Allows the entry box to automatically disable itself after sending a message.">
-                                        Allow Textbox Disabling
+                                              ToolTip="Allows the entry box to automatically disable itself for half a second after sending a message.">
+                                        Briefly disable the textbox after each message sent
                                     </CheckBox>
                                     
                                     <CheckBox IsChecked="{Binding AllowGreedyTextboxFocus}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
-                                              ToolTip="Allows the entry box to automatically focus itself after switching tabs.">
-                                        Allow Texbox Focusing
+                                              ToolTip="Allows the entry box to automatically focus itself after switching tabs regardless of how the tab was switched.">
+                                        Focus the textbox after switching tabs
                                     </CheckBox>
 
                                     <CheckBox IsChecked="{Binding SpellCheckEnabled}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
-                                              ToolTip="Allows slimCat to spell-check the messages you type out">
-                                        Allow Spell Check
+                                              ToolTip="Allows slimCat to spell-check the messages you type out.">
+                                        Spell check my messages
                                     </CheckBox>
                                     
                                     <StackPanel Margin="0,15,0,0"
@@ -273,31 +265,23 @@
                                           Margin="0,0,0,0" />
 
                                     <CheckBox IsChecked="{Binding ShowNotifications}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
-                                              ToolTip="Allows slimCat to display small windows on the bottom-right of your screen for new notifications">
-                                        Allow Toast Notifications
+                                              ToolTip="Allows slimCat to display small windows on the bottom-right of your screen for new notifications. This will override any channel-specific settings if off.">
+                                        Display toast notifications for events
                                     </CheckBox>
 
                                     <CheckBox IsChecked="{Binding AllowSound}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
-                                              ToolTip="Allows slimCat to play sounds during toasts when applicable">
-                                        Allow Sound
+                                              ToolTip="Allows slimCat to play sounds during toasts when applicable.">
+                                        Play sounds for events
                                     </CheckBox>
 
                                     <CheckBox IsChecked="{Binding CheckOwnName}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
                                               ToolTip="Determines whether or not slimCat will automatically notify you when someone mentions your character's name">
-                                        Allow Current Name Highlighting
+                                        Highlight and notify me of messages mentioning my character
                                     </CheckBox>
 
                                     <CheckBox IsChecked="{Binding AllowSoundWhenTabIsFocused}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
-                                              ToolTip="Allows slimCat to play sounds even if the window and tab are focused">
-                                        Allow Sound when Tab is Focused
+                                              ToolTip="Allows slimCat to play sounds even if the window and the tab that generates the vent are focused.">
+                                        Play sounds even when window and tab are focused
                                     </CheckBox>
                                     
                                     <StackPanel Margin="0,15,0,0"
@@ -325,10 +309,8 @@
                                           Margin="0,0,0,0" />
 
                                     <CheckBox IsChecked="{Binding AllowColors}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
-                                              ToolTip="Allows slimCat to parse bbcode [color] tags as present the text as colored output">
-                                        Allow BBCode Colors
+                                              ToolTip="Allows slimCat to parse bbcode [color] tags as present the text as colored output.">
+                                        Display bbcode colors
                                     </CheckBox>
 
                                     <StackPanel Margin="0,15,0,0"
@@ -362,10 +344,8 @@
                                     </StackPanel>
                                     
                                     <CheckBox IsChecked="{Binding AllowStatusDiscolor}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
                                               ToolTip="Allows slimCat to discolor users who have a status of busy, idle, away, or do not disturb.">
-                                        Allow Status Discoloring
+                                        Discolor names of unavaiable users
                                     </CheckBox>
                                     
                                     <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
@@ -380,39 +360,29 @@
                                           Margin="0,0,0,0" />
 
                                     <CheckBox IsChecked="{Binding AllowAdDedpulication}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
-                                              ToolTip="Allows slimCat to automatically supress identical ads from the same user">
-                                        Disallow Duplicate Ads
+                                              ToolTip="Allows slimCat to automatically supress identical ads from the same user.">
+                                        Hide duplicate ads from others
                                     </CheckBox>
 
                                     <CheckBox IsChecked="{Binding AllowAggressiveAdDedpulication}"
-                                              VerticalAlignment="Center"
                                               Visibility="{Binding Path=AllowAdDedpulication, Converter={StaticResource BoolConverter}}"
-                                              Margin="0,15,0,0"
-                                              ToolTip="Allows slimCat to automatically supress multiple ads from the same user">
-                                        Allow Only One Ad Per Person
+                                              ToolTip="Allows slimCat to automatically supress multiple ads from the same user. Only the first ad the person sends will be seen.">
+                                        Show only the first ad from each person
                                     </CheckBox>
 
                                     <CheckBox IsChecked="{Binding AllowAutoStatusReset}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
-                                              ToolTip="Allows slimCat to automatically reset your status from 'away' or 'idle' to 'online' when you perform actions">
-                                        Allow Status Auto Reset
+                                              ToolTip="Allows slimCat to automatically reset your status from 'away' or 'idle' to 'online' when you perform actions.">
+                                        Automatically go online with activity
                                     </CheckBox>
 
                                     <CheckBox IsChecked="{Binding AllowAutoBusy}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
                                               ToolTip="Allows slimCat to automatically set your status to 'busy' you have a full-screen application open for a period of time">
-                                        Allow Automatic Busy
+                                        Automatically go busy when in full screen applications
                                     </CheckBox>
 
                                     <CheckBox IsChecked="{Binding AllowAutoIdle}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
                                               ToolTip="Allows slimCat to automatically set your status to 'idle' if you have no activity for a given period of time">
-                                        Allow Automatic Idle
+                                        Automatically go idle after inactivity
                                     </CheckBox>
 
                                     <StackPanel Margin="0,15,0,0"
@@ -434,10 +404,8 @@
                                     </StackPanel>
 
                                     <CheckBox IsChecked="{Binding AllowAutoAway}"
-                                              VerticalAlignment="Center"
-                                              Margin="0,15,0,0"
                                               ToolTip="Allows slimCat to automatically set your status to 'away' if you have no activity for a given period of time">
-                                        Allow Automatic Away
+                                        Automatically go away after inactivity
                                     </CheckBox>
 
                                     <StackPanel Margin="0,15,0,15"
