@@ -369,11 +369,21 @@ namespace slimCat.ViewModels
         {
             Log("Opening link " + linkToOpen);
             var interpret = linkToOpen as string;
-            if (interpret != null && (!interpret.Contains(".") || interpret.Contains(" ")))
-                interpret = "http://www.f-list.net/c/" + HttpUtility.UrlEncode(interpret);
+            if (string.IsNullOrEmpty(interpret)) return;
 
-            if (!string.IsNullOrEmpty(interpret))
-                Process.Start(interpret);
+            // todo: show character profile in client
+            if (!interpret.Contains(".") || interpret.Contains(" "))
+            {
+                if (interpret.EndsWith("/notes"))
+                {
+                    RequestPmEvent(interpret);
+                    return;
+                }
+
+                interpret = "http://www.f-list.net/c/" + HttpUtility.UrlEncode(interpret);
+            }
+
+            Process.Start(interpret);
         }
 
         private void UpdateRightClickMenu(NotificationModel argument)

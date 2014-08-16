@@ -79,7 +79,7 @@ namespace slimCat.Models
                 Define("notinteresting").AsForCharacters(),
                 Define("openlog").As("_logger_open_log").AsForChannels(),
 
-                Define("openlogfolder").As("_logger_open_folder").AsForChannels(),
+                Define("openlogfolder", "openfolder").As("_logger_open_folder").AsForChannels(),
                 Define("priv", "pm", "tell").AsForCharacters(),
                 Define("rejoin").AsForChannels(),
                 Define("removebookmark").As("bookmark-remove").WithArgument(A.Name),
@@ -219,7 +219,7 @@ namespace slimCat.Models
             string familiarName, IList<string> args = null, string channel = null)
         {
             if (!IsValidCommand(familiarName))
-                throw new ArgumentException("Unknown command.", "familiarName");
+                throw new ArgumentException("Unknown command: {0}.".FormatWith(familiarName));
 
             var model = GetCommandModelFromName(familiarName);
 

@@ -110,18 +110,15 @@ namespace slimCat.Models
 
     public class NoteEventArgs : CharacterUpdateEventArgs
     {
-        public string Link
-        {
-            get { return Constants.UrlConstants.ViewNote + NoteId; }
+        public string Target { get; set; }
 
-        }
         public long NoteId { get; set; }
 
         public string Subject { get; set; }
 
         public override string ToString()
         {
-            return string.Format(@"has sent you a note: [url={0}]{1}[/url]", Link, Subject);
+            return string.Format(@"has sent you a note: [url={0}]{1}[/url]", Target, Subject);
         }
     }
 }
@@ -169,14 +166,13 @@ namespace slimCat.Services
             {
                 var senderName = command.Get(Constants.Arguments.Sender);
                 var subject = command.Get("subject");
-                var id = (long)command["id"];
 
                 var update = new CharacterUpdateModel(
                     CharacterManager.Find(senderName),
                     new NoteEventArgs
                     {
                         Subject = subject,
-                        NoteId = id
+                        Target = senderName + "/notes"
                     });
 
                 notes.UpdateNotes(senderName);

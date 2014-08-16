@@ -215,6 +215,12 @@ namespace slimCat.Services
 
         public void JoinChannel(ChannelType type, string id, string name = "")
         {
+            var originalId = id;
+            if (id.EndsWith("/notes"))
+            {
+                id = id.Substring(0, id.Length - "/notes".Length);
+            }
+
             name = HttpUtility.HtmlDecode(name);
             IEnumerable<string> history = new List<string>();
 
@@ -249,7 +255,7 @@ namespace slimCat.Services
                         })));
             }
 
-            RequestNavigate(id);
+            RequestNavigate(originalId);
         }
 
         public void RemoveChannel(string name)
@@ -333,6 +339,13 @@ namespace slimCat.Services
 
             Log("Requested " + channelId);
 
+            var wantsNoteView = false;
+            if (channelId.EndsWith("/notes"))
+            {
+                channelId = channelId.Substring(0, channelId.Length - "/notes".Length);
+                wantsNoteView = true;
+            }
+
             if (lastSelected != null)
             {
                 if (lastSelected.Id.Equals(channelId, StringComparison.OrdinalIgnoreCase))
@@ -357,6 +370,12 @@ namespace slimCat.Services
 
             if (channelModel == null)
                 throw new ArgumentOutOfRangeException("channelId", "Cannot navigate to unknown channel");
+
+            var pmChannelModel = channelModel as PmChannelModel;
+            if (pmChannelModel != null && wantsNoteView)
+            {
+                pmChannelModel.LastNoteCount = 0;
+            }
 
             channelModel.IsSelected = true;
             model.CurrentChannel = channelModel;

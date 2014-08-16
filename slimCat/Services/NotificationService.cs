@@ -349,7 +349,7 @@ namespace slimCat.Services
                     AddNotification(model);
 
                     var link = args is NoteEventArgs
-                        ? ((NoteEventArgs) args).Link
+                        ? model.TargetCharacter + "/notes"
                         : ((CommentEventArgs) args).Link;
 
                     NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), link, null, model.TargetCharacter);

@@ -230,7 +230,7 @@ namespace slimCat.ViewModels
 
         public void OpenLogEvent(object args, bool isFolder)
         {
-            Events.SendUserCommand(isFolder ? "openlogfolder" : "openlog");
+            Events.SendUserCommand(isFolder ? "openlogfolder" : "openlog", null, Model.Id);
         }
 
         #endregion

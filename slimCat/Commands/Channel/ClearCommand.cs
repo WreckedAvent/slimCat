@@ -19,6 +19,7 @@
 
 namespace slimCat.Services
 {
+    using System;
     using Models;
     using System.Collections.Generic;
     using System.Linq;
@@ -48,7 +49,13 @@ namespace slimCat.Services
 
         private void OnClearRequested(IDictionary<string, object> command)
         {
-            ClearChannel(model.CurrentChannel);
+            var targetName = command.Get(Constants.Arguments.Channel);
+            var target = model.CurrentChannels
+                .Cast<ChannelModel>()
+                .Union(model.CurrentPms)
+                .FirstOrDefault(x => x.Id.Equals(targetName, StringComparison.OrdinalIgnoreCase));
+
+            ClearChannel(target);
         }
     }
 }
