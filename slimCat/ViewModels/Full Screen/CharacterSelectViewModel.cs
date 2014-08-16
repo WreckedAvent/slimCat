@@ -185,7 +185,7 @@ namespace slimCat.ViewModels
 
         private bool CanSendCharacterSelectEvent()
         {
-            return !string.IsNullOrWhiteSpace(CurrentCharacter.Name);
+            return CurrentCharacter != null && !string.IsNullOrWhiteSpace(CurrentCharacter.Name);
         }
 
         private void SendCharacterSelectEvent()
@@ -202,6 +202,7 @@ namespace slimCat.ViewModels
 
             RelayMessage = "Done! Now pick a character.";
             RegionManager.RequestNavigate(Shell.MainRegion, new Uri(CharacterSelectViewName, UriKind.Relative));
+            OnPropertyChanged("Characters");
             Log("Requesting character select view");
         }
 
