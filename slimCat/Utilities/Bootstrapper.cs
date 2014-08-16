@@ -58,7 +58,7 @@ namespace slimCat.Utilities
                 RegisterSingleton<IListConnection, FlistService>();
                 RegisterSingleton<IChatConnection, FchatService>();
                 RegisterSingleton<IChatModel, ChatModel>();
-                RegisterSingleton<IChannelManager, ChannelService>();
+                RegisterSingleton<IChannelService, ChannelService>();
                 RegisterSingleton<IThemeLocator, ApplicationThemeLocator>();
                 RegisterSingleton<ICharacterManager, GlobalCharacterManager>();
                 RegisterSingleton<IPermissionService, PermissionService>();

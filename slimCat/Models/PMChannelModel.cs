@@ -108,6 +108,21 @@ namespace slimCat.Models
         }
 
         /// <summary>
+        ///     Gets or sets a value indicating whether is selected.
+        /// </summary>
+        public override bool IsSelected
+        {
+            get { return base.IsSelected; }
+
+            set
+            {
+                base.IsSelected = value;
+                if (!value)
+                    LastNoteCount = Notes.Count;
+            }
+        }
+
+        /// <summary>
         ///     Gets or sets the typing status.
         /// </summary>
         public TypingStatus TypingStatus
@@ -144,6 +159,8 @@ namespace slimCat.Models
                 return string.Empty;
             }
         }
+
+        public int LastNoteCount { get; set; }
 
         public bool HasAutoRepliedTo { get; set; }
 

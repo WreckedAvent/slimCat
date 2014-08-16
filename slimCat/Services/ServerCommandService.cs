@@ -52,7 +52,7 @@ namespace slimCat.Services
 
         private readonly object locker = new object();
 
-        private readonly IChannelManager manager;
+        private readonly IChannelService manager;
 
         private readonly INoteService notes;
 
@@ -69,7 +69,7 @@ namespace slimCat.Services
         public ServerCommandService(
             IChatModel cm,
             IChatConnection conn,
-            IChannelManager manager,
+            IChannelService manager,
             IUnityContainer contain,
             IRegionManager regman,
             IEventAggregator eventagg,

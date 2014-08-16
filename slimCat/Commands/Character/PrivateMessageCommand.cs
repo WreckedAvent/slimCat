@@ -30,20 +30,31 @@ namespace slimCat.Services
         {
             var characterName = command.Get(Constants.Arguments.Character);
             if (model.CurrentCharacter.NameEquals(characterName))
+            {
                 events.GetEvent<ErrorEvent>().Publish("Hmmm... talking to yourself?");
+                return;
+            }
+
+            var isExact = characterName.StartsWith("\"") && characterName.EndsWith("\"");
+
+            ICharacter guess = null;
+            if (isExact)
+            {
+                characterName = characterName.Substring(1, characterName.Length - 2);
+            }
             else
             {
-                var guess = characterManager.SortedCharacters.OrderBy(x => x.Name)
+                guess = characterManager.SortedCharacters.OrderBy(x => x.Name)
                     .Where(x => !x.NameEquals(model.CurrentCharacter.Name))
                     .FirstOrDefault(c => c.Name.StartsWith(characterName, true, null));
-
-                channelManager.JoinChannel(ChannelType.PrivateMessage, guess == null ? characterName : guess.Name);
             }
+
+            channelService.JoinChannel(ChannelType.PrivateMessage, guess == null ? characterName : guess.Name);
         }
 
         private void OnPivateMessageSendRequested(IDictionary<string, object> command)
         {
-            channelManager.AddMessage(
+            channelService.AddMessage(
                 command.Get(Constants.Arguments.Message),
                 command.Get("recipient"),
                 Constants.Arguments.ThisCharacter);

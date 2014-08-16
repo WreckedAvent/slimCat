@@ -260,7 +260,7 @@ namespace slimCat.Services
             if (args != null) command.Add(Constants.Arguments.CallId, args.CallId);
             command.Add(Constants.Arguments.Action, Constants.Arguments.ActionConfirm);
 
-            channelManager.JoinChannel(ChannelType.PrivateMessage, latest.TargetCharacter.Name);
+            channelService.JoinChannel(ChannelType.PrivateMessage, latest.TargetCharacter.Name);
 
             var logId = -1;
             if (command.ContainsKey(Constants.Arguments.LogId))
@@ -290,7 +290,7 @@ namespace slimCat.Services
                 if (!command.ContainsKey(Constants.Arguments.Action))
                     command[Constants.Arguments.Action] = Constants.Arguments.ActionConfirm;
 
-                channelManager.JoinChannel(ChannelType.PrivateMessage, target.Name);
+                channelService.JoinChannel(ChannelType.PrivateMessage, target.Name);
 
                 var logId = -1;
                 if (command.ContainsKey(Constants.Arguments.LogId))

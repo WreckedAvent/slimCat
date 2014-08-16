@@ -45,7 +45,7 @@ namespace slimCatTest
     {
         #region Fields
 
-        private readonly Mock<IChannelManager> channelManager;
+        private readonly Mock<IChannelService> channelManager;
         private readonly Mock<ICharacterManager> characterManager;
         private readonly Mock<IChatConnection> chatConnection;
         private readonly Mock<IChatModel> chatModel;
@@ -60,7 +60,7 @@ namespace slimCatTest
             // TODO: maybe create a real container to handle this dependency injection
             chatModel = new Mock<IChatModel>();
             chatConnection = new Mock<IChatConnection>();
-            channelManager = new Mock<IChannelManager>();
+            channelManager = new Mock<IChannelService>();
             characterManager = new Mock<ICharacterManager>();
 
             chatModel.SetupGet(x => x.CurrentPms).Returns(new ObservableCollection<PmChannelModel>());

@@ -232,7 +232,7 @@
     <Compile Include="Services\Interfaces\IAutomationService.cs" />
     <Compile Include="Services\Interfaces\INoteService.cs" />
     <Compile Include="Services\Interfaces\IBrowser.cs" />
-    <Compile Include="Services\Interfaces\IChannelManager.cs" />
+    <Compile Include="Services\Interfaces\IChannelService.cs" />
     <Compile Include="Services\Interfaces\IChatConnection.cs" />
     <Compile Include="Services\Interfaces\IListConnection.cs" />
     <Compile Include="Services\Interfaces\ILoggingService.cs" />

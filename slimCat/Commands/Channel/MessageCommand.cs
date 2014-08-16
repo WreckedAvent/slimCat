@@ -49,7 +49,7 @@ namespace slimCat.Services
     {
         private void OnMsgRequested(IDictionary<string, object> command)
         {
-            channelManager.AddMessage(
+            channelService.AddMessage(
                 command.Get(Constants.Arguments.Message),
                 command.Get(Constants.Arguments.Channel),
                 Constants.Arguments.ThisCharacter);

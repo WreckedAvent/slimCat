@@ -21,6 +21,7 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System.Linq;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
@@ -406,6 +407,14 @@ namespace slimCat.ViewModels
         {
             if (e.PropertyName == "TypingStatus" || e.PropertyName == "TypingString")
                 OnPropertyChanged("TypingString");
+
+            if (e.PropertyName == "IsSelected")
+            {
+                if (model.IsSelected == false) return;
+
+                if (model.Notes.Count > model.LastNoteCount)
+                    IsViewingChat = false;
+            }
 
             if (e.PropertyName != "NoteSubject") return;
 

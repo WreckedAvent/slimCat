@@ -28,7 +28,7 @@ namespace slimCat.Services
     /// <summary>
     ///     Represents several operations to manage channels.
     /// </summary>
-    public interface IChannelManager
+    public interface IChannelService
     {
         #region Public Methods and Operators
 

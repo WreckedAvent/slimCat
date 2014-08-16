@@ -146,7 +146,7 @@ namespace slimCat.Services
         private void OnChannelRejoinRequested(IDictionary<string, object> command)
         {
             var channelName = command.Get(Constants.Arguments.Channel);
-            channelManager.RemoveChannel(channelName, true);
+            channelService.RemoveChannel(channelName, true);
 
             var toSend = new { channel = channelName };
             connection.SendMessage(toSend, Constants.ClientCommands.ChannelJoin);

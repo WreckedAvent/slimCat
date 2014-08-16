@@ -175,7 +175,7 @@ namespace slimCat.Models
             set
             {
                 base.IsSelected = value;
-                if (value)
+                if (!value)
                     LastReadAdCount = Ads.Count;
             }
         }

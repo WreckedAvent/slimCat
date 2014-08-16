@@ -64,13 +64,13 @@ namespace slimCat.Services
     {
         private void OnCloseRequested(IDictionary<string, object> command)
         {
-            channelManager.RemoveChannel(command.Get(Constants.Arguments.Channel));
+            channelService.RemoveChannel(command.Get(Constants.Arguments.Channel));
         }
 
         private void OnForceChannelCloseRequested(IDictionary<string, object> command)
         {
             var channelName = command.Get(Constants.Arguments.Channel);
-            channelManager.RemoveChannel(channelName, true);
+            channelService.RemoveChannel(channelName, true);
         }
     }
 }

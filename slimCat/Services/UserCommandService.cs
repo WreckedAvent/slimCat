@@ -57,7 +57,7 @@ namespace slimCat.Services
 
         private readonly IChatModel model;
 
-        private readonly IChannelManager channelManager;
+        private readonly IChannelService channelService;
 
         #endregion
 
@@ -70,7 +70,7 @@ namespace slimCat.Services
             IListConnection api,
             ICharacterManager manager,
             ILoggingService logger,
-            IChannelManager channelManager,
+            IChannelService channelService,
             IRegionManager regman)
         {
 
@@ -81,7 +81,7 @@ namespace slimCat.Services
                 this.connection = connection.ThrowIfNull("connection");
                 this.api = api.ThrowIfNull("api");
                 this.logger = logger.ThrowIfNull("logger");
-                this.channelManager = channelManager.ThrowIfNull("channelManager");
+                this.channelService = channelService.ThrowIfNull("channelManager");
                 regionManager = regman.ThrowIfNull("regman");
                 characterManager = manager.ThrowIfNull("characterManager");
 
@@ -188,7 +188,7 @@ namespace slimCat.Services
             if (newCharacterUpdate != null)
             {
                 // so tell our system to join the Pm Tab
-                channelManager.JoinChannel(ChannelType.PrivateMessage, newCharacterUpdate.TargetCharacter.Name);
+                channelService.JoinChannel(ChannelType.PrivateMessage, newCharacterUpdate.TargetCharacter.Name);
 
                 Dispatcher.Invoke((Action) NotificationService.ShowWindow);
                 return;
@@ -211,7 +211,7 @@ namespace slimCat.Services
             }
 
             var chanType = newChannel.Type;
-            channelManager.JoinChannel(chanType, doStuffWith.TargetChannel.Id);
+            channelService.JoinChannel(chanType, doStuffWith.TargetChannel.Id);
             Dispatcher.Invoke((Action) NotificationService.ShowWindow);
         }
 

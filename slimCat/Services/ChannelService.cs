@@ -42,7 +42,7 @@ namespace slimCat.Services
     ///     The message daemon is the service layer responsible for managing what the user sees and the commands the user
     ///     sends.
     /// </summary>
-    public class ChannelService : DispatcherObject, IChannelManager
+    public class ChannelService : DispatcherObject, IChannelService
     {
         #region Fields
 
