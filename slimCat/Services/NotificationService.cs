@@ -144,7 +144,7 @@ namespace slimCat.Services
             var checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase);
 
             // if any of these conditions hold true we have no reason to evaluate further
-            if (manager.IsOnList(message.Poster.Name, ListKind.NotInterested))
+            if (manager.IsOnList(message.Poster.Name, ListKind.NotInterested) && message.Type == MessageType.Ad)
                 return;
 
             var notifyLevel = message.Type == MessageType.Ad
