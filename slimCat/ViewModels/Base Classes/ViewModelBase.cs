@@ -21,6 +21,7 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System.Management.Instrumentation;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Modularity;
@@ -71,6 +72,10 @@ namespace slimCat.ViewModels
 
         private RelayCommand unignore;
         private RelayCommand searchTag;
+
+        private RelayCommand advanceFriend;
+        private RelayCommand bookmark;
+        private RelayCommand regressFriend;
 
         #endregion
 
@@ -285,6 +290,21 @@ namespace slimCat.ViewModels
         public ICommand IgnoreUpdateCommand
         {
             get { return ignoreUpdate ?? (ignoreUpdate = new RelayCommand(IgnoreUpdatesEvent, CanIgnoreUpdate)); }
+        }
+
+        public ICommand AdvanceFriendCommand
+        {
+            get { return advanceFriend ?? (advanceFriend = new RelayCommand(AdvanceFriendEvent)); }
+        }
+
+        public ICommand BookmarkCommand
+        {
+            get { return bookmark ?? (bookmark = new RelayCommand(BookmarkEvent)); }
+        }
+
+        public ICommand RegressFriendCommand
+        {
+            get { return regressFriend ?? (regressFriend = new RelayCommand(RegressFriendEvent)); }
         }
 
         #endregion
@@ -520,6 +540,58 @@ namespace slimCat.ViewModels
             IgnoreEvent(args, true);
         }
 
+        private void RegressFriendEvent(object obj)
+        {
+            var character = obj as string;
+
+            var actionSelected = false;
+            var action = "";
+
+            if (CharacterManager.IsOnList(character, ListKind.Friend, false))
+            {
+                action = "removefriend";
+                actionSelected = true;
+            }
+
+            if (CharacterManager.IsOnList(character, ListKind.FriendRequestReceived, false) && !actionSelected)
+            {
+                action = "denyrequest";
+                actionSelected = true;
+            }
+
+            if (CharacterManager.IsOnList(character, ListKind.FriendRequestSent, false) && !actionSelected)
+                action = "cancelrequest";
+
+            Events.SendUserCommand(action, new[] { character });
+        }
+
+        private void BookmarkEvent(object obj)
+        {
+            var character = obj as string;
+
+            Events.SendUserCommand(
+                CharacterManager.IsOnList(character, ListKind.Bookmark, false) ? "removebookmark" : "addbookmark",
+                new[] { character });
+        }
+
+        private void AdvanceFriendEvent(object obj)
+        {
+            var character = obj as string;
+
+            var actionSelected = false;
+            var action = "";
+
+            if (CharacterManager.IsOnList(character, ListKind.FriendRequestReceived, false))
+            {
+                action = "acceptrequest";
+                actionSelected = true;
+            }
+
+            if (!CharacterManager.IsOnList(character, ListKind.Friend, false) && !actionSelected)
+                action = "addfriend";
+
+            Events.SendUserCommand(action, new[] { character });
+        }
 
         [Conditional("DEBUG")]
         internal void Log(string text = null, bool isVerbose = false)

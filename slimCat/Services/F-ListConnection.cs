@@ -23,6 +23,7 @@ namespace slimCat.Services
 
     using Microsoft.Practices.Prism;
     using Microsoft.Practices.Prism.Events;
+    using Microsoft.VisualBasic.CompilerServices;
     using Models;
     using Models.Api;
     using SimpleJson;
@@ -222,6 +223,8 @@ namespace slimCat.Services
                     command.Remove(Constants.Arguments.Character);
 
                     DoApiAction(commandType, command);
+                    if (commandType == "request-send")
+                        requestService.UpdateOutgoingRequests();
                     break;
                 }
 
@@ -241,6 +244,11 @@ namespace slimCat.Services
 
                     command.Add("request_id", id.ToString());
                     DoApiAction(commandType, command);
+
+                    if (commandType == "request-deny" || commandType == "request-accept")
+                        requestService.UpdatePendingRequests();
+                    else
+                        requestService.UpdateOutgoingRequests();
                     break;
                 }
 

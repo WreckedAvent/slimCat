@@ -144,6 +144,67 @@ namespace slimCat.ViewModels
             }
         }
 
+        public string Bookmark
+        {
+            get
+            {
+                if (Target == null) return string.Empty;
+
+                return manager.IsOnList(Target.Name, ListKind.Bookmark, false)
+                    ? "Remove bookmark"
+                    : "Add bookmark";
+            }
+        }
+
+        public string RegressFriendRequest
+        {
+            get
+            {
+                if (Target == null) return string.Empty;
+
+                if (manager.IsOnList(Target.Name, ListKind.Friend, false))
+                    return "Remove friend";
+
+                if (manager.IsOnList(Target.Name, ListKind.FriendRequestSent, false))
+                    return "Retract friend request";
+
+                if (manager.IsOnList(Target.Name, ListKind.FriendRequestReceived, false))
+                    return "Reject friend request";
+
+                return string.Empty;
+            }
+        }
+
+        public string AdvanceFriendRequest
+        {
+            get
+            {
+                if (Target == null) return string.Empty;
+
+                if (manager.IsOnList(Target.Name, ListKind.FriendRequestReceived, false))
+                    return "Accept Friend Request";
+
+                if (manager.IsOnList(Target.Name, ListKind.FriendRequestSent, false))
+                    return string.Empty;
+
+                if (!manager.IsOnList(Target.Name, ListKind.Friend, false))
+                    return "Send friend request";
+
+                return string.Empty;
+            }
+        }
+
+        public bool IsPendingFriend
+        {
+            get
+            {
+                if (Target == null) return false;
+
+                return manager.IsOnList(Target.Name, ListKind.FriendRequestReceived, false) 
+                    || manager.IsOnList(Target.Name, ListKind.FriendRequestSent, false);
+            }
+        }
+
         public ICharacter Target { get; private set; }
 
         public string TargetGender
@@ -248,6 +309,26 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool HasOutgoingFriendRequest
+        {
+            get
+            {
+                if (Target == null) return false;
+
+                return manager.IsOnList(Target.Name, ListKind.FriendRequestSent, false);
+            }
+        }
+
+        public bool HasIncomingFriendRequest
+        {
+            get
+            {
+                if (Target == null) return false;
+
+                return manager.IsOnList(Target.Name, ListKind.FriendRequestReceived, false);
+            }
+        }
+
         public string TargetStatus
         {
             get
@@ -319,6 +400,13 @@ namespace slimCat.ViewModels
 
             OnPropertyChanged("IsUpdatesIgnored");
             OnPropertyChanged("CanRemoveSearchTag");
+
+            OnPropertyChanged("HasIncomingFriendRequest");
+            OnPropertyChanged("HasOutgoingFriendRequest");
+            OnPropertyChanged("IsPendingFriend");
+
+            OnPropertyChanged("Bookmark");
+            OnPropertyChanged("FriendRequest");
         }
 
         #endregion

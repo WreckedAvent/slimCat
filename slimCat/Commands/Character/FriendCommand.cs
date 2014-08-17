@@ -34,25 +34,21 @@ namespace slimCat.Services
         private void OnFriendRequestAcceptRequested(IDictionary<string, object> command)
         {
             DoListAction(command, ListKind.FriendRequestReceived, false, false);
-            friendRequestService.UpdatePendingRequests();
         }
 
         private void OnFriendRequestDenyRequested(IDictionary<string, object> command)
         {
             DoListAction(command, ListKind.FriendRequestReceived, false, false);
-            friendRequestService.UpdatePendingRequests();
         }
 
         private void OnFriendRequestSendRequested(IDictionary<string, object> command)
         {
             DoListAction(command, ListKind.FriendRequestSent, true);
-            friendRequestService.UpdateOutgoingRequests();
         }
 
         private void OnFriendRequestCancelRequested(IDictionary<string, object> command)
         {
             DoListAction(command, ListKind.FriendRequestSent, false);
-            friendRequestService.UpdateOutgoingRequests();
         }
 
         private void DoListAction(IDictionary<string, object> command, ListKind list, bool isAdd, bool generateUpdate = true)

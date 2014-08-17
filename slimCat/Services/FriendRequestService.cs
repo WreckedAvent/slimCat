@@ -76,6 +76,7 @@ namespace slimCat.Services
 
                 requestsReceived.Clear();
                 relevant.Each(x => requestsReceived.Add(x.Source, x.Id));
+                characterManager.Set(relevant.Select(x => x.Source), ListKind.FriendRequestReceived);
             };
 
             worker.RunWorkerAsync();
@@ -95,6 +96,7 @@ namespace slimCat.Services
 
                 requestsSent.Clear();
                 relevant.Each(x => requestsSent.Add(x.Destination, x.Id));
+                characterManager.Set(relevant.Select(x => x.Destination), ListKind.FriendRequestSent);
             };
 
             worker.RunWorkerAsync();

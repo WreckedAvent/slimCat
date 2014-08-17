@@ -50,6 +50,10 @@
                                    Foreground="{StaticResource ContrastBrush}"
                                    Visibility="{Binding Path=IsFriend, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
                         
+                        <TextBlock Text="Pending Friend"
+                                   Foreground="{StaticResource ContrastBrush}"
+                                   Visibility="{Binding Path=IsPendingFriend, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
+                        
                         <TextBlock Text="Bookmarked"
                                    Foreground="{StaticResource ContrastBrush}"
                                    Visibility="{Binding Path=IsBookmarked, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
@@ -116,7 +120,9 @@
                         Content="Message" />
                 <Button Command="{Binding FindLogCommand}"
                         Content="View Logs" />
-
+                
+                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" />
+                
                 <Button Command="{Binding InterestedCommand}"
                         Content="{Binding Path=RightClickMenuViewModel.MarkInterested}" />
                 <Button Command="{Binding NotInterestedCommand}"
@@ -126,9 +132,24 @@
                         Content="{Binding Path=RightClickMenuViewModel.IgnoreUpdate}"
                         Visibility="{Binding Path=RightClickMenuViewModel.CanIgnoreUpdates, Converter={StaticResource BoolConverter}}" />
 
+                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" />
+
+                <Button Command="{Binding BookmarkCommand}"
+                        Content="{Binding Path=RightClickMenuViewModel.Bookmark}"/>
+                
+                <Button Command="{Binding AdvanceFriendCommand}"
+                        Content="{Binding Path=RightClickMenuViewModel.AdvanceFriendRequest}"
+                        Visibility="{Binding Path=RightClickMenuViewModel.AdvanceFriendRequest, Converter={StaticResource EmptyConverter}}"/>
+
+                <Button Command="{Binding RegressFriendCommand}"
+                        Content="{Binding Path=RightClickMenuViewModel.RegressFriendRequest}"
+                        Visibility="{Binding Path=RightClickMenuViewModel.RegressFriendRequest, Converter={StaticResource EmptyConverter}}"/>
+
                 <Button Command="{Binding SearchTagCommand}"
                         Content="Remove from Search Results"
                         Visibility="{Binding Path=RightClickMenuViewModel.CanRemoveSearchTag, Converter={StaticResource BoolConverter}}" />
+                
+                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" />
 
                 <Button Command="{Binding IgnoreCommand}"
                         Content="Ignore"
@@ -140,8 +161,10 @@
                 <Button Command="{Binding ReportCommand}"
                         Visibility="{Binding Path=RightClickMenuViewModel.HasReport, Converter={StaticResource OppositeBoolConverter}}"
                         Content="Report User" />
-
+                
                 <!-- Mod Commands -->
+                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" Visibility="{Binding HasPermissions, Converter={StaticResource BoolConverter}}" />
+                
                 <Button Command="{Binding KickCommand}"
                         Content="Kick"
                         Visibility="{Binding HasPermissions, Converter={StaticResource BoolConverter}}" />
