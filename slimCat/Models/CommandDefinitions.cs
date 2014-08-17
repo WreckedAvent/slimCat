@@ -139,7 +139,7 @@ namespace slimCat.Models
 
             SystemCommands(
                 Define(ClientSendTypingStatus).As(C.UserTyping).WithArguments("status", A.Character),
-                Define(ClientSendPm).As(C.UserMessage).WithArguments(A.Message, "receipient"),
+                Define(ClientSendPm).As(C.UserMessage).WithArguments(A.Message, "recipient"),
                 Define(ClientSendChannelMessage).As(C.ChannelMessage).WithArguments(A.Message, A.Channel),
                 Define(ClientSendChannelAd).As(C.ChannelAd).WithArguments(A.Message, A.Channel)
             );
