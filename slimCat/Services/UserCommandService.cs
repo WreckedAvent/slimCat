@@ -39,8 +39,6 @@ namespace slimCat.Services
     /// </summary>
     public partial class UserCommandService : DispatcherObject
     {
-        private readonly IRegionManager regionManager;
-
         #region Fields
 
         private readonly IListConnection api;
@@ -59,6 +57,9 @@ namespace slimCat.Services
 
         private readonly IChannelService channelService;
 
+        private readonly IFriendRequestService friendRequestService;
+
+        private readonly IRegionManager regionManager;
         #endregion
 
         #region Constructors and Destructors
@@ -71,7 +72,8 @@ namespace slimCat.Services
             ICharacterManager manager,
             ILoggingService logger,
             IChannelService channelService,
-            IRegionManager regman)
+            IRegionManager regman,
+            IFriendRequestService friendRequestService)
         {
 
             try
@@ -84,11 +86,18 @@ namespace slimCat.Services
                 this.channelService = channelService.ThrowIfNull("channelManager");
                 regionManager = regman.ThrowIfNull("regman");
                 characterManager = manager.ThrowIfNull("characterManager");
+                this.friendRequestService = friendRequestService;
 
                 this.events.GetEvent<UserCommandEvent>().Subscribe(CommandReceived, ThreadOption.UIThread, true);
 
                 commands = new Dictionary<string, CommandHandler>
                     {
+                        {"bookmark-add", OnBookmarkAddRequested},
+                        {"friend-remove", OnFriendRemoveRequested},
+                        {"request-accept", OnFriendRequestAcceptRequested},
+                        {"request-deny", OnFriendRequestDenyRequested},
+                        {"request-send", OnFriendRequestSendRequested},
+                        {"request-cancel", OnFriendRequestCancelRequested},
                         {"priv", OnPrivRequested},
                         {Commands.UserMessage, OnPivateMessageSendRequested},
                         {Commands.ChannelMessage, OnMsgRequested},
@@ -117,6 +126,7 @@ namespace slimCat.Services
                         {"tempnotinteresting", OnTemporaryInterestedRequested},
                         {"handlelatest", OnHandleLatestReportRequested},
                         {"handlereport", OnHandleLatestReportByUserRequested},
+                        {"bookmark-remove", OnBookmarkRemoveRequested},
                         {"rejoin", OnChannelRejoinRequested },
                         {"searchtag", OnSearchTagToggleRequested},
                         {"logout", OnLogoutRequested}
