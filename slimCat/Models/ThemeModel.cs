@@ -19,12 +19,28 @@
 
 namespace slimCat.Models
 {
-    public class SearchTermModel
+    using System.Windows.Media;
+
+    public class ThemeModel
     {
-        public string DisplayName { get; set; }
+        public string Name { get; set; }
 
-        public string Category { get; set; }
+        public ICharacter Author { get; set; }
 
-        public string UnderlyingValue { get; set; }
+        public string Version { get; set; }
+
+        public Color BackgroundColor { get; set; }
+
+        public Color ForegroundColor { get; set; }
+
+        public Color ContrastColor { get; set; }
+
+        public Color DepressedColor { get; set; }
+
+        public Color BrightBackgroundColor { get; set; }
+
+        public Color HighlightColor { get; set; }
+
+        public string Url { get; set; }
     }
 }

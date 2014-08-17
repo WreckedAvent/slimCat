@@ -286,4 +286,25 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+    
+    <Style TargetType="{x:Type ListBox}" x:Key="NoScrollListBox">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <ItemsPresenter/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <Style TargetType="{x:Type ListBox}" x:Key="HorizontalListBoxStyle" BasedOn="{StaticResource NoScrollListBox}">        
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+
+    </Style>
 </ResourceDictionary>

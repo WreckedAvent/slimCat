@@ -49,9 +49,20 @@ namespace slimCat.Utilities
         public const string ServerHost = "wss://chat.f-list.net:9799/";
 
         /// <summary>
+        ///     The the base url used to find updates and themes.
+        /// </summary>
+        public const string SlimCatResourceUrl = "https://dl.dropbox.com/u/29984849/slimCat/";
+
+        /// <summary>
         ///     The the url for checking for new updates.
         /// </summary>
-        public const string NewVersionUrl = "https://dl.dropbox.com/u/29984849/slimCat/latest.csv";
+        public const string NewVersionUrl = SlimCatResourceUrl + "latest.csv";
+
+        /// <summary>
+        ///     The the url for the index of available themes.
+        /// </summary>
+        public const string ThemeIndexUrl = SlimCatResourceUrl + "themes/index.csv";
+
 
         #endregion
 

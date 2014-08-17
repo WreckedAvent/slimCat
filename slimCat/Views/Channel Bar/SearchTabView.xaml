@@ -47,7 +47,8 @@
                             Margin="0,10,0,0"/>
             
             <Expander Header="Current Search Terms" IsExpanded="True" Visibility="{Binding Path=SelectedSearchTerms.IsEmpty, Converter={StaticResource OppositeBoolConverter}}">
-                <ListBox ItemsSource="{Binding Path=SelectedSearchTerms, Mode=OneWay}">
+                <ListBox ItemsSource="{Binding Path=SelectedSearchTerms, Mode=OneWay}"
+                         Style="{StaticResource HorizontalListBoxStyle}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock TextWrapping="Wrap">
@@ -57,16 +58,6 @@
                             </TextBlock>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
-                    <ListBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
-                        </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
-                    <ListBox.Template>
-                        <ControlTemplate>
-                            <ItemsPresenter/>
-                        </ControlTemplate>
-                    </ListBox.Template>
                 </ListBox>
             </Expander>
         </StackPanel>
@@ -86,7 +77,8 @@
 
                 <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,10" />
 
-                <ListBox ItemsSource="{Binding Path=AvailableSearchTerms, Mode=OneWay}">
+                <ListBox ItemsSource="{Binding Path=AvailableSearchTerms, Mode=OneWay}"
+                         Style="{StaticResource HorizontalListBoxStyle}">
                     <ListBox.GroupStyle>
                         <GroupStyle ContainerStyle="{StaticResource HeaderContainerStyle}"/>
                     </ListBox.GroupStyle>
@@ -99,16 +91,6 @@
                             </TextBlock>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
-                    <ListBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
-                        </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
-                    <ListBox.Template>
-                        <ControlTemplate>
-                            <ItemsPresenter/>
-                        </ControlTemplate>
-                    </ListBox.Template>
                 </ListBox>
             </StackPanel>
         </ScrollViewer>

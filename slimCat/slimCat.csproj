@@ -221,6 +221,7 @@
     <Compile Include="Models\ReportModel.cs" />
     <Compile Include="Models\Enums\StatusType.cs" />
     <Compile Include="Models\Enums\TypingStatus.cs" />
+    <Compile Include="Models\ThemeModel.cs" />
     <Compile Include="Models\SearchTermModel.cs" />
     <Compile Include="Services\AutomationService.cs" />
     <Compile Include="Services\Browser.cs" />
@@ -452,7 +453,7 @@
     <Page Include="Theme\Colors.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Page>
     <Page Include="Theme\EmbeddedTheme.xaml">
       <SubType>Designer</SubType>
@@ -661,7 +662,7 @@
     <Page Include="Theme\Theme.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Page>
     <Page Include="Views\Full Screen\CharacterSelectView.xaml">
       <SubType>Designer</SubType>
@@ -705,6 +706,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="Theme\theme.csv" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

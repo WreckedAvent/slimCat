@@ -21,9 +21,14 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System.Collections.ObjectModel;
+    using System.IO;
+    using System.Windows.Markup;
+    using System.Windows.Media;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
+    using Microsoft.VisualBasic.FileIO;
     using Models;
     using Services;
     using System;
@@ -121,6 +126,8 @@ namespace slimCat.ViewModels
                     };
 
                 LoggingSection = "utility channel vm";
+
+                Themes = new ObservableCollection<ThemeModel>();
             }
             catch (Exception ex)
             {
@@ -547,6 +554,15 @@ namespace slimCat.ViewModels
 
         #endregion
 
+        #region Theme
+
+        public ObservableCollection<ThemeModel> Themes { get; set; }
+
+        public ThemeModel CurrentTheme { get; set; }
+
+        public bool HasCurrentTheme { get; set; }
+        #endregion
+
         #region Recent Tabs
 
         public IList<ICharacter> RecentCharacters
@@ -611,6 +627,7 @@ namespace slimCat.ViewModels
             OnPropertyChanged("IsTemplateCharacter");
 
             CheckForUpdates();
+            CheckForThemes();
         }
 
         public void LoginFailedEvent(string error)
@@ -727,6 +744,88 @@ namespace slimCat.ViewModels
             catch (WebException)
             {
             }
+        }
+
+        private void CheckForThemes()
+        {
+            try
+            {
+                try
+                {
+                    var currentThemeParser =
+                        new TextFieldParser(new FileStream("Theme\\theme.csv", FileMode.Open, FileAccess.Read,
+                            FileShare.Read));
+
+                    currentThemeParser.SetDelimiters(",");
+
+                    // go through header
+                    currentThemeParser.ReadLine();
+
+                    CurrentTheme = GetThemeModel(currentThemeParser.ReadFields());
+                    OnPropertyChanged("CurrentTheme");
+
+                    currentThemeParser.Close();
+
+                    HasCurrentTheme = true;
+                    OnPropertyChanged("HasCurrentTheme");
+                }
+                catch
+                {
+                    HasCurrentTheme = false;
+                    OnPropertyChanged("HasCurrentTheme");
+                }
+
+                var resp = browser.GetResponse(Constants.ThemeIndexUrl);
+                if (resp == null) return;
+
+                var parser = new TextFieldParser(new StringReader(resp))
+                {
+                    TextFieldType = FieldType.Delimited
+                };
+
+                parser.SetDelimiters(",");
+
+                // go through header
+                parser.ReadLine();
+
+                while (!parser.EndOfData)
+                {
+                    var row = parser.ReadFields();
+                    var model = GetThemeModel(row);
+
+                    if (HasCurrentTheme && model.Name == CurrentTheme.Name && model.Version == CurrentTheme.Version)
+                        continue;
+
+                    Dispatcher.BeginInvoke((Action)(() => Themes.Add(model)));
+                }
+
+                parser.Close();
+            }
+            catch (WebException)
+            {
+            }
+        }
+
+        private Color GetColor(string hex)
+        {
+            return (Color) ColorConverter.ConvertFromString(hex);
+        }
+
+        private ThemeModel GetThemeModel(IList<string> themeCsv)
+        {
+            return new ThemeModel
+            {
+                Name = themeCsv[0],
+                Author = CharacterManager.Find(themeCsv[1]),
+                Version = themeCsv[2],
+                ForegroundColor = GetColor(themeCsv[3]),
+                HighlightColor = GetColor(themeCsv[4]),
+                ContrastColor = GetColor(themeCsv[5]),
+                BackgroundColor = GetColor(themeCsv[6]),
+                DepressedColor = GetColor(themeCsv[7]),
+                BrightBackgroundColor = GetColor(themeCsv[8]),
+                Url = themeCsv.Count == 10 ? themeCsv[9] : string.Empty
+            };
         }
 
         #endregion

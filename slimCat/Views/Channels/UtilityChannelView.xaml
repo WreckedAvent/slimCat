@@ -11,6 +11,73 @@
                   d:DataContext="{d:DesignInstance vm:UtilityChannelViewModel}">
 
     <UserControl.Resources>
+        <DataTemplate DataType="{x:Type models:ThemeModel}">
+            <Grid>
+                <Grid.Resources>
+                    <Style TargetType="{x:Type Hyperlink}" BasedOn="{StaticResource {x:Type Hyperlink}}">
+                        <Setter Property="Command" Value="{Binding Path=DataContext.NavigateTo, RelativeSource={RelativeSource AncestorType={x:Type v:DisposableView}}}"/>
+                    </Style>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Foreground="{StaticResource ForegroundBrush}" 
+                           Grid.Column="0">
+                        <Hyperlink CommandParameter="{Binding Path=Url}">
+                            <Run Text="{Binding Path=Name}"/>
+                        </Hyperlink>
+                </TextBlock>
+
+                <TextBlock Text="by" Margin="5,0,0,0" Foreground="{StaticResource ForegroundBrush}" Grid.Column="1" />
+                <ContentControl Content="{Binding Author}" Margin="5,0,0,0" Grid.Column="2" />
+
+                <WrapPanel Grid.Column="3">
+                    <WrapPanel.Resources>
+                        <Style TargetType="Rectangle">
+                            <Setter Property="Width" Value="20" />
+                            <Setter Property="Height" Value="20"/>
+                            <Setter Property="Margin" Value="2" />
+                            <Setter Property="VerticalAlignment" Value="Bottom" />
+                        </Style>
+                    </WrapPanel.Resources>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{Binding HighlightColor}"/>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{Binding ContrastColor}"/>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{Binding BackgroundColor}"/>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{Binding DepressedColor}"/>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{Binding BrightBackgroundColor}"/>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{Binding ForegroundColor}"/>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </WrapPanel>
+            </Grid>
+        </DataTemplate>
+        
         <DataTemplate DataType="{x:Type models:CharacterModel}">
             <ContentControl Margin="0"
                             Content="{Binding}"
@@ -35,13 +102,13 @@
                             <TextBlock TextWrapping="Wrap"
                                        Grid.Column="1">
                                 <Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
+                                           Command="{Binding Path=DataContext.NavigateTo, RelativeSource={RelativeSource AncestorType={x:Type v:DisposableView}}}"
                                            Style="{StaticResource UsernameStyle}"
                                            Foreground="{Binding Converter={StaticResource NameplateColorConverter}, Mode=OneWay}">
                                     <Run Text="{Binding Path=Name, Mode=OneTime}" />
                                     <Hyperlink.InputBindings>
                                         <MouseBinding MouseAction="RightClick"
-                                                      Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
-                                                            RelativeSource={RelativeSource AncestorType={x:Type Grid},AncestorLevel=2}}"
+                                                      Command="{Binding Path=DataContext.OpenRightClickMenuCommand, RelativeSource={RelativeSource AncestorType={x:Type v:DisposableView}}}"
                                                       CommandParameter="{Binding Path=Name, Mode=OneTime}" />
                                     </Hyperlink.InputBindings>
                                 </Hyperlink>
@@ -168,8 +235,10 @@
             </Border>
 
             <ScrollViewer Grid.Row="1"
-                          CanContentScroll="False">
-                <StackPanel>
+                          CanContentScroll="False" 
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch">
+                <StackPanel HorizontalAlignment="Stretch">
                     <Expander Visibility="{Binding HasNewUpdate, Mode=OneWay, Converter={StaticResource BoolConverter}}">
                         <Expander.Header>
                             <TextBlock Foreground="{StaticResource  HighlightBrush}"
@@ -193,6 +262,24 @@
                             </TextBlock>
 
                             <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,15,0,0" />
+                        </StackPanel>
+                    </Expander>
+                    
+                    <Expander Header="Themes" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                        <StackPanel Margin="10,0,0,0" HorizontalAlignment="Stretch">
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,10" />
+                            
+                            <StackPanel Visibility="{Binding HasCurrentTheme, Converter={StaticResource BoolConverter}}"
+                                        Margin="0,0,0,10">
+                                <TextBlock Text="Current Theme:" Foreground="{StaticResource ForegroundBrush}" />
+                                <ContentControl Content="{Binding CurrentTheme}" Margin="5,0,5,0"/>
+                            </StackPanel>
+
+                            <TextBlock Text="Available Themes:" Foreground="{StaticResource ForegroundBrush}"/>
+                            <ListBox ItemsSource="{Binding Themes}"
+                                     HorizontalAlignment="Stretch"
+                                     HorizontalContentAlignment="Stretch"
+                                     Style="{StaticResource NoScrollListBox}"/>
                         </StackPanel>
                     </Expander>
                     
