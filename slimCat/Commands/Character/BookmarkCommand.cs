@@ -23,6 +23,7 @@ namespace slimCat.Services
 
     public partial class UserCommandService
     {
+        // implementation is in f-list connection, these just prevent us from sending junk to chat server
         private void OnBookmarkAddRequested(IDictionary<string, object> command)
         {
         }

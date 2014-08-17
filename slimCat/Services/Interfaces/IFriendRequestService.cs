@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ListKind.cs">
+// <copyright file="IFriendRequestService.cs">
 //    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
 //   
 //    This source is subject to the Simplified BSD License.
@@ -17,21 +17,15 @@
 
 #endregion
 
-namespace slimCat.Models
+namespace slimCat.Services
 {
-    public enum ListKind
+
+    public interface IFriendRequestService
     {
-        Online,
-        Friend,
-        Bookmark,
-        Moderator,
-        Interested,
-        NotInterested,
-        Ignored,
-        Banned,
-        IgnoreUpdates,
-        SearchResult,
-        FriendRequestSent,
-        FriendRequestReceived
+        void UpdatePendingRequests();
+
+        void UpdateOutgoingRequests();
+
+        int? GetRequestForCharacter(string character);
     }
 }

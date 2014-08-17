@@ -30,11 +30,9 @@ namespace slimCat.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Timers;
-    using System.Web;
     using System.Windows;
     using Utilities;
     using ViewModels;
-    using Views;
     using Commands = Utilities.Constants.ServerCommands;
 
     #endregion
@@ -56,6 +54,8 @@ namespace slimCat.Services
 
         private readonly INoteService notes;
 
+        private readonly IFriendRequestService friendRequestService;
+
         private readonly string[] noisyTypes;
 
         private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
@@ -75,13 +75,15 @@ namespace slimCat.Services
             IEventAggregator eventagg,
             ICharacterManager characterManager,
             IAutomationService automation,
-            INoteService notes)
+            INoteService notes,
+            IFriendRequestService friendRequestService)
             : base(contain, regman, eventagg, cm, characterManager)
         {
             connection = conn;
             this.manager = manager;
             this.automation = automation;
             this.notes = notes;
+            this.friendRequestService = friendRequestService;
 
             Events.GetEvent<CharacterSelectedLoginEvent>()
                 .Subscribe(GetCharacter, ThreadOption.BackgroundThread, true);

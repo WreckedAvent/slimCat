@@ -33,9 +33,20 @@ namespace slimCat.Models
 
         public override string ToString()
         {
-            var listKind = ListArgument != ListKind.NotInterested
-                ? ListArgument.ToString()
-                : "not interested";
+            var listKind = ListArgument.ToString();
+
+            if (ListArgument == ListKind.NotInterested) listKind = "not interested";
+            if (ListArgument == ListKind.SearchResult) listKind = "search result";
+
+            if (ListArgument == ListKind.FriendRequestReceived)
+            {
+                return "has sent you a friend request";
+            }
+
+            if (ListArgument == ListKind.FriendRequestSent)
+            {
+                return IsAdded ? "has received your friend request" : "no longer has your friend request";
+            }
 
             return "has been " + (IsAdded ? "added to" : "removed from") + " your " + listKind + " list"
                    + (IsTemporary ? " until this character logs out" : string.Empty) + '.';

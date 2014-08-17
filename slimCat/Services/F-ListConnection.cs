@@ -54,15 +54,18 @@ namespace slimCat.Services
 
         private readonly ITicketProvider ticketProvider;
 
+        private readonly IFriendRequestService requestService;
+
         #endregion
 
         #region Constructors and Destructors
 
         public FlistService(IAccount model, IEventAggregator eventagg, IBrowser browser,
-            ITicketProvider ticketProvider)
+            ITicketProvider ticketProvider, IFriendRequestService requestService)
         {
             this.browser = browser;
             this.ticketProvider = ticketProvider;
+            this.requestService = requestService;
 
             try
             {
@@ -200,6 +203,8 @@ namespace slimCat.Services
 
             var commandType = command["type"] as string;
 
+            command = new Dictionary<string, object>(command);
+
             switch (commandType)
             {
                 case "bookmark-add":
@@ -213,6 +218,28 @@ namespace slimCat.Services
                 case "friend-remove":
                 {
                     command.Add("source_name", selectedCharacter);
+                    command["dest_name"] = command[Constants.Arguments.Character];
+                    command.Remove(Constants.Arguments.Character);
+
+                    DoApiAction(commandType, command);
+                    break;
+                }
+
+                case "request-accept":
+                case "request-cancel":
+                case "request-deny":
+                {
+                    var character = command.Get(Constants.Arguments.Character);
+                    command.Remove(Constants.Arguments.Character);
+
+                    var id = requestService.GetRequestForCharacter(character);
+                    if (id == null)
+                    {
+                        events.GetEvent<ErrorEvent>().Publish("Could not find any friend requests for/from {0}".FormatWith(character));
+                        return;
+                    }
+
+                    command.Add("request_id", id.ToString());
                     DoApiAction(commandType, command);
                     break;
                 }

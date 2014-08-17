@@ -221,6 +221,12 @@ namespace slimCat.Services
                 var name = command.Get(Constants.Arguments.Name);
                 doListAction(name, ListKind.Friend, true, true);
             }
+            else if (type.Equals("friendrequest"))
+            {
+                var name = command.Get(Constants.Arguments.Name);
+                doListAction(name, ListKind.FriendRequestReceived, true, true);
+                friendRequestService.UpdatePendingRequests();
+            }
             else if (type.Equals("friendremove"))
             {
                 var name = command.Get(Constants.Arguments.Name);

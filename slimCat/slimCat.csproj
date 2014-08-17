@@ -153,8 +153,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Commands\Channel\DisciplineCommand.cs" />
+    <Compile Include="Commands\Character\FriendCommand.cs" />
     <Compile Include="Commands\Character\BookmarkCommand.cs" />
-    <Compile Include="Commands\System\BridgeCommand.cs" />
+    <Compile Include="Commands\System\RealTimeBridgeCommand.cs" />
     <Compile Include="Commands\Character\LogInCommand.cs" />
     <Compile Include="Commands\Channel\OwnerCommand.cs" />
     <Compile Include="Commands\Channel\ModeCommand.cs" />
@@ -184,6 +185,7 @@
     <Compile Include="lib\FlashWindowHelper.cs" />
     <Compile Include="lib\FullScreenHelper.cs" />
     <Compile Include="lib\TextBlockHelper.cs" />
+    <Compile Include="Models\Api\ApiIFriendRequestResponse.cs" />
     <Compile Include="Models\Api\ApiAuthResponse.cs" />
     <Compile Include="Models\Api\ApiUploadLogResponse.cs" />
     <Compile Include="Models\ApplicationThemeLocator.cs" />
@@ -238,10 +240,12 @@
     <Compile Include="Services\Interfaces\IListConnection.cs" />
     <Compile Include="Services\Interfaces\ILoggingService.cs" />
     <Compile Include="Services\Interfaces\IPermissionService.cs" />
+    <Compile Include="Services\Interfaces\IFriendRequestService.cs" />
     <Compile Include="Services\Interfaces\ITicketProvider.cs" />
     <Compile Include="Services\NoteService.cs" />
     <Compile Include="Services\PermissionService.cs" />
     <Compile Include="Services\SettingsService.cs" />
+    <Compile Include="Services\FriendRequestService.cs" />
     <Compile Include="Services\TicketProvider.cs" />
     <Compile Include="Utilities\CacheCount.cs" />
     <Compile Include="Utilities\Constants.cs" />

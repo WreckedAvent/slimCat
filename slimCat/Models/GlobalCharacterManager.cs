@@ -46,6 +46,8 @@ namespace slimCat.Models
         private readonly CollectionPair moderators = new CollectionPair();
         private readonly CollectionPair notInterested = new CollectionPair();
         private readonly CollectionPair searchResults = new CollectionPair();
+        private readonly CollectionPair friendRequestsSent = new CollectionPair();
+        private readonly CollectionPair friendRequestsReceived = new CollectionPair();
         private readonly IDictionary<ListKind, IList<string>> savedCollections;
         private string currentCharacter;
 
@@ -67,7 +69,8 @@ namespace slimCat.Models
                     notInterested,
                     ignored,
                     ignoreUpdates,
-                    searchResults
+                    searchResults,
+                    friendRequestsSent
                 };
 
             CollectionDictionary = new Dictionary<ListKind, CollectionPair>
@@ -79,7 +82,9 @@ namespace slimCat.Models
                     {ListKind.NotInterested, notInterested},
                     {ListKind.Ignored, ignored},
                     {ListKind.IgnoreUpdates, ignoreUpdates},
-                    {ListKind.SearchResult, searchResults}
+                    {ListKind.SearchResult, searchResults},
+                    {ListKind.FriendRequestSent, friendRequestsSent},
+                    {ListKind.FriendRequestReceived, friendRequestsReceived}
                 };
 
             savedCollections = new Dictionary<ListKind, IList<string>>

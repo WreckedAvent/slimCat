@@ -54,15 +54,15 @@ namespace slimCat.Models
         static CommandDefinitions()
         {
             UserCommands(
-                Define("acceptrequest").As("request-accept").WithArgument("request_id"),
+                Define("acceptfriendrequest", "acceptrequest").As("request-accept").AsForCharacters(),
                 Define("addbookmark").As("bookmark-add").WithArgument(A.Name),
-                Define("addfriend").As("friend-add").WithArgument("dest_name"),
                 Define("bottle").As(C.ChannelRoll).WithArguments("dice", A.Channel),
                 Define("code").AsArgumentless(),
                 Define("clear").AsForChannels(),
                 Define("clearall").AsArgumentless(),
 
                 Define("close").AsForChannels(),
+                Define("denyfriendrequest", "denyrequest").As("request-deny").AsForCharacters(),
                 Define("forceclose").AsForChannels(),
                 Define("ignore").As(C.UserIgnore).WithArguments(A.Character, A.Action),
                 Define("ignoreUpdates").AsForCharacters(),
@@ -84,13 +84,14 @@ namespace slimCat.Models
                 Define("priv", "pm", "tell").AsForCharacters(),
                 Define("rejoin").AsForChannels(),
                 Define("removebookmark").As("bookmark-remove").WithArgument(A.Name),
-                Define("removefriend").As("friend-remove").WithArgument("dest_name"),
+                Define("removefriend").As("friend-remove").AsForCharacters(),
+                Define("cancelrequest", "cancelfriendrequest").As("request-cancel").AsForCharacters(),
 
                 Define("roll").As(C.ChannelRoll).WithArguments("dice", A.Channel),
                 Define("report").As(C.AdminAlert).WithArguments(A.Name, A.Report, A.Channel),
                 Define("status", "online", "away", "busy", "idle", "dnd", "looking").As(C.UserStatus).WithArguments(A.Status, A.StatusMessage),
                 Define("setowner").As(C.ChannelSetOwner).WithArguments(A.Character, A.Channel),
-                Define("sendrequest").As("request-send").WithArgument("request_id"),
+                Define("sendfriendrequest", "sendrequest", "addfriend").As("request-send").AsForCharacters(),
                 Define("searchtag").AsForCharacters(),
 
                 Define("tempignore").AsForCharacters(),

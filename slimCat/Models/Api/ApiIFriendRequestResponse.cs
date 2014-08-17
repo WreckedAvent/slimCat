@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ListKind.cs">
+// <copyright file="ApiAuthResponse.cs">
 //    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
 //   
 //    This source is subject to the Simplified BSD License.
@@ -17,21 +17,31 @@
 
 #endregion
 
-namespace slimCat.Models
+namespace slimCat.Models.Api
 {
-    public enum ListKind
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+
+    [DataContract]
+    public class ApiFriendRequestsResponse
     {
-        Online,
-        Friend,
-        Bookmark,
-        Moderator,
-        Interested,
-        NotInterested,
-        Ignored,
-        Banned,
-        IgnoreUpdates,
-        SearchResult,
-        FriendRequestSent,
-        FriendRequestReceived
+        [DataMember(Name = "requests")]
+        public IList<ApiFriendRequest> Requests { get; set; }
+
+        [DataMember(Name = "error")]
+        public string Error { get; set; }
+    }
+
+    [DataContract]
+    public class ApiFriendRequest
+    {
+        [DataMember(Name = "source")]
+        public string Source { get; set; }
+
+        [DataMember(Name = "dest")]
+        public string Destination { get; set; }
+
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
     }
 }
