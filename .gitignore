@@ -173,3 +173,7 @@ slimCat.sln.ide/edb.log
 *.jrs
 slimCat.sln.ide/storage.ide
 *.log
+/css
+/fonts
+/js/bootstrap.min.js
+/js/bootstrap.js
