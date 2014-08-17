@@ -49,14 +49,16 @@
                                        Width="75" />
                     </Border>
 
-                    <TextBlock TextWrapping="Wrap"
-                           Foreground="{StaticResource ForegroundBrush}">
-                    <lib:TextBlockHelper.InlineList>
-                        <Binding Path="Content"
-                                 Mode="OneWay"
-                                 Converter="{StaticResource BbCodeConverter}" />
-                    </lib:TextBlockHelper.InlineList>
-                    </TextBlock>
+                    <Grid>
+                        <TextBlock TextWrapping="Wrap"
+                                   Foreground="{StaticResource ForegroundBrush}">
+                            <lib:TextBlockHelper.InlineList>
+                                <Binding Path="Content"
+                                         Mode="OneWay"
+                                         Converter="{StaticResource BbCodeConverter}" />
+                            </lib:TextBlockHelper.InlineList>
+                        </TextBlock>
+                    </Grid>
                 </DockPanel>
             </StackPanel>
         </Button>

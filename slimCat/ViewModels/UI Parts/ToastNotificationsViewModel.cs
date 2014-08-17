@@ -21,6 +21,8 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System.Diagnostics;
+    using System.Web;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Models;
@@ -61,6 +63,8 @@ namespace slimCat.ViewModels
         private NotificationsView view;
 
         private ICharacter targetCharacter;
+
+        private RelayCommand link;
 
         private string title;
 
@@ -197,6 +201,10 @@ namespace slimCat.ViewModels
             ShowNotifications();
             view.OnContentChanged();
         }
+        public ICommand NavigateTo
+        {
+            get { return link ?? (link = new RelayCommand(StartLinkInDefaultBrowser)); }
+        }
 
         #endregion
 
@@ -212,6 +220,26 @@ namespace slimCat.ViewModels
             }
 
             base.Dispose(isManaged);
+        }
+
+        private void StartLinkInDefaultBrowser(object linkToOpen)
+        {
+            var interpret = linkToOpen as string;
+            if (string.IsNullOrEmpty(interpret)) return;
+
+            // todo: show character profile in client
+            if (!interpret.Contains(".") || interpret.Contains(" "))
+            {
+                if (interpret.EndsWith("/notes"))
+                {
+                    events.GetEvent<RequestChangeTabEvent>().Publish(interpret);
+                    return;
+                }
+
+                interpret = "http://www.f-list.net/c/" + HttpUtility.UrlEncode(interpret);
+            }
+
+            Process.Start(interpret);
         }
 
         #endregion
