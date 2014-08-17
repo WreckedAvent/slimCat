@@ -20,16 +20,21 @@
 namespace slimCat.Services
 {
     using System.Collections.Generic;
+    using Models;
+    using Utilities;
 
     public partial class UserCommandService
     {
         // implementation is in f-list connection, these just prevent us from sending junk to chat server
+        // HACK: we have to assume success due to an RTB not being sent on the backend
         private void OnBookmarkAddRequested(IDictionary<string, object> command)
         {
+            DoListAction(command.Get(Constants.Arguments.Name), ListKind.Bookmark, true);
         }
 
         private void OnBookmarkRemoveRequested(IDictionary<string, object> command)
         {
+            DoListAction(command.Get(Constants.Arguments.Name), ListKind.Bookmark, false);
         }
     }
 }

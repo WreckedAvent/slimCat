@@ -19,6 +19,7 @@
 
 namespace slimCat.Services
 {
+    using System;
     using Models;
     using System.Collections.Generic;
     using Utilities;
@@ -33,41 +34,45 @@ namespace slimCat.Services
 
         private void OnFriendRequestAcceptRequested(IDictionary<string, object> command)
         {
-            DoListAction(command, ListKind.FriendRequestReceived, false, false);
+            DoListAction(command.Get(Constants.Arguments.Character), ListKind.FriendRequestReceived, false, false);
         }
 
         private void OnFriendRequestDenyRequested(IDictionary<string, object> command)
         {
-            DoListAction(command, ListKind.FriendRequestReceived, false, false);
+            DoListAction(command.Get(Constants.Arguments.Character), ListKind.FriendRequestReceived, false, false);
         }
 
         private void OnFriendRequestSendRequested(IDictionary<string, object> command)
         {
-            DoListAction(command, ListKind.FriendRequestSent, true);
+            DoListAction(command.Get(Constants.Arguments.Character), ListKind.FriendRequestSent, true);
         }
 
         private void OnFriendRequestCancelRequested(IDictionary<string, object> command)
         {
-            DoListAction(command, ListKind.FriendRequestSent, false);
+            DoListAction(command.Get(Constants.Arguments.Character), ListKind.FriendRequestSent, false);
         }
 
-        private void DoListAction(IDictionary<string, object> command, ListKind list, bool isAdd, bool generateUpdate = true)
+        private void DoListAction(string name, ListKind list, bool isAdd, bool generateUpdate = true)
         {
-            var character = command.Get(Constants.Arguments.Character);
-            if (isAdd)
-                characterManager.Add(character, list);
-            else
-                characterManager.Remove(character, list);
-
-            if (!generateUpdate) return;
-
-            var eventargs = new CharacterListChangedEventArgs
+            Dispatcher.Invoke((Action) delegate
             {
-                IsAdded = isAdd,
-                ListArgument = list
-            };
+                var result = isAdd
+                    ? characterManager.Add(name, list)
+                    : characterManager.Remove(name, list);
 
-            events.NewCharacterUpdate(characterManager.Find(character), eventargs);
+                var character = characterManager.Find(name);
+                character.IsInteresting = characterManager.IsOfInterest(name);
+
+                if (!generateUpdate || !result) return;
+
+                var eventargs = new CharacterListChangedEventArgs
+                {
+                    IsAdded = isAdd,
+                    ListArgument = list
+                };
+
+                events.NewCharacterUpdate(character, eventargs);
+            });
         }
     }
 }

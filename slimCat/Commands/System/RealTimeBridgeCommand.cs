@@ -139,27 +139,25 @@ namespace slimCat.Services
 
             if (type == null) return;
 
-            var doListAction = new Action<string, ListKind, bool, bool>((name, listKind, isAdd, giveUpdate) => Dispatcher.Invoke((Action)delegate
+            var doListAction = new Action<string, ListKind, bool, bool>((name, list, isAdd, giveUpdate) =>             
+            Dispatcher.Invoke((Action) delegate
             {
-                if (isAdd)
-                    CharacterManager.Add(name, listKind);
-                else
-                    CharacterManager.Remove(name, listKind);
+                var result = isAdd
+                    ? CharacterManager.Add(name, list)
+                    : CharacterManager.Remove(name, list);
 
                 var character = CharacterManager.Find(name);
-
                 character.IsInteresting = CharacterManager.IsOfInterest(name);
 
-                var update = new CharacterUpdateModel(
-                    character,
-                    new CharacterListChangedEventArgs
-                    {
-                        IsAdded = isAdd,
-                        ListArgument = listKind
-                    });
+                if (!giveUpdate || !result) return;
 
-                if (giveUpdate)
-                    Events.GetEvent<NewUpdateEvent>().Publish(update);
+                var eventargs = new CharacterListChangedEventArgs
+                {
+                    IsAdded = isAdd,
+                    ListArgument = list
+                };
+
+                Events.NewCharacterUpdate(character, eventargs);
             }));
 
             if (type.Equals("note"))
