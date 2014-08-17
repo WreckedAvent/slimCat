@@ -119,7 +119,7 @@ namespace slimCat.ViewModels
                            new RelayCommand(
                                args =>
                                    Events.GetEvent<UserCommandEvent>()
-                                       .Publish(CommandDefinitions.CreateCommand("clear").ToDictionary())));
+                                       .Publish(CommandDefinitions.CreateCommand("clear", null, Model.Id).ToDictionary())));
             }
         }
 

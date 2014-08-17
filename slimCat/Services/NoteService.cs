@@ -196,6 +196,16 @@ namespace slimCat.Services
                         .FirstOrDefault();
 
                     title = value ?? title;
+
+                    // our title will get escaped each time it is sent with entities in it
+                    // so try and decode it until there's none left
+                    bool hasEscaped;
+                    do
+                    {
+                        var escaped = HttpUtility.HtmlDecode(title);
+                        hasEscaped = escaped != title;
+                        title = escaped;
+                    } while (hasEscaped);
                     Log("note subject to {0} is {1}".FormatWith(characterName, title));
                 }
             }

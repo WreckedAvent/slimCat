@@ -192,7 +192,10 @@ namespace slimCat.Services
                 }
             }
 
-            que.Enqueue(data);
+            lock (locker)
+            {
+                que.Enqueue(data);
+            }
             DoAction();
         }
 
