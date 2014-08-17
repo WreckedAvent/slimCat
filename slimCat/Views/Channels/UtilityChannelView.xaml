@@ -280,6 +280,17 @@
                                      HorizontalAlignment="Stretch"
                                      HorizontalContentAlignment="Stretch"
                                      Style="{StaticResource NoScrollListBox}"/>
+
+                            <WrapPanel Margin="0,10,0,0">
+                                
+                                <TextBlock Foreground="{StaticResource ForegroundBrush}" TextWrapping="Wrap">
+                                    If you want your theme listed here, contact 
+                                </TextBlock>
+
+                                <ContentControl Content="{Binding Path=slimCat}" Margin="5,0,0,0" />
+
+                                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,10,0,0" />
+                            </WrapPanel>
                         </StackPanel>
                     </Expander>
                     
