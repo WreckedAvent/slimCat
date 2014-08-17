@@ -54,6 +54,7 @@ namespace slimCat.Models
         static CommandDefinitions()
         {
             UserCommands(
+                Define("acceptrequest").As("request-accept").WithArgument("request_id"),
                 Define("addbookmark").As("bookmark-add").WithArgument(A.Name),
                 Define("addfriend").As("friend-add").WithArgument("dest_name"),
                 Define("bottle").As(C.ChannelRoll).WithArguments("dice", A.Channel),
@@ -89,6 +90,7 @@ namespace slimCat.Models
                 Define("report").As(C.AdminAlert).WithArguments(A.Name, A.Report, A.Channel),
                 Define("status", "online", "away", "busy", "idle", "dnd", "looking").As(C.UserStatus).WithArguments(A.Status, A.StatusMessage),
                 Define("setowner").As(C.ChannelSetOwner).WithArguments(A.Character, A.Channel),
+                Define("sendrequest").As("request-send").WithArgument("request_id"),
                 Define("searchtag").AsForCharacters(),
 
                 Define("tempignore").AsForCharacters(),

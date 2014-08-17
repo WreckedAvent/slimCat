@@ -153,6 +153,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Commands\Channel\DisciplineCommand.cs" />
+    <Compile Include="Commands\Character\BookmarkCommand.cs" />
     <Compile Include="Commands\System\BridgeCommand.cs" />
     <Compile Include="Commands\Character\LogInCommand.cs" />
     <Compile Include="Commands\Channel\OwnerCommand.cs" />

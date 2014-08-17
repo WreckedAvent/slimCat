@@ -172,7 +172,7 @@ namespace slimCat.Services
             var host = Constants.UrlConstants.Api + apiName + ".php";
 
             command.Add("account", model.AccountName.ToLower());
-            command.Add("ticket", model.Ticket);
+            command.Add("ticket", ticketProvider.Ticket);
 
             var buffer = browser.GetResponse(host, command);
 
@@ -180,13 +180,19 @@ namespace slimCat.Services
 
             var hasError = !string.IsNullOrWhiteSpace((string) result.error);
 
+            if (string.Equals("Ticked expired", result.error, StringComparison.OrdinalIgnoreCase))
+            {
+                ticketProvider.ShouldGetNewTicket = true;
+                DoApiAction(apiName, command);
+            }
+
             if (hasError)
                 events.GetEvent<ErrorEvent>().Publish((string) result.error);
         }
 
         private void HandleCommand(IDictionary<string, object> command)
         {
-            if (model == null || model.Ticket == null)
+            if (model == null)
                 return;
 
             if (!command.ContainsKey("type"))
