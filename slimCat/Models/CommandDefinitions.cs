@@ -105,7 +105,7 @@ namespace slimCat.Models
             ModeratorCommands(
                 Define("ban").As(C.ChannelBan).WithArguments(A.Character, A.Channel),
                 Define("banlist").As(C.ChannelBanList).AsForChannels(),
-                Define("closeroom").WithArguments("status", A.Channel),
+                Define("closeroom").As(C.ChannelKind).WithArguments("status", A.Channel),
                 Define("demote", "dop").As(C.ChannelDemote).WithArguments(A.Character, A.Channel),
                 Define("getdescription").WithArgument(A.Channel),
 
