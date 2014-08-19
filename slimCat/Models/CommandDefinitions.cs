@@ -62,6 +62,7 @@ namespace slimCat.Models
                 Define("clearall").AsArgumentless(),
 
                 Define("close").AsForChannels(),
+                Define("coplist", "modlist").As(C.ChannelModeratorList).AsForChannels(),
                 Define("denyfriendrequest", "denyrequest").As("request-deny").AsForCharacters(),
                 Define("forceclose").AsForChannels(),
                 Define("ignore").As(C.UserIgnore).WithArguments(A.Character, A.Action),
@@ -69,6 +70,7 @@ namespace slimCat.Models
                 Define("interesting").AsForCharacters(),
 
                 Define("invite").As(C.UserInvite).WithArguments(A.Character, A.Channel),
+                Define("ignorelist").As(C.UserIgnore).WithArgument(A.Action),
                 Define("join").AsForChannels(),
                 Define("lastupdate").As("_snap_to_last_update").AsArgumentless(),
                 Define("logheader").As("_logger_new_header").WithArgument("title"),
@@ -91,6 +93,8 @@ namespace slimCat.Models
                 Define("report").As(C.AdminAlert).WithArguments(A.Name, A.Report, A.Channel),
                 Define("status", "online", "away", "busy", "idle", "dnd", "looking").As(C.UserStatus).WithArguments(A.Status, A.StatusMessage),
                 Define("setowner").As(C.ChannelSetOwner).WithArguments(A.Character, A.Channel),
+                Define("soundon").AsArgumentless(),
+                Define("soundoff").AsArgumentless(),
                 Define("sendfriendrequest", "sendrequest", "addfriend").As("request-send").AsForCharacters(),
                 Define("searchtag").AsForCharacters(),
 
@@ -200,6 +204,9 @@ namespace slimCat.Models
                 {
                     "handlereport", new CommandOverride(A.Action, A.ActionConfirm)
                 },
+                {
+                    "ignorelist", new CommandOverride(A.Action, "list")
+                }
             };
 
         #endregion

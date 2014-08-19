@@ -57,6 +57,12 @@ namespace slimCat.Services
     {
         private void OnIgnoreRequested(IDictionary<string, object> command)
         {
+            if (!command.ContainsKey(Constants.Arguments.Character))
+            {
+                connection.SendMessage(command);
+                return;
+            }
+
             var args = command.Get(Constants.Arguments.Character);
 
             var action = command.Get(Constants.Arguments.Action);

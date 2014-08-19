@@ -53,7 +53,7 @@ namespace slimCat.Utilities
 
                 // create singletons
                 RegisterSingleton<IAccount, AccountModel>();
-                RegisterSingleton<IBrowser, Browser>();
+                RegisterSingleton<IBrowser, BrowserService>();
                 RegisterSingleton<ITicketProvider, TicketProvider>();
                 RegisterSingleton<IListConnection, FlistService>();
                 RegisterSingleton<IChatConnection, FchatService>();
@@ -68,6 +68,7 @@ namespace slimCat.Utilities
                 RegisterSingleton<IIconService, IconService>();
                 RegisterSingleton<INoteService, NoteService>();
                 RegisterSingleton<IFriendRequestService, FriendRequestService>();
+                RegisterSingleton<IProfileService, ProfileService>();
 
                 Register<Application, Application>(Application.Current);
                 Register<WebSocket, WebSocket>(new WebSocket(Constants.ServerHost));

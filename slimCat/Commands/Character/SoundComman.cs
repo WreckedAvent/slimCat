@@ -20,33 +20,23 @@
 namespace slimCat.Services
 {
     using System.Collections.Generic;
-    using Utilities;
+    using Models;
 
-    public partial class ServerCommandService
+    public partial class UserCommandService
     {
-        private void ErrorCommand(IDictionary<string, object> command)
+        private void OnSoundOnRequested(IDictionary<string, object> command)
         {
-            var thisMessage = command.Get(Constants.Arguments.Message);
+            if (ApplicationSettings.AllowSound) return;
 
-            // for some fucktarded reason room status changes are only done through SYS
-            if (thisMessage.ContainsOrdinal("this channel is now"))
-            {
-                RoomTypeChangedCommand(command);
-                return;
-            }
-
-            // checks to see if this is a channel ban message
-            if (thisMessage.ContainsOrdinal("channel ban"))
-            {
-                ChannelBanListCommand(command);
-                return;
-            }
-
-            // checks to ensure it's not a mod promote message
-            if (!thisMessage.ContainsOrdinal("has been promoted"))
-                Events.GetEvent<ErrorEvent>().Publish(thisMessage);
+            iconService.ToggleSound();
+            SettingsService.SaveApplicationSettingsToXml(model.CurrentCharacter.Name);
         }
 
-
+        private void OnSoundOffRequested(IDictionary<string, object> command)
+        {
+            if (!ApplicationSettings.AllowSound) return;
+            iconService.ToggleSound();
+            SettingsService.SaveApplicationSettingsToXml(model.CurrentCharacter.Name);
+        }
     }
 }

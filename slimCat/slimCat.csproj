@@ -155,6 +155,7 @@
     <Compile Include="Commands\Channel\DisciplineCommand.cs" />
     <Compile Include="Commands\Character\FriendCommand.cs" />
     <Compile Include="Commands\Character\BookmarkCommand.cs" />
+    <Compile Include="Commands\Character\SoundComman.cs" />
     <Compile Include="Commands\System\RealTimeBridgeCommand.cs" />
     <Compile Include="Commands\Character\LogInCommand.cs" />
     <Compile Include="Commands\Channel\OwnerCommand.cs" />

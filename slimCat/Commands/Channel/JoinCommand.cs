@@ -125,19 +125,29 @@ namespace slimCat.Services
     {
         private void OnJoinRequested(IDictionary<string, object> command)
         {
-            var channels = command.Get(Constants.Arguments.Channel);
+            var channelName = command.Get(Constants.Arguments.Channel);
 
-            if (model.CurrentChannels.FirstByIdOrNull(channels) != null)
+            if (model.CurrentChannels.FirstByIdOrNull(channelName) != null)
             {
-                events.GetEvent<RequestChangeTabEvent>().Publish(channels);
+                events.GetEvent<RequestChangeTabEvent>().Publish(channelName);
                 return;
             }
 
-            var guess =
-                model.AllChannels.OrderBy(channel => channel.Title)
-                    .FirstOrDefault(channel => channel.Title.StartsWith(channels, true, null));
+            var isExact = channelName.StartsWith("\"") && channelName.EndsWith("\"");
 
-            var toJoin = guess != null ? guess.Id : channels;
+            ChannelModel guess = null;
+            if (isExact)
+            {
+                channelName = channelName.Substring(1, channelName.Length - 2);
+            }
+            else
+            {
+                guess =
+                    model.AllChannels.OrderBy(channel => channel.Title)
+                        .FirstOrDefault(channel => channel.Title.StartsWith(channelName, true, null));
+            }
+
+            var toJoin = guess != null ? guess.Id : channelName;
             var toSend = new { channel = toJoin };
 
             connection.SendMessage(toSend, Constants.ClientCommands.ChannelJoin);

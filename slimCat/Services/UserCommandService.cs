@@ -60,6 +60,8 @@ namespace slimCat.Services
         private readonly IFriendRequestService friendRequestService;
 
         private readonly IRegionManager regionManager;
+
+        private readonly IIconService iconService;
         #endregion
 
         #region Constructors and Destructors
@@ -73,7 +75,8 @@ namespace slimCat.Services
             ILoggingService logger,
             IChannelService channelService,
             IRegionManager regman,
-            IFriendRequestService friendRequestService)
+            IFriendRequestService friendRequestService,
+            IIconService iconService)
         {
 
             try
@@ -87,6 +90,7 @@ namespace slimCat.Services
                 regionManager = regman.ThrowIfNull("regman");
                 characterManager = manager.ThrowIfNull("characterManager");
                 this.friendRequestService = friendRequestService;
+                this.iconService = iconService;
 
                 this.events.GetEvent<UserCommandEvent>().Subscribe(CommandReceived, ThreadOption.UIThread, true);
 
@@ -129,7 +133,9 @@ namespace slimCat.Services
                         {"bookmark-remove", OnBookmarkRemoveRequested},
                         {"rejoin", OnChannelRejoinRequested },
                         {"searchtag", OnSearchTagToggleRequested},
-                        {"logout", OnLogoutRequested}
+                        {"logout", OnLogoutRequested},
+                        {"soundon", OnSoundOnRequested},
+                        {"soundoff", OnSoundOffRequested}
                     };
             }
             catch (Exception ex)
