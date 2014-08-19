@@ -32,13 +32,29 @@ namespace slimCat.Services
             var characters = (JsonArray) command[Constants.Arguments.MultipleCharacters];
             CharacterManager.Set(new JsonArray(), ListKind.SearchResult);
 
-            foreach (string character in characters.Where(x => !CharacterManager.IsOnList((string)x, ListKind.NotInterested)))
+            var resultsEnumerable = characters
+                .Where(x => !CharacterManager.IsOnList((string) x, ListKind.NotInterested))
+                .Where(x => !CharacterManager.IsOnList((string) x, ListKind.Ignored));
+
+            if (ApplicationSettings.HideFriendsFromSearchResults)
+            {
+                resultsEnumerable = resultsEnumerable
+                    .Where(x => !CharacterManager.IsOnList((string)x, ListKind.Interested))
+                    .Where(x => !CharacterManager.IsOnList((string)x, ListKind.Friend))
+                    .Where(x => !CharacterManager.IsOnList((string)x, ListKind.Bookmark));
+            }
+
+            var resultsList = resultsEnumerable.ToList();
+            foreach (string character in resultsList)
             {
                 CharacterManager.Add(character, ListKind.SearchResult);
             }
 
             Events.GetEvent<ChatSearchResultEvent>().Publish(null);
-            Events.GetEvent<ErrorEvent>().Publish("Got search results successfully.");
+            Events.GetEvent<ErrorEvent>()
+                .Publish(resultsList.Any() 
+                ? "Got search results successfully." 
+                : "Got search results, but with no relevant characters.");
         }
     }
 

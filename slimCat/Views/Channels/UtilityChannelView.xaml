@@ -333,6 +333,11 @@
                                         Focus the textbox after switching tabs
                                     </CheckBox>
 
+                                    <CheckBox IsChecked="{Binding HideFriendsFromSearchResults}"
+                                              ToolTip="Allos slimCat to automatically filter out friends, bookmarks, and interested characters from search results.">
+                                        Hide of interest characters from search results
+                                    </CheckBox>
+
                                     <CheckBox IsChecked="{Binding SpellCheckEnabled}"
                                               ToolTip="Allows slimCat to spell-check the messages you type out.">
                                         Spell check my messages

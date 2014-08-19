@@ -25,6 +25,8 @@ namespace slimCat.Models
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using Microsoft.VisualBasic;
+    using Constants = Utilities.Constants;
 
     #endregion
 
@@ -76,11 +78,15 @@ namespace slimCat.Models
 
             CheckForOwnName = true;
             TemplateCharacter = string.Empty;
+            HideFriendsFromSearchResults = true;
+            SettingsVersion = Constants.ClientVer;
         }
 
         #endregion
 
         #region Public Properties
+
+        public static string SettingsVersion { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether allow logging.
@@ -183,6 +189,9 @@ namespace slimCat.Models
         }
 
         public static bool FriendsAreAccountWide { get; set; }
+
+
+        public static bool HideFriendsFromSearchResults { get; set; }
 
         public static int FontSize { get; set; }
 

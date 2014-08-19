@@ -253,6 +253,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool HideFriendsFromSearchResults
+        {
+            get { return ApplicationSettings.HideFriendsFromSearchResults; }
+            set
+            {
+                ApplicationSettings.HideFriendsFromSearchResults = value;
+                Save();
+            }
+        }
+
         public bool AllowGreedyTextboxFocus
         {
             get { return ApplicationSettings.AllowGreedyTextboxFocus; }
@@ -712,6 +722,7 @@ namespace slimCat.ViewModels
 
         private void Save()
         {
+            ApplicationSettings.SettingsVersion = Constants.ClientVer;
             SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
         }
 
