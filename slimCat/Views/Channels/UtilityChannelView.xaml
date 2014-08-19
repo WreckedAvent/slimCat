@@ -407,8 +407,13 @@
                                           Margin="0,0,0,0" />
 
                                     <CheckBox IsChecked="{Binding AllowColors}"
-                                              ToolTip="Allows slimCat to parse bbcode [color] tags as present the text as colored output.">
+                                              ToolTip="Allows slimCat to parse bbcode [color] tags and present the text as colored output.">
                                         Display bbcode colors
+                                    </CheckBox>
+                                    
+                                    <CheckBox IsChecked="{Binding AllowIcons}"
+                                              ToolTip="Allows slimCat to parse [icon] tags and present the bbcode as an in-line image.">
+                                        Display icons
                                     </CheckBox>
 
                                     <StackPanel Margin="0,15,0,0"

@@ -224,7 +224,7 @@
     <Compile Include="Models\ThemeModel.cs" />
     <Compile Include="Models\SearchTermModel.cs" />
     <Compile Include="Services\AutomationService.cs" />
-    <Compile Include="Services\Browser.cs" />
+    <Compile Include="Services\BrowserService.cs" />
     <Compile Include="Services\ChannelListUpdaterService.cs" />
     <Compile Include="Services\ChannelService.cs" />
     <Compile Include="Commands\Channel\BanListCommand.cs" />
@@ -234,6 +234,7 @@
     <Compile Include="Commands\System\BroadcastCommand.cs" />
     <Compile Include="Services\IconService.cs" />
     <Compile Include="Services\Interfaces\IAutomationService.cs" />
+    <Compile Include="Services\Interfaces\IProfileService.cs" />
     <Compile Include="Services\Interfaces\INoteService.cs" />
     <Compile Include="Services\Interfaces\IBrowser.cs" />
     <Compile Include="Services\Interfaces\IChannelService.cs" />
@@ -243,6 +244,7 @@
     <Compile Include="Services\Interfaces\IPermissionService.cs" />
     <Compile Include="Services\Interfaces\IFriendRequestService.cs" />
     <Compile Include="Services\Interfaces\ITicketProvider.cs" />
+    <Compile Include="Services\ProfileService.cs" />
     <Compile Include="Services\NoteService.cs" />
     <Compile Include="Services\PermissionService.cs" />
     <Compile Include="Services\SettingsService.cs" />

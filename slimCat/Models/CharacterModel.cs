@@ -27,6 +27,7 @@ namespace slimCat.Models
     using System.Net;
     using System.Net.Cache;
     using System.Windows.Media.Imaging;
+    using Utilities;
     using ViewModels;
 
     #endregion
@@ -230,7 +231,7 @@ namespace slimCat.Models
                     worker.Dispose();
                 };
 
-            worker.RunWorkerAsync("https://static.f-list.net/images/avatar/" + Name.ToLower() + ".png");
+            worker.RunWorkerAsync(Constants.UrlConstants.CharacterAvatar + Name.ToLower() + ".png");
         }
 
         #endregion

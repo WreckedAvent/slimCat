@@ -78,7 +78,7 @@ namespace slimCat.Services
         #endregion
 
         #region Public Methods
-        public void GetNotes(string characterName)
+        public void GetNotesAsync(string characterName)
         {
             Log(string.Format("getting notes for {0}", characterName));
 
@@ -98,14 +98,14 @@ namespace slimCat.Services
             }
 
             var worker = new BackgroundWorker();
-            worker.DoWork += GetNotesAsync;
+            worker.DoWork += GetNotesAsyncHandler;
             worker.RunWorkerAsync(characterName);
         }
 
-        public void UpdateNotes(string characterName)
+        public void UpdateNotesAsync(string characterName)
         {
             noteCache.Remove(characterName);
-            GetNotes(characterName);
+            GetNotesAsync(characterName);
         }
 
         public string GetLastSubject(string character)
@@ -116,7 +116,7 @@ namespace slimCat.Services
                 : string.Empty;
         }
 
-        public void SendNote(string message, string characterName, string subject)
+        public void SendNoteAsync(string message, string characterName, string subject)
         {
             var conversation = noteCache[characterName];
 
@@ -129,11 +129,11 @@ namespace slimCat.Services
             };
 
             var worker = new BackgroundWorker();
-            worker.DoWork += SendNoteAsync;
+            worker.DoWork += SendNoteAsyncHandler;
             worker.RunWorkerAsync(args);
         }
 
-        private void SendNoteAsync(object sender, DoWorkEventArgs e)
+        private void SendNoteAsyncHandler(object sender, DoWorkEventArgs e)
         {
             var args = (IDictionary<string, object>) e.Argument;
             var characterName = (string)args["dest"];
@@ -165,7 +165,7 @@ namespace slimCat.Services
             }));
         }
 
-        private void GetNotesAsync(object s, DoWorkEventArgs e)
+        private void GetNotesAsyncHandler(object s, DoWorkEventArgs e)
         {
             var characterName = (string)e.Argument;
 

@@ -19,6 +19,8 @@
 
 namespace slimCat.Utilities
 {
+    using System.Web.Hosting;
+
     /// <summary>
     ///     The constants used by slimCat.
     /// </summary>
@@ -343,6 +345,10 @@ namespace slimCat.Utilities
             public const string IncomingFriendRequests = Api + "request-list.php";
 
             public const string OutgoingFriendRequests = Api + "request-pending.php";
+
+            public const string CharacterPage = Domain + "/c/";
+
+            public const string CharacterAvatar = @"https://static.f-list.net/images/avatar/";
         }
     }
 }

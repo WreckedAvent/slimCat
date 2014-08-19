@@ -42,6 +42,8 @@ namespace slimCat.ViewModels
     /// </summary>
     public class PmChannelViewModel : ChannelViewModelBase
     {
+        private readonly IProfileService profileService;
+
         #region Fields
 
         private Timer checkTick = new Timer(5000);
@@ -82,7 +84,7 @@ namespace slimCat.ViewModels
 
         public PmChannelViewModel(
             string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
-            ICharacterManager manager, INoteService notes)
+            ICharacterManager manager, INoteService notes, IProfileService profile)
             : base(contain, regman, events, cm, manager)
         {
             try
@@ -91,7 +93,10 @@ namespace slimCat.ViewModels
                 Model = model;
 
                 noteService = notes;
-                notes.GetNotes(name);
+                notes.GetNotesAsync(name);
+
+                //profileService = profile;
+                //profileService.GetProfileDataAsync(name);
 
                 Model.PropertyChanged += OnModelPropertyChanged;
 
@@ -498,7 +503,7 @@ namespace slimCat.ViewModels
                 return;
             }
 
-            noteService.SendNote(Message, ConversationWith.Name, NoteSubject);
+            noteService.SendNoteAsync(Message, ConversationWith.Name, NoteSubject);
             isInNoteCoolDown = true;
             noteCooldownTimer.Enabled = true;
             noteCooldownUpdateTick.Enabled = true;

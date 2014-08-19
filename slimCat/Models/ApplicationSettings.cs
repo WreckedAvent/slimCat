@@ -160,6 +160,11 @@ namespace slimCat.Models
         public static bool AllowStatusDiscolor { get; set; }
 
         /// <summary>
+        ///     Gets or sets a value indicating whether to allow bbcode icons to be parsed, or to replace with user.
+        /// </summary>
+        public static bool AllowIcons { get; set; }
+
+        /// <summary>
         ///     Gets or sets a value indicating whether all messages should be checked for the current character's name.
         /// </summary>
         public static bool CheckForOwnName { get; set; }

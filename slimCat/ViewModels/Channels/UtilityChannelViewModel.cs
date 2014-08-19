@@ -290,6 +290,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool AllowIcons
+        {
+            get { return ApplicationSettings.AllowIcons; }
+            set
+            {
+                ApplicationSettings.AllowIcons = value;
+                Save();
+            }
+        }
+
         public bool AllowColors
         {
             get { return ApplicationSettings.AllowColors; }

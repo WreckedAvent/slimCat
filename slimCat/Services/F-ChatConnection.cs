@@ -142,7 +142,7 @@ namespace slimCat.Services
 
         private void OnTimeout()
         {
-            if (socket.State != WebSocketState.Connecting) return;
+            socket.Close();
 
             socket = new WebSocket(Constants.ServerHost);
 

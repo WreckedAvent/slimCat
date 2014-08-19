@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IBrowser.cs">
+// <copyright file="IProfileService.cs">
 //    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
 //   
 //    This source is subject to the Simplified BSD License.
@@ -20,29 +20,13 @@
 namespace slimCat.Services
 {
     /// <summary>
-    ///     Represents endpoints for sending and retrieving notes.
+    ///     Represents endpoints for retrieving information on profiles.
     /// </summary>
-    public interface INoteService
+    public interface IProfileService
     {
         /// <summary>
-        ///     Retrieves the notes for the specified character.
+        ///     Retrieves the full profile data for the selected character.
         /// </summary>
-        void GetNotesAsync(string character);
-
-        /// <summary>
-        ///     Updates the note backlog for a given character.
-        /// </summary>
-        void UpdateNotesAsync(string character);
-
-        /// <summary>
-        ///     Sends the specified message to the specified character via note.
-        ///     The last message in the conversation is used for the title.
-        /// </summary>
-        void SendNoteAsync(string message, string characterName, string subject = null);
-
-        /// <summary>
-        ///     Gets the subject line of the last conversation with the specified character.
-        /// </summary>
-        string GetLastSubject(string character);
+        void GetProfileDataAsync(string character);
     }
 }

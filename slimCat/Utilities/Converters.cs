@@ -21,6 +21,7 @@ namespace slimCat.Utilities
 {
     #region Usings
 
+    using System.Net.Cache;
     using Models;
     using Services;
     using System;
@@ -200,7 +201,7 @@ namespace slimCat.Utilities
                 {"user", BbCodeType.User},
                 {"url", BbCodeType.Url},
                 {"u", BbCodeType.Underline},
-                {"icon", BbCodeType.User},
+                {"icon", BbCodeType.Icon},
                 {"sup", BbCodeType.Superscript},
                 {"sub", BbCodeType.Subscript},
                 {"small", BbCodeType.Small},
@@ -232,42 +233,45 @@ namespace slimCat.Utilities
 
         #region Methods
 
-        /// <summary>
-        ///     Makes a username link.
-        /// </summary>
         internal Inline MakeUsernameLink(ICharacter target)
         {
-            var toReturn =
-                new InlineUIContainer
-                    {
-                        Child = new ContentControl
-                            {
-                                ContentTemplate = Locator.Find<DataTemplate>("UsernameTemplate"),
-                                Content = target
-                            },
-                        BaselineAlignment = BaselineAlignment.TextBottom,
-                    };
-
-            return toReturn;
+            return MakeInlineContainer(target, "UsernameTemplate");
         }
 
-        /// <summary>
-        ///     Makes a channel link.
-        /// </summary>
+        internal Inline MakeIcon(string target)
+        {
+            var icon = new InlineUIContainer();
+            var child = new Image { MaxHeight = 50, MaxWidth = 50, Margin = new Thickness(2,0,2,0)};
+            var avatar = new BitmapImage(
+                new Uri(
+                    Constants.UrlConstants.CharacterAvatar + target.ToLower() + ".png", UriKind.Absolute),
+                    new RequestCachePolicy(RequestCacheLevel.Revalidate)
+                );
+
+            child.Source = avatar;
+            icon.Child = child;
+
+            return icon;
+        }
+
         internal Inline MakeChannelLink(ChannelModel channel)
         {
-            var toReturn =
-                new InlineUIContainer
-                    {
-                        Child = new ContentControl
-                            {
-                                ContentTemplate = Locator.Find<DataTemplate>("ChannelTemplate"),
-                                Content = channel
-                            },
-                        BaselineAlignment = BaselineAlignment.TextBottom
-                    };
+            return MakeInlineContainer(channel, "ChannelTemplate");
+        }
 
-            return toReturn;
+        private Inline MakeInlineContainer(object model, string template)
+        {
+            return 
+                new InlineUIContainer
+                {
+                    Child = new ContentControl
+                    {
+                        ContentTemplate = Locator.Find<DataTemplate>(template),
+                        Content = model,
+                        Margin = new Thickness(2,0,2,0)
+                    },
+                    BaselineAlignment = BaselineAlignment.TextBottom,
+                };
         }
 
         /// <summary>
@@ -372,7 +376,8 @@ namespace slimCat.Utilities
                     {BbCodeType.Subscript, MakeSubscript},
                     {BbCodeType.Superscript, MakeSuperscript},
                     {BbCodeType.User, MakeUser},
-                    {BbCodeType.NoParse, MakeNormalText}
+                    {BbCodeType.NoParse, MakeNormalText},
+                    {BbCodeType.Icon, MakeIcon}
                 };
 
             var converter = converters[chunk.Type];
@@ -562,6 +567,25 @@ namespace slimCat.Utilities
 
             return !string.IsNullOrEmpty(arg.Arguments) 
                 ? MakeUsernameLink(characterManager.Find(arg.Arguments)) 
+                : MakeNormalText(arg);
+        }
+
+        private Inline MakeIcon(ParsedChunk arg)
+        {
+            if (!ApplicationSettings.AllowIcons) return MakeUser(arg);
+
+            if (arg.Children != null && arg.Children.Any())
+            {
+                var character = arg.Children.First().InnerText;
+
+                var icon = MakeIcon(character);
+
+                arg.Children.Clear();
+                return icon;
+            }
+
+            return !string.IsNullOrEmpty(arg.Arguments)
+                ? MakeIcon(arg.Arguments)
                 : MakeNormalText(arg);
         }
 

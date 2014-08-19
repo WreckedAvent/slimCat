@@ -173,7 +173,7 @@ namespace slimCat.Services
                         Target = senderName + "/notes"
                     });
 
-                notes.UpdateNotes(senderName);
+                notes.UpdateNotesAsync(senderName);
                 Events.GetEvent<NewUpdateEvent>().Publish(update);
             }
             else if (type.Equals("comment"))
@@ -218,6 +218,8 @@ namespace slimCat.Services
             {
                 var name = command.Get(Constants.Arguments.Name);
                 doListAction(name, ListKind.Friend, true, true);
+                friendRequestService.UpdatePendingRequests();
+                friendRequestService.UpdateOutgoingRequests();
             }
             else if (type.Equals("friendrequest"))
             {

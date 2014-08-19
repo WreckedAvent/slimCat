@@ -32,7 +32,7 @@ namespace slimCat.Services
 
     #endregion
 
-    internal class Browser : IBrowser
+    internal class BrowserService : IBrowser
     {
         private readonly CookieContainer loginCookies = new CookieContainer();
 
