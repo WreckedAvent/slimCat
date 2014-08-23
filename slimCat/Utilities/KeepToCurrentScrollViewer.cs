@@ -51,10 +51,8 @@ namespace slimCat.Utilities
             toManage.ThrowIfNull("toManage");
 
             scroller = StaticFunctions.FindChild<ScrollViewer>(toManage);
-            if (scroller == null)
-                throw new ArgumentException("toManage");
-
-            scroller.ScrollChanged += OnScrollChanged;
+            if (scroller != null)
+                scroller.ScrollChanged += OnScrollChanged;
         }
 
         #endregion

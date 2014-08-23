@@ -319,6 +319,9 @@
     <Compile Include="Views\Channel Bar\ManageListsView.xaml.cs">
       <DependentUpon>ManageListsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UI Parts\Buttons\ProfileButtonView.xaml.cs">
+      <DependentUpon>ProfileButtonView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UI Parts\Buttons\AutoButtonView.xaml.cs">
       <DependentUpon>AutoButtonView.xaml</DependentUpon>
     </Compile>
@@ -480,6 +483,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Channel Bar\ManageListsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\UI Parts\Buttons\ProfileButtonView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -742,6 +749,9 @@
     <Content Include="icons\auto.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="icons\browser.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="icons\channels.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -802,6 +812,9 @@
     <Content Include="icons\private_open.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="icons\profile.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="icons\public.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -824,6 +837,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="icons\settings.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icons\stats.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="icons\transgender.png">

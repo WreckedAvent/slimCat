@@ -113,11 +113,33 @@
             </Grid>
         </Border>
 
-        <v:ObservingFlowDocumentReader
-            Grid.Row="1"
-            x:Name="PopupAnchor"
-            LoadInReverse="True"
-            MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}" />
+        <Grid Grid.Row="1">
+            <v:ObservingFlowDocumentReader
+                x:Name="PopupAnchor"
+                LoadInReverse="True"
+                Visibility="{Binding IsViewingProfile, Converter={StaticResource OppositeBoolConverter}}"
+                MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}" />
+
+            <FlowDocumentScrollViewer
+                HorizontalAlignment="Left"
+                UseLayoutRounding="False"
+                Foreground="{StaticResource ForegroundBrush}"
+                Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}"
+                Background="Transparent"
+                VerticalScrollBarVisibility="Auto">
+                <FlowDocument 
+                    PagePadding="2,5"
+                    IsHyphenationEnabled="True">
+                    <Paragraph            
+                        FontFamily="Segoe UI, Verdanda"
+                        IsHyphenationEnabled="True"
+                        FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}">
+                        <Span lib:SpanHelper.InlineSource="{Binding Path=Model.ProfileText, Mode=OneWay, Converter={StaticResource BbCodeConverter}, IsAsync=True}" />
+                    </Paragraph>
+                </FlowDocument>
+            </FlowDocumentScrollViewer>
+        </Grid>
+
 
         <v:ChannelSettingsView Grid.Row="1" />
 
@@ -151,21 +173,25 @@
                             HorizontalAlignment="Right"
                             Margin="0"
                             Grid.Column="1">
-                    <v:UpDownButtonView Margin="4"
-                                        VerticalAlignment="Center"
-                                        IsChecked="{Binding Path=CanShowSubject, Mode=TwoWay}"
-                                        Visibility="{Binding Path=IsViewingChat, Converter={StaticResource OppositeBoolConverter}}"
-                                        ToolTip="Toggles whether the note subject line is shown"/>
+
                     
                     <v:MarkupButtonView Margin="4"
                                         VerticalAlignment="Center"
                                         IsChecked="{Binding Path=ShowPreview, Mode=TwoWay}"/>
                     
-                    <v:MoreButtonView Command="{Binding SwitchCommand}"
-                                      Visibility="{Binding Path=CanSwitch, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                                      BorderBrush="{Binding Path=OtherTabHasMessages, Mode=OneWay, Converter={StaticResource ColorConverter}}"
-                                      Margin="4"
-                                      ToolTip="Switches between private messages and sending notes"/>
+                    <v:ProfileButtonView IsChecked="{Binding IsViewingProfile, Mode=TwoWay}"/>
+                    
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding Path=IsViewingProfile, Converter={StaticResource OppositeBoolConverter}}">
+                        <v:UpDownButtonView Margin="4"
+                                            VerticalAlignment="Center"
+                                            IsChecked="{Binding Path=CanShowSubject, Mode=TwoWay}"
+                                            Visibility="{Binding Path=IsViewingChat, Converter={StaticResource OppositeBoolConverter}}"
+                                            ToolTip="Toggles whether the note subject line is shown"/>
+                    
+                        <v:MoreButtonView Command="{Binding SwitchCommand}"
+                                          Margin="4"
+                                          ToolTip="Switches between private messages and sending notes"/>
+                        </StackPanel>
                 </StackPanel>
             </Grid>
             <v:RightClickMenu />

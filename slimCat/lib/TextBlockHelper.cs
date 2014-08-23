@@ -29,17 +29,11 @@ namespace slimCat.Libraries
 
     #endregion
 
-    /// <summary>
-    ///     The text block helper.
-    /// </summary>
     [ExcludeFromCodeCoverage]
     public class TextBlockHelper
     {
         #region Static Fields
 
-        /// <summary>
-        ///     The article content property.
-        /// </summary>
         public static readonly DependencyProperty ArticleContentProperty =
             DependencyProperty.RegisterAttached(
                 "InlineList",
@@ -51,33 +45,15 @@ namespace slimCat.Libraries
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The get inline list.
-        /// </summary>
-        /// <param name="element">
-        ///     The element.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="string" />.
-        /// </returns>
-        public static string GetInlineList(TextBlock element)
+        public static List<Inline> GetInlineList(TextBlock element)
         {
             if (element != null)
-                return element.GetValue(ArticleContentProperty) as string;
+                return element.GetValue(ArticleContentProperty) as List<Inline>;
 
-            return string.Empty;
+            return null;
         }
 
-        /// <summary>
-        ///     The set inline list.
-        /// </summary>
-        /// <param name="element">
-        ///     The element.
-        /// </param>
-        /// <param name="value">
-        ///     The value.
-        /// </param>
-        public static void SetInlineList(TextBlock element, string value)
+        public static void SetInlineList(TextBlock element, List<Inline> value)
         {
             if (element != null)
                 element.SetValue(ArticleContentProperty, value);

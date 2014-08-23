@@ -45,6 +45,7 @@ namespace slimCat.Models
         private readonly ObservableCollection<IMessage> notes = new ObservableCollection<IMessage>();
 
         private string noteSubject;
+        private string profileText;
 
         #endregion
 
@@ -174,6 +175,16 @@ namespace slimCat.Models
             }
         }
 
+        public string ProfileText
+        {
+            get { return profileText; }
+            set
+            {
+                profileText = value;
+                OnPropertyChanged("ProfileText");
+            }
+        }
+
         public bool ShouldViewNotes { get; set; }
 
         public ObservableCollection<IMessage> Notes
@@ -184,13 +195,6 @@ namespace slimCat.Models
         #endregion
 
         #region Methods
-
-        /// <summary>
-        ///     The dispose.
-        /// </summary>
-        /// <param name="isManaged">
-        ///     The is managed.
-        /// </param>
         protected override void Dispose(bool isManaged)
         {
             if (isManaged)

@@ -21,17 +21,14 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using System.Net;
     using HtmlAgilityPack;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Unity;
     using Models;
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
-    using System.Globalization;
-    using System.Linq;
-    using System.Text.RegularExpressions;
     using Utilities;
     using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
@@ -69,7 +66,6 @@ namespace slimCat.Services
 
         private void GetProfileDataAsyncHandler(object s, DoWorkEventArgs e)
         {
-            return;
             var characterName = (string)e.Argument;
 
             var resp = browser.GetResponse(Constants.UrlConstants.CharacterPage + characterName, true);
@@ -85,15 +81,19 @@ namespace slimCat.Services
             if (htmlDoc.DocumentNode == null)
                 return;
 
-
+            string profileBody;
             var result = htmlDoc.DocumentNode.SelectNodes(ProfileBody);
             {
                 if (result == null || result.Count != 1)
                     return;
 
-                Console.WriteLine(result[0].InnerHtml.Substring(0, 400));
-
+                profileBody = WebUtility.HtmlDecode(result[0].InnerHtml);
+                profileBody = profileBody.Replace("<br>", "");
             }
+
+            var model = container.Resolve<PmChannelModel>(characterName);
+
+            model.ProfileText = profileBody;
         }
 
         [Conditional("DEBUG")]

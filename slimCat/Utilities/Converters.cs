@@ -21,6 +21,7 @@ namespace slimCat.Utilities
 {
     #region Usings
 
+    using System.Windows.Shapes;
     using Models;
     using Services;
     using System;
@@ -60,7 +61,11 @@ namespace slimCat.Utilities
         Icon,
         Invalid,
         Color,
-        NoParse
+        NoParse,
+        Indent,
+        Collapse,
+        Quote,
+        HorizontalRule
     }
 
     /// <summary>
@@ -209,7 +214,10 @@ namespace slimCat.Utilities
                 {"s", BbCodeType.Strikethrough},
                 {"channel", BbCodeType.Channel},
                 {"color", BbCodeType.Color},
-                {"noparse", BbCodeType.NoParse}
+                {"noparse", BbCodeType.NoParse},
+                {"collapse", BbCodeType.Collapse},
+                {"quote", BbCodeType.Quote},
+                {"hr", BbCodeType.HorizontalRule}
             };
 
         #endregion
@@ -377,7 +385,10 @@ namespace slimCat.Utilities
                     {BbCodeType.Superscript, MakeSuperscript},
                     {BbCodeType.User, MakeUser},
                     {BbCodeType.NoParse, MakeNormalText},
-                    {BbCodeType.Icon, MakeIcon}
+                    {BbCodeType.Icon, MakeIcon},
+                    {BbCodeType.Collapse, MakeCollapse},
+                    {BbCodeType.Quote, MakeQuote},
+                    {BbCodeType.HorizontalRule, MakeHorizontalRule}
                 };
 
             var converter = converters[chunk.Type];
@@ -429,7 +440,8 @@ namespace slimCat.Utilities
 
             var unbalancedTags =
                 (from t in tags
-                    where t.Type != BbCodeType.None
+                    where t.Type != BbCodeType.None 
+                    where t.Type != BbCodeType.HorizontalRule
                     group t by t.Type
                     into g
                     select new {Type = g.Key, Tags = g})
@@ -495,7 +507,8 @@ namespace slimCat.Utilities
                 if (tag.IsClosing) continue;
 
                 // tell the system we're in the context of this tag now
-                if (tag.Type != BbCodeType.None) // text content can't have children
+                // though ignore children of 'text' and 'hr'
+                if (tag.Type != BbCodeType.None && tag.Type != BbCodeType.HorizontalRule) 
                     openTags.Push(tag);
 
                 // if we're added as a child to another tag, don't process independently of parent
@@ -721,6 +734,62 @@ namespace slimCat.Utilities
             }
 
             return new Span();
+        }
+
+        private Inline MakeCollapse(ParsedChunk arg)
+        {
+            var title = arg.Arguments;
+
+            var container = new InlineUIContainer();
+            var expander = new Expander
+            {
+                Header = title,
+                Margin = new Thickness(0),
+                Padding = new Thickness(0)
+            };
+
+            var text = new TextBlock
+            {
+                Foreground = Locator.Find<SolidColorBrush>("ForegroundBrush"),
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(25,0,0,0)
+            };
+            Libraries.TextBlockHelper.SetInlineList(text, arg.Children.Select(ToInline).ToList());
+
+            expander.Content = text;
+            container.Child = expander;
+
+            arg.Children.Clear();
+            return container;
+        }
+
+        private Inline MakeQuote(ParsedChunk arg)
+        {
+            var container = new InlineUIContainer();
+
+            var text = new TextBlock
+            {
+                Foreground = Locator.Find<SolidColorBrush>("ForegroundBrush"),
+                Opacity = 0.8,
+                Margin = new Thickness(50,5,0,5),
+                TextWrapping = TextWrapping.Wrap,
+            };
+            Libraries.TextBlockHelper.SetInlineList(text, arg.Children.Select(ToInline).ToList());
+
+            container.Child = text;
+            arg.Children.Clear();
+            return container;
+        }
+
+        private Inline MakeHorizontalRule(ParsedChunk arg)
+        {
+            return new InlineUIContainer(new Line
+            {
+                Stretch = Stretch.Fill,
+                X2 = 1, 
+                Margin = new Thickness(0,5,0,5),
+                Stroke = Locator.Find<SolidColorBrush>("HighlightBrush")
+            });
         }
 
         #endregion

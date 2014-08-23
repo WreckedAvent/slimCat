@@ -76,6 +76,8 @@ namespace slimCat.ViewModels
 
         private bool showSubject;
 
+        private bool isViewingProfile;
+
         #endregion
 
         #region Constructors and Destructors
@@ -205,7 +207,7 @@ namespace slimCat.ViewModels
 
         public string Title
         {
-            get { return isViewingChat ? "Chat" : "Notes"; }
+            get { return  IsViewingProfile ? "Profile" : isViewingChat ? "Chat" : "Notes"; }
         }
 
         public string NoteSubject
@@ -267,6 +269,18 @@ namespace slimCat.ViewModels
                 OnPropertyChanged("CanShowSubject");
                 OnPropertyChanged("EntryTextBoxIcon");
                 OnPropertyChanged("EntryTextBoxLabel");
+            }
+        }
+
+        public bool IsViewingProfile
+        {
+            get { return isViewingProfile; }
+            set
+            {
+                isViewingProfile = value;
+                IsViewingChat = true;
+
+                OnPropertyChanged("IsViewingProfile");
             }
         }
 
