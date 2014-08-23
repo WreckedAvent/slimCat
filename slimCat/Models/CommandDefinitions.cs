@@ -90,7 +90,7 @@ namespace slimCat.Models
                 Define("cancelrequest", "cancelfriendrequest").As("request-cancel").AsForCharacters(),
 
                 Define("roll").As(C.ChannelRoll).WithArguments("dice", A.Channel),
-                Define("report").As(C.AdminAlert).WithArguments(A.Name, A.Report, A.Channel),
+                Define("report").As(C.AdminAlert).WithArguments(A.Name, A.Report, A.Action, A.Channel),
                 Define("status", "online", "away", "busy", "idle", "dnd", "looking").As(C.UserStatus).WithArguments(A.Status, A.StatusMessage),
                 Define("setowner").As(C.ChannelSetOwner).WithArguments(A.Character, A.Channel),
                 Define("soundon").AsArgumentless(),
@@ -405,14 +405,14 @@ namespace slimCat.Models
             return this;
         }
 
-        public FluentCommandBuilder WithArguments(string first, string second, string third = null)
+        public FluentCommandBuilder WithArguments(string first, string second, string third = null, string fourth = null)
         {
             if (first == A.Channel || second == A.Channel)
                 CommandType = T.SingleArgsAndChannel;
             else
                 CommandType = T.TwoArgs;
 
-            if (third == A.Channel)
+            if (third == A.Channel || fourth == A.Channel)
                 CommandType = T.TwoArgsAndChannel;
 
             Arguments.Add(first);
@@ -420,6 +420,9 @@ namespace slimCat.Models
 
             if (third != null)
                 Arguments.Add(third);
+
+            if (fourth != null)
+                Arguments.Add(fourth);
 
             return this;
         }
