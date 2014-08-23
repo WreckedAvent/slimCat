@@ -235,6 +235,7 @@
     <Compile Include="Commands\System\BroadcastCommand.cs" />
     <Compile Include="Services\IconService.cs" />
     <Compile Include="Services\Interfaces\IAutomationService.cs" />
+    <Compile Include="Services\Interfaces\IChatState.cs" />
     <Compile Include="Services\Interfaces\IProfileService.cs" />
     <Compile Include="Services\Interfaces\INoteService.cs" />
     <Compile Include="Services\Interfaces\IBrowser.cs" />
@@ -291,7 +292,7 @@
     <Compile Include="ViewModels\Channels\PMChannelViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\ToastNotificationsViewModel.cs" />
     <Compile Include="ViewModels\Channel Bar\UsersTabViewModel.cs" />
-    <Compile Include="ViewModels\Channels\UtilityChannelViewModel.cs" />
+    <Compile Include="ViewModels\Channels\HomeChannelViewModel.cs" />
     <Compile Include="ViewModels\Full Screen\CharacterSelectViewModel.cs" />
     <Compile Include="ViewModels\Full Screen\ChatWrapperViewModel.cs" />
     <Compile Include="ViewModels\Full Screen\LoginViewModel.cs" />
@@ -450,8 +451,8 @@
     <Compile Include="Views\User Bar\UserbarView.xaml.cs">
       <DependentUpon>UserbarView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Channels\UtilityChannelView.xaml.cs">
-      <DependentUpon>UtilityChannelView.xaml</DependentUpon>
+    <Compile Include="Views\Channels\HomeChannelView.xaml.cs">
+      <DependentUpon>HomeChannelView.xaml</DependentUpon>
     </Compile>
     <Page Include="Theme\Colors.xaml">
       <SubType>Designer</SubType>
@@ -658,7 +659,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Channels\UtilityChannelView.xaml">
+    <Page Include="Views\Channels\HomeChannelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

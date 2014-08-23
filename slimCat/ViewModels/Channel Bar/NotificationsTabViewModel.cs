@@ -28,6 +28,7 @@ namespace slimCat.ViewModels
     using Models;
     using System.Collections.ObjectModel;
     using System.Windows.Input;
+    using Services;
     using Utilities;
     using Views;
 
@@ -60,10 +61,8 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public NotificationsTabViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg,
-            ICharacterManager manager)
-            : base(contain, regman, eventagg, cm, manager)
+        public NotificationsTabViewModel(IChatState chatState)
+            : base(chatState)
         {
             Container.RegisterType<object, NotificationsTabView>(NotificationsTabView);
 

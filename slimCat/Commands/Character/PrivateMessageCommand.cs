@@ -82,7 +82,7 @@ namespace slimCat.Services
             }
             else
             {
-                connection.SendMessage(
+                ChatConnection.SendMessage(
                     new Dictionary<string, object>
                         {
                             {Constants.Arguments.Action, Constants.Arguments.ActionNotify},

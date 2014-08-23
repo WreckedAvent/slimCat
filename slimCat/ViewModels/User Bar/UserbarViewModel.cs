@@ -52,8 +52,6 @@ namespace slimCat.ViewModels
 
         #region Fields
 
-        private readonly IChatConnection chatConnection;
-
         private readonly IDictionary<string, StatusType> statusKinds = new Dictionary<string, StatusType>
         {
             {
@@ -80,8 +78,6 @@ namespace slimCat.ViewModels
         private bool channelsExpanded = true;
 
         private RelayCommand close;
-
-        private RelayCommand logout;
 
         private bool hasNewChanMessage;
 
@@ -117,11 +113,9 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public UserbarViewModel(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
-            ICharacterManager manager, IChatConnection chatConnection)
-            : base(contain, regman, events, cm, manager)
+        public UserbarViewModel(IChatState chatState)
+            : base(chatState)
         {
-            this.chatConnection = chatConnection;
             try
             {
                 ChatModel.CurrentPms.CollectionChanged += (s, e) => OnPropertyChanged("HasPms");
@@ -423,10 +417,6 @@ namespace slimCat.ViewModels
             get { return toggleAuto ?? (toggleAuto = new RelayCommand(ToggleAutoReplyEvent)); }
         }
 
-        public ICommand LogoutCommand
-        {
-            get { return logout ?? (logout = new RelayCommand(LogoutEvent)); }
-        }
 
         public bool IsChangingAuto
         {
@@ -460,12 +450,6 @@ namespace slimCat.ViewModels
         {
             IsChangingAuto = !IsChangingAuto;
             if (isChangingAuto) AutoReplyEnabled = !AutoReplyEnabled;
-        }
-
-        private void LogoutEvent(object o)
-        {
-            chatConnection.Disconnect();
-            RegionManager.RequestNavigate(Shell.MainRegion, new Uri(CharacterSelectViewModel.CharacterSelectViewName, UriKind.Relative));
         }
 
         #endregion

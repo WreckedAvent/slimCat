@@ -66,14 +66,12 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public LoginViewModel(
-            IUnityContainer contain, IRegionManager regman, IAccount acc, IEventAggregator events, IChatModel cm,
-            ICharacterManager lists, IBrowser browser)
-            : base(contain, regman, events, cm, lists)
+        public LoginViewModel(IChatState chatState, IBrowser browser)
+            : base(chatState)
         {
             try
             {
-                model = acc.ThrowIfNull("acc");
+                model = chatState.Account;
                 this.browser = browser;
                 CheckForUpdates();
 

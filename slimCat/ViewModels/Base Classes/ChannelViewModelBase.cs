@@ -32,6 +32,7 @@ namespace slimCat.ViewModels
     using System.Linq;
     using System.Timers;
     using System.Windows.Input;
+    using Services;
     using Utilities;
 
     #endregion
@@ -78,10 +79,8 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        protected ChannelViewModelBase(
-            IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
-            ICharacterManager manager)
-            : base(contain, regman, events, cm, manager)
+        protected ChannelViewModelBase(IChatState chatState)
+            : base(chatState)
         {
             Events.GetEvent<ErrorEvent>().Subscribe(UpdateError);
 

@@ -28,6 +28,7 @@ namespace slimCat.ViewModels
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Services;
     using Utilities;
     using Views;
 
@@ -65,10 +66,8 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public ManageListsViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg,
-            ICharacterManager manager)
-            : base(contain, regman, eventagg, cm, manager)
+        public ManageListsViewModel(IChatState chatState)
+            : base(chatState)
         {
             Container.RegisterType<object, ManageListsTabView>(ManageListsTabView);
 
@@ -115,9 +114,9 @@ namespace slimCat.ViewModels
                         var joinLeaveArguments = thisUpdate.Arguments as JoinLeaveEventArgs;
                         if (joinLeaveArguments != null)
                         {
-                            if (manager.IsOnList(name, ListKind.Moderator, false))
+                            if (CharacterManager.IsOnList(name, ListKind.Moderator, false))
                                 OnPropertyChanged("Moderators");
-                            if (manager.IsOnList(name, ListKind.Banned, false))
+                            if (CharacterManager.IsOnList(name, ListKind.Banned, false))
                                 OnPropertyChanged("Banned");
                             return;
                         }
@@ -127,7 +126,7 @@ namespace slimCat.ViewModels
                         {
                             listKinds.Each(x =>
                                 {
-                                    if (manager.IsOnList(name, x.Key, false))
+                                    if (CharacterManager.IsOnList(name, x.Key, false))
                                         OnPropertyChanged(x.Value);
                                 });
 
@@ -165,7 +164,7 @@ namespace slimCat.ViewModels
                     },
                 true);
 
-            cm.SelectedChannelChanged += (s, e) =>
+            ChatModel.SelectedChannelChanged += (s, e) =>
                 {
                     OnPropertyChanged("HasUsers");
                     OnPropertyChanged("Moderators");

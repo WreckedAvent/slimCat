@@ -29,6 +29,7 @@ namespace slimCat.ViewModels
     using System;
     using System.Linq;
     using System.Windows.Input;
+    using Services;
     using Utilities;
     using Views;
 
@@ -68,10 +69,8 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public ChannelbarViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator events,
-            ICharacterManager manager)
-            : base(contain, regman, events, cm, manager)
+        public ChannelbarViewModel(IChatState chatState)
+            : base(chatState)
         {
             try
             {
@@ -87,7 +86,7 @@ namespace slimCat.ViewModels
 
                 ChatModel.Notifications.CollectionChanged += (s, e) => HasUpdate = ChatModel.Notifications.Any();
 
-                events.GetEvent<ChatSearchResultEvent>().Subscribe(_ => HasNewSearchResults = true);
+                Events.GetEvent<ChatSearchResultEvent>().Subscribe(_ => HasNewSearchResults = true);
 
                 LoggingSection = "channel bar vm";
             }

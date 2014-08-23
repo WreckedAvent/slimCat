@@ -49,8 +49,6 @@ namespace slimCat.ViewModels
     /// </summary>
     public class SearchTabViewModel : ChannelbarViewModelCommon
     {
-        private readonly IChatConnection connection;
-
         #region Constants
 
         public const string SearchTabView = "SearchTabView";
@@ -91,12 +89,9 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public SearchTabViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg,
-            ICharacterManager manager, IBrowser browser, IChatConnection connection)
-            : base(contain, regman, eventagg, cm, manager)
+        public SearchTabViewModel(IChatState chatState, IBrowser browser)
+            : base(chatState)
         {
-            this.connection = connection;
             Container.RegisterType<object, SearchTabView>(SearchTabView);
 
             var worker = new BackgroundWorker();
@@ -254,7 +249,7 @@ namespace slimCat.ViewModels
                 toSend[term.Category].Add(term.UnderlyingValue ?? term.DisplayName);
             });
 
-            connection.SendMessage(toSend, "FKS");
+            ChatConnection.SendMessage(toSend, "FKS");
 
             isInSearchCoolDown = true;
             chatSearchCooldownTimer.Start();

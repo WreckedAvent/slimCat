@@ -65,6 +65,7 @@ namespace slimCat.ViewModels
 
         private RelayCommand link;
 
+        private RelayCommand logout;
         private RelayCommand openMenu;
 
         private RelayCommand openPm;
@@ -81,16 +82,16 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        protected ViewModelBase(IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
-            ICharacterManager manager)
+        protected ViewModelBase(IChatState chatState)
         {
             try
             {
-                Container = contain.ThrowIfNull("contain");
-                RegionManager = regman.ThrowIfNull("regman");
-                Events = events.ThrowIfNull("events");
-                ChatModel = cm.ThrowIfNull("cm");
-                CharacterManager = manager.ThrowIfNull("manager");
+                Container = chatState.Container;
+                RegionManager = chatState.RegionManager;
+                Events = chatState.EventAggregator;
+                ChatModel = chatState.ChatModel;
+                CharacterManager = chatState.CharacterManager;
+                ChatConnection = chatState.ChatConnection;
 
                 RightClickMenuViewModel = new RightClickMenuViewModel(ChatModel.IsGlobalModerator, CharacterManager, Container.Resolve<IPermissionService>());
                 CreateReportViewModel = new CreateReportViewModel(Events, ChatModel);
@@ -206,6 +207,8 @@ namespace slimCat.ViewModels
         /// </value>
         protected ICharacterManager CharacterManager { get; set; }
 
+        protected IChatConnection ChatConnection { get; set; }
+
         #region ICommands
 
         public ICommand BanCommand
@@ -258,6 +261,10 @@ namespace slimCat.ViewModels
             get { return searchTag ?? (searchTag = new RelayCommand(SearchTagEvent)); }
         }
 
+        public ICommand LogoutCommand
+        {
+            get { return logout ?? (logout = new RelayCommand(LogoutEvent)); }
+        }
 
         public ICommand OpenRightClickMenuCommand
         {
@@ -523,6 +530,11 @@ namespace slimCat.ViewModels
         private void IsUninterestedEvent(object args)
         {
             InterestedEvent(args, false);
+        }
+        private void LogoutEvent(object o)
+        {
+            ChatConnection.Disconnect();
+            RegionManager.RequestNavigate(Shell.MainRegion, new Uri(CharacterSelectViewModel.CharacterSelectViewName, UriKind.Relative));
         }
 
         private void KickEvent(object args)

@@ -63,17 +63,15 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public ChannelsTabViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager reggman, IEventAggregator events,
-            ICharacterManager manager, IChannelListUpdater updater)
-            : base(contain, reggman, events, cm, manager)
+        public ChannelsTabViewModel(IChatState chatState, IChannelListUpdater updater)
+            : base(chatState)
         {
             this.updater = updater;
             Container.RegisterType<object, ChannelTabView>(ChannelsTabView);
 
             SearchSettings.Updated += Update;
 
-            cm.AllChannels.CollectionChanged += Update;
+            ChatModel.AllChannels.CollectionChanged += Update;
         }
 
         #endregion

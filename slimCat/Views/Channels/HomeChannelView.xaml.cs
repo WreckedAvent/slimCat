@@ -26,9 +26,9 @@ namespace slimCat.Views
     #endregion
 
     /// <summary>
-    ///     Interaction logic for UtilityChannelView.xaml
+    ///     Interaction logic for HomeChannelView.xaml
     /// </summary>
-    public partial class UtilityChannelView
+    public partial class HomeChannelView
     {
         #region Fields
 
@@ -44,7 +44,7 @@ namespace slimCat.Views
         /// <param name="vm">
         ///     The vm.
         /// </param>
-        public UtilityChannelView(UtilityChannelViewModel vm)
+        public HomeChannelView(HomeChannelViewModel vm)
         {
             InitializeComponent();
             this.vm = vm;

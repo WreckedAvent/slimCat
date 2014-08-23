@@ -30,6 +30,7 @@ namespace slimCat.ViewModels
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows.Input;
+    using Services;
     using Utilities;
     using Views;
 
@@ -66,14 +67,12 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public CharacterSelectViewModel(
-            IUnityContainer contain, IRegionManager regman, IEventAggregator events, IAccount acc, IChatModel cm,
-            ICharacterManager manager)
-            : base(contain, regman, events, cm, manager)
+        public CharacterSelectViewModel(IChatState chatState)
+            : base(chatState)
         {
             try
             {
-                model = acc.ThrowIfNull("acc");
+                model = chatState.Account;
 
                 Events.GetEvent<LoginCompleteEvent>()
                     .Subscribe(HandleLoginComplete, ThreadOption.UIThread, true);

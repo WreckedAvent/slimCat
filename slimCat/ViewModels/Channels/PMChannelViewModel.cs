@@ -82,10 +82,8 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public PmChannelViewModel(
-            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
-            ICharacterManager manager, INoteService notes, IProfileService profile)
-            : base(contain, regman, events, cm, manager)
+        public PmChannelViewModel(string name, IChatState chatState, INoteService notes, IProfileService profile)
+            : base(chatState)
         {
             try
             {
@@ -140,7 +138,7 @@ namespace slimCat.ViewModels
                 };
 
                 Model.Settings = SettingsService.GetChannelSettings(
-                    cm.CurrentCharacter.Name, Model.Title, Model.Id, Model.Type);
+                    ChatModel.CurrentCharacter.Name, Model.Title, Model.Id, Model.Type);
 
                 ChannelSettings.Updated += (s, e) =>
                 {
@@ -148,7 +146,7 @@ namespace slimCat.ViewModels
                     if (!ChannelSettings.IsChangingSettings)
                     {
                         SettingsService.UpdateSettingsFile(
-                            ChannelSettings, cm.CurrentCharacter.Name, Model.Title, Model.Id);
+                            ChannelSettings, ChatModel.CurrentCharacter.Name, Model.Title, Model.Id);
                     }
                 };
 

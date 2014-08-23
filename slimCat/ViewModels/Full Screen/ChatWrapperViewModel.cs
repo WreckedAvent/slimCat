@@ -26,6 +26,7 @@ namespace slimCat.ViewModels
     using Microsoft.Practices.Unity;
     using Models;
     using System;
+    using Services;
     using Utilities;
     using Views;
 
@@ -44,10 +45,8 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public ChatWrapperViewModel(
-            IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
-            ICharacterManager lists)
-            : base(contain, regman, events, cm, lists)
+        public ChatWrapperViewModel(IChatState chatState)
+            : base(chatState)
         {
             try
             {

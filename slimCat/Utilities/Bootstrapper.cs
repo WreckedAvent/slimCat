@@ -69,6 +69,7 @@ namespace slimCat.Utilities
                 RegisterSingleton<INoteService, NoteService>();
                 RegisterSingleton<IFriendRequestService, FriendRequestService>();
                 RegisterSingleton<IProfileService, ProfileService>();
+                RegisterSingleton<IChatState, ChatState>();
 
                 Register<Application, Application>(Application.Current);
                 Register<WebSocket, WebSocket>(new WebSocket(Constants.ServerHost));

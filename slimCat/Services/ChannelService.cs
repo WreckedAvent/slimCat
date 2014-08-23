@@ -143,7 +143,7 @@ namespace slimCat.Services
                     // our model won't have a reference to home, so we build it manually
                     temp = new GeneralChannelModel(id, ChannelType.Utility);
                     container.RegisterInstance(id, temp);
-                    container.Resolve<UtilityChannelViewModel>(new ParameterOverride("name", id));
+                    container.Resolve<HomeChannelViewModel>(new ParameterOverride("name", id));
                 }
                 else
                 {

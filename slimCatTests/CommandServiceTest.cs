@@ -71,20 +71,24 @@ namespace slimCatTest
             var auto = Mock.Of<IAutomationService>();
             var notes = Mock.Of<INoteService>();
             var friendRequest = Mock.Of<IFriendRequestService>();
+            var account = Mock.Of<IAccount>();
 
-            eventAggregator = new EventAggregator();
-
-            // we shouldn't reference this in tests
-            new ServerCommandService(
-                chatModel.Object,
-                chatConnection.Object,
-                channelManager.Object,
+            eventAggregator = new EventAggregator(); 
+            var state = new ChatState(
                 contain,
                 regman,
                 eventAggregator,
+                chatModel.Object,
                 characterManager.Object,
+                chatConnection.Object,
+                account);
+
+            // we shouldn't reference this in tests
+            new ServerCommandService(
+                state,
                 auto,
                 notes,
+                channelManager.Object,
                 friendRequest);
         }
 

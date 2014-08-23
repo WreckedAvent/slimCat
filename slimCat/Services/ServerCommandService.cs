@@ -46,8 +46,6 @@ namespace slimCat.Services
 
         private readonly IAutomationService automation;
 
-        private readonly IChatConnection connection;
-
         private readonly object locker = new object();
 
         private readonly IChannelService manager;
@@ -66,20 +64,13 @@ namespace slimCat.Services
 
         #region Constructors and Destructors
 
-        public ServerCommandService(
-            IChatModel cm,
-            IChatConnection conn,
-            IChannelService manager,
-            IUnityContainer contain,
-            IRegionManager regman,
-            IEventAggregator eventagg,
-            ICharacterManager characterManager,
+        public ServerCommandService(IChatState chatState,
             IAutomationService automation,
             INoteService notes,
+            IChannelService manager,
             IFriendRequestService friendRequestService)
-            : base(contain, regman, eventagg, cm, characterManager)
+            : base(chatState)
         {
-            connection = conn;
             this.manager = manager;
             this.automation = automation;
             this.notes = notes;
@@ -90,7 +81,7 @@ namespace slimCat.Services
             Events.GetEvent<ChatCommandEvent>().Subscribe(EnqueueAction, ThreadOption.BackgroundThread, true);
             Events.GetEvent<ConnectionClosedEvent>().Subscribe(WipeState, ThreadOption.PublisherThread, true);
 
-            ChatModel.CurrentAccount = connection.Account;
+            ChatModel.CurrentAccount = ChatConnection.Account;
 
             noisyTypes = new[]
                 {
@@ -294,7 +285,7 @@ namespace slimCat.Services
         private void LoginCommand(IDictionary<string, object> command)
         {
             ChatModel.ClientUptime = DateTimeOffset.Now;
-            connection.SendMessage(Constants.ClientCommands.SystemUptime);
+            ChatConnection.SendMessage(Constants.ClientCommands.SystemUptime);
 
             Dispatcher.Invoke((Action) delegate { ChatModel.IsAuthenticated = true; });
 
@@ -314,7 +305,7 @@ namespace slimCat.Services
                     {
                         Log("Auto joining " + walk.Current);
                         autoJoinedChannels.Add(walk.Current.channel);
-                        connection.SendMessage(walk.Current, Constants.ClientCommands.ChannelJoin);
+                        ChatConnection.SendMessage(walk.Current, Constants.ClientCommands.ChannelJoin);
                         if (walk.MoveNext())
                             return;
 

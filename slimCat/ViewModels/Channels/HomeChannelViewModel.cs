@@ -45,7 +45,7 @@ namespace slimCat.ViewModels
     /// <summary>
     ///     Used for a few channels which are not treated normally and cannot receive/send messages.
     /// </summary>
-    public class UtilityChannelViewModel : ChannelViewModelBase
+    public class HomeChannelViewModel : ChannelViewModelBase
     {
 
         #region Fields
@@ -70,10 +70,8 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public UtilityChannelViewModel(
-            string name, IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
-            ICharacterManager manager, IAutomationService automation, IBrowser browser, IIconService iconService)
-            : base(contain, regman, events, cm, manager)
+        public HomeChannelViewModel(string name, IChatState chatState, IAutomationService automation, IBrowser browser, IIconService iconService)
+            : base(chatState)
         {
             try
             {
@@ -82,7 +80,7 @@ namespace slimCat.ViewModels
                 flavorText = new StringBuilder("Connecting");
                 connectDotDot = new StringBuilder();
 
-                Container.RegisterType<object, UtilityChannelView>(Model.Id, new InjectionConstructor(this));
+                Container.RegisterType<object, HomeChannelView>(Model.Id, new InjectionConstructor(this));
                 minuteOnlineCount = new CacheCount(OnlineCountPrime, 15, 1000*15);
 
                 updateTimer.Enabled = true;
@@ -91,7 +89,6 @@ namespace slimCat.ViewModels
                         OnPropertyChanged("RoughServerUpTime");
                         OnPropertyChanged("RoughClientUpTime");
                         OnPropertyChanged("LastMessageReceived");
-                        OnPropertyChanged("IsConnecting");
                     };
 
                 updateTimer.Elapsed += UpdateConnectText;
@@ -543,11 +540,6 @@ namespace slimCat.ViewModels
 
         public int DelayTime { get; set; }
 
-        public bool IsConnecting
-        {
-            get { return !ChatModel.IsAuthenticated; }
-        }
-
         public string ConnectFlavorText
         {
             get
@@ -648,7 +640,6 @@ namespace slimCat.ViewModels
         public void LoggedInEvent(bool? _)
         {
             updateTimer.Elapsed -= UpdateConnectText;
-            OnPropertyChanged("IsConnecting");
 
             SettingsService.ReadApplicationSettingsFromXml(ChatModel.CurrentCharacter.Name, CharacterManager);
             automation.ResetStatusTimers();
@@ -673,8 +664,6 @@ namespace slimCat.ViewModels
 
             flavorText.Append("\nStaggering connection");
             ConnectTime = 0;
-
-            OnPropertyChanged("IsConnecting");
         }
 
         public void LoginReconnectingEvent(int reconnectTime)
@@ -690,8 +679,6 @@ namespace slimCat.ViewModels
 
             ConnectTime = 0;
             DelayTime = reconnectTime;
-
-            OnPropertyChanged("IsConnecting");
         }
 
         public void UpdateConnectText(object sender, EventArgs e)

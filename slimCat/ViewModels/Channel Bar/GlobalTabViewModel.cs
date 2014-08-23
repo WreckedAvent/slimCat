@@ -27,6 +27,7 @@ namespace slimCat.ViewModels
     using Models;
     using System.Collections.Generic;
     using System.Linq;
+    using Services;
     using Utilities;
     using Views;
 
@@ -51,10 +52,8 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public GlobalTabViewModel(
-            IChatModel cm, IUnityContainer contain, IRegionManager regman, IEventAggregator eventagg,
-            ICharacterManager manager)
-            : base(contain, regman, eventagg, cm, manager)
+        public GlobalTabViewModel(IChatState chatState)
+            : base(chatState)
         {
             Container.RegisterType<object, GlobalTabView>(GlobalTabView);
             genderSettings = new GenderSettingsModel();

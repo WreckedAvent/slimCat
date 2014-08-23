@@ -25,6 +25,7 @@ namespace slimCat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
+    using Services;
 
     #endregion
 
@@ -41,12 +42,10 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        protected ChannelbarViewModelCommon(
-            IUnityContainer contain, IRegionManager regman, IEventAggregator events, IChatModel cm,
-            ICharacterManager lists)
-            : base(contain, regman, events, cm, lists)
+        protected ChannelbarViewModelCommon(IChatState chatState)
+            : base(chatState)
         {
-            cm.SelectedChannelChanged += (s, e) => OnPropertyChanged("HasUsers");
+            ChatModel.SelectedChannelChanged += (s, e) => OnPropertyChanged("HasUsers");
         }
 
         #endregion
