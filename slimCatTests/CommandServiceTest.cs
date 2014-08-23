@@ -70,6 +70,7 @@ namespace slimCatTest
             var regman = Mock.Of<IRegionManager>();
             var auto = Mock.Of<IAutomationService>();
             var notes = Mock.Of<INoteService>();
+            var friendRequest = Mock.Of<IFriendRequestService>();
 
             eventAggregator = new EventAggregator();
 
@@ -83,7 +84,8 @@ namespace slimCatTest
                 eventAggregator,
                 characterManager.Object,
                 auto,
-                notes);
+                notes,
+                friendRequest);
         }
 
         #endregion
