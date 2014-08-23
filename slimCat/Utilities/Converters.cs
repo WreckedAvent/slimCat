@@ -21,14 +21,13 @@ namespace slimCat.Utilities
 {
     #region Usings
 
-    using System.Net.Cache;
     using Models;
-    using Properties;
     using Services;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Net.Cache;
     using System.Text;
     using System.Web;
     using System.Windows;

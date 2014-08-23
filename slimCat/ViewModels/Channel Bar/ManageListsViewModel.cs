@@ -21,14 +21,12 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using Microsoft.Practices.Prism.Events;
-    using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
+    using Services;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Services;
     using Utilities;
     using Views;
 
@@ -172,7 +170,7 @@ namespace slimCat.ViewModels
                     OnPropertyChanged("Banned");
                 };
 
-            Events.GetEvent<ChatSearchResultEvent>().Subscribe((_) =>
+            Events.GetEvent<ChatSearchResultEvent>().Subscribe(_ =>
             {
                 OnPropertyChanged("SearchResults");
                 OnPropertyChanged("HasSearchResults");

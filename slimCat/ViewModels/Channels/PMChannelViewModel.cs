@@ -23,7 +23,6 @@ namespace slimCat.ViewModels
 
     using Libraries;
     using Microsoft.Practices.Prism.Events;
-    using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
@@ -74,8 +73,6 @@ namespace slimCat.ViewModels
 
         private DateTimeOffset noteTimeLeft;
 
-        private readonly IProfileService profileService;
-
         private bool showSubject;
 
         #endregion
@@ -93,8 +90,7 @@ namespace slimCat.ViewModels
                 noteService = notes;
                 notes.GetNotesAsync(name);
 
-                profileService = profile;
-                profileService.GetProfileDataAsync(name);
+                profile.GetProfileDataAsync(name);
 
                 Model.PropertyChanged += OnModelPropertyChanged;
 

@@ -37,7 +37,6 @@ namespace slimCat.Models
         private readonly IAccount account;
 
         private readonly CollectionPair bookmarks = new CollectionPair();
-        private readonly IEventAggregator eventAggregator;
         private readonly CollectionPair friends = new CollectionPair();
         private readonly CollectionPair ignoreUpdates = new CollectionPair();
         private readonly CollectionPair ignored = new CollectionPair();
@@ -58,7 +57,6 @@ namespace slimCat.Models
         public GlobalCharacterManager(IAccount account, IEventAggregator eventAggregator)
         {
             this.account = account;
-            this.eventAggregator = eventAggregator;
 
             Collections = new HashSet<CollectionPair>
                 {

@@ -52,7 +52,6 @@ namespace slimCat.Services
 
         private readonly IUnityContainer container;
 
-        private readonly Regex amPmRegex = new Regex("sent,|(AM:)|(PM:)", RegexOptions.Compiled);
         #endregion
 
         #region Constructors
@@ -71,8 +70,6 @@ namespace slimCat.Services
         private void GetProfileDataAsyncHandler(object s, DoWorkEventArgs e)
         {
             var characterName = (string)e.Argument;
-
-            var notes = new List<IMessage>();
 
             var resp = browser.GetResponse(Constants.UrlConstants.CharacterPage + characterName, true);
 
@@ -96,50 +93,6 @@ namespace slimCat.Services
                 Console.WriteLine(result[0].InnerHtml.Substring(0, 400));
 
             }
-        }
-
-        private static DateTime FromFuzzyString(string timeAgo)
-        {
-            // captures a string like '8m, 25d, 8h, 55m'
-            const string regex = @"(\d+y|\d+mo|\d+d|\d+h|\d+m),? *";
-
-            var split = Regex
-                .Split(timeAgo, regex, RegexOptions.Compiled)
-                .Where(x => !string.IsNullOrEmpty(x))
-                .ToList();
-
-            var toReturn = DateTime.Now;
-
-            foreach (var date in split)
-            {
-                var splitDate = Regex
-                    .Split(date, @"(\d+)", RegexOptions.Compiled)
-                    .Where(x => !string.IsNullOrEmpty(x))
-                    .ToList();
-
-                int numberPart;
-                int.TryParse(splitDate[0], out numberPart);
-
-                var datePart = splitDate[1];
-
-                switch (datePart)
-                {
-                    case "y": toReturn = toReturn.Subtract(TimeSpan.FromDays(365 * numberPart)); break;
-                    case "mo": toReturn = toReturn.Subtract(TimeSpan.FromDays(27 * numberPart)); break;
-                    case "d": toReturn = toReturn.Subtract(TimeSpan.FromDays(numberPart)); break;
-                    case "h": toReturn = toReturn.Subtract(TimeSpan.FromHours(numberPart)); break;
-                    case "m": toReturn = toReturn.Subtract(TimeSpan.FromMinutes(numberPart)); break;
-                }
-            }
-
-            return toReturn;
-        }
-
-        private static DateTime FromExactString(string date)
-        {
-            // "at 03 Aug,2014 6:35:49"
-            const string format = "'at' dd MMM,yyyy h:mm:ss tt:";
-            return DateTime.ParseExact(date, format, CultureInfo.InvariantCulture);
         }
 
         [Conditional("DEBUG")]

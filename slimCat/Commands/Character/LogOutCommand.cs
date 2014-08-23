@@ -68,7 +68,7 @@ namespace slimCat.Services
             if (characterChannel != null)
                 characterChannel.TypingStatus = TypingStatus.Clear;
 
-            var updateArgs = new LoginStateChangedEventArgs()
+            var updateArgs = new LoginStateChangedEventArgs
             {
                 IsLogIn = false
             };

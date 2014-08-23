@@ -21,7 +21,6 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using System.Management.Instrumentation;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Modularity;
@@ -531,7 +530,8 @@ namespace slimCat.ViewModels
         {
             InterestedEvent(args, false);
         }
-        private void LogoutEvent(object o)
+
+        protected virtual void LogoutEvent(object o)
         {
             ChatConnection.Disconnect();
             RegionManager.RequestNavigate(Shell.MainRegion, new Uri(CharacterSelectViewModel.CharacterSelectViewName, UriKind.Relative));

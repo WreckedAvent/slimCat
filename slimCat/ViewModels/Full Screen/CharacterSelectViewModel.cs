@@ -26,11 +26,11 @@ namespace slimCat.ViewModels
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
+    using Services;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows.Input;
-    using Services;
     using Utilities;
     using Views;
 

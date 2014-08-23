@@ -24,9 +24,8 @@ namespace slimCat.ViewModels
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
-    using Models;
-    using System;
     using Services;
+    using System;
     using Utilities;
     using Views;
 

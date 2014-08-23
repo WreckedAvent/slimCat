@@ -23,7 +23,6 @@ namespace slimCat.Services
 
     using Microsoft.Practices.Prism;
     using Microsoft.Practices.Prism.Events;
-    using Microsoft.VisualBasic.CompilerServices;
     using Models;
     using Models.Api;
     using SimpleJson;

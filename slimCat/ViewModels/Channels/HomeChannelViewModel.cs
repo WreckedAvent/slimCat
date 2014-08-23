@@ -21,22 +21,19 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using System.Collections.ObjectModel;
-    using System.IO;
-    using System.Windows.Markup;
-    using System.Windows.Media;
-    using Microsoft.Practices.Prism.Events;
-    using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Microsoft.VisualBasic.FileIO;
     using Models;
     using Services;
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.IO;
     using System.Linq;
     using System.Net;
     using System.Text;
     using System.Timers;
+    using System.Windows.Media;
     using Utilities;
     using Views;
 
@@ -844,6 +841,12 @@ namespace slimCat.ViewModels
                 BrightBackgroundColor = GetColor(themeCsv[8]),
                 Url = themeCsv.Count == 10 ? themeCsv[9] : string.Empty
             };
+        }
+
+        protected override void LogoutEvent(object o)
+        {
+            base.LogoutEvent(o);
+            ConnectTime = 0;
         }
 
         #endregion

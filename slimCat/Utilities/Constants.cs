@@ -19,7 +19,6 @@
 
 namespace slimCat.Utilities
 {
-    using System.Web.Hosting;
 
     /// <summary>
     ///     The constants used by slimCat.

@@ -42,7 +42,7 @@ namespace slimCat.Views
 
         private Point lastPoint;
 
-        private double minDragDistance;
+        private readonly double minDragDistance;
         #endregion
 
         #region Constructors and Destructors

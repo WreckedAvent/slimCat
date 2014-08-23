@@ -23,8 +23,6 @@ namespace slimCat.ViewModels
 
     using Libraries;
     using Microsoft.Practices.Prism;
-    using Microsoft.Practices.Prism.Events;
-    using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
     using Newtonsoft.Json.Linq;
@@ -82,7 +80,7 @@ namespace slimCat.ViewModels
 
         private string searchString = string.Empty;
 
-        private bool isInSearchCoolDown = false;
+        private bool isInSearchCoolDown;
 
         private readonly Timer chatSearchCooldownTimer = new Timer(5500);
         #endregion

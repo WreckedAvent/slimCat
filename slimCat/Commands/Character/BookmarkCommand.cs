@@ -19,8 +19,8 @@
 
 namespace slimCat.Services
 {
-    using System.Collections.Generic;
     using Models;
+    using System.Collections.Generic;
     using Utilities;
 
     public partial class UserCommandService

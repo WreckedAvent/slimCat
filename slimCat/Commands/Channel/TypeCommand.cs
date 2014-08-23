@@ -53,7 +53,7 @@ namespace slimCat.Services
 
             channel.Type = isPublic ? ChannelType.Private : ChannelType.InviteOnly;
 
-            var updateArgs = new ChannelTypeChangedEventArgs()
+            var updateArgs = new ChannelTypeChangedEventArgs
             {
                 IsOpen = isPublic
             };

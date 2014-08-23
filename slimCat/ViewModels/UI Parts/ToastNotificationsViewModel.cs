@@ -21,14 +21,14 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using System.Diagnostics;
-    using System.Web;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Models;
     using System;
+    using System.Diagnostics;
     using System.Linq;
     using System.Timers;
+    using System.Web;
     using System.Windows.Input;
     using Utilities;
     using Views;
