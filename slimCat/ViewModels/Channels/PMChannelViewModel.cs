@@ -21,6 +21,7 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System.Linq;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Unity;
@@ -410,8 +411,8 @@ namespace slimCat.ViewModels
             {
                 if (model.IsSelected == false) return;
 
-                if (model.Notes.Count > model.LastNoteCount)
-                    IsViewingChat = false;
+                if (model.ShouldViewNotes || (ApplicationSettings.OpenOfflineChatsInNoteView && ConversationWith.Status == StatusType.Offline))
+                    IsViewingChat = model.ShouldViewNotes = false;
             }
 
             if (e.PropertyName != "NoteSubject") return;

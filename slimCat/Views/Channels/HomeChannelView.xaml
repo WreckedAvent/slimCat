@@ -344,11 +344,15 @@
                                               ToolTip="Allows slimCat to automatically filter out friends, bookmarks, and interested characters from search results.">
                                         Hide of interest characters from search results
                                     </CheckBox>
-
-
+                                    
                                     <CheckBox IsChecked="{Binding UseMilitaryTime}"
                                               ToolTip="Allows slimCat to use military (24-hour) labels for time stamps.">
                                         Use 24-hour time for time stamps
+                                    </CheckBox>
+
+                                    <CheckBox IsChecked="{Binding OpenOfflineChatsInNoteView}"
+                                              ToolTip="Allows slimCat to automatically switch your view to notes if a new conversation with a character is opened while they are offline.">
+                                        Open new conversations with offline users in note mode
                                     </CheckBox>
 
                                     <CheckBox IsChecked="{Binding SpellCheckEnabled}"

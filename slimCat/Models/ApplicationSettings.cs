@@ -81,6 +81,7 @@ namespace slimCat.Models
 
             SettingsVersion = Constants.ClientVer;
             UseMilitaryTime = true;
+            OpenOfflineChatsInNoteView = true;
         }
 
         #endregion
@@ -263,6 +264,8 @@ namespace slimCat.Models
         public static IList<string> IgnoreUpdates { get; set; }
 
         public static bool UseMilitaryTime { get; set; }
+
+        public static bool OpenOfflineChatsInNoteView { get; set; }
 
         #endregion
     }

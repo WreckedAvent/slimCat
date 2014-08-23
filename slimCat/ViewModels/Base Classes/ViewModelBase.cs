@@ -402,7 +402,7 @@ namespace slimCat.ViewModels
             {
                 if (interpret.EndsWith("/notes"))
                 {
-                    RequestPmEvent(interpret);
+                    Events.SendUserCommand("priv", new[] { interpret});
                     return;
                 }
 

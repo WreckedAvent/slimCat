@@ -374,7 +374,7 @@ namespace slimCat.Services
             var pmChannelModel = channelModel as PmChannelModel;
             if (pmChannelModel != null && wantsNoteView)
             {
-                pmChannelModel.LastNoteCount = 0;
+                pmChannelModel.ShouldViewNotes = true;
             }
 
             channelModel.IsSelected = true;

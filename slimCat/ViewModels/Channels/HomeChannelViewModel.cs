@@ -286,6 +286,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool OpenOfflineChatsInNoteView
+        {
+            get { return ApplicationSettings.OpenOfflineChatsInNoteView; }
+            set
+            {
+                ApplicationSettings.OpenOfflineChatsInNoteView = value;
+                Save();
+            }
+        }
+
         #endregion
 
         #region Appearance

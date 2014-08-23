@@ -69,6 +69,7 @@ namespace slimCat.Services
 
         private void GetProfileDataAsyncHandler(object s, DoWorkEventArgs e)
         {
+            return;
             var characterName = (string)e.Argument;
 
             var resp = browser.GetResponse(Constants.UrlConstants.CharacterPage + characterName, true);
