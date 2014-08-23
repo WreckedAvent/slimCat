@@ -282,6 +282,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool UseMilitaryTime
+        {
+            get { return ApplicationSettings.UseMilitaryTime; }
+            set
+            {
+                ApplicationSettings.UseMilitaryTime = value;
+                Save();
+            }
+        }
+
         #endregion
 
         #region Appearance

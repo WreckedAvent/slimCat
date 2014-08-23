@@ -79,7 +79,9 @@ namespace slimCat.Models
             CheckForOwnName = true;
             TemplateCharacter = string.Empty;
             HideFriendsFromSearchResults = true;
+
             SettingsVersion = Constants.ClientVer;
+            UseMilitaryTime = true;
         }
 
         #endregion
@@ -260,6 +262,8 @@ namespace slimCat.Models
         public static bool PlaySoundEvenWhenTabIsFocused { get; set; }
 
         public static IList<string> IgnoreUpdates { get; set; }
+
+        public static bool UseMilitaryTime { get; set; }
 
         #endregion
     }

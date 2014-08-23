@@ -42,8 +42,6 @@ namespace slimCat.ViewModels
     /// </summary>
     public class PmChannelViewModel : ChannelViewModelBase
     {
-        private readonly IProfileService profileService;
-
         #region Fields
 
         private Timer checkTick = new Timer(5000);
@@ -76,6 +74,8 @@ namespace slimCat.ViewModels
 
         private DateTimeOffset noteTimeLeft;
 
+        private readonly IProfileService profileService;
+
         private bool showSubject;
 
         #endregion
@@ -95,8 +95,8 @@ namespace slimCat.ViewModels
                 noteService = notes;
                 notes.GetNotesAsync(name);
 
-                //profileService = profile;
-                //profileService.GetProfileDataAsync(name);
+                profileService = profile;
+                profileService.GetProfileDataAsync(name);
 
                 Model.PropertyChanged += OnModelPropertyChanged;
 

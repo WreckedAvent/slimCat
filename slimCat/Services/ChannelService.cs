@@ -46,7 +46,7 @@ namespace slimCat.Services
     {
         #region Fields
 
-        private const int MaxRecentTabs = 10;
+        private const int MaxRecentTabs = 30;
 
         private readonly IAutomationService automation;
 

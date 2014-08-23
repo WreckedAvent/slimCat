@@ -23,6 +23,7 @@ namespace slimCat.Utilities
 
     using System.Net.Cache;
     using Models;
+    using Properties;
     using Services;
     using System;
     using System.Collections.Generic;
@@ -1653,10 +1654,7 @@ namespace slimCat.Utilities
                 return "[" + time.ToString("d") + "]";
             }
 
-            var minute = time.Minute;
-            var minuteFix = minute.ToString(CultureInfo.InvariantCulture).Insert(0, minute < 10 ? "0" : string.Empty);
-
-            return "[" + time.Hour + ":" + minuteFix + "]";
+            return time.ToString(ApplicationSettings.UseMilitaryTime ? "[HH:mm]" : "[hh:mm tt]");
         }
 
         /// <summary>

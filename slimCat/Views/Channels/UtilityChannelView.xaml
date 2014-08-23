@@ -334,8 +334,14 @@
                                     </CheckBox>
 
                                     <CheckBox IsChecked="{Binding HideFriendsFromSearchResults}"
-                                              ToolTip="Allos slimCat to automatically filter out friends, bookmarks, and interested characters from search results.">
+                                              ToolTip="Allows slimCat to automatically filter out friends, bookmarks, and interested characters from search results.">
                                         Hide of interest characters from search results
+                                    </CheckBox>
+
+
+                                    <CheckBox IsChecked="{Binding UseMilitaryTime}"
+                                              ToolTip="Allows slimCat to use military (24-hour) labels for time stamps.">
+                                        Use 24-hour time for time stamps
                                     </CheckBox>
 
                                     <CheckBox IsChecked="{Binding SpellCheckEnabled}"
