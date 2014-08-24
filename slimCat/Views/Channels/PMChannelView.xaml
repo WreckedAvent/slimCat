@@ -176,7 +176,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <StackPanel>
+                <StackPanel Visibility="{Binding Model.ProfileData.Images.Count, Converter={StaticResource GreaterThanZeroConverter}}">
                     <ScrollViewer VerticalScrollBarVisibility="Hidden"
                                   HorizontalScrollBarVisibility="Auto"
                                   MaxHeight="100"

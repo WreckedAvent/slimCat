@@ -283,7 +283,7 @@
                             </StackPanel>
 
                             <TextBlock Text="Available Themes:" Foreground="{StaticResource ForegroundBrush}"/>
-                            <ListBox ItemsSource="{Binding Themes}"
+                            <ItemsControl ItemsSource="{Binding Themes}"
                                      HorizontalAlignment="Stretch"
                                      HorizontalContentAlignment="Stretch"
                                      Style="{StaticResource NoScrollListBox}"/>

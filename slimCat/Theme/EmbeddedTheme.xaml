@@ -288,7 +288,7 @@
         </Style.Triggers>
     </Style>
     
-    <Style TargetType="{x:Type ListBox}" x:Key="NoScrollListBox">
+    <Style TargetType="{x:Type ItemsControl}" x:Key="NoScrollListBox">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
