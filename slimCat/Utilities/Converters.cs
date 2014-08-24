@@ -65,7 +65,9 @@ namespace slimCat.Utilities
         Indent,
         Collapse,
         Quote,
-        HorizontalRule
+        HorizontalRule,
+        Justify,
+        Heading
     }
 
     /// <summary>
@@ -217,7 +219,10 @@ namespace slimCat.Utilities
                 {"noparse", BbCodeType.NoParse},
                 {"collapse", BbCodeType.Collapse},
                 {"quote", BbCodeType.Quote},
-                {"hr", BbCodeType.HorizontalRule}
+                {"hr", BbCodeType.HorizontalRule},
+                {"indent", BbCodeType.Indent},
+                {"justify", BbCodeType.Justify},
+                {"heading", BbCodeType.Heading}
             };
 
         #endregion
@@ -388,7 +393,10 @@ namespace slimCat.Utilities
                     {BbCodeType.Icon, MakeIcon},
                     {BbCodeType.Collapse, MakeCollapse},
                     {BbCodeType.Quote, MakeQuote},
-                    {BbCodeType.HorizontalRule, MakeHorizontalRule}
+                    {BbCodeType.HorizontalRule, MakeHorizontalRule},
+                    {BbCodeType.Indent, MakeBlockText},
+                    {BbCodeType.Heading, MakeHeading},
+                    {BbCodeType.Justify, MakeNormalText}
                 };
 
             var converter = converters[chunk.Type];
@@ -741,6 +749,8 @@ namespace slimCat.Utilities
             var title = arg.Arguments;
 
             var container = new InlineUIContainer();
+            var panel = new StackPanel();
+
             var expander = new Expander
             {
                 Header = title,
@@ -757,7 +767,14 @@ namespace slimCat.Utilities
             Libraries.TextBlockHelper.SetInlineList(text, arg.Children.Select(ToInline).ToList());
 
             expander.Content = text;
-            container.Child = expander;
+            panel.Children.Add(expander);
+            panel.Children.Add(new Line
+            {
+                Stretch = Stretch.Fill,
+                X2 = 1,
+                Stroke = new SolidColorBrush(Colors.Transparent)
+            });
+            container.Child = panel;
 
             arg.Children.Clear();
             return container;
@@ -786,10 +803,44 @@ namespace slimCat.Utilities
             return new InlineUIContainer(new Line
             {
                 Stretch = Stretch.Fill,
-                X2 = 1, 
-                Margin = new Thickness(0,5,0,5),
+                X2 = 1,
+                Margin = new Thickness(0, 5, 0, 5),
                 Stroke = Locator.Find<SolidColorBrush>("HighlightBrush")
             });
+        }
+
+        private Span MakeHeading(ParsedChunk arg)
+        {
+            return new Span
+            {
+                FontSize = 20,
+                Foreground = Locator.Find<SolidColorBrush>("HighlightBrush")
+            };
+        }
+
+        private Inline MakeBlockText(ParsedChunk arg)
+        {
+            var container = new InlineUIContainer();
+            var panel = new StackPanel();
+            var text = new TextBlock
+            {
+                Foreground = Locator.Find<SolidColorBrush>("ForegroundBrush"),
+                Margin = new Thickness(15, 0, 0, 0),
+                TextWrapping = TextWrapping.Wrap,
+            };
+            Libraries.TextBlockHelper.SetInlineList(text, arg.Children.Select(ToInline).ToList());
+
+            panel.Children.Add(text);
+            panel.Children.Add(new Line
+            {
+                Stretch = Stretch.Fill,
+                X2 = 1,
+                Stroke = new SolidColorBrush(Colors.Transparent)
+            });
+
+            container.Child = panel;
+            arg.Children.Clear();
+            return container;
         }
 
         #endregion

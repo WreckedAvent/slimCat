@@ -26,7 +26,6 @@ namespace slimCat.Services
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Unity;
     using Models;
-    using System;
     using System.ComponentModel;
     using System.Diagnostics;
     using Utilities;
@@ -67,6 +66,8 @@ namespace slimCat.Services
         private void GetProfileDataAsyncHandler(object s, DoWorkEventArgs e)
         {
             var characterName = (string)e.Argument;
+            var model = container.Resolve<PmChannelModel>(characterName);
+            if (!string.IsNullOrEmpty(model.ProfileText)) return;
 
             var resp = browser.GetResponse(Constants.UrlConstants.CharacterPage + characterName, true);
 
@@ -88,10 +89,8 @@ namespace slimCat.Services
                     return;
 
                 profileBody = WebUtility.HtmlDecode(result[0].InnerHtml);
-                profileBody = profileBody.Replace("<br>", "");
+                profileBody = profileBody.Replace("<br>", "\n");
             }
-
-            var model = container.Resolve<PmChannelModel>(characterName);
 
             model.ProfileText = profileBody;
         }

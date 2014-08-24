@@ -129,10 +129,12 @@
                 VerticalScrollBarVisibility="Auto">
                 <FlowDocument 
                     PagePadding="2,5"
+                    TextAlignment="Left"
                     IsHyphenationEnabled="True">
                     <Paragraph            
                         FontFamily="Segoe UI, Verdanda"
                         IsHyphenationEnabled="True"
+                        TextAlignment="Left"
                         FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}">
                         <Span lib:SpanHelper.InlineSource="{Binding Path=Model.ProfileText, Mode=OneWay, Converter={StaticResource BbCodeConverter}, IsAsync=True}" />
                     </Paragraph>
