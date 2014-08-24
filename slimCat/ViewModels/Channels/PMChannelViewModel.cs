@@ -78,6 +78,8 @@ namespace slimCat.ViewModels
 
         private bool isViewingProfile;
 
+        private ProfileImage currentImage;
+
         #endregion
 
         #region Constructors and Destructors
@@ -385,6 +387,16 @@ namespace slimCat.ViewModels
                     ? "Chat here ..."
                     : "Write a pretty note here ...";
 
+            }
+        }
+
+        public ProfileImage CurrentImage
+        {
+            get { return currentImage; }
+            set
+            {
+                currentImage = value;
+                OnPropertyChanged("CurrentImage");
             }
         }
 

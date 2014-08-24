@@ -67,6 +67,7 @@
                 BorderThickness="0,0,0,1"
                 TextBlock.Foreground="{StaticResource ForegroundBrush}">
             <Grid>
+                <!-- Chat View Header -->
                 <Grid Visibility="{Binding IsViewingProfile, Converter={StaticResource OppositeBoolConverter}}">
                     <Expander x:Name="CharacterStatusDisplayer">
                         <Expander.Header>
@@ -113,23 +114,36 @@
                                               DataContext="{Binding Path=ChannelSettings}" />
                     </WrapPanel>
                 </Grid>
-            
+
+                <!-- Profile View Header -->
                 <Grid Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}"
                       Margin="0,10,0,0">
                     <DockPanel>
                         <Image Source="{Binding Path=ConversationWith.Avatar, Mode=OneWay}"
                                Height="75"
                                Width="75"
+                               Margin="10,0,0,0"
                                DockPanel.Dock="Right"/>
                         <StackPanel>
-                            <TextBlock Text="{Binding Path=ConversationWith.Name}" FontSize="20"/>
-                            <TextBlock DataContext="{Binding Model.ProfileData}">
-                                <Run Text="{Binding Orientation}"/>
-                                <Run Text="{Binding Gender}"/>
+                            <ContentControl Content="{Binding Path=ConversationWith}" />
+                            <TextBlock DataContext="{Binding Model.ProfileData}"
+                                       TextWrapping="Wrap">
+                                <Run Text="{Binding Age, Converter={StaticResource CommaConverter}}"/>
+                                <Run Text="{Binding Orientation, Converter={StaticResource CommaConverter}}"/>
                                 <Run Text="{Binding Species}"/>
                             </TextBlock>
-                            <TextBlock DataContext="{Binding Model.ProfileData}">
-                                <Run Text="{Binding Age}"/>
+                            <TextBlock DataContext="{Binding Model.ProfileData}"
+                                       TextWrapping="Wrap">
+                                <Run Text="{Binding Build}"/>
+                                <Run Text="{Binding Height}"/>
+                                <Run Text="{Binding BodyType}"/>
+                            </TextBlock>
+                            <TextBlock DataContext="{Binding Model.ProfileData}"
+                                       TextWrapping="Wrap"
+                                       Visibility="{Binding DomSubRole, Converter={StaticResource EmptyConverter}}">
+                                <Run Text="{Binding DomSubRole}"/>
+                                <Run Text="/"/>
+                                <Run Text="{Binding Position}"/>
                             </TextBlock>
                         </StackPanel>
                     </DockPanel>
@@ -144,26 +158,70 @@
                 Visibility="{Binding IsViewingProfile, Converter={StaticResource OppositeBoolConverter}}"
                 MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}" />
 
-            <FlowDocumentScrollViewer
-                HorizontalAlignment="Left"
-                UseLayoutRounding="False"
-                Foreground="{StaticResource ForegroundBrush}"
-                Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}"
-                Background="Transparent"
-                VerticalScrollBarVisibility="Auto">
-                <FlowDocument 
-                    PagePadding="2,5"
-                    TextAlignment="Left"
-                    IsHyphenationEnabled="True">
-                    <Paragraph            
-                        FontFamily="Segoe UI, Verdanda"
-                        IsHyphenationEnabled="True"
+
+            <!-- Profile View -->
+            <Grid Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}">
+                <Grid.Resources>
+                    <DataTemplate DataType="{x:Type models:ProfileImage}" x:Key="ThumbnailTemplate">
+                        <Grid>
+                            <Image Source="{Binding Path=ThumbnailUri}"
+                                       Height="75"
+                                       Width="75" />
+                        </Grid>
+                    </DataTemplate>
+                </Grid.Resources>
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  MaxHeight="100"
+                                 Margin="0,10,0,10">
+                        <ListBox ItemsSource="{Binding Model.ProfileData.Images}"
+                                 ItemTemplate="{StaticResource ThumbnailTemplate}"
+                                 Style="{StaticResource HorizontalListBoxStyle}"
+                                 SelectedItem="{Binding CurrentImage, Mode=TwoWay}"
+                                 LostFocus="OnListboxLostFocus">
+                        </ListBox>
+                    </ScrollViewer>
+                    <Line Stretch="Fill" 
+                              Stroke="{StaticResource HighlightBrush}" 
+                              X2="1"
+                              Margin="0,0,0,0" />
+                </StackPanel>
+
+                <FlowDocumentPageViewer
+                    Grid.Row="1"
+                    ScrollViewer.CanContentScroll="False"
+                    
+                    HorizontalAlignment="Left"
+                    UseLayoutRounding="False"
+                    Foreground="{StaticResource ForegroundBrush}"
+                    Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}"
+                    Background="Transparent">
+                    <FlowDocument 
+                        PagePadding="2,5"
                         TextAlignment="Left"
-                        FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}">
-                        <Span lib:SpanHelper.InlineSource="{Binding Path=Model.ProfileData.ProfileText, Mode=OneWay, Converter={StaticResource BbCodeConverter}, IsAsync=True}" />
-                    </Paragraph>
-                </FlowDocument>
-            </FlowDocumentScrollViewer>
+                        IsHyphenationEnabled="True"
+                        ColumnRuleBrush="{StaticResource BrightBackgroundBrush}"
+                        ColumnRuleWidth="5.00">
+                        <Paragraph            
+                            FontFamily="Segoe UI, Verdanda"
+                            IsHyphenationEnabled="True"
+                            TextAlignment="Left"
+                            FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}">
+                            <Image Source="{Binding CurrentImage.FullImageUri}"
+                                   RenderOptions.BitmapScalingMode="Fant"/>
+                            
+                            <Span lib:SpanHelper.InlineSource="{Binding Path=Model.ProfileData.ProfileText, Mode=OneWay, Converter={StaticResource BbCodeConverter}, IsAsync=True}" />
+                        </Paragraph>
+                    </FlowDocument>
+                </FlowDocumentPageViewer>
+            </Grid>
         </Grid>
 
 
@@ -176,25 +234,29 @@
                     <ColumnDefinition Width="auto" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
+                
                 <WrapPanel Orientation="Horizontal"
-                           HorizontalAlignment="Left">
-                    <TextBlock Foreground="{StaticResource HighlightBrush}"
-                               Visibility="{Binding Path=ShouldShowPostLength, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                               VerticalAlignment="Center"
-                               Margin="2,0,4,0">
-                        <Run Text="{Binding Path=Message.Length, Mode=OneWay}" />
-                        <Run Text="/" />
-                        <Run Text="{Binding Path=MaxMessageLength, Mode=OneWay}" />
-                        </TextBlock>
+                               HorizontalAlignment="Left">
                         <TextBlock Foreground="{StaticResource HighlightBrush}"
-                                   Text="{Binding Path=TypingString}" />
-                        <TextBlock Foreground="{StaticResource HighlightBrush}"
-                                   Text="{Binding Path=NoteTimeLeft, Mode=OneWay}"
+                                   Visibility="{Binding Path=ShouldShowPostLength, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                                    VerticalAlignment="Center"
-                                   Margin="2,0,0,0"
-                                   Visibility="{Binding Path=CanShowNoteTimeLeft, Mode=OneWay, Converter={StaticResource BoolConverter}}"/>
+                                   Margin="2,0,4,0">
+                            <Run Text="{Binding Path=Message.Length, Mode=OneWay}" />
+                            <Run Text="/" />
+                            <Run Text="{Binding Path=MaxMessageLength, Mode=OneWay}" />
+                        </TextBlock>
+                        
+                        <TextBlock Foreground="{StaticResource HighlightBrush}"
+                                    Text="{Binding Path=TypingString}" />
+                        
+                        <TextBlock Foreground="{StaticResource HighlightBrush}"
+                                    Text="{Binding Path=NoteTimeLeft, Mode=OneWay}"
+                                    VerticalAlignment="Center"
+                                    Margin="2,0,0,0"
+                                    Visibility="{Binding Path=CanShowNoteTimeLeft, Mode=OneWay, Converter={StaticResource BoolConverter}}"/>
 
-                </WrapPanel>
+                    </WrapPanel>
+                
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Right"
                             Margin="0"

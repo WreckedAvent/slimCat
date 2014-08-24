@@ -188,6 +188,17 @@ namespace slimCat.Utilities
         }
     }
 
+    public class CommaConverter : OneWayConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var parsed = (string) value;
+            return string.IsNullOrEmpty(parsed)
+                ? value
+                : value + ",";
+        }
+    }
+
     /// <summary>
     ///     The common logic for parsing bbcode.
     /// </summary>

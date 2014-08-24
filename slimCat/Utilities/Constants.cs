@@ -341,13 +341,17 @@ namespace slimCat.Utilities
 
             public const string SearchFields = Domain + @"/json/chat-search-getfields.json?ids=true";
 
+            public const string ProfileImages = Domain + @"/json/profile-images.json";
+
             public const string IncomingFriendRequests = Api + "request-list.php";
 
             public const string OutgoingFriendRequests = Api + "request-pending.php";
 
             public const string CharacterPage = Domain + "/c/";
 
-            public const string CharacterAvatar = @"https://static.f-list.net/images/avatar/";
+            public const string StaticDomain = @"https://static.f-list.net";
+
+            public const string CharacterAvatar = StaticDomain + @"/images/avatar/";
         }
     }
 }

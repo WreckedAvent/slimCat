@@ -189,6 +189,7 @@
     <Compile Include="Models\Api\ApiIFriendRequestResponse.cs" />
     <Compile Include="Models\Api\ApiAuthResponse.cs" />
     <Compile Include="Models\Api\ApiUploadLogResponse.cs" />
+    <Compile Include="Models\Api\ApiProfileImagesResponse.cs" />
     <Compile Include="Models\ApplicationThemeLocator.cs" />
     <Compile Include="Models\ChannelUpdateModel.cs" />
     <Compile Include="Models\CharacterManagerBase.cs" />
@@ -246,6 +247,8 @@
     <Compile Include="Services\Interfaces\IPermissionService.cs" />
     <Compile Include="Services\Interfaces\IFriendRequestService.cs" />
     <Compile Include="Services\Interfaces\ITicketProvider.cs" />
+    <Compile Include="Models\ProfileData.cs" />
+    <Compile Include="Models\ProfileImage.cs" />
     <Compile Include="Services\ProfileService.cs" />
     <Compile Include="Services\NoteService.cs" />
     <Compile Include="Services\PermissionService.cs" />

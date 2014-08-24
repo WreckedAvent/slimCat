@@ -25,12 +25,13 @@ namespace slimCat.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
-    using System.Text.RegularExpressions;
     using HtmlAgilityPack;
     using Microsoft.Practices.Unity;
     using Models;
     using System.ComponentModel;
     using System.Diagnostics;
+    using Models.Api;
+    using Newtonsoft.Json;
     using Utilities;
     using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
@@ -44,6 +45,10 @@ namespace slimCat.Services
         private const string ProfileBodySelector = "//div[@id = 'tabs-1']/*[1]";
 
         private const string ProfileTagsSelector = "//div[@class = 'itgroup']";
+
+        private const string ImageSelector = "//div[@class = 'thumbbox']/a";
+
+        private const string ProfileIdSelector = "//input[@id = 'profile-character-id']";
 
         private readonly IUnityContainer container;
 
@@ -106,12 +111,18 @@ namespace slimCat.Services
                     .Select(x => x.ToList())
                     .Select(x => new ProfileTag
                     {
-                        Label = x[0].ToLower().Trim().Replace(":", ""),
-                        Value = x[1].Trim()
+                        Label = WebUtility.HtmlDecode(x[0].ToLower().Replace(":", "").Trim()),
+                        Value = WebUtility.HtmlDecode(x[1].Trim())
                     }));
             }
 
-            profileCache[characterName] = model.ProfileData = CreateModel(profileBody, profileTags);
+            var id = htmlDoc.DocumentNode.SelectSingleNode(ProfileIdSelector).Attributes["value"].Value;
+
+            var imageResp = browser.GetResponse(Constants.UrlConstants.ProfileImages,
+                new Dictionary<string, object> {{"character_id", id}}, true);
+            var images = JsonConvert.DeserializeObject<ApiProfileImagesResponse>(imageResp);
+
+            profileCache[characterName] = model.ProfileData = CreateModel(profileBody, profileTags, images);
         }
 
         [Conditional("DEBUG")]
@@ -128,7 +139,7 @@ namespace slimCat.Services
             worker.RunWorkerAsync(character);
         }
 
-        private static ProfileData CreateModel(string profileText, IEnumerable<ProfileTag> tags)
+        private static ProfileData CreateModel(string profileText, IEnumerable<ProfileTag> tags, ApiProfileImagesResponse imageResponse)
         {
             var toReturn = new ProfileData
             {
@@ -139,40 +150,37 @@ namespace slimCat.Services
             {
                 switch (x.Label)
                 {
-                    case "age": toReturn.Age = x.Value; break;
-                    case "species": toReturn.Species = x.Value; break;
-                    case "language preference": toReturn.LanguagePreference = x.Value; break;
-                    case "furry preference": toReturn.FurryPreference = x.Value; break;
-                    case "desired rp length": toReturn.DesiredRpLength = x.Value; break;
-                    case "orientation": toReturn.Orientation = x.Value; break;
-                    case "dom/sub role": toReturn.DomSubRole = x.Value; break;
-                    case "gender": toReturn.Gender = x.Value; break;
+                    case "age": 
+                        toReturn.Age = x.Value; break;
+                    case "species": 
+                        toReturn.Species = x.Value; break;
+                    case "language preference": 
+                        toReturn.LanguagePreference = x.Value; break;
+                    case "furry preference": 
+                        toReturn.FurryPreference = x.Value; break;
+                    case "desired rp length": 
+                        toReturn.DesiredRpLength = x.Value; break;
+                    case "orientation": 
+                        toReturn.Orientation = x.Value; break;
+                    case "dom/sub role": 
+                        toReturn.DomSubRole = x.Value; break;
+                    case "gender": 
+                        toReturn.Gender = x.Value; break;
+                    case "build": 
+                        toReturn.Build = x.Value; break;
+                    case "height/length": 
+                        toReturn.Height = x.Value; break;
+                    case "body type": 
+                        toReturn.BodyType = x.Value; break;
+                    case "position":
+                        toReturn.Position = x.Value; break;
                 }
             });
 
+            toReturn.Images = imageResponse.Images.Select(x => new ProfileImage(x)).ToList();
+
             return toReturn;
         }
-    }
-
-    public class ProfileData
-    {
-        public string Age { get; set; }
-
-        public string Gender { get; set; }
-
-        public string LanguagePreference { get; set; }
-
-        public string FurryPreference { get; set; }
-
-        public string DomSubRole { get; set; }
-
-        public string DesiredRpLength { get; set; }
-
-        public string Species { get; set; }
-
-        public string ProfileText { get; set; }
-
-        public string Orientation { get; set; }
     }
 
     class ProfileTag
