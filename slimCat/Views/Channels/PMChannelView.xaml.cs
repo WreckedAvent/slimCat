@@ -24,6 +24,7 @@ namespace slimCat.Views
     using System;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Documents;
     using Utilities;
     using ViewModels;
 
@@ -37,6 +38,10 @@ namespace slimCat.Views
         #region Fields
 
         private PmChannelViewModel vm;
+
+        private Inline lastItem;
+
+        private bool isAdded = true;
 
         #endregion
 
@@ -97,6 +102,17 @@ namespace slimCat.Views
             if (vm == null || e.Source is Button) return;
 
             vm.CurrentImage = null;
+            lastItem = ProfileParagraph.Inlines.FirstInline;
+            ProfileParagraph.Inlines.Remove(lastItem);
+            isAdded = false;
+        }
+
+        private void OnSelected(object sender, RoutedEventArgs e)
+        {
+            if (isAdded) return;
+
+            ProfileParagraph.Inlines.InsertBefore(ProfileParagraph.Inlines.FirstInline, lastItem);
+            isAdded = true;
         }
     }
 }

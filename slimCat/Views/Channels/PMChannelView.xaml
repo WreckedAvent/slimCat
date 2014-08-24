@@ -192,7 +192,8 @@
                         <ListBox ItemsSource="{Binding Model.ProfileData.Images}"
                                  ItemTemplate="{StaticResource ThumbnailTemplate}"
                                  Style="{StaticResource HorizontalListBoxStyle}"
-                                 SelectedItem="{Binding CurrentImage, Mode=TwoWay}">
+                                 SelectedItem="{Binding CurrentImage, Mode=TwoWay}"
+                                 SelectionChanged="OnSelected">
                         </ListBox>
                     </ScrollViewer>
                     <Line Stretch="Fill" 
@@ -226,7 +227,9 @@
                                 FontFamily="Segoe UI, Verdanda"
                                 IsHyphenationEnabled="True"
                                 TextAlignment="Left"
-                                FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}">
+                                FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
+                                Loaded="OnElementFocused"
+                                x:Name="ProfileParagraph">
 
                                 <Figure VerticalAnchor="ContentTop" 
                                         HorizontalAnchor="ColumnLeft" 
