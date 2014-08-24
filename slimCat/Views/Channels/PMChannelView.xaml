@@ -187,7 +187,8 @@
                     <ScrollViewer VerticalScrollBarVisibility="Hidden"
                                   HorizontalScrollBarVisibility="Auto"
                                   MaxHeight="100"
-                                 Margin="0,10,0,10">
+                                  Margin="0,10,0,10"
+                                  Visibility="{Binding Model.ProfileData.Images.Count, Converter={StaticResource GreaterThanZeroConverter}}">
                         <ListBox ItemsSource="{Binding Model.ProfileData.Images}"
                                  ItemTemplate="{StaticResource ThumbnailTemplate}"
                                  Style="{StaticResource HorizontalListBoxStyle}"
@@ -195,6 +196,7 @@
                         </ListBox>
                     </ScrollViewer>
                     <Line Stretch="Fill" 
+                          Visibility="{Binding Model.ProfileData.Images.Count, Converter={StaticResource GreaterThanZeroConverter}}"
                           Stroke="{StaticResource HighlightBrush}" 
                           X2="1"
                           Margin="0,0,0,0" />
@@ -236,7 +238,7 @@
                                                 <ControlTemplate>
                                                     <Image Source="{Binding CurrentImage.FullImageUri}"
                                                            Margin="5"
-                                                            RenderOptions.BitmapScalingMode="Fant"/>
+                                                           RenderOptions.BitmapScalingMode="Fant"/>
                                                 </ControlTemplate>
                                             </Button.Template>
                                         </Button>
