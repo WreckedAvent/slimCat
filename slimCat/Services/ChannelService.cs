@@ -226,6 +226,9 @@ namespace slimCat.Services
                 id = id.Substring(0, id.Length - "/profile".Length);
             }
 
+            if (model.CurrentChannel != null && model.CurrentChannel.Id.Equals(id))
+                return;
+
             name = HttpUtility.HtmlDecode(name);
             IEnumerable<string> history = new List<string>();
 

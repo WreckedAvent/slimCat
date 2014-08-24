@@ -126,25 +126,30 @@
                                DockPanel.Dock="Right"/>
                         <StackPanel>
                             <ContentControl Content="{Binding Path=ConversationWith}" />
-                            <TextBlock DataContext="{Binding Model.ProfileData}"
-                                       TextWrapping="Wrap">
-                                <Run Text="{Binding Age, Converter={StaticResource CommaConverter}}"/>
-                                <Run Text="{Binding Orientation, Converter={StaticResource CommaConverter}}"/>
-                                <Run Text="{Binding Species}"/>
-                            </TextBlock>
-                            <TextBlock DataContext="{Binding Model.ProfileData}"
-                                       TextWrapping="Wrap">
-                                <Run Text="{Binding Build}"/>
-                                <Run Text="{Binding Height}"/>
-                                <Run Text="{Binding BodyType}"/>
-                            </TextBlock>
-                            <TextBlock DataContext="{Binding Model.ProfileData}"
-                                       TextWrapping="Wrap"
-                                       Visibility="{Binding DomSubRole, Converter={StaticResource EmptyConverter}}">
-                                <Run Text="{Binding DomSubRole}"/>
-                                <Run Text="/"/>
-                                <Run Text="{Binding Position}"/>
-                            </TextBlock>
+                            
+                            <StackPanel Visibility="{Binding Converter={StaticResource NotNullConverter}}"
+                                        DataContext="{Binding Path=Model.ProfileData}">
+                                <TextBlock TextWrapping="Wrap">
+                                    <Run Text="{Binding Age, Converter={StaticResource CommaConverter}}"/>
+                                    <Run Text="{Binding Orientation, Converter={StaticResource CommaConverter}}"/>
+                                    <Run Text="{Binding Species}"/>
+                                </TextBlock>
+                                
+                                <TextBlock TextWrapping="Wrap">
+                                    <Run Text="{Binding Build}"/>
+                                    <Run Text="{Binding Height}"/>
+                                    <Run Text="{Binding BodyType}"/>
+                                </TextBlock>
+                                
+                                <TextBlock TextWrapping="Wrap"
+                                           Visibility="{Binding DomSubRole, Converter={StaticResource EmptyConverter}}">
+                                    <Run Text="{Binding DomSubRole}"/>
+                                    <Run Text="/"/>
+                                    <Run Text="{Binding Position}"/>
+                                </TextBlock>
+                            </StackPanel>
+                            
+                            <TextBlock></TextBlock>
                         </StackPanel>
                     </DockPanel>
                 </Grid>
@@ -176,7 +181,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <StackPanel Visibility="{Binding Model.ProfileData.Images.Count, Converter={StaticResource GreaterThanZeroConverter}}">
+                <StackPanel Visibility="{Binding Model.ProfileData, Converter={StaticResource NotNullConverter}}">
                     <ScrollViewer VerticalScrollBarVisibility="Hidden"
                                   HorizontalScrollBarVisibility="Auto"
                                   MaxHeight="100"
