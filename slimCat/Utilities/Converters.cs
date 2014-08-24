@@ -254,7 +254,7 @@ namespace slimCat.Utilities
         internal Inline MakeIcon(string target)
         {
             var icon = new InlineUIContainer();
-            var child = new Image { MaxHeight = 50, MaxWidth = 50, Margin = new Thickness(2,0,2,0)};
+            var child = new Image { MaxHeight = 50, MaxWidth = 50, Margin = new Thickness(0)};
             var avatar = new BitmapImage(
                 new Uri(
                     Constants.UrlConstants.CharacterAvatar + target.ToLower() + ".png", UriKind.Absolute),
@@ -820,6 +820,8 @@ namespace slimCat.Utilities
 
         private Inline MakeBlockText(ParsedChunk arg)
         {
+            if (arg.Children == null || !arg.Children.Any()) return MakeNormalText(arg);
+
             var container = new InlineUIContainer();
             var panel = new StackPanel();
             var text = new TextBlock

@@ -424,6 +424,7 @@ namespace slimCat.ViewModels
             if (e.PropertyName == "IsSelected")
             {
                 if (model.IsSelected == false) return;
+                if (IsViewingProfile) return;
 
                 if (model.ShouldViewNotes || (ApplicationSettings.OpenOfflineChatsInNoteView && ConversationWith.Status == StatusType.Offline))
                     IsViewingChat = model.ShouldViewNotes = false;

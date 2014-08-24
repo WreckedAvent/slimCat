@@ -187,6 +187,8 @@ namespace slimCat.Models
 
         public bool ShouldViewNotes { get; set; }
 
+        public bool ShouldViewProfile { get; set; }
+
         public ObservableCollection<IMessage> Notes
         {
             get { return notes; }

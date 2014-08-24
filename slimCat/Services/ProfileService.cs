@@ -21,9 +21,11 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using System;
+    using System.Linq;
     using System.Net;
+    using System.Text.RegularExpressions;
     using HtmlAgilityPack;
-    using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Unity;
     using Models;
     using System.ComponentModel;
@@ -40,23 +42,19 @@ namespace slimCat.Services
 
         private const string ProfileBody = "//div[@id = 'tabs-1']/*[1]";
 
-        private readonly ICharacterManager characterManager;
+        private const string ProfileStats = "//div[@class = 'statbox']";
 
-        private readonly IChatModel cm;
-
-        private readonly IEventAggregator events;
+        private readonly Regex quickProfileRegex = new Regex("(.*:.*)");
 
         private readonly IUnityContainer container;
 
         #endregion
 
         #region Constructors
-        public ProfileService(IUnityContainer contain, IBrowser browser, ICharacterManager characterMan, IChatModel cm, IEventAggregator eventagg)
+        public ProfileService(IUnityContainer contain, IBrowser browser)
         {
             this.browser = browser;
-            characterManager = characterMan;
-            this.cm = cm;
-            events = eventagg;
+
             container = contain;
         }
         #endregion
@@ -91,8 +89,26 @@ namespace slimCat.Services
                 profileBody = WebUtility.HtmlDecode(result[0].InnerHtml);
                 profileBody = profileBody.Replace("<br>", "\n");
             }
-
             model.ProfileText = profileBody;
+
+            var quickSection = htmlDoc.DocumentNode.SelectNodes(ProfileStats);
+            {
+                if (quickSection == null || quickSection.Count == 0)
+                    return;
+
+                return;
+
+                var hits = quickSection[0].InnerText
+                    .Split(new[] {':', '\t', '\r', '\n'})
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .ToList()
+                    .Chunk(2).ToList();
+                    //.Select(x => x.ToList())
+                    //.Select(x => new ProfileTag { Label = x[0], Value = x[1] })
+                    //.ToList();
+
+                Console.WriteLine(hits[0]);
+            }
         }
 
         [Conditional("DEBUG")]
@@ -108,5 +124,29 @@ namespace slimCat.Services
             worker.DoWork += GetProfileDataAsyncHandler;
             worker.RunWorkerAsync(character);
         }
+    }
+
+    public class ProfileData
+    {
+        public string Age { get; set; }
+
+        public Gender Gender { get; set; }
+
+        public string LanguagePreference { get; set; }
+
+        public string FurryPreference { get; set; }
+
+        public string DomSubRole { get; set; }
+
+        public string DesiredRpLength { get; set; }
+
+        public string Species { get; set; }
+    }
+
+    class ProfileTag
+    {
+        public string Label { get; set; }
+
+        public string Value { get; set; }
     }
 }
