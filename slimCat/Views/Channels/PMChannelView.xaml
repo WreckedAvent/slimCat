@@ -149,7 +149,9 @@
                                 </TextBlock>
                             </StackPanel>
                             
-                            <TextBlock></TextBlock>
+                            <TextBlock Visibility="{Binding Path=Model.ProfileData, Converter={StaticResource NullConverter}}">
+                                Loading Profile Data ...
+                            </TextBlock>
                         </StackPanel>
                     </DockPanel>
                 </Grid>
@@ -194,9 +196,9 @@
                         </ListBox>
                     </ScrollViewer>
                     <Line Stretch="Fill" 
-                              Stroke="{StaticResource HighlightBrush}" 
-                              X2="1"
-                              Margin="0,0,0,0" />
+                          Stroke="{StaticResource HighlightBrush}" 
+                          X2="1"
+                          Margin="0,0,0,0" />
                 </StackPanel>
 
                 <FlowDocumentPageViewer
@@ -208,19 +210,25 @@
                     Foreground="{StaticResource ForegroundBrush}"
                     Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}"
                     Background="Transparent">
+                    
                     <FlowDocument 
                         PagePadding="2,5"
                         TextAlignment="Left"
                         IsHyphenationEnabled="True"
                         ColumnRuleBrush="{StaticResource BrightBackgroundBrush}"
                         ColumnRuleWidth="5.00">
+                        
                         <Paragraph            
                             FontFamily="Segoe UI, Verdanda"
                             IsHyphenationEnabled="True"
                             TextAlignment="Left"
                             FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}">
-                            <Image Source="{Binding CurrentImage.FullImageUri}"
-                                   RenderOptions.BitmapScalingMode="Fant"/>
+                            <Floater HorizontalAlignment="Left">
+                                <BlockUIContainer>
+                                    <Image Source="{Binding CurrentImage.FullImageUri}"
+                                           RenderOptions.BitmapScalingMode="Fant"/>
+                                </BlockUIContainer>
+                            </Floater>
                             
                             <Span lib:SpanHelper.InlineSource="{Binding Path=Model.ProfileData.ProfileText, Mode=OneWay, Converter={StaticResource BbCodeConverter}, IsAsync=True}" />
                         </Paragraph>

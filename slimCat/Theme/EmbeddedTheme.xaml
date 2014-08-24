@@ -23,6 +23,7 @@
     <utilities:EmptyConverter x:Key="EmptyConverter"/>
     <utilities:ImagePathConverter x:Key="ImagePathConverter"/>
     <utilities:NotNullConverter x:Key="NotNullConverter"/>
+    <utilities:NullConverter x:Key="NullConverter"/>
     <utilities:CommaConverter x:Key="CommaConverter"/>
 
     <!-- These will be replaced with their instance values by the container -->
