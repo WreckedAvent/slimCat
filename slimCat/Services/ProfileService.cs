@@ -22,6 +22,7 @@ namespace slimCat.Services
     #region Usings
 
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Text.RegularExpressions;
@@ -48,6 +49,8 @@ namespace slimCat.Services
 
         private readonly IUnityContainer container;
 
+        private readonly IDictionary<string, string> profileCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase); 
+
         #endregion
 
         #region Constructors
@@ -65,7 +68,13 @@ namespace slimCat.Services
         {
             var characterName = (string)e.Argument;
             var model = container.Resolve<PmChannelModel>(characterName);
-            if (!string.IsNullOrEmpty(model.ProfileText)) return;
+
+            string cache;
+            if (profileCache.TryGetValue(characterName, out cache))
+            {
+                model.ProfileText = cache;
+                return;
+            }
 
             var resp = browser.GetResponse(Constants.UrlConstants.CharacterPage + characterName, true);
 
@@ -90,6 +99,7 @@ namespace slimCat.Services
                 profileBody = profileBody.Replace("<br>", "\n");
             }
             model.ProfileText = profileBody;
+            profileCache[characterName] = profileBody;
 
             var quickSection = htmlDoc.DocumentNode.SelectNodes(ProfileStats);
             {

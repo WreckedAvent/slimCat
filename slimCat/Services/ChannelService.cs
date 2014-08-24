@@ -221,6 +221,11 @@ namespace slimCat.Services
                 id = id.Substring(0, id.Length - "/notes".Length);
             }
 
+            if (id.EndsWith("/profile"))
+            {
+                id = id.Substring(0, id.Length - "/profile".Length);
+            }
+
             name = HttpUtility.HtmlDecode(name);
             IEnumerable<string> history = new List<string>();
 
@@ -340,10 +345,16 @@ namespace slimCat.Services
             Log("Requested " + channelId);
 
             var wantsNoteView = false;
+            var wantsProfileView = false;
             if (channelId.EndsWith("/notes"))
             {
                 channelId = channelId.Substring(0, channelId.Length - "/notes".Length);
                 wantsNoteView = true;
+            }
+            if (channelId.EndsWith("/profile"))
+            {
+                channelId = channelId.Substring(0, channelId.Length - "/profile".Length);
+                wantsProfileView = true;
             }
 
             if (lastSelected != null)
@@ -372,9 +383,10 @@ namespace slimCat.Services
                 throw new ArgumentOutOfRangeException("channelId", "Cannot navigate to unknown channel");
 
             var pmChannelModel = channelModel as PmChannelModel;
-            if (pmChannelModel != null && wantsNoteView)
+            if (pmChannelModel != null)
             {
-                pmChannelModel.ShouldViewNotes = true;
+                pmChannelModel.ShouldViewNotes = wantsNoteView || pmChannelModel.ShouldViewNotes;
+                pmChannelModel.ShouldViewProfile = wantsProfileView || pmChannelModel.ShouldViewProfile;
             }
 
             channelModel.IsSelected = true;

@@ -397,16 +397,10 @@ namespace slimCat.ViewModels
             var interpret = linkToOpen as string;
             if (string.IsNullOrEmpty(interpret)) return;
 
-            // todo: show character profile in client
             if (!interpret.Contains(".") || interpret.Contains(" "))
             {
-                if (interpret.EndsWith("/notes"))
-                {
-                    Events.SendUserCommand("priv", new[] { interpret});
-                    return;
-                }
-
-                interpret = "http://www.f-list.net/c/" + HttpUtility.UrlEncode(interpret);
+                Events.SendUserCommand("priv", new[] { interpret.EndsWith("/notes") ? interpret : interpret + "/profile" });
+                return;
             }
 
             Process.Start(interpret);
