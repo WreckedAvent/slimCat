@@ -588,6 +588,22 @@ namespace slimCat.ViewModels
                 StatusChanged(this, new EventArgs());
         }
 
+        protected override void StartLinkInDefaultBrowser(object linkToOpen)
+        {
+            var target = (string) linkToOpen;
+            if (target.ToLower().StartsWith(ConversationWith.Name.ToLower()))
+            {
+                if (target.EndsWith("/notes"))
+                    IsViewingChat = IsViewingProfile = false;
+                else
+                    IsViewingChat = IsViewingProfile = true;
+
+                return;
+            }
+
+            base.StartLinkInDefaultBrowser(linkToOpen);
+        }
+
         private void SendTypingNotification(TypingStatus type)
         {
             if (!IsViewingChat) return;

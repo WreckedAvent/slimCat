@@ -391,7 +391,7 @@ namespace slimCat.ViewModels
             Events.SendUserCommand("priv", new[] {tabName});
         }
 
-        private void StartLinkInDefaultBrowser(object linkToOpen)
+        protected virtual void StartLinkInDefaultBrowser(object linkToOpen)
         {
             Log("Opening link " + linkToOpen);
             var interpret = linkToOpen as string;
