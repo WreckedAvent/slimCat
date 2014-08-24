@@ -41,15 +41,13 @@ namespace slimCat.Services
         #region Fields
         private readonly IBrowser browser;
 
-        private const string ProfileBody = "//div[@id = 'tabs-1']/*[1]";
+        private const string ProfileBodySelector = "//div[@id = 'tabs-1']/*[1]";
 
-        private const string ProfileStats = "//div[@class = 'statbox']";
-
-        private readonly Regex quickProfileRegex = new Regex("(.*:.*)");
+        private const string ProfileTagsSelector = "//div[@class = 'itgroup']";
 
         private readonly IUnityContainer container;
 
-        private readonly IDictionary<string, string> profileCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase); 
+        private readonly IDictionary<string, ProfileData> profileCache = new Dictionary<string, ProfileData>(StringComparer.OrdinalIgnoreCase); 
 
         #endregion
 
@@ -69,10 +67,10 @@ namespace slimCat.Services
             var characterName = (string)e.Argument;
             var model = container.Resolve<PmChannelModel>(characterName);
 
-            string cache;
+            ProfileData cache;
             if (profileCache.TryGetValue(characterName, out cache))
             {
-                model.ProfileText = cache;
+                model.ProfileData = cache;
                 return;
             }
 
@@ -90,35 +88,30 @@ namespace slimCat.Services
                 return;
 
             string profileBody;
-            var result = htmlDoc.DocumentNode.SelectNodes(ProfileBody);
+            var profileText = htmlDoc.DocumentNode.SelectNodes(ProfileBodySelector);
             {
-                if (result == null || result.Count != 1)
-                    return;
-
-                profileBody = WebUtility.HtmlDecode(result[0].InnerHtml);
+                profileBody = WebUtility.HtmlDecode(profileText[0].InnerHtml);
                 profileBody = profileBody.Replace("<br>", "\n");
             }
-            model.ProfileText = profileBody;
-            profileCache[characterName] = profileBody;
 
-            var quickSection = htmlDoc.DocumentNode.SelectNodes(ProfileStats);
+            IEnumerable<ProfileTag> profileTags;
+            var fullSelection = htmlDoc.DocumentNode.SelectNodes(ProfileTagsSelector);
             {
-                if (quickSection == null || quickSection.Count == 0)
-                    return;
-
-                return;
-
-                var hits = quickSection[0].InnerText
-                    .Split(new[] {':', '\t', '\r', '\n'})
-                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                profileTags = fullSelection.SelectMany(selection => 
+                    selection.ChildNodes
+                    .Where(x => x.Name == "span" || x.Name == "#text")
+                    .Select(x => x.InnerText)
                     .ToList()
-                    .Chunk(2).ToList();
-                    //.Select(x => x.ToList())
-                    //.Select(x => new ProfileTag { Label = x[0], Value = x[1] })
-                    //.ToList();
-
-                Console.WriteLine(hits[0]);
+                    .Chunk(2)
+                    .Select(x => x.ToList())
+                    .Select(x => new ProfileTag
+                    {
+                        Label = x[0].ToLower().Trim().Replace(":", ""),
+                        Value = x[1].Trim()
+                    }));
             }
+
+            profileCache[characterName] = model.ProfileData = CreateModel(profileBody, profileTags);
         }
 
         [Conditional("DEBUG")]
@@ -134,13 +127,38 @@ namespace slimCat.Services
             worker.DoWork += GetProfileDataAsyncHandler;
             worker.RunWorkerAsync(character);
         }
+
+        private static ProfileData CreateModel(string profileText, IEnumerable<ProfileTag> tags)
+        {
+            var toReturn = new ProfileData
+            {
+                ProfileText = profileText
+            };
+
+            tags.Each(x =>
+            {
+                switch (x.Label)
+                {
+                    case "age": toReturn.Age = x.Value; break;
+                    case "species": toReturn.Species = x.Value; break;
+                    case "language preference": toReturn.LanguagePreference = x.Value; break;
+                    case "furry preference": toReturn.FurryPreference = x.Value; break;
+                    case "desired rp length": toReturn.DesiredRpLength = x.Value; break;
+                    case "orientation": toReturn.Orientation = x.Value; break;
+                    case "dom/sub role": toReturn.DomSubRole = x.Value; break;
+                    case "gender": toReturn.Gender = x.Value; break;
+                }
+            });
+
+            return toReturn;
+        }
     }
 
     public class ProfileData
     {
         public string Age { get; set; }
 
-        public Gender Gender { get; set; }
+        public string Gender { get; set; }
 
         public string LanguagePreference { get; set; }
 
@@ -151,6 +169,10 @@ namespace slimCat.Services
         public string DesiredRpLength { get; set; }
 
         public string Species { get; set; }
+
+        public string ProfileText { get; set; }
+
+        public string Orientation { get; set; }
     }
 
     class ProfileTag

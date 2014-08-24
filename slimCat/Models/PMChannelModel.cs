@@ -24,6 +24,7 @@ namespace slimCat.Models
     using System.Collections.ObjectModel;
     using System.Text;
     using System.Timers;
+    using Services;
 
     #endregion
 
@@ -45,7 +46,8 @@ namespace slimCat.Models
         private readonly ObservableCollection<IMessage> notes = new ObservableCollection<IMessage>();
 
         private string noteSubject;
-        private string profileText;
+
+        private ProfileData profileData;
 
         #endregion
 
@@ -175,13 +177,13 @@ namespace slimCat.Models
             }
         }
 
-        public string ProfileText
+        public ProfileData ProfileData
         {
-            get { return profileText; }
+            get { return profileData; }
             set
             {
-                profileText = value;
-                OnPropertyChanged("ProfileText");
+                profileData = value;
+                OnPropertyChanged("ProfileData");
             }
         }
 

@@ -64,52 +64,76 @@
         </Grid.RowDefinitions>
 
         <Border BorderBrush="{StaticResource HighlightBrush}"
-                BorderThickness="0,0,0,1">
+                BorderThickness="0,0,0,1"
+                TextBlock.Foreground="{StaticResource ForegroundBrush}">
             <Grid>
-                <Expander x:Name="CharacterStatusDisplayer">
-                    <Expander.Header>
-                        <TextBlock TextWrapping="Wrap"
-                                   TextAlignment="Left"
-                                   HorizontalAlignment="Left">
-                            <v:ChannelTypeButtonView IsEnabled="False" Margin="0,0,0,3" />
-                            <ContentControl Content="{Binding Path=ConversationWith}" />                            
-                            <ContentControl Content="{Binding Path=Title, Mode=OneWay}"
-                                            Foreground="{StaticResource ForegroundBrush}" />
-                        </TextBlock>
-                    </Expander.Header>
-                    <StackPanel TextBlock.FontSize="14">
-                        <TextBlock Text="{Binding Path=StatusString}"
-                                   Foreground="{StaticResource HighlightBrush}"
-                                   TextWrapping="Wrap" />
+                <Grid Visibility="{Binding IsViewingProfile, Converter={StaticResource OppositeBoolConverter}}">
+                    <Expander x:Name="CharacterStatusDisplayer">
+                        <Expander.Header>
+                            <TextBlock TextWrapping="Wrap"
+                                       TextAlignment="Left"
+                                       HorizontalAlignment="Left">
+                                <v:ChannelTypeButtonView IsEnabled="False" Margin="0,0,0,3" />
+                                <ContentControl Content="{Binding Path=ConversationWith}" />                            
+                                <ContentControl Content="{Binding Path=Title, Mode=OneWay}"
+                                                Foreground="{StaticResource ForegroundBrush}" />
+                            </TextBlock>
+                        </Expander.Header>
+                        <StackPanel TextBlock.FontSize="14">
+                            <TextBlock Text="{Binding Path=StatusString}"
+                                       Foreground="{StaticResource HighlightBrush}"
+                                       TextWrapping="Wrap" />
 
-                        <TextBlock Foreground="{StaticResource ForegroundBrush}"
-                                   TextWrapping="Wrap"
-                                   Visibility="{Binding Path=HasStatus, Converter={StaticResource BoolConverter}}">
-                            <lib:TextBlockHelper.InlineList>
-                                <Binding Converter="{StaticResource BbCodeConverter}"
-                                         Path="ConversationWith.StatusMessage" />
-                            </lib:TextBlockHelper.InlineList>
-                        </TextBlock>
-                        <TextBlock Foreground="{StaticResource ForegroundBrush}"
-                                   TextWrapping="Wrap"
-                                   Visibility="{Binding Path=ConversationWith.HasReport, Converter={StaticResource BoolConverter}}">
-                            <lib:TextBlockHelper.InlineList>
-                                <Binding Converter="{StaticResource BbCodeConverter}"
-                                         Path="ConversationWith.LastReport.Complaint" />
-                            </lib:TextBlockHelper.InlineList>
-                        </TextBlock>
-                    </StackPanel>
-                </Expander>
-                <WrapPanel HorizontalAlignment="Right"
-                           VerticalAlignment="Top"
-                           Margin="6,6,6,2"
-                           Background="{StaticResource BackgroundBrush}">
-                    <v:RestartButtonView Command="{Binding Path=ClearLogCommand}" />
-                    <v:FolderButtonView Command="{Binding Path=OpenLogFolderCommand}" />
-                    <v:FileButtonView Command="{Binding Path=OpenLogCommand}" />
-                    <v:SettingsButtonView Command="{Binding Path=OpenChannelSettingsCommand}"
-                                          DataContext="{Binding Path=ChannelSettings}" />
-                </WrapPanel>
+                            <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                                       TextWrapping="Wrap"
+                                       Visibility="{Binding Path=HasStatus, Converter={StaticResource BoolConverter}}">
+                                <lib:TextBlockHelper.InlineList>
+                                    <Binding Converter="{StaticResource BbCodeConverter}"
+                                             Path="ConversationWith.StatusMessage" />
+                                </lib:TextBlockHelper.InlineList>
+                            </TextBlock>
+                            <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                                       TextWrapping="Wrap"
+                                       Visibility="{Binding Path=ConversationWith.HasReport, Converter={StaticResource BoolConverter}}">
+                                <lib:TextBlockHelper.InlineList>
+                                    <Binding Converter="{StaticResource BbCodeConverter}"
+                                             Path="ConversationWith.LastReport.Complaint" />
+                                </lib:TextBlockHelper.InlineList>
+                            </TextBlock>
+                        </StackPanel>
+                    </Expander>
+                    <WrapPanel HorizontalAlignment="Right"
+                               VerticalAlignment="Top"
+                               Margin="6,6,6,2"
+                               Background="{StaticResource BackgroundBrush}">
+                        <v:RestartButtonView Command="{Binding Path=ClearLogCommand}" />
+                        <v:FolderButtonView Command="{Binding Path=OpenLogFolderCommand}" />
+                        <v:FileButtonView Command="{Binding Path=OpenLogCommand}" />
+                        <v:SettingsButtonView Command="{Binding Path=OpenChannelSettingsCommand}"
+                                              DataContext="{Binding Path=ChannelSettings}" />
+                    </WrapPanel>
+                </Grid>
+            
+                <Grid Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}"
+                      Margin="0,10,0,0">
+                    <DockPanel>
+                        <Image Source="{Binding Path=ConversationWith.Avatar, Mode=OneWay}"
+                               Height="75"
+                               Width="75"
+                               DockPanel.Dock="Right"/>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Path=ConversationWith.Name}" FontSize="20"/>
+                            <TextBlock DataContext="{Binding Model.ProfileData}">
+                                <Run Text="{Binding Orientation}"/>
+                                <Run Text="{Binding Gender}"/>
+                                <Run Text="{Binding Species}"/>
+                            </TextBlock>
+                            <TextBlock DataContext="{Binding Model.ProfileData}">
+                                <Run Text="{Binding Age}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </DockPanel>
+                </Grid>
             </Grid>
         </Border>
 
@@ -136,7 +160,7 @@
                         IsHyphenationEnabled="True"
                         TextAlignment="Left"
                         FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}">
-                        <Span lib:SpanHelper.InlineSource="{Binding Path=Model.ProfileText, Mode=OneWay, Converter={StaticResource BbCodeConverter}, IsAsync=True}" />
+                        <Span lib:SpanHelper.InlineSource="{Binding Path=Model.ProfileData.ProfileText, Mode=OneWay, Converter={StaticResource BbCodeConverter}, IsAsync=True}" />
                     </Paragraph>
                 </FlowDocument>
             </FlowDocumentScrollViewer>
