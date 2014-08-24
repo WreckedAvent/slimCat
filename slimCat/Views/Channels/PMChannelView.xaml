@@ -170,7 +170,7 @@
             <Grid Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}">
                 <Grid.Resources>
                     <DataTemplate DataType="{x:Type models:ProfileImage}" x:Key="ThumbnailTemplate">
-                        <Grid>
+                        <Grid Cursor="Hand">
                             <Image Source="{Binding Path=ThumbnailUri}"
                                        Height="75"
                                        Width="75" />
@@ -191,8 +191,7 @@
                         <ListBox ItemsSource="{Binding Model.ProfileData.Images}"
                                  ItemTemplate="{StaticResource ThumbnailTemplate}"
                                  Style="{StaticResource HorizontalListBoxStyle}"
-                                 SelectedItem="{Binding CurrentImage, Mode=TwoWay}"
-                                 LostFocus="OnListboxLostFocus">
+                                 SelectedItem="{Binding CurrentImage, Mode=TwoWay}">
                         </ListBox>
                     </ScrollViewer>
                     <Line Stretch="Fill" 
@@ -201,39 +200,64 @@
                           Margin="0,0,0,0" />
                 </StackPanel>
 
-                <FlowDocumentPageViewer
-                    Grid.Row="1"
-                    ScrollViewer.CanContentScroll="False"
+                <Grid Grid.Row="1"
+                      Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}">
+
+                    <FlowDocumentPageViewer
+                        ScrollViewer.CanContentScroll="False"
                     
-                    HorizontalAlignment="Left"
-                    UseLayoutRounding="False"
-                    Foreground="{StaticResource ForegroundBrush}"
-                    Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}"
-                    Background="Transparent">
-                    
-                    <FlowDocument 
-                        PagePadding="2,5"
-                        TextAlignment="Left"
-                        IsHyphenationEnabled="True"
-                        ColumnRuleBrush="{StaticResource BrightBackgroundBrush}"
-                        ColumnRuleWidth="5.00">
-                        
-                        <Paragraph            
-                            FontFamily="Segoe UI, Verdanda"
-                            IsHyphenationEnabled="True"
+                        HorizontalAlignment="Left"
+                        UseLayoutRounding="False"
+                        Foreground="{StaticResource ForegroundBrush}"
+                        Visibility="{Binding IsViewingFullImage, Converter={StaticResource OppositeBoolConverter}}"
+                        Background="Transparent"
+                        GotFocus="OnElementFocused">
+
+                        <FlowDocument 
+                            PagePadding="2,5"
                             TextAlignment="Left"
-                            FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}">
-                            <Floater HorizontalAlignment="Left">
-                                <BlockUIContainer>
-                                    <Image Source="{Binding CurrentImage.FullImageUri}"
-                                           RenderOptions.BitmapScalingMode="Fant"/>
-                                </BlockUIContainer>
-                            </Floater>
-                            
-                            <Span lib:SpanHelper.InlineSource="{Binding Path=Model.ProfileData.ProfileText, Mode=OneWay, Converter={StaticResource BbCodeConverter}, IsAsync=True}" />
-                        </Paragraph>
-                    </FlowDocument>
-                </FlowDocumentPageViewer>
+                            IsHyphenationEnabled="True"
+                            ColumnRuleBrush="{StaticResource BrightBackgroundBrush}"
+                            ColumnRuleWidth="5.00">
+
+                            <Paragraph            
+                                FontFamily="Segoe UI, Verdanda"
+                                IsHyphenationEnabled="True"
+                                TextAlignment="Left"
+                                FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}">
+
+                                <Figure VerticalAnchor="ContentTop" 
+                                        HorizontalAnchor="ColumnLeft" 
+                                        Width="{Binding Path=ColumnWidth, RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}, FallbackValue=Content}">
+                                    <Paragraph>
+                                        <Button Command="{Binding SwitchImageViewCommand}" 
+                                                Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}">
+                                            <Button.Template>
+                                                <ControlTemplate>
+                                                    <Image Source="{Binding CurrentImage.FullImageUri}"
+                                                           Margin="5"
+                                                            RenderOptions.BitmapScalingMode="Fant"/>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </Paragraph>
+                                </Figure>
+
+                                <Span lib:SpanHelper.InlineSource="{Binding Path=Model.ProfileData.ProfileText, Mode=OneWay, Converter={StaticResource BbCodeConverter}, IsAsync=True}"/>
+                            </Paragraph>
+                        </FlowDocument>
+                    </FlowDocumentPageViewer>
+
+                    <Button Margin="5" Command="{Binding SwitchImageViewCommand}"
+                            Visibility="{Binding IsViewingFullImage, Converter={StaticResource BoolConverter}}">
+                        <Button.Template>
+                            <ControlTemplate>
+                                <Image Source="{Binding CurrentImage.FullImageUri}"
+                                               RenderOptions.BitmapScalingMode="Fant"/>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
             </Grid>
         </Grid>
 

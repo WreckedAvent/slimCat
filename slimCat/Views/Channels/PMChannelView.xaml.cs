@@ -22,8 +22,8 @@ namespace slimCat.Views
     #region Usings
 
     using System;
-    using System.Web.UI.WebControls;
     using System.Windows;
+    using System.Windows.Controls;
     using Utilities;
     using ViewModels;
 
@@ -92,9 +92,10 @@ namespace slimCat.Views
 
         #endregion
 
-        private void OnListboxLostFocus(object sender, RoutedEventArgs e)
+        private void OnElementFocused(object sender, RoutedEventArgs e)
         {
-            if (vm != null)
+            if (vm == null || e.Source is Button) return;
+
             vm.CurrentImage = null;
         }
     }

@@ -80,6 +80,10 @@ namespace slimCat.ViewModels
 
         private ProfileImage currentImage;
 
+        private bool isViewingFullImage;
+
+        private RelayCommand switchViewingImageCommand;
+
         #endregion
 
         #region Constructors and Destructors
@@ -360,6 +364,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool IsViewingFullImage
+        {
+            get { return isViewingFullImage; }
+            set
+            {
+                isViewingFullImage = value;
+                OnPropertyChanged("IsViewingFullImage");
+            }
+        }
+
         public ICommand SwitchCommand
         {
             get
@@ -397,6 +411,16 @@ namespace slimCat.ViewModels
             {
                 currentImage = value;
                 OnPropertyChanged("CurrentImage");
+            }
+        }
+
+        public ICommand SwitchImageViewCommand
+
+        {
+            get
+            {
+                return switchViewingImageCommand ??
+                       (switchViewingImageCommand = new RelayCommand(_ => IsViewingFullImage = !IsViewingFullImage));
             }
         }
 
