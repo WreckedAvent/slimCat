@@ -846,7 +846,7 @@ namespace slimCat.Utilities
             var text = new TextBlock
             {
                 Foreground = Locator.Find<SolidColorBrush>("ForegroundBrush"),
-                Margin = new Thickness(15, 0, 0, 0),
+                Margin = new Thickness(ApplicationSettings.AllowIndent ? 15 : 0, 0, 0, 0),
                 TextWrapping = TextWrapping.Wrap,
             };
             Libraries.TextBlockHelper.SetInlineList(text, arg.Children.Select(ToInline).ToList());

@@ -99,7 +99,7 @@ namespace slimCat.Views
 
         private void OnElementFocused(object sender, RoutedEventArgs e)
         {
-            if (vm == null || e.Source is Button) return;
+            if (vm == null || e.Source is Button || !isAdded) return;
 
             vm.CurrentImage = null;
             lastItem = ProfileParagraph.Inlines.FirstInline;
@@ -109,9 +109,11 @@ namespace slimCat.Views
 
         private void OnSelected(object sender, RoutedEventArgs e)
         {
+            Reader.FirstPage();
             if (isAdded) return;
 
             ProfileParagraph.Inlines.InsertBefore(ProfileParagraph.Inlines.FirstInline, lastItem);
+            Reader.FirstPage();
             isAdded = true;
         }
     }

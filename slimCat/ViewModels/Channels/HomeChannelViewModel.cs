@@ -324,6 +324,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool AllowIndent
+        {
+            get { return ApplicationSettings.AllowIndent; }
+            set
+            {
+                ApplicationSettings.AllowIndent = value;
+                Save();
+            }
+        }
+
         public bool AllowColors
         {
             get { return ApplicationSettings.AllowColors; }

@@ -438,6 +438,11 @@
                                         Display icons
                                     </CheckBox>
 
+                                    <CheckBox IsChecked="{Binding AllowIndent}"
+                                              ToolTip="Allows slimCat to parse [indent] tags and present the bbcode indented text.">
+                                        Display indent
+                                    </CheckBox>
+
                                     <StackPanel Margin="0,15,0,0"
                                                 ToolTip="Changes the size of the font for messages displayed in channels">
                                         <WrapPanel>

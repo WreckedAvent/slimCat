@@ -182,6 +182,8 @@ namespace slimCat.Models
         /// </summary>
         public static string GlobalNotifyTerms { get; set; }
 
+        public static bool AllowIndent { get; set; }
+
         /// <summary>
         ///     Gets the global notify terms list.
         /// </summary>
