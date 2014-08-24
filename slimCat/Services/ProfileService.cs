@@ -91,38 +91,41 @@ namespace slimCat.Services
 
             if (htmlDoc.DocumentNode == null)
                 return;
-
-            string profileBody;
-            var profileText = htmlDoc.DocumentNode.SelectNodes(ProfileBodySelector);
+            try
             {
-                profileBody = WebUtility.HtmlDecode(profileText[0].InnerHtml);
-                profileBody = profileBody.Replace("<br>", "\n");
+                string profileBody;
+                var profileText = htmlDoc.DocumentNode.SelectNodes(ProfileBodySelector);
+                {
+                    profileBody = WebUtility.HtmlDecode(profileText[0].InnerHtml);
+                    profileBody = profileBody.Replace("<br>", "\n");
+                }
+
+                IEnumerable<ProfileTag> profileTags;
+                var fullSelection = htmlDoc.DocumentNode.SelectNodes(ProfileTagsSelector);
+                {
+                    profileTags = fullSelection.SelectMany(selection =>
+                        selection.ChildNodes
+                            .Where(x => x.Name == "span" || x.Name == "#text")
+                            .Select(x => x.InnerText)
+                            .ToList()
+                            .Chunk(2)
+                            .Select(x => x.ToList())
+                            .Select(x => new ProfileTag
+                            {
+                                Label = WebUtility.HtmlDecode(x[0].ToLower().Replace(":", "").Trim()),
+                                Value = WebUtility.HtmlDecode(x[1].Trim())
+                            }));
+                }
+
+                var id = htmlDoc.DocumentNode.SelectSingleNode(ProfileIdSelector).Attributes["value"].Value;
+
+                var imageResp = browser.GetResponse(Constants.UrlConstants.ProfileImages,
+                    new Dictionary<string, object> {{"character_id", id}}, true);
+                var images = JsonConvert.DeserializeObject<ApiProfileImagesResponse>(imageResp);
+
+                profileCache[characterName] = model.ProfileData = CreateModel(profileBody, profileTags, images);
             }
-
-            IEnumerable<ProfileTag> profileTags;
-            var fullSelection = htmlDoc.DocumentNode.SelectNodes(ProfileTagsSelector);
-            {
-                profileTags = fullSelection.SelectMany(selection => 
-                    selection.ChildNodes
-                    .Where(x => x.Name == "span" || x.Name == "#text")
-                    .Select(x => x.InnerText)
-                    .ToList()
-                    .Chunk(2)
-                    .Select(x => x.ToList())
-                    .Select(x => new ProfileTag
-                    {
-                        Label = WebUtility.HtmlDecode(x[0].ToLower().Replace(":", "").Trim()),
-                        Value = WebUtility.HtmlDecode(x[1].Trim())
-                    }));
-            }
-
-            var id = htmlDoc.DocumentNode.SelectSingleNode(ProfileIdSelector).Attributes["value"].Value;
-
-            var imageResp = browser.GetResponse(Constants.UrlConstants.ProfileImages,
-                new Dictionary<string, object> {{"character_id", id}}, true);
-            var images = JsonConvert.DeserializeObject<ApiProfileImagesResponse>(imageResp);
-
-            profileCache[characterName] = model.ProfileData = CreateModel(profileBody, profileTags, images);
+            catch {}
         }
 
         [Conditional("DEBUG")]
