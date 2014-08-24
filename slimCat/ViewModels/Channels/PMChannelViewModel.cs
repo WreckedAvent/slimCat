@@ -21,7 +21,10 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System.Diagnostics;
     using System.Linq;
+    using System.Net;
+    using System.Runtime.Remoting.Proxies;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Unity;
@@ -83,6 +86,8 @@ namespace slimCat.ViewModels
         private bool isViewingFullImage;
 
         private RelayCommand switchViewingImageCommand;
+
+        private RelayCommand openInBrowserCommand;
 
         #endregion
 
@@ -421,6 +426,16 @@ namespace slimCat.ViewModels
             {
                 return switchViewingImageCommand ??
                        (switchViewingImageCommand = new RelayCommand(_ => IsViewingFullImage = !IsViewingFullImage));
+            }
+        }
+
+        public ICommand OpenBrowserCommand
+        {
+            get
+            {
+                return openInBrowserCommand ??
+                       (openInBrowserCommand =
+                           new RelayCommand(_ => Process.Start(Constants.UrlConstants.CharacterPage + WebUtility.HtmlEncode(ConversationWith.Name))));
             }
         }
 

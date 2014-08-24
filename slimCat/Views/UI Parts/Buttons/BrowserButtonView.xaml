@@ -1,0 +1,17 @@
+﻿<Button x:Class="slimCat.Views.BrowserButtonView"
+        x:Name="BrowserButton"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource ImageContentButton}"
+        ToolTip="View profile in a browser"
+        Margin="2,0,2,0">
+    <Button.Content>
+        <Rectangle Fill="{Binding ElementName=BrowserButton, Path=Foreground}"
+                   Height="18"
+                   Width="18">
+            <Rectangle.OpacityMask>
+                <ImageBrush ImageSource="pack://application:,,,/icons/browser.png" />
+            </Rectangle.OpacityMask>
+        </Rectangle>
+    </Button.Content>
+</Button>

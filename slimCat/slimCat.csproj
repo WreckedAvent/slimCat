@@ -322,6 +322,9 @@
     <Compile Include="Views\Channel Bar\ManageListsView.xaml.cs">
       <DependentUpon>ManageListsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UI Parts\Buttons\BrowserButtonView.xaml.cs">
+      <DependentUpon>BrowserButtonView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\UI Parts\Buttons\ProfileButtonView.xaml.cs">
       <DependentUpon>ProfileButtonView.xaml</DependentUpon>
     </Compile>
@@ -486,6 +489,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Channel Bar\ManageListsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\UI Parts\Buttons\BrowserButtonView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

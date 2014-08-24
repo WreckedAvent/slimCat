@@ -261,7 +261,6 @@
             </Grid>
         </Grid>
 
-
         <v:ChannelSettingsView Grid.Row="1" />
 
         <StackPanel Grid.Row="2"
@@ -294,6 +293,7 @@
 
                     </WrapPanel>
                 
+                <!-- Action buttons (above the entry box) -->
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Right"
                             Margin="0"
@@ -304,6 +304,9 @@
                                         VerticalAlignment="Center"
                                         IsChecked="{Binding Path=ShowPreview, Mode=TwoWay}"
                                         Visibility="{Binding Path=IsViewingProfile, Converter={StaticResource OppositeBoolConverter}}"/>
+                    
+                    <v:BrowserButtonView Command="{Binding OpenBrowserCommand}"
+                                         Visibility="{Binding Path=IsViewingProfile, Converter={StaticResource BoolConverter}}"/>
                     
                     <v:ProfileButtonView IsChecked="{Binding IsViewingProfile, Mode=TwoWay}"/>
                     
