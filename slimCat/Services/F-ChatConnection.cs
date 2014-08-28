@@ -446,14 +446,21 @@ namespace slimCat.Services
 
         public void Disconnect()
         {
-            socket.Closed -= ConnectionClosed;
-            socket.Error -= ConnectionError;
-            socket.MessageReceived -= ConnectionMessageReceived;
-            socket.Close();
+            if (socket.State == WebSocketState.Connecting || socket.State == WebSocketState.Open)
+            {
+                socket.Closed -= ConnectionClosed;
+                socket.Error -= ConnectionError;
+                socket.MessageReceived -= ConnectionMessageReceived;
+                socket.Close();
+            }
 
             events.GetEvent<ConnectionClosedEvent>().Publish(string.Empty);
             isAuthenticated = false;
             autoPingTimer.Stop();
+            staggerTimer.Stop();
+            timeoutTimer.Stop();
+            autoPingTimer.Stop();
+            retryAttemptCount = 0;
         }
 
         #region logging
