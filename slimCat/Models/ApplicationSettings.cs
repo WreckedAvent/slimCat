@@ -84,6 +84,7 @@ namespace slimCat.Models
 
             OpenOfflineChatsInNoteView = true;
             OpenProfilesInClient = true;
+            ShowMoreInAdsLength = 400;
         }
 
         #endregion
@@ -272,6 +273,8 @@ namespace slimCat.Models
         public static bool UseMilitaryTime { get; set; }
 
         public static bool OpenOfflineChatsInNoteView { get; set; }
+
+        public static int ShowMoreInAdsLength { get; set; }
 
         #endregion
     }

@@ -520,6 +520,29 @@
                                         Automatically go idle after inactivity
                                     </CheckBox>
 
+                                    <CheckBox IsChecked="{Binding AllowAdTruncating}"
+                                              ToolTip="Allows slimCat to automatically collapse very long ads with a 'show more' collapse">
+                                        Automatically collapse long ads
+                                    </CheckBox>
+
+                                    <StackPanel Margin="0,15,0,0"
+                                                Visibility="{Binding AllowAdTruncating, Converter={StaticResource BoolConverter}}">
+                                        <WrapPanel>
+                                            <TextBlock Text="Ad collapse cutoff (characters): " />
+                                            <TextBlock Text="{Binding Path=AdTruncateLength}" />
+                                        </WrapPanel>
+                                        <Slider Value="{Binding AdTruncateLength}"
+                                                LargeChange="100"
+                                                SmallChange="5"
+                                                Minimum="400"
+                                                Maximum="10400"
+                                                Width="200"
+                                                TickFrequency="1000"
+                                                TickPlacement="BottomRight"
+                                                HorizontalAlignment="Left"
+                                                Margin="5,0,0,0" />
+                                    </StackPanel>
+
                                     <StackPanel Margin="0,15,0,0"
                                                 Visibility="{Binding AllowAutoIdle, Converter={StaticResource BoolConverter}}">
                                         <WrapPanel>

@@ -373,6 +373,7 @@ namespace slimCat.ViewModels
                 if (value >= 8 && value <= 20)
                     ApplicationSettings.FontSize = value;
 
+                OnPropertyChanged("FontSize");
                 Save();
             }
         }
@@ -475,7 +476,29 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.AllowAggressiveAdDedup = value;
+                Save();
+            }
+        }
 
+        public bool AllowAdTruncating
+        {
+            get { return ApplicationSettings.ShowMoreInAdsLength != 50000; }
+            set
+            {
+                ApplicationSettings.ShowMoreInAdsLength = value ? 400 : 50000;
+                OnPropertyChanged("AllowAdTruncating");
+                OnPropertyChanged("AdTruncateLength");
+                Save();
+            }
+        }
+
+        public int AdTruncateLength
+        {
+            get { return ApplicationSettings.ShowMoreInAdsLength; }
+            set
+            {
+                ApplicationSettings.ShowMoreInAdsLength = value;
+                OnPropertyChanged("AdTruncateLength");
                 Save();
             }
         }

@@ -1072,6 +1072,7 @@ namespace slimCat.Utilities
                         // if the post is a /me "command"
                         text = text.Substring("/me".Length);
                         inlines.Insert(0, new Run("*")); // push the name button to the second slot
+                        inlines[1].FontStyle = FontStyles.Italic;
                         inlines.Add(new Italic(Parse(text)));
                         inlines.Add(new Run("*"));
                         return inlines;
@@ -1094,7 +1095,7 @@ namespace slimCat.Utilities
                         inlines.Add(new Run(" warns, "));
                         var toAdd = Parse(text);
 
-                        toAdd.Foreground = Locator.Find<Brush>("HighlightBrush");
+                        toAdd.Foreground = Locator.Find<Brush>("ContrastBrush");
                         toAdd.FontWeight = FontWeights.ExtraBold;
                         inlines.Add(toAdd);
 
@@ -1169,6 +1170,46 @@ namespace slimCat.Utilities
 
             var message = value as IMessage; // this is the beef of the message
             var text = message == null ? value as string : message.Message;
+
+            // show more logic
+            if (message != null)
+            {
+                // we don't want to collapse only one small sentence
+                const int wiggleRoom = 75;
+
+                if (message.Type == MessageType.Ad && text.Length > (ApplicationSettings.ShowMoreInAdsLength + wiggleRoom))
+                {
+                    // try to find a nice sentence to break after
+                    var start = ApplicationSettings.ShowMoreInAdsLength;
+                    do
+                    {
+                        if (Char.IsPunctuation(text[start]) && Char.IsWhiteSpace(text[start+1]))
+                            break;
+                        start--;
+                    } while (start != 0);
+
+                    // if we didn't find one, just aggressively break at our point
+                    if (start == 0)
+                    {
+                        start = ApplicationSettings.ShowMoreInAdsLength;
+                        do
+                        {
+                            if (Char.IsWhiteSpace(text[start]))
+                                break;
+                            start--;
+                        } while (start != 0);
+                    }
+
+                    if (start != 0)
+                    {
+                        var sb = new StringBuilder(text);
+                        sb.Insert(start+1, "[collapse=Read More]");
+                        sb.Append("[/collapse]");
+                        text = sb.ToString();
+                    }
+                }
+            }
+
 
             text = HttpUtility.HtmlDecode(text); // translate the HTML characters
 

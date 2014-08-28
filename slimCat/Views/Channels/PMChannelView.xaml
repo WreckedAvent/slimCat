@@ -131,7 +131,7 @@
                     <Image Source="{Binding Path=ConversationWith.Avatar, Mode=OneWay}"
                            Height="75"
                            Width="75"
-                           Margin="10,0,0,0"
+                           Margin="0,10,0,0"
                            HorizontalAlignment="Right"
                            VerticalAlignment="Top"
                            Visibility="{Binding IsExpanded, ElementName=ProfileHeaderExpander, Converter={StaticResource BoolConverter}}"/>
@@ -173,7 +173,8 @@
                             </StackPanel>
                             
                             <TextBlock Visibility="{Binding Path=Model.ProfileData, Converter={StaticResource NullConverter}}"
-                                       Foreground="{StaticResource ForegroundBrush}">
+                                       Foreground="{StaticResource ForegroundBrush}"
+                                       Height="75">
                                 Loading Profile Data ...
                             </TextBlock>
                                 
