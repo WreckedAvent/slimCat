@@ -25,6 +25,7 @@
 	<utilities:NotNullConverter x:Key="NotNullConverter"/>
 	<utilities:NullConverter x:Key="NullConverter"/>
 	<utilities:CommaConverter x:Key="CommaConverter"/>
+    <utilities:ImageSizeConverter x:Key="ImageSizeConverter"/>
 
 	<!-- These will be replaced with their instance values by the container -->
 	<utilities:GenderColorConverter x:Key="GenderColorConverter" />

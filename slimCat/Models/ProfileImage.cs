@@ -34,6 +34,8 @@ namespace slimCat.Models
             ThumbnailUri = new Uri(ThumbUrl.FormatWith(image.ImageId, image.Extension));
             FullImageUri = new Uri(FullImageUrl.FormatWith(image.ImageId, image.Extension));
             Description = image.Description;
+            Width = image.Width;
+            Height = image.Height;
         }
 
         public Uri ThumbnailUri { get; set; }
@@ -41,5 +43,9 @@ namespace slimCat.Models
         public Uri FullImageUri { get; set; }
 
         public string Description { get; set; }
+
+        public string Width { get; set; }
+
+        public string Height { get; set; }
     }
 }

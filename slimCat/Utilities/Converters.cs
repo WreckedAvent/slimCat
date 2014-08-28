@@ -135,6 +135,18 @@ namespace slimCat.Utilities
         }
     }
 
+    public class ImageSizeConverter : OneWayConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var width = (double) value;
+
+            if (width <= 600) return width;
+
+            return width/2;
+        }
+    }
+
     public class NotNullConverter : OneWayConverter
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
