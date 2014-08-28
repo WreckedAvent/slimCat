@@ -109,11 +109,10 @@ namespace slimCat.Views
 
         private void OnSelected(object sender, RoutedEventArgs e)
         {
-            Reader.FirstPage();
             if (isAdded) return;
 
             ProfileParagraph.Inlines.InsertBefore(ProfileParagraph.Inlines.FirstInline, lastItem);
-            Reader.FirstPage();
+
             isAdded = true;
         }
     }

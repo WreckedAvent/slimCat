@@ -206,9 +206,11 @@
                 <Grid Grid.Row="1"
                       Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}">
 
-                    <FlowDocumentPageViewer
+                    <FlowDocumentReader
                         ScrollViewer.CanContentScroll="False"
                     
+                        ViewingMode="Scroll"
+                        IsFindEnabled="False"
                         HorizontalAlignment="Left"
                         UseLayoutRounding="False"
                         Foreground="{StaticResource ForegroundBrush}"
@@ -242,6 +244,7 @@
                                                 <ControlTemplate>
                                                     <Image Source="{Binding CurrentImage.FullImageUri}"
                                                            Margin="5"
+                                                           MaxWidth="800"
                                                            RenderOptions.BitmapScalingMode="Fant"/>
                                                 </ControlTemplate>
                                             </Button.Template>
@@ -252,14 +255,14 @@
                                 <Span lib:SpanHelper.InlineSource="{Binding Path=Model.ProfileData.ProfileText, Mode=OneWay, Converter={StaticResource BbCodeConverter}, IsAsync=True}"/>
                             </Paragraph>
                         </FlowDocument>
-                    </FlowDocumentPageViewer>
+                    </FlowDocumentReader>
 
                     <Button Margin="5" Command="{Binding SwitchImageViewCommand}"
                             Visibility="{Binding IsViewingFullImage, Converter={StaticResource BoolConverter}}">
                         <Button.Template>
                             <ControlTemplate>
                                 <Image Source="{Binding CurrentImage.FullImageUri}"
-                                               RenderOptions.BitmapScalingMode="Fant"/>
+                                       RenderOptions.BitmapScalingMode="Fant"/>
                             </ControlTemplate>
                         </Button.Template>
                     </Button>

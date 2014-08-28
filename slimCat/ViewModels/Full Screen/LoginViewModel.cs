@@ -256,7 +256,7 @@ namespace slimCat.ViewModels
                                 OnPropertyChanged("UpdateLink");
                             });
                     }
-                    catch (WebException)
+                    catch
                     {
                     }
                 }).Start();
