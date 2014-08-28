@@ -833,6 +833,7 @@ namespace slimCat.ViewModels
                 // go through header
                 parser.ReadLine();
 
+                Dispatcher.BeginInvoke((Action) (() => Themes.Clear()));
                 while (!parser.EndOfData)
                 {
                     var row = parser.ReadFields();
