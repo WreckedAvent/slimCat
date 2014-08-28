@@ -116,19 +116,42 @@
                 </Grid>
 
                 <!-- Profile View Header -->
-                <Grid Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}"
-                      Margin="0,10,0,0">
-                    <DockPanel>
-                        <Image Source="{Binding Path=ConversationWith.Avatar, Mode=OneWay}"
-                               Height="75"
-                               Width="75"
-                               Margin="10,0,0,0"
-                               DockPanel.Dock="Right"/>
+                <Grid Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}">
+                    <Grid.Resources>
+                        <DataTemplate DataType="{x:Type models:ProfileImage}" x:Key="ThumbnailTemplate">
+                            <Grid Cursor="Hand">
+                                <Image Source="{Binding Path=ThumbnailUri}"
+                                       Height="75"
+                                       Width="75"
+                                       Margin="0,10,0,0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </Grid.Resources>
+                    
+                    <Image Source="{Binding Path=ConversationWith.Avatar, Mode=OneWay}"
+                           Height="75"
+                           Width="75"
+                           Margin="10,0,0,0"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Top"
+                           Visibility="{Binding IsExpanded, ElementName=ProfileHeaderExpander, Converter={StaticResource BoolConverter}}"/>
+
+                    <Expander IsExpanded="True" x:Name="ProfileHeaderExpander">
+                        <Expander.Header>
+                            <TextBlock TextWrapping="Wrap"
+                                       TextAlignment="Left"
+                                       HorizontalAlignment="Left">
+                            <ContentControl Content="{Binding Path=ConversationWith}" />                            
+                            <ContentControl Content="{Binding Path=Title, Mode=OneWay}"
+                                            Foreground="{StaticResource ForegroundBrush}" />
+                            </TextBlock>
+                        </Expander.Header>
                         <StackPanel>
-                            <ContentControl Content="{Binding Path=ConversationWith}" />
                             
                             <StackPanel Visibility="{Binding Converter={StaticResource NotNullConverter}}"
-                                        DataContext="{Binding Path=Model.ProfileData}">
+                                        DataContext="{Binding Path=Model.ProfileData}"
+                                        Margin="0,0,80,0"
+                                        TextBlock.Foreground="{StaticResource ForegroundBrush}">
                                 <TextBlock TextWrapping="Wrap">
                                     <Run Text="{Binding Age, Converter={StaticResource CommaConverter}}"/>
                                     <Run Text="{Binding Orientation, Converter={StaticResource CommaConverter}}"/>
@@ -142,18 +165,41 @@
                                 </TextBlock>
                                 
                                 <TextBlock TextWrapping="Wrap"
-                                           Visibility="{Binding DomSubRole, Converter={StaticResource EmptyConverter}}">
+                                            Visibility="{Binding DomSubRole, Converter={StaticResource EmptyConverter}}">
                                     <Run Text="{Binding DomSubRole}"/>
                                     <Run Text="/"/>
                                     <Run Text="{Binding Position}"/>
                                 </TextBlock>
                             </StackPanel>
                             
-                            <TextBlock Visibility="{Binding Path=Model.ProfileData, Converter={StaticResource NullConverter}}">
+                            <TextBlock Visibility="{Binding Path=Model.ProfileData, Converter={StaticResource NullConverter}}"
+                                       Foreground="{StaticResource ForegroundBrush}">
                                 Loading Profile Data ...
                             </TextBlock>
+                                
+                            <Line Stretch="Fill" 
+                                    Visibility="{Binding Model.ProfileData.Images.Count, Converter={StaticResource GreaterThanZeroConverter}}"
+                                    Stroke="{StaticResource HighlightBrush}" 
+                                    X2="1"
+                                    Margin="0,0,0,0" />
+
+                            <StackPanel Visibility="{Binding Model.ProfileData, Converter={StaticResource NotNullConverter}}">
+                                <ScrollViewer VerticalScrollBarVisibility="Hidden"
+                                                HorizontalScrollBarVisibility="Auto"
+                                                MaxHeight="100"
+                                                Margin="0,10,0,10"
+                                                Visibility="{Binding Model.ProfileData.Images.Count, Converter={StaticResource GreaterThanZeroConverter}}">
+                                    <ListBox ItemsSource="{Binding Model.ProfileData.Images}"
+                                                ItemTemplate="{StaticResource ThumbnailTemplate}"
+                                                Style="{StaticResource HorizontalListBoxStyle}"
+                                                SelectedItem="{Binding CurrentImage, Mode=TwoWay}"
+                                                SelectionChanged="OnSelected">
+                                    </ListBox>
+                                </ScrollViewer>
+
+                            </StackPanel>
                         </StackPanel>
-                    </DockPanel>
+                    </Expander>
                 </Grid>
             </Grid>
         </Border>
@@ -168,43 +214,7 @@
 
             <!-- Profile View -->
             <Grid Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}">
-                <Grid.Resources>
-                    <DataTemplate DataType="{x:Type models:ProfileImage}" x:Key="ThumbnailTemplate">
-                        <Grid Cursor="Hand">
-                            <Image Source="{Binding Path=ThumbnailUri}"
-                                       Height="75"
-                                       Width="75" />
-                        </Grid>
-                    </DataTemplate>
-                </Grid.Resources>
-                
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <StackPanel Visibility="{Binding Model.ProfileData, Converter={StaticResource NotNullConverter}}">
-                    <ScrollViewer VerticalScrollBarVisibility="Hidden"
-                                  HorizontalScrollBarVisibility="Auto"
-                                  MaxHeight="100"
-                                  Margin="0,10,0,10"
-                                  Visibility="{Binding Model.ProfileData.Images.Count, Converter={StaticResource GreaterThanZeroConverter}}">
-                        <ListBox ItemsSource="{Binding Model.ProfileData.Images}"
-                                 ItemTemplate="{StaticResource ThumbnailTemplate}"
-                                 Style="{StaticResource HorizontalListBoxStyle}"
-                                 SelectedItem="{Binding CurrentImage, Mode=TwoWay}"
-                                 SelectionChanged="OnSelected">
-                        </ListBox>
-                    </ScrollViewer>
-                    <Line Stretch="Fill" 
-                          Visibility="{Binding Model.ProfileData.Images.Count, Converter={StaticResource GreaterThanZeroConverter}}"
-                          Stroke="{StaticResource HighlightBrush}" 
-                          X2="1"
-                          Margin="0,0,0,0" />
-                </StackPanel>
-
-                <Grid Grid.Row="1"
-                      Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}">
+                <Grid Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}">
 
                     <FlowDocumentReader
                         ScrollViewer.CanContentScroll="False"
