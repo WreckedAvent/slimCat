@@ -270,20 +270,9 @@ namespace slimCat.Utilities
             return MakeInlineContainer(target, "UsernameTemplate");
         }
 
-        internal Inline MakeIcon(string target)
+        internal Inline MakeIcon(ICharacter target)
         {
-            var icon = new InlineUIContainer();
-            var child = new Image { MaxHeight = 50, MaxWidth = 50, Margin = new Thickness(0)};
-            var avatar = new BitmapImage(
-                new Uri(
-                    Constants.UrlConstants.CharacterAvatar + target.ToLower() + ".png", UriKind.Absolute),
-                    new RequestCachePolicy(RequestCacheLevel.Revalidate)
-                );
-
-            child.Source = avatar;
-            icon.Child = child;
-
-            return icon;
+            return MakeInlineContainer(target, "UserIconTemplate");
         }
 
         internal Inline MakeChannelLink(ChannelModel channel)
@@ -616,8 +605,10 @@ namespace slimCat.Utilities
 
             if (arg.Children != null && arg.Children.Any())
             {
-                var character = arg.Children.First().InnerText;
+                var characterName = arg.Children.First().InnerText;
 
+                var character = characterManager.Find(characterName);
+                character.GetAvatar();
                 var icon = MakeIcon(character);
 
                 arg.Children.Clear();
@@ -625,7 +616,7 @@ namespace slimCat.Utilities
             }
 
             return !string.IsNullOrEmpty(arg.Arguments)
-                ? MakeIcon(arg.Arguments)
+                ? MakeIcon(characterManager.Find(arg.Arguments))
                 : MakeNormalText(arg);
         }
 

@@ -140,7 +140,24 @@
 		</Grid>
 	</DataTemplate>
 
-	<Style TargetType="Hyperlink" x:Key="Hyperlink">
+    <DataTemplate x:Key="UserIconTemplate"
+				  DataType="models:CharacterModel">
+        <TextBlock TextWrapping="Wrap">
+			<Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
+						Style="{StaticResource UsernameStyle}"
+						Foreground="{Binding Converter={StaticResource NameplateColorConverter}, Mode=OneWay}">
+				<Image Source="{Binding Avatar}" Height="50" Width="50" Margin="0"/>
+				<Hyperlink.InputBindings>
+					<MouseBinding MouseAction="RightClick"
+									Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
+													RelativeSource={RelativeSource AncestorType={x:Type Grid},AncestorLevel=2}}"
+									CommandParameter="{Binding Path=Name, Mode=OneTime}" />
+				</Hyperlink.InputBindings>
+			</Hyperlink>
+        </TextBlock>
+    </DataTemplate>
+
+    <Style TargetType="Hyperlink" x:Key="Hyperlink">
 		<Setter Property="Command"
 				Value="{Binding Path=DataContext.NavigateTo,
 								  RelativeSource={RelativeSource Mode=FindAncestor,
