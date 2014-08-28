@@ -605,15 +605,18 @@ namespace slimCat.ViewModels
 
         protected override void StartLinkInDefaultBrowser(object linkToOpen)
         {
-            var target = (string) linkToOpen;
-            if (target.ToLower().StartsWith(ConversationWith.Name.ToLower()))
+            if (ApplicationSettings.OpenProfilesInClient)
             {
-                if (target.EndsWith("/notes"))
-                    IsViewingChat = IsViewingProfile = false;
-                else
-                    IsViewingChat = IsViewingProfile = true;
+                var target = (string) linkToOpen;
+                if (target.ToLower().StartsWith(ConversationWith.Name.ToLower()))
+                {
+                    if (target.EndsWith("/notes"))
+                        IsViewingChat = IsViewingProfile = false;
+                    else
+                        IsViewingChat = IsViewingProfile = true;
 
-                return;
+                    return;
+                }
             }
 
             base.StartLinkInDefaultBrowser(linkToOpen);

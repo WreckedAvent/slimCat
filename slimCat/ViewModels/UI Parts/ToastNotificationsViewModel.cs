@@ -229,7 +229,19 @@ namespace slimCat.ViewModels
 
             if (!interpret.Contains(".") || interpret.Contains(" "))
             {
-                events.SendUserCommand("priv", new[] { interpret.EndsWith("/notes") ? interpret : interpret + "/profile" });
+                if (interpret.EndsWith("/notes"))
+                {
+                    events.SendUserCommand("priv", new[] { interpret });
+                    return;
+                }
+
+                if (!ApplicationSettings.OpenProfilesInClient)
+                {
+                    Process.Start(Constants.UrlConstants.CharacterPage + HttpUtility.HtmlEncode(interpret));
+                    return;
+                }
+
+                events.SendUserCommand("priv", new[] { interpret + "/profile" });
                 return;
             }
 

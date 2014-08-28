@@ -334,6 +334,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool ViewProfilesInChat
+        {
+            get { return ApplicationSettings.OpenProfilesInClient; }
+            set
+            {
+                ApplicationSettings.OpenProfilesInClient = value;
+                Save();
+            }
+        }
+
         public bool AllowColors
         {
             get { return ApplicationSettings.AllowColors; }

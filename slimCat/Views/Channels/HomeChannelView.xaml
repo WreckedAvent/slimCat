@@ -319,7 +319,12 @@
                                               ToolTip="Determines if this character's settings are used as defaults for other characters.">
                                         Make this character's settings the default for others
                                     </CheckBox>
-                                    
+
+                                    <CheckBox IsChecked="{Binding ViewProfilesInChat}"
+                                              ToolTip="Determines if slimCat will be the default viewer for profiles on left-click instead of browsers.">
+                                        Left-click views profiles within slimCat
+                                    </CheckBox>
+
                                     <CheckBox IsChecked="{Binding AllowMinimizeToSystemTray}"
                                               ToolTip="Allows slimCat to minimize itself to system tray on closing the window, instead of exiting.">
                                         Minimize to system tray on close

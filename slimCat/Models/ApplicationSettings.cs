@@ -81,7 +81,9 @@ namespace slimCat.Models
 
             SettingsVersion = Constants.ClientVer;
             UseMilitaryTime = true;
+
             OpenOfflineChatsInNoteView = true;
+            OpenProfilesInClient = true;
         }
 
         #endregion
@@ -183,6 +185,8 @@ namespace slimCat.Models
         public static string GlobalNotifyTerms { get; set; }
 
         public static bool AllowIndent { get; set; }
+
+        public static bool OpenProfilesInClient { get; set; }
 
         /// <summary>
         ///     Gets the global notify terms list.
