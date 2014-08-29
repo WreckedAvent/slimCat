@@ -330,7 +330,8 @@
                     <v:BrowserButtonView Command="{Binding OpenBrowserCommand}"
                                          Visibility="{Binding Path=IsViewingProfile, Converter={StaticResource BoolConverter}}"/>
                     
-                    <v:ProfileButtonView IsChecked="{Binding IsViewingProfile, Mode=TwoWay}"/>
+                    <v:ProfileButtonView IsChecked="{Binding IsViewingProfile, Mode=TwoWay}"
+                                         Visibility="{Binding IsConversationWithSelf, Converter={StaticResource OppositeBoolConverter}}"/>
                     
                     <StackPanel Orientation="Horizontal" Visibility="{Binding Path=IsViewingProfile, Converter={StaticResource OppositeBoolConverter}}">
                         <v:UpDownButtonView Margin="4"

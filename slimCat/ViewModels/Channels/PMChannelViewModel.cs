@@ -379,6 +379,11 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool IsConversationWithSelf
+        {
+            get { return ConversationWith != null && ConversationWith.NameEquals(ChatModel.CurrentCharacter.Name); }
+        }
+
         public ICommand SwitchCommand
         {
             get
