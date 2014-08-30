@@ -26,6 +26,7 @@
 	<utilities:NullConverter x:Key="NullConverter"/>
 	<utilities:CommaConverter x:Key="CommaConverter"/>
     <utilities:ImageSizeConverter x:Key="ImageSizeConverter"/>
+    <utilities:CharacterAvatarConverter x:Key="CharacterAvatarConverter"/>
 
 	<!-- These will be replaced with their instance values by the container -->
 	<utilities:GenderColorConverter x:Key="GenderColorConverter" />
@@ -143,16 +144,17 @@
 
     <DataTemplate x:Key="UserIconTemplate"
 				  DataType="models:CharacterModel">
-        <TextBlock TextWrapping="Wrap">
+        <TextBlock TextWrapping="Wrap"
+                   Margin="0">
 			<Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
-						Style="{StaticResource UsernameStyle}"
-						Foreground="{Binding Converter={StaticResource NameplateColorConverter}, Mode=OneWay}">
-				<Image Source="{Binding Avatar}" Height="50" Width="50" Margin="0"/>
+					   Style="{StaticResource UsernameStyle}"
+					   Foreground="{Binding Converter={StaticResource NameplateColorConverter}, Mode=OneWay}">
+				<Image Source="{Binding Name, Converter={StaticResource CharacterAvatarConverter}, IsAsync=True}" Height="50" Width="50" Margin="0" />
 				<Hyperlink.InputBindings>
 					<MouseBinding MouseAction="RightClick"
-									Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
-													RelativeSource={RelativeSource AncestorType={x:Type Grid},AncestorLevel=2}}"
-									CommandParameter="{Binding Path=Name, Mode=OneTime}" />
+								  Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
+													RelativeSource={RelativeSource AncestorType={x:Type Grid}, AncestorLevel=2}}"
+								  CommandParameter="{Binding Path=Name, Mode=OneTime}" />
 				</Hyperlink.InputBindings>
 			</Hyperlink>
         </TextBlock>

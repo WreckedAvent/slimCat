@@ -26,6 +26,7 @@ namespace slimCat.Models
     using System.IO;
     using System.Net;
     using System.Net.Cache;
+    using System.Web;
     using System.Windows.Media.Imaging;
     using Utilities;
     using ViewModels;
@@ -107,6 +108,11 @@ namespace slimCat.Models
             }
         }
 
+        public Uri AvatarUri
+        {
+            get { return new Uri(Constants.UrlConstants.CharacterAvatar + HttpUtility.HtmlEncode(name).ToLower() + ".png", UriKind.Absolute); }
+        }
+
         /// <summary>
         ///     Gets or sets the name.
         /// </summary>
@@ -118,6 +124,7 @@ namespace slimCat.Models
             {
                 name = value;
                 OnPropertyChanged("Name");
+                OnPropertyChanged("Uri");
             }
         }
 

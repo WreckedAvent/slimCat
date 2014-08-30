@@ -135,6 +135,22 @@ namespace slimCat.Utilities
         }
     }
 
+    public class CharacterAvatarConverter : OneWayConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            var character = (string) value;
+            var image =
+                new BitmapImage(
+                    new Uri(Constants.UrlConstants.CharacterAvatar + character.ToLower() + ".png",
+                        UriKind.Absolute), new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable));
+
+            return image;
+        }
+    }
+
     public class ImageSizeConverter : OneWayConverter
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -620,7 +636,6 @@ namespace slimCat.Utilities
                 var characterName = arg.Children.First().InnerText;
 
                 var character = characterManager.Find(characterName);
-                character.GetAvatar();
                 var icon = MakeIcon(character);
 
                 arg.Children.Clear();
