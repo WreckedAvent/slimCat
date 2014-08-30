@@ -23,6 +23,7 @@ namespace slimCat.Services
     using Microsoft.Practices.Prism.Events;
     using System;
     using System.Timers;
+    using Models;
     using Utilities;
 
     #endregion
@@ -31,11 +32,14 @@ namespace slimCat.Services
     {
         private readonly IChatConnection connection;
 
+        private readonly IChatModel chatModel;
+
         private DateTime lastUpdate;
 
-        public ChannelListUpdaterService(IChatConnection connection, IEventAggregator eventAggregator)
+        public ChannelListUpdaterService(IChatConnection connection, IEventAggregator eventAggregator, IChatModel chatModel)
         {
             this.connection = connection;
+            this.chatModel = chatModel;
 
             eventAggregator.GetEvent<ConnectionClosedEvent>().Subscribe(OnWipeState);
 
@@ -55,11 +59,24 @@ namespace slimCat.Services
 
         public void UpdateChannels()
         {
-            if (lastUpdate.AddHours(2) > DateTime.Now) return;
+            if (!ShouldUpdate()) return;
 
             connection.SendMessage(Constants.ClientCommands.PublicChannelList);
             connection.SendMessage(Constants.ClientCommands.PrivateChannelList);
             lastUpdate = DateTime.Now;
+        }
+
+        private bool ShouldUpdate()
+        {
+            // if we didn't get our channel list by a minute in, try updating again
+            if (lastUpdate.AddMinutes(1) < DateTime.Now)
+            {
+                if (chatModel.AllChannels.Count.Equals(ApplicationSettings.SavedChannels.Count))
+                    return true;
+            }
+
+            // update every 2 hours
+            return lastUpdate.AddHours(2) <= DateTime.Now;
         }
 
     }
