@@ -28,6 +28,7 @@
     <utilities:ImageSizeConverter x:Key="ImageSizeConverter"/>
     <utilities:CharacterAvatarConverter x:Key="CharacterAvatarConverter"/>
     <utilities:CacheUriForeverConverter x:Key="CacheUriForeverConverter"/>
+    <utilities:AutoOrStarConverter x:Key="AutoOrStarConverter"/>
 
 	<!-- These will be replaced with their instance values by the container -->
 	<utilities:GenderColorConverter x:Key="GenderColorConverter" />

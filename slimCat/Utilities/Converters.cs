@@ -148,6 +148,16 @@ namespace slimCat.Utilities
         }
     }
 
+    public class AutoOrStarConverter : OneWayConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if ((bool) value)
+                return "*";
+            return "auto";
+        }
+    }
+
     public class CacheUriForeverConverter : OneWayConverter
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)

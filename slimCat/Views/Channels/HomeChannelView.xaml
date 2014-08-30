@@ -644,16 +644,26 @@
             </ScrollViewer>
 
             <v:RightClickMenu Grid.Row="1" />
-            <StackPanel Grid.Row="2">
-                <StackPanel Orientation="Horizontal"
+
+            <GridSplitter Grid.Row="2">
+            </GridSplitter>
+
+            <Grid Grid.Row="2" Height="auto" Margin="0,4,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Right"
                             Margin="0">
                     <v:MarkupButtonView Margin="4"
                                         VerticalAlignment="Center"
                                         IsChecked="{Binding Path=ShowPreview, Mode=TwoWay}"/>
                 </StackPanel>
-                <v:ChannelTextBoxEntryView Margin="0,0,0,10" />
-            </StackPanel>
+                
+                <v:ChannelTextBoxEntryView Margin="0,0,0,10" Grid.Row="1"/>
+            </Grid>
         </Grid>
     </Grid>
 </v:DisposableView>

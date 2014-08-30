@@ -102,11 +102,19 @@
 
         <v:ChannelSettingsView Grid.Row="1" />
 
-        <StackPanel Grid.Row="2">
-            <Grid>
+        <GridSplitter Grid.Row="2"> 
+        </GridSplitter>
+        
+        <Grid Grid.Row="2" Height="auto" Margin="0,4,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto" />
-                    <ColumnDefinition />
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal"
                             VerticalAlignment="Center"
@@ -170,12 +178,13 @@
             <v:ChannelTextBoxEntryView
                 Visibility="{Binding Path=IsChatting, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                 IsEnabled="{Binding Path=CanPost, Mode=OneWay}"
+                Grid.Row="1"
                 Margin="0,0,0,10" />
 
             <Grid Visibility="{Binding Path=IsSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}">
                 <v:SearchBoxView DataContext="{Binding SearchSettings}"
                                  Margin="0,0,0,10" />
             </Grid>
-        </StackPanel>
+        </Grid>
     </Grid>
 </v:DisposableView>

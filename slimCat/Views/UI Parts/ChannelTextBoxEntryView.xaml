@@ -7,33 +7,32 @@
              xmlns:vm="clr-namespace:slimCat.ViewModels"
              xmlns:lib="clr-namespace:slimCat.Libraries"
              xmlns:v="clr-namespace:slimCat.Views"
-
+             VerticalAlignment="Stretch"
              d:DataContext="{d:DesignInstance vm:ChannelViewModelBase}">
-    <Grid>
+    <Grid VerticalAlignment="Stretch"
+          Height="auto">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="{Binding ShowPreview, Converter={StaticResource AutoOrStarConverter}}" />
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <DockPanel Visibility="{Binding Error, Mode=OneWay, Converter={StaticResource EmptyConverter}}">
             <v:CloseButtonView DockPanel.Dock="Right"
                                    Command="{Binding ClearErrorCommand}"/>
-            
+
             <TextBlock Foreground="{StaticResource HighlightBrush}"
                        FontSize="16"
                        FontWeight="Bold"
                        Text="{Binding Error}"
                        TextWrapping="Wrap"/>
         </DockPanel>
-
-        <ScrollViewer MaxHeight="200"
-                      Visibility="{Binding ShowPreview, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+        
+        <ScrollViewer Visibility="{Binding ShowPreview, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                       CanContentScroll="False"
                       Grid.Row="1">
             <StackPanel>
-                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,0,0,0" />
-                
+
                 <TextBlock Margin="0"
                            FontSize="14"
                            Foreground="{StaticResource ForegroundBrush}"
@@ -48,42 +47,29 @@
         </ScrollViewer>
 
         <v:ImageTextBox 
-            Text="{Binding Path=Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            TextWrapping="Wrap"
-            FontSize="13"
-            AcceptsReturn="True"
-            KeyUp="OnKeyUp"
-            PreviewKeyDown="OnPreviewKeyDown"
-            ScrollViewer.CanContentScroll="True"
-            ScrollViewer.VerticalScrollBarVisibility="Auto"
-            SpellCheck.IsEnabled="{Binding SpellCheckEnabled, Mode=OneWay}"
-            TabIndex="0"
-            Loaded="OnLoaded"
-            x:Name="Entry"
-            LabelText="{Binding EntryTextBoxLabel}"
-            IconSource="{Binding EntryTextBoxIcon}"
-            Grid.Row="2">
+                Text="{Binding Path=Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                TextWrapping="Wrap"
+                FontSize="13"
+                AcceptsReturn="True"
+                KeyUp="OnKeyUp"
+                PreviewKeyDown="OnPreviewKeyDown"
+                ScrollViewer.CanContentScroll="True"
+                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                SpellCheck.IsEnabled="{Binding SpellCheckEnabled, Mode=OneWay}"
+                TabIndex="0"
+                Loaded="OnLoaded"
+                x:Name="Entry"
+                Grid.Row="2"
+                LabelText="{Binding EntryTextBoxLabel}"
+                IconSource="{Binding EntryTextBoxIcon}"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Stretch">
             <v:ImageTextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}" />
                 <KeyBinding Key="Up" Modifiers="Alt" Command="{Binding NavigateUpCommand}" />
                 <KeyBinding Key="Down" Modifiers="Alt" Command="{Binding NavigateDownCommand}" />
                 <KeyBinding Key="Up" Modifiers="Control" Command="{x:Null}"/>
             </v:ImageTextBox.InputBindings>
-            <v:ImageTextBox.Style>
-                <Style TargetType="{x:Type v:ImageTextBox}" BasedOn="{StaticResource {x:Type v:ImageTextBox}}">
-                    <Style.Triggers>
-                        <Trigger Property="IsFocused" Value="True">
-                            <Setter Property="MinLines" Value="2" />
-                            <Setter Property="MaxLines" Value="8" />
-                        </Trigger>
-
-                        <Trigger Property="IsFocused" Value="False">
-                            <Setter Property="MinLines" Value="1" />
-                            <Setter Property="MaxLines" Value="1" />
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </v:ImageTextBox.Style>
         </v:ImageTextBox>
     </Grid>
 </UserControl>
