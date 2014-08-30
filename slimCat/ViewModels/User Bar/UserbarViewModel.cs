@@ -534,7 +534,7 @@ namespace slimCat.ViewModels
             else
                 ChannelSelected = ChatModel.CurrentChannels.IndexOf(ChatModel.CurrentChannel as GeneralChannelModel);
 
-            hasNewPm = ChatModel.CurrentPms.Cast<ChannelModel>().Any(cm => cm.NeedsAttention);
+            HasNewPm = ChatModel.CurrentPms.Cast<ChannelModel>().Any(cm => cm.NeedsAttention);
             HasNewMessage = ChatModel.CurrentChannels.Cast<ChannelModel>().Any(cm => cm.NeedsAttention);
         }
 

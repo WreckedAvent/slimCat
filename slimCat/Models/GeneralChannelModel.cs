@@ -207,6 +207,8 @@ namespace slimCat.Models
                 if (!IsSelected && NeedsAttentionOverride)
                     return true; // flash for ding words
 
+                if (Messages.Count == 0 && Ads.Count == 0) return false;
+
                 var messageNotifyMatters = Mode == ChannelMode.Chat || Mode == ChannelMode.Both;
                 var adNotifyMatters = Mode == ChannelMode.Ads || Mode == ChannelMode.Both;
 
