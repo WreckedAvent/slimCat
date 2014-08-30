@@ -25,7 +25,9 @@ namespace slimCat.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Web;
     using HtmlAgilityPack;
+    using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Unity;
     using Models;
     using System.ComponentModel;
@@ -42,11 +44,14 @@ namespace slimCat.Services
         #region Fields
         private readonly IBrowser browser;
 
+        private readonly IChatModel cm;
+        private readonly IEventAggregator events;
+
         private const string ProfileBodySelector = "//div[@id = 'tabs-1']/*[1]";
 
         private const string ProfileTagsSelector = "//div[@class = 'itgroup']";
 
-        private const string ImageSelector = "//div[@class = 'thumbbox']/a";
+        private const string ProfileKinksSeletor = "//td[contains(@class,'Character_Fetishlist')]";
 
         private const string ProfileIdSelector = "//input[@id = 'profile-character-id']";
 
@@ -57,11 +62,15 @@ namespace slimCat.Services
         #endregion
 
         #region Constructors
-        public ProfileService(IUnityContainer contain, IBrowser browser)
+        public ProfileService(IUnityContainer contain, IBrowser browser, IChatModel cm, IEventAggregator events)
         {
             this.browser = browser;
+            this.cm = cm;
+            this.events = events;
 
             container = contain;
+
+            events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(GetProfileDataAsync);
         }
         #endregion
 
@@ -70,12 +79,32 @@ namespace slimCat.Services
         private void GetProfileDataAsyncHandler(object s, DoWorkEventArgs e)
         {
             var characterName = (string)e.Argument;
-            var model = container.Resolve<PmChannelModel>(characterName);
+            PmChannelModel model = null;
+            try
+            {
+                model = container.Resolve<PmChannelModel>(characterName);
+            }
+            catch (ResolutionFailedException)
+            {
+            }
 
             ProfileData cache;
             if (profileCache.TryGetValue(characterName, out cache))
             {
-                model.ProfileData = cache;
+                if (model != null)
+                    model.ProfileData = cache;
+                return;
+            }
+
+            cache = SettingsService.RetrieveProfile(characterName);
+            if (cache != null)
+            {
+                if (cm.CurrentCharacter.NameEquals(characterName))
+                    cm.CurrentCharacterData = cache;
+                else if (model != null)
+                    model.ProfileData = cache;
+
+                profileCache[characterName] = cache;
                 return;
             }
 
@@ -117,13 +146,47 @@ namespace slimCat.Services
                             }));
                 }
 
+                List<ProfileKink> allKinks;
+                var profileKinks = htmlDoc.DocumentNode.SelectNodes(ProfileKinksSeletor);
+                {
+                    allKinks = profileKinks.SelectMany(selection =>
+                    {
+                        var kind = (KinkListKind)Enum.Parse(typeof(KinkListKind), selection.Id.Substring("Character_Fetishlist".Length));
+                        return selection.Descendants()
+                            .Where(x => x.Name == "a")
+                            .Select(x =>
+                            {
+                                var tagId = int.Parse(x.Id.Substring("Character_Listedfetish".Length));
+                                var isCustomKink = x.Attributes.First(y => y.Name.Equals("class")).Value.Contains("FetishGroupCustom");
+                                var name = x.InnerText.Trim();
+
+                                return new ProfileKink
+                                {
+                                    Id = tagId,
+                                    IsCustomKink = isCustomKink,
+                                    Name = HttpUtility.HtmlDecode(name),
+                                    KinkListKind = kind
+                                };
+                            });
+                    }).ToList();
+                }
+
                 var id = htmlDoc.DocumentNode.SelectSingleNode(ProfileIdSelector).Attributes["value"].Value;
 
                 var imageResp = browser.GetResponse(Constants.UrlConstants.ProfileImages,
                     new Dictionary<string, object> {{"character_id", id}}, true);
                 var images = JsonConvert.DeserializeObject<ApiProfileImagesResponse>(imageResp);
 
-                profileCache[characterName] = model.ProfileData = CreateModel(profileBody, profileTags, images);
+                var profileData = CreateModel(profileBody, profileTags, images, allKinks);
+                profileCache[characterName] = profileData;
+
+                SettingsService.SaveProfile(characterName, profileData);
+
+                if (model != null)
+                    model.ProfileData = profileData;
+
+                if (cm.CurrentCharacter.NameEquals(characterName))
+                    cm.CurrentCharacterData = profileData;
             }
             catch {}
         }
@@ -142,11 +205,12 @@ namespace slimCat.Services
             worker.RunWorkerAsync(character);
         }
 
-        private static ProfileData CreateModel(string profileText, IEnumerable<ProfileTag> tags, ApiProfileImagesResponse imageResponse)
+        private static ProfileData CreateModel(string profileText, IEnumerable<ProfileTag> tags, ApiProfileImagesResponse imageResponse, List<ProfileKink> kinks)
         {
             var toReturn = new ProfileData
             {
-                ProfileText = profileText
+                ProfileText = profileText,
+                Kinks = kinks
             };
 
             tags.Each(x =>

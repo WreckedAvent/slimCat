@@ -79,6 +79,7 @@ namespace slimCat.Utilities
                 Instantiate<ServerCommandService>();
                 Instantiate<UserCommandService>();
                 Instantiate<IIconService>();
+                Instantiate<ProfileService>();
 
                 // some resources that are dependant on our singletons
                 Application.Current.Resources.Add("BbCodeConverter", Container.Resolve<BbCodeConverter>());

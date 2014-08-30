@@ -20,9 +20,12 @@
 namespace slimCat.Models
 {
     using System;
+    using System.Xml.Serialization;
     using Api;
     using Utilities;
 
+    [Serializable]
+    [XmlRoot(ElementName = "Image")]
     public class ProfileImage
     {
         public const string ThumbUrl = Constants.UrlConstants.StaticDomain + "/images/charthumb/{0}.{1}";
@@ -38,9 +41,30 @@ namespace slimCat.Models
             Height = image.Height;
         }
 
+        public ProfileImage()
+        {
+            
+        }
+
+        [XmlIgnore]
         public Uri ThumbnailUri { get; set; }
 
+        [XmlElement("ThumbnailUri")]
+        public string ThumbnailString
+        {
+            get { return ThumbnailUri.AbsolutePath; }
+            set { ThumbnailUri = new Uri(Constants.UrlConstants.StaticDomain + value, UriKind.Absolute);}
+        }
+
+        [XmlIgnore]
         public Uri FullImageUri { get; set; }
+
+        [XmlElement("FullImageUri")]
+        public string FullImageString
+        {
+            get { return FullImageUri.AbsolutePath; }
+            set { FullImageUri = new Uri(Constants.UrlConstants.StaticDomain + value, UriKind.Absolute); }
+        }
 
         public string Description { get; set; }
 

@@ -21,6 +21,9 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using System.Text;
+    using System.Xml.Serialization;
+    using Microsoft.VisualBasic.CompilerServices;
     using Models;
     using System;
     using System.Collections.Generic;
@@ -40,6 +43,8 @@ namespace slimCat.Services
 
         private const string SettingsFileName = "!settings.xml";
 
+        private const string ProfileCacheFileName = "!profile.xml";
+
         private const string GlobalFolderName = "Global";
 
         private const string DefaultsFolderName = "!Defaults";
@@ -51,18 +56,6 @@ namespace slimCat.Services
         /// <summary>
         ///     Returns either the channel settings that already exist or a new settings file
         /// </summary>
-        /// <param name="currentCharacter">
-        ///     The Current Character.
-        /// </param>
-        /// <param name="title">
-        ///     The Title.
-        /// </param>
-        /// <param name="id">
-        ///     The ID.
-        /// </param>
-        /// <param name="chanType">
-        ///     The chan Type.
-        /// </param>
         public static ChannelSettingsModel GetChannelSettings(
             string currentCharacter, string title, string id, ChannelType chanType)
         {
@@ -85,15 +78,58 @@ namespace slimCat.Services
             }
         }
 
+        public static void SaveProfile(string targetCharacter, ProfileData profileData)
+        {
+            var workingPath = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, targetCharacter, targetCharacter);
+
+            if (!Directory.Exists(workingPath))
+                Directory.CreateDirectory(workingPath);
+
+            var fileName = Path.Combine(workingPath, ProfileCacheFileName);
+
+            try
+            {
+                using (var streamWriter = new StreamWriter(fileName, false, Encoding.UTF8))
+                {
+                    var serializer = new XmlSerializer(typeof(ProfileData));
+                    serializer.Serialize(streamWriter, profileData);
+                }
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+        public static ProfileData RetrieveProfile(string targetCharacter)
+        {
+            var workingPath = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, targetCharacter, targetCharacter);
+
+            if (!Directory.Exists(workingPath))
+                return null;
+
+            var fileName = Path.Combine(workingPath, ProfileCacheFileName);
+
+            if (!File.Exists(fileName))
+                return null;
+
+            try
+            {
+                using (var stream = File.OpenRead(fileName))
+                {
+                    var serializer = new XmlSerializer(typeof (ProfileData));
+                    return serializer.Deserialize(stream) as ProfileData;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         /// <summary>
         ///     Updates the application settings from file
         /// </summary>
-        /// <param name="currentCharacter">
-        ///     The current character.
-        /// </param>
-        /// <param name="cm">
-        ///     The current character manager.
-        /// </param>
         public static void ReadApplicationSettingsFromXml(string currentCharacter, ICharacterManager cm)
         {
             MakeGlobalSettingsFileIfNotExist(currentCharacter);
@@ -165,15 +201,6 @@ namespace slimCat.Services
         /// <summary>
         ///     Return type T from a specified XML file, using reflection
         /// </summary>
-        /// <param name="fileName">
-        ///     The file Name.
-        /// </param>
-        /// <param name="baseObject">
-        ///     The base Object.
-        /// </param>
-        /// <param name="decrypt">
-        ///     The decrypt.
-        /// </param>
         public static T ReadObjectFromXml<T>(string fileName, T baseObject, bool decrypt = false) where T : new()
         {
             var type = baseObject.GetType();
@@ -208,9 +235,6 @@ namespace slimCat.Services
         /// <summary>
         ///     Updates the application settings file from memory
         /// </summary>
-        /// <param name="currentCharacter">
-        ///     The current Character.
-        /// </param>
         public static void SaveApplicationSettingsToXml(string currentCharacter)
         {
             var root = new XElement("settings");
@@ -265,20 +289,11 @@ namespace slimCat.Services
         /// <summary>
         ///     Serialize and object to XML through reflection
         /// </summary>
-        /// <param name="toSerialize">
-        ///     The to Serialize.
-        /// </param>
-        /// <param name="fileName">
-        ///     The file Name.
-        /// </param>
-        /// <param name="encrypt">
-        ///     The encrypt.
-        /// </param>
-        public static void SerializeObjectToXml(object toSerialize, string fileName, bool encrypt = false)
+        public static void SerializeObjectToXml(object toSerialize, string fileName, bool encrypt = false, string rootName = "settings")
         {
             var type = toSerialize.GetType();
             var checkTerms = new[] {"command", "is", "enumerable"};
-            var root = new XElement("settings");
+            var root = new XElement(rootName);
 
             foreach (var property in type.GetProperties()
                 .Where(property =>
@@ -296,18 +311,6 @@ namespace slimCat.Services
         /// <summary>
         ///     Updates our settings XML file with newSettingsModel
         /// </summary>
-        /// <param name="newSettingsModel">
-        ///     The new Settings Model.
-        /// </param>
-        /// <param name="currentCharacter">
-        ///     The Current Character.
-        /// </param>
-        /// <param name="title">
-        ///     The Title.
-        /// </param>
-        /// <param name="id">
-        ///     The ID.
-        /// </param>
         public static void UpdateSettingsFile(object newSettingsModel, string currentCharacter, string title, string id)
         {
             var workingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);

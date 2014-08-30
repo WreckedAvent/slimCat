@@ -19,8 +19,14 @@
 
 namespace slimCat.Models
 {
+    using System;
     using System.Collections.Generic;
+    using System.Xml.Serialization;
 
+    [Serializable]
+    [XmlInclude(typeof(ProfileKink))]
+    [XmlInclude(typeof(ProfileImage))]
+    [XmlRoot(ElementName = "Profile")]
     public class ProfileData
     {
         public string Age { get; set; }
@@ -49,6 +55,8 @@ namespace slimCat.Models
 
         public string Position { get; set; }
 
-        public IList<ProfileImage> Images { get; set; }
+        public List<ProfileImage> Images { get; set; }
+
+        public List<ProfileKink> Kinks { get; set; } 
     }
 }

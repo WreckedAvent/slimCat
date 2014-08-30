@@ -52,6 +52,7 @@ namespace slimCat.Models
         private ICharacter currentCharacter;
 
         private bool isAuthenticated;
+        private ProfileData currentCharacterData;
 
         #endregion
 
@@ -173,6 +174,16 @@ namespace slimCat.Models
             {
                 currentCharacter = value;
                 OnPropertyChanged("CurrentCharacter");
+            }
+        }
+
+        public ProfileData CurrentCharacterData
+        {
+            get { return currentCharacterData; }
+            set 
+            { 
+                currentCharacterData = value;
+                OnPropertyChanged("CurrentCharacterData"); 
             }
         }
 

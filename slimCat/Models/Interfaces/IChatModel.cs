@@ -102,6 +102,8 @@ namespace slimCat.Models
         /// </summary>
         ICharacter CurrentCharacter { get; set; }
 
+        ProfileData CurrentCharacterData { get; set; }
+
         /// <summary>
         ///     Gets or sets the server up time.
         /// </summary>

@@ -249,6 +249,7 @@
     <Compile Include="Services\Interfaces\ITicketProvider.cs" />
     <Compile Include="Models\ProfileData.cs" />
     <Compile Include="Models\ProfileImage.cs" />
+    <Compile Include="Models\ProfileKink.cs" />
     <Compile Include="Services\ProfileService.cs" />
     <Compile Include="Services\NoteService.cs" />
     <Compile Include="Services\PermissionService.cs" />
