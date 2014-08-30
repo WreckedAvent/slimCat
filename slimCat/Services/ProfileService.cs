@@ -26,6 +26,7 @@ namespace slimCat.Services
     using System.Linq;
     using System.Net;
     using System.Web;
+    using System.Windows.Media;
     using HtmlAgilityPack;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Unity;
@@ -89,14 +90,8 @@ namespace slimCat.Services
             }
 
             ProfileData cache;
-            if (profileCache.TryGetValue(characterName, out cache))
-            {
-                if (model != null)
-                    model.ProfileData = cache;
-                return;
-            }
-
-            cache = SettingsService.RetrieveProfile(characterName);
+            profileCache.TryGetValue(characterName, out cache);
+            cache = cache ?? SettingsService.RetrieveProfile(characterName);
             if (cache != null)
             {
                 if (cm.CurrentCharacter.NameEquals(characterName))
