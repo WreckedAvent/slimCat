@@ -27,6 +27,7 @@
 	<utilities:CommaConverter x:Key="CommaConverter"/>
     <utilities:ImageSizeConverter x:Key="ImageSizeConverter"/>
     <utilities:CharacterAvatarConverter x:Key="CharacterAvatarConverter"/>
+    <utilities:CacheUriForeverConverter x:Key="CacheUriForeverConverter"/>
 
 	<!-- These will be replaced with their instance values by the container -->
 	<utilities:GenderColorConverter x:Key="GenderColorConverter" />
@@ -329,6 +330,23 @@
 		</Setter>
 
 	</Style>
+    
+    <Style TargetType="GridSplitter" >
+        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="ResizeDirection" Value="Rows"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>  
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="False">
+                <Setter Property="BorderBrush" Value="{StaticResource DepressedBrush}"/>
+                <Setter Property="Opacity" Value="0.5"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="{StaticResource HighlightBrush}"/>
+                <Setter Property="Opacity" Value="1"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 	
     <!-- Theme for Flowdocument reader
          Warning: This was reflected out of an assembly

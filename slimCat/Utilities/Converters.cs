@@ -142,13 +142,22 @@ namespace slimCat.Utilities
             if (value == null) return null;
 
             var character = (string) value;
-            var image =
-                new BitmapImage(
+            return new BitmapImage(
                     new Uri(Constants.UrlConstants.CharacterAvatar + character.ToLower() + ".png",
                         UriKind.Absolute), new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable));
-
-            return image;
         }
+    }
+
+    public class CacheUriForeverConverter : OneWayConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return null;
+
+            var character = (Uri)value;
+            return new BitmapImage(character, new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable));
+        }
+        
     }
 
     public class ImageSizeConverter : OneWayConverter

@@ -120,7 +120,7 @@
                     <Grid.Resources>
                         <DataTemplate DataType="{x:Type models:ProfileImage}" x:Key="ThumbnailTemplate">
                             <Grid Cursor="Hand">
-                                <Image Source="{Binding Path=ThumbnailUri}"
+                                <Image Source="{Binding Path=ThumbnailUri, Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
                                        Height="75"
                                        Width="75"
                                        Margin="0,10,0,0"/>
@@ -128,7 +128,7 @@
                         </DataTemplate>
                     </Grid.Resources>
                     
-                    <Image Source="{Binding Path=ConversationWith.Avatar, Mode=OneWay}"
+                    <Image Source="{Binding Path=ConversationWith.Name, Converter={StaticResource CharacterAvatarConverter}, IsAsync=True, Mode=OneWay}"
                            Height="75"
                            Width="75"
                            Margin="0,10,0,0"
@@ -253,7 +253,7 @@
                                                 Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}">
                                             <Button.Template>
                                                 <ControlTemplate>
-                                                    <Image Source="{Binding CurrentImage.FullImageUri}"
+                                                    <Image Source="{Binding CurrentImage.FullImageUri, Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
                                                            Margin="5"
                                                            Width="{Binding CurrentImage.Width}"
                                                            Height="{Binding CurrentImage.Height}"
@@ -274,7 +274,7 @@
                             Visibility="{Binding IsViewingFullImage, Converter={StaticResource BoolConverter}}">
                         <Button.Template>
                             <ControlTemplate>
-                                <Image Source="{Binding CurrentImage.FullImageUri}"
+                                <Image Source="{Binding CurrentImage.FullImageUri, Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
                                        RenderOptions.BitmapScalingMode="Fant"/>
                             </ControlTemplate>
                         </Button.Template>
