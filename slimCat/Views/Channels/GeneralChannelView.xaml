@@ -6,63 +6,63 @@
                   xmlns:lib="clr-namespace:slimCat.Libraries"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:models="clr-namespace:slimCat.Models"
                   mc:Ignorable="d"
                   d:DataContext="{d:DesignInstance vm:GeneralChannelViewModel}">
     <Grid Margin="10"
           TextBlock.FontSize="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*"/>
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
 
-        <Border BorderBrush="{StaticResource HighlightBrush}"
-                BorderThickness="0,0,0,1">
-            <Grid>
-                <Expander>
-                    <Expander.Header>
-                        <TextBlock Margin="0"
-                                   Foreground="{StaticResource ForegroundBrush}"
-                                   TextWrapping="Wrap"
-                                   ToolTip="Expand or retract the channel header">
-                            <v:ChannelTypeButtonView IsEnabled="False" />
+        <Grid>
+            <Expander>
+                <Expander.Header>
+                    <TextBlock Margin="0"
+                               Foreground="{StaticResource ForegroundBrush}"
+                               TextWrapping="Wrap"
+                               ToolTip="Expand or retract the channel header">
+                        <v:ChannelTypeButtonView IsEnabled="False" />
 
-                            <Run Text="{Binding Path=Model.Title, Mode=OneWay}"
-                                 Foreground="{StaticResource HighlightBrush}" />
-                            <Run Text="{Binding Path=ChatContentString, Mode=OneWay}" />
-                        </TextBlock>
-                    </Expander.Header>
-                    <ScrollViewer MaxHeight="100">
-                        <TextBlock Margin="0"
-                                   FontSize="12"
-                                   Foreground="{StaticResource ForegroundBrush}"
-                                   TextWrapping="Wrap">
-                            <lib:TextBlockHelper.InlineList>
-                                <Binding Converter="{StaticResource BbCodeConverter}"
-                                         IsAsync="True"
-                                         Mode="OneWay"
-                                         Path="Description" />
-                            </lib:TextBlockHelper.InlineList>
-                        </TextBlock>
-                    </ScrollViewer>
-                </Expander>
-                <WrapPanel HorizontalAlignment="Right"
-                           VerticalAlignment="Top"
-                           Margin="6,6,6,2"
-                           Background="{StaticResource BackgroundBrush}">
-                    <v:EditButtonView Command="{Binding Path=ChannelManagementViewModel.OpenChannelManagementCommand}"
-                                      Visibility="{Binding Path=HasPermissions, Converter={StaticResource BoolConverter}}" />
-                    <v:RestartButtonView Command="{Binding Path=ClearLogCommand}" />
-                    <v:FolderButtonView Command="{Binding Path=OpenLogFolderCommand}" />
-                    <v:FileButtonView Command="{Binding Path=OpenLogCommand}" />
-                    <v:SettingsButtonView Command="{Binding Path=OpenChannelSettingsCommand}"
-                                          DataContext="{Binding Path=ChannelSettings}" />
-                </WrapPanel>
-            </Grid>
-        </Border>
+                        <Run Text="{Binding Path=Model.Title, Mode=OneWay}"
+                             Foreground="{StaticResource HighlightBrush}" />
+                        <Run Text="{Binding Path=ChatContentString, Mode=OneWay}" />
+                    </TextBlock>
+                </Expander.Header>
+                <ScrollViewer>
+                    <TextBlock Margin="0"
+                               FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
+                               Foreground="{StaticResource ForegroundBrush}"
+                               TextWrapping="Wrap">
+                        <lib:TextBlockHelper.InlineList>
+                            <Binding Converter="{StaticResource BbCodeConverter}"
+                                     IsAsync="True"
+                                     Mode="OneWay"
+                                     Path="Description" />
+                        </lib:TextBlockHelper.InlineList>
+                    </TextBlock>
+                </ScrollViewer>
+            </Expander>
+            <WrapPanel HorizontalAlignment="Right"
+                       VerticalAlignment="Top"
+                       Margin="6,6,6,2"
+                       Background="{StaticResource BackgroundBrush}">
+                <v:EditButtonView Command="{Binding Path=ChannelManagementViewModel.OpenChannelManagementCommand}"
+                                  Visibility="{Binding Path=HasPermissions, Converter={StaticResource BoolConverter}}" />
+                <v:RestartButtonView Command="{Binding Path=ClearLogCommand}" />
+                <v:FolderButtonView Command="{Binding Path=OpenLogFolderCommand}" />
+                <v:FileButtonView Command="{Binding Path=OpenLogCommand}" />
+                <v:SettingsButtonView Command="{Binding Path=OpenChannelSettingsCommand}"
+                                      DataContext="{Binding Path=ChannelSettings}" />
+            </WrapPanel>
+        </Grid>
+        <GridSplitter Grid.Row="1" />
 
         <v:ObservingFlowDocumentReader
             Grid.Row="1"
+            Margin="0,4,0,0"
             x:Name="PopupAnchor"
             LoadInReverse="True"
             MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}" />
