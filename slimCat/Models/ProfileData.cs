@@ -57,6 +57,8 @@ namespace slimCat.Models
 
         public List<ProfileImage> Images { get; set; }
 
-        public List<ProfileKink> Kinks { get; set; } 
+        public List<ProfileKink> Kinks { get; set; }
+
+        public DateTime LastRetrieved { get; set; }
     }
 }

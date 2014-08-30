@@ -246,6 +246,7 @@ namespace slimCat.Services
 
             toReturn.Images = imageResponse.Images.Select(x => new ProfileImage(x)).ToList();
 
+            toReturn.LastRetrieved = DateTime.Now;
             return toReturn;
         }
     }

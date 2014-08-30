@@ -97,7 +97,6 @@ namespace slimCat.Services
             }
             catch
             {
-                return;
             }
         }
 
@@ -118,7 +117,10 @@ namespace slimCat.Services
                 using (var stream = File.OpenRead(fileName))
                 {
                     var serializer = new XmlSerializer(typeof (ProfileData));
-                    return serializer.Deserialize(stream) as ProfileData;
+                    var toReturn = serializer.Deserialize(stream) as ProfileData;
+                    if (toReturn == null) return null;
+
+                    return toReturn.LastRetrieved.AddDays(7) < DateTime.Now ? null : toReturn;
                 }
             }
             catch
