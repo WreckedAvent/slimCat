@@ -194,7 +194,7 @@ namespace slimCat.Models
         /// </summary>
         public static IEnumerable<string> GlobalNotifyTermsList
         {
-            get { return GlobalNotifyTerms.Split(',').Select(word => word.ToLower()); }
+            get { return GlobalNotifyTerms.Split(',').Select(word => word.Trim().ToLower()); }
         }
 
         public static bool FriendsAreAccountWide { get; set; }

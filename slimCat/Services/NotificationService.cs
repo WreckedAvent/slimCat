@@ -21,6 +21,7 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using System.Windows.Documents.DocumentStructures;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Models;
@@ -141,7 +142,7 @@ namespace slimCat.Services
             var temp = new List<string>(channel.Settings.EnumerableTerms);
             temp.AddRange(ApplicationSettings.GlobalNotifyTermsList);
 
-            var checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase);
+            var checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase).Select(x => x.Trim());
 
             // if any of these conditions hold true we have no reason to evaluate further
             if (manager.IsOnList(message.Poster.Name, ListKind.NotInterested) && message.Type == MessageType.Ad)
@@ -208,7 +209,10 @@ namespace slimCat.Services
                 if (name.Last() != 's' && name.Last() != 'z')
                     temp.Add(name + @"'s"); // possessive fix
                 else
+                {
                     temp.Add(name + @"'");
+                    temp.Add(name + "'s");
+                }
 
                 checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase);
             }

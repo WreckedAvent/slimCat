@@ -92,7 +92,7 @@ namespace slimCat.Utilities
                 }
             }
 
-            if (checkAgainst.Length == fullString.Length && checkAgainst == fullString)
+            if (checkAgainst.Length == fullString.Length && checkAgainst.Equals(fullString, StringComparison.OrdinalIgnoreCase))
                 return new Tuple<string, string>(checkAgainst, checkAgainst);
 
             return hasMatch

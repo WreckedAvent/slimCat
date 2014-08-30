@@ -186,13 +186,16 @@ namespace slimCat.Services
                 var channel = (ChannelModel)model.CurrentPms.FirstByIdOrNull(target)
                               ?? model.CurrentChannels.FirstByIdOrNull(target);
 
-                if (channel != null)
-                    events.GetEvent<RequestChangeTabEvent>().Publish(target);
-                else
-                    events.SendUserCommand("priv", new[] { target });
+                if (!target.StartsWith("ADH-"))
+                {
+                    if (channel != null)
+                        events.GetEvent<RequestChangeTabEvent>().Publish(target);
+                    else
+                        events.SendUserCommand("priv", new[] {target});
 
-                Dispatcher.Invoke((Action)NotificationService.ShowWindow);
-                return;
+                    Dispatcher.Invoke((Action) NotificationService.ShowWindow);
+                    return;
+                }
             }
 
             var latest = model.Notifications.LastOrDefault();
