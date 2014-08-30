@@ -250,6 +250,7 @@ namespace slimCat.ViewModels
 
                                 UpdateName = args[0] + " update";
                                 UpdateLink = args[1];
+                                ApplicationSettings.SlimCatChannelId = args[4];
 
                                 OnPropertyChanged("HasNewUpdate");
                                 OnPropertyChanged("UpdateName");

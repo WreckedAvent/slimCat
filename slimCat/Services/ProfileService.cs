@@ -117,15 +117,17 @@ namespace slimCat.Services
                 return;
             try
             {
-                string profileBody;
+                var profileBody = String.Empty;
                 var profileText = htmlDoc.DocumentNode.SelectNodes(ProfileBodySelector);
+                if (profileText != null)
                 {
                     profileBody = WebUtility.HtmlDecode(profileText[0].InnerHtml);
                     profileBody = profileBody.Replace("<br>", "\n");
                 }
 
-                IEnumerable<ProfileTag> profileTags;
+                IEnumerable<ProfileTag> profileTags = new List<ProfileTag>();
                 var fullSelection = htmlDoc.DocumentNode.SelectNodes(ProfileTagsSelector);
+                if (fullSelection != null)
                 {
                     profileTags = fullSelection.SelectMany(selection =>
                         selection.ChildNodes
@@ -141,8 +143,9 @@ namespace slimCat.Services
                             }));
                 }
 
-                List<ProfileKink> allKinks;
+                var allKinks = new List<ProfileKink>();
                 var profileKinks = htmlDoc.DocumentNode.SelectNodes(ProfileKinksSeletor);
+                if (profileKinks != null)
                 {
                     allKinks = profileKinks.SelectMany(selection =>
                     {

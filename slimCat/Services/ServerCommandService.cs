@@ -21,6 +21,7 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using System.IO;
     using Microsoft.Practices.Prism.Events;
     using Models;
     using System;
@@ -285,6 +286,14 @@ namespace slimCat.Services
             ChatConnection.SendMessage(Constants.ClientCommands.SystemUptime);
 
             Dispatcher.Invoke((Action) delegate { ChatModel.IsAuthenticated = true; });
+
+            const string nojoinName = "nojoin";
+            if ((!File.Exists(nojoinName) || ApplicationSettings.SavedChannels.Count == 0) && ApplicationSettings.SlimCatChannelId != null)
+            {
+                ApplicationSettings.SavedChannels.Add(ApplicationSettings.SlimCatChannelId);
+                SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+                File.Create(nojoinName);
+            }
 
             // auto join
             var waitTimer = new Timer(200);

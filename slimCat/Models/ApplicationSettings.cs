@@ -276,6 +276,8 @@ namespace slimCat.Models
 
         public static int ShowMoreInAdsLength { get; set; }
 
+        public static string SlimCatChannelId { get; set; }
+
         #endregion
     }
 
