@@ -124,10 +124,10 @@ namespace slimCat.Models
             lock (Locker)
             {
                 ICharacter character;
-                if (!characters.TryRemove(name, out character)) return false;
+                var toReturn = characters.TryRemove(name, out character);
 
-                Collections.Each(x => x.SignOff(name));
-                return true;
+                Collections.Each(x => toReturn = toReturn || x.SignOff(name));
+                return toReturn;
             }
         }
 

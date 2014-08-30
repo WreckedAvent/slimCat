@@ -147,6 +147,10 @@ namespace slimCat.Services
                     : CharacterManager.Remove(name, list);
 
                 var character = CharacterManager.Find(name);
+                if (isAdd && character.Status == StatusType.Offline)
+                {
+                    CharacterManager.SignOff(name);
+                }
                 character.IsInteresting = CharacterManager.IsOfInterest(name);
 
                 if (!giveUpdate || !result) return;
