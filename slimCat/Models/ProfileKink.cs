@@ -34,6 +34,8 @@ namespace slimCat.Models
         public bool IsCustomKink { get; set; }
 
         public KinkListKind KinkListKind { get; set; }
+
+        public string Tooltip { get; set; }
     }
 
     public enum KinkListKind

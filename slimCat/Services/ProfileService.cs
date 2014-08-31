@@ -156,14 +156,16 @@ namespace slimCat.Services
                             {
                                 var tagId = int.Parse(x.Id.Substring("Character_Listedfetish".Length));
                                 var isCustomKink = x.Attributes.First(y => y.Name.Equals("class")).Value.Contains("FetishGroupCustom");
+                                var tooltip = x.Attributes.FirstOrDefault(y => y.Name.Equals("rel"));
                                 var name = x.InnerText.Trim();
 
                                 return new ProfileKink
                                 {
                                     Id = tagId,
                                     IsCustomKink = isCustomKink,
-                                    Name = HttpUtility.HtmlDecode(name),
-                                    KinkListKind = kind
+                                    Name = WebUtility.HtmlDecode(HttpUtility.HtmlDecode(name)),
+                                    KinkListKind = kind,
+                                    Tooltip = tooltip != null ? WebUtility.HtmlDecode(WebUtility.HtmlDecode(tooltip.Value)) : string.Empty
                                 };
                             });
                     }).ToList();

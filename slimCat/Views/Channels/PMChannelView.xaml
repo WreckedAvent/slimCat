@@ -55,7 +55,21 @@
         </DataTemplate>
         
         <DataTemplate DataType="{x:Type models:ProfileKink}">
-            <TextBlock Text="{Binding Name}" Foreground="{StaticResource ForegroundBrush}"/>
+            <TextBlock Text="{Binding Name}" 
+                       ToolTip="{Binding Tooltip}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsCustomKink}" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource HighlightBrush}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsCustomKink}" Value="False">
+                                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
         </DataTemplate>
     </v:DisposableView.Resources>
 
@@ -318,20 +332,32 @@
                                     </StackPanel>
                                 </Expander>
                                 
-                                <Expander Header="Trouble Kinks" Visibility="{Binding OurTroubleKinks.Count, Converter={StaticResource GreaterThanZeroConverter}}">
+                                <Expander Header="Your Trouble Kinks" Visibility="{Binding OurTroubleKinks.Count, Converter={StaticResource GreaterThanZeroConverter}}">
                                     <StackPanel>
                                         <Line X1="1" Stroke="Transparent" Stretch="Fill"/>
 
                                         <TextBlock Foreground="{StaticResource ContrastBrush}" FontWeight="Bold">
                                             <Run Text="{Binding OurTroubleKinks.Count, Mode=OneWay}"/>
-                                            <Run>interest you like, but they don't</Run>
+                                            <Run>interests you like, but they don't</Run>
                                         </TextBlock>
 
                                         <ItemsControl ItemsSource="{Binding OurTroubleKinks}" Style="{StaticResource NoScrollListBox}"/>
                                     </StackPanel>
                                 </Expander>
-                                <Line X1="1" Stroke="{StaticResource HighlightBrush}" Stretch="Fill" Margin="0,0,0,4"/>
+                                
+                                <Expander Header="Their Trouble Kinks" Visibility="{Binding TheirTroubleKinks.Count, Converter={StaticResource GreaterThanZeroConverter}}">
+                                    <StackPanel>
+                                        <Line X1="1" Stroke="Transparent" Stretch="Fill"/>
 
+                                        <TextBlock Foreground="{StaticResource ContrastBrush}" FontWeight="Bold">
+                                            <Run Text="{Binding TheirTroubleKinks.Count, Mode=OneWay}"/>
+                                            <Run>interests they like, but you don't</Run>
+                                        </TextBlock>
+
+                                        <ItemsControl ItemsSource="{Binding TheirTroubleKinks}" Style="{StaticResource NoScrollListBox}"/>
+                                    </StackPanel>
+                                </Expander>
+                                <Line X1="1" Stroke="{StaticResource HighlightBrush}" Stretch="Fill" Margin="0,0,0,4"/>
                                 <Span lib:SpanHelper.InlineSource="{Binding Path=Model.ProfileData.ProfileText, Mode=OneWay, Converter={StaticResource BbCodeConverter}, IsAsync=True}"/>
 
                                 <Line X1="1" Stroke="{StaticResource HighlightBrush}" Stretch="Fill" Margin="0,4,0,0"/>
