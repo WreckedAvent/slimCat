@@ -281,7 +281,7 @@
                                 
                                 <TextBlock FontSize="24" 
                                            Foreground="{StaticResource ContrastBrush}"
-                                           Visibility="{Binding MatchPercent, Converter={StaticResource GreaterThanZeroConverter}}"
+                                           Visibility="{Binding Model.ProfileData.Kinks.Count, Converter={StaticResource GreaterThanZeroConverter}}"
                                            VerticalAlignment="Center">
                                     <Run Text="{Binding MatchPercent, Mode=OneWay}"/>
                                     <Run>%</Run>
@@ -318,16 +318,16 @@
                                     </StackPanel>
                                 </Expander>
                                 
-                                <Expander Header="Trouble Kinks" Visibility="{Binding TroubleKinks.Count, Converter={StaticResource GreaterThanZeroConverter}}">
+                                <Expander Header="Trouble Kinks" Visibility="{Binding OurTroubleKinks.Count, Converter={StaticResource GreaterThanZeroConverter}}">
                                     <StackPanel>
                                         <Line X1="1" Stroke="Transparent" Stretch="Fill"/>
 
                                         <TextBlock Foreground="{StaticResource ContrastBrush}" FontWeight="Bold">
-                                            <Run Text="{Binding TroubleKinks.Count, Mode=OneWay}"/>
+                                            <Run Text="{Binding OurTroubleKinks.Count, Mode=OneWay}"/>
                                             <Run>interest you like, but they don't</Run>
                                         </TextBlock>
 
-                                        <ItemsControl ItemsSource="{Binding TroubleKinks}" Style="{StaticResource NoScrollListBox}"/>
+                                        <ItemsControl ItemsSource="{Binding OurTroubleKinks}" Style="{StaticResource NoScrollListBox}"/>
                                     </StackPanel>
                                 </Expander>
                                 <Line X1="1" Stroke="{StaticResource HighlightBrush}" Stretch="Fill" Margin="0,0,0,4"/>

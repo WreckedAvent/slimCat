@@ -446,12 +446,17 @@ namespace slimCat.Services
 
         public void Disconnect()
         {
-            if (socket.State == WebSocketState.Connecting || socket.State == WebSocketState.Open)
+            socket.Closed -= ConnectionClosed;
+            socket.Error -= ConnectionError;
+            socket.MessageReceived -= ConnectionMessageReceived;
+
+            if (socket.State == WebSocketState.Open)
             {
-                socket.Closed -= ConnectionClosed;
-                socket.Error -= ConnectionError;
-                socket.MessageReceived -= ConnectionMessageReceived;
                 socket.Close();
+            }
+            else
+            {
+                socket = new WebSocket(Constants.ServerHost);
             }
 
             events.GetEvent<ConnectionClosedEvent>().Publish(string.Empty);

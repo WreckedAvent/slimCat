@@ -465,7 +465,7 @@ namespace slimCat.ViewModels
             }
         }
 
-        public IList<ProfileKink> TroubleKinks
+        public IList<ProfileKink> OurTroubleKinks
         {
             get
             {
@@ -476,6 +476,22 @@ namespace slimCat.ViewModels
                         where otherKinks.KinkListKind == KinkListKind.No
                         join ourKinks in ChatModel.CurrentCharacterData.Kinks on otherKinks.Id equals ourKinks.Id
                         where ourKinks.KinkListKind == KinkListKind.Fave || ourKinks.KinkListKind == KinkListKind.Yes
+                        orderby ourKinks.KinkListKind, ourKinks.Name
+                        select ourKinks).ToList();
+            }
+        }
+
+        public IList<ProfileKink> TheirTroubleKinks
+        {
+            get
+            {
+                if (model.ProfileData == null || model.ProfileData.Kinks == null)
+                    return new ProfileKink[0];
+
+                return (from otherKinks in model.ProfileData.Kinks
+                        where otherKinks.KinkListKind == KinkListKind.Fave || otherKinks.KinkListKind == KinkListKind.Yes
+                        join ourKinks in ChatModel.CurrentCharacterData.Kinks on otherKinks.Id equals ourKinks.Id
+                        where ourKinks.KinkListKind == KinkListKind.No
                         orderby ourKinks.KinkListKind, ourKinks.Name
                         select ourKinks).ToList();
             }
@@ -492,8 +508,8 @@ namespace slimCat.ViewModels
                     return 0;
 
                 var numberOfOurInterests = ChatModel.CurrentCharacterData.Kinks
-                    .Where(x => x.IsCustomKink == false)
-                    .Count(x => x.KinkListKind == KinkListKind.Fave || x.KinkListKind == KinkListKind.Yes);
+                   .Where(x => x.IsCustomKink == false)
+                   .Count(x => x.KinkListKind == KinkListKind.Fave || x.KinkListKind == KinkListKind.Yes);
 
                 var numberOfTheirInterests = model.ProfileData.Kinks
                     .Where(x => x.IsCustomKink == false)
@@ -502,25 +518,59 @@ namespace slimCat.ViewModels
                 if (numberOfOurInterests == 0 || numberOfTheirInterests == 0)
                     return 0;
 
-                var countToPercent = 100.00/Math.Max(numberOfOurInterests, numberOfTheirInterests);
+                var applicableFavorites = (from ourKinks in ChatModel.CurrentCharacterData.Kinks
+                                           where ourKinks.KinkListKind == KinkListKind.Fave
+                                           join theirKinks in model.ProfileData.Kinks on ourKinks.Id equals theirKinks.Id
+                                           where theirKinks.KinkListKind == KinkListKind.Fave || theirKinks.KinkListKind == KinkListKind.Yes
+                                           select ourKinks).Count();
 
-                // we will use this as a final multiplier to our score
-                // this prevents someone from only having a few interests scoring
-                // high with someone who has very many
-                //
-                // this makes very large disparities in numbers return very low points
-                var basePoints = Math.Sqrt((numberOfOurInterests*countToPercent)*(numberOfTheirInterests*countToPercent));
+                var applicableYes = (from ourKinks in ChatModel.CurrentCharacterData.Kinks
+                                     where ourKinks.KinkListKind == KinkListKind.Yes
+                                     join theirKinks in model.ProfileData.Kinks on ourKinks.Id equals theirKinks.Id
+                                     where theirKinks.KinkListKind == KinkListKind.Fave || theirKinks.KinkListKind == KinkListKind.Yes
+                                     select ourKinks).Count();
 
-                // simple ratio of how many of the kinks are in common versus problems 
-                var ratioPoints = (KinksInCommon.Count/(double)(KinksInCommon.Count + TroubleKinks.Count));
+                var ourTotalFavorite = (from ourKinks in ChatModel.CurrentCharacterData.Kinks
+                                        where ourKinks.KinkListKind == KinkListKind.Fave
+                                        join theirKinks in model.ProfileData.Kinks on ourKinks.Id equals theirKinks.Id
+                                        select ourKinks).Count();
 
-                return Math.Round(basePoints*ratioPoints, 2);
+                var ourTotalYes = (from ourKinks in ChatModel.CurrentCharacterData.Kinks
+                                   where ourKinks.KinkListKind == KinkListKind.Yes
+                                   join theirKinks in model.ProfileData.Kinks on ourKinks.Id equals theirKinks.Id
+                                   select ourKinks).Count();
+
+                // we weight the ratio of our favorites and yes
+                var favoritePoints = 0.75*GetMatchRatio(applicableFavorites, ourTotalFavorite);
+                var yesPoints = 0.25*GetMatchRatio(applicableYes, ourTotalYes);
+
+                var subTotal = favoritePoints + yesPoints;
+
+                // this subtracts points if we're missing a lot of interests
+                var percent = (numberOfOurInterests > numberOfTheirInterests
+                    ? numberOfTheirInterests/(double)numberOfOurInterests
+                    : numberOfOurInterests/(double)numberOfTheirInterests);
+
+                // this returns a number between 0 and 1, but gets close to 1 quickly
+                // this makes really large disparities hurt
+                var multiplier = Math.Max((1+Math.Log10(percent)), 0);
+
+                subTotal *= multiplier;
+
+                return subTotal > 0.5 
+                    ? Math.Round((GetMatchRatio(subTotal, 1)* 100), 2) 
+                    : Math.Round(subTotal*100, 2);
             }
         }
 
         #endregion
 
         #region Methods
+
+        private double GetMatchRatio(double one, double two)
+        {
+            return 1 + Math.Log10((one/two)-0.1) + 0.05;
+        }
 
         protected override void Dispose(bool isManaged)
         {
