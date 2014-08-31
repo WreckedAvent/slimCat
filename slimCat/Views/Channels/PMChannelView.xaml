@@ -53,6 +53,10 @@
                 </ContentControl.ContentTemplate>
             </ContentControl>
         </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type models:ProfileKink}">
+            <TextBlock Text="{Binding Name}" Foreground="{StaticResource ForegroundBrush}"/>
+        </DataTemplate>
     </v:DisposableView.Resources>
 
     <Grid Margin="10"
@@ -245,7 +249,7 @@
                                 Loaded="OnElementFocused"
                                 x:Name="ProfileParagraph">
 
-                                <Figure VerticalAnchor="ContentTop" 
+                                <Figure VerticalAnchor="PageTop" 
                                         HorizontalAnchor="ColumnLeft"
                                         CanDelayPlacement="True">
                                     <Paragraph>
@@ -255,17 +259,104 @@
                                                 <ControlTemplate>
                                                     <Image Source="{Binding CurrentImage.FullImageUri, Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
                                                            Margin="5"
-                                                           Width="{Binding CurrentImage.Width}"
-                                                           Height="{Binding CurrentImage.Height}"
-                                                           MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=FlowDocumentReader}, Converter={StaticResource ImageSizeConverter}}"
-                                                           RenderOptions.BitmapScalingMode="Fant"/>
+                                                           RenderOptions.BitmapScalingMode="Fant">
+                                                        <Image.Width>
+                                                            <MultiBinding Converter="{StaticResource ImageSizeConverter}">
+                                                                <Binding Path="CurrentImage.Width"/>
+                                                                <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=FlowDocumentReader}" Path="ActualWidth"/>
+                                                            </MultiBinding>
+                                                        </Image.Width>
+                                                        <Image.Height>
+                                                            <MultiBinding Converter="{StaticResource ImageSizeConverter}">
+                                                                <Binding Path="CurrentImage.Height"/>
+                                                                <Binding RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=FlowDocumentReader}" Path="ActualWidth"/>
+                                                            </MultiBinding>
+                                                        </Image.Height>
+                                                    </Image>
                                                 </ControlTemplate>
                                             </Button.Template>
                                         </Button>
                                     </Paragraph>
                                 </Figure>
+                                
+                                <TextBlock FontSize="24" 
+                                           Foreground="{StaticResource ContrastBrush}"
+                                           Visibility="{Binding MatchPercent, Converter={StaticResource GreaterThanZeroConverter}}"
+                                           VerticalAlignment="Center">
+                                    <Run Text="{Binding MatchPercent, Mode=OneWay}"/>
+                                    <Run>%</Run>
+                                </TextBlock>
+                                <Line X1="1" Stroke="Transparent" Stretch="Fill"/>
+
+                                <Expander Header="Profile Tags">
+                                    <StackPanel>
+                                        <ItemsControl ItemsSource="{Binding Model.ProfileData.AdditionalTags}" Style="{StaticResource NoScrollListBox}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate DataType="models:ProfileTag">
+                                                    <WrapPanel>
+                                                        <TextBlock Text="{Binding Label}" Foreground="{StaticResource ContrastBrush}" Margin="0,0,10,0"/>
+                                                        <TextBlock Text="{Binding Value}" Foreground="{StaticResource ForegroundBrush}" TextWrapping="Wrap"/>
+                                                    </WrapPanel>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+
+                                        <Line X1="1" Stroke="Transparent" Stretch="Fill"/>
+                                    </StackPanel>
+                                </Expander>
+                                
+                                <Expander Header="Kinks in Common" Visibility="{Binding KinksInCommon.Count, Converter={StaticResource GreaterThanZeroConverter}}">
+                                    <StackPanel>
+                                        <Line X1="1" Stroke="Transparent" Stretch="Fill"/>
+                                        
+                                        <TextBlock Foreground="{StaticResource ContrastBrush}" FontWeight="Bold">
+                                            <Run Text="{Binding KinksInCommon.Count, Mode=OneWay}"/>
+                                            <Run>interests you both like</Run>
+                                        </TextBlock>
+
+                                        <ItemsControl ItemsSource="{Binding KinksInCommon}" Style="{StaticResource NoScrollListBox}"/>
+                                    </StackPanel>
+                                </Expander>
+                                
+                                <Expander Header="Trouble Kinks" Visibility="{Binding TroubleKinks.Count, Converter={StaticResource GreaterThanZeroConverter}}">
+                                    <StackPanel>
+                                        <Line X1="1" Stroke="Transparent" Stretch="Fill"/>
+
+                                        <TextBlock Foreground="{StaticResource ContrastBrush}" FontWeight="Bold">
+                                            <Run Text="{Binding TroubleKinks.Count, Mode=OneWay}"/>
+                                            <Run>interest you like, but they don't</Run>
+                                        </TextBlock>
+
+                                        <ItemsControl ItemsSource="{Binding TroubleKinks}" Style="{StaticResource NoScrollListBox}"/>
+                                    </StackPanel>
+                                </Expander>
+                                <Line X1="1" Stroke="{StaticResource HighlightBrush}" Stretch="Fill" Margin="0,0,0,4"/>
 
                                 <Span lib:SpanHelper.InlineSource="{Binding Path=Model.ProfileData.ProfileText, Mode=OneWay, Converter={StaticResource BbCodeConverter}, IsAsync=True}"/>
+
+                                <Line X1="1" Stroke="{StaticResource HighlightBrush}" Stretch="Fill" Margin="0,4,0,0"/>
+                                <ItemsControl ItemsSource="{Binding AllKinks}" 
+                                              Style="{StaticResource NoScrollListBox}" 
+                                              HorizontalAlignment="Left">
+                                    <ItemsControl.GroupStyle>
+                                        <GroupStyle>
+                                            <GroupStyle.ContainerStyle>
+                                                <Style TargetType="{x:Type GroupItem}">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate>
+                                                                <Expander Header="{Binding Name}"
+                                                                          HorizontalAlignment="Left">
+                                                                    <ItemsPresenter />
+                                                                </Expander>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </GroupStyle.ContainerStyle>
+                                        </GroupStyle>
+                                    </ItemsControl.GroupStyle>
+                                </ItemsControl>
                             </Paragraph>
                         </FlowDocument>
                     </FlowDocumentReader>

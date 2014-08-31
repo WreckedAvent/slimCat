@@ -170,15 +170,23 @@ namespace slimCat.Utilities
         
     }
 
-    public class ImageSizeConverter : OneWayConverter
+    public class ImageSizeConverter : OneWayMultiConverter
     {
-        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            var width = (double) value;
+            var width = (double)values[1];
+            try
+            {
+                var normal = int.Parse((string) values[0]);
 
+                if (normal < width) return (double) normal;
+            }
+            catch
+            {
+            }
             if (width <= 600) return width;
 
-            return width/2;
+            return width / 2;
         }
     }
 
@@ -205,7 +213,7 @@ namespace slimCat.Utilities
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var parsed = (int) value;
+            var parsed = System.Convert.ToInt32(value);
 
             return parsed > 0
                 ? Visibility.Visible

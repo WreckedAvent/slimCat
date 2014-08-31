@@ -21,10 +21,13 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using System.Net;
     using System.Runtime.Remoting.Proxies;
+    using System.Windows.Controls;
+    using System.Windows.Data;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Unity;
@@ -128,6 +131,8 @@ namespace slimCat.ViewModels
                     OnPropertyChanged("CanPost");
                     OnPropertyChanged("CanShowNoteTimeLeft");
                 };
+
+                AllKinks = new ListCollectionView(new ProfileKink[0]);
 
                 noteCooldownUpdateTick.Elapsed += (s, e) => OnPropertyChanged("NoteTimeLeft");
 
@@ -444,6 +449,75 @@ namespace slimCat.ViewModels
             }
         }
 
+        public IList<ProfileKink> KinksInCommon
+        {
+            get
+            {
+                if (model.ProfileData == null || model.ProfileData.Kinks == null)
+                    return new ProfileKink[0];
+
+                return (from otherKinks in model.ProfileData.Kinks 
+                        where otherKinks.KinkListKind == KinkListKind.Fave || otherKinks.KinkListKind == KinkListKind.Yes
+                        join ourKinks in ChatModel.CurrentCharacterData.Kinks on otherKinks.Id equals ourKinks.Id
+                        where ourKinks.KinkListKind == KinkListKind.Fave || ourKinks.KinkListKind == KinkListKind.Yes
+                        orderby ourKinks.KinkListKind, ourKinks.Name
+                        select ourKinks).ToList();
+            }
+        }
+
+        public IList<ProfileKink> TroubleKinks
+        {
+            get
+            {
+                if (model.ProfileData == null || model.ProfileData.Kinks == null)
+                    return new ProfileKink[0];
+
+                return (from otherKinks in model.ProfileData.Kinks
+                        where otherKinks.KinkListKind == KinkListKind.No
+                        join ourKinks in ChatModel.CurrentCharacterData.Kinks on otherKinks.Id equals ourKinks.Id
+                        where ourKinks.KinkListKind == KinkListKind.Fave || ourKinks.KinkListKind == KinkListKind.Yes
+                        orderby ourKinks.KinkListKind, ourKinks.Name
+                        select ourKinks).ToList();
+            }
+        } 
+
+        public ICollectionView AllKinks { get; private set; }
+
+        public double MatchPercent
+        {
+            get
+            {
+
+                if (model.ProfileData == null || model.ProfileData.Kinks == null)
+                    return 0;
+
+                var numberOfOurInterests = ChatModel.CurrentCharacterData.Kinks
+                    .Where(x => x.IsCustomKink == false)
+                    .Count(x => x.KinkListKind == KinkListKind.Fave || x.KinkListKind == KinkListKind.Yes);
+
+                var numberOfTheirInterests = model.ProfileData.Kinks
+                    .Where(x => x.IsCustomKink == false)
+                    .Count(x => x.KinkListKind == KinkListKind.Fave || x.KinkListKind == KinkListKind.Yes);
+
+                if (numberOfOurInterests == 0 || numberOfTheirInterests == 0)
+                    return 0;
+
+                var countToPercent = 100.00/Math.Max(numberOfOurInterests, numberOfTheirInterests);
+
+                // we will use this as a final multiplier to our score
+                // this prevents someone from only having a few interests scoring
+                // high with someone who has very many
+                //
+                // this makes very large disparities in numbers return very low points
+                var basePoints = Math.Sqrt((numberOfOurInterests*countToPercent)*(numberOfTheirInterests*countToPercent));
+
+                // simple ratio of how many of the kinks are in common versus problems 
+                var ratioPoints = (KinksInCommon.Count/(double)(KinksInCommon.Count + TroubleKinks.Count));
+
+                return Math.Round(basePoints*ratioPoints, 2);
+            }
+        }
+
         #endregion
 
         #region Methods
@@ -490,6 +564,18 @@ namespace slimCat.ViewModels
                 if (IsViewingProfile) return;
                 if (model.ShouldViewNotes || (ApplicationSettings.OpenOfflineChatsInNoteView && ConversationWith.Status == StatusType.Offline))
                     IsViewingChat = model.ShouldViewNotes = false;
+            }
+
+            if (e.PropertyName == "ProfileData")
+            {
+                OnPropertyChanged("KinksInCommon");
+                OnPropertyChanged("TroubleKinks");
+                AllKinks = new ListCollectionView(model.ProfileData.Kinks);
+                AllKinks.GroupDescriptions.Add(new PropertyGroupDescription("KinkListKind"));
+                AllKinks.SortDescriptions.Add(new SortDescription("KinkListKind", ListSortDirection.Ascending));
+                AllKinks.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                OnPropertyChanged("AllKinks");
+                OnPropertyChanged("MatchPercent");
             }
 
             if (e.PropertyName != "NoteSubject") return;

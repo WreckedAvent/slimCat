@@ -66,11 +66,9 @@ namespace slimCat.ViewModels
 
         private readonly TimeSpan searchDebounce = TimeSpan.FromMilliseconds(250);
 
-
         private readonly ObservableCollection<SearchTermModel> selectedSearchTerms = new ObservableCollection<SearchTermModel>();
 
         private readonly ICollectionView selectedView;
-
 
         private readonly DeferredAction updateActiveViews;
 

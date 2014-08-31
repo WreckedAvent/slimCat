@@ -51,10 +51,10 @@
                          Style="{StaticResource HorizontalListBoxStyle}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock TextWrapping="Wrap">
-                                    <Hyperlink Style="{StaticResource RemoveLinkStyle}">
-                                        <Run Text="{Binding Path=DisplayName, Mode=OneTime}" />
-                                    </Hyperlink>
+                            <TextBlock TextWrapping="Wrap" Margin="0,0,10,0">
+                                <Hyperlink Style="{StaticResource RemoveLinkStyle}">
+                                    <Run Text="{Binding Path=DisplayName, Mode=OneTime}" />
+                                </Hyperlink>
                             </TextBlock>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
