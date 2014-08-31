@@ -55,8 +55,10 @@
         </DataTemplate>
         
         <DataTemplate DataType="{x:Type models:ProfileKink}">
-            <TextBlock Text="{Binding Name}" 
-                       ToolTip="{Binding Tooltip}">
+            <TextBlock Text="{Binding Name}">
+                <TextBlock.ToolTip>
+                    <TextBlock Text="{Binding Tooltip}" TextWrapping="Wrap" MaxWidth="200"/>
+                </TextBlock.ToolTip>
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Style.Triggers>
