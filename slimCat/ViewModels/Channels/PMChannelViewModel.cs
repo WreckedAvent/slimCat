@@ -503,7 +503,6 @@ namespace slimCat.ViewModels
         {
             get
             {
-
                 if (model.ProfileData == null || model.ProfileData.Kinks == null)
                     return 0;
 
@@ -560,6 +559,52 @@ namespace slimCat.ViewModels
                 return subTotal > 0.5 
                     ? Math.Round((GetMatchRatio(subTotal, 1)* 100), 2) 
                     : Math.Round(subTotal*100, 2);
+            }
+        }
+
+        public bool IsRoleMismatch
+        {
+            get
+            {
+                if (model.ProfileData == null || model.ProfileData.Kinks == null)
+                    return false;
+
+                var ours = ChatModel.CurrentCharacterData;
+                var theirs = model.ProfileData;
+
+                if (ours.DomSubRole.ContainsOrdinal("dominant") && theirs.DomSubRole.Contains("dominant"))
+                    return true;
+
+                if (ours.DomSubRole.ContainsOrdinal("submissive") && theirs.DomSubRole.Contains("submissive"))
+                    return true;
+
+                if (theirs.Position.ContainsOrdinal("top") && ours.Position.Contains("top"))
+                    return true;
+
+                if (ours.Position.ContainsOrdinal("bottom") && theirs.Position.Contains("bottom"))
+                    return true;
+
+                return false;
+            }
+        }
+
+        public bool IsOrientationMismatch
+        {
+            get
+            {
+                if (model.ProfileData == null || model.ProfileData.Kinks == null)
+                    return false;
+
+                var ours = ChatModel.CurrentCharacterData;
+                var theirs = model.ProfileData;
+
+                var gender = ours.AdditionalTags.FirstOrDefault(x => x.Label.ContainsOrdinal("gender"));
+                if (gender == null)
+                    return false;
+
+                return theirs.Kinks
+                    .Where(x => x.KinkListKind == KinkListKind.No)
+                    .Any(x => x.Name.ContainsOrdinal(gender.Value));
             }
         }
 
@@ -627,6 +672,8 @@ namespace slimCat.ViewModels
                 AllKinks.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
                 OnPropertyChanged("AllKinks");
                 OnPropertyChanged("MatchPercent");
+                OnPropertyChanged("IsRoleMismatch");
+                OnPropertyChanged("IsOrientationMismatch");
             }
 
             if (e.PropertyName != "NoteSubject") return;

@@ -294,13 +294,28 @@
                                         </Button>
                                     </Paragraph>
                                 </Figure>
-                                
+
+                                <Line X1="1" Stroke="Transparent" Stretch="Fill"/>
                                 <TextBlock FontSize="24" 
                                            Foreground="{StaticResource ContrastBrush}"
                                            Visibility="{Binding Model.ProfileData.Kinks.Count, Converter={StaticResource GreaterThanZeroConverter}}"
                                            VerticalAlignment="Center">
                                     <Run Text="{Binding MatchPercent, Mode=OneWay}"/>
                                     <Run>%</Run>
+                                </TextBlock>
+                                
+                                <TextBlock FontSize="24"
+                                           Foreground="{StaticResource ContrastBrush}"
+                                           Visibility="{Binding IsRoleMismatch, Converter={StaticResource BoolConverter}}"
+                                           Margin="20,0,0,0">
+                                    D/s role mismatch!
+                                </TextBlock>
+
+                                <TextBlock FontSize="24"
+                                           Foreground="{StaticResource ContrastBrush}"
+                                           Visibility="{Binding IsOrientationMismatch, Converter={StaticResource BoolConverter}}"
+                                           Margin="20,0,0,0">
+                                    Orientation mismatch!
                                 </TextBlock>
                                 <Line X1="1" Stroke="Transparent" Stretch="Fill"/>
 
