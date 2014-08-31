@@ -343,6 +343,8 @@ namespace slimCat.Utilities
 
             public const string ProfileImages = Domain + @"/json/profile-images.json";
 
+            public const string KinkList = Domain + @"/json/api/kink-list.php";
+
             public const string IncomingFriendRequests = Api + "request-list.php";
 
             public const string OutgoingFriendRequests = Api + "request-pending.php";

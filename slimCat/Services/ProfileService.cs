@@ -46,7 +46,6 @@ namespace slimCat.Services
         private readonly IBrowser browser;
 
         private readonly IChatModel cm;
-        private readonly IEventAggregator events;
 
         private const string ProfileBodySelector = "//div[@id = 'tabs-1']/*[1]";
 
@@ -60,6 +59,8 @@ namespace slimCat.Services
 
         private readonly IDictionary<string, ProfileData> profileCache = new Dictionary<string, ProfileData>(StringComparer.OrdinalIgnoreCase); 
 
+        private readonly IDictionary<int, ProfileKink> kinkData = new Dictionary<int, ProfileKink>(); 
+
         #endregion
 
         #region Constructors
@@ -67,11 +68,14 @@ namespace slimCat.Services
         {
             this.browser = browser;
             this.cm = cm;
-            this.events = events;
 
             container = contain;
 
             events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(GetProfileDataAsync);
+
+            var worker = new BackgroundWorker();
+            worker.DoWork += GetKinkDataAsync;
+            worker.RunWorkerAsync();
         }
         #endregion
 
@@ -94,6 +98,9 @@ namespace slimCat.Services
             cache = cache ?? SettingsService.RetrieveProfile(characterName);
             if (cache != null)
             {
+                if (!profileCache.ContainsKey(characterName))
+                    cache.Kinks = cache.Kinks.Select(GetFullKink).ToList();
+
                 if (cm.CurrentCharacter.NameEquals(characterName))
                     cm.CurrentCharacterData = cache;
                 else if (model != null)
@@ -138,8 +145,8 @@ namespace slimCat.Services
                             .Select(x => x.ToList())
                             .Select(x => new ProfileTag
                             {
-                                Label = WebUtility.HtmlDecode(x[0].Replace(":", "").Trim()),
-                                Value = WebUtility.HtmlDecode(WebUtility.HtmlDecode(x[1].Trim()))
+                                Label = DoubleDecode(x[0].Replace(":", "").Trim()),
+                                Value = DoubleDecode(x[1].Trim())
                             }));
                 }
 
@@ -163,9 +170,9 @@ namespace slimCat.Services
                                 {
                                     Id = tagId,
                                     IsCustomKink = isCustomKink,
-                                    Name = WebUtility.HtmlDecode(HttpUtility.HtmlDecode(name)),
+                                    Name = isCustomKink ? DoubleDecode(name) : string.Empty,
                                     KinkListKind = kind,
-                                    Tooltip = tooltip != null ? WebUtility.HtmlDecode(WebUtility.HtmlDecode(tooltip.Value)) : string.Empty
+                                    Tooltip = tooltip != null && isCustomKink ? DoubleDecode(tooltip.Value) : string.Empty
                                 };
                             });
                     }).ToList();
@@ -178,9 +185,9 @@ namespace slimCat.Services
                 var images = JsonConvert.DeserializeObject<ApiProfileImagesResponse>(imageResp);
 
                 var profileData = CreateModel(profileBody, profileTags, images, allKinks);
-                profileCache[characterName] = profileData;
-
                 SettingsService.SaveProfile(characterName, profileData);
+
+                profileCache[characterName] = profileData;
 
                 if (model != null)
                     model.ProfileData = profileData;
@@ -189,6 +196,42 @@ namespace slimCat.Services
                     cm.CurrentCharacterData = profileData;
             }
             catch {}
+        }
+
+        private string DoubleDecode(string s)
+        {
+            return WebUtility.HtmlDecode(WebUtility.HtmlDecode(s));
+        }
+
+        private void GetKinkDataAsync(object s, DoWorkEventArgs e)
+        {
+            var kinkDataCache = SettingsService.RetrieveProfile("!kinkdata");
+            if (kinkDataCache == null)
+            {
+                var response = browser.GetResponse(Constants.UrlConstants.KinkList);
+
+                var data = JsonConvert.DeserializeObject<ApiKinkDataResponse>(response);
+
+                var apiKinks = data.Kinks
+                    .SelectMany(x => x.Value.Kinks)
+                    .Select(x => new ProfileKink
+                {
+                    Id = x.Id,
+                    IsCustomKink = false,
+                    Name = DoubleDecode(x.Name),
+                    Tooltip = DoubleDecode(x.Description),
+                    KinkListKind = KinkListKind.MasterList
+                }).ToList();
+
+                kinkDataCache = new ProfileData
+                {
+                    Kinks = apiKinks
+                };
+                SettingsService.SaveProfile("!kinkdata", kinkDataCache);
+            }
+
+            kinkData.Clear();
+            kinkDataCache.Kinks.Each(x => kinkData.Add(x.Id, x));
         }
 
         [Conditional("DEBUG")]
@@ -205,12 +248,24 @@ namespace slimCat.Services
             worker.RunWorkerAsync(character);
         }
 
-        private static ProfileData CreateModel(string profileText, IEnumerable<ProfileTag> tags, ApiProfileImagesResponse imageResponse, List<ProfileKink> kinks)
+        private ProfileKink GetFullKink(ProfileKink kink)
         {
+            ProfileKink data;
+            if (!kinkData.TryGetValue(kink.Id, out data)) return kink;
+
+            kink.Name = data.Name;
+            kink.Tooltip = data.Tooltip;
+            return kink;
+        } 
+
+        private ProfileData CreateModel(string profileText, IEnumerable<ProfileTag> tags, ApiProfileImagesResponse imageResponse, IEnumerable<ProfileKink> kinks)
+        {
+            var allKinks = kinks.Select(GetFullKink);
+
             var toReturn = new ProfileData
             {
                 ProfileText = profileText,
-                Kinks = kinks
+                Kinks = allKinks.ToList()
             };
 
             var tagActions = new Dictionary<string, Action<string>>(StringComparer.OrdinalIgnoreCase)
@@ -230,10 +285,16 @@ namespace slimCat.Services
             {
                 Action<string> action;
                 if (tagActions.TryGetValue(x.Label, out action))
-                    action(x.Value);
+                    action(DoubleDecode(x.Value));
             });
 
-            toReturn.AdditionalTags = profileTags.Where(x => !tagActions.ContainsKey(x.Label)).ToList();
+            toReturn.AdditionalTags = profileTags
+                .Where(x => !tagActions.ContainsKey(x.Label))
+                .Select(x =>
+            {
+                x.Value = DoubleDecode(x.Value);
+                return x;
+            }).ToList();
 
             toReturn.Images = imageResponse.Images.Select(x => new ProfileImage(x)).ToList();
 
@@ -241,6 +302,4 @@ namespace slimCat.Services
             return toReturn;
         }
     }
-
-
 }

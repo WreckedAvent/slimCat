@@ -20,6 +20,7 @@
 namespace slimCat.Models
 {
     using System;
+    using System.Net;
     using System.Xml.Serialization;
     using Api;
     using Utilities;
@@ -36,7 +37,7 @@ namespace slimCat.Models
         {
             ThumbnailUri = new Uri(ThumbUrl.FormatWith(image.ImageId, image.Extension));
             FullImageUri = new Uri(FullImageUrl.FormatWith(image.ImageId, image.Extension));
-            Description = image.Description;
+            Description = WebUtility.HtmlDecode(WebUtility.HtmlDecode(image.Description));
             Width = image.Width;
             Height = image.Height;
         }
@@ -49,7 +50,7 @@ namespace slimCat.Models
         [XmlIgnore]
         public Uri ThumbnailUri { get; set; }
 
-        [XmlElement("ThumbnailUri")]
+        [XmlAttribute("ThumbnailUri")]
         public string ThumbnailString
         {
             get { return ThumbnailUri.AbsolutePath; }
@@ -59,17 +60,20 @@ namespace slimCat.Models
         [XmlIgnore]
         public Uri FullImageUri { get; set; }
 
-        [XmlElement("FullImageUri")]
+        [XmlAttribute("FullImageUri")]
         public string FullImageString
         {
             get { return FullImageUri.AbsolutePath; }
             set { FullImageUri = new Uri(Constants.UrlConstants.StaticDomain + value, UriKind.Absolute); }
         }
 
+        [XmlAttribute]
         public string Description { get; set; }
 
+        [XmlAttribute]
         public string Width { get; set; }
 
+        [XmlAttribute]
         public string Height { get; set; }
     }
 }

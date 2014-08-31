@@ -619,7 +619,8 @@ namespace slimCat.ViewModels
             if (e.PropertyName == "ProfileData")
             {
                 OnPropertyChanged("KinksInCommon");
-                OnPropertyChanged("TroubleKinks");
+                OnPropertyChanged("OurTroubleKinks");
+                OnPropertyChanged("TheirTroubleKinks");
                 AllKinks = new ListCollectionView(model.ProfileData.Kinks);
                 AllKinks.GroupDescriptions.Add(new PropertyGroupDescription("KinkListKind"));
                 AllKinks.SortDescriptions.Add(new SortDescription("KinkListKind", ListSortDirection.Ascending));

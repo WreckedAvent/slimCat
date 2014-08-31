@@ -188,6 +188,7 @@
     <Compile Include="lib\TextBlockHelper.cs" />
     <Compile Include="Models\Api\ApiIFriendRequestResponse.cs" />
     <Compile Include="Models\Api\ApiAuthResponse.cs" />
+    <Compile Include="Models\Api\KinkDataResponse.cs" />
     <Compile Include="Models\Api\ApiUploadLogResponse.cs" />
     <Compile Include="Models\Api\ApiProfileImagesResponse.cs" />
     <Compile Include="Models\ApplicationThemeLocator.cs" />

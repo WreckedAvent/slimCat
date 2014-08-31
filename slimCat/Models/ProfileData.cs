@@ -52,6 +52,7 @@ namespace slimCat.Models
 
         public List<ProfileKink> Kinks { get; set; }
 
+        [XmlAttribute]
         public DateTime LastRetrieved { get; set; }
 
         public List<ProfileTag> AdditionalTags { get; set; } 
@@ -60,8 +61,10 @@ namespace slimCat.Models
     [Serializable]
     public class ProfileTag
     {
+        [XmlAttribute]
         public string Label { get; set; }
 
+        [XmlAttribute]
         public string Value { get; set; }
     }
 }

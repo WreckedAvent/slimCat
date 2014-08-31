@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="KinkDataResponse.cs">
+// <copyright file="ApiAuthResponse.cs">
 //    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
 //   
 //    This source is subject to the Simplified BSD License.
@@ -19,15 +19,39 @@
 
 namespace slimCat.Models.Api
 {
+    using System.Collections.Generic;
     using System.Runtime.Serialization;
 
     [DataContract]
-    public class ApiUploadLogResponse
+    public class ApiKinkDataResponse
     {
-        [DataMember(Name = "log_id")]
-        public string LogId { get; set; }
-
+        [DataMember(Name = "kinks")]
+        public IDictionary<string, ApiKinkGroup> Kinks { get; set; }
+        
         [DataMember(Name = "error")]
         public string Error { get; set; }
+    }
+
+    [DataContract]
+    public class ApiKinkGroup
+    {
+        [DataMember(Name = "group")]
+        public string Group { get; set; }
+
+        [DataMember(Name = "items")]
+        public IList<ApiKink> Kinks { get; set; }
+    }
+
+    [DataContract]
+    public class ApiKink
+    {
+        [DataMember(Name = "description")]
+        public string Description { get; set; }
+
+        [DataMember(Name = "kink_id")]
+        public int Id { get; set; }
+
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
     }
 }

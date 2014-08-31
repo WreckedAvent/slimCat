@@ -27,15 +27,35 @@ namespace slimCat.Models
     [XmlRoot(ElementName = "Kink")]
     public class ProfileKink
     {
+        [XmlAttribute]
         public int Id { get; set; }
 
+        [XmlAttribute]
         public string Name { get; set; }
 
+        public bool ShouldSerializedName()
+        {
+            return IsCustomKink || KinkListKind == KinkListKind.MasterList;
+        }
+
+        [XmlAttribute]
         public bool IsCustomKink { get; set; }
 
+        public bool ShouldSerializeIsCustomKink()
+        {
+            return IsCustomKink;
+        }
+
+        [XmlAttribute]
         public KinkListKind KinkListKind { get; set; }
 
+        [XmlAttribute]
         public string Tooltip { get; set; }
+
+        public bool ShouldSerializeTooltip()
+        {
+            return IsCustomKink || KinkListKind == KinkListKind.MasterList; 
+        }
     }
 
     public enum KinkListKind
@@ -43,6 +63,7 @@ namespace slimCat.Models
         Fave,
         Yes,
         Maybe,
-        No
+        No,
+        MasterList
     }
 }
