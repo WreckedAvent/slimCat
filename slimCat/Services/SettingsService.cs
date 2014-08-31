@@ -43,11 +43,13 @@ namespace slimCat.Services
 
         private const string SettingsFileName = "!settings.xml";
 
-        private const string ProfileCacheFileName = "!profile.xml";
+        private const string ProfileCacheFileName = "{0}.xml";
 
         private const string GlobalFolderName = "Global";
 
         private const string DefaultsFolderName = "!Defaults";
+
+        private const string ProfileCacheFolderName = "!Profiles";
 
         #endregion
 
@@ -80,12 +82,12 @@ namespace slimCat.Services
 
         public static void SaveProfile(string targetCharacter, ProfileData profileData)
         {
-            var workingPath = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, targetCharacter, targetCharacter);
+            var workingPath = StaticFunctions.MakeSafeFolderPath(ProfileCacheFolderName, string.Empty, string.Empty);
 
             if (!Directory.Exists(workingPath))
                 Directory.CreateDirectory(workingPath);
 
-            var fileName = Path.Combine(workingPath, ProfileCacheFileName);
+            var fileName = Path.Combine(workingPath, ProfileCacheFileName.FormatWith(targetCharacter));
 
             try
             {
@@ -102,12 +104,12 @@ namespace slimCat.Services
 
         public static ProfileData RetrieveProfile(string targetCharacter)
         {
-            var workingPath = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, targetCharacter, targetCharacter);
+            var workingPath = StaticFunctions.MakeSafeFolderPath(ProfileCacheFolderName, string.Empty, string.Empty);
 
             if (!Directory.Exists(workingPath))
                 return null;
 
-            var fileName = Path.Combine(workingPath, ProfileCacheFileName);
+            var fileName = Path.Combine(workingPath, ProfileCacheFileName.FormatWith(targetCharacter));
 
             if (!File.Exists(fileName))
                 return null;

@@ -26,20 +26,13 @@ namespace slimCat.Models
     [Serializable]
     [XmlInclude(typeof(ProfileKink))]
     [XmlInclude(typeof(ProfileImage))]
+    [XmlInclude(typeof(ProfileTag))]
     [XmlRoot(ElementName = "Profile")]
     public class ProfileData
     {
         public string Age { get; set; }
 
-        public string Gender { get; set; }
-
-        public string LanguagePreference { get; set; }
-
-        public string FurryPreference { get; set; }
-
         public string DomSubRole { get; set; }
-
-        public string DesiredRpLength { get; set; }
 
         public string Species { get; set; }
 
@@ -60,5 +53,15 @@ namespace slimCat.Models
         public List<ProfileKink> Kinks { get; set; }
 
         public DateTime LastRetrieved { get; set; }
+
+        public List<ProfileTag> AdditionalTags { get; set; } 
+    }
+
+    [Serializable]
+    public class ProfileTag
+    {
+        public string Label { get; set; }
+
+        public string Value { get; set; }
     }
 }

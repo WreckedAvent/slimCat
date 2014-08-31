@@ -138,8 +138,8 @@ namespace slimCat.Services
                             .Select(x => x.ToList())
                             .Select(x => new ProfileTag
                             {
-                                Label = WebUtility.HtmlDecode(x[0].ToLower().Replace(":", "").Trim()),
-                                Value = WebUtility.HtmlDecode(x[1].Trim())
+                                Label = WebUtility.HtmlDecode(x[0].Replace(":", "").Trim()),
+                                Value = WebUtility.HtmlDecode(WebUtility.HtmlDecode(x[1].Trim()))
                             }));
                 }
 
@@ -211,36 +211,27 @@ namespace slimCat.Services
                 Kinks = kinks
             };
 
-            tags.Each(x =>
+            var tagActions = new Dictionary<string, Action<string>>(StringComparer.OrdinalIgnoreCase)
             {
-                switch (x.Label)
-                {
-                    case "age": 
-                        toReturn.Age = x.Value; break;
-                    case "species": 
-                        toReturn.Species = x.Value; break;
-                    case "language preference": 
-                        toReturn.LanguagePreference = x.Value; break;
-                    case "furry preference": 
-                        toReturn.FurryPreference = x.Value; break;
-                    case "desired rp length": 
-                        toReturn.DesiredRpLength = x.Value; break;
-                    case "orientation": 
-                        toReturn.Orientation = x.Value; break;
-                    case "dom/sub role": 
-                        toReturn.DomSubRole = x.Value; break;
-                    case "gender": 
-                        toReturn.Gender = x.Value; break;
-                    case "build": 
-                        toReturn.Build = x.Value; break;
-                    case "height/length": 
-                        toReturn.Height = x.Value; break;
-                    case "body type": 
-                        toReturn.BodyType = x.Value; break;
-                    case "position":
-                        toReturn.Position = x.Value; break;
-                }
+                {"age", s => toReturn.Age = s},
+                {"species", s => toReturn.Species = s},
+                {"orientation", s => toReturn.Orientation = s},
+                {"build", s => toReturn.Build = s},
+                {"height/length", s => toReturn.Height = s},
+                {"body type", s => toReturn.BodyType = s},
+                {"position", s => toReturn.Position = s},
+                {"dom/sub role", s => toReturn.DomSubRole = s}
+            };
+
+            var profileTags = tags.ToList();
+            profileTags.Each(x =>
+            {
+                Action<string> action;
+                if (tagActions.TryGetValue(x.Label, out action))
+                    action(x.Value);
             });
+
+            toReturn.AdditionalTags = profileTags.Where(x => !tagActions.ContainsKey(x.Label)).ToList();
 
             toReturn.Images = imageResponse.Images.Select(x => new ProfileImage(x)).ToList();
 
@@ -249,10 +240,5 @@ namespace slimCat.Services
         }
     }
 
-    class ProfileTag
-    {
-        public string Label { get; set; }
 
-        public string Value { get; set; }
-    }
 }
