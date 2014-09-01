@@ -480,7 +480,7 @@
                                     
                                     <CheckBox IsChecked="{Binding AllowStatusDiscolor}"
                                               ToolTip="Allows slimCat to discolor users who have a status of busy, idle, away, or do not disturb.">
-                                        Discolor names of unavaiable users
+                                        Discolor names of unavailable users
                                     </CheckBox>
                                     
                                     <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
