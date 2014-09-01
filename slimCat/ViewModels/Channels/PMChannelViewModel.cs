@@ -605,7 +605,7 @@ namespace slimCat.ViewModels
 
                 return theirs.Kinks
                     .Where(x => x.KinkListKind == KinkListKind.No)
-                    .Any(x => x.Name.ContainsOrdinal(gender.Value));
+                    .Any(x => x.Name.StartsWith(gender.Value, StringComparison.OrdinalIgnoreCase));
             }
         }
 
