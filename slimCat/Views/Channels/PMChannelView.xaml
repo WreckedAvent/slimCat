@@ -166,7 +166,7 @@
                                             Foreground="{StaticResource ForegroundBrush}" />
                             </TextBlock>
                         </Expander.Header>
-                        <StackPanel>
+                        <StackPanel MinHeight="50">
                             
                             <StackPanel Visibility="{Binding Converter={StaticResource NotNullConverter}}"
                                         DataContext="{Binding Path=Model.ProfileData}"
@@ -298,7 +298,7 @@
                                 <Line X1="1" Stroke="Transparent" Stretch="Fill"/>
                                 <TextBlock FontSize="24" 
                                            Foreground="{StaticResource ContrastBrush}"
-                                           Visibility="{Binding Model.ProfileData.Kinks.Count, Converter={StaticResource GreaterThanZeroConverter}}"
+                                           Visibility="{Binding MatchPercent, Converter={StaticResource GreaterThanZeroConverter}}"
                                            VerticalAlignment="Center">
                                     <Run Text="{Binding MatchPercent, Mode=OneWay}"/>
                                     <Run>%</Run>
