@@ -76,6 +76,8 @@ namespace slimCat.ViewModels
 
         private string noteMessage;
 
+        private string messageMessage;
+
         private DateTimeOffset noteTimeLeft;
 
         private bool showSubject;
@@ -266,13 +268,23 @@ namespace slimCat.ViewModels
             get { return isViewingChat; }
             set
             {
+                if (isViewingChat != value)
+                {
+                    if (!value)
+                    {
+                        messageMessage = Message;
+                        Message = noteMessage;
+                    }
+                    else
+                    {
+                        noteMessage = Message;
+                        Message = messageMessage;
+                    }
+                }
+
                 isViewingChat = value;
 
                 messageManager.OriginalCollection = value ? model.Messages : model.Notes;
-
-                var temp = Message;
-                Message = noteMessage;
-                noteMessage = temp;
 
                 OnPropertyChanged("IsViewingChat");
                 OnPropertyChanged("Title");
