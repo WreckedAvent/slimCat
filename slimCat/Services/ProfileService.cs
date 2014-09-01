@@ -103,7 +103,7 @@ namespace slimCat.Services
 
                 if (cm.CurrentCharacter.NameEquals(characterName))
                     cm.CurrentCharacterData = cache;
-                else if (model != null)
+                if (model != null)
                     model.ProfileData = cache;
 
                 profileCache[characterName] = cache;

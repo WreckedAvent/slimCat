@@ -25,8 +25,6 @@ namespace slimCat.ViewModels
     using System.Diagnostics;
     using System.Linq;
     using System.Net;
-    using System.Runtime.Remoting.Proxies;
-    using System.Windows.Controls;
     using System.Windows.Data;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
@@ -571,6 +569,9 @@ namespace slimCat.ViewModels
 
                 var ours = ChatModel.CurrentCharacterData;
                 var theirs = model.ProfileData;
+
+                if (ours.DomSubRole == null || theirs.DomSubRole == null || ours.Position == null || theirs.Position == null)
+                    return false;
 
                 if (ours.DomSubRole.ContainsOrdinal("dominant") && theirs.DomSubRole.Contains("dominant"))
                     return true;

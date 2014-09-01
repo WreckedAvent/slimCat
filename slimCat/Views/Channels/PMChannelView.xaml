@@ -235,7 +235,7 @@
 
             <!-- Profile View -->
             <Grid Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}">
-                <Grid Visibility="{Binding IsViewingProfile, Converter={StaticResource BoolConverter}}">
+                <Grid Visibility="{Binding Model.ProfileData, Converter={StaticResource NotNullConverter}}">
 
                     <FlowDocumentReader
                         ScrollViewer.CanContentScroll="False"
