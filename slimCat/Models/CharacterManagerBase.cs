@@ -126,7 +126,7 @@ namespace slimCat.Models
                 ICharacter character;
                 var toReturn = characters.TryRemove(name, out character);
 
-                Collections.Each(x => toReturn = toReturn || x.SignOff(name));
+                Collections.Each(x => toReturn = toReturn | x.SignOff(name));
                 return toReturn;
             }
         }
