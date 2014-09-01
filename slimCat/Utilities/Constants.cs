@@ -40,7 +40,7 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The client's version.
         /// </summary>
-        public const string ClientVer = "4.04";
+        public const string ClientVer = "4.05 dev";
 
         public const string AssemblyVer = ClientVer + ".*";
 

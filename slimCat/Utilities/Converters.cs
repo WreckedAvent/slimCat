@@ -165,7 +165,17 @@ namespace slimCat.Utilities
             if (value == null) return null;
 
             var character = (Uri)value;
-            return new BitmapImage(character, new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable));
+            var bi = new BitmapImage();
+            bi.BeginInit();
+
+            bi.UriSource = character;
+            bi.CacheOption = BitmapCacheOption.OnDemand;
+            bi.UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable);
+            bi.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
+
+            bi.EndInit();
+
+            return bi;
         }
         
     }
