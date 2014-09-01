@@ -156,14 +156,8 @@
                                       VerticalAlignment="Center" />
 
                     <v:SearchButtonView
-                        Visibility="{Binding Path=IsNotSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                        Command="{Binding SwitchSearchCommand}"
+                        IsChecked="{Binding IsSearching}"
                         Margin="4" />
-
-                    <v:ChatButtonView
-                        Visibility="{Binding Path=IsSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                        Command="{Binding SwitchSearchCommand}"
-                        Margin="4,6,4,4" />
 
                     <v:MoreButtonView Command="{Binding SwitchCommand}"
                                       Visibility="{Binding Path=CanSwitch, Mode=OneWay, Converter={StaticResource BoolConverter}}"
@@ -181,7 +175,8 @@
                 Grid.Row="1"
                 Margin="0,0,0,10" />
 
-            <Grid Visibility="{Binding Path=IsSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}">
+            <Grid Visibility="{Binding Path=IsSearching, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                  Grid.Row="1">
                 <v:SearchBoxView DataContext="{Binding SearchSettings}"
                                  Margin="0,0,0,10" />
             </Grid>

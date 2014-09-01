@@ -1,11 +1,11 @@
-﻿<Button x:Class="slimCat.Views.SearchButtonView"
+﻿<ToggleButton x:Class="slimCat.Views.SearchButtonView"
         x:Name="SearchButton"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Style="{StaticResource ImageContentButton}"
+        Style="{StaticResource ImageContentToggleButton}"
         ToolTip="Switch to searching mode"
         Margin="2,7,2,0">
-    <Button.Content>
+    <ToggleButton.Content>
         <Rectangle Fill="{Binding ElementName=SearchButton, Path=Foreground}"
                    Height="18"
                    Width="18">
@@ -13,5 +13,5 @@
                 <ImageBrush ImageSource="pack://application:,,,/icons/search.png" />
             </Rectangle.OpacityMask>
         </Rectangle>
-    </Button.Content>
-</Button>
+    </ToggleButton.Content>
+</ToggleButton>
