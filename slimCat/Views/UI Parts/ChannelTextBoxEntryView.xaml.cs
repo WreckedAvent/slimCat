@@ -63,7 +63,7 @@ namespace slimCat.Views
 
         #region Fields
 
-        private ViewModelBase vm;
+        private ChannelViewModelBase vm;
 
         #endregion
 
@@ -78,12 +78,13 @@ namespace slimCat.Views
 
             Entry.FocusableChanged += (s, e) =>
             {
-                if ((bool) e.NewValue)
-                    Entry.Focus();
+                if (!(bool) e.NewValue) return;
+
+                Entry.Focus();
             };
 
             Entry.Language = XmlLanguage.GetLanguage(ApplicationSettings.Langauge);
-            vm = DataContext as ViewModelBase;
+            vm = DataContext as ChannelViewModelBase;
 
             if (vm != null)
                 vm.PropertyChanged += PropertyChanged;
@@ -93,7 +94,7 @@ namespace slimCat.Views
                     if (vm != null)
                         vm.PropertyChanged -= PropertyChanged;
 
-                    vm = DataContext as ViewModelBase;
+                    vm = DataContext as ChannelViewModelBase;
 
                     if (vm != null)
                         vm.PropertyChanged += PropertyChanged;
@@ -168,6 +169,8 @@ namespace slimCat.Views
             }
 
             Entry.Focus();
+            Entry.ScrollToEnd();
+            Entry.CaretIndex = vm.Message.Length;
         }
 
         private void OnPreviewKeyDown(object sender, KeyEventArgs e)
