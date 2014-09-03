@@ -31,6 +31,7 @@ namespace slimCat.Models
 
 namespace slimCat.Services
 {
+    using System.Net;
     using Models;
     using System;
     using System.Collections.Generic;
@@ -55,7 +56,7 @@ namespace slimCat.Services
             if (string.Equals(channel.Description, description, StringComparison.Ordinal))
                 return;
 
-            channel.Description = description;
+            channel.Description = WebUtility.HtmlDecode(WebUtility.HtmlDecode(description));
 
             if (isInitializer)
                 return;
