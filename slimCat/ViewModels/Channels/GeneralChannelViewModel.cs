@@ -697,7 +697,10 @@ namespace slimCat.ViewModels
             Events.SendUserCommand(command, new[] {Message}, Model.Id);
 
             if (!autoPostAds || IsDisplayingChat)
+            {
+                LastMessage = Message;
                 Message = null;
+            }
 
             if (IsDisplayingChat)
             {

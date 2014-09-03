@@ -742,6 +742,8 @@ namespace slimCat.ViewModels
             }
 
             Events.SendUserCommand(CommandDefinitions.ClientSendPm, new[] { Message, ConversationWith.Name });
+
+            LastMessage = Message;
             Message = string.Empty;
 
             isInCoolDown = true;
@@ -783,6 +785,7 @@ namespace slimCat.ViewModels
             OnPropertyChanged("CanPost");
             CanShowSubject = false;
 
+            LastMessage = Message;
             Message = string.Empty;
         }
 

@@ -146,6 +146,8 @@ namespace slimCat.ViewModels
             }
         }
 
+        public string LastMessage { get; set; }
+
         public bool ShowPreview
         {
             get { return showPreview; }
@@ -257,6 +259,7 @@ namespace slimCat.ViewModels
         {
             Error = null;
 
+            LastMessage = Message;
             Message = null;
             Events.GetEvent<UserCommandEvent>().Publish(command);
         }
