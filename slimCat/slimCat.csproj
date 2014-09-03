@@ -185,6 +185,7 @@
     <Compile Include="lib\DeferredAction.cs" />
     <Compile Include="lib\FlashWindowHelper.cs" />
     <Compile Include="lib\FullScreenHelper.cs" />
+    <Compile Include="lib\NonTopmostPopup.cs" />
     <Compile Include="lib\TextBlockHelper.cs" />
     <Compile Include="Models\Api\ApiIFriendRequestResponse.cs" />
     <Compile Include="Models\Api\ApiAuthResponse.cs" />

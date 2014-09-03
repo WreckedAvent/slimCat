@@ -6,6 +6,7 @@
              mc:Ignorable="d"
              xmlns:vm="clr-namespace:slimCat.ViewModels"
              xmlns:v="clr-namespace:slimCat.Views"
+             xmlns:libraries="clr-namespace:slimCat.Libraries"
 
              d:DataContext="{d:DesignInstance vm:UserbarViewModel}">
 
@@ -107,7 +108,7 @@
                 </DockPanel>
             </Border>
 
-            <Popup IsOpen="{Binding Path=IsChangingStatus, Mode=OneWay}"
+            <libraries:NonTopmostPopup IsOpen="{Binding Path=IsChangingStatus, Mode=OneWay}"
                    PlacementTarget="{Binding ElementName=PopupAnchor}"
                    Grid.Row="0"
                    Placement="Center">
@@ -154,9 +155,9 @@
                     </StackPanel>
 
                 </Border>
-            </Popup>
+            </libraries:NonTopmostPopup>
 
-            <Popup IsOpen="{Binding Path=IsChangingAuto, Mode=OneWay}"
+            <libraries:NonTopmostPopup IsOpen="{Binding Path=IsChangingAuto, Mode=OneWay}"
                    PlacementTarget="{Binding ElementName=PopupAnchor}"
                    Grid.Row="0"
                    Placement="Center">
@@ -196,7 +197,7 @@
                     </StackPanel>
 
                 </Border>
-            </Popup>
+            </libraries:NonTopmostPopup>
             <ScrollViewer Grid.Row="1"
                           CanContentScroll="False">
                 <StackPanel>
