@@ -176,7 +176,7 @@ namespace slimCat.Views
 
             Entry.Focus();
             Entry.ScrollToEnd();
-            Entry.CaretIndex = vm.Message.Length;
+            if (!string.IsNullOrEmpty(vm.Message)) Entry.CaretIndex = vm.Message.Length;
         }
 
         private void OnPreviewKeyDown(object sender, KeyEventArgs e)
