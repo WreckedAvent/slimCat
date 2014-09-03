@@ -70,6 +70,7 @@ namespace slimCat.Models
 
 namespace slimCat.Services
 {
+    using System;
     using Models;
     using System.Collections.Generic;
     using Utilities;
@@ -127,7 +128,17 @@ namespace slimCat.Services
         private void OnStatusChangeRequested(IDictionary<string, object> command)
         {
             object statusmsg;
-            var status = command.Get(Constants.Arguments.Status).ToEnum<StatusType>();
+            StatusType status;
+            try
+            {
+                status = command.Get(Constants.Arguments.Status).ToEnum<StatusType>();
+            }
+            catch (ArgumentException)
+            {
+                events.GetEvent<ErrorEvent>().Publish("'{0}' is not a valid status type!".FormatWith(command.Get(Constants.Arguments.Status)));
+                return;
+            }
+
             command.TryGetValue(Constants.Arguments.StatusMessage, out statusmsg);
 
             model.CurrentCharacter.Status = status;
