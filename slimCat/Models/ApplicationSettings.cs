@@ -85,6 +85,8 @@ namespace slimCat.Models
             OpenOfflineChatsInNoteView = true;
             OpenProfilesInClient = true;
             ShowMoreInAdsLength = 400;
+
+            ChannelDisplayThreshold = 5;
         }
 
         #endregion
@@ -277,6 +279,8 @@ namespace slimCat.Models
         public static int ShowMoreInAdsLength { get; set; }
 
         public static string SlimCatChannelId { get; set; }
+
+        public static int ChannelDisplayThreshold { get; set; }
 
         #endregion
     }

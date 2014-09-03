@@ -21,12 +21,15 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System.Windows.Input;
+    using Libraries;
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Utilities;
     using Views;
 
     #endregion
@@ -53,9 +56,15 @@ namespace slimCat.ViewModels
 
         private bool sortByName;
 
-        private int thresh = 5;
-
         private readonly IChannelListUpdater updater;
+
+        private bool isCreatingNewChannel;
+
+        private RelayCommand toggleIsCreatingNewChannel;
+
+        private RelayCommand createNewChannel;
+
+        private string newChannelName;
 
         #endregion
 
@@ -151,14 +160,15 @@ namespace slimCat.ViewModels
 
         public int Threshold
         {
-            get { return thresh; }
+            get { return ApplicationSettings.ChannelDisplayThreshold; }
 
             set
             {
-                if (thresh == value || value <= 0 || value >= 1000)
+                if (ApplicationSettings.ChannelDisplayThreshold == value || value <= 0 || value >= 1000)
                     return;
 
-                thresh = value;
+                ApplicationSettings.ChannelDisplayThreshold = value;
+                SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
                 OnPropertyChanged("SortedChannels");
             }
         }
@@ -180,6 +190,47 @@ namespace slimCat.ViewModels
 
             }
             base.Dispose(isManaged);
+        }
+
+        public bool IsCreatingNewChannel
+        {
+            get { return isCreatingNewChannel; }
+            set
+            {
+                isCreatingNewChannel = value;
+                OnPropertyChanged("IsCreatingNewChannel");
+            }
+        }
+
+        public ICommand ToggleIsCreatingNewChannelCommand
+        {
+            get
+            {
+                return toggleIsCreatingNewChannel ??
+                       (toggleIsCreatingNewChannel = new RelayCommand(_ => IsCreatingNewChannel = !IsCreatingNewChannel));
+            }
+        }
+
+        public ICommand CreateNewChannelCommand
+        {
+            get { return createNewChannel ?? (createNewChannel = new RelayCommand(CreateNewChannelEvent)); }
+        }
+
+        public string NewChannelName
+        {
+            get { return newChannelName; }
+            set
+            {
+                newChannelName = value;
+                OnPropertyChanged("NewChannelName");
+            }
+        }
+
+        public void CreateNewChannelEvent(object args)
+        {
+            IsCreatingNewChannel = false;
+            Events.SendUserCommand("makeroom", new[] { NewChannelName });
+            NewChannelName = string.Empty;
         }
     }
 }

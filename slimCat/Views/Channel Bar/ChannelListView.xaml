@@ -6,15 +6,16 @@
              mc:Ignorable="d"
              xmlns:vm="clr-namespace:slimCat.ViewModels"
              xmlns:v="clr-namespace:slimCat.Views"
+             xmlns:libraries="clr-namespace:slimCat.Libraries"
              MaxWidth="225"
              MinWidth="180"
 
              d:DataContext="{d:DesignInstance vm:ChannelsTabViewModel}">
     <DockPanel>
-        <Popup PlacementTarget="{Binding ElementName=PopupAnchor}"
-               Placement="Center"
-               IsOpen="{Binding Path=SearchSettings.IsChangingSettings}"
-               StaysOpen="False">
+        <libraries:NonTopmostPopup 
+            PlacementTarget="{Binding ElementName=PopupAnchor}"
+            Placement="Center"
+            IsOpen="{Binding Path=SearchSettings.IsChangingSettings}">
 
             <Border BorderBrush="{StaticResource HighlightBrush}"
                     BorderThickness="2"
@@ -45,8 +46,55 @@
                             Command="{Binding OpenSearchSettingsCommand}" />
                 </WrapPanel>
             </Border>
-        </Popup>
+        </libraries:NonTopmostPopup>
+        
+        <libraries:NonTopmostPopup 
+            PlacementTarget="{Binding ElementName=PopupAnchor}"
+            Placement="Center"
+            IsOpen="{Binding Path=IsCreatingNewChannel}">
+            <Border BorderBrush="{StaticResource HighlightBrush}"
+                    BorderThickness="2"
+                    Background="{StaticResource BackgroundBrush}"
+                    TextBlock.Foreground="{StaticResource ForegroundBrush}">
+                <WrapPanel Orientation="Vertical"
+                           Margin="10">
+                    <TextBlock FontSize="20"
+                               HorizontalAlignment="Center"
+                               Margin="10,5"
+                               Text="Create a new room" />
 
+                    <TextBlock
+                            Foreground="{StaticResource DepressedBrush}"
+                            HorizontalAlignment="Left"
+                            Margin="10,0,10,0">
+                            New Channel Name
+                    </TextBlock>
+                    <TextBox
+                            Text="{Binding Path=NewChannelName, UpdateSourceTrigger=PropertyChanged}"
+                            FontSize="12"
+                            TextWrapping="Wrap"
+                            MaxWidth="200"
+                            Margin="10,0,10,10" />
+                    
+
+                    <WrapPanel>
+                        <Button Content="Make room"
+                                Margin="10,5"
+                                Command="{Binding CreateNewChannelCommand}" />
+                        <Button Content="Cancel" 
+                                Margin="10,5" 
+                                Command="{Binding ToggleIsCreatingNewChannelCommand}"/>
+                    </WrapPanel>
+                </WrapPanel>
+            </Border>
+        </libraries:NonTopmostPopup>
+
+        <Button DockPanel.Dock="Top" 
+                Command="{Binding ToggleIsCreatingNewChannelCommand}"
+                Margin="0,10,0,5">
+            Create New ...
+        </Button>
+        
         <v:SearchBoxView DockPanel.Dock="Bottom" Margin="0,5,0,0"
                          DataContext="{Binding SearchSettings}" />
 
