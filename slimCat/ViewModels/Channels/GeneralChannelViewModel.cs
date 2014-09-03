@@ -21,6 +21,7 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System.Xaml;
     using Libraries;
     using Microsoft.Practices.Unity;
     using Models;
@@ -739,7 +740,10 @@ namespace slimCat.ViewModels
         {
             if (!IsDisplayingChat) return;
 
-            OtherTabHasMessages = e.NewItems != null && e.NewItems.Count > 0;
+            OtherTabHasMessages =
+                e.NewItems != null
+                && e.NewItems.Count > 0
+                && e.NewItems.OfType<IMessage>().Any(x => !CharacterManager.IsOnList(x.Poster.Name, ListKind.NotInterested));
             if (Model.Ads.All(x => x.IsHistoryMessage)) OtherTabHasMessages = false;
         }
 
