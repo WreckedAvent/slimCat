@@ -125,7 +125,7 @@ namespace slimCat.Views
             }
             else if (e.Key == Key.Return)
                 e.Handled = true; // don't do the funny business with inserting a new line
-            else if (e.Key == Key.Up && string.IsNullOrEmpty(vm.Message))
+            else if (e.Key == Key.Up && string.IsNullOrEmpty(vm.Message) && !string.IsNullOrWhiteSpace(vm.LastMessage))
             {
                 vm.Message = vm.LastMessage;
                 Entry.ScrollToEnd();
