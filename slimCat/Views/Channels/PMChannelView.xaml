@@ -166,7 +166,7 @@
                                             Foreground="{StaticResource ForegroundBrush}" />
                             </TextBlock>
                         </Expander.Header>
-                        <StackPanel MinHeight="50">
+                        <StackPanel MinHeight="55">
                             
                             <StackPanel Visibility="{Binding Converter={StaticResource NotNullConverter}}"
                                         DataContext="{Binding Path=Model.ProfileData}"
