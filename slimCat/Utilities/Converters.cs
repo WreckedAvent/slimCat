@@ -1751,7 +1751,7 @@ namespace slimCat.Utilities
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             const int top = 0;
-            var left = 0;
+            const int left = 0;
 
             var bottom = 0;
             var right = 0;
@@ -1759,11 +1759,7 @@ namespace slimCat.Utilities
             var message = value as IMessage;
             if (message == null) return new Thickness(left, top, right, bottom);
 
-            if (message.IsLastViewed)
-            {
-                left = 8;
-                bottom = 2;
-            }
+            if (message.IsLastViewed) bottom = 2;
 
             else if (message.Type == MessageType.Ad) bottom = 1;
 
@@ -1822,7 +1818,7 @@ namespace slimCat.Utilities
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return ((double)value) - (System.Convert.ToDouble(parameter));
+            return Math.Max(((double)value) - (System.Convert.ToDouble(parameter)), 0);
         }
     }
 
