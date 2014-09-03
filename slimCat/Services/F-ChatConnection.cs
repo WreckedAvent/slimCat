@@ -320,6 +320,7 @@ namespace slimCat.Services
                 if (errsThatDisconnect.Contains(err))
                 {
                     isAuthenticated = false;
+                    Disconnect();
                 }
 
                 if (errsThatPreventReconnect.Contains(err))
