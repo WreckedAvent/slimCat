@@ -781,7 +781,19 @@ namespace slimCat.ViewModels
                 if (resp == null) return;
                 var args = resp.Split(',');
 
-                HasNewUpdate = !args[0].Equals(Constants.FriendlyName, StringComparison.OrdinalIgnoreCase);
+                var versionString = args[0].Substring(args[0].LastIndexOf(' '));
+                var version = Convert.ToDouble(versionString);
+
+                var ourVersion = Convert.ToDouble(Constants.ClientVer.Contains(" ")
+                    ? Constants.ClientVer.Substring(0, Constants.ClientVer.LastIndexOf(' '))
+                    : Constants.ClientVer);
+
+                HasNewUpdate = version > ourVersion;
+
+                if (!HasNewUpdate && Math.Abs(version - ourVersion) < 0.001)
+                {
+                    HasNewUpdate = Constants.ClientVer.Contains("dev");
+                }
 
                 var updateDelayTimer = new Timer(10 * 1000);
                 updateDelayTimer.Elapsed += (s, e) =>

@@ -244,18 +244,29 @@ namespace slimCat.ViewModels
                         var args = resp.Split(',');
 
                         Dispatcher.BeginInvoke((Action) delegate
+                        {
+                            var versionString = args[0].Substring(args[0].LastIndexOf(' '));
+                            var version = Convert.ToDouble(versionString);
+
+                            var ourVersion = Convert.ToDouble(Constants.ClientVer.Contains(" ")
+                                ? Constants.ClientVer.Substring(0, Constants.ClientVer.LastIndexOf(' '))
+                                : Constants.ClientVer);
+
+                            HasNewUpdate = version > ourVersion;
+
+                            if (!HasNewUpdate && Math.Abs(version - ourVersion) < 0.001)
                             {
-                                HasNewUpdate =
-                                    !args[0].Equals(Constants.FriendlyName, StringComparison.OrdinalIgnoreCase);
+                                HasNewUpdate = Constants.ClientVer.Contains("dev");
+                            }
 
-                                UpdateName = args[0] + " update";
-                                UpdateLink = args[1];
-                                ApplicationSettings.SlimCatChannelId = args[4];
+                            UpdateName = args[0] + " update";
+                            UpdateLink = args[1];
+                            ApplicationSettings.SlimCatChannelId = args[4];
 
-                                OnPropertyChanged("HasNewUpdate");
-                                OnPropertyChanged("UpdateName");
-                                OnPropertyChanged("UpdateLink");
-                            });
+                            OnPropertyChanged("HasNewUpdate");
+                            OnPropertyChanged("UpdateName");
+                            OnPropertyChanged("UpdateLink");
+                        });
                     }
                     catch
                     {

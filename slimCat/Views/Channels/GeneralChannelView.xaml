@@ -31,7 +31,7 @@
                         <Run Text="{Binding Path=ChatContentString, Mode=OneWay}" />
                     </TextBlock>
                 </Expander.Header>
-                <ScrollViewer>
+                <ScrollViewer MaxHeight="">
                     <TextBlock Margin="0"
                                FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
                                Foreground="{StaticResource ForegroundBrush}"
@@ -67,10 +67,9 @@
             LoadInReverse="True"
             MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}" />
 
-        <Popup Grid.Row="1"
+        <lib:NonTopmostPopup Grid.Row="1"
                PlacementTarget="{Binding ElementName=PopupAnchor}"
                Placement="Center"
-               StaysOpen="False"
                IsOpen="{Binding Path=SearchSettings.IsChangingSettings}">
 
             <Border BorderBrush="{StaticResource HighlightBrush}"
@@ -98,7 +97,7 @@
                             Command="{Binding OpenSearchSettingsCommand}" />
                 </WrapPanel>
             </Border>
-        </Popup>
+        </lib:NonTopmostPopup>
 
         <v:ChannelSettingsView Grid.Row="1" />
 
