@@ -647,6 +647,20 @@ namespace slimCat.ViewModels
 
                     OnPropertyChanged("CanSwitch");
                     break;
+                case "IsSelected":
+                    if (Model.IsSelected) break;
+
+                    if (isDisplayingChat && Model.Messages.Any())
+                    {
+                        Model.Messages.Each(x => x.IsLastViewed = false);
+                        Model.Messages.Last().IsLastViewed = true;
+                    }
+                    else if (IsDisplayingAds && Model.Ads.Any())
+                    {
+                        Model.Ads.Each(x => x.IsLastViewed = false);
+                        Model.Ads.Last().IsLastViewed = true;
+                    }
+                    break;
             }
         }
 

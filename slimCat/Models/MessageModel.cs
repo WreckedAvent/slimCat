@@ -75,6 +75,8 @@ namespace slimCat.Models
 
         public bool IsOfInterest { get; set; }
 
+        public bool IsLastViewed { get; set; }
+
         public Block View
         {
             get

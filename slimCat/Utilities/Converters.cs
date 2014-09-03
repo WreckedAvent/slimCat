@@ -1726,6 +1726,9 @@ namespace slimCat.Utilities
 
             var message = (IMessage) value;
 
+            if (message.IsLastViewed)
+                return Application.Current.FindResource("ContrastBrush");
+
             if (message.IsOfInterest)
                 return Application.Current.FindResource("HighlightBrush");
 
@@ -1741,7 +1744,7 @@ namespace slimCat.Utilities
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             const int top = 0;
-            const int left = 0;
+            var left = 0;
 
             var bottom = 0;
             var right = 0;
@@ -1749,10 +1752,15 @@ namespace slimCat.Utilities
             var message = value as IMessage;
             if (message == null) return new Thickness(left, top, right, bottom);
 
-            if (message.Type == MessageType.Ad)
-                bottom = 1;
+            if (message.IsLastViewed)
+            {
+                left = 8;
+                bottom = 2;
+            }
 
-            if (message.IsOfInterest)
+            else if (message.Type == MessageType.Ad) bottom = 1;
+
+            else if (message.IsOfInterest)
             {
                 right = 8;
                 bottom = 2;

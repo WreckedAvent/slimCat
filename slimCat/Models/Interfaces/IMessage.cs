@@ -67,6 +67,11 @@ namespace slimCat.Models
         /// </summary>
         bool IsOfInterest { get; set; }
 
+        /// <summary>
+        ///     Gets or sets a value indicating whether this message was the last viewed in the channel.
+        /// </summary>
+        bool IsLastViewed { get; set; }
+
         #endregion
     }
 }
