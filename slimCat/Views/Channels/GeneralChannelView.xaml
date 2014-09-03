@@ -31,7 +31,7 @@
                         <Run Text="{Binding Path=ChatContentString, Mode=OneWay}" />
                     </TextBlock>
                 </Expander.Header>
-                <ScrollViewer MaxHeight="">
+                <ScrollViewer MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=90}">
                     <TextBlock Margin="0"
                                FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
                                Foreground="{StaticResource ForegroundBrush}"

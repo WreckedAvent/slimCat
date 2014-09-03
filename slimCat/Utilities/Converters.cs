@@ -223,11 +223,18 @@ namespace slimCat.Utilities
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var parsed = System.Convert.ToInt32(value);
+            try
+            {
+                var parsed = System.Convert.ToInt32(value);
 
-            return parsed > 0
-                ? Visibility.Visible
-                : Visibility.Collapsed;
+                return parsed > 0
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            }
+            catch (ArithmeticException)
+            {
+                return Visibility.Collapsed;
+            }
         }
     }
 
@@ -1808,6 +1815,14 @@ namespace slimCat.Utilities
                 return locator.Find<Brush>("SelfBrush");
 
             return defaultBrush;
+        }
+    }
+
+    public class RemoveSomeConverter : OneWayConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return ((double)value) - (System.Convert.ToDouble(parameter));
         }
     }
 
