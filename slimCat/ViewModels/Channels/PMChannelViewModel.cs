@@ -615,9 +615,10 @@ namespace slimCat.ViewModels
                 if (gender == null)
                     return false;
 
+                var genderValue = gender.Value + "s";
                 return theirs.Kinks
                     .Where(x => x.KinkListKind == KinkListKind.No)
-                    .Any(x => x.Name.StartsWith(gender.Value, StringComparison.OrdinalIgnoreCase));
+                    .Any(x => x.Name.StartsWith(genderValue, StringComparison.OrdinalIgnoreCase));
             }
         }
 
