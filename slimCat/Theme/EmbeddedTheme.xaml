@@ -30,6 +30,12 @@
     <utilities:CacheUriForeverConverter x:Key="CacheUriForeverConverter"/>
     <utilities:AutoOrStarConverter x:Key="AutoOrStarConverter"/>
     <utilities:RemoveSomeConverter x:Key="RemoveSomeConverter"/>
+    <utilities:EqualsConverter x:Key="EqualsConverter"/>
+    
+    <utilities:ConverterChain x:Key="EqualsVisibilityConverterChain">
+        <utilities:EqualsConverter/>
+        <BooleanToVisibilityConverter/>
+    </utilities:ConverterChain>
     
 	<!-- These will be replaced with their instance values by the container -->
 	<utilities:GenderColorConverter x:Key="GenderColorConverter" />

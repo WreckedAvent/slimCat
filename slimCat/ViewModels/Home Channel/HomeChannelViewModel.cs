@@ -63,6 +63,8 @@ namespace slimCat.ViewModels
 
         private bool inStagger;
 
+        private string selectedTab = string.Empty;
+
         #endregion
 
         #region Constructors and Destructors
@@ -692,6 +694,16 @@ namespace slimCat.ViewModels
         }
 
         #endregion
+
+        public string SelectedTab
+        {
+            get { return selectedTab; }
+            set
+            {
+                selectedTab = value;
+                OnPropertyChanged("SelectedTab");
+            }
+        }
 
         #endregion
 

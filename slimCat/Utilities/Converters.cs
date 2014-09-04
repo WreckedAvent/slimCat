@@ -21,6 +21,8 @@ namespace slimCat.Utilities
 {
     #region Usings
 
+    using System.Collections.ObjectModel;
+    using System.Windows.Markup;
     using System.Windows.Shapes;
     using Models;
     using Services;
@@ -276,6 +278,19 @@ namespace slimCat.Utilities
             return string.IsNullOrEmpty(parsed)
                 ? value
                 : value + ",";
+        }
+    }
+
+    public class EqualsConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value.Equals(parameter);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value.Equals(true) ? parameter : Binding.DoNothing;
         }
     }
 
@@ -1821,6 +1836,27 @@ namespace slimCat.Utilities
             return Math.Max(((double)value) - (System.Convert.ToDouble(parameter)), 0);
         }
     }
+
+    /// <summary>Represents a chain of <see cref="IValueConverter"/>s to be executed in succession.</summary>
+    [ContentProperty("Converters")]
+    [ContentWrapper(typeof(ValueConverterCollection))]
+    public class ConverterChain : OneWayConverter
+    {
+        ValueConverterCollection converters;
+
+        public ValueConverterCollection Converters
+        {
+            get { return converters ?? (converters = new ValueConverterCollection()); }
+        }
+
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return Converters.Aggregate(value, (current, valueConverter) => valueConverter.Convert(current, targetType, parameter, culture));
+        }
+    }
+
+    /// <summary>Represents a collection of <see cref="IValueConverter"/>s.</summary>
+    public sealed class ValueConverterCollection : Collection<IValueConverter> { }
 
     /// <summary>
     ///     Various conversion methods.

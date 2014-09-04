@@ -32,6 +32,8 @@ namespace slimCat.Utilities
     using System.Web;
     using System.Windows;
     using System.Windows.Media;
+    using Services;
+    using ViewModels;
 
     #endregion
 
@@ -331,6 +333,12 @@ namespace slimCat.Utilities
         public static void NewChannelUpdate(this IEventAggregator events, ChannelModel channel, ChannelUpdateEventArgs e)
         {
             events.GetEvent<NewUpdateEvent>().Publish(new ChannelUpdateModel(channel, e));
+        }
+
+        public static void SaveSettings(this ViewModelBase vm)
+        {
+            ApplicationSettings.SettingsVersion = Constants.ClientVer;
+            SettingsService.SaveApplicationSettingsToXml(vm.ChatModel.CurrentCharacter.Name);
         }
     }
 }
