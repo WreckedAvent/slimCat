@@ -63,7 +63,7 @@ namespace slimCat.ViewModels
 
         private bool inStagger;
 
-        private string selectedTab = string.Empty;
+        private string selectedTab = "About";
 
         #endregion
 
