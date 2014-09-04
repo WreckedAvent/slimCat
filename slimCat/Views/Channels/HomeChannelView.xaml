@@ -484,7 +484,12 @@
                                               ToolTip="Allows slimCat to discolor users who have a status of busy, idle, away, or do not disturb.">
                                         Discolor names of unavailable users
                                     </CheckBox>
-                                    
+
+                                    <CheckBox IsChecked="{Binding AllowOfInterestColoring}"
+                                              ToolTip="Allows slimCat to color friends, bookmarks, and interested users a contrasting color.">
+                                        Color of interest users differently
+                                    </CheckBox>
+
                                     <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
                                           Margin="0,15,0,0" />
 

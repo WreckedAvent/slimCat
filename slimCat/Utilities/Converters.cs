@@ -1497,7 +1497,7 @@ namespace slimCat.Utilities
             Color baseColor;
             var brightColor = (Color) TryGet("Foreground", false);
 
-            if (isInteresting)
+            if (isInteresting && ApplicationSettings.AllowOfInterestColoring)
                 baseColor = (Color) TryGet("Contrast", false);
             else
                 baseColor = GetColor(character);
@@ -1672,7 +1672,7 @@ namespace slimCat.Utilities
                 return Application.Current.FindResource("ForegroundBrush");
 
             var character = (ICharacter) value;
-            var interesting = character.IsInteresting;
+            var interesting = character.IsInteresting && ApplicationSettings.AllowOfInterestColoring;
 
             return interesting
                 ? TryGet("Contrast", true)
@@ -1702,7 +1702,7 @@ namespace slimCat.Utilities
 
             var message = (IMessage) value;
 
-            return message.Poster.IsInteresting
+            return message.Poster.IsInteresting && ApplicationSettings.AllowOfInterestColoring
                 ? TryGet("Contrast", true)
                 : GetBrush(message.Poster);
         }

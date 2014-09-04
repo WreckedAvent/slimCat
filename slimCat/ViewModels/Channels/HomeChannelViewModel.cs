@@ -388,6 +388,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool AllowOfInterestColoring
+        {
+            get { return ApplicationSettings.AllowOfInterestColoring; }
+            set
+            {
+                ApplicationSettings.AllowOfInterestColoring = value;
+                Save();
+            }
+        }
+
         #endregion
 
         #region Automation

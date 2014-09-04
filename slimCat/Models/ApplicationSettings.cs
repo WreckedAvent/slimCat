@@ -87,6 +87,7 @@ namespace slimCat.Models
             ShowMoreInAdsLength = 400;
 
             ChannelDisplayThreshold = 5;
+            AllowOfInterestColoring = true;
         }
 
         #endregion
@@ -281,6 +282,8 @@ namespace slimCat.Models
         public static string SlimCatChannelId { get; set; }
 
         public static int ChannelDisplayThreshold { get; set; }
+
+        public static bool AllowOfInterestColoring { get; set; }
 
         #endregion
     }
