@@ -22,6 +22,9 @@ namespace slimCat.Views
     #region Usings
 
     using System;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
     using Utilities;
     using ViewModels;
 
@@ -75,6 +78,15 @@ namespace slimCat.Views
             DataContext = null;
         }
 
+        private void OnChannelDescriptionResizeRequested(object sender, MouseButtonEventArgs e)
+        {
+            ChannelDescriptionRowDefinition.Height = new GridLength();
+        }
         #endregion
+
+        private void OnEntryBoxResizeRequested(object sender, MouseButtonEventArgs e)
+        {
+            EntryBoxRowDefinition.Height = new GridLength();
+        }
     }
 }

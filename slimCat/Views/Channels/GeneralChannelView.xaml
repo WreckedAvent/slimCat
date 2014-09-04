@@ -12,9 +12,14 @@
     <Grid Margin="10"
           TextBlock.FontSize="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"
+                           x:Name="ChannelDescriptionRowDefinition"
+                           MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=92}"
+                           MinHeight="35"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="auto" MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=75}" />
+            <RowDefinition Height="auto"
+                           x:Name="EntryBoxRowDefinition"
+                           MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=60}" />
         </Grid.RowDefinitions>
 
         <Grid>
@@ -58,7 +63,7 @@
                                       DataContext="{Binding Path=ChannelSettings}" />
             </WrapPanel>
         </Grid>
-        <GridSplitter Grid.Row="1" />
+        <GridSplitter Grid.Row="1" MouseDoubleClick="OnChannelDescriptionResizeRequested" />
 
         <v:ObservingFlowDocumentReader
             Grid.Row="1"
@@ -101,13 +106,13 @@
 
         <v:ChannelSettingsView Grid.Row="1" />
 
-        <GridSplitter Grid.Row="2"> 
+        <GridSplitter Grid.Row="2" MouseDoubleClick="OnEntryBoxResizeRequested"> 
         </GridSplitter>
         
         <Grid Grid.Row="2" 
               Height="auto" 
               Margin="0,4,0,0"
-              MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=70}">
+              MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=65}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"  />

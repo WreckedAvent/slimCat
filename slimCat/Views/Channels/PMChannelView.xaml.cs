@@ -25,6 +25,7 @@ namespace slimCat.Views
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Documents;
+    using System.Windows.Input;
     using Utilities;
     using ViewModels;
 
@@ -114,6 +115,11 @@ namespace slimCat.Views
             ProfileParagraph.Inlines.InsertBefore(ProfileParagraph.Inlines.FirstInline, lastItem);
 
             isAdded = true;
+        }
+
+        private void OnEntryBoxResizeRequested(object sender, MouseButtonEventArgs e)
+        {     
+            EntryBoxRowDefinition.Height = new GridLength();
         }
     }
 }
