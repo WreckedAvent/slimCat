@@ -28,6 +28,7 @@ namespace slimCat.Views
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Markup;
+    using Libraries;
     using Models;
     using ViewModels;
 
@@ -64,6 +65,12 @@ namespace slimCat.Views
         #region Fields
 
         private ChannelViewModelBase vm;
+
+        private static bool bindingsAdded;
+
+        private static KeyBinding lastFocusBind;
+
+        private RelayCommand focusCommand;
 
         #endregion
 
@@ -111,6 +118,11 @@ namespace slimCat.Views
         }
 
         #endregion
+
+        public ICommand FocusCommand
+        {
+            get { return focusCommand = focusCommand ?? (focusCommand = new RelayCommand(_ => OnLoaded(null, null))); }
+        }
 
         #region Methods
 
@@ -169,6 +181,30 @@ namespace slimCat.Views
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            if (vm != null)
+            {
+                var bindings = Application.Current.MainWindow.InputBindings;
+
+                if (!bindingsAdded)
+                {
+                    bindings.Add(new KeyBinding(vm.NavigateUpCommand, Key.Up, ModifierKeys.Alt));
+                    bindings.Add(new KeyBinding(vm.NavigateDownCommand, Key.Down, ModifierKeys.Alt));
+                    bindings.Add(new KeyBinding(vm.NavigateUpCommand, Key.Tab, ModifierKeys.Control));
+                    lastFocusBind = new KeyBinding(FocusCommand, new KeyGesture(Key.Tab));
+                    bindings.Add(lastFocusBind);
+
+                    bindingsAdded = true;
+                }
+                else
+                {
+                    bindings.Remove(lastFocusBind);
+
+
+                    lastFocusBind = new KeyBinding(FocusCommand, new KeyGesture(Key.Tab));
+                    bindings.Add(lastFocusBind);
+                }
+            }
+
             if (!ApplicationSettings.AllowGreedyTextboxFocus)
             {
                 var element = FocusManager.GetFocusedElement(Application.Current.MainWindow);

@@ -7,6 +7,7 @@
                   xmlns:vm="clr-namespace:slimCat.ViewModels"
                   xmlns:v="clr-namespace:slimCat.Views"
                   xmlns:models="clr-namespace:slimCat.Models"
+                  xmlns:utilities="clr-namespace:slimCat.Utilities"
 
                   d:DataContext="{d:DesignInstance vm:HomeChannelViewModel}">
 
@@ -286,15 +287,37 @@
                     <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
                                 Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=About}">
                         <TextBlock>
-                            <Run Text="There is a new update available!" />
-                            <LineBreak />
-                            <Run Text="{Binding Path=UpdateName, Mode=OneWay}" />
-                            <Run Text=" @" />
-                            <Run Text="{Binding Path=UpdateBuildTime, Mode=OneWay}" />
-                            <LineBreak />
-
-                            <Hyperlink CommandParameter="{Binding Path=UpdateLink, Mode=OneWay}">Download</Hyperlink>
+                            <Run Foreground="{StaticResource ContrastBrush}"
+                                 FontSize="20"
+                                 Text="{x:Static utilities:Constants.FriendlyName}" />
                         </TextBlock>
+                        <TextBlock
+                            Visibility="{Binding HasNewUpdate, Converter={StaticResource OppositeBoolConverter}}">
+                            <Hyperlink CommandParameter="{Binding Path=ChangeLog, Mode=OneWay}">Changelog</Hyperlink>
+                        </TextBlock>
+                        
+                        <WrapPanel>
+                            <TextBlock Text="by" />
+                            <ContentControl Content="{Binding Path=slimCat}" Margin="5,0,0,0" />
+                        </WrapPanel>
+                        
+                        <StackPanel Visibility="{Binding HasNewUpdate, Converter={StaticResource BoolConverter}}">
+                            <TextBlock Margin="0,5,0,0">
+                                <Run Foreground="{StaticResource ContrastBrush}"
+                                     FontSize="20"
+                                     Text="{Binding Path=UpdateName, Mode=OneWay}" />
+                            </TextBlock>
+                            <TextBlock>
+                                <Hyperlink CommandParameter="{Binding Path=ChangeLog, Mode=OneWay}">Changelog</Hyperlink>
+                            </TextBlock>
+                            <TextBlock>
+                                <Run Text="released" />
+                                <Run Text="{Binding Path=UpdateBuildTime, Mode=OneWay}" />
+                                <LineBreak />
+
+                                <Hyperlink CommandParameter="{Binding Path=UpdateLink, Mode=OneWay}">Update Now!</Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
                     </StackPanel>
 
                     <StackPanel HorizontalAlignment="Stretch"
@@ -347,23 +370,14 @@
                                       Grid.Column="1" />
                     </Grid>
 
-                    <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
-                                Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=About}">
-                        <TextBlock>
-                            <Run Text="Change log of " />
-                            <Run Text="{Binding Path=UpdateName, Mode=OneWay}" />
-                            <LineBreak />
-
-                            <Hyperlink CommandParameter="{Binding Path=ChangeLog, Mode=OneWay}">View</Hyperlink>
-                        </TextBlock>
-                    </StackPanel>
-
                     <WrapPanel
-                        Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Help}">
-                        <TextBlock Foreground="{StaticResource ForegroundBrush}" TextWrapping="Wrap">
-                            For trouble shooting, support, feature suggestions, bug reports, or other inquiries, please send a note to or PM
-                            <ContentControl Content="{Binding Path=slimCat}" />
+                        Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Help}"
+                        TextBlock.Foreground="{StaticResource ForegroundBrush}">
+                        <TextBlock>
+                            Help can be found by contacting 
                         </TextBlock>
+
+                        <ContentControl Content="{Binding Path=slimCat}" />
                     </WrapPanel>
 
                     <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,10" />

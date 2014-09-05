@@ -16,7 +16,7 @@
         </Style>
     </UserControl.Resources>
 
-    <StackPanel>
+    <StackPanel Margin="0,0,0,10">
         <WrapPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
             <WrapPanel.Resources>
                 <Style TargetType="RadioButton" BasedOn="{StaticResource ActivatingToggleButton}">
@@ -225,12 +225,6 @@
                       ToolTip="Allows slimCat to automatically set your status to 'busy' you have a full-screen application open for a period of time">
                 Automatically go busy when in full screen applications
             </CheckBox>
-
-            <CheckBox IsChecked="{Binding AllowAutoIdle}"
-                      ToolTip="Allows slimCat to automatically set your status to 'idle' if you have no activity for a given period of time">
-                Automatically go idle after inactivity
-            </CheckBox>
-
             <CheckBox IsChecked="{Binding AllowAdTruncating}"
                       ToolTip="Allows slimCat to automatically collapse very long ads with a 'show more' collapse">
                 Automatically collapse long ads
@@ -253,6 +247,11 @@
                         HorizontalAlignment="Left"
                         Margin="5,0,0,0" />
             </StackPanel>
+
+            <CheckBox IsChecked="{Binding AllowAutoIdle}"
+                      ToolTip="Allows slimCat to automatically set your status to 'idle' if you have no activity for a given period of time">
+                Automatically go idle after inactivity
+            </CheckBox>
 
             <StackPanel Margin="0,15,0,0"
                         Visibility="{Binding AllowAutoIdle, Converter={StaticResource BoolConverter}}">
