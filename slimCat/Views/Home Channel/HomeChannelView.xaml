@@ -15,21 +15,22 @@
             <Grid>
                 <Grid.Resources>
                     <Style TargetType="{x:Type Hyperlink}" BasedOn="{StaticResource {x:Type Hyperlink}}">
-                        <Setter Property="Command" Value="{Binding Path=DataContext.NavigateTo, RelativeSource={RelativeSource AncestorType={x:Type v:DisposableView}}}"/>
+                        <Setter Property="Command"
+                                Value="{Binding Path=DataContext.NavigateTo, RelativeSource={RelativeSource AncestorType={x:Type v:DisposableView}}}" />
                     </Style>
                 </Grid.Resources>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                
-                <TextBlock Foreground="{StaticResource ForegroundBrush}" 
+
+                <TextBlock Foreground="{StaticResource ForegroundBrush}"
                            Grid.Column="0">
-                        <Hyperlink CommandParameter="{Binding Path=Url}">
-                            <Run Text="{Binding Path=Name}"/>
-                        </Hyperlink>
+                    <Hyperlink CommandParameter="{Binding Path=Url}">
+                        <Run Text="{Binding Path=Name}" />
+                    </Hyperlink>
                 </TextBlock>
 
                 <TextBlock Text="by" Margin="5,0,0,0" Foreground="{StaticResource ForegroundBrush}" Grid.Column="1" />
@@ -39,45 +40,45 @@
                     <WrapPanel.Resources>
                         <Style TargetType="Rectangle">
                             <Setter Property="Width" Value="20" />
-                            <Setter Property="Height" Value="20"/>
+                            <Setter Property="Height" Value="20" />
                             <Setter Property="Margin" Value="2" />
                             <Setter Property="VerticalAlignment" Value="Bottom" />
                         </Style>
                     </WrapPanel.Resources>
                     <Rectangle>
                         <Rectangle.Fill>
-                            <SolidColorBrush Color="{Binding HighlightColor}"/>
+                            <SolidColorBrush Color="{Binding HighlightColor}" />
                         </Rectangle.Fill>
                     </Rectangle>
                     <Rectangle>
                         <Rectangle.Fill>
-                            <SolidColorBrush Color="{Binding ContrastColor}"/>
+                            <SolidColorBrush Color="{Binding ContrastColor}" />
                         </Rectangle.Fill>
                     </Rectangle>
                     <Rectangle>
                         <Rectangle.Fill>
-                            <SolidColorBrush Color="{Binding BackgroundColor}"/>
+                            <SolidColorBrush Color="{Binding BackgroundColor}" />
                         </Rectangle.Fill>
                     </Rectangle>
                     <Rectangle>
                         <Rectangle.Fill>
-                            <SolidColorBrush Color="{Binding DepressedColor}"/>
+                            <SolidColorBrush Color="{Binding DepressedColor}" />
                         </Rectangle.Fill>
                     </Rectangle>
                     <Rectangle>
                         <Rectangle.Fill>
-                            <SolidColorBrush Color="{Binding BrightBackgroundColor}"/>
+                            <SolidColorBrush Color="{Binding BrightBackgroundColor}" />
                         </Rectangle.Fill>
                     </Rectangle>
                     <Rectangle>
                         <Rectangle.Fill>
-                            <SolidColorBrush Color="{Binding ForegroundColor}"/>
+                            <SolidColorBrush Color="{Binding ForegroundColor}" />
                         </Rectangle.Fill>
                     </Rectangle>
                 </WrapPanel>
             </Grid>
         </DataTemplate>
-        
+
         <DataTemplate DataType="{x:Type models:CharacterModel}">
             <ContentControl Margin="0"
                             Content="{Binding}"
@@ -119,31 +120,48 @@
                 </ContentControl.ContentTemplate>
             </ContentControl>
         </DataTemplate>
-        
-        <Style TargetType="ListBox" x:Key="AvatarBoxStyle">
+
+        <Style TargetType="ItemsControl" x:Key="AvatarBoxStyle">
 
             <Setter Property="BorderThickness" Value="0" />
 
             <Setter Property="Background" Value="Transparent" />
-            
+
             <Setter Property="ItemsPanel">
                 <Setter.Value>
                     <ItemsPanelTemplate>
-                        <WrapPanel
-                            Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}}" />
+                        <WrapPanel Orientation="Horizontal" IsItemsHost="True" />
                     </ItemsPanelTemplate>
                 </Setter.Value>
             </Setter>
-            
+
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate DataType="models:CharacterModel">
-                        <StackPanel Opacity="{Binding Path=Status, Converter={StaticResource CharacterStatusOpacityConverter}}">
+                        <StackPanel Cursor="Hand"
+                                    Margin="5">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="TextBlock.Foreground"
+                                                    Value="{StaticResource HighlightBrush}" />
+                                            <Setter Property="Opacity" Value="1" />
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="False">
+                                            <Setter Property="Opacity"
+                                                    Value="{Binding Path=Status, Converter={StaticResource CharacterStatusOpacityConverter}}" />
+                                            <Setter Property="TextBlock.Foreground"
+                                                    Value="{StaticResource ForegroundBrush}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
                             <Border BorderThickness="0,0,0,1"
                                     BorderBrush="{StaticResource HighlightBrush}">
                                 <Image Source="{Binding Path=Avatar}"
-                                                   Height="75"
-                                                   Width="75" />
+                                       Height="75"
+                                       Width="75" />
                             </Border>
 
                             <TextBlock Text="{Binding Path=Name}"
@@ -153,7 +171,6 @@
                                        MaxWidth="100"
                                        TextWrapping="Wrap"
                                        IsHyphenationEnabled="True"
-                                       Foreground="{StaticResource ForegroundBrush}"
                                        HorizontalAlignment="Center" />
 
                             <StackPanel.InputBindings>
@@ -172,11 +189,11 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
-            <Setter Property="Cursor" Value="Help"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0,15,0,0"/>
+            <Setter Property="Cursor" Value="Help" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,15,0,0" />
         </Style>
     </UserControl.Resources>
 
@@ -190,9 +207,9 @@
                            TextWrapping="Wrap">
                     <Run Text="{Binding ConnectFlavorText, Mode=OneWay}" />
                 </TextBlock>
-                
-                <Button MaxWidth="200" 
-                        Margin="0,20,0,0" 
+
+                <Button MaxWidth="200"
+                        Margin="0,20,0,0"
                         FontSize="20"
                         Command="{Binding Path=LogoutCommand}">
                     Cancel Connecting
@@ -205,7 +222,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition />
-                <RowDefinition Height="auto" 
+                <RowDefinition Height="auto"
                                x:Name="EntryBoxRowDefinition"
                                MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=60}" />
             </Grid.RowDefinitions>
@@ -244,408 +261,137 @@
             </Border>
 
             <ScrollViewer Grid.Row="1"
-                          CanContentScroll="False" 
+                          CanContentScroll="False"
                           HorizontalAlignment="Stretch"
                           HorizontalContentAlignment="Stretch">
                 <StackPanel HorizontalAlignment="Stretch">
                     <WrapPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
                         <WrapPanel.Resources>
-                            <Style TargetType="RadioButton" BasedOn="{StaticResource ActivatingToggleButton}"/>
+                            <Style TargetType="RadioButton" BasedOn="{StaticResource ActivatingToggleButton}" />
                         </WrapPanel.Resources>
-                        
-                        <RadioButton Margin="5" Content="About" IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=About}"/>
-                        <RadioButton Content="Themes" Margin="5" IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Themes}"/>
-                        <RadioButton Content="Settings" Margin="5" IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Settings}"/>
-                        <RadioButton Content="Recent Tabs" Margin="5" IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Tabs}"/>
-                        <RadioButton Content="Help" Margin="5" IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Help}"/>
+
+                        <RadioButton Margin="5" Content="About"
+                                     IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=About}" />
+                        <RadioButton Content="Themes" Margin="5"
+                                     IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Themes}" />
+                        <RadioButton Content="Settings" Margin="5"
+                                     IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Settings}" />
+                        <RadioButton Content="Recent Tabs" Margin="5"
+                                     IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Tabs}" />
+                        <RadioButton Content="Help" Margin="5"
+                                     IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Help}" />
                     </WrapPanel>
                     <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" />
-                    
+
                     <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
                                 Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=About}">
                         <TextBlock>
-                                <Run Text="There is a new update available!" />
-                                <LineBreak />
-                                <Run Text="{Binding Path=UpdateName, Mode=OneWay}" />
-                                <Run Text=" @" />
-                                <Run Text="{Binding Path=UpdateBuildTime, Mode=OneWay}" />
-                                <LineBreak />
+                            <Run Text="There is a new update available!" />
+                            <LineBreak />
+                            <Run Text="{Binding Path=UpdateName, Mode=OneWay}" />
+                            <Run Text=" @" />
+                            <Run Text="{Binding Path=UpdateBuildTime, Mode=OneWay}" />
+                            <LineBreak />
 
-                                <Hyperlink CommandParameter="{Binding Path=UpdateLink, Mode=OneWay}">Download</Hyperlink>
+                            <Hyperlink CommandParameter="{Binding Path=UpdateLink, Mode=OneWay}">Download</Hyperlink>
                         </TextBlock>
                     </StackPanel>
 
-                    <StackPanel HorizontalAlignment="Stretch" Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Themes}">                     
+                    <StackPanel HorizontalAlignment="Stretch"
+                                Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Themes}">
                         <StackPanel Visibility="{Binding HasCurrentTheme, Converter={StaticResource BoolConverter}}"
                                     Margin="0,0,0,10">
                             <TextBlock Text="Current Theme:" Foreground="{StaticResource ForegroundBrush}" />
-                            <ContentControl Content="{Binding CurrentTheme}" Margin="0"/>
+                            <ContentControl Content="{Binding CurrentTheme}" Margin="0" />
                         </StackPanel>
 
-                        <TextBlock Text="Available Themes:" Foreground="{StaticResource ForegroundBrush}"/>
+                        <TextBlock Text="Available Themes:" Foreground="{StaticResource ForegroundBrush}" />
                         <ItemsControl ItemsSource="{Binding Themes}"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Stretch"
-                                    Style="{StaticResource NoScrollListBox}"/>
+                                      HorizontalAlignment="Stretch"
+                                      HorizontalContentAlignment="Stretch"
+                                      Style="{StaticResource NoScrollListBox}" />
 
                         <WrapPanel Margin="0,10,0,0">
-                                
+
                             <TextBlock Foreground="{StaticResource ForegroundBrush}" TextWrapping="Wrap">
-                                If you want your theme listed here, contact 
+                                If you want your theme listed here, contact
                             </TextBlock>
 
                             <ContentControl Content="{Binding Path=slimCat}" Margin="5,0,0,0" />
                         </WrapPanel>
                     </StackPanel>
-                    
-                    <StackPanel Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Settings}">
-                        <Expander Header="General">
-                            <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
-                                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
-                                        Margin="0,0,0,0" />
 
-                                <CheckBox IsChecked="{Binding AllowLogging}"
-                                            ToolTip="Allows slimCat to store any kind of log file. This setting overrides any channel-specific setting if off.">
-                                    Automatically log each message
-                                </CheckBox>
-                                    
-                                <CheckBox IsChecked="{Binding IsTemplateCharacter}"
-                                            ToolTip="Determines if this character's settings are used as defaults for other characters.">
-                                    Make this character's settings the default for others
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding ViewProfilesInChat}"
-                                            ToolTip="Determines if slimCat will be the default viewer for profiles on left-click on character names instead of browsers.">
-                                    Use the integrated slimCat profile viewer
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding AllowMinimizeToSystemTray}"
-                                            ToolTip="Allows slimCat to minimize itself to system tray on closing the window, instead of exiting.">
-                                    Minimize to system tray on close
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
-                                            ToolTip="Determines if friends on characters other than the one you are currently signed in with are treated as friends or normal characters.">
-                                    Show friends from all of my characters
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding AllowTexboxDisable}"
-                                            ToolTip="Allows the entry box to automatically disable itself for half a second after sending a message.">
-                                    Briefly disable the textbox after each message sent
-                                </CheckBox>
-                                    
-                                <CheckBox IsChecked="{Binding AllowGreedyTextboxFocus}"
-                                            ToolTip="Allows the entry box to automatically focus itself after switching tabs regardless of how the tab was switched.">
-                                    Focus the textbox after switching tabs
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding HideFriendsFromSearchResults}"
-                                            ToolTip="Allows slimCat to automatically filter out friends, bookmarks, and interested characters from search results.">
-                                    Hide of interest characters from search results
-                                </CheckBox>
-                                    
-                                <CheckBox IsChecked="{Binding UseMilitaryTime}"
-                                            ToolTip="Allows slimCat to use military (24-hour) labels for time stamps.">
-                                    Use 24-hour time for time stamps
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding OpenOfflineChatsInNoteView}"
-                                            ToolTip="Allows slimCat to automatically switch your view to notes if a new conversation with a character is opened while they are offline.">
-                                    Open new conversations with offline users in note mode
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding SpellCheckEnabled}"
-                                            ToolTip="Allows slimCat to spell-check the messages you type out.">
-                                    Spell check my messages
-                                </CheckBox>
-                                    
-                                <StackPanel Margin="0,15,0,0"
-                                            Visibility="{Binding SpellCheckEnabled, Converter={StaticResource BoolConverter}}"
-                                            ToolTip="Determines what language dictionary spell-checking uses">
-                                    <TextBlock Text="Spell check language" />
-                                    <ComboBox ItemsSource="{Binding Path=LanguageNames}"
-                                                SelectedValue="{Binding Path=Language}"
-
-                                                HorizontalAlignment="Left"
-                                                Width="200"
-                                                DisplayMemberPath="Key"
-                                                SelectedValuePath="Value" />
-                                </StackPanel>
-
-                                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
-                                        Margin="0,15,0,0" />
-
-                            </StackPanel>
-                        </Expander>
-
-                        <Expander Header="Notifications">
-                            <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
-                                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
-                                        Margin="0,0,0,0" />
-
-                                <CheckBox IsChecked="{Binding ShowNotifications}"
-                                            ToolTip="Allows slimCat to display small windows on the bottom-right of your screen for new notifications. This will override any channel-specific settings if off.">
-                                    Display toast notifications for events
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding AllowSound}"
-                                            ToolTip="Allows slimCat to play sounds during toasts when applicable.">
-                                    Play sounds for events
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding CheckOwnName}"
-                                            ToolTip="Determines whether or not slimCat will automatically notify you when someone mentions your character's name">
-                                    Highlight and notify me of messages mentioning my character
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding AllowSoundWhenTabIsFocused}"
-                                            ToolTip="Allows slimCat to play sounds even if the window and the tab that generates the vent are focused.">
-                                    Play sounds even when window and tab are focused
-                                </CheckBox>
-                                    
-                                <StackPanel Margin="0,15,0,0"
-                                            ToolTip="Defines a global set of words that slimCat will check messages against and alert you if they match">
-                                    <TextBlock Text="Global Notify Words (comma separated)" />
-                                    <TextBox
-                                        Text="{Binding Path=GlobalNotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        TextWrapping="Wrap"
-                                        Width="200"
-                                        AcceptsReturn="True"
-                                        MaxLines="5"
-                                        HorizontalAlignment="Left"
-                                        FontSize="12" />
-                                </StackPanel>
-
-                                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
-                                        Margin="0,15,0,0" />
-
-                            </StackPanel>
-                        </Expander>
-
-                        <Expander Header="Appearance">
-                            <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
-                                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
-                                        Margin="0,0,0,0" />
-
-                                <CheckBox IsChecked="{Binding AllowColors}"
-                                            ToolTip="Allows slimCat to parse bbcode [color] tags and present the text as colored output.">
-                                    Display bbcode colors
-                                </CheckBox>
-                                    
-                                <CheckBox IsChecked="{Binding AllowIcons}"
-                                            ToolTip="Allows slimCat to parse [icon] tags and present the bbcode as an in-line image.">
-                                    Display icons
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding AllowIndent}"
-                                            ToolTip="Allows slimCat to parse [indent] tags and present the bbcode indented text.">
-                                    Display indent
-                                </CheckBox>
-
-                                <StackPanel Margin="0,15,0,0"
-                                            ToolTip="Changes the size of the font for messages displayed in channels">
-                                    <WrapPanel>
-                                        <TextBlock Text="Backlog Font Size: " />
-                                        <TextBlock Text="{Binding Path=FontSize}" />
-                                    </WrapPanel>
-                                    <Slider Value="{Binding FontSize}"
-                                            LargeChange="4"
-                                            SmallChange="1"
-                                            Minimum="8"
-                                            Maximum="20"
-                                            Width="200"
-                                            TickFrequency="1"
-                                            TickPlacement="BottomRight"
-                                            HorizontalAlignment="Left"
-                                            Margin="5,0,0,0" />
-                                </StackPanel>
-
-                                <StackPanel Margin="0,15,0,5"
-                                            ToolTip="Determines how slimCat applies gender coloring to users">
-                                    <TextBlock Text="Gender Color Settings" />
-                                    <ComboBox ItemsSource="{Binding Path=GenderSettings}"
-                                                SelectedValue="{Binding Path=GenderColorSettings}"
-
-                                                HorizontalAlignment="Left"
-                                                Width="200"
-                                                DisplayMemberPath="Key"
-                                                SelectedValuePath="Value" />
-                                </StackPanel>
-                                    
-                                <CheckBox IsChecked="{Binding AllowStatusDiscolor}"
-                                            ToolTip="Allows slimCat to discolor users who have a status of busy, idle, away, or do not disturb.">
-                                    Discolor names of unavailable users
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding AllowOfInterestColoring}"
-                                            ToolTip="Allows slimCat to color friends, bookmarks, and interested users a contrasting color.">
-                                    Color of interest users differently
-                                </CheckBox>
-
-                                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
-                                        Margin="0,15,0,0" />
-
-                            </StackPanel>
-                        </Expander>
-
-                        <Expander Header="Automation">
-                            <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
-                                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1"
-                                        Margin="0,0,0,0" />
-
-                                <CheckBox IsChecked="{Binding AllowAdDedpulication}"
-                                            ToolTip="Allows slimCat to automatically supress identical ads from the same user.">
-                                    Hide duplicate ads from others
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding AllowAggressiveAdDedpulication}"
-                                            Visibility="{Binding Path=AllowAdDedpulication, Converter={StaticResource BoolConverter}}"
-                                            ToolTip="Allows slimCat to automatically supress multiple ads from the same user. Only the first ad the person sends will be seen.">
-                                    Show only the first ad from each person
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding AllowAutoStatusReset}"
-                                            ToolTip="Allows slimCat to automatically reset your status from 'away' or 'idle' to 'online' when you perform actions.">
-                                    Automatically go online with activity
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding AllowAutoBusy}"
-                                            ToolTip="Allows slimCat to automatically set your status to 'busy' you have a full-screen application open for a period of time">
-                                    Automatically go busy when in full screen applications
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding AllowAutoIdle}"
-                                            ToolTip="Allows slimCat to automatically set your status to 'idle' if you have no activity for a given period of time">
-                                    Automatically go idle after inactivity
-                                </CheckBox>
-
-                                <CheckBox IsChecked="{Binding AllowAdTruncating}"
-                                            ToolTip="Allows slimCat to automatically collapse very long ads with a 'show more' collapse">
-                                    Automatically collapse long ads
-                                </CheckBox>
-
-                                <StackPanel Margin="0,15,0,0"
-                                            Visibility="{Binding AllowAdTruncating, Converter={StaticResource BoolConverter}}">
-                                    <WrapPanel>
-                                        <TextBlock Text="Ad collapse cutoff (characters): " />
-                                        <TextBlock Text="{Binding Path=AdTruncateLength}" />
-                                    </WrapPanel>
-                                    <Slider Value="{Binding AdTruncateLength}"
-                                            LargeChange="100"
-                                            SmallChange="5"
-                                            Minimum="400"
-                                            Maximum="10400"
-                                            Width="200"
-                                            TickFrequency="1000"
-                                            TickPlacement="BottomRight"
-                                            HorizontalAlignment="Left"
-                                            Margin="5,0,0,0" />
-                                </StackPanel>
-
-                                <StackPanel Margin="0,15,0,0"
-                                            Visibility="{Binding AllowAutoIdle, Converter={StaticResource BoolConverter}}">
-                                    <WrapPanel>
-                                        <TextBlock Text="Time Until Idle (minutes): " />
-                                        <TextBlock Text="{Binding Path=AutoIdleTime}" />
-                                    </WrapPanel>
-                                    <Slider Value="{Binding AutoIdleTime}"
-                                            LargeChange="20"
-                                            SmallChange="5"
-                                            Minimum="5"
-                                            Maximum="60"
-                                            Width="200"
-                                            TickFrequency="5"
-                                            TickPlacement="BottomRight"
-                                            HorizontalAlignment="Left"
-                                            Margin="5,0,0,0" />
-                                </StackPanel>
-
-                                <CheckBox IsChecked="{Binding AllowAutoAway}"
-                                            ToolTip="Allows slimCat to automatically set your status to 'away' if you have no activity for a given period of time">
-                                    Automatically go away after inactivity
-                                </CheckBox>
-
-                                <StackPanel Margin="0,15,0,15"
-                                            Visibility="{Binding AllowAutoAway, Converter={StaticResource BoolConverter}}">
-                                    <WrapPanel>
-                                        <TextBlock Text="Time Until Away (minutes): " />
-                                        <TextBlock Text="{Binding Path=AutoAwayTime}" />
-                                    </WrapPanel>
-                                    <Slider Value="{Binding AutoAwayTime}"
-                                            LargeChange="20"
-                                            SmallChange="5"
-                                            Minimum="60"
-                                            Maximum="120"
-                                            Width="200"
-                                            TickFrequency="5"
-                                            TickPlacement="BottomRight"
-                                            HorizontalAlignment="Left"
-                                            Margin="5,0,0,0" />
-                                </StackPanel>
-
-                            </StackPanel>
-                        </Expander>
+                    <StackPanel
+                        Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Settings}">
+                        <v:HomeSettingsView DataContext="{Binding SettingsVm}" />
                     </StackPanel>
 
-                    <StackPanel Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Tabs}">
-                            <Expander Header="Conversations">
-                                <ListBox ItemsSource="{Binding RecentCharacters}"
-                                         Style="{StaticResource AvatarBoxStyle}"
-                                         HorizontalAlignment="Left"
-                                         VerticalContentAlignment="Top"
-                                         HorizontalContentAlignment="Left"/>
-                            </Expander>
-                        <Expander Header="Channels">
-                            <ListBox ItemsSource="{Binding RecentChannels}"
-                                         ItemTemplate="{StaticResource ChannelTemplate}"
-                                         HorizontalContentAlignment="Left"
-                                         HorizontalAlignment="Left"/>
-                        </Expander>
-                    </StackPanel>
+                    <Grid
+                        Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Tabs}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="200" />
+                        </Grid.ColumnDefinitions>
 
-                    <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}" 
+                        <ItemsControl ItemsSource="{Binding RecentCharacters}"
+                                      HorizontalAlignment="Left"
+                                      VerticalContentAlignment="Top"
+                                      HorizontalContentAlignment="Left"
+                                      Style="{StaticResource AvatarBoxStyle}" />
+
+                        <ItemsControl ItemsSource="{Binding RecentChannels}"
+                                      ItemTemplate="{StaticResource ChannelTemplate}"
+                                      Style="{StaticResource NoScrollListBox}"
+                                      HorizontalContentAlignment="Right"
+                                      HorizontalAlignment="Right"
+                                      Grid.Column="1" />
+                    </Grid>
+
+                    <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
                                 Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=About}">
                         <TextBlock>
-                                <Run Text="Change log of " />
-                                <Run Text="{Binding Path=UpdateName, Mode=OneWay}"/>
-                                <LineBreak/>
-                                
-                                <Hyperlink CommandParameter="{Binding Path=ChangeLog, Mode=OneWay}">View</Hyperlink>
+                            <Run Text="Change log of " />
+                            <Run Text="{Binding Path=UpdateName, Mode=OneWay}" />
+                            <LineBreak />
+
+                            <Hyperlink CommandParameter="{Binding Path=ChangeLog, Mode=OneWay}">View</Hyperlink>
                         </TextBlock>
                     </StackPanel>
 
-                    <WrapPanel Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Help}">
+                    <WrapPanel
+                        Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Help}">
                         <TextBlock Foreground="{StaticResource ForegroundBrush}" TextWrapping="Wrap">
-                                For trouble shooting, support, feature suggestions, bug reports, or other inquiries, please send a note to or PM
-                                <ContentControl Content="{Binding Path=slimCat}" />
+                            For trouble shooting, support, feature suggestions, bug reports, or other inquiries, please send a note to or PM
+                            <ContentControl Content="{Binding Path=slimCat}" />
                         </TextBlock>
                     </WrapPanel>
-                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" />
+
+                    <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,10" />
                 </StackPanel>
             </ScrollViewer>
 
             <v:RightClickMenu Grid.Row="1" />
 
-            <GridSplitter Grid.Row="2" MouseDoubleClick="OnEntryBoxResizeRequested"/>
+            <GridSplitter Grid.Row="2" MouseDoubleClick="OnEntryBoxResizeRequested" />
 
-            <Grid Grid.Row="2" 
-                  Height="auto" 
+            <Grid Grid.Row="2"
+                  Height="auto"
                   Margin="0,4,0,0"
                   MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=65}">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                    <StackPanel Orientation="Horizontal"
+                <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Right"
                             Margin="0">
                     <v:MarkupButtonView Margin="4"
                                         VerticalAlignment="Center"
-                                        IsChecked="{Binding Path=ShowPreview, Mode=TwoWay}"/>
+                                        IsChecked="{Binding Path=ShowPreview, Mode=TwoWay}" />
                 </StackPanel>
-                
-                <v:ChannelTextBoxEntryView Margin="0,0,0,10" Grid.Row="1"/>
+
+                <v:ChannelTextBoxEntryView Margin="0,0,0,10" Grid.Row="1" />
             </Grid>
         </Grid>
     </Grid>

@@ -160,9 +160,9 @@ namespace slimCat.Models
         /// <summary>
         ///     Gets the display number.
         /// </summary>
-        public int DisplayNumber
+        public string DisplayNumber
         {
-            get { return UserCount; }
+            get { return UserCount > 0 ? userCount.ToString() : string.Empty; }
         }
 
         /// <summary>

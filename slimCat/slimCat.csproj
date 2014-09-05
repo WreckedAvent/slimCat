@@ -267,8 +267,10 @@
     <Compile Include="ViewModels\Channel Bar\GlobalTabViewModel.cs" />
     <Compile Include="ViewModels\Channel Bar\ManageListsViewModel.cs" />
     <Compile Include="ViewModels\Channel Bar\SearchTabViewModel.cs" />
+    <Compile Include="ViewModels\Home Channel\HomeSettingsViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\ChannelManagementViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\CreateReportViewModel.cs" />
+    <Compile Include="ViewModels\UI Parts\IHasTabs.cs" />
     <Compile Include="ViewModels\UI Parts\RightClickViewModel.cs" />
     <Compile Include="Models\MessageModel.cs" />
     <Compile Include="Models\PMChannelModel.cs" />
@@ -324,6 +326,9 @@
     </Compile>
     <Compile Include="Views\Channel Bar\ManageListsView.xaml.cs">
       <DependentUpon>ManageListsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Home Channel\HomeSettingsView.xaml.cs">
+      <DependentUpon>HomeSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\UI Parts\Buttons\BrowserButtonView.xaml.cs">
       <DependentUpon>BrowserButtonView.xaml</DependentUpon>
@@ -492,6 +497,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Channel Bar\ManageListsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Home Channel\HomeSettingsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

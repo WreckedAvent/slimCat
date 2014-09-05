@@ -1,0 +1,300 @@
+﻿<UserControl x:Class="slimCat.Views.HomeSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:vm="clr-namespace:slimCat.ViewModels"
+
+             d:DataContext="{d:DesignInstance vm:HomeSettingsViewModel}">
+
+    <UserControl.Resources>
+        <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
+            <Setter Property="Cursor" Value="Help" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,15,0,0" />
+        </Style>
+    </UserControl.Resources>
+
+    <StackPanel>
+        <WrapPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
+            <WrapPanel.Resources>
+                <Style TargetType="RadioButton" BasedOn="{StaticResource ActivatingToggleButton}">
+                    <Setter Property="Margin" Value="5" />
+                </Style>
+            </WrapPanel.Resources>
+
+            <RadioButton Content="General"
+                         IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=General}" />
+            <RadioButton Content="Notifications"
+                         IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Notifications}" />
+            <RadioButton Content="Appearance"
+                         IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Appearance}" />
+            <RadioButton Content="Automation"
+                         IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Automation}" />
+            <RadioButton Content="Profile"
+                         IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Profile}" />
+        </WrapPanel>
+        <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" />
+
+        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
+                    Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=General}">
+
+            <CheckBox IsChecked="{Binding AllowLogging}"
+                      ToolTip="Allows slimCat to store any kind of log file. This setting overrides any channel-specific setting if off.">
+                Automatically log each message
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding IsTemplateCharacter}"
+                      ToolTip="Determines if this character's settings are used as defaults for other characters.">
+                Make this character's settings the default for others
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding ViewProfilesInChat}"
+                      ToolTip="Determines if slimCat will be the default viewer for profiles on left-click on character names instead of browsers.">
+                Use the integrated slimCat profile viewer
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllowMinimizeToSystemTray}"
+                      ToolTip="Allows slimCat to minimize itself to system tray on closing the window, instead of exiting.">
+                Minimize to system tray on close
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding FriendsAreAccountWide}"
+                      ToolTip="Determines if friends on characters other than the one you are currently signed in with are treated as friends or normal characters.">
+                Show friends from all of my characters
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllowTexboxDisable}"
+                      ToolTip="Allows the entry box to automatically disable itself for half a second after sending a message.">
+                Briefly disable the textbox after each message sent
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllowGreedyTextboxFocus}"
+                      ToolTip="Allows the entry box to automatically focus itself after switching tabs regardless of how the tab was switched.">
+                Focus the textbox after switching tabs
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding HideFriendsFromSearchResults}"
+                      ToolTip="Allows slimCat to automatically filter out friends, bookmarks, and interested characters from search results.">
+                Hide of interest characters from search results
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding UseMilitaryTime}"
+                      ToolTip="Allows slimCat to use military (24-hour) labels for time stamps.">
+                Use 24-hour time for time stamps
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding OpenOfflineChatsInNoteView}"
+                      ToolTip="Allows slimCat to automatically switch your view to notes if a new conversation with a character is opened while they are offline.">
+                Open new conversations with offline users in note mode
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding SpellCheckEnabled}"
+                      ToolTip="Allows slimCat to spell-check the messages you type out.">
+                Spell check my messages
+            </CheckBox>
+
+            <StackPanel Margin="0,15,0,0"
+                        Visibility="{Binding SpellCheckEnabled, Converter={StaticResource BoolConverter}}"
+                        ToolTip="Determines what language dictionary spell-checking uses">
+                <TextBlock Text="Spell check language" />
+                <ComboBox ItemsSource="{Binding Path=LanguageNames}"
+                          SelectedValue="{Binding Path=Language}"
+
+                          HorizontalAlignment="Left"
+                          Width="200"
+                          DisplayMemberPath="Key"
+                          SelectedValuePath="Value" />
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
+                    Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Notifications}">
+            <CheckBox IsChecked="{Binding ShowNotifications}"
+                      ToolTip="Allows slimCat to display small windows on the bottom-right of your screen for new notifications. This will override any channel-specific settings if off.">
+                Display toast notifications for events
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllowSound}"
+                      ToolTip="Allows slimCat to play sounds during toasts when applicable.">
+                Play sounds for events
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding CheckOwnName}"
+                      ToolTip="Determines whether or not slimCat will automatically notify you when someone mentions your character's name">
+                Highlight and notify me of messages mentioning my character
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllowSoundWhenTabIsFocused}"
+                      ToolTip="Allows slimCat to play sounds even if the window and the tab that generates the vent are focused.">
+                Play sounds even when window and tab are focused
+            </CheckBox>
+
+            <StackPanel Margin="0,15,0,0"
+                        ToolTip="Defines a global set of words that slimCat will check messages against and alert you if they match">
+                <TextBlock Text="Global Notify Words (comma separated)" />
+                <TextBox
+                    Text="{Binding Path=GlobalNotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    TextWrapping="Wrap"
+                    Width="200"
+                    AcceptsReturn="True"
+                    MaxLines="5"
+                    HorizontalAlignment="Left"
+                    FontSize="12" />
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
+                    Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Appearance}">
+            <CheckBox IsChecked="{Binding AllowColors}"
+                      ToolTip="Allows slimCat to parse bbcode [color] tags and present the text as colored output.">
+                Display bbcode colors
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllowIcons}"
+                      ToolTip="Allows slimCat to parse [icon] tags and present the bbcode as an in-line image.">
+                Display icons
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllowIndent}"
+                      ToolTip="Allows slimCat to parse [indent] tags and present the bbcode indented text.">
+                Display indent
+            </CheckBox>
+
+            <StackPanel Margin="0,15,0,0"
+                        ToolTip="Changes the size of the font for messages displayed in channels">
+                <WrapPanel>
+                    <TextBlock Text="Backlog Font Size: " />
+                    <TextBlock Text="{Binding Path=FontSize}" />
+                </WrapPanel>
+                <Slider Value="{Binding FontSize}"
+                        LargeChange="4"
+                        SmallChange="1"
+                        Minimum="8"
+                        Maximum="20"
+                        Width="200"
+                        TickFrequency="1"
+                        TickPlacement="BottomRight"
+                        HorizontalAlignment="Left"
+                        Margin="5,0,0,0" />
+            </StackPanel>
+
+            <StackPanel Margin="0,15,0,5"
+                        ToolTip="Determines how slimCat applies gender coloring to users">
+                <TextBlock Text="Gender Color Settings" />
+                <ComboBox ItemsSource="{Binding Path=GenderSettings}"
+                          SelectedValue="{Binding Path=GenderColorSettings}"
+
+                          HorizontalAlignment="Left"
+                          Width="200"
+                          DisplayMemberPath="Key"
+                          SelectedValuePath="Value" />
+            </StackPanel>
+
+            <CheckBox IsChecked="{Binding AllowStatusDiscolor}"
+                      ToolTip="Allows slimCat to discolor users who have a status of busy, idle, away, or do not disturb.">
+                Discolor names of unavailable users
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllowOfInterestColoring}"
+                      ToolTip="Allows slimCat to color friends, bookmarks, and interested users a contrasting color.">
+                Color of interest users differently
+            </CheckBox>
+        </StackPanel>
+
+        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
+                    Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Automation}">
+            <CheckBox IsChecked="{Binding AllowAdDedpulication}"
+                      ToolTip="Allows slimCat to automatically supress identical ads from the same user.">
+                Hide duplicate ads from others
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllowAggressiveAdDedpulication}"
+                      Visibility="{Binding Path=AllowAdDedpulication, Converter={StaticResource BoolConverter}}"
+                      ToolTip="Allows slimCat to automatically supress multiple ads from the same user. Only the first ad the person sends will be seen.">
+                Show only the first ad from each person
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllowAutoStatusReset}"
+                      ToolTip="Allows slimCat to automatically reset your status from 'away' or 'idle' to 'online' when you perform actions.">
+                Automatically go online with activity
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllowAutoBusy}"
+                      ToolTip="Allows slimCat to automatically set your status to 'busy' you have a full-screen application open for a period of time">
+                Automatically go busy when in full screen applications
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllowAutoIdle}"
+                      ToolTip="Allows slimCat to automatically set your status to 'idle' if you have no activity for a given period of time">
+                Automatically go idle after inactivity
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding AllowAdTruncating}"
+                      ToolTip="Allows slimCat to automatically collapse very long ads with a 'show more' collapse">
+                Automatically collapse long ads
+            </CheckBox>
+
+            <StackPanel Margin="0,15,0,0"
+                        Visibility="{Binding AllowAdTruncating, Converter={StaticResource BoolConverter}}">
+                <WrapPanel>
+                    <TextBlock Text="Ad collapse cutoff (characters): " />
+                    <TextBlock Text="{Binding Path=AdTruncateLength}" />
+                </WrapPanel>
+                <Slider Value="{Binding AdTruncateLength}"
+                        LargeChange="100"
+                        SmallChange="5"
+                        Minimum="400"
+                        Maximum="10400"
+                        Width="200"
+                        TickFrequency="1000"
+                        TickPlacement="BottomRight"
+                        HorizontalAlignment="Left"
+                        Margin="5,0,0,0" />
+            </StackPanel>
+
+            <StackPanel Margin="0,15,0,0"
+                        Visibility="{Binding AllowAutoIdle, Converter={StaticResource BoolConverter}}">
+                <WrapPanel>
+                    <TextBlock Text="Time Until Idle (minutes): " />
+                    <TextBlock Text="{Binding Path=AutoIdleTime}" />
+                </WrapPanel>
+                <Slider Value="{Binding AutoIdleTime}"
+                        LargeChange="20"
+                        SmallChange="5"
+                        Minimum="5"
+                        Maximum="60"
+                        Width="200"
+                        TickFrequency="5"
+                        TickPlacement="BottomRight"
+                        HorizontalAlignment="Left"
+                        Margin="5,0,0,0" />
+            </StackPanel>
+
+            <CheckBox IsChecked="{Binding AllowAutoAway}"
+                      ToolTip="Allows slimCat to automatically set your status to 'away' if you have no activity for a given period of time">
+                Automatically go away after inactivity
+            </CheckBox>
+
+            <StackPanel Margin="0,15,0,15"
+                        Visibility="{Binding AllowAutoAway, Converter={StaticResource BoolConverter}}">
+                <WrapPanel>
+                    <TextBlock Text="Time Until Away (minutes): " />
+                    <TextBlock Text="{Binding Path=AutoAwayTime}" />
+                </WrapPanel>
+                <Slider Value="{Binding AutoAwayTime}"
+                        LargeChange="20"
+                        SmallChange="5"
+                        Minimum="60"
+                        Maximum="120"
+                        Width="200"
+                        TickFrequency="5"
+                        TickPlacement="BottomRight"
+                        HorizontalAlignment="Left"
+                        Margin="5,0,0,0" />
+            </StackPanel>
+
+        </StackPanel>
+    </StackPanel>
+</UserControl>
