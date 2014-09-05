@@ -558,9 +558,9 @@ namespace slimCat.ViewModels
 
                 subTotal *= multiplier;
 
-                return subTotal > 0.5
+                return Math.Min(subTotal > 0.5
                     ? Math.Round((GetMatchRatio(subTotal, 1)*100), 2)
-                    : Math.Round(subTotal*100, 2);
+                    : Math.Round(subTotal*100, 2), 100);
             }
         }
 
