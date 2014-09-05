@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="PMChannelViewModel.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,21 +21,21 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
     using System.Diagnostics;
     using System.Linq;
     using System.Net;
+    using System.Timers;
     using System.Windows.Data;
+    using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
-    using System;
-    using System.Collections.ObjectModel;
-    using System.ComponentModel;
-    using System.Timers;
-    using System.Windows.Input;
     using Utilities;
     using Views;
 
@@ -48,13 +48,12 @@ namespace slimCat.ViewModels
     {
         #region Fields
 
+        private readonly PmChannelModel model;
+        private readonly INoteService noteService;
         private Timer checkTick = new Timer(5000);
 
         private Timer cooldownTimer = new Timer(500);
-
-        private Timer noteCooldownTimer = new Timer(21000);
-
-        private Timer noteCooldownUpdateTick = new Timer(1000);
+        private ProfileImage currentImage;
 
         private bool isInCoolDown;
 
@@ -63,34 +62,25 @@ namespace slimCat.ViewModels
         private bool isTyping;
 
         private bool isViewingChat = true;
+        private bool isViewingFullImage;
+        private bool isViewingProfile;
 
         private FilteredCollection<IMessage, IViewableObject> messageManager;
 
-        private int typingLengthCache;
+        private string messageMessage;
+        private Timer noteCooldownTimer = new Timer(21000);
 
-        private readonly INoteService noteService;
-
-        private RelayCommand @switch;
-
-        private readonly PmChannelModel model;
-
+        private Timer noteCooldownUpdateTick = new Timer(1000);
         private string noteMessage;
 
-        private string messageMessage;
-
         private DateTimeOffset noteTimeLeft;
+        private RelayCommand openInBrowserCommand;
 
         private bool showSubject;
-
-        private bool isViewingProfile;
-
-        private ProfileImage currentImage;
-
-        private bool isViewingFullImage;
+        private RelayCommand @switch;
 
         private RelayCommand switchViewingImageCommand;
-
-        private RelayCommand openInBrowserCommand;
+        private int typingLengthCache;
 
         #endregion
 
@@ -223,7 +213,7 @@ namespace slimCat.ViewModels
 
         public string Title
         {
-            get { return  IsViewingProfile ? "Profile" : isViewingChat ? "Chat" : "Notes"; }
+            get { return IsViewingProfile ? "Profile" : isViewingChat ? "Chat" : "Notes"; }
         }
 
         public string NoteSubject
@@ -425,7 +415,6 @@ namespace slimCat.ViewModels
                 return isViewingChat
                     ? "Chat here ..."
                     : "Write a pretty note here ...";
-
             }
         }
 
@@ -455,7 +444,10 @@ namespace slimCat.ViewModels
             {
                 return openInBrowserCommand ??
                        (openInBrowserCommand =
-                           new RelayCommand(_ => Process.Start(Constants.UrlConstants.CharacterPage + WebUtility.HtmlEncode(ConversationWith.Name))));
+                           new RelayCommand(
+                               _ =>
+                                   Process.Start(Constants.UrlConstants.CharacterPage +
+                                                 WebUtility.HtmlEncode(ConversationWith.Name))));
             }
         }
 
@@ -466,12 +458,12 @@ namespace slimCat.ViewModels
                 if (model.ProfileData == null || model.ProfileData.Kinks == null)
                     return new ProfileKink[0];
 
-                return (from otherKinks in model.ProfileData.Kinks 
-                        where otherKinks.KinkListKind == KinkListKind.Fave || otherKinks.KinkListKind == KinkListKind.Yes
-                        join ourKinks in ChatModel.CurrentCharacterData.Kinks on otherKinks.Id equals ourKinks.Id
-                        where ourKinks.KinkListKind == KinkListKind.Fave || ourKinks.KinkListKind == KinkListKind.Yes
-                        orderby ourKinks.KinkListKind, ourKinks.Name
-                        select ourKinks).ToList();
+                return (from otherKinks in model.ProfileData.Kinks
+                    where otherKinks.KinkListKind == KinkListKind.Fave || otherKinks.KinkListKind == KinkListKind.Yes
+                    join ourKinks in ChatModel.CurrentCharacterData.Kinks on otherKinks.Id equals ourKinks.Id
+                    where ourKinks.KinkListKind == KinkListKind.Fave || ourKinks.KinkListKind == KinkListKind.Yes
+                    orderby ourKinks.KinkListKind, ourKinks.Name
+                    select ourKinks).ToList();
             }
         }
 
@@ -483,11 +475,11 @@ namespace slimCat.ViewModels
                     return new ProfileKink[0];
 
                 return (from otherKinks in model.ProfileData.Kinks
-                        where otherKinks.KinkListKind == KinkListKind.No
-                        join ourKinks in ChatModel.CurrentCharacterData.Kinks on otherKinks.Id equals ourKinks.Id
-                        where ourKinks.KinkListKind == KinkListKind.Fave || ourKinks.KinkListKind == KinkListKind.Yes
-                        orderby ourKinks.KinkListKind, ourKinks.Name
-                        select ourKinks).ToList();
+                    where otherKinks.KinkListKind == KinkListKind.No
+                    join ourKinks in ChatModel.CurrentCharacterData.Kinks on otherKinks.Id equals ourKinks.Id
+                    where ourKinks.KinkListKind == KinkListKind.Fave || ourKinks.KinkListKind == KinkListKind.Yes
+                    orderby ourKinks.KinkListKind, ourKinks.Name
+                    select ourKinks).ToList();
             }
         }
 
@@ -499,13 +491,13 @@ namespace slimCat.ViewModels
                     return new ProfileKink[0];
 
                 return (from otherKinks in model.ProfileData.Kinks
-                        where otherKinks.KinkListKind == KinkListKind.Fave || otherKinks.KinkListKind == KinkListKind.Yes
-                        join ourKinks in ChatModel.CurrentCharacterData.Kinks on otherKinks.Id equals ourKinks.Id
-                        where ourKinks.KinkListKind == KinkListKind.No
-                        orderby ourKinks.KinkListKind, ourKinks.Name
-                        select ourKinks).ToList();
+                    where otherKinks.KinkListKind == KinkListKind.Fave || otherKinks.KinkListKind == KinkListKind.Yes
+                    join ourKinks in ChatModel.CurrentCharacterData.Kinks on otherKinks.Id equals ourKinks.Id
+                    where ourKinks.KinkListKind == KinkListKind.No
+                    orderby ourKinks.KinkListKind, ourKinks.Name
+                    select ourKinks).ToList();
             }
-        } 
+        }
 
         public ICollectionView AllKinks { get; private set; }
 
@@ -517,8 +509,8 @@ namespace slimCat.ViewModels
                     return 0;
 
                 var numberOfOurInterests = ChatModel.CurrentCharacterData.Kinks
-                   .Where(x => x.IsCustomKink == false)
-                   .Count(x => x.KinkListKind == KinkListKind.Fave || x.KinkListKind == KinkListKind.Yes);
+                    .Where(x => x.IsCustomKink == false)
+                    .Count(x => x.KinkListKind == KinkListKind.Fave || x.KinkListKind == KinkListKind.Yes);
 
                 var numberOfTheirInterests = model.ProfileData.Kinks
                     .Where(x => x.IsCustomKink == false)
@@ -528,26 +520,26 @@ namespace slimCat.ViewModels
                     return 0;
 
                 var applicableFavorites = (from ourKinks in ChatModel.CurrentCharacterData.Kinks
-                                           where ourKinks.KinkListKind == KinkListKind.Fave
-                                           join theirKinks in model.ProfileData.Kinks on ourKinks.Id equals theirKinks.Id
-                                           where theirKinks.KinkListKind == KinkListKind.Fave || theirKinks.KinkListKind == KinkListKind.Yes
-                                           select ourKinks).Count();
+                    where ourKinks.KinkListKind == KinkListKind.Fave
+                    join theirKinks in model.ProfileData.Kinks on ourKinks.Id equals theirKinks.Id
+                    where theirKinks.KinkListKind == KinkListKind.Fave || theirKinks.KinkListKind == KinkListKind.Yes
+                    select ourKinks).Count();
 
                 var applicableYes = (from ourKinks in ChatModel.CurrentCharacterData.Kinks
-                                     where ourKinks.KinkListKind == KinkListKind.Yes
-                                     join theirKinks in model.ProfileData.Kinks on ourKinks.Id equals theirKinks.Id
-                                     where theirKinks.KinkListKind == KinkListKind.Fave || theirKinks.KinkListKind == KinkListKind.Yes
-                                     select ourKinks).Count();
+                    where ourKinks.KinkListKind == KinkListKind.Yes
+                    join theirKinks in model.ProfileData.Kinks on ourKinks.Id equals theirKinks.Id
+                    where theirKinks.KinkListKind == KinkListKind.Fave || theirKinks.KinkListKind == KinkListKind.Yes
+                    select ourKinks).Count();
 
                 var ourTotalFavorite = (from ourKinks in ChatModel.CurrentCharacterData.Kinks
-                                        where ourKinks.KinkListKind == KinkListKind.Fave
-                                        join theirKinks in model.ProfileData.Kinks on ourKinks.Id equals theirKinks.Id
-                                        select ourKinks).Count();
+                    where ourKinks.KinkListKind == KinkListKind.Fave
+                    join theirKinks in model.ProfileData.Kinks on ourKinks.Id equals theirKinks.Id
+                    select ourKinks).Count();
 
                 var ourTotalYes = (from ourKinks in ChatModel.CurrentCharacterData.Kinks
-                                   where ourKinks.KinkListKind == KinkListKind.Yes
-                                   join theirKinks in model.ProfileData.Kinks on ourKinks.Id equals theirKinks.Id
-                                   select ourKinks).Count();
+                    where ourKinks.KinkListKind == KinkListKind.Yes
+                    join theirKinks in model.ProfileData.Kinks on ourKinks.Id equals theirKinks.Id
+                    select ourKinks).Count();
 
                 // we weight the ratio of our favorites and yes
                 var favoritePoints = 0.75*GetMatchRatio(applicableFavorites, ourTotalFavorite);
@@ -557,17 +549,17 @@ namespace slimCat.ViewModels
 
                 // this subtracts points if we're missing a lot of interests
                 var percent = (numberOfOurInterests > numberOfTheirInterests
-                    ? numberOfTheirInterests/(double)numberOfOurInterests
-                    : numberOfOurInterests/(double)numberOfTheirInterests);
+                    ? numberOfTheirInterests/(double) numberOfOurInterests
+                    : numberOfOurInterests/(double) numberOfTheirInterests);
 
                 // this returns a number between 0 and 1, but gets close to 1 quickly
                 // this makes really large disparities hurt
-                var multiplier = Math.Max((1+Math.Log10(percent)), 0);
+                var multiplier = Math.Max((1 + Math.Log10(percent)), 0);
 
                 subTotal *= multiplier;
 
-                return subTotal > 0.5 
-                    ? Math.Round((GetMatchRatio(subTotal, 1)* 100), 2) 
+                return subTotal > 0.5
+                    ? Math.Round((GetMatchRatio(subTotal, 1)*100), 2)
                     : Math.Round(subTotal*100, 2);
             }
         }
@@ -582,7 +574,8 @@ namespace slimCat.ViewModels
                 var ours = ChatModel.CurrentCharacterData;
                 var theirs = model.ProfileData;
 
-                if (ours.DomSubRole == null || theirs.DomSubRole == null || ours.Position == null || theirs.Position == null)
+                if (ours.DomSubRole == null || theirs.DomSubRole == null || ours.Position == null ||
+                    theirs.Position == null)
                     return false;
 
                 if (ours.DomSubRole.ContainsOrdinal("dominant") && theirs.DomSubRole.Contains("dominant"))
@@ -628,7 +621,7 @@ namespace slimCat.ViewModels
 
         private double GetMatchRatio(double one, double two)
         {
-            return 1 + Math.Log10((one/two)-0.1) + 0.05;
+            return 1 + Math.Log10((one/two) - 0.1) + 0.05;
         }
 
         protected override void Dispose(bool isManaged)
@@ -671,7 +664,8 @@ namespace slimCat.ViewModels
                 }
 
                 if (IsViewingProfile) return;
-                if (model.ShouldViewNotes || (ApplicationSettings.OpenOfflineChatsInNoteView && ConversationWith.Status == StatusType.Offline))
+                if (model.ShouldViewNotes ||
+                    (ApplicationSettings.OpenOfflineChatsInNoteView && ConversationWith.Status == StatusType.Offline))
                     IsViewingChat = model.ShouldViewNotes = false;
             }
 
@@ -742,7 +736,7 @@ namespace slimCat.ViewModels
                 return;
             }
 
-            Events.SendUserCommand(CommandDefinitions.ClientSendPm, new[] { Message, ConversationWith.Name });
+            Events.SendUserCommand(CommandDefinitions.ClientSendPm, new[] {Message, ConversationWith.Name});
 
             LastMessage = Message;
             Message = string.Empty;

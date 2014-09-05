@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Converters.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,13 +21,9 @@ namespace slimCat.Utilities
 {
     #region Usings
 
-    using System.Collections.ObjectModel;
-    using System.Windows.Markup;
-    using System.Windows.Shapes;
-    using Models;
-    using Services;
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Globalization;
     using System.Linq;
     using System.Net.Cache;
@@ -37,8 +33,13 @@ namespace slimCat.Utilities
     using System.Windows.Controls;
     using System.Windows.Data;
     using System.Windows.Documents;
+    using System.Windows.Markup;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
+    using System.Windows.Shapes;
+    using Libraries;
+    using Models;
+    using Services;
 
     #endregion
 
@@ -132,7 +133,7 @@ namespace slimCat.Utilities
             if (value == null) return null;
 
             var uri = new Uri(value.ToString(), UriKind.RelativeOrAbsolute);
-            var imageBrush = new ImageBrush { ImageSource = new BitmapImage(uri) };
+            var imageBrush = new ImageBrush {ImageSource = new BitmapImage(uri)};
             return imageBrush;
         }
     }
@@ -145,8 +146,8 @@ namespace slimCat.Utilities
 
             var character = (string) value;
             return new BitmapImage(
-                    new Uri(Constants.UrlConstants.CharacterAvatar + character.ToLower() + ".png",
-                        UriKind.Absolute), new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable));
+                new Uri(Constants.UrlConstants.CharacterAvatar + character.ToLower() + ".png",
+                    UriKind.Absolute), new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable));
         }
     }
 
@@ -166,7 +167,7 @@ namespace slimCat.Utilities
         {
             if (value == null) return null;
 
-            var character = (Uri)value;
+            var character = (Uri) value;
             var bi = new BitmapImage();
             bi.BeginInit();
 
@@ -179,14 +180,13 @@ namespace slimCat.Utilities
 
             return bi;
         }
-        
     }
 
     public class ImageSizeConverter : OneWayMultiConverter
     {
         public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            var width = (double)values[1];
+            var width = (double) values[1];
             try
             {
                 var normal = int.Parse((string) values[0]);
@@ -198,7 +198,7 @@ namespace slimCat.Utilities
             }
             if (width <= 600) return width;
 
-            return width / 2;
+            return width/2;
         }
     }
 
@@ -247,9 +247,9 @@ namespace slimCat.Utilities
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var parsed = (string)value;
+            var parsed = (string) value;
 
-            return string.IsNullOrEmpty(parsed) 
+            return string.IsNullOrEmpty(parsed)
                 ? Visibility.Visible
                 : Visibility.Collapsed;
         }
@@ -262,7 +262,7 @@ namespace slimCat.Utilities
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var parsed = (string)value;
+            var parsed = (string) value;
 
             return string.IsNullOrEmpty(parsed)
                 ? Visibility.Collapsed
@@ -307,29 +307,29 @@ namespace slimCat.Utilities
         private static readonly string[] ValidStartTerms = {"http://", "https://", "ftp://"};
 
         private static readonly IDictionary<string, BbCodeType> Types = new Dictionary<string, BbCodeType>
-            {
-                {"big", BbCodeType.Big},
-                {"b", BbCodeType.Bold},
-                {"i", BbCodeType.Italic},
-                {"user", BbCodeType.User},
-                {"url", BbCodeType.Url},
-                {"u", BbCodeType.Underline},
-                {"icon", BbCodeType.Icon},
-                {"sup", BbCodeType.Superscript},
-                {"sub", BbCodeType.Subscript},
-                {"small", BbCodeType.Small},
-                {"session", BbCodeType.Session},
-                {"s", BbCodeType.Strikethrough},
-                {"channel", BbCodeType.Channel},
-                {"color", BbCodeType.Color},
-                {"noparse", BbCodeType.NoParse},
-                {"collapse", BbCodeType.Collapse},
-                {"quote", BbCodeType.Quote},
-                {"hr", BbCodeType.HorizontalRule},
-                {"indent", BbCodeType.Indent},
-                {"justify", BbCodeType.Justify},
-                {"heading", BbCodeType.Heading}
-            };
+        {
+            {"big", BbCodeType.Big},
+            {"b", BbCodeType.Bold},
+            {"i", BbCodeType.Italic},
+            {"user", BbCodeType.User},
+            {"url", BbCodeType.Url},
+            {"u", BbCodeType.Underline},
+            {"icon", BbCodeType.Icon},
+            {"sup", BbCodeType.Superscript},
+            {"sub", BbCodeType.Subscript},
+            {"small", BbCodeType.Small},
+            {"session", BbCodeType.Session},
+            {"s", BbCodeType.Strikethrough},
+            {"channel", BbCodeType.Channel},
+            {"color", BbCodeType.Color},
+            {"noparse", BbCodeType.NoParse},
+            {"collapse", BbCodeType.Collapse},
+            {"quote", BbCodeType.Quote},
+            {"hr", BbCodeType.HorizontalRule},
+            {"indent", BbCodeType.Indent},
+            {"justify", BbCodeType.Justify},
+            {"heading", BbCodeType.Heading}
+        };
 
         #endregion
 
@@ -369,14 +369,14 @@ namespace slimCat.Utilities
 
         private Inline MakeInlineContainer(object model, string template)
         {
-            return 
+            return
                 new InlineUIContainer
                 {
                     Child = new ContentControl
                     {
                         ContentTemplate = Locator.Find<DataTemplate>(template),
                         Content = model,
-                        Margin = new Thickness(2,0,2,0)
+                        Margin = new Thickness(2, 0, 2, 0)
                     },
                     BaselineAlignment = BaselineAlignment.TextBottom,
                 };
@@ -461,7 +461,8 @@ namespace slimCat.Utilities
                 if (StartsWithValidTerm(current)) valid.Add(current);
             }
 
-            var matches = valid.Select(x => new Tuple<string, string>(x, MarkUpUrlWithBbCode(x))).Distinct();
+            var matches =
+                valid.Select(x => new Tuple<string, string>(x, MarkUpUrlWithBbCode(x))).Distinct();
 
             return matches.Aggregate(text, (current, toReplace) => current.Replace(toReplace.Item1, toReplace.Item2));
         }
@@ -469,30 +470,30 @@ namespace slimCat.Utilities
         private Inline ToInline(ParsedChunk chunk)
         {
             var converters = new Dictionary<BbCodeType, Func<ParsedChunk, Inline>>
-                {
-                    {BbCodeType.Bold, MakeBold},
-                    {BbCodeType.Italic, MakeItalic},
-                    {BbCodeType.Underline, MakeUnderline},
-                    {BbCodeType.Url, MakeUrl},
-                    {BbCodeType.None, MakeNormalText},
-                    {BbCodeType.Color, MakeColor},
-                    {BbCodeType.Strikethrough, MakeStrikeThrough},
-                    {BbCodeType.Session, MakeSession},
-                    {BbCodeType.Channel, MakeChannel},
-                    {BbCodeType.Big, MakeBig},
-                    {BbCodeType.Small, MakeSmall},
-                    {BbCodeType.Subscript, MakeSubscript},
-                    {BbCodeType.Superscript, MakeSuperscript},
-                    {BbCodeType.User, MakeUser},
-                    {BbCodeType.NoParse, MakeNormalText},
-                    {BbCodeType.Icon, MakeIcon},
-                    {BbCodeType.Collapse, MakeCollapse},
-                    {BbCodeType.Quote, MakeQuote},
-                    {BbCodeType.HorizontalRule, MakeHorizontalRule},
-                    {BbCodeType.Indent, MakeBlockText},
-                    {BbCodeType.Heading, MakeHeading},
-                    {BbCodeType.Justify, MakeNormalText}
-                };
+            {
+                {BbCodeType.Bold, MakeBold},
+                {BbCodeType.Italic, MakeItalic},
+                {BbCodeType.Underline, MakeUnderline},
+                {BbCodeType.Url, MakeUrl},
+                {BbCodeType.None, MakeNormalText},
+                {BbCodeType.Color, MakeColor},
+                {BbCodeType.Strikethrough, MakeStrikeThrough},
+                {BbCodeType.Session, MakeSession},
+                {BbCodeType.Channel, MakeChannel},
+                {BbCodeType.Big, MakeBig},
+                {BbCodeType.Small, MakeSmall},
+                {BbCodeType.Subscript, MakeSubscript},
+                {BbCodeType.Superscript, MakeSuperscript},
+                {BbCodeType.User, MakeUser},
+                {BbCodeType.NoParse, MakeNormalText},
+                {BbCodeType.Icon, MakeIcon},
+                {BbCodeType.Collapse, MakeCollapse},
+                {BbCodeType.Quote, MakeQuote},
+                {BbCodeType.HorizontalRule, MakeHorizontalRule},
+                {BbCodeType.Indent, MakeBlockText},
+                {BbCodeType.Heading, MakeHeading},
+                {BbCodeType.Justify, MakeNormalText}
+            };
 
             var converter = converters[chunk.Type];
             Inline toReturn;
@@ -543,7 +544,7 @@ namespace slimCat.Utilities
 
             var unbalancedTags =
                 (from t in tags
-                    where t.Type != BbCodeType.None 
+                    where t.Type != BbCodeType.None
                     where t.Type != BbCodeType.HorizontalRule
                     group t by t.Type
                     into g
@@ -581,11 +582,11 @@ namespace slimCat.Utilities
                         {
                             lastOpen.Children = lastOpen.Children ?? new List<BbTag>();
                             lastOpen.Children.Add(new BbTag
-                                {
-                                    Type = BbCodeType.None,
-                                    End = tag.Start,
-                                    Start = lastOpen.End
-                                });
+                            {
+                                Type = BbCodeType.None,
+                                End = tag.Start,
+                                Start = lastOpen.End
+                            });
                         }
 
                         #endregion
@@ -611,7 +612,7 @@ namespace slimCat.Utilities
 
                 // tell the system we're in the context of this tag now
                 // though ignore children of 'text' and 'hr'
-                if (tag.Type != BbCodeType.None && tag.Type != BbCodeType.HorizontalRule) 
+                if (tag.Type != BbCodeType.None && tag.Type != BbCodeType.HorizontalRule)
                     openTags.Push(tag);
 
                 // if we're added as a child to another tag, don't process independently of parent
@@ -631,12 +632,12 @@ namespace slimCat.Utilities
         internal static ParsedChunk AsChunk(string input)
         {
             return new ParsedChunk
-                {
-                    Type = BbCodeType.None,
-                    Start = 0,
-                    End = input.Length,
-                    InnerText = input
-                };
+            {
+                Type = BbCodeType.None,
+                Start = 0,
+                End = input.Length,
+                InnerText = input
+            };
         }
 
         public Inline AsInline(string bbcode)
@@ -654,12 +655,12 @@ namespace slimCat.Utilities
         {
             var last = tag.ClosingTag != null ? tag.ClosingTag.End : tag.End;
             var toReturn = new ParsedChunk
-                {
-                    Start = tag.Start,
-                    End = last,
-                    Type = tag.Type,
-                    Arguments = tag.Arguments
-                };
+            {
+                Start = tag.Start,
+                End = last,
+                Type = tag.Type,
+                Arguments = tag.Arguments
+            };
 
             if (tag.Children != null && tag.Children.Any())
                 toReturn.Children = tag.Children.Select(x => FromTag(x, context)).ToList();
@@ -681,8 +682,8 @@ namespace slimCat.Utilities
                 return user;
             }
 
-            return !string.IsNullOrEmpty(arg.Arguments) 
-                ? MakeUsernameLink(characterManager.Find(arg.Arguments)) 
+            return !string.IsNullOrEmpty(arg.Arguments)
+                ? MakeUsernameLink(characterManager.Find(arg.Arguments))
                 : MakeNormalText(arg);
         }
 
@@ -785,11 +786,11 @@ namespace slimCat.Utilities
                 arg.Children.Clear();
 
             return new Hyperlink(WrapInRun(display))
-                {
-                    CommandParameter = url,
-                    ToolTip = url,
-                    Style = Locator.FindStyle("Hyperlink")
-                };
+            {
+                CommandParameter = url,
+                ToolTip = url,
+                Style = Locator.FindStyle("Hyperlink")
+            };
         }
 
         private Inline MakeSession(ParsedChunk arg)
@@ -858,9 +859,9 @@ namespace slimCat.Utilities
             {
                 Foreground = Locator.Find<SolidColorBrush>("ForegroundBrush"),
                 TextWrapping = TextWrapping.Wrap,
-                Margin = new Thickness(25,0,0,0)
+                Margin = new Thickness(25, 0, 0, 0)
             };
-            Libraries.TextBlockHelper.SetInlineList(text, arg.Children.Select(ToInline).ToList());
+            TextBlockHelper.SetInlineList(text, arg.Children.Select(ToInline).ToList());
 
             expander.Content = text;
             panel.Children.Add(expander);
@@ -884,10 +885,10 @@ namespace slimCat.Utilities
             {
                 Foreground = Locator.Find<SolidColorBrush>("ForegroundBrush"),
                 Opacity = 0.8,
-                Margin = new Thickness(50,5,0,5),
+                Margin = new Thickness(50, 5, 0, 5),
                 TextWrapping = TextWrapping.Wrap,
             };
-            Libraries.TextBlockHelper.SetInlineList(text, arg.Children.Select(ToInline).ToList());
+            TextBlockHelper.SetInlineList(text, arg.Children.Select(ToInline).ToList());
 
             container.Child = text;
             arg.Children.Clear();
@@ -926,7 +927,7 @@ namespace slimCat.Utilities
                 Margin = new Thickness(ApplicationSettings.AllowIndent ? 15 : 0, 0, 0, 0),
                 TextWrapping = TextWrapping.Wrap,
             };
-            Libraries.TextBlockHelper.SetInlineList(text, arg.Children.Select(ToInline).ToList());
+            TextBlockHelper.SetInlineList(text, arg.Children.Select(ToInline).ToList());
 
             panel.Children.Add(text);
             panel.Children.Add(new Line
@@ -966,11 +967,11 @@ namespace slimCat.Utilities
                     end = start + 2;
 
                 var toReturn = new BbTag
-                    {
-                        Type = BbCodeType.None,
-                        Start = start,
-                        End = end - 1
-                    };
+                {
+                    Type = BbCodeType.None,
+                    Start = start,
+                    End = end - 1
+                };
 
                 var rewindTo = Last != null ? Last.End : 0;
                 currentPosition = rewindTo;
@@ -999,11 +1000,11 @@ namespace slimCat.Utilities
                     if (end - start > 0)
                     {
                         return new BbTag
-                            {
-                                Type = BbCodeType.None,
-                                Start = start,
-                                End = end
-                            };
+                        {
+                            Type = BbCodeType.None,
+                            Start = start,
+                            End = end
+                        };
                     }
                     return null;
                 }
@@ -1043,13 +1044,13 @@ namespace slimCat.Utilities
                     return NoResult();
 
                 Last = new BbTag
-                    {
-                        Arguments = arguments,
-                        End = currentPosition,
-                        Start = openBrace,
-                        Type = Types[possibleMatch],
-                        IsClosing = isEndType
-                    };
+                {
+                    Arguments = arguments,
+                    End = currentPosition,
+                    Start = openBrace,
+                    Type = Types[possibleMatch],
+                    IsClosing = isEndType
+                };
 
                 return Last;
             }
@@ -1057,11 +1058,11 @@ namespace slimCat.Utilities
             private BbTag NoResult()
             {
                 var toReturn = new BbTag
-                    {
-                        Start = lastStart - 1,
-                        End = currentPosition,
-                        Type = BbCodeType.None
-                    };
+                {
+                    Start = lastStart - 1,
+                    End = currentPosition,
+                    Type = BbCodeType.None
+                };
                 Last = toReturn;
                 return toReturn;
             }
@@ -1251,13 +1252,14 @@ namespace slimCat.Utilities
                 // we don't want to collapse only one small sentence
                 const int wiggleRoom = 75;
 
-                if (message.Type == MessageType.Ad && text.Length > (ApplicationSettings.ShowMoreInAdsLength + wiggleRoom))
+                if (message.Type == MessageType.Ad &&
+                    text.Length > (ApplicationSettings.ShowMoreInAdsLength + wiggleRoom))
                 {
                     // try to find a nice sentence to break after
                     var start = ApplicationSettings.ShowMoreInAdsLength;
                     do
                     {
-                        if (Char.IsPunctuation(text[start]) && Char.IsWhiteSpace(text[start+1]))
+                        if (Char.IsPunctuation(text[start]) && Char.IsWhiteSpace(text[start + 1]))
                             break;
                         start--;
                     } while (start != 0);
@@ -1277,7 +1279,7 @@ namespace slimCat.Utilities
                     if (start != 0)
                     {
                         var sb = new StringBuilder(text);
-                        sb.Insert(start+1, "[collapse=Read More]");
+                        sb.Insert(start + 1, "[collapse=Read More]");
                         sb.Append("[/collapse]");
                         text = sb.ToString();
                     }
@@ -1308,10 +1310,10 @@ namespace slimCat.Utilities
                 // or a warn "command"
                 text = text.Substring("/warn ".Length);
                 inlines.Add(new Run(" warns, ")
-                    {
-                        FontWeight = FontWeights.Medium,
-                        Foreground = Locator.Find<Brush>("ModeratorBrush")
-                    });
+                {
+                    FontWeight = FontWeights.Medium,
+                    Foreground = Locator.Find<Brush>("ModeratorBrush")
+                });
 
                 var toAdd = Parse(text);
                 toAdd.Foreground = Locator.Find<Brush>("ModeratorBrush");
@@ -1384,28 +1386,28 @@ namespace slimCat.Utilities
         internal readonly IPermissionService Permissions;
 
         private readonly IDictionary<Gender, Gender> genderFallbacks = new Dictionary<Gender, Gender>
-            {
-                {Gender.Male, Gender.Male},
-                {Gender.HermM, Gender.Male},
-                {Gender.Cuntboy, Gender.Male},
-                {Gender.Female, Gender.Female},
-                {Gender.Shemale, Gender.Female},
-                {Gender.HermF, Gender.Female},
-                {Gender.Transgender, Gender.None},
-                {Gender.None, Gender.None}
-            };
+        {
+            {Gender.Male, Gender.Male},
+            {Gender.HermM, Gender.Male},
+            {Gender.Cuntboy, Gender.Male},
+            {Gender.Female, Gender.Female},
+            {Gender.Shemale, Gender.Female},
+            {Gender.HermF, Gender.Female},
+            {Gender.Transgender, Gender.None},
+            {Gender.None, Gender.None}
+        };
 
         private readonly IDictionary<Gender, string> genderNames = new Dictionary<Gender, string>
-            {
-                {Gender.HermM, "MaleHerm"},
-                {Gender.Cuntboy, "Cunt"},
-                {Gender.Male, "Male"},
-                {Gender.HermF, "Herm"},
-                {Gender.Female, "Female"},
-                {Gender.Shemale, "Shemale"},
-                {Gender.Transgender, "Transgender"},
-                {Gender.None, "Highlight"}
-            };
+        {
+            {Gender.HermM, "MaleHerm"},
+            {Gender.Cuntboy, "Cunt"},
+            {Gender.Male, "Male"},
+            {Gender.HermF, "Herm"},
+            {Gender.Female, "Female"},
+            {Gender.Shemale, "Shemale"},
+            {Gender.Transgender, "Transgender"},
+            {Gender.None, "Highlight"}
+        };
 
         private readonly ICharacterManager manager;
 
@@ -1518,12 +1520,12 @@ namespace slimCat.Utilities
                 baseColor = GetColor(character);
 
             var stops = new List<GradientStop>
-                {
-                    new GradientStop(baseColor, 0.0),
-                    new GradientStop(baseColor, 0.5),
-                    new GradientStop(brightColor, 0.5),
-                    new GradientStop(brightColor, 1.0)
-                };
+            {
+                new GradientStop(baseColor, 0.0),
+                new GradientStop(baseColor, 0.5),
+                new GradientStop(brightColor, 0.5),
+                new GradientStop(brightColor, 1.0)
+            };
 
             switch (gender)
             {
@@ -1833,16 +1835,16 @@ namespace slimCat.Utilities
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return Math.Max(((double)value) - (System.Convert.ToDouble(parameter)), 0);
+            return Math.Max(((double) value) - (System.Convert.ToDouble(parameter)), 0);
         }
     }
 
-    /// <summary>Represents a chain of <see cref="IValueConverter"/>s to be executed in succession.</summary>
+    /// <summary>Represents a chain of <see cref="IValueConverter" />s to be executed in succession.</summary>
     [ContentProperty("Converters")]
-    [ContentWrapper(typeof(ValueConverterCollection))]
+    [ContentWrapper(typeof (ValueConverterCollection))]
     public class ConverterChain : OneWayConverter
     {
-        ValueConverterCollection converters;
+        private ValueConverterCollection converters;
 
         public ValueConverterCollection Converters
         {
@@ -1851,12 +1853,15 @@ namespace slimCat.Utilities
 
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return Converters.Aggregate(value, (current, valueConverter) => valueConverter.Convert(current, targetType, parameter, culture));
+            return Converters.Aggregate(value,
+                (current, valueConverter) => valueConverter.Convert(current, targetType, parameter, culture));
         }
     }
 
-    /// <summary>Represents a collection of <see cref="IValueConverter"/>s.</summary>
-    public sealed class ValueConverterCollection : Collection<IValueConverter> { }
+    /// <summary>Represents a collection of <see cref="IValueConverter" />s.</summary>
+    public sealed class ValueConverterCollection : Collection<IValueConverter>
+    {
+    }
 
     /// <summary>
     ///     Various conversion methods.

@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="F-ListConnection.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,16 +21,16 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using Microsoft.Practices.Prism;
-    using Microsoft.Practices.Prism.Events;
-    using Models;
-    using Models.Api;
-    using SimpleJson;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Text;
+    using Microsoft.Practices.Prism;
+    using Microsoft.Practices.Prism.Events;
+    using Models;
+    using Models.Api;
+    using SimpleJson;
     using Utilities;
 
     #endregion
@@ -41,20 +41,16 @@ namespace slimCat.Services
     /// </summary>
     internal class FlistService : IListConnection
     {
-
         #region Fields
 
+        private readonly IBrowser browser;
         private readonly IEventAggregator events;
 
         private readonly IAccount model;
 
-        private string selectedCharacter;
-
-        private readonly IBrowser browser;
-
-        private readonly ITicketProvider ticketProvider;
-
         private readonly IFriendRequestService requestService;
+        private readonly ITicketProvider ticketProvider;
+        private string selectedCharacter;
 
         #endregion
 
@@ -101,23 +97,26 @@ namespace slimCat.Services
                 sb.Append("==================================\n");
                 sb.Append("{0} log upload \n{1} in {2}\nreported user: {3}\ntime stamps in 24hr UTC\n"
                     .FormatWith(Constants.FriendlyName,
-                                DateTime.UtcNow.ToShortDateString(),
-                                report.Tab,
-                                report.Reported));
+                        DateTime.UtcNow.ToShortDateString(),
+                        report.Tab,
+                        report.Reported));
                 sb.Append("==================================\n");
 
                 log.Where(x => !x.IsHistoryMessage)
-                    .Select(m => string.Format("{0} {1}: {2} \n", m.PostedTime.ToUniversalTime().ToTimeStamp(), m.Poster.Name, m.Message))
+                    .Select(
+                        m =>
+                            string.Format("{0} {1}: {2} \n", m.PostedTime.ToUniversalTime().ToTimeStamp(), m.Poster.Name,
+                                m.Message))
                     .Each(m => sb.Append(m));
 
                 var toUpload = new Dictionary<string, object>
-                    {
-                        {"character", report.Reporter.Name},
-                        {"log", sb.ToString()},
-                        {"reportText", report.Complaint},
-                        {"reportUser", report.Reported},
-                        {"channel", report.Tab}
-                    };
+                {
+                    {"character", report.Reporter.Name},
+                    {"log", sb.ToString()},
+                    {"reportText", report.Complaint},
+                    {"reportUser", report.Reported},
+                    {"channel", report.Tab}
+                };
 
                 var buffer = browser.GetResponse(Constants.UrlConstants.UploadLog, toUpload, true);
                 var result = buffer.DeserializeTo<ApiUploadLogResponse>();
@@ -237,7 +236,8 @@ namespace slimCat.Services
                     var id = requestService.GetRequestForCharacter(character);
                     if (id == null)
                     {
-                        events.GetEvent<ErrorEvent>().Publish("Could not find any friend requests for/from {0}".FormatWith(character));
+                        events.GetEvent<ErrorEvent>()
+                            .Publish("Could not find any friend requests for/from {0}".FormatWith(character));
                         return;
                     }
 

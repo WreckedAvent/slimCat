@@ -80,7 +80,7 @@
                     <Setter Property="Background" Value="{StaticResource ForegroundBrush}" />
                     <Setter Property="TextBlock.Foreground" Value="{StaticResource DepressedBrush}" />
                 </DataTrigger>
-                
+
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="TextBlock.Foreground" Value="{StaticResource HighlightBrush}" />
                 </Trigger>

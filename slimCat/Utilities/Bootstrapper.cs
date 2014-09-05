@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Bootstrapper.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,14 +21,14 @@ namespace slimCat.Utilities
 {
     #region Usings
 
+    using System;
+    using System.Windows;
     using Microsoft.Practices.Prism.Modularity;
     using Microsoft.Practices.Prism.UnityExtensions;
     using Microsoft.Practices.ServiceLocation;
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
-    using System;
-    using System.Windows;
     using ViewModels;
     using WebSocket4Net;
 
@@ -87,10 +87,10 @@ namespace slimCat.Utilities
                 Application.Current.Resources.Add("BbPostConverter", Container.Resolve<BbCodePostConverter>());
                 Application.Current.Resources.Add("GenderColorConverter", Container.Resolve<GenderColorConverter>());
                 Application.Current.Resources.Add("NameplateColorConverter",
-                    Container.Resolve<NameplateColorConverter>()); 
+                    Container.Resolve<NameplateColorConverter>());
                 Application.Current.Resources.Add("NameplateMessageColorConverter",
-                     Container.Resolve<NameplateMessageColorConverter>());
-                Application.Current.Resources.Add("ForegroundBrushConverter", 
+                    Container.Resolve<NameplateMessageColorConverter>());
+                Application.Current.Resources.Add("ForegroundBrushConverter",
                     Container.Resolve<ForegroundBrushConverter>());
             }
             catch (Exception ex)
@@ -169,10 +169,10 @@ namespace slimCat.Utilities
         {
             ModuleCatalog.AddModule(
                 new ModuleInfo
-                    {
-                        ModuleName = moduleType.Name,
-                        ModuleType = moduleType.AssemblyQualifiedName
-                    });
+                {
+                    ModuleName = moduleType.Name,
+                    ModuleType = moduleType.AssemblyQualifiedName
+                });
         }
 
         #endregion

@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ChannelSettingsModel.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,11 +21,11 @@ namespace slimCat.Models
 {
     #region Usings
 
-    using Libraries;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows.Input;
+    using Libraries;
 
     #endregion
 
@@ -39,6 +39,7 @@ namespace slimCat.Models
         private int adNotifyLevel;
 
         private bool alertAboutUpdates = true;
+        private int autopostTime = 10;
 
         private bool enableLogging = true;
 
@@ -67,8 +68,6 @@ namespace slimCat.Models
         private bool promoteDemoteNotifyOnlyForInteresting;
 
         private int shouldFlashInterval = 1;
-        
-        private int autopostTime = 10;
 
         #endregion
 
@@ -244,7 +243,7 @@ namespace slimCat.Models
         }
 
         /// <summary>
-        ///     Gets or sets the time between ad auto-posting. 
+        ///     Gets or sets the time between ad auto-posting.
         ///     Time in minutes.
         /// </summary>
         public int AutopostTime

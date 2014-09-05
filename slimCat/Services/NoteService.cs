@@ -1,19 +1,19 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CommandService.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="NoteService.cs">
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,13 +21,6 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using HtmlAgilityPack;
-    using Microsoft.Practices.Prism;
-    using Microsoft.Practices.Prism.Events;
-    using Microsoft.Practices.Unity;
-    using Models;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -36,38 +29,44 @@ namespace slimCat.Services
     using System.Linq;
     using System.Text.RegularExpressions;
     using System.Web;
+    using System.Windows;
+    using HtmlAgilityPack;
+    using Microsoft.Practices.Prism;
+    using Microsoft.Practices.Prism.Events;
+    using Microsoft.Practices.Unity;
+    using Models;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using Utilities;
-    using Application = System.Windows.Application;
-    using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
     #endregion
 
     public class NoteService : INoteService
     {
         #region Fields
-        private readonly IBrowser browser;
 
         private const string NoteXpath = "//div[contains(@class, 'panel') and contains(@class, 'FormattedBlock')]";
 
         private const string NoteTitleXpath = "//input[@id='SendNoteTitle']";
 
         private const string NoteIdXpath = "//select/option[normalize-space(.)='{0}']";
-
-        private readonly IDictionary<string, Conversation> noteCache = new Dictionary<string, Conversation>();
+        private readonly Regex amPmRegex = new Regex("sent,|(AM:)|(PM:)", RegexOptions.Compiled);
+        private readonly IBrowser browser;
 
         private readonly ICharacterManager characterManager;
 
         private readonly IChatModel cm;
 
-        private readonly IEventAggregator events;
-
         private readonly IUnityContainer container;
+        private readonly IEventAggregator events;
+        private readonly IDictionary<string, Conversation> noteCache = new Dictionary<string, Conversation>();
 
-        private readonly Regex amPmRegex = new Regex("sent,|(AM:)|(PM:)", RegexOptions.Compiled);
         #endregion
 
         #region Constructors
-        public NoteService(IUnityContainer contain, IBrowser browser, ICharacterManager characterMan, IChatModel cm, IEventAggregator eventagg)
+
+        public NoteService(IUnityContainer contain, IBrowser browser, ICharacterManager characterMan, IChatModel cm,
+            IEventAggregator eventagg)
         {
             this.browser = browser;
             characterManager = characterMan;
@@ -75,9 +74,11 @@ namespace slimCat.Services
             events = eventagg;
             container = contain;
         }
+
         #endregion
 
         #region Public Methods
+
         public void GetNotesAsync(string characterName)
         {
             Log(string.Format("getting notes for {0}", characterName));
@@ -111,8 +112,8 @@ namespace slimCat.Services
         public string GetLastSubject(string character)
         {
             Conversation conversation;
-            return noteCache.TryGetValue(character, out conversation) 
-                ? conversation.Subject 
+            return noteCache.TryGetValue(character, out conversation)
+                ? conversation.Subject
                 : string.Empty;
         }
 
@@ -122,10 +123,10 @@ namespace slimCat.Services
 
             var args = new Dictionary<string, object>
             {
-                { "title", subject ?? conversation.Subject },
-                { "message", message },
-                { "dest", characterName },
-                { "source",  conversation.SourceId }
+                {"title", subject ?? conversation.Subject},
+                {"message", message},
+                {"dest", characterName},
+                {"source", conversation.SourceId}
             };
 
             var worker = new BackgroundWorker();
@@ -136,12 +137,12 @@ namespace slimCat.Services
         private void SendNoteAsyncHandler(object sender, DoWorkEventArgs e)
         {
             var args = (IDictionary<string, object>) e.Argument;
-            var characterName = (string)args["dest"];
-            var message = (string)args["message"];
-            var subject = (string)args["title"];
+            var characterName = (string) args["dest"];
+            var message = (string) args["message"];
+            var subject = (string) args["title"];
 
             var resp = browser.GetResponse(Constants.UrlConstants.SendNote, args, true);
-            var json = (JObject)JsonConvert.DeserializeObject(resp);
+            var json = (JObject) JsonConvert.DeserializeObject(resp);
 
             JToken errorMessage;
             var error = string.Empty;
@@ -156,7 +157,7 @@ namespace slimCat.Services
             var model = cm.CurrentPms.FirstByIdOrNull(characterName);
             if (model == null) return;
 
-            Application.Current.Dispatcher.BeginInvoke((Action)(() =>
+            Application.Current.Dispatcher.BeginInvoke((Action) (() =>
             {
                 model.Notes.Add(
                     new MessageModel(cm.CurrentCharacter,
@@ -167,7 +168,7 @@ namespace slimCat.Services
 
         private void GetNotesAsyncHandler(object s, DoWorkEventArgs e)
         {
-            var characterName = (string)e.Argument;
+            var characterName = (string) e.Argument;
 
             var notes = new List<IMessage>();
 
@@ -212,7 +213,8 @@ namespace slimCat.Services
 
             var sourceId = string.Empty;
             {
-                var sourceIdInput = htmlDoc.DocumentNode.SelectSingleNode(NoteIdXpath.FormatWith(cm.CurrentCharacter.Name));
+                var sourceIdInput =
+                    htmlDoc.DocumentNode.SelectSingleNode(NoteIdXpath.FormatWith(cm.CurrentCharacter.Name));
 
                 if (sourceIdInput != null)
                 {
@@ -236,7 +238,8 @@ namespace slimCat.Services
                     {
                         Log(x.InnerText);
                         var isFuzzyTime = true;
-                        var split = x.InnerText.Split(new[] { "sent,", "ago:" }, 3, StringSplitOptions.RemoveEmptyEntries);
+                        var split = x.InnerText.Split(new[] {"sent,", "ago:"}, 3,
+                            StringSplitOptions.RemoveEmptyEntries);
                         if (split.Length < 3)
                         {
                             split = amPmRegex.Split(x.InnerText, 3).ToArray();
@@ -252,7 +255,7 @@ namespace slimCat.Services
                             HttpUtility.HtmlDecode(split[2]),
                             isFuzzyTime ? FromFuzzyString(split[1].Trim()) : FromExactString(split[1].Trim()));
                     })
-                    .Each(notes.Add);
+                        .Each(notes.Add);
                 }
 
                 noteCache.Add(characterName,
@@ -266,7 +269,7 @@ namespace slimCat.Services
                 try
                 {
                     var model = container.Resolve<PmChannelModel>(characterName);
-                    Application.Current.Dispatcher.Invoke((Action)delegate
+                    Application.Current.Dispatcher.Invoke((Action) delegate
                     {
                         model.Notes.Clear();
                         model.Notes.AddRange(notes);
@@ -305,11 +308,21 @@ namespace slimCat.Services
 
                 switch (datePart)
                 {
-                    case "y": toReturn = toReturn.Subtract(TimeSpan.FromDays(365 * numberPart)); break;
-                    case "mo": toReturn = toReturn.Subtract(TimeSpan.FromDays(27 * numberPart)); break;
-                    case "d": toReturn = toReturn.Subtract(TimeSpan.FromDays(numberPart)); break;
-                    case "h": toReturn = toReturn.Subtract(TimeSpan.FromHours(numberPart)); break;
-                    case "m": toReturn = toReturn.Subtract(TimeSpan.FromMinutes(numberPart)); break;
+                    case "y":
+                        toReturn = toReturn.Subtract(TimeSpan.FromDays(365*numberPart));
+                        break;
+                    case "mo":
+                        toReturn = toReturn.Subtract(TimeSpan.FromDays(27*numberPart));
+                        break;
+                    case "d":
+                        toReturn = toReturn.Subtract(TimeSpan.FromDays(numberPart));
+                        break;
+                    case "h":
+                        toReturn = toReturn.Subtract(TimeSpan.FromHours(numberPart));
+                        break;
+                    case "m":
+                        toReturn = toReturn.Subtract(TimeSpan.FromMinutes(numberPart));
+                        break;
                 }
             }
 
@@ -328,10 +341,11 @@ namespace slimCat.Services
         {
             Logging.LogLine(text, "note serv");
         }
+
         #endregion
     }
 
-    class Conversation
+    internal class Conversation
     {
         public IList<IMessage> Messages { get; set; }
         public string SourceId { get; set; }

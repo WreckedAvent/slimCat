@@ -47,16 +47,16 @@
 
                     <v:ManageButtonView CommandParameter="ManageLists"
                                         Command="{Binding Path=ChangeTabCommand}"
-                                        v:Properties.NeedsAttention="{Binding HasNewSearchResults}"/>
+                                        v:Properties.NeedsAttention="{Binding HasNewSearchResults}" />
 
                     <v:NotificationsButtonView CommandParameter="Notifications"
                                                x:Name="NotificationButton"
                                                Command="{Binding Path=ChangeTabCommand}"
-                                               v:Properties.NeedsAttention="{Binding Path=HasUpdate}"/>
-                    
-                    <v:ChatSearchButtonView 
-                                        CommandParameter="Search"
-                                        Command="{Binding ChangeTabCommand}"/>
+                                               v:Properties.NeedsAttention="{Binding Path=HasUpdate}" />
+
+                    <v:ChatSearchButtonView
+                        CommandParameter="Search"
+                        Command="{Binding ChangeTabCommand}" />
                 </WrapPanel>
             </Border>
 

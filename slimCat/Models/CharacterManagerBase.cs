@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CharacterManagerBase.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,11 +21,11 @@ namespace slimCat.Models
 {
     #region Usings
 
-    using SimpleJson;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using SimpleJson;
     using Utilities;
 
     #endregion
@@ -84,9 +84,10 @@ namespace slimCat.Models
             lock (Locker)
             {
                 CollectionPair toModify;
-                var toReturn = CollectionDictionary.TryGetValue(listKind, out toModify) && toModify.Remove(name, isTemporary);
+                var toReturn = CollectionDictionary.TryGetValue(listKind, out toModify) &&
+                               toModify.Remove(name, isTemporary);
 
-                if (toReturn && listKind != ListKind.Online) 
+                if (toReturn && listKind != ListKind.Online)
                     toModify.SignOff(name);
 
                 return toReturn;
@@ -98,7 +99,8 @@ namespace slimCat.Models
             lock (Locker)
             {
                 CollectionPair toModify;
-                var toReturn = CollectionDictionary.TryGetValue(listKind, out toModify) && toModify.Add(name, isTemporary);
+                var toReturn = CollectionDictionary.TryGetValue(listKind, out toModify) &&
+                               toModify.Add(name, isTemporary);
 
                 if (toReturn && listKind != ListKind.Online && IsOnList(name, ListKind.Online))
                     toModify.SignOn(name);

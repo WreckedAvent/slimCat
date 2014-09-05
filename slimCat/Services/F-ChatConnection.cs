@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="F-ChatConnection.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,18 +21,18 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using Microsoft.Practices.Prism.Events;
-    using Models;
-    using Newtonsoft.Json;
-    using SimpleJson;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using System.Timers;
+    using Microsoft.Practices.Prism.Events;
+    using Models;
+    using Newtonsoft.Json;
+    using SimpleJson;
+    using SuperSocket.ClientEngine;
     using Utilities;
     using WebSocket4Net;
-    using ErrorEventArgs = SuperSocket.ClientEngine.ErrorEventArgs;
-    using Timer = System.Timers.Timer;
 
     #endregion
 
@@ -43,15 +43,16 @@ namespace slimCat.Services
     {
         #region Fields
 
+        private const int TimeoutTimeMs = 30*1000; // 30 seconds
         private readonly Timer autoPingTimer = new Timer(45*1000); // every 45 seconds
 
         private readonly int[] errsThatDisconnect;
         private readonly int[] errsThatPreventReconnect;
 
         // these are types of commands which produce a lot not useful noise in debug logs
-        private readonly string[] noisyTypes;
 
         private readonly IEventAggregator events;
+        private readonly string[] noisyTypes;
 
         private readonly ITicketProvider provider;
 
@@ -67,8 +68,6 @@ namespace slimCat.Services
         private int retryAttemptCount;
 
         private WebSocket socket;
-
-        private const int TimeoutTimeMs = 30*1000; // 30 seconds
 
         #endregion
 
@@ -97,39 +96,39 @@ namespace slimCat.Services
                 .Subscribe(ConnectToChat, ThreadOption.BackgroundThread, true);
 
             errsThatDisconnect = new[]
-                {
-                    Constants.Errors.NoLoginSlots,
-                    Constants.Errors.NoServerSlots,
-                    Constants.Errors.KickedFromServer,
-                    Constants.Errors.SimultaneousLoginKick,
-                    Constants.Errors.BannedFromServer,
-                    Constants.Errors.BadLoginInfo,
-                    Constants.Errors.TooManyConnections,
-                    Constants.Errors.UnknownLoginMethod,
-                    Constants.Errors.TimedOutFromServer
-                };
+            {
+                Constants.Errors.NoLoginSlots,
+                Constants.Errors.NoServerSlots,
+                Constants.Errors.KickedFromServer,
+                Constants.Errors.SimultaneousLoginKick,
+                Constants.Errors.BannedFromServer,
+                Constants.Errors.BadLoginInfo,
+                Constants.Errors.TooManyConnections,
+                Constants.Errors.UnknownLoginMethod,
+                Constants.Errors.TimedOutFromServer
+            };
 
             errsThatPreventReconnect = new[]
-                {
-                    Constants.Errors.BannedFromServer,
-                    Constants.Errors.TooManyConnections,
-                    Constants.Errors.KickedFromServer,
-                    Constants.Errors.UnknownLoginMethod,
-                    Constants.Errors.SimultaneousLoginKick,
-                    Constants.Errors.TimedOutFromServer
-                };
+            {
+                Constants.Errors.BannedFromServer,
+                Constants.Errors.TooManyConnections,
+                Constants.Errors.KickedFromServer,
+                Constants.Errors.UnknownLoginMethod,
+                Constants.Errors.SimultaneousLoginKick,
+                Constants.Errors.TimedOutFromServer
+            };
 
             noisyTypes = new[]
-                {
-                    Constants.ServerCommands.UserJoin,
-                    Constants.ServerCommands.UserLeave,
-                    Constants.ServerCommands.UserStatus,
-                    Constants.ServerCommands.PublicChannelList,
-                    Constants.ServerCommands.PrivateChannelList,
-                    Constants.ServerCommands.UserList,
-                    Constants.ServerCommands.ChannelMessage,
-                    Constants.ServerCommands.ChannelAd
-                };
+            {
+                Constants.ServerCommands.UserJoin,
+                Constants.ServerCommands.UserLeave,
+                Constants.ServerCommands.UserStatus,
+                Constants.ServerCommands.PublicChannelList,
+                Constants.ServerCommands.PrivateChannelList,
+                Constants.ServerCommands.UserList,
+                Constants.ServerCommands.ChannelMessage,
+                Constants.ServerCommands.ChannelAd
+            };
 
             autoPingTimer.Elapsed += (s, e) => TrySend(Constants.ClientCommands.SystemPing);
 
@@ -205,6 +204,48 @@ namespace slimCat.Services
         }
 
         #region Connection Management
+
+        public void Disconnect()
+        {
+            socket.Closed -= ConnectionClosed;
+            socket.Error -= ConnectionError;
+            socket.MessageReceived -= ConnectionMessageReceived;
+
+            if (socket.State == WebSocketState.Open)
+            {
+                socket.Close();
+            }
+            else
+            {
+                socket = new WebSocket(Constants.ServerHost);
+            }
+
+            events.GetEvent<ConnectionClosedEvent>().Publish(string.Empty);
+            isAuthenticated = false;
+            autoPingTimer.Stop();
+            staggerTimer.Stop();
+            timeoutTimer.Stop();
+            autoPingTimer.Stop();
+            retryAttemptCount = 0;
+        }
+
+        #region logging
+
+        [Conditional("DEBUG")]
+        private void Log(string type, object payload = null, bool isSent = true)
+        {
+            Logging.Log(type + (payload != null ? " " + payload.GetHashCode() : ""),
+                "chat {0}".FormatWith(isSent ? "OUT" : "IN"));
+
+            if (!(noisyTypes.Contains(type) || (type == "IDN" && isSent)))
+            {
+                Logging.LogObject(payload);
+            }
+
+            Logging.Log();
+        }
+
+        #endregion
 
         private void ConnectToChat(string character)
         {
@@ -363,14 +404,14 @@ namespace slimCat.Services
             // Handshake completed, send login command
             object authRequest =
                 new
-                    {
-                        ticket = provider.Ticket,
-                        method = "ticket",
-                        account = provider.Account.AccountName,
-                        character = Character,
-                        cname = Constants.ClientId,
-                        cversion = string.Format("{0} {1}", Constants.ClientName, Constants.ClientVer)
-                    };
+                {
+                    ticket = provider.Ticket,
+                    method = "ticket",
+                    account = provider.Account.AccountName,
+                    character = Character,
+                    cname = Constants.ClientId,
+                    cversion = string.Format("{0} {1}", Constants.ClientName, Constants.ClientVer)
+                };
 
             SendMessage(authRequest, Constants.ClientCommands.SystemAuthenticate);
 
@@ -397,7 +438,7 @@ namespace slimCat.Services
 
         private void DoReconnect()
         {
-            Logging.LogLine("Attempting reconnect #" + (retryAttemptCount+1), "chat");
+            Logging.LogLine("Attempting reconnect #" + (retryAttemptCount + 1), "chat");
 
             if (retryAttemptCount >= 21)
             {
@@ -444,47 +485,6 @@ namespace slimCat.Services
             // we're not going to reconnect at this point
             return 60*60*oneSecond;
         }
-
-        public void Disconnect()
-        {
-            socket.Closed -= ConnectionClosed;
-            socket.Error -= ConnectionError;
-            socket.MessageReceived -= ConnectionMessageReceived;
-
-            if (socket.State == WebSocketState.Open)
-            {
-                socket.Close();
-            }
-            else
-            {
-                socket = new WebSocket(Constants.ServerHost);
-            }
-
-            events.GetEvent<ConnectionClosedEvent>().Publish(string.Empty);
-            isAuthenticated = false;
-            autoPingTimer.Stop();
-            staggerTimer.Stop();
-            timeoutTimer.Stop();
-            autoPingTimer.Stop();
-            retryAttemptCount = 0;
-        }
-
-        #region logging
-
-        [Conditional("DEBUG")]
-        private void Log(string type, object payload = null, bool isSent = true)
-        {
-            Logging.Log(type + (payload != null ? " " + payload.GetHashCode() :""), "chat {0}".FormatWith(isSent ? "OUT" : "IN"));
-
-            if (!(noisyTypes.Contains(type) || (type == "IDN" && isSent)))
-            {
-                Logging.LogObject(payload);
-            }
-
-            Logging.Log();
-        }
-
-        #endregion
 
         #endregion
     }

@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Logging.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,23 +21,26 @@ namespace slimCat.Utilities
 {
     #region Usings
 
-    using SimpleJson;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using SimpleJson;
 
     #endregion
 
     public static class Logging
     {
         #region Fields
+
         private const string LargeSeparator = "===================================";
         private static readonly TraceSwitch DefaultSwitch = new TraceSwitch("Default", string.Empty);
         private static readonly object Locker = new object();
+
         #endregion
 
         #region Methods
+
         /// <summary>
         ///     Logs the header with the given text.
         /// </summary>
@@ -176,6 +179,7 @@ namespace slimCat.Utilities
         {
             return "[{0}]".FormatWith(DateTime.Now.ToString("mm:ss.ffff"));
         }
+
         #endregion
     }
 }

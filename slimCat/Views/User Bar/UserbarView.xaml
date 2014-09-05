@@ -79,7 +79,7 @@
                         <WrapPanel HorizontalAlignment="Right"
                                    Grid.Row="2"
                                    VerticalAlignment="Center">
-                            
+
                             <WrapPanel Margin="0,0,0,2" VerticalAlignment="Bottom">
                                 <WrapPanel.Resources>
                                     <Style TargetType="Rectangle">
@@ -100,18 +100,18 @@
                             </WrapPanel>
 
                             <v:LogoutButtonView Command="{Binding LogoutCommand}" />
-                            
+
                             <v:PinButtonView Command="{Binding SaveChannelsCommand}" />
-                            
+
                         </WrapPanel>
                     </Grid>
                 </DockPanel>
             </Border>
 
             <libraries:NonTopmostPopup IsOpen="{Binding Path=IsChangingStatus, Mode=OneWay}"
-                   PlacementTarget="{Binding ElementName=PopupAnchor}"
-                   Grid.Row="0"
-                   Placement="Center">
+                                       PlacementTarget="{Binding ElementName=PopupAnchor}"
+                                       Grid.Row="0"
+                                       Placement="Center">
                 <Border BorderBrush="{StaticResource HighlightBrush}"
                         BorderThickness="1">
                     <StackPanel Orientation="Vertical"
@@ -158,9 +158,9 @@
             </libraries:NonTopmostPopup>
 
             <libraries:NonTopmostPopup IsOpen="{Binding Path=IsChangingAuto, Mode=OneWay}"
-                   PlacementTarget="{Binding ElementName=PopupAnchor}"
-                   Grid.Row="0"
-                   Placement="Center">
+                                       PlacementTarget="{Binding ElementName=PopupAnchor}"
+                                       Grid.Row="0"
+                                       Placement="Center">
                 <Border BorderBrush="{StaticResource HighlightBrush}"
                         BorderThickness="1">
                     <StackPanel Orientation="Vertical"
@@ -214,12 +214,13 @@
                             </ListBox.ItemTemplate>
                             <ListBox.ItemContainerStyle>
                                 <Style>
-                                    <Setter Property="ListBoxItem.AllowDrop" Value="True"/>
-                                    <EventSetter Event="ListBoxItem.PreviewMouseLeftButtonDown" Handler="OnPreviewMouseClick"/>
-                                    <EventSetter Event="ListBoxItem.MouseMove" Handler="OnMouseMove"/>
-                                    <EventSetter Event="ListBoxItem.Drop" Handler="OnPmModelDragDrop"/>
-                                    <EventSetter Event="ListBoxItem.PreviewDragEnter" Handler="CheckAsPm"/>
-                                    <EventSetter Event="ListBoxItem.PreviewDragOver" Handler="CheckAsPm"/>
+                                    <Setter Property="ListBoxItem.AllowDrop" Value="True" />
+                                    <EventSetter Event="ListBoxItem.PreviewMouseLeftButtonDown"
+                                                 Handler="OnPreviewMouseClick" />
+                                    <EventSetter Event="ListBoxItem.MouseMove" Handler="OnMouseMove" />
+                                    <EventSetter Event="ListBoxItem.Drop" Handler="OnPmModelDragDrop" />
+                                    <EventSetter Event="ListBoxItem.PreviewDragEnter" Handler="CheckAsPm" />
+                                    <EventSetter Event="ListBoxItem.PreviewDragOver" Handler="CheckAsPm" />
                                 </Style>
                             </ListBox.ItemContainerStyle>
                         </ListBox>
@@ -234,16 +235,17 @@
                                     <v:ChannelSelectView />
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
-                                <ListBox.ItemContainerStyle>
-                                    <Style>
-                                        <Setter Property="ListBoxItem.AllowDrop" Value="True"/>
-                                        <EventSetter Event="ListBoxItem.PreviewMouseLeftButtonDown" Handler="OnPreviewMouseClick"/>
-                                        <EventSetter Event="ListBoxItem.Drop" Handler="OnChannelModelDragDrop"/>
-                                        <EventSetter Event="ListBoxItem.MouseMove" Handler="OnMouseMove"/>
-                                        <EventSetter Event="ListBoxItem.PreviewDragEnter" Handler="CheckAsChannel"/>
-                                        <EventSetter Event="ListBoxItem.PreviewDragOver" Handler="CheckAsChannel"/>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
+                            <ListBox.ItemContainerStyle>
+                                <Style>
+                                    <Setter Property="ListBoxItem.AllowDrop" Value="True" />
+                                    <EventSetter Event="ListBoxItem.PreviewMouseLeftButtonDown"
+                                                 Handler="OnPreviewMouseClick" />
+                                    <EventSetter Event="ListBoxItem.Drop" Handler="OnChannelModelDragDrop" />
+                                    <EventSetter Event="ListBoxItem.MouseMove" Handler="OnMouseMove" />
+                                    <EventSetter Event="ListBoxItem.PreviewDragEnter" Handler="CheckAsChannel" />
+                                    <EventSetter Event="ListBoxItem.PreviewDragOver" Handler="CheckAsChannel" />
+                                </Style>
+                            </ListBox.ItemContainerStyle>
                         </ListBox>
                     </Expander>
                 </StackPanel>

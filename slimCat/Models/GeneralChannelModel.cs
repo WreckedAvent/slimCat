@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="GeneralChannelModel.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -60,22 +60,22 @@ namespace slimCat.Models
 
                 // the message count now faces the user, so when we reset it it now requires a UI update
                 Messages.CollectionChanged += (s, e) =>
-                    {
-                        if (e.Action != NotifyCollectionChangedAction.Reset)
-                            return;
+                {
+                    if (e.Action != NotifyCollectionChangedAction.Reset)
+                        return;
 
-                        LastReadCount = Messages.Count;
-                        UpdateBindings();
-                    };
+                    LastReadCount = Messages.Count;
+                    UpdateBindings();
+                };
 
                 Ads.CollectionChanged += (s, e) =>
-                    {
-                        if (e.Action != NotifyCollectionChangedAction.Reset)
-                            return;
+                {
+                    if (e.Action != NotifyCollectionChangedAction.Reset)
+                        return;
 
-                        LastReadAdCount = Ads.Count;
-                        UpdateBindings();
-                    };
+                    LastReadAdCount = Ads.Count;
+                    UpdateBindings();
+                };
             }
             catch (Exception ex)
             {
@@ -97,22 +97,22 @@ namespace slimCat.Models
 
                 // the message count now faces the user, so when we reset it it now requires a UI update
                 Messages.CollectionChanged += (s, e) =>
-                    {
-                        if (e.Action != NotifyCollectionChangedAction.Reset)
-                            return;
+                {
+                    if (e.Action != NotifyCollectionChangedAction.Reset)
+                        return;
 
-                        LastReadCount = Messages.Count;
-                        UpdateBindings();
-                    };
+                    LastReadCount = Messages.Count;
+                    UpdateBindings();
+                };
 
                 Ads.CollectionChanged += (s, e) =>
-                    {
-                        if (e.Action != NotifyCollectionChangedAction.Reset)
-                            return;
+                {
+                    if (e.Action != NotifyCollectionChangedAction.Reset)
+                        return;
 
-                        LastReadAdCount = Ads.Count;
-                        UpdateBindings();
-                    };
+                    LastReadAdCount = Ads.Count;
+                    UpdateBindings();
+                };
             }
             catch (Exception ex)
             {

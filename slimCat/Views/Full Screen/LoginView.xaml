@@ -44,9 +44,11 @@
             <TextBlock>
                 <Hyperlink CommandParameter="http://chat.f-list.net:9002/stats/">Chat Stats</Hyperlink>
             </TextBlock>
-            <TextBlock Visibility="{Binding Path=HasNewUpdate, Converter={StaticResource  BoolConverter}}" 
+            <TextBlock Visibility="{Binding Path=HasNewUpdate, Converter={StaticResource  BoolConverter}}"
                        Margin="15,0,0,0">
-                <Hyperlink CommandParameter="{Binding Path=UpdateLink}"> <TextBlock Text="{Binding UpdateName}"/> </Hyperlink>
+                <Hyperlink CommandParameter="{Binding Path=UpdateLink}">
+                    <TextBlock Text="{Binding UpdateName}" />
+                </Hyperlink>
             </TextBlock>
         </WrapPanel>
 

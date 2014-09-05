@@ -2,28 +2,32 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ProfileImage.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
 namespace slimCat.Models
 {
+    #region Usings
+
     using System;
     using System.Net;
     using System.Xml.Serialization;
     using Api;
     using Utilities;
+
+    #endregion
 
     [Serializable]
     [XmlRoot(ElementName = "Image")]
@@ -44,7 +48,6 @@ namespace slimCat.Models
 
         public ProfileImage()
         {
-            
         }
 
         [XmlIgnore]
@@ -54,7 +57,7 @@ namespace slimCat.Models
         public string ThumbnailString
         {
             get { return ThumbnailUri.AbsolutePath; }
-            set { ThumbnailUri = new Uri(Constants.UrlConstants.StaticDomain + value, UriKind.Absolute);}
+            set { ThumbnailUri = new Uri(Constants.UrlConstants.StaticDomain + value, UriKind.Absolute); }
         }
 
         [XmlIgnore]

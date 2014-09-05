@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="SettingsService.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,15 +21,14 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using System.Text;
-    using System.Xml.Serialization;
-    using Microsoft.VisualBasic.CompilerServices;
-    using Models;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Text;
     using System.Xml.Linq;
+    using System.Xml.Serialization;
+    using Models;
     using Utilities;
 
     #endregion
@@ -93,7 +92,7 @@ namespace slimCat.Services
             {
                 using (var streamWriter = new StreamWriter(fileName, false, Encoding.UTF8))
                 {
-                    var serializer = new XmlSerializer(typeof(ProfileData));
+                    var serializer = new XmlSerializer(typeof (ProfileData));
                     serializer.Serialize(streamWriter, profileData);
                 }
             }
@@ -264,7 +263,8 @@ namespace slimCat.Services
                             var label = "item";
                             if (property.Name.ToLower().Contains("channel"))
                                 label = "channel";
-                            else if (property.Name.ToLower().Contains("interested") || property.Name.ToLower().Contains("character"))
+                            else if (property.Name.ToLower().Contains("interested") ||
+                                     property.Name.ToLower().Contains("character"))
                                 label = "character";
 
                             toAdd.Add(new XElement(label, item));
@@ -281,7 +281,8 @@ namespace slimCat.Services
 
             if (!ApplicationSettings.TemplateCharacter.Equals(currentCharacter)) return;
 
-            var workingPath = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, GlobalFolderName, GlobalFolderName);
+            var workingPath = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, GlobalFolderName,
+                GlobalFolderName);
             if (!Directory.Exists(workingPath))
                 Directory.CreateDirectory(workingPath);
 
@@ -293,7 +294,8 @@ namespace slimCat.Services
         /// <summary>
         ///     Serialize and object to XML through reflection
         /// </summary>
-        public static void SerializeObjectToXml(object toSerialize, string fileName, bool encrypt = false, string rootName = "settings")
+        public static void SerializeObjectToXml(object toSerialize, string fileName, bool encrypt = false,
+            string rootName = "settings")
         {
             var type = toSerialize.GetType();
             var checkTerms = new[] {"command", "is", "enumerable"};

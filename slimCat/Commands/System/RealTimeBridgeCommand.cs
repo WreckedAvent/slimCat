@@ -1,25 +1,29 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BroadcastCommand.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="RealTimeBridgeCommand.cs">
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
 namespace slimCat.Models
 {
+    #region Usings
+
     using Utilities;
+
+    #endregion
 
     public class CommentEventArgs : CharacterUpdateEventArgs
     {
@@ -125,11 +129,15 @@ namespace slimCat.Models
 
 namespace slimCat.Services
 {
-    using Models;
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Web;
+    using Models;
     using Utilities;
+
+    #endregion
 
     public partial class ServerCommandService
     {
@@ -139,30 +147,30 @@ namespace slimCat.Services
 
             if (type == null) return;
 
-            var doListAction = new Action<string, ListKind, bool, bool>((name, list, isAdd, giveUpdate) =>             
-            Dispatcher.Invoke((Action) delegate
-            {
-                var result = isAdd
-                    ? CharacterManager.Add(name, list)
-                    : CharacterManager.Remove(name, list);
-
-                var character = CharacterManager.Find(name);
-                if (isAdd && character.Status == StatusType.Offline)
+            var doListAction = new Action<string, ListKind, bool, bool>((name, list, isAdd, giveUpdate) =>
+                Dispatcher.Invoke((Action) delegate
                 {
-                    CharacterManager.SignOff(name);
-                }
-                character.IsInteresting = CharacterManager.IsOfInterest(name);
+                    var result = isAdd
+                        ? CharacterManager.Add(name, list)
+                        : CharacterManager.Remove(name, list);
 
-                if (!giveUpdate || !result) return;
+                    var character = CharacterManager.Find(name);
+                    if (isAdd && character.Status == StatusType.Offline)
+                    {
+                        CharacterManager.SignOff(name);
+                    }
+                    character.IsInteresting = CharacterManager.IsOfInterest(name);
 
-                var eventargs = new CharacterListChangedEventArgs
-                {
-                    IsAdded = isAdd,
-                    ListArgument = list
-                };
+                    if (!giveUpdate || !result) return;
 
-                Events.NewCharacterUpdate(character, eventargs);
-            }));
+                    var eventargs = new CharacterListChangedEventArgs
+                    {
+                        IsAdded = isAdd,
+                        ListArgument = list
+                    };
+
+                    Events.NewCharacterUpdate(character, eventargs);
+                }));
 
             if (type.Equals("note"))
             {
@@ -187,7 +195,7 @@ namespace slimCat.Services
                 // sometimes ID is sent as a string. Sometimes it is sent as a number.
                 // so even though it's THE SAME COMMAND we have to treat *each* number differently
                 var commentId = long.Parse(command.Get("id"));
-                var parentId = (long)command["parent_id"];
+                var parentId = (long) command["parent_id"];
                 var targetId = long.Parse(command.Get("target_id"));
 
                 var title = HttpUtility.HtmlDecode(command.Get("target"));
@@ -237,6 +245,5 @@ namespace slimCat.Services
                 doListAction(name, ListKind.Friend, false, false);
             }
         }
-
     }
 }

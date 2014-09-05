@@ -1,19 +1,19 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CommandService.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="ServerCommandService.cs">
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,14 +21,14 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using System.IO;
-    using Microsoft.Practices.Prism.Events;
-    using Models;
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Timers;
     using System.Windows;
+    using Microsoft.Practices.Prism.Events;
+    using Models;
     using Utilities;
     using ViewModels;
     using Commands = Utilities.Constants.ServerCommands;
@@ -42,21 +42,18 @@ namespace slimCat.Services
     {
         #region Fields
 
+        private readonly HashSet<string> autoJoinedChannels = new HashSet<string>();
         private readonly IAutomationService automation;
+        private readonly IFriendRequestService friendRequestService;
 
         private readonly object locker = new object();
 
         private readonly IChannelService manager;
 
+        private readonly string[] noisyTypes;
         private readonly INoteService notes;
 
-        private readonly IFriendRequestService friendRequestService;
-
-        private readonly string[] noisyTypes;
-
         private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
-
-        private readonly HashSet<string> autoJoinedChannels = new HashSet<string>();
 
         #endregion
 
@@ -82,16 +79,16 @@ namespace slimCat.Services
             ChatModel.CurrentAccount = ChatConnection.Account;
 
             noisyTypes = new[]
-                {
-                    Commands.UserJoin,
-                    Commands.UserLeave,
-                    Commands.UserStatus,
-                    Commands.PublicChannelList,
-                    Commands.PrivateChannelList,
-                    Commands.UserList,
-                    Commands.ChannelAd,
-                    Commands.ChannelMessage
-                };
+            {
+                Commands.UserJoin,
+                Commands.UserLeave,
+                Commands.UserStatus,
+                Commands.PublicChannelList,
+                Commands.PrivateChannelList,
+                Commands.UserList,
+                Commands.ChannelAd,
+                Commands.ChannelMessage
+            };
 
             LoggingSection = "cmnd serv";
         }
@@ -108,6 +105,7 @@ namespace slimCat.Services
         #endregion
 
         #region Public Methods and Operators
+
         public override void Initialize()
         {
         }
@@ -115,6 +113,7 @@ namespace slimCat.Services
         #endregion
 
         #region Methods
+
         private static Gender ParseGender(string input)
         {
             switch (input)
@@ -136,8 +135,8 @@ namespace slimCat.Services
 
         private GeneralChannelModel FindChannel(string id)
         {
-            return ChatModel.CurrentChannels.FirstByIdOrNull(id) 
-                ?? ChatModel.AllChannels.FirstByIdOrNull(id);
+            return ChatModel.CurrentChannels.FirstByIdOrNull(id)
+                   ?? ChatModel.AllChannels.FirstByIdOrNull(id);
         }
 
         private GeneralChannelModel FindChannel(IDictionary<string, object> command)
@@ -288,7 +287,8 @@ namespace slimCat.Services
             Dispatcher.Invoke((Action) delegate { ChatModel.IsAuthenticated = true; });
 
             const string nojoinName = "nojoin";
-            if ((!File.Exists(nojoinName) || ApplicationSettings.SavedChannels.Count == 0) && ApplicationSettings.SlimCatChannelId != null)
+            if ((!File.Exists(nojoinName) || ApplicationSettings.SavedChannels.Count == 0) &&
+                ApplicationSettings.SlimCatChannelId != null)
             {
                 ApplicationSettings.SavedChannels.Add(ApplicationSettings.SlimCatChannelId);
                 SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
@@ -298,26 +298,26 @@ namespace slimCat.Services
             // auto join
             var waitTimer = new Timer(200);
             var channels = (from c in ApplicationSettings.SavedChannels
-                           where !string.IsNullOrWhiteSpace(c)
-                           select new { channel = c })
-                           .Distinct()
-                           .ToList();
+                where !string.IsNullOrWhiteSpace(c)
+                select new {channel = c})
+                .Distinct()
+                .ToList();
 
             var walk = channels.GetEnumerator();
 
             if (walk.MoveNext())
             {
                 waitTimer.Elapsed += (s, e) =>
-                    {
-                        Log("Auto joining " + walk.Current);
-                        autoJoinedChannels.Add(walk.Current.channel);
-                        ChatConnection.SendMessage(walk.Current, Constants.ClientCommands.ChannelJoin);
-                        if (walk.MoveNext())
-                            return;
+                {
+                    Log("Auto joining " + walk.Current);
+                    autoJoinedChannels.Add(walk.Current.channel);
+                    ChatConnection.SendMessage(walk.Current, Constants.ClientCommands.ChannelJoin);
+                    if (walk.MoveNext())
+                        return;
 
-                        waitTimer.Stop();
-                        waitTimer.Dispose();
-                    };
+                    waitTimer.Stop();
+                    waitTimer.Dispose();
+                };
             }
 
             waitTimer.Start();
@@ -337,10 +337,10 @@ namespace slimCat.Services
             Dispatcher.Invoke(
                 (Action)
                     delegate
-                        {
-                            Application.Current.MainWindow.Title = string.Format(
-                                "{0} {1} ({2})", Constants.ClientId, Constants.ClientName, character);
-                        });
+                    {
+                        Application.Current.MainWindow.Title = string.Format(
+                            "{0} {1} ({2})", Constants.ClientId, Constants.ClientName, character);
+                    });
         }
 
         private void WipeState(string message)
@@ -354,15 +354,15 @@ namespace slimCat.Services
             ChatModel.CurrentCharacter.StatusMessage = string.Empty;
 
             Dispatcher.Invoke((Action) (() =>
+            {
+                ChatModel.AllChannels.Clear();
+                while (ChatModel.CurrentChannels.Count > 1)
                 {
-                    ChatModel.AllChannels.Clear();
-                    while (ChatModel.CurrentChannels.Count > 1)
-                    {
-                        ChatModel.CurrentChannels.RemoveAt(1);
-                    }
+                    ChatModel.CurrentChannels.RemoveAt(1);
+                }
 
-                    ChatModel.CurrentPms.Each(pm => pm.TypingStatus = TypingStatus.Clear);
-                }));
+                ChatModel.CurrentPms.Each(pm => pm.TypingStatus = TypingStatus.Clear);
+            }));
         }
 
         private void RequeueCommand(IDictionary<string, object> command)
@@ -372,9 +372,9 @@ namespace slimCat.Services
                 value = 0;
 
             var retryAttempts = (int) value;
-            Logging.LogLine(command.Get(Constants.Arguments.Command) 
-                + " " + command.GetHashCode() 
-                + " fail #" + (retryAttempts + 1), "cmnd serv");
+            Logging.LogLine(command.Get(Constants.Arguments.Command)
+                            + " " + command.GetHashCode()
+                            + " fail #" + (retryAttempts + 1), "cmnd serv");
 
             if (retryAttempts >= 5) return;
 

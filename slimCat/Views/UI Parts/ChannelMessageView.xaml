@@ -5,28 +5,28 @@
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
            xmlns:models="clr-namespace:slimCat.Models"
            mc:Ignorable="d"
-           
+
            Margin="0,2"
            Padding="0,0,5,2"
-           
+
            FontFamily="Segoe UI, Verdanda"
            IsHyphenationEnabled="True"
            FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
-           
+
            Foreground="{Binding Converter={StaticResource ForegroundBrushConverter}, Mode=OneWay}"
            BorderThickness="{Binding Converter={StaticResource MessageThicknessConverter}}"
            BorderBrush="{Binding Converter={StaticResource DelimiterColorConverter}}"
            TextAlignment="Left"
-           
+
            d:DataContext="{d:DesignInstance models:MessageModel}">
-    
+
     <Run Text="{Binding TimeStamp, Mode=OneTime}"
-            FontSize="12"
-            Foreground="{Binding Converter={StaticResource NameplateMessageColorConverter}, Mode=OneWay}" />
+         FontSize="12"
+         Foreground="{Binding Converter={StaticResource NameplateMessageColorConverter}, Mode=OneWay}" />
 
     <InlineUIContainer BaselineAlignment="Bottom">
         <Rectangle Height="15" Width="15"
-                    Fill="{Binding Path=Poster, Converter={StaticResource GenderColorConverter}, Mode=OneWay}">
+                   Fill="{Binding Path=Poster, Converter={StaticResource GenderColorConverter}, Mode=OneWay}">
             <Rectangle.OpacityMask>
                 <ImageBrush
                     ImageSource="{Binding Path=Poster.Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
@@ -35,15 +35,15 @@
     </InlineUIContainer>
 
     <Hyperlink CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}"
-                   Command="{Binding Path=DataContext.NavigateTo, RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
-                   Style="{StaticResource UsernameStyle}"
-                   Foreground="{Binding Converter={StaticResource NameplateMessageColorConverter}, Mode=OneWay}">
+               Command="{Binding Path=DataContext.NavigateTo, RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
+               Style="{StaticResource UsernameStyle}"
+               Foreground="{Binding Converter={StaticResource NameplateMessageColorConverter}, Mode=OneWay}">
         <Run Text="{Binding Path=Poster.Name, Mode=OneTime}" />
         <Hyperlink.InputBindings>
             <MouseBinding MouseAction="RightClick"
-                              Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
+                          Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
                                         RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
-                              CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}" />
+                          CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}" />
         </Hyperlink.InputBindings>
     </Hyperlink>
 

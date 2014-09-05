@@ -1,30 +1,34 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BroadcastCommand.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="ListCommand.cs">
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
 namespace slimCat.Services
 {
-    using Models;
-    using SimpleJson;
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Web;
+    using Models;
+    using SimpleJson;
     using Utilities;
+
+    #endregion
 
     public partial class ServerCommandService
     {
@@ -48,24 +52,24 @@ namespace slimCat.Services
                     if (number < 0)
                         number = 0;
 
-                    var model = new GeneralChannelModel(name, isPublic ? ChannelType.Public : ChannelType.Private, (int)number, mode)
+                    var model = new GeneralChannelModel(name, isPublic ? ChannelType.Public : ChannelType.Private,
+                        (int) number, mode)
                     {
                         Title = isPublic ? name : title
                     };
 
                     Dispatcher.Invoke((Action) (() =>
+                    {
+                        var current = ChatModel.AllChannels.FirstByIdOrNull(name);
+                        if (current == null)
                         {
-                            var current = ChatModel.AllChannels.FirstByIdOrNull(name);
-                            if (current == null)
-                            {
-                                ChatModel.AllChannels.Add(model);
-                                return;
-                            }
+                            ChatModel.AllChannels.Add(model);
+                            return;
+                        }
 
-                            current.Mode = mode;
-                            current.UserCount = (int)number;
-                        }));
-
+                        current.Mode = mode;
+                        current.UserCount = (int) number;
+                    }));
                 }
             }
         }
@@ -80,6 +84,5 @@ namespace slimCat.Services
         {
             ChannelListCommand(command, true);
         }
-
     }
 }

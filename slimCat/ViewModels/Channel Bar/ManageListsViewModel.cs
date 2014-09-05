@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ManageListsViewModel.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,12 +21,12 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using Microsoft.Practices.Unity;
-    using Models;
-    using Services;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Practices.Unity;
+    using Models;
+    using Services;
     using Utilities;
     using Views;
 
@@ -47,18 +47,18 @@ namespace slimCat.ViewModels
 
         private readonly GenderSettingsModel genderSettings;
 
-        private bool showOffline;
-
         private readonly IDictionary<ListKind, string> listKinds = new Dictionary<ListKind, string>
-            {
-                {ListKind.Banned, "Banned"},
-                {ListKind.Bookmark, "Bookmarks"},
-                {ListKind.Friend, "Friends"},
-                {ListKind.Moderator, "Moderators"},
-                {ListKind.Interested, "Interested"},
-                {ListKind.NotInterested, "NotInterested"},
-                {ListKind.Ignored, "Ignored"}
-            };
+        {
+            {ListKind.Banned, "Banned"},
+            {ListKind.Bookmark, "Bookmarks"},
+            {ListKind.Friend, "Friends"},
+            {ListKind.Moderator, "Moderators"},
+            {ListKind.Interested, "Interested"},
+            {ListKind.NotInterested, "NotInterested"},
+            {ListKind.Ignored, "Ignored"}
+        };
+
+        private bool showOffline;
 
         #endregion
 
@@ -74,101 +74,101 @@ namespace slimCat.ViewModels
             SearchSettings.ShowIgnored = true;
 
             SearchSettings.Updated += (s, e) =>
-                {
-                    OnPropertyChanged("SearchSettings");
-                    UpdateBindings();
-                };
+            {
+                OnPropertyChanged("SearchSettings");
+                UpdateBindings();
+            };
 
             GenderSettings.Updated += (s, e) =>
-                {
-                    OnPropertyChanged("GenderSettings");
-                    UpdateBindings();
-                };
+            {
+                OnPropertyChanged("GenderSettings");
+                UpdateBindings();
+            };
 
             ChatModel.PropertyChanged += (s, e) =>
-                {
-                    if (e.PropertyName.Equals("OnlineFriends", StringComparison.OrdinalIgnoreCase))
-                        OnPropertyChanged("Friends");
-                };
+            {
+                if (e.PropertyName.Equals("OnlineFriends", StringComparison.OrdinalIgnoreCase))
+                    OnPropertyChanged("Friends");
+            };
 
             Events.GetEvent<NewUpdateEvent>().Subscribe(
                 args =>
+                {
+                    var thisChannelUpdate = args as ChannelUpdateModel;
+                    if (thisChannelUpdate != null
+                        && (thisChannelUpdate.Arguments is ChannelTypeBannedListEventArgs
+                            || thisChannelUpdate.Arguments is ChannelDisciplineEventArgs))
                     {
-                        var thisChannelUpdate = args as ChannelUpdateModel;
-                        if (thisChannelUpdate != null
-                            && (thisChannelUpdate.Arguments is ChannelTypeBannedListEventArgs
-                                || thisChannelUpdate.Arguments is ChannelDisciplineEventArgs))
-                        {
-                            OnPropertyChanged("HasBanned");
+                        OnPropertyChanged("HasBanned");
+                        OnPropertyChanged("Banned");
+                    }
+
+                    var thisUpdate = args as CharacterUpdateModel;
+                    if (thisUpdate == null)
+                        return;
+
+                    var name = thisUpdate.TargetCharacter.Name;
+
+                    var joinLeaveArguments = thisUpdate.Arguments as JoinLeaveEventArgs;
+                    if (joinLeaveArguments != null)
+                    {
+                        if (CharacterManager.IsOnList(name, ListKind.Moderator, false))
+                            OnPropertyChanged("Moderators");
+                        if (CharacterManager.IsOnList(name, ListKind.Banned, false))
                             OnPropertyChanged("Banned");
-                        }
+                        return;
+                    }
 
-                        var thisUpdate = args as CharacterUpdateModel;
-                        if (thisUpdate == null)
-                            return;
-
-                        var name = thisUpdate.TargetCharacter.Name;
-
-                        var joinLeaveArguments = thisUpdate.Arguments as JoinLeaveEventArgs;
-                        if (joinLeaveArguments != null)
+                    var signInOutArguments = thisUpdate.Arguments as LoginStateChangedEventArgs;
+                    if (signInOutArguments != null)
+                    {
+                        listKinds.Each(x =>
                         {
-                            if (CharacterManager.IsOnList(name, ListKind.Moderator, false))
-                                OnPropertyChanged("Moderators");
-                            if (CharacterManager.IsOnList(name, ListKind.Banned, false))
-                                OnPropertyChanged("Banned");
-                            return;
-                        }
+                            if (CharacterManager.IsOnList(name, x.Key, false))
+                                OnPropertyChanged(x.Value);
+                        });
 
-                        var signInOutArguments = thisUpdate.Arguments as LoginStateChangedEventArgs;
-                        if (signInOutArguments != null)
-                        {
-                            listKinds.Each(x =>
-                                {
-                                    if (CharacterManager.IsOnList(name, x.Key, false))
-                                        OnPropertyChanged(x.Value);
-                                });
+                        return;
+                    }
 
-                            return;
-                        }
+                    var thisArguments = thisUpdate.Arguments as CharacterListChangedEventArgs;
+                    if (thisArguments == null)
+                        return;
 
-                        var thisArguments = thisUpdate.Arguments as CharacterListChangedEventArgs;
-                        if (thisArguments == null)
-                            return;
-
-                        switch (thisArguments.ListArgument)
-                        {
-                            case ListKind.Interested:
-                                OnPropertyChanged("Interested");
-                                OnPropertyChanged("NotInterested");
-                                break;
-                            case ListKind.Ignored:
-                                OnPropertyChanged("Ignored");
-                                break;
-                            case ListKind.NotInterested:
-                                OnPropertyChanged("NotInterested");
-                                OnPropertyChanged("Interested");
-                                break;
-                            case ListKind.Bookmark:
-                                OnPropertyChanged("Bookmarks");
-                                break;
-                            case ListKind.Friend:
-                                OnPropertyChanged("Friends");
-                                break;
-                            case ListKind.SearchResult:
-                                OnPropertyChanged("SearchResults");
-                                OnPropertyChanged("HasSearchResults");
-                                break;
-                        }
-                    },
+                    switch (thisArguments.ListArgument)
+                    {
+                        case ListKind.Interested:
+                            OnPropertyChanged("Interested");
+                            OnPropertyChanged("NotInterested");
+                            break;
+                        case ListKind.Ignored:
+                            OnPropertyChanged("Ignored");
+                            break;
+                        case ListKind.NotInterested:
+                            OnPropertyChanged("NotInterested");
+                            OnPropertyChanged("Interested");
+                            break;
+                        case ListKind.Bookmark:
+                            OnPropertyChanged("Bookmarks");
+                            break;
+                        case ListKind.Friend:
+                            OnPropertyChanged("Friends");
+                            break;
+                        case ListKind.SearchResult:
+                            OnPropertyChanged("SearchResults");
+                            OnPropertyChanged("HasSearchResults");
+                            break;
+                    }
+                },
                 true);
 
             ChatModel.SelectedChannelChanged += (s, e) =>
-                {
-                    OnPropertyChanged("HasUsers");
-                    OnPropertyChanged("Moderators");
-                    OnPropertyChanged("HasBanned");
-                    OnPropertyChanged("Banned");
-                };
+            {
+                OnPropertyChanged("HasUsers");
+                OnPropertyChanged("Moderators");
+                OnPropertyChanged("HasBanned");
+                OnPropertyChanged("Banned");
+            };
 
             Events.GetEvent<ChatSearchResultEvent>().Subscribe(_ =>
             {

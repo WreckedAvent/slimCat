@@ -12,7 +12,7 @@
 
              d:DataContext="{d:DesignInstance vm:ChannelsTabViewModel}">
     <DockPanel>
-        <libraries:NonTopmostPopup 
+        <libraries:NonTopmostPopup
             PlacementTarget="{Binding ElementName=PopupAnchor}"
             Placement="Center"
             IsOpen="{Binding Path=SearchSettings.IsChangingSettings}">
@@ -47,8 +47,8 @@
                 </WrapPanel>
             </Border>
         </libraries:NonTopmostPopup>
-        
-        <libraries:NonTopmostPopup 
+
+        <libraries:NonTopmostPopup
             PlacementTarget="{Binding ElementName=PopupAnchor}"
             Placement="Center"
             IsOpen="{Binding Path=IsCreatingNewChannel}">
@@ -64,37 +64,37 @@
                                Text="Create a new room" />
 
                     <TextBlock
-                            Foreground="{StaticResource DepressedBrush}"
-                            HorizontalAlignment="Left"
-                            Margin="10,0,10,0">
-                            New Channel Name
+                        Foreground="{StaticResource DepressedBrush}"
+                        HorizontalAlignment="Left"
+                        Margin="10,0,10,0">
+                        New Channel Name
                     </TextBlock>
                     <TextBox
-                            Text="{Binding Path=NewChannelName, UpdateSourceTrigger=PropertyChanged}"
-                            FontSize="12"
-                            TextWrapping="Wrap"
-                            MaxWidth="200"
-                            Margin="10,0,10,10" />
-                    
+                        Text="{Binding Path=NewChannelName, UpdateSourceTrigger=PropertyChanged}"
+                        FontSize="12"
+                        TextWrapping="Wrap"
+                        MaxWidth="200"
+                        Margin="10,0,10,10" />
+
 
                     <WrapPanel>
                         <Button Content="Make room"
                                 Margin="10,5"
                                 Command="{Binding CreateNewChannelCommand}" />
-                        <Button Content="Cancel" 
-                                Margin="10,5" 
-                                Command="{Binding ToggleIsCreatingNewChannelCommand}"/>
+                        <Button Content="Cancel"
+                                Margin="10,5"
+                                Command="{Binding ToggleIsCreatingNewChannelCommand}" />
                     </WrapPanel>
                 </WrapPanel>
             </Border>
         </libraries:NonTopmostPopup>
 
-        <Button DockPanel.Dock="Top" 
+        <Button DockPanel.Dock="Top"
                 Command="{Binding ToggleIsCreatingNewChannelCommand}"
                 Margin="0,10,0,5">
             Create New ...
         </Button>
-        
+
         <v:SearchBoxView DockPanel.Dock="Bottom" Margin="0,5,0,0"
                          DataContext="{Binding SearchSettings}" />
 

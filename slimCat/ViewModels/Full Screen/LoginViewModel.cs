@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="LoginViewModel.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,6 +21,9 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System;
+    using System.Threading;
+    using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
@@ -28,10 +31,6 @@ namespace slimCat.ViewModels
     using Models;
     using Properties;
     using Services;
-    using System;
-    using System.Net;
-    using System.Threading;
-    using System.Windows.Input;
     using Utilities;
     using Views;
 
@@ -235,46 +234,44 @@ namespace slimCat.ViewModels
         private void CheckForUpdates()
         {
             new Thread(() =>
+            {
+                Thread.CurrentThread.IsBackground = true;
+                try
                 {
-                    Thread.CurrentThread.IsBackground = true;
-                    try
-                    {
-                        var resp = browser.GetResponse(Constants.NewVersionUrl);
-                        if (resp == null) return;
-                        var args = resp.Split(',');
+                    var resp = browser.GetResponse(Constants.NewVersionUrl);
+                    if (resp == null) return;
+                    var args = resp.Split(',');
 
-                        Dispatcher.BeginInvoke((Action) delegate
+                    Dispatcher.BeginInvoke((Action) delegate
+                    {
+                        var versionString = args[0].Substring(args[0].LastIndexOf(' '));
+                        var version = Convert.ToDouble(versionString);
+
+                        var ourVersion = Convert.ToDouble(Constants.ClientVer.Contains(" ")
+                            ? Constants.ClientVer.Substring(0, Constants.ClientVer.LastIndexOf(' '))
+                            : Constants.ClientVer);
+
+                        HasNewUpdate = version > ourVersion;
+
+                        if (!HasNewUpdate && Math.Abs(version - ourVersion) < 0.001)
                         {
-                            var versionString = args[0].Substring(args[0].LastIndexOf(' '));
-                            var version = Convert.ToDouble(versionString);
+                            HasNewUpdate = Constants.ClientVer.Contains("dev");
+                        }
 
-                            var ourVersion = Convert.ToDouble(Constants.ClientVer.Contains(" ")
-                                ? Constants.ClientVer.Substring(0, Constants.ClientVer.LastIndexOf(' '))
-                                : Constants.ClientVer);
+                        UpdateName = args[0] + " update";
+                        UpdateLink = args[1];
+                        ApplicationSettings.SlimCatChannelId = args[4];
 
-                            HasNewUpdate = version > ourVersion;
-
-                            if (!HasNewUpdate && Math.Abs(version - ourVersion) < 0.001)
-                            {
-                                HasNewUpdate = Constants.ClientVer.Contains("dev");
-                            }
-
-                            UpdateName = args[0] + " update";
-                            UpdateLink = args[1];
-                            ApplicationSettings.SlimCatChannelId = args[4];
-
-                            OnPropertyChanged("HasNewUpdate");
-                            OnPropertyChanged("UpdateName");
-                            OnPropertyChanged("UpdateLink");
-                        });
-                    }
-                    catch
-                    {
-                    }
-                }).Start();
-   
+                        OnPropertyChanged("HasNewUpdate");
+                        OnPropertyChanged("UpdateName");
+                        OnPropertyChanged("UpdateLink");
+                    });
+                }
+                catch
+                {
+                }
+            }).Start();
         }
-
 
         #endregion
     }

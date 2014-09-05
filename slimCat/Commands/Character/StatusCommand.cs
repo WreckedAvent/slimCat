@@ -1,26 +1,30 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BroadcastCommand.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="StatusCommand.cs">
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
 namespace slimCat.Models
 {
+    #region Usings
+
     using System.Linq;
     using System.Text;
+
+    #endregion
 
     public partial class CharacterUpdateModel
     {
@@ -70,10 +74,14 @@ namespace slimCat.Models
 
 namespace slimCat.Services
 {
+    #region Usings
+
     using System;
-    using Models;
     using System.Collections.Generic;
+    using Models;
     using Utilities;
+
+    #endregion
 
     public partial class ServerCommandService
     {
@@ -135,7 +143,8 @@ namespace slimCat.Services
             }
             catch (ArgumentException)
             {
-                events.GetEvent<ErrorEvent>().Publish("'{0}' is not a valid status type!".FormatWith(command.Get(Constants.Arguments.Status)));
+                events.GetEvent<ErrorEvent>()
+                    .Publish("'{0}' is not a valid status type!".FormatWith(command.Get(Constants.Arguments.Status)));
                 return;
             }
 

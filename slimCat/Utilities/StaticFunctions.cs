@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="StaticFunctions.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,9 +21,6 @@ namespace slimCat.Utilities
 {
     #region Usings
 
-    using Microsoft.Practices.Prism.Events;
-    using Models;
-    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -32,6 +29,9 @@ namespace slimCat.Utilities
     using System.Web;
     using System.Windows;
     using System.Windows.Media;
+    using Microsoft.Practices.Prism.Events;
+    using Models;
+    using Newtonsoft.Json;
     using Services;
     using ViewModels;
 
@@ -94,7 +94,8 @@ namespace slimCat.Utilities
                 }
             }
 
-            if (checkAgainst.Length == fullString.Length && checkAgainst.Equals(fullString, StringComparison.OrdinalIgnoreCase))
+            if (checkAgainst.Length == fullString.Length &&
+                checkAgainst.Equals(fullString, StringComparison.OrdinalIgnoreCase))
                 return new Tuple<string, string>(checkAgainst, checkAgainst);
 
             return hasMatch
@@ -111,17 +112,17 @@ namespace slimCat.Utilities
             var end = Math.Min(fullContent.Length, needle + maxDistance);
 
             Func<int, int> findStartOfWord = suspectIndex =>
+            {
+                while (suspectIndex != 0 && !char.IsWhiteSpace(fullContent[suspectIndex]))
                 {
-                    while (suspectIndex != 0 && !char.IsWhiteSpace(fullContent[suspectIndex]))
-                    {
-                        suspectIndex--; // find space before word
-                    }
+                    suspectIndex--; // find space before word
+                }
 
-                    if (suspectIndex != 0)
-                        suspectIndex++; // skip past space
+                if (suspectIndex != 0)
+                    suspectIndex++; // skip past space
 
-                    return suspectIndex;
-                };
+                return suspectIndex;
+            };
 
             start = findStartOfWord(start);
 
@@ -159,12 +160,12 @@ namespace slimCat.Utilities
 
             if (!title.Equals(id))
             {
-                var safeTitle = 
+                var safeTitle =
                     Path.GetInvalidPathChars()
-                    .Union(Path.GetInvalidFileNameChars())
-                    .Union(new []{'/', '\\'})
-                    .Aggregate(title,
-                        (current, c) => current.Replace(c.ToString(CultureInfo.InvariantCulture), string.Empty));
+                        .Union(Path.GetInvalidFileNameChars())
+                        .Union(new[] {'/', '\\'})
+                        .Aggregate(title,
+                            (current, c) => current.Replace(c.ToString(CultureInfo.InvariantCulture), string.Empty));
 
                 if (safeTitle[0].Equals('.'))
                     safeTitle = safeTitle.Remove(0, 1);
@@ -192,13 +193,13 @@ namespace slimCat.Utilities
             var name = character.Name;
 
             var map = new HashSet<KeyValuePair<ListKind, bool>>
-                {
-                    new KeyValuePair<ListKind, bool>(ListKind.Ignored, search.ShowIgnored),
-                    new KeyValuePair<ListKind, bool>(ListKind.NotInterested, search.ShowNotInterested),
-                    new KeyValuePair<ListKind, bool>(ListKind.Moderator, search.ShowMods),
-                    new KeyValuePair<ListKind, bool>(ListKind.Friend, search.ShowFriends),
-                    new KeyValuePair<ListKind, bool>(ListKind.Bookmark, search.ShowBookmarks)
-                };
+            {
+                new KeyValuePair<ListKind, bool>(ListKind.Ignored, search.ShowIgnored),
+                new KeyValuePair<ListKind, bool>(ListKind.NotInterested, search.ShowNotInterested),
+                new KeyValuePair<ListKind, bool>(ListKind.Moderator, search.ShowMods),
+                new KeyValuePair<ListKind, bool>(ListKind.Friend, search.ShowFriends),
+                new KeyValuePair<ListKind, bool>(ListKind.Bookmark, search.ShowBookmarks)
+            };
 
             // weee thread-safe functions
             foreach (var pair in map.Where(pair => cm.IsOnList(name, pair.Key)))
@@ -254,23 +255,23 @@ namespace slimCat.Utilities
             GeneralChannelModel channel)
         {
             var map = new HashSet<KeyValuePair<ListKind, string>>
-                {
-                    new KeyValuePair<ListKind, string>(ListKind.Friend, "a"),
-                    new KeyValuePair<ListKind, string>(ListKind.Bookmark, "b"),
-                    new KeyValuePair<ListKind, string>(ListKind.Interested, "c"),
-                    new KeyValuePair<ListKind, string>(ListKind.Moderator, "d"),
-                    new KeyValuePair<ListKind, string>(ListKind.Ignored, "z"),
-                    new KeyValuePair<ListKind, string>(ListKind.NotInterested, "z"),
-                };
+            {
+                new KeyValuePair<ListKind, string>(ListKind.Friend, "a"),
+                new KeyValuePair<ListKind, string>(ListKind.Bookmark, "b"),
+                new KeyValuePair<ListKind, string>(ListKind.Interested, "c"),
+                new KeyValuePair<ListKind, string>(ListKind.Moderator, "d"),
+                new KeyValuePair<ListKind, string>(ListKind.Ignored, "z"),
+                new KeyValuePair<ListKind, string>(ListKind.NotInterested, "z"),
+            };
 
             var statusMap = new Dictionary<StatusType, string>
-                {
-                    {StatusType.Looking, "e"},
-                    {StatusType.Busy, "g"},
-                    {StatusType.Idle, "h"},
-                    {StatusType.Away, "i"},
-                    {StatusType.Dnd, "y"}
-                };
+            {
+                {StatusType.Looking, "e"},
+                {StatusType.Busy, "g"},
+                {StatusType.Idle, "h"},
+                {StatusType.Away, "i"},
+                {StatusType.Dnd, "y"}
+            };
 
             foreach (var pair in map.Where(pair => cm.IsOnList(character.Name, pair.Key)))
                 return pair.Value;
@@ -325,7 +326,8 @@ namespace slimCat.Utilities
             return JsonConvert.DeserializeObject<T>(objectString);
         }
 
-        public static void NewCharacterUpdate(this IEventAggregator events, ICharacter character, CharacterUpdateEventArgs e)
+        public static void NewCharacterUpdate(this IEventAggregator events, ICharacter character,
+            CharacterUpdateEventArgs e)
         {
             events.GetEvent<NewUpdateEvent>().Publish(new CharacterUpdateModel(character, e));
         }

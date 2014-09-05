@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="TicketProvider.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,12 +21,12 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using Models;
-    using Models.Api;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using Models;
+    using Models.Api;
     using Utilities;
 
     #endregion
@@ -34,6 +34,7 @@ namespace slimCat.Services
     internal class TicketProvider : ITicketProvider
     {
         #region Fields
+
         private const string siteIsDisabled = "The site has been disabled for maintenance, check back later.";
         private readonly IBrowser browser;
 
@@ -42,19 +43,23 @@ namespace slimCat.Services
 
         private string lastTicket;
 
-        private Dictionary<string, object> ticketCredentials;
         private Dictionary<string, object> loginCredentials;
         private bool shouldGetNewTicket;
+        private Dictionary<string, object> ticketCredentials;
+
         #endregion
 
         #region Constructors
+
         public TicketProvider(IBrowser browser)
         {
             this.browser = browser;
         }
+
         #endregion
 
         #region Properties
+
         public bool ShouldGetNewTicket
         {
             set { shouldGetNewTicket = value; }
@@ -82,9 +87,11 @@ namespace slimCat.Services
                 return lastAccount;
             }
         }
+
         #endregion
 
         #region Methods
+
         public void SetCredentials(string user, string pass)
         {
             if (lastAccount != null
@@ -93,20 +100,20 @@ namespace slimCat.Services
                 return;
 
             ticketCredentials = new Dictionary<string, object>
-                {
-                    {"account", user.ToLower()},
-                    {"password", pass},
-                };
+            {
+                {"account", user.ToLower()},
+                {"password", pass},
+            };
 
             loginCredentials = new Dictionary<string, object>
-                {
-                    {"username", user.ToLower()},
-                    {"password", pass},
-                };
+            {
+                {"username", user.ToLower()},
+                {"password", pass},
+            };
 
             lastAccount = new AccountModel
             {
-                AccountName = user, 
+                AccountName = user,
                 Password = pass
             };
 
@@ -150,12 +157,13 @@ namespace slimCat.Services
                 }
             }
 
-            foreach (var bookmark in result.Bookmarks.Where(bookmark => !lastAccount.Bookmarks.Contains(bookmark.Name)))
+            foreach (
+                var bookmark in result.Bookmarks.Where(bookmark => !lastAccount.Bookmarks.Contains(bookmark.Name)))
                 lastAccount.Bookmarks.Add(bookmark.Name);
 
             lastInfoRetrieval = DateTime.Now;
             ShouldGetNewTicket = false;
-            Log("Successfully got a new ticket: " + result.Ticket.Substring(result.Ticket.Length-6));
+            Log("Successfully got a new ticket: " + result.Ticket.Substring(result.Ticket.Length - 6));
         }
 
         private void ReAuthenticate()
@@ -168,6 +176,7 @@ namespace slimCat.Services
         {
             Logging.LogLine(text, "ticket serv");
         }
+
         #endregion
     }
 }

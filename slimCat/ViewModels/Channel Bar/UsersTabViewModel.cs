@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="UsersTabViewModel.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,11 +21,11 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
-    using System.Collections.Generic;
-    using System.Linq;
     using Utilities;
     using Views;
 
@@ -59,39 +59,39 @@ namespace slimCat.ViewModels
             genderSettings = new GenderSettingsModel();
 
             SearchSettings.Updated += (s, e) =>
-                {
-                    OnPropertyChanged("SortedUsers");
-                    OnPropertyChanged("SearchSettings");
-                };
+            {
+                OnPropertyChanged("SortedUsers");
+                OnPropertyChanged("SearchSettings");
+            };
 
             GenderSettings.Updated += (s, e) =>
-                {
-                    OnPropertyChanged("GenderSettings");
-                    OnPropertyChanged("SortedUsers");
-                };
+            {
+                OnPropertyChanged("GenderSettings");
+                OnPropertyChanged("SortedUsers");
+            };
 
             ChatModel.SelectedChannelChanged += (s, e) =>
-                {
-                    currentChan = null;
-                    OnPropertyChanged("SortContentString");
-                    OnPropertyChanged("SortedUsers");
-                };
+            {
+                currentChan = null;
+                OnPropertyChanged("SortContentString");
+                OnPropertyChanged("SortedUsers");
+            };
 
             Events.GetEvent<NewUpdateEvent>().Subscribe(
                 args =>
-                    {
-                        var thisNotification = args as CharacterUpdateModel;
-                        if (thisNotification == null)
-                            return;
+                {
+                    var thisNotification = args as CharacterUpdateModel;
+                    if (thisNotification == null)
+                        return;
 
-                        if (thisNotification.Arguments is PromoteDemoteEventArgs)
-                            OnPropertyChanged("HasPermissions");
+                    if (thisNotification.Arguments is PromoteDemoteEventArgs)
+                        OnPropertyChanged("HasPermissions");
 
 
-                        else if (thisNotification.Arguments is JoinLeaveEventArgs
-                                 || thisNotification.Arguments is CharacterListChangedEventArgs)
-                            OnPropertyChanged("SortedUsers");
-                    });
+                    else if (thisNotification.Arguments is JoinLeaveEventArgs
+                             || thisNotification.Arguments is CharacterListChangedEventArgs)
+                        OnPropertyChanged("SortedUsers");
+                });
         }
 
         #endregion

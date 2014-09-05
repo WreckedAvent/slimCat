@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Exceptions.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -40,23 +40,22 @@ namespace slimCat.Utilities
                                               "\n\nPlease submit the stacktrace.log file found in your slimCat installation folder to slimCat on F-list for debugging purposes.";
 
         private const string DefaultDebugMessage = "Uh-oh! Something bad happened." +
-                                              "\n\nPlease submit the trace.log file found in your slimCat installation folder to slimCat on F-list for debugging purposes.";
+                                                   "\n\nPlease submit the trace.log file found in your slimCat installation folder to slimCat on F-list for debugging purposes.";
+
         #endregion
 
         #region Public Methods and Operators
 
-
-
 #if DEBUG
-        /// <summary>
-        ///     Writes the given exception to a log file in a uniform way.
-        /// </summary>
-        /// <param name="ex">
-        ///     Exception to be traced
-        /// </param>
-        /// <param name="message">
-        ///     The message.
-        /// </param>
+    /// <summary>
+    ///     Writes the given exception to a log file in a uniform way.
+    /// </summary>
+    /// <param name="ex">
+    ///     Exception to be traced
+    /// </param>
+    /// <param name="message">
+    ///     The message.
+    /// </param>
         public static void HandleException(Exception ex, string message = DefaultDebugMessage)
         {
             Logging.LogHeader("Exception at " + DateTime.UtcNow);
@@ -81,7 +80,7 @@ namespace slimCat.Utilities
         ///     The message.
         /// </param>
         public static void HandleException(Exception ex, string message = DefaultMessage)
-        {            
+        {
             try
             {
                 using (var file = new StreamWriter(@"Stacktrace.log", true))
@@ -122,7 +121,7 @@ namespace slimCat.Utilities
         {
             const int topMostOption = 0x40000;
             const int getsForegroundOption = 0x010000;
-            const MessageBoxOptions options = (MessageBoxOptions)(topMostOption | getsForegroundOption);
+            const MessageBoxOptions options = (MessageBoxOptions) (topMostOption | getsForegroundOption);
 
             MessageBox.Show(
                 message,

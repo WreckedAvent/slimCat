@@ -1,19 +1,19 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Browser.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="BrowserService.cs">
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -81,13 +81,13 @@ namespace slimCat.Services
                 if (answerStream == null)
                     return null;
                 using (var answerReader = new StreamReader(answerStream))
-                    return answerReader.ReadToEnd(); 
+                    return answerReader.ReadToEnd();
             }
         }
 
         public string GetResponse(string host, bool useCookies = false)
         {
-            var req = (HttpWebRequest)WebRequest.Create(host);
+            var req = (HttpWebRequest) WebRequest.Create(host);
             req.Method = "GET";
 
             if (useCookies)
@@ -95,7 +95,7 @@ namespace slimCat.Services
 
             req.UserAgent = Constants.FriendlyName;
 
-            using (var rep = (HttpWebResponse)req.GetResponse())
+            using (var rep = (HttpWebResponse) req.GetResponse())
             using (var answerStream = rep.GetResponseStream())
             {
                 if (answerStream == null)

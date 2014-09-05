@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ChannelBarViewModel.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,14 +21,14 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System;
+    using System.Linq;
+    using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Services;
-    using System;
-    using System.Linq;
-    using System.Windows.Input;
     using Utilities;
     using Views;
 
@@ -51,18 +51,16 @@ namespace slimCat.ViewModels
         #region Fields
 
         private string currentSelected;
-
-        private bool needsAttention;
+        private bool hasNewNotifications;
+        private bool hasNewSearchResults;
+        private bool hasUpdate;
 
         private bool isExpanded = true;
+        private bool needsAttention;
 
         private RelayCommand @select;
 
         private RelayCommand toggle;
-
-        private bool hasUpdate;
-        private bool hasNewSearchResults;
-        private bool hasNewNotifications;
 
         #endregion
 
@@ -182,42 +180,42 @@ namespace slimCat.ViewModels
             {
                 return toggle ?? (toggle = new RelayCommand(
                     delegate
+                    {
+                        IsExpanded = !IsExpanded;
+
+                        if (IsExpanded)
                         {
-                            IsExpanded = !IsExpanded;
-
-                            if (IsExpanded)
+                            // this shoots us to the notifications tab if we have something to see there
+                            if (HasUpdate)
                             {
-                                // this shoots us to the notifications tab if we have something to see there
-                                if (HasUpdate)
+                                NavigateToTabEvent("Notifications");
+
+                                // used to check if we weren't already here; now that isn't possible
+                                if (OnJumpToNotifications != null)
                                 {
-                                    NavigateToTabEvent("Notifications");
+                                    OnJumpToNotifications(
+                                        this, new EventArgs());
 
-                                    // used to check if we weren't already here; now that isn't possible
-                                    if (OnJumpToNotifications != null)
-                                    {
-                                        OnJumpToNotifications(
-                                            this, new EventArgs());
-
-                                        // this lets the view sync our jump
-                                    }
-
-                                    HasUpdate = false;
+                                    // this lets the view sync our jump
                                 }
-                                else if (
-                                    !string.IsNullOrWhiteSpace(
-                                        currentSelected))
-                                {
-                                    // this fixes a very subtle bug where a list won't load or won't load properly after switching tabs
-                                    NavigateToTabEvent(
-                                        currentSelected);
-                                }
+
+                                HasUpdate = false;
                             }
-                            else
+                            else if (
+                                !string.IsNullOrWhiteSpace(
+                                    currentSelected))
                             {
-                                // when we close it, unload the tab, but _currentSelected remains what it was so we remember user input
-                                NavigateToTabEvent("NoTab");
+                                // this fixes a very subtle bug where a list won't load or won't load properly after switching tabs
+                                NavigateToTabEvent(
+                                    currentSelected);
                             }
-                        }));
+                        }
+                        else
+                        {
+                            // when we close it, unload the tab, but _currentSelected remains what it was so we remember user input
+                            NavigateToTabEvent("NoTab");
+                        }
+                    }));
             }
         }
 

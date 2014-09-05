@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CommandDefinitions.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -60,7 +60,6 @@ namespace slimCat.Models
                 Define("code").AsArgumentless(),
                 Define("clear").AsForChannels(),
                 Define("clearall").AsArgumentless(),
-
                 Define("close").AsForChannels(),
                 Define("coplist", "modlist").As(C.ChannelModeratorList).AsForChannels(),
                 Define("denyfriendrequest", "denyrequest").As("request-deny").AsForCharacters(),
@@ -68,42 +67,39 @@ namespace slimCat.Models
                 Define("ignore").As(C.UserIgnore).WithArguments(A.Character, A.Action),
                 Define("ignoreUpdates").AsForCharacters(),
                 Define("interesting").AsForCharacters(),
-
                 Define("invite").As(C.UserInvite).WithArguments(A.Character, A.Channel),
                 Define("ignorelist").As(C.UserIgnore).WithArgument(A.Action),
                 Define("join").AsForChannels(),
                 Define("lastupdate").As("_snap_to_last_update").AsArgumentless(),
                 Define("logheader").As("_logger_new_header").WithArgument("title"),
                 Define("logsection").As("_logger_new_section").WithArgument("title"),
-
                 Define("lognewline").As("_logger_new_line").AsArgumentless(),
                 Define("logout").AsArgumentless(),
                 Define("makeroom").As(C.ChannelCreate).AsForChannels(),
                 Define("notinteresting").AsForCharacters(),
                 Define("openlog").As("_logger_open_log").AsForChannels(),
-
                 Define("openlogfolder", "openfolder").As("_logger_open_folder").AsForChannels(),
                 Define("priv", "pm", "tell").AsForCharacters(),
                 Define("rejoin").AsForChannels(),
                 Define("removebookmark").As("bookmark-remove").WithArgument(A.Name),
                 Define("removefriend").As("friend-remove").AsForCharacters(),
                 Define("cancelrequest", "cancelfriendrequest").As("request-cancel").AsForCharacters(),
-
                 Define("roll").As(C.ChannelRoll).WithArguments("dice", A.Channel),
                 Define("report").As(C.AdminAlert).WithArguments(A.Name, A.Report, A.Action, A.Channel),
-                Define("status", "online", "away", "busy", "idle", "dnd", "looking").As(C.UserStatus).WithArguments(A.Status, A.StatusMessage),
+                Define("status", "online", "away", "busy", "idle", "dnd", "looking")
+                    .As(C.UserStatus)
+                    .WithArguments(A.Status, A.StatusMessage),
                 Define("setowner").As(C.ChannelSetOwner).WithArguments(A.Character, A.Channel),
                 Define("soundon").AsArgumentless(),
                 Define("soundoff").AsArgumentless(),
                 Define("sendfriendrequest", "sendrequest", "addfriend").As("request-send").AsForCharacters(),
                 Define("searchtag").AsForCharacters(),
-
                 Define("tempignore").AsForCharacters(),
                 Define("tempunignore").AsForCharacters(),
                 Define("tempnotinteresting").AsForCharacters(),
                 Define("unignore").As(C.UserIgnore).WithArguments(A.Character, A.Action),
                 Define("who").AsArgumentless()
-            );
+                );
 
 
             ModeratorCommands(
@@ -112,17 +108,15 @@ namespace slimCat.Models
                 Define("closeroom").As(C.ChannelKind).WithArguments("status", A.Channel),
                 Define("demote", "dop").As(C.ChannelDemote).WithArguments(A.Character, A.Channel),
                 Define("getdescription").WithArgument(A.Channel),
-
                 Define("kick").As(C.ChannelKick).WithArguments(A.Character, A.Channel),
                 Define("killchannel").As(C.ChannelKill).WithArgument(A.Channel),
                 Define("openroom").As(C.ChannelKind).WithArguments("status", A.Channel),
                 Define("promote", "cop").As(C.ChannelPromote).WithArguments(A.Character, A.Channel),
                 Define("setdescription").As(C.ChannelDescription).WithArguments("description", A.Channel),
-
                 Define("timeout").As(C.ChannelTimeOut).WithArguments(A.Character, "time", "reason"),
                 Define("unban").As(C.ChannelUnban).WithArguments(A.Character, A.Channel),
                 Define("setmode").As(C.ChannelMode).WithArguments(A.Mode, A.Channel)
-            );
+                );
 
 
             AdminCommands(
@@ -131,22 +125,20 @@ namespace slimCat.Models
                 Define("chatunban", "gunban").As(C.AdminUnban).AsForCharacters(),
                 Define("reward").As(C.AdminReward).AsForCharacters(),
                 Define("chattimeout", "gtimeout").As(C.AdminTimeout).WithArguments(A.Character, "time", "reason"),
-
                 Define("handlereport", "hr").WithArgument(A.Name),
                 Define("handlelatest", "r").WithArgument(A.Name),
                 Define("broadcast").As(C.AdminBroadcast).AsForCharacters(),
                 Define("chatdemote", "deop").As(C.AdminDemote).AsForCharacters(),
                 Define("chatpromote", "op").As(C.AdminPromote).AsForCharacters(),
-
                 Define("makechannel", "createchannel").As(C.SystemChannelCreate).AsForChannels()
-            );
+                );
 
             SystemCommands(
                 Define(ClientSendTypingStatus).As(C.UserTyping).WithArguments("status", A.Character),
                 Define(ClientSendPm).As(C.UserMessage).WithArguments(A.Message, "recipient"),
                 Define(ClientSendChannelMessage).As(C.ChannelMessage).WithArguments(A.Message, A.Channel),
                 Define(ClientSendChannelAd).As(C.ChannelAd).WithArguments(A.Message, A.Channel)
-            );
+                );
         }
 
         #region Static Fields
@@ -163,51 +155,51 @@ namespace slimCat.Models
 
         private static readonly IDictionary<string, CommandOverride> CommandOverrides = new Dictionary
             <string, CommandOverride>(StringComparer.OrdinalIgnoreCase)
+        {
+            // command to override, command parameter to override, value to override with
             {
-                // command to override, command parameter to override, value to override with
-                {
-                    "online", new CommandOverride(A.Status, "online")
-                },
-                {
-                    "busy", new CommandOverride(A.Status, "busy")
-                },
-                {
-                    "looking", new CommandOverride(A.Status, "looking")
-                },
-                {
-                    "away", new CommandOverride(A.Status, "away")
-                },
-                {
-                    "dnd", new CommandOverride(A.Status, "dnd")
-                },
-                {
-                    "idle", new CommandOverride(A.Status, "idle")
-                },
-                {
-                    "ignore", new CommandOverride(A.Action, A.ActionAdd)
-                },
-                {
-                    "unignore", new CommandOverride(A.Action, A.ActionDelete)
-                },
-                {
-                    "openroom", new CommandOverride(A.Status, "public")
-                },
-                {
-                    "closeroom", new CommandOverride(A.Status, "private")
-                },
-                {
-                    "bottle", new CommandOverride("dice", "bottle")
-                },
-                {
-                    "report", new CommandOverride(A.Action, A.ActionReport)
-                },
-                {
-                    "handlereport", new CommandOverride(A.Action, A.ActionConfirm)
-                },
-                {
-                    "ignorelist", new CommandOverride(A.Action, "list")
-                }
-            };
+                "online", new CommandOverride(A.Status, "online")
+            },
+            {
+                "busy", new CommandOverride(A.Status, "busy")
+            },
+            {
+                "looking", new CommandOverride(A.Status, "looking")
+            },
+            {
+                "away", new CommandOverride(A.Status, "away")
+            },
+            {
+                "dnd", new CommandOverride(A.Status, "dnd")
+            },
+            {
+                "idle", new CommandOverride(A.Status, "idle")
+            },
+            {
+                "ignore", new CommandOverride(A.Action, A.ActionAdd)
+            },
+            {
+                "unignore", new CommandOverride(A.Action, A.ActionDelete)
+            },
+            {
+                "openroom", new CommandOverride(A.Status, "public")
+            },
+            {
+                "closeroom", new CommandOverride(A.Status, "private")
+            },
+            {
+                "bottle", new CommandOverride("dice", "bottle")
+            },
+            {
+                "report", new CommandOverride(A.Action, A.ActionReport)
+            },
+            {
+                "handlereport", new CommandOverride(A.Action, A.ActionConfirm)
+            },
+            {
+                "ignorelist", new CommandOverride(A.Action, "list")
+            }
+        };
 
         #endregion
 
@@ -243,8 +235,8 @@ namespace slimCat.Models
                 var overrideArg = commandOverride.ArgumentName;
                 var position = model.ArgumentNames.IndexOf(overrideArg);
 
-                args = (args == null) 
-                    ? new List<string>() 
+                args = (args == null)
+                    ? new List<string>()
                     : new List<string>(args);
 
                 if (position != -1 && !(position > args.Count))
@@ -261,7 +253,7 @@ namespace slimCat.Models
             var argsCount = (args != null ? args.Count : 0);
             var modelArgsCount = (model.ArgumentNames != null ? model.ArgumentNames.Count : 0);
 
-            var difference =  argsCount - modelArgsCount;
+            var difference = argsCount - modelArgsCount;
 
             // if we have parity in counts we don't have any issues
             if (difference == 0) return toReturn;
@@ -269,9 +261,10 @@ namespace slimCat.Models
             // error out if we have more arguments than we should
             if (difference > 0 || model.ArgumentNames == null)
             {
-                throw new ArgumentException("{0} takes {1} arguments, not {2}.".FormatWith(familiarName, modelArgsCount, argsCount));
+                throw new ArgumentException("{0} takes {1} arguments, not {2}.".FormatWith(familiarName, modelArgsCount,
+                    argsCount));
             }
-            
+
             var missingArgument = model.ArgumentNames[difference + model.ArgumentNames.Count];
 
             // error out if we have less arguments, but not if we are only missing the channel argument provided by the active channel
@@ -335,8 +328,8 @@ namespace slimCat.Models
 
         private static void AddAliases(params FluentCommandBuilder[] commands)
         {
-            commands.Each(command => 
-                command.Aliases.Each(alias => 
+            commands.Each(command =>
+                command.Aliases.Each(alias =>
                     CommandAliases.Add(alias, command.CommonName)));
         }
 
@@ -357,18 +350,8 @@ namespace slimCat.Models
         }
     }
 
-    class FluentCommandBuilder
+    internal class FluentCommandBuilder
     {
-        public string CommonName { get; set; }
-        public T CommandType { get; set; }
-
-        public P PermissionLevel { get; set; }
-
-        public string RemoteName { get; set; }
-        public IList<string> Arguments { get; set; }
-
-        public IList<string> Aliases { get; set; } 
-
         public FluentCommandBuilder(string commonName, params string[] aliases)
         {
             CommonName = commonName;
@@ -377,6 +360,16 @@ namespace slimCat.Models
             CommandType = T.SingleWord;
             PermissionLevel = P.User;
         }
+
+        public string CommonName { get; set; }
+        public T CommandType { get; set; }
+
+        public P PermissionLevel { get; set; }
+
+        public string RemoteName { get; set; }
+        public IList<string> Arguments { get; set; }
+
+        public IList<string> Aliases { get; set; }
 
         public FluentCommandBuilder OfType(T type)
         {
@@ -458,7 +451,8 @@ namespace slimCat.Models
 
         public KeyValuePair<string, CommandModel> Build()
         {
-            return new KeyValuePair<string, CommandModel>(CommonName, new CommandModel(CommonName, RemoteName ?? CommonName, Arguments, CommandType, PermissionLevel));
+            return new KeyValuePair<string, CommandModel>(CommonName,
+                new CommandModel(CommonName, RemoteName ?? CommonName, Arguments, CommandType, PermissionLevel));
         }
     }
 }

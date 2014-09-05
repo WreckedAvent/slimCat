@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ViewModelBase.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,6 +21,12 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Web;
+    using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Modularity;
@@ -28,12 +34,6 @@ namespace slimCat.ViewModels
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Web;
-    using System.Windows.Input;
     using Utilities;
 
     #endregion
@@ -45,7 +45,9 @@ namespace slimCat.ViewModels
     {
         #region Fields
 
+        private RelayCommand advanceFriend;
         private RelayCommand ban;
+        private RelayCommand bookmark;
 
         private RelayCommand getLogs;
 
@@ -68,14 +70,11 @@ namespace slimCat.ViewModels
         private RelayCommand openMenu;
 
         private RelayCommand openPm;
+        private RelayCommand regressFriend;
         private RelayCommand report;
 
-        private RelayCommand unignore;
         private RelayCommand searchTag;
-
-        private RelayCommand advanceFriend;
-        private RelayCommand bookmark;
-        private RelayCommand regressFriend;
+        private RelayCommand unignore;
 
         #endregion
 
@@ -92,7 +91,8 @@ namespace slimCat.ViewModels
                 CharacterManager = chatState.CharacterManager;
                 ChatConnection = chatState.ChatConnection;
 
-                RightClickMenuViewModel = new RightClickMenuViewModel(ChatModel.IsGlobalModerator, CharacterManager, Container.Resolve<IPermissionService>());
+                RightClickMenuViewModel = new RightClickMenuViewModel(ChatModel.IsGlobalModerator, CharacterManager,
+                    Container.Resolve<IPermissionService>());
                 CreateReportViewModel = new CreateReportViewModel(Events, ChatModel);
                 ChatModel.SelectedChannelChanged += OnSelectedChannelChanged;
 
@@ -153,7 +153,8 @@ namespace slimCat.ViewModels
                 var channel = ChatModel.CurrentChannel as GeneralChannelModel;
 
                 if (channel != null)
-                    isLocalMod = channel.CharacterManager.IsOnList(ChatModel.CurrentCharacter.Name, ListKind.Moderator, false);
+                    isLocalMod = channel.CharacterManager.IsOnList(ChatModel.CurrentCharacter.Name, ListKind.Moderator,
+                        false);
 
                 return ChatModel.IsGlobalModerator || isLocalMod;
             }
@@ -271,10 +272,10 @@ namespace slimCat.ViewModels
             {
                 return openMenu ?? (openMenu = new RelayCommand(
                     args =>
-                        {
-                            var newTarget = CharacterManager.Find(args as string);
-                            OnRightClickMenuUpdated(newTarget);
-                        }));
+                    {
+                        var newTarget = CharacterManager.Find(args as string);
+                        OnRightClickMenuUpdated(newTarget);
+                    }));
             }
         }
 
@@ -401,7 +402,7 @@ namespace slimCat.ViewModels
             {
                 if (interpret.EndsWith("/notes"))
                 {
-                    Events.SendUserCommand("priv", new[] { interpret });
+                    Events.SendUserCommand("priv", new[] {interpret});
                     return;
                 }
 
@@ -411,7 +412,7 @@ namespace slimCat.ViewModels
                     return;
                 }
 
-                Events.SendUserCommand("priv", new []{ interpret + "/profile" });
+                Events.SendUserCommand("priv", new[] {interpret + "/profile"});
                 return;
             }
 
@@ -496,7 +497,7 @@ namespace slimCat.ViewModels
 
         private void SearchTagEvent(object obj)
         {
-            Events.SendUserCommand("searchtag", new []{obj as string});
+            Events.SendUserCommand("searchtag", new[] {obj as string});
             OnRightClickMenuUpdated(RightClickMenuViewModel.Target);
         }
 
@@ -524,7 +525,7 @@ namespace slimCat.ViewModels
         private void IgnoreUpdatesEvent(object args)
         {
             Events.SendUserCommand("ignoreUpdates", new[] {args as string});
-            OnRightClickMenuUpdated(RightClickMenuViewModel.Target); 
+            OnRightClickMenuUpdated(RightClickMenuViewModel.Target);
         }
 
         private void IsInterestedEvent(object args)
@@ -540,7 +541,8 @@ namespace slimCat.ViewModels
         protected virtual void LogoutEvent(object o)
         {
             ChatConnection.Disconnect();
-            RegionManager.RequestNavigate(Shell.MainRegion, new Uri(CharacterSelectViewModel.CharacterSelectViewName, UriKind.Relative));
+            RegionManager.RequestNavigate(Shell.MainRegion,
+                new Uri(CharacterSelectViewModel.CharacterSelectViewName, UriKind.Relative));
         }
 
         private void KickEvent(object args)
@@ -580,7 +582,7 @@ namespace slimCat.ViewModels
             if (CharacterManager.IsOnList(character, ListKind.FriendRequestSent, false) && !actionSelected)
                 action = "cancelrequest";
 
-            Events.SendUserCommand(action, new[] { character });
+            Events.SendUserCommand(action, new[] {character});
         }
 
         private void BookmarkEvent(object obj)
@@ -589,7 +591,7 @@ namespace slimCat.ViewModels
 
             Events.SendUserCommand(
                 CharacterManager.IsOnList(character, ListKind.Bookmark, false) ? "removebookmark" : "addbookmark",
-                new[] { character });
+                new[] {character});
         }
 
         private void AdvanceFriendEvent(object obj)
@@ -608,7 +610,7 @@ namespace slimCat.ViewModels
             if (!CharacterManager.IsOnList(character, ListKind.Friend, false) && !actionSelected)
                 action = "addfriend";
 
-            Events.SendUserCommand(action, new[] { character });
+            Events.SendUserCommand(action, new[] {character});
         }
 
         [Conditional("DEBUG")]

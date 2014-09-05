@@ -15,8 +15,8 @@
             <RowDefinition Height="Auto"
                            x:Name="ChannelDescriptionRowDefinition"
                            MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=92}"
-                           MinHeight="35"/>
-            <RowDefinition Height="*"/>
+                           MinHeight="35" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="auto"
                            x:Name="EntryBoxRowDefinition"
                            MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=60}" />
@@ -36,7 +36,8 @@
                         <Run Text="{Binding Path=ChatContentString, Mode=OneWay}" />
                     </TextBlock>
                 </Expander.Header>
-                <ScrollViewer MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=90}">
+                <ScrollViewer
+                    MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=90}">
                     <TextBlock Margin="0"
                                FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
                                Foreground="{StaticResource ForegroundBrush}"
@@ -73,9 +74,9 @@
             MessageSource="{Binding Path=CurrentMessages, Mode=OneWay}" />
 
         <lib:NonTopmostPopup Grid.Row="1"
-               PlacementTarget="{Binding ElementName=PopupAnchor}"
-               Placement="Center"
-               IsOpen="{Binding Path=SearchSettings.IsChangingSettings}">
+                             PlacementTarget="{Binding ElementName=PopupAnchor}"
+                             Placement="Center"
+                             IsOpen="{Binding Path=SearchSettings.IsChangingSettings}">
 
             <Border BorderBrush="{StaticResource HighlightBrush}"
                     BorderThickness="2"
@@ -106,22 +107,21 @@
 
         <v:ChannelSettingsView Grid.Row="1" />
 
-        <GridSplitter Grid.Row="2" MouseDoubleClick="OnEntryBoxResizeRequested"> 
-        </GridSplitter>
-        
-        <Grid Grid.Row="2" 
-              Height="auto" 
+        <GridSplitter Grid.Row="2" MouseDoubleClick="OnEntryBoxResizeRequested" />
+
+        <Grid Grid.Row="2"
+              Height="auto"
               Margin="0,4,0,0"
               MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=65}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"  />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            
+
             <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto" />
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal"
                             VerticalAlignment="Center"
@@ -140,12 +140,12 @@
                                Foreground="{StaticResource HighlightBrush}"
                                VerticalAlignment="Center"
                                Margin="2,0,0,0"
-                               Visibility="{Binding Path=CanShowAutoTimeLeft, Mode=OneWay, Converter={StaticResource BoolConverter}}"/>
+                               Visibility="{Binding Path=CanShowAutoTimeLeft, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
                     <TextBlock Foreground="{StaticResource HighlightBrush}"
                                Text="{Binding Path=AutoTimeLeft, Mode=OneWay}"
                                VerticalAlignment="Center"
                                Margin="2,0,0,0"
-                               Visibility="{Binding Path=CanShowAutoTimeLeft, Mode=OneWay, Converter={StaticResource BoolConverter}}"/>
+                               Visibility="{Binding Path=CanShowAutoTimeLeft, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal"
@@ -155,8 +155,8 @@
 
                     <v:MarkupButtonView Margin="4"
                                         VerticalAlignment="Center"
-                                        IsChecked="{Binding Path=ShowPreview, Mode=TwoWay}"/>
-                    
+                                        IsChecked="{Binding Path=ShowPreview, Mode=TwoWay}" />
+
                     <v:AutoButtonView IsChecked="{Binding Path=AutoPost, Mode=TwoWay}"
                                       Visibility="{Binding Path=ShouldShowAutoPost, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                                       Margin="4"

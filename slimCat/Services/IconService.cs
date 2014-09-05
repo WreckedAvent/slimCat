@@ -1,50 +1,54 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="NotificationService.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="IconService.cs">
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
 namespace slimCat.Services
 {
     #region Usings
-    using Microsoft.Practices.Prism.Events;
-    using Models;
-    using Properties;
+
     using System;
     using System.Drawing;
     using System.Windows;
     using System.Windows.Forms;
     using System.Windows.Threading;
+    using Microsoft.Practices.Prism.Events;
+    using Models;
+    using Properties;
     using Utilities;
     using Application = System.Windows.Application;
+
     #endregion
 
     public class IconService : DispatcherObject, IDisposable, IIconService
     {
         #region Fields
-        private readonly IEventAggregator events;
 
         private readonly IChatModel cm;
+        private readonly IEventAggregator events;
 
         private readonly NotifyIcon icon = new NotifyIcon();
 
         public event EventHandler SettingsChanged;
+
         #endregion
 
         #region Constructors
+
         public IconService(IEventAggregator eventagg, IChatModel chatModel)
         {
             events = eventagg;
@@ -52,9 +56,16 @@ namespace slimCat.Services
 
             eventagg.GetEvent<CharacterSelectedLoginEvent>().Subscribe(OnCharacterSelected);
         }
+
         #endregion
 
         #region Public Methods
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
         public void ToggleSound()
         {
             ApplicationSettings.AllowSound = !ApplicationSettings.AllowSound;
@@ -83,11 +94,6 @@ namespace slimCat.Services
             Dispatcher.InvokeShutdown();
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
         public void Dispose(bool isManagedDispose)
         {
             if (!isManagedDispose)
@@ -95,9 +101,21 @@ namespace slimCat.Services
 
             icon.Dispose();
         }
+
         #endregion
 
         #region Methods
+
+        private MenuItem AllowSound
+        {
+            get { return icon.ContextMenu.MenuItems[2]; }
+        }
+
+        private MenuItem AllowToast
+        {
+            get { return icon.ContextMenu.MenuItems[3]; }
+        }
+
         private void BuildIcon(string character)
         {
             icon.Icon = new Icon(Environment.CurrentDirectory + @"\icons\catIcon.ico");
@@ -119,14 +137,20 @@ namespace slimCat.Services
                         Constants.ClientName,
                         Constants.ClientVer,
                         character))
-            {
-                Enabled = false
-            });
+                {
+                    Enabled = false
+                });
 
             iconMenu.MenuItems.Add(new MenuItem("-"));
 
-            iconMenu.MenuItems.Add(new MenuItem("Sounds Enabled", ToggleSound) { Checked = ApplicationSettings.AllowSound });
-            iconMenu.MenuItems.Add(new MenuItem("Toasts Enabled", ToggleToasts) { Checked = ApplicationSettings.ShowNotificationsGlobal });
+            iconMenu.MenuItems.Add(new MenuItem("Sounds Enabled", ToggleSound)
+            {
+                Checked = ApplicationSettings.AllowSound
+            });
+            iconMenu.MenuItems.Add(new MenuItem("Toasts Enabled", ToggleToasts)
+            {
+                Checked = ApplicationSettings.ShowNotificationsGlobal
+            });
             iconMenu.MenuItems.Add(new MenuItem("-"));
 
             iconMenu.MenuItems.Add("Show", (s, e) => ShowWindow());
@@ -150,16 +174,6 @@ namespace slimCat.Services
             cm.SelectedChannelChanged += (s, e) => events.GetEvent<ErrorEvent>().Publish(null);
 
             BuildIcon(character);
-        }
-
-        private MenuItem AllowSound
-        {
-            get { return icon.ContextMenu.MenuItems[2]; }
-        }
-
-        private MenuItem AllowToast
-        {
-            get { return icon.ContextMenu.MenuItems[3]; }
         }
 
         private void ToggleSound(object sender, EventArgs e)
@@ -186,6 +200,7 @@ namespace slimCat.Services
                     ToolTipIcon.Info);
             }
         }
+
         private static void ShowWindow()
         {
             Application.Current.MainWindow.Show();
@@ -194,6 +209,7 @@ namespace slimCat.Services
 
             Application.Current.MainWindow.Activate();
         }
+
         #endregion
     }
 

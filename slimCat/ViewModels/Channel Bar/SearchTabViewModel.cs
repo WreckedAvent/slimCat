@@ -1,19 +1,19 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="NotificationsTabViewModel.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="SearchTabViewModel.cs">
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,12 +21,6 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using Libraries;
-    using Microsoft.Practices.Prism;
-    using Microsoft.Practices.Unity;
-    using Models;
-    using Newtonsoft.Json.Linq;
-    using Services;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -37,6 +31,12 @@ namespace slimCat.ViewModels
     using System.Timers;
     using System.Windows.Data;
     using System.Windows.Input;
+    using Libraries;
+    using Microsoft.Practices.Prism;
+    using Microsoft.Practices.Unity;
+    using Models;
+    using Newtonsoft.Json.Linq;
+    using Services;
     using Utilities;
     using Views;
 
@@ -55,32 +55,27 @@ namespace slimCat.ViewModels
 
         #region Fields
 
+        private readonly ObservableCollection<SearchTermModel> availableSearchTerms =
+            new ObservableCollection<SearchTermModel>();
 
-        private RelayCommand addSearch;
-
-        private RelayCommand removeSearch;
-
-        private RelayCommand clearSearch;
-
-        private RelayCommand sendSearch;
-
+        private readonly ICollectionView availableView;
+        private readonly Timer chatSearchCooldownTimer = new Timer(5500);
         private readonly TimeSpan searchDebounce = TimeSpan.FromMilliseconds(250);
 
-        private readonly ObservableCollection<SearchTermModel> selectedSearchTerms = new ObservableCollection<SearchTermModel>();
+        private readonly ObservableCollection<SearchTermModel> selectedSearchTerms =
+            new ObservableCollection<SearchTermModel>();
 
         private readonly ICollectionView selectedView;
 
         private readonly DeferredAction updateActiveViews;
-
-        private readonly ObservableCollection<SearchTermModel> availableSearchTerms = new ObservableCollection<SearchTermModel>();
-
-        private readonly ICollectionView availableView;
-
-        private string searchString = string.Empty;
+        private RelayCommand addSearch;
+        private RelayCommand clearSearch;
 
         private bool isInSearchCoolDown;
+        private RelayCommand removeSearch;
+        private string searchString = string.Empty;
+        private RelayCommand sendSearch;
 
-        private readonly Timer chatSearchCooldownTimer = new Timer(5500);
         #endregion
 
         #region Constructors and Destructors
@@ -91,7 +86,8 @@ namespace slimCat.ViewModels
             Container.RegisterType<object, SearchTabView>(SearchTabView);
 
             var worker = new BackgroundWorker();
-            worker.DoWork += (sender, args) => PopulateSearchTerms(browser.GetResponse(Constants.UrlConstants.SearchFields));
+            worker.DoWork +=
+                (sender, args) => PopulateSearchTerms(browser.GetResponse(Constants.UrlConstants.SearchFields));
             worker.RunWorkerAsync();
 
             availableView = new ListCollectionView(availableSearchTerms);
@@ -196,10 +192,10 @@ namespace slimCat.ViewModels
         }
 
         public string SearchButtonText { get; set; }
+
         #endregion
 
         #region Methods
-
 
         private void UpdateAvailableViews()
         {
@@ -225,7 +221,7 @@ namespace slimCat.ViewModels
 
         private void AddSearchTermEvent(object obj)
         {
-            var term = (SearchTermModel)obj;
+            var term = (SearchTermModel) obj;
             availableSearchTerms.Remove(term);
 
             selectedSearchTerms.Add(term);
@@ -236,7 +232,7 @@ namespace slimCat.ViewModels
         private void SendSearchEvent(object obj)
         {
             var toSend = new Dictionary<string, IList<string>>();
-            
+
             selectedSearchTerms.Each(term =>
             {
                 if (!toSend.ContainsKey(term.Category))
@@ -285,7 +281,7 @@ namespace slimCat.ViewModels
                 DisplayName = x
             });
 
-            Dispatcher.BeginInvoke((Action)(() =>
+            Dispatcher.BeginInvoke((Action) (() =>
                 availableSearchTerms
                     .AddRange(kinks)
                     .AddRange(genders)
@@ -305,15 +301,15 @@ namespace slimCat.ViewModels
                     DisplayName = WebUtility.HtmlDecode((string) x)
                 });
         }
-        #endregion
 
+        #endregion
     }
 
-    class CategoryConverter : OneWayConverter
+    internal class CategoryConverter : OneWayConverter
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var toReturn = CultureInfo.CurrentCulture.TextInfo.ToTitleCase((string)value);
+            var toReturn = CultureInfo.CurrentCulture.TextInfo.ToTitleCase((string) value);
 
             return toReturn.Equals("Furryprefs") ? "Furry Preference" : toReturn;
         }

@@ -1,25 +1,29 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BroadcastCommand.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="ReportCommand.cs">
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
 namespace slimCat.Models
 {
+    #region Usings
+
     using Utilities;
+
+    #endregion
 
     public class ReportFiledEventArgs : CharacterUpdateEventArgs
     {
@@ -75,12 +79,16 @@ namespace slimCat.Models
 
 namespace slimCat.Services
 {
-    using Models;
+    #region Usings
+
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using System.Threading;
+    using Models;
     using Utilities;
+
+    #endregion
 
     public partial class ServerCommandService
     {
@@ -105,7 +113,7 @@ namespace slimCat.Services
 
                 var rawReport = report.Split('|').Select(x => x.Trim()).ToList();
 
-                var starters = new[] { "Current Tab/Channel:", "Reporting User:", string.Empty };
+                var starters = new[] {"Current Tab/Channel:", "Reporting User:", string.Empty};
 
                 // each section should start with one of these
                 var reportData = new List<string>();
@@ -179,7 +187,7 @@ namespace slimCat.Services
                 Events.GetEvent<NewUpdateEvent>()
                     .Publish(
                         new CharacterUpdateModel(
-                            handler, new ReportHandledEventArgs { Handled = handled }));
+                            handler, new ReportHandledEventArgs {Handled = handled}));
             }
         }
     }
@@ -239,17 +247,16 @@ namespace slimCat.Services
 
                 connection.SendMessage(command);
             }).Start();
-
         }
 
         private void OnHandleLatestReportRequested(IDictionary<string, object> command)
         {
             command.Clear();
             var latest = (from n in model.Notifications
-                          let update = n as CharacterUpdateModel
-                          where update != null
-                                && update.Arguments is ReportFiledEventArgs
-                          select update).FirstOrDefault();
+                let update = n as CharacterUpdateModel
+                where update != null
+                      && update.Arguments is ReportFiledEventArgs
+                select update).FirstOrDefault();
 
             if (latest == null)
                 return;

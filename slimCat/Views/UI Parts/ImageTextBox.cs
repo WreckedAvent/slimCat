@@ -1,20 +1,35 @@
-﻿namespace slimCat.Views
+﻿#region Copyright
+
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ImageTextBox.cs">
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+#endregion
+
+namespace slimCat.Views
 {
+    #region Usings
+
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
     using Brush = System.Drawing.Brush;
 
+    #endregion
+
     public class ImageTextBox : TextBox
     {
-        static ImageTextBox()
-        {
-
-            DefaultStyleKeyProperty.OverrideMetadata(
-                typeof(ImageTextBox),
-                new FrameworkPropertyMetadata(typeof(ImageTextBox)));
-        }
-
         public static DependencyProperty LabelTextProperty =
             DependencyProperty.Register(
                 "LabelText",
@@ -24,8 +39,8 @@
         public static DependencyProperty IconSourceProperty =
             DependencyProperty.Register(
                 "IconSource",
-                typeof(ImageSource),
-                typeof(ImageTextBox));
+                typeof (ImageSource),
+                typeof (ImageTextBox));
 
         public static DependencyProperty LabelTextColorProperty =
             DependencyProperty.Register(
@@ -42,12 +57,13 @@
 
         public static DependencyProperty HasTextProperty = HasTextPropertyKey.DependencyProperty;
 
-
-        protected override void OnTextChanged(TextChangedEventArgs e)
+        static ImageTextBox()
         {
-            base.OnTextChanged(e);
-            HasText = Text.Length != 0;
+            DefaultStyleKeyProperty.OverrideMetadata(
+                typeof (ImageTextBox),
+                new FrameworkPropertyMetadata(typeof (ImageTextBox)));
         }
+
 
         public string LabelText
         {
@@ -70,7 +86,13 @@
         public ImageSource IconSource
         {
             get { return (ImageSource) GetValue(IconSourceProperty); }
-            set { SetValue(IconSourceProperty, value);}
+            set { SetValue(IconSourceProperty, value); }
+        }
+
+        protected override void OnTextChanged(TextChangedEventArgs e)
+        {
+            base.OnTextChanged(e);
+            HasText = Text.Length != 0;
         }
     }
 }

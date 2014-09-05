@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ToastNotificationsViewModel.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,15 +21,15 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using Libraries;
-    using Microsoft.Practices.Prism.Events;
-    using Models;
     using System;
     using System.Diagnostics;
     using System.Linq;
     using System.Timers;
     using System.Web;
     using System.Windows.Input;
+    using Libraries;
+    using Microsoft.Practices.Prism.Events;
+    using Models;
     using Utilities;
     using Views;
 
@@ -57,16 +57,14 @@ namespace slimCat.ViewModels
         private string content = string.Empty;
 
         private RelayCommand hide;
+        private RelayCommand link;
 
         private RelayCommand snap;
 
-        private NotificationsView view;
-
         private ICharacter targetCharacter;
 
-        private RelayCommand link;
-
         private string title;
+        private NotificationsView view;
 
         #endregion
 
@@ -148,14 +146,19 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
+        public ICommand NavigateTo
+        {
+            get { return link ?? (link = new RelayCommand(StartLinkInDefaultBrowser)); }
+        }
+
         public void HideNotifications()
         {
             Dispatcher.Invoke(
                 (Action) delegate
-                    {
-                        view.OnHideCommand();
-                        hideDelay.Stop();
-                    });
+                {
+                    view.OnHideCommand();
+                    hideDelay.Stop();
+                });
         }
 
         public void OnSnapToLatestEvent(object args)
@@ -201,10 +204,6 @@ namespace slimCat.ViewModels
             ShowNotifications();
             view.OnContentChanged();
         }
-        public ICommand NavigateTo
-        {
-            get { return link ?? (link = new RelayCommand(StartLinkInDefaultBrowser)); }
-        }
 
         #endregion
 
@@ -231,7 +230,7 @@ namespace slimCat.ViewModels
             {
                 if (interpret.EndsWith("/notes"))
                 {
-                    events.SendUserCommand("priv", new[] { interpret });
+                    events.SendUserCommand("priv", new[] {interpret});
                     return;
                 }
 
@@ -241,7 +240,7 @@ namespace slimCat.ViewModels
                     return;
                 }
 
-                events.SendUserCommand("priv", new[] { interpret + "/profile" });
+                events.SendUserCommand("priv", new[] {interpret + "/profile"});
                 return;
             }
 

@@ -1,25 +1,29 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BroadcastCommand.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="OwnerCommand.cs">
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
 namespace slimCat.Models
 {
+    #region Usings
+
     using Utilities;
+
+    #endregion
 
     public class ChannelOwnerChangedEventArgs : ChannelUpdateEventArgs
     {
@@ -34,10 +38,14 @@ namespace slimCat.Models
 
 namespace slimCat.Services
 {
-    using Models;
+    #region Usings
+
     using System.Collections.Generic;
     using System.Linq;
+    using Models;
     using Utilities;
+
+    #endregion
 
     public partial class ServerCommandService
     {
@@ -54,8 +62,8 @@ namespace slimCat.Services
             mods[0] = character;
             channel.CharacterManager.Set(mods, ListKind.Moderator);
 
-            var update = new ChannelUpdateModel(channel, new ChannelOwnerChangedEventArgs { NewOwner = character });
+            var update = new ChannelUpdateModel(channel, new ChannelOwnerChangedEventArgs {NewOwner = character});
             Events.GetEvent<NewUpdateEvent>().Publish(update);
-        } 
+        }
     }
 }

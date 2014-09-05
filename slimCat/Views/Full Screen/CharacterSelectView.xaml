@@ -71,16 +71,16 @@
         </ScrollViewer>
 
         <StackPanel Grid.Row="2"
-                   Margin="20"
-                   HorizontalAlignment="Center">
+                    Margin="20"
+                    HorizontalAlignment="Center">
             <Button Content="Login"
                     Command="{Binding SelectCharacterCommand}"
-                    Margin="0,5"/>
+                    Margin="0,5" />
             <Button Content="Switch Accounts"
                     Command="{Binding SwitchAccountCommand}"
-                    Margin="0,5"/>
+                    Margin="0,5" />
         </StackPanel>
 
-        
+
     </Grid>
 </UserControl>

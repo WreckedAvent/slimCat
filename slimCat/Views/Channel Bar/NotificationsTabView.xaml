@@ -10,14 +10,14 @@
              d:DataContext="{d:DesignInstance vm:NotificationsTabViewModel}">
 
     <DockPanel
-             MaxWidth="180"
-             MinWidth="150">
+        MaxWidth="180"
+        MinWidth="150">
         <v:RightClickMenu />
         <v:CreateReportView />
         <v:RestartButtonView Command="{Binding Path=ClearNotificationsCommand}"
                              ToolTip="Clear all notifications"
                              DockPanel.Dock="Top"
-                             Margin="0,10,0,0"/>
+                             Margin="0,10,0,0" />
 
         <v:SearchBoxView DockPanel.Dock="Bottom" />
 
@@ -28,7 +28,7 @@
         <v:ObservingFlowDocumentReader x:Name="PopupAnchor"
                                        MessageSource="{Binding Path=CurrentNotifications, Mode=OneWay}"
                                        Unloaded="OnUnload"
-                                       Loaded="OnLoad"/>
+                                       Loaded="OnLoad" />
 
     </DockPanel>
 </UserControl>

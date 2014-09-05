@@ -22,31 +22,34 @@
         </Style>
         <Style x:Key="AddLinkStyle" TargetType="{x:Type Hyperlink}" BasedOn="{StaticResource {x:Type Hyperlink}}">
             <Style.Setters>
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="Command" Value="{Binding Path=DataContext.AddSearchTermCommand, 
-                                RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
-                <Setter Property="CommandParameter" Value="{Binding}"></Setter>
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="Command"
+                        Value="{Binding Path=DataContext.AddSearchTermCommand, 
+                                RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" />
+                <Setter Property="CommandParameter" Value="{Binding}" />
             </Style.Setters>
         </Style>
         <Style x:Key="RemoveLinkStyle" TargetType="{x:Type Hyperlink}" BasedOn="{StaticResource {x:Type Hyperlink}}">
             <Style.Setters>
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="Command" Value="{Binding Path=DataContext.RemoveSearchTermCommand, 
-                                RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"/>
-                <Setter Property="CommandParameter" Value="{Binding}"></Setter>
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="Command"
+                        Value="{Binding Path=DataContext.RemoveSearchTermCommand, 
+                                RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" />
+                <Setter Property="CommandParameter" Value="{Binding}" />
             </Style.Setters>
         </Style>
     </UserControl.Resources>
 
-    <DockPanel  MaxWidth="180"
-                MinWidth="150">
+    <DockPanel MaxWidth="180"
+               MinWidth="150">
         <StackPanel DockPanel.Dock="Top">
             <v:RestartButtonView Command="{Binding Path=ClearSearchTermsCommand}"
-                            ToolTip="Clear all search terms"
-                            DockPanel.Dock="Top"
-                            Margin="0,10,0,0"/>
-            
-            <Expander Header="Current Search Terms" IsExpanded="True" Visibility="{Binding Path=SelectedSearchTerms.IsEmpty, Converter={StaticResource OppositeBoolConverter}}">
+                                 ToolTip="Clear all search terms"
+                                 DockPanel.Dock="Top"
+                                 Margin="0,10,0,0" />
+
+            <Expander Header="Current Search Terms" IsExpanded="True"
+                      Visibility="{Binding Path=SelectedSearchTerms.IsEmpty, Converter={StaticResource OppositeBoolConverter}}">
                 <ListBox ItemsSource="{Binding Path=SelectedSearchTerms, Mode=OneWay}"
                          Style="{StaticResource HorizontalListBoxStyle}">
                     <ListBox.ItemTemplate>
@@ -63,24 +66,24 @@
         </StackPanel>
 
         <StackPanel DockPanel.Dock="Bottom">
-            <v:SearchBoxView  />
-            <Button FontSize="13" 
+            <v:SearchBoxView />
+            <Button FontSize="13"
                     Margin="0,5,0,0"
                     Command="{Binding SendSearchCommand}"
-                    Content="{Binding SearchButtonText}"/>
+                    Content="{Binding SearchButtonText}" />
 
         </StackPanel>
 
         <ScrollViewer CanContentScroll="False">
             <StackPanel>
-                
+
 
                 <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,10" />
 
                 <ListBox ItemsSource="{Binding Path=AvailableSearchTerms, Mode=OneWay}"
                          Style="{StaticResource HorizontalListBoxStyle}">
                     <ListBox.GroupStyle>
-                        <GroupStyle ContainerStyle="{StaticResource HeaderContainerStyle}"/>
+                        <GroupStyle ContainerStyle="{StaticResource HeaderContainerStyle}" />
                     </ListBox.GroupStyle>
                     <ListBox.ItemTemplate>
                         <DataTemplate>

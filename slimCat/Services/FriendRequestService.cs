@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="FriendRequestService.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,27 +21,32 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using Microsoft.Practices.Prism.Events;
-    using Models;
-    using Models.Api;
-    using SimpleJson;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
+    using Microsoft.Practices.Prism.Events;
+    using Models;
+    using Models.Api;
+    using SimpleJson;
     using Utilities;
 
     #endregion
 
     internal class FriendRequestService : IFriendRequestService
     {
-        private readonly IDictionary<string, int> requestsReceived = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        private readonly IDictionary<string, int> requestsSent = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        private readonly IBrowser browser;
-        private readonly ITicketProvider ticketProvider;
         private readonly IAccount account;
-        private readonly IEventAggregator events;
+        private readonly IBrowser browser;
         private readonly ICharacterManager characterManager;
+        private readonly IEventAggregator events;
+
+        private readonly IDictionary<string, int> requestsReceived =
+            new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        private readonly IDictionary<string, int> requestsSent =
+            new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        private readonly ITicketProvider ticketProvider;
         private string selectedCharacter;
 
         public FriendRequestService(IBrowser browser, ITicketProvider ticketProvider,
@@ -127,7 +132,8 @@ namespace slimCat.Services
 
             var buffer = browser.GetResponse(endpoint, command);
 
-            var result = (ApiFriendRequestsResponse)SimpleJson.DeserializeObject(buffer, typeof(ApiFriendRequestsResponse));
+            var result =
+                (ApiFriendRequestsResponse) SimpleJson.DeserializeObject(buffer, typeof (ApiFriendRequestsResponse));
 
             var hasError = !string.IsNullOrWhiteSpace(result.Error);
 

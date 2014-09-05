@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CharacterModel.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -56,6 +56,16 @@ namespace slimCat.Models
         #endregion
 
         #region Public Properties
+
+        public Uri AvatarUri
+        {
+            get
+            {
+                return new Uri(
+                    Constants.UrlConstants.CharacterAvatar + HttpUtility.HtmlEncode(name).ToLower() + ".png",
+                    UriKind.Absolute);
+            }
+        }
 
         /// <summary>
         ///     Gets or sets the avatar.
@@ -106,11 +116,6 @@ namespace slimCat.Models
                 OnPropertyChanged("LastReport");
                 OnPropertyChanged("HasReport");
             }
-        }
-
-        public Uri AvatarUri
-        {
-            get { return new Uri(Constants.UrlConstants.CharacterAvatar + HttpUtility.HtmlEncode(name).ToLower() + ".png", UriKind.Absolute); }
         }
 
         /// <summary>
@@ -193,50 +198,50 @@ namespace slimCat.Models
 
             var worker = new BackgroundWorker();
             worker.DoWork += (s, e) =>
+            {
+                var uri = new Uri((string) e.Argument, UriKind.Absolute);
+
+                using (var webClient = new WebClient())
                 {
-                    var uri = new Uri((string) e.Argument, UriKind.Absolute);
-
-                    using (var webClient = new WebClient())
+                    webClient.Proxy = null; // avoids dynamic proxy discovery delay
+                    webClient.CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate);
+                    try
                     {
-                        webClient.Proxy = null; // avoids dynamic proxy discovery delay
-                        webClient.CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate);
-                        try
+                        var imageBytes = webClient.DownloadData(uri);
+
+                        if (imageBytes == null)
                         {
-                            var imageBytes = webClient.DownloadData(uri);
-
-                            if (imageBytes == null)
-                            {
-                                e.Result = null;
-                                return;
-                            }
-
-                            var imageStream = new MemoryStream(imageBytes);
-                            var image = new BitmapImage();
-
-                            image.BeginInit();
-                            image.StreamSource = imageStream;
-                            image.CacheOption = BitmapCacheOption.OnLoad;
-                            image.EndInit();
-
-                            image.Freeze();
-                            imageStream.Close();
-
-                            e.Result = image;
+                            e.Result = null;
+                            return;
                         }
-                        catch (Exception)
-                        {
-                        }
+
+                        var imageStream = new MemoryStream(imageBytes);
+                        var image = new BitmapImage();
+
+                        image.BeginInit();
+                        image.StreamSource = imageStream;
+                        image.CacheOption = BitmapCacheOption.OnLoad;
+                        image.EndInit();
+
+                        image.Freeze();
+                        imageStream.Close();
+
+                        e.Result = image;
                     }
-                };
+                    catch (Exception)
+                    {
+                    }
+                }
+            };
 
             worker.RunWorkerCompleted += (s, e) =>
-                {
-                    var bitmapImage = e.Result as BitmapImage;
-                    if (bitmapImage != null)
-                        Avatar = bitmapImage;
+            {
+                var bitmapImage = e.Result as BitmapImage;
+                if (bitmapImage != null)
+                    Avatar = bitmapImage;
 
-                    worker.Dispose();
-                };
+                worker.Dispose();
+            };
 
             worker.RunWorkerAsync(Constants.UrlConstants.CharacterAvatar + Name.ToLower() + ".png");
         }

@@ -1,31 +1,35 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BroadcastCommand.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="LogOutCommand.cs">
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
 namespace slimCat.Services
 {
-    using Microsoft.Practices.Prism.Regions;
-    using Models;
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Practices.Prism.Regions;
+    using Models;
     using Utilities;
     using ViewModels;
+
+    #endregion
 
     public partial class UserCommandService
     {
@@ -33,7 +37,8 @@ namespace slimCat.Services
         {
             connection.Disconnect();
             model.IsAuthenticated = false;
-            regionManager.RequestNavigate(Shell.MainRegion, new Uri(CharacterSelectViewModel.CharacterSelectViewName, UriKind.Relative));
+            regionManager.RequestNavigate(Shell.MainRegion,
+                new Uri(CharacterSelectViewModel.CharacterSelectViewName, UriKind.Relative));
         }
     }
 
@@ -41,7 +46,7 @@ namespace slimCat.Services
     {
         private void CharacterDisconnectCommand(IDictionary<string, object> command)
         {
-            var characterName =  command.Get(Constants.Arguments.Character);
+            var characterName = command.Get(Constants.Arguments.Character);
 
             var character = CharacterManager.Find(characterName);
             var ofInterest = CharacterManager.IsOfInterest(characterName);
@@ -51,14 +56,14 @@ namespace slimCat.Services
 
             CharacterManager.SignOff(characterName);
 
-            var leaveChannelCommands = 
+            var leaveChannelCommands =
                 from channel in ChatModel.CurrentChannels
                 where channel.CharacterManager.SignOff(characterName)
                 select new Dictionary<string, object>
                 {
-                    { Constants.Arguments.Character, character.Name },
-                    { Constants.Arguments.Channel, channel.Id },
-                    { "ignoreUpdate", ofInterest }
+                    {Constants.Arguments.Character, character.Name},
+                    {Constants.Arguments.Channel, channel.Id},
+                    {"ignoreUpdate", ofInterest}
                     // ignore updates from characters we'll already get a sign-out notice for
                 };
 
@@ -75,6 +80,5 @@ namespace slimCat.Services
 
             Events.NewCharacterUpdate(character, updateArgs);
         }
-
     }
 }

@@ -1,19 +1,19 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MessageService.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="UserCommandService.cs">
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,14 +21,14 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using Microsoft.Practices.Prism.Events;
-    using Microsoft.Practices.Prism.Regions;
-    using Models;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using System.Windows.Threading;
+    using Microsoft.Practices.Prism.Events;
+    using Microsoft.Practices.Prism.Regions;
+    using Models;
     using Utilities;
     using Commands = Utilities.Constants.ClientCommands;
 
@@ -42,6 +42,7 @@ namespace slimCat.Services
         #region Fields
 
         private readonly IListConnection api;
+        private readonly IChannelService channelService;
 
         private readonly ICharacterManager characterManager;
 
@@ -50,18 +51,15 @@ namespace slimCat.Services
         private readonly IChatConnection connection;
 
         private readonly IEventAggregator events;
+        private readonly IFriendRequestService friendRequestService;
+        private readonly IIconService iconService;
 
         private readonly ILoggingService logger;
 
         private readonly IChatModel model;
 
-        private readonly IChannelService channelService;
-
-        private readonly IFriendRequestService friendRequestService;
-
         private readonly IRegionManager regionManager;
 
-        private readonly IIconService iconService;
         #endregion
 
         #region Constructors and Destructors
@@ -78,7 +76,6 @@ namespace slimCat.Services
             IFriendRequestService friendRequestService,
             IIconService iconService)
         {
-
             try
             {
                 this.events = events.ThrowIfNull("events");
@@ -95,48 +92,48 @@ namespace slimCat.Services
                 this.events.GetEvent<UserCommandEvent>().Subscribe(CommandReceived, ThreadOption.UIThread, true);
 
                 commands = new Dictionary<string, CommandHandler>
-                    {
-                        {"bookmark-add", OnBookmarkAddRequested},
-                        {"friend-remove", OnFriendRemoveRequested},
-                        {"request-accept", OnFriendRequestAcceptRequested},
-                        {"request-deny", OnFriendRequestDenyRequested},
-                        {"request-send", OnFriendRequestSendRequested},
-                        {"request-cancel", OnFriendRequestCancelRequested},
-                        {"priv", OnPrivRequested},
-                        {Commands.UserMessage, OnPivateMessageSendRequested},
-                        {Commands.ChannelMessage, OnMsgRequested},
-                        {Commands.ChannelAd, OnLrpRequested},
-                        {Commands.UserStatus, OnStatusChangeRequested},
-                        {"close", OnCloseRequested},
-                        {"forceclose", OnForceChannelCloseRequested},
-                        {"join", OnJoinRequested},
-                        {Commands.UserIgnore, OnIgnoreRequested},
-                        {"clear", OnClearRequested},
-                        {"clearall", OnClearAllRequested},
-                        {"_logger_open_log", OnOpenLogRequested},
-                        {"_logger_open_folder", OnOpenLogFolderRequested},
-                        {"code", OnChannelCodeRequested},
-                        {"_snap_to_last_update", OnNotificationFocusRequested},
-                        {Commands.UserInvite, OnInviteToChannelRequested},
-                        {"who", OnWhoInformationRequested},
-                        {"getdescription", OnChannelDescriptionRequested},
-                        {"interesting", OnMarkInterestedRequested},
-                        {"notinteresting", OnMarkNotInterestedRequested},
-                        {"ignoreUpdates", OnIgnoreUpdatesRequested},
-                        {Commands.AdminAlert, OnReportRequested},
-                        {"tempignore", OnTemporaryIgnoreRequested},
-                        {"tempunignore", OnTemporaryIgnoreRequested},
-                        {"tempinteresting", OnTemporaryInterestedRequested},
-                        {"tempnotinteresting", OnTemporaryInterestedRequested},
-                        {"handlelatest", OnHandleLatestReportRequested},
-                        {"handlereport", OnHandleLatestReportByUserRequested},
-                        {"bookmark-remove", OnBookmarkRemoveRequested},
-                        {"rejoin", OnChannelRejoinRequested },
-                        {"searchtag", OnSearchTagToggleRequested},
-                        {"logout", OnLogoutRequested},
-                        {"soundon", OnSoundOnRequested},
-                        {"soundoff", OnSoundOffRequested}
-                    };
+                {
+                    {"bookmark-add", OnBookmarkAddRequested},
+                    {"friend-remove", OnFriendRemoveRequested},
+                    {"request-accept", OnFriendRequestAcceptRequested},
+                    {"request-deny", OnFriendRequestDenyRequested},
+                    {"request-send", OnFriendRequestSendRequested},
+                    {"request-cancel", OnFriendRequestCancelRequested},
+                    {"priv", OnPrivRequested},
+                    {Commands.UserMessage, OnPivateMessageSendRequested},
+                    {Commands.ChannelMessage, OnMsgRequested},
+                    {Commands.ChannelAd, OnLrpRequested},
+                    {Commands.UserStatus, OnStatusChangeRequested},
+                    {"close", OnCloseRequested},
+                    {"forceclose", OnForceChannelCloseRequested},
+                    {"join", OnJoinRequested},
+                    {Commands.UserIgnore, OnIgnoreRequested},
+                    {"clear", OnClearRequested},
+                    {"clearall", OnClearAllRequested},
+                    {"_logger_open_log", OnOpenLogRequested},
+                    {"_logger_open_folder", OnOpenLogFolderRequested},
+                    {"code", OnChannelCodeRequested},
+                    {"_snap_to_last_update", OnNotificationFocusRequested},
+                    {Commands.UserInvite, OnInviteToChannelRequested},
+                    {"who", OnWhoInformationRequested},
+                    {"getdescription", OnChannelDescriptionRequested},
+                    {"interesting", OnMarkInterestedRequested},
+                    {"notinteresting", OnMarkNotInterestedRequested},
+                    {"ignoreUpdates", OnIgnoreUpdatesRequested},
+                    {Commands.AdminAlert, OnReportRequested},
+                    {"tempignore", OnTemporaryIgnoreRequested},
+                    {"tempunignore", OnTemporaryIgnoreRequested},
+                    {"tempinteresting", OnTemporaryInterestedRequested},
+                    {"tempnotinteresting", OnTemporaryInterestedRequested},
+                    {"handlelatest", OnHandleLatestReportRequested},
+                    {"handlereport", OnHandleLatestReportByUserRequested},
+                    {"bookmark-remove", OnBookmarkRemoveRequested},
+                    {"rejoin", OnChannelRejoinRequested},
+                    {"searchtag", OnSearchTagToggleRequested},
+                    {"logout", OnLogoutRequested},
+                    {"soundon", OnSoundOnRequested},
+                    {"soundoff", OnSoundOffRequested}
+                };
             }
             catch (Exception ex)
             {
@@ -183,7 +180,7 @@ namespace slimCat.Services
                     OnHandleLatestReportByUserRequested(command);
                 }
 
-                var channel = (ChannelModel)model.CurrentPms.FirstByIdOrNull(target)
+                var channel = (ChannelModel) model.CurrentPms.FirstByIdOrNull(target)
                               ?? model.CurrentChannels.FirstByIdOrNull(target);
 
                 if (!target.StartsWith("ADH-"))
@@ -272,6 +269,7 @@ namespace slimCat.Services
         {
             Logging.LogLine(text, "msg serv");
         }
+
         #endregion
     }
 }

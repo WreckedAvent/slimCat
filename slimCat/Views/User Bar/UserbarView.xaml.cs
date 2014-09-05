@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="UserbarView.xaml.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,13 +21,13 @@ namespace slimCat.Views
 {
     #region Usings
 
-    using Models;
     using System;
     using System.Collections.Generic;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Shapes;
+    using Models;
     using ViewModels;
 
     #endregion
@@ -38,11 +38,12 @@ namespace slimCat.Views
     public partial class UserbarView
     {
         #region Fields
+
+        private readonly double minDragDistance;
         private readonly UserbarViewModel vm;
 
         private Point lastPoint;
 
-        private readonly double minDragDistance;
         #endregion
 
         #region Constructors and Destructors
@@ -78,8 +79,8 @@ namespace slimCat.Views
         private void OnDragDrop<T>(object sender, DragEventArgs e, IList<T> coll, bool isChannel)
             where T : ChannelModel
         {
-            var droppedData = e.Data.GetData(typeof(T)) as T;
-            var target = ((ListBoxItem)(sender)).DataContext as T;
+            var droppedData = e.Data.GetData(typeof (T)) as T;
+            var target = ((ListBoxItem) (sender)).DataContext as T;
 
             if (droppedData == null || target == null) return;
 
@@ -109,7 +110,7 @@ namespace slimCat.Views
         private void CheckAs<T>(object sender, DragEventArgs e)
             where T : ChannelModel
         {
-            var possible = e.Data.GetData(typeof(T)) as T;
+            var possible = e.Data.GetData(typeof (T)) as T;
             if (possible != null) return;
 
             e.Effects = DragDropEffects.None;

@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="GlobalCharacterManager.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,11 +21,11 @@ namespace slimCat.Models
 {
     #region Usings
 
-    using Microsoft.Practices.Prism.Events;
-    using Services;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Practices.Prism.Events;
+    using Services;
     using Utilities;
 
     #endregion
@@ -37,6 +37,8 @@ namespace slimCat.Models
         private readonly IAccount account;
 
         private readonly CollectionPair bookmarks = new CollectionPair();
+        private readonly CollectionPair friendRequestsReceived = new CollectionPair();
+        private readonly CollectionPair friendRequestsSent = new CollectionPair();
         private readonly CollectionPair friends = new CollectionPair();
         private readonly CollectionPair ignoreUpdates = new CollectionPair();
         private readonly CollectionPair ignored = new CollectionPair();
@@ -44,10 +46,8 @@ namespace slimCat.Models
         private readonly CollectionPair localFriends = new CollectionPair();
         private readonly CollectionPair moderators = new CollectionPair();
         private readonly CollectionPair notInterested = new CollectionPair();
-        private readonly CollectionPair searchResults = new CollectionPair();
-        private readonly CollectionPair friendRequestsSent = new CollectionPair();
-        private readonly CollectionPair friendRequestsReceived = new CollectionPair();
         private readonly IDictionary<ListKind, IList<string>> savedCollections;
+        private readonly CollectionPair searchResults = new CollectionPair();
         private string currentCharacter;
 
         #endregion
@@ -59,45 +59,45 @@ namespace slimCat.Models
             this.account = account;
 
             Collections = new HashSet<CollectionPair>
-                {
-                    bookmarks,
-                    friends,
-                    moderators,
-                    interested,
-                    notInterested,
-                    ignored,
-                    ignoreUpdates,
-                    searchResults,
-                    friendRequestsSent
-                };
+            {
+                bookmarks,
+                friends,
+                moderators,
+                interested,
+                notInterested,
+                ignored,
+                ignoreUpdates,
+                searchResults,
+                friendRequestsSent
+            };
 
             CollectionDictionary = new Dictionary<ListKind, CollectionPair>
-                {
-                    {ListKind.Bookmark, bookmarks},
-                    {ListKind.Friend, friends},
-                    {ListKind.Interested, interested},
-                    {ListKind.Moderator, moderators},
-                    {ListKind.NotInterested, notInterested},
-                    {ListKind.Ignored, ignored},
-                    {ListKind.IgnoreUpdates, ignoreUpdates},
-                    {ListKind.SearchResult, searchResults},
-                    {ListKind.FriendRequestSent, friendRequestsSent},
-                    {ListKind.FriendRequestReceived, friendRequestsReceived}
-                };
+            {
+                {ListKind.Bookmark, bookmarks},
+                {ListKind.Friend, friends},
+                {ListKind.Interested, interested},
+                {ListKind.Moderator, moderators},
+                {ListKind.NotInterested, notInterested},
+                {ListKind.Ignored, ignored},
+                {ListKind.IgnoreUpdates, ignoreUpdates},
+                {ListKind.SearchResult, searchResults},
+                {ListKind.FriendRequestSent, friendRequestsSent},
+                {ListKind.FriendRequestReceived, friendRequestsReceived}
+            };
 
             savedCollections = new Dictionary<ListKind, IList<string>>
-                {
-                    {ListKind.Interested, ApplicationSettings.Interested},
-                    {ListKind.NotInterested, ApplicationSettings.NotInterested},
-                    {ListKind.IgnoreUpdates, ApplicationSettings.IgnoreUpdates}
-                };
+            {
+                {ListKind.Interested, ApplicationSettings.Interested},
+                {ListKind.NotInterested, ApplicationSettings.NotInterested},
+                {ListKind.IgnoreUpdates, ApplicationSettings.IgnoreUpdates}
+            };
 
             OfInterestCollections = new HashSet<CollectionPair>
-                {
-                    bookmarks,
-                    friends,
-                    interested
-                };
+            {
+                bookmarks,
+                friends,
+                interested
+            };
 
             eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Subscribe(Initialize);
         }
@@ -200,6 +200,7 @@ namespace slimCat.Models
         #endregion
 
         #region Methods
+
         private void Initialize(string name)
         {
             currentCharacter = name;
@@ -238,12 +239,12 @@ namespace slimCat.Models
                 var oppositeList = isInteresting ? notInterested : interested;
                 var sameList = isInteresting ? interested : notInterested;
                 Action<CollectionPair> addRemove = c =>
-                    {
-                        if (isAdd)
-                            c.Add(name, isTemporary);
-                        else
-                            c.Remove(name, isTemporary);
-                    };
+                {
+                    if (isAdd)
+                        c.Add(name, isTemporary);
+                    else
+                        c.Remove(name, isTemporary);
+                };
 
                 if (isAdd) // if we're adding to one, then we have to remove from the other
                     oppositeList.Remove(name, isTemporary);

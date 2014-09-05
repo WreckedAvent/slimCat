@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="AutomationService.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,12 +21,12 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using Libraries;
-    using Microsoft.Practices.Prism.Events;
-    using Models;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Timers;
+    using Libraries;
+    using Microsoft.Practices.Prism.Events;
+    using Models;
     using Utilities;
 
     #endregion
@@ -34,6 +34,7 @@ namespace slimCat.Services
     public class AutomationService : IAutomationService
     {
         #region Fields
+
         private const int OneMinute = 1000*60;
         private readonly Timer awayTimer;
         private readonly IChatModel cm;
@@ -41,9 +42,11 @@ namespace slimCat.Services
         private readonly Timer fullscreenTimer = new Timer(2*OneMinute);
         private readonly Timer idleTimer;
         private readonly ICharacterManager manager;
+
         #endregion
 
         #region Constructors
+
         public AutomationService(IEventAggregator events, ICharacterManager manager, IChatModel cm)
         {
             this.events = events;
@@ -59,9 +62,11 @@ namespace slimCat.Services
 
             events.GetEvent<UserCommandEvent>().Subscribe(OnUserCommandSent);
         }
+
         #endregion
 
         #region Methods
+
         public void ResetStatusTimers()
         {
             idleTimer.Stop();
@@ -98,7 +103,7 @@ namespace slimCat.Services
 
         private void FullscreenTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            if (cm.CurrentCharacter == null 
+            if (cm.CurrentCharacter == null
                 || !ApplicationSettings.AllowAutoBusy
                 || cm.CurrentCharacter.Status == StatusType.Busy) return;
 
@@ -135,7 +140,7 @@ namespace slimCat.Services
 
         private void AwayTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            if (cm.CurrentCharacter == null 
+            if (cm.CurrentCharacter == null
                 || cm.CurrentCharacter.Status == StatusType.Away
                 || !ApplicationSettings.AllowAutoAway) return;
 
@@ -148,8 +153,8 @@ namespace slimCat.Services
 
         private void IdleTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            if (cm.CurrentCharacter == null 
-                || cm.CurrentCharacter.Status != StatusType.Online 
+            if (cm.CurrentCharacter == null
+                || cm.CurrentCharacter.Status != StatusType.Online
                 || !ApplicationSettings.AllowAutoIdle) return;
 
             Log("Setting user status to idle");
@@ -164,6 +169,7 @@ namespace slimCat.Services
         {
             Logging.LogLine(text, "auto serv");
         }
+
         #endregion
     }
 }

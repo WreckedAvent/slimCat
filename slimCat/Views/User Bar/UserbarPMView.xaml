@@ -34,7 +34,7 @@
                     <TextBlock.Effect>
                         <DropShadowEffect BlurRadius="1"
                                           ShadowDepth="2"
-                                          
+
                                           Color="{StaticResource BackgroundColor}" />
                     </TextBlock.Effect>
                 </TextBlock>

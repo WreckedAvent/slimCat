@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ProfileService.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -23,29 +23,23 @@ namespace slimCat.Services
 
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics;
     using System.Linq;
     using System.Net;
-    using System.Web;
-    using System.Windows.Media;
     using HtmlAgilityPack;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Unity;
     using Models;
-    using System.ComponentModel;
-    using System.Diagnostics;
     using Models.Api;
     using Newtonsoft.Json;
     using Utilities;
-    using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
     #endregion
 
     public class ProfileService : IProfileService
     {
         #region Fields
-        private readonly IBrowser browser;
-
-        private readonly IChatModel cm;
 
         private const string ProfileBodySelector = "//div[@id = 'tabs-1']/*[1]";
 
@@ -54,16 +48,21 @@ namespace slimCat.Services
         private const string ProfileKinksSeletor = "//td[contains(@class,'Character_Fetishlist')]";
 
         private const string ProfileIdSelector = "//input[@id = 'profile-character-id']";
+        private readonly IBrowser browser;
+
+        private readonly IChatModel cm;
 
         private readonly IUnityContainer container;
 
-        private readonly IDictionary<string, ProfileData> profileCache = new Dictionary<string, ProfileData>(StringComparer.OrdinalIgnoreCase); 
+        private readonly IDictionary<int, ProfileKink> kinkData = new Dictionary<int, ProfileKink>();
 
-        private readonly IDictionary<int, ProfileKink> kinkData = new Dictionary<int, ProfileKink>(); 
+        private readonly IDictionary<string, ProfileData> profileCache =
+            new Dictionary<string, ProfileData>(StringComparer.OrdinalIgnoreCase);
 
         #endregion
 
         #region Constructors
+
         public ProfileService(IUnityContainer contain, IBrowser browser, IChatModel cm, IEventAggregator events)
         {
             this.browser = browser;
@@ -77,13 +76,14 @@ namespace slimCat.Services
             worker.DoWork += GetKinkDataAsync;
             worker.RunWorkerAsync();
         }
+
         #endregion
 
         #region Public Methods
 
         private void GetProfileDataAsyncHandler(object s, DoWorkEventArgs e)
         {
-            var characterName = (string)e.Argument;
+            var characterName = (string) e.Argument;
             PmChannelModel model = null;
             try
             {
@@ -156,13 +156,16 @@ namespace slimCat.Services
                 {
                     allKinks = profileKinks.SelectMany(selection =>
                     {
-                        var kind = (KinkListKind)Enum.Parse(typeof(KinkListKind), selection.Id.Substring("Character_Fetishlist".Length));
+                        var kind =
+                            (KinkListKind)
+                                Enum.Parse(typeof (KinkListKind), selection.Id.Substring("Character_Fetishlist".Length));
                         return selection.Descendants()
                             .Where(x => x.Name == "a")
                             .Select(x =>
                             {
                                 var tagId = int.Parse(x.Id.Substring("Character_Listedfetish".Length));
-                                var isCustomKink = x.Attributes.First(y => y.Name.Equals("class")).Value.Contains("FetishGroupCustom");
+                                var isCustomKink =
+                                    x.Attributes.First(y => y.Name.Equals("class")).Value.Contains("FetishGroupCustom");
                                 var tooltip = x.Attributes.FirstOrDefault(y => y.Name.Equals("rel"));
                                 var name = x.InnerText.Trim();
 
@@ -172,7 +175,8 @@ namespace slimCat.Services
                                     IsCustomKink = isCustomKink,
                                     Name = isCustomKink ? DoubleDecode(name) : string.Empty,
                                     KinkListKind = kind,
-                                    Tooltip = tooltip != null && isCustomKink ? DoubleDecode(tooltip.Value) : string.Empty
+                                    Tooltip =
+                                        tooltip != null && isCustomKink ? DoubleDecode(tooltip.Value) : string.Empty
                                 };
                             });
                     }).ToList();
@@ -195,7 +199,9 @@ namespace slimCat.Services
                 if (cm.CurrentCharacter.NameEquals(characterName))
                     cm.CurrentCharacterData = profileData;
             }
-            catch {}
+            catch
+            {
+            }
         }
 
         private string DoubleDecode(string s)
@@ -215,13 +221,13 @@ namespace slimCat.Services
                 var apiKinks = data.Kinks
                     .SelectMany(x => x.Value.Kinks)
                     .Select(x => new ProfileKink
-                {
-                    Id = x.Id,
-                    IsCustomKink = false,
-                    Name = DoubleDecode(x.Name),
-                    Tooltip = DoubleDecode(x.Description),
-                    KinkListKind = KinkListKind.MasterList
-                }).ToList();
+                    {
+                        Id = x.Id,
+                        IsCustomKink = false,
+                        Name = DoubleDecode(x.Name),
+                        Tooltip = DoubleDecode(x.Description),
+                        KinkListKind = KinkListKind.MasterList
+                    }).ToList();
 
                 kinkDataCache = new ProfileData
                 {
@@ -239,6 +245,7 @@ namespace slimCat.Services
         {
             Logging.LogLine(text, "profile serv");
         }
+
         #endregion
 
         public void GetProfileDataAsync(string character)
@@ -256,9 +263,10 @@ namespace slimCat.Services
             kink.Name = data.Name;
             kink.Tooltip = data.Tooltip;
             return kink;
-        } 
+        }
 
-        private ProfileData CreateModel(string profileText, IEnumerable<ProfileTag> tags, ApiProfileImagesResponse imageResponse, IEnumerable<ProfileKink> kinks)
+        private ProfileData CreateModel(string profileText, IEnumerable<ProfileTag> tags,
+            ApiProfileImagesResponse imageResponse, IEnumerable<ProfileKink> kinks)
         {
             var allKinks = kinks.Select(GetFullKink);
 
@@ -291,10 +299,10 @@ namespace slimCat.Services
             toReturn.AdditionalTags = profileTags
                 .Where(x => !tagActions.ContainsKey(x.Label))
                 .Select(x =>
-            {
-                x.Value = DoubleDecode(x.Value);
-                return x;
-            }).ToList();
+                {
+                    x.Value = DoubleDecode(x.Value);
+                    return x;
+                }).ToList();
 
             toReturn.Images = imageResponse.Images.Select(x => new ProfileImage(x)).ToList();
 

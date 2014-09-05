@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="GeneralChannelViewModel.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,11 +21,6 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using System.Xaml;
-    using Libraries;
-    using Microsoft.Practices.Unity;
-    using Models;
-    using Services;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -34,6 +29,10 @@ namespace slimCat.ViewModels
     using System.Linq;
     using System.Timers;
     using System.Windows.Input;
+    using Libraries;
+    using Microsoft.Practices.Unity;
+    using Models;
+    using Services;
     using Utilities;
     using Views;
 
@@ -136,38 +135,38 @@ namespace slimCat.ViewModels
                 SearchSettings.Updated += (s, e) => OnPropertyChanged("SearchSettings");
 
                 messageFloodTimer.Elapsed += (s, e) =>
-                    {
-                        isInCoolDownMessage = false;
-                        messageFloodTimer.Enabled = false;
-                        OnPropertyChanged("CanPost");
-                    };
+                {
+                    isInCoolDownMessage = false;
+                    messageFloodTimer.Enabled = false;
+                    OnPropertyChanged("CanPost");
+                };
 
                 adFloodTimer.Elapsed += (s, e) =>
-                    {
-                        isInCoolDownAd = false;
-                        adFloodTimer.Enabled = false;
-                        OnPropertyChanged("CanPost");
-                        OnPropertyChanged("CannotPost");
-                        OnPropertyChanged("ShouldShowAutoPost");
-                        if (autoPostAds)
-                            SendAutoAd();
-                        else
-                            autoPostCount = 0;
-                    };
+                {
+                    isInCoolDownAd = false;
+                    adFloodTimer.Enabled = false;
+                    OnPropertyChanged("CanPost");
+                    OnPropertyChanged("CannotPost");
+                    OnPropertyChanged("ShouldShowAutoPost");
+                    if (autoPostAds)
+                        SendAutoAd();
+                    else
+                        autoPostCount = 0;
+                };
 
                 updateTimer.Elapsed += (s, e) =>
+                {
+                    if (!Model.IsSelected)
+                        return;
+
+                    if (CannotPost)
                     {
-                        if (!Model.IsSelected)
-                            return;
+                        OnPropertyChanged("TimeLeft");
+                        OnPropertyChanged("AutoTimeLeft");
+                    }
 
-                        if (CannotPost)
-                        {
-                            OnPropertyChanged("TimeLeft");
-                            OnPropertyChanged("AutoTimeLeft");
-                        }
-
-                        OnPropertyChanged("StatusString");
-                    };
+                    OnPropertyChanged("StatusString");
+                };
 
                 ChannelManagementViewModel.PropertyChanged += (s, e) => OnPropertyChanged("ChannelManagementViewModel");
 
@@ -178,15 +177,15 @@ namespace slimCat.ViewModels
                 Model.Settings = newSettings;
 
                 ChannelSettings.Updated += (s, e) =>
+                {
+                    OnPropertyChanged("ChannelSettings");
+                    OnPropertyChanged("HasNotifyTerms");
+                    if (!ChannelSettings.IsChangingSettings)
                     {
-                        OnPropertyChanged("ChannelSettings");
-                        OnPropertyChanged("HasNotifyTerms");
-                        if (!ChannelSettings.IsChangingSettings)
-                        {
-                            SettingsService.UpdateSettingsFile(
-                                ChannelSettings, ChatModel.CurrentCharacter.Name, Model.Title, Model.Id);
-                        }
-                    };
+                        SettingsService.UpdateSettingsFile(
+                            ChannelSettings, ChatModel.CurrentCharacter.Name, Model.Title, Model.Id);
+                    }
+                };
 
                 PropertyChanged += OnPropertyChanged;
 
@@ -227,7 +226,8 @@ namespace slimCat.ViewModels
         {
             get
             {
-                var canPostChat = isDisplayingChat && (!isInCoolDownMessage || !ApplicationSettings.AllowTextboxDisable);
+                var canPostChat = isDisplayingChat &&
+                                  (!isInCoolDownMessage || !ApplicationSettings.AllowTextboxDisable);
                 var canPostAd = IsDisplayingAds && !isInCoolDownAd;
 
                 return canPostChat || canPostAd;
@@ -746,7 +746,9 @@ namespace slimCat.ViewModels
             OtherTabHasMessages =
                 e.NewItems != null
                 && e.NewItems.Count > 0
-                && e.NewItems.OfType<IMessage>().Any(x => !CharacterManager.IsOnList(x.Poster.Name, ListKind.NotInterested));
+                &&
+                e.NewItems.OfType<IMessage>()
+                    .Any(x => !CharacterManager.IsOnList(x.Poster.Name, ListKind.NotInterested));
             if (Model.Ads.All(x => x.IsHistoryMessage)) OtherTabHasMessages = false;
         }
 

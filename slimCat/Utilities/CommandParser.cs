@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CommandParser.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,12 +21,12 @@ namespace slimCat.Utilities
 {
     #region Usings
 
-    using Microsoft.VisualBasic.FileIO;
-    using Models;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using Microsoft.VisualBasic.FileIO;
+    using Models;
 
     #endregion
 
@@ -37,13 +37,12 @@ namespace slimCat.Utilities
     {
         #region Fields
 
-        private IList<string> arguments;
-
         private readonly string currentChannel;
 
         private readonly bool hasCommand = true;
 
         private readonly string type;
+        private IList<string> arguments;
 
         #endregion
 
@@ -77,7 +76,7 @@ namespace slimCat.Utilities
 
             var spaceIndex = trimmed.IndexOf(' ');
             type = trimmed.Substring(0, spaceIndex);
-            trimmed = trimmed.Substring(spaceIndex+1);
+            trimmed = trimmed.Substring(spaceIndex + 1);
 
             CommandModel model;
             if (CommandDefinitions.Commands.TryGetValue(type, out model))
@@ -159,6 +158,7 @@ namespace slimCat.Utilities
             arguments = parser.ReadFields().Select(x => x.Trim()).ToList();
             parser.Close();
         }
+
         #endregion
     }
 }

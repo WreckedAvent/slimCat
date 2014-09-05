@@ -1,19 +1,19 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="UtilityChannelViewModel.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="HomeChannelViewModel.cs">
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,10 +21,6 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using Microsoft.Practices.Unity;
-    using Microsoft.VisualBasic.FileIO;
-    using Models;
-    using Services;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -34,6 +30,10 @@ namespace slimCat.ViewModels
     using System.Text;
     using System.Timers;
     using System.Windows.Media;
+    using Microsoft.Practices.Unity;
+    using Microsoft.VisualBasic.FileIO;
+    using Models;
+    using Services;
     using Utilities;
     using Views;
 
@@ -44,7 +44,6 @@ namespace slimCat.ViewModels
     /// </summary>
     public class HomeChannelViewModel : ChannelViewModelBase, IHasTabs
     {
-
         #region Fields
 
         private readonly IAutomationService automation;
@@ -67,7 +66,8 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public HomeChannelViewModel(string name, IChatState chatState, IAutomationService automation, IBrowser browser, HomeSettingsViewModel settingsVm)
+        public HomeChannelViewModel(string name, IChatState chatState, IAutomationService automation, IBrowser browser,
+            HomeSettingsViewModel settingsVm)
             : base(chatState)
         {
             try
@@ -82,30 +82,30 @@ namespace slimCat.ViewModels
 
                 updateTimer.Enabled = true;
                 updateTimer.Elapsed += (s, e) =>
-                    {
-                        OnPropertyChanged("RoughServerUpTime");
-                        OnPropertyChanged("RoughClientUpTime");
-                        OnPropertyChanged("LastMessageReceived");
-                    };
+                {
+                    OnPropertyChanged("RoughServerUpTime");
+                    OnPropertyChanged("RoughClientUpTime");
+                    OnPropertyChanged("LastMessageReceived");
+                };
 
                 updateTimer.Elapsed += UpdateConnectText;
                 SettingsVm = settingsVm;
 
                 Events.GetEvent<NewUpdateEvent>().Subscribe(
                     param =>
-                        {
-                            if (!(param is CharacterUpdateModel))
-                                return;
+                    {
+                        if (!(param is CharacterUpdateModel))
+                            return;
 
-                            var temp = param as CharacterUpdateModel;
-                            if (!(temp.Arguments is LoginStateChangedEventArgs))
-                                return;
+                        var temp = param as CharacterUpdateModel;
+                        if (!(temp.Arguments is LoginStateChangedEventArgs))
+                            return;
 
-                            OnPropertyChanged("OnlineCount");
-                            OnPropertyChanged("OnlineFriendsCount");
-                            OnPropertyChanged("OnlineBookmarksCount");
-                            OnPropertyChanged("OnlineCountChange");
-                        });
+                        OnPropertyChanged("OnlineCount");
+                        OnPropertyChanged("OnlineFriendsCount");
+                        OnPropertyChanged("OnlineBookmarksCount");
+                        OnPropertyChanged("OnlineCountChange");
+                    });
 
                 Events.GetEvent<LoginAuthenticatedEvent>().Subscribe(LoggedInEvent);
                 Events.GetEvent<LoginFailedEvent>().Subscribe(LoginFailedEvent);
@@ -237,6 +237,7 @@ namespace slimCat.ViewModels
         public ThemeModel CurrentTheme { get; set; }
 
         public bool HasCurrentTheme { get; set; }
+
         #endregion
 
         #region Recent Tabs
@@ -269,7 +270,7 @@ namespace slimCat.ViewModels
                     .Reverse()
                     .ToList();
             }
-        } 
+        }
 
         #endregion
 
@@ -405,17 +406,17 @@ namespace slimCat.ViewModels
                     HasNewUpdate = Constants.ClientVer.Contains("dev");
                 }
 
-                var updateDelayTimer = new Timer(10 * 1000);
+                var updateDelayTimer = new Timer(10*1000);
                 updateDelayTimer.Elapsed += (s, e) =>
-                    {
-                        Events.GetEvent<ErrorEvent>()
-                            .Publish(
-                                "{0} is now available! \nPlease Update with the link in the home tab.".FormatWith(
-                                    args[0]));
-                        updateDelayTimer.Stop();
-                        updateDelayTimer = null;
-                        Model.FlashTab();
-                    };
+                {
+                    Events.GetEvent<ErrorEvent>()
+                        .Publish(
+                            "{0} is now available! \nPlease Update with the link in the home tab.".FormatWith(
+                                args[0]));
+                    updateDelayTimer.Stop();
+                    updateDelayTimer = null;
+                    Model.FlashTab();
+                };
 
                 if (HasNewUpdate)
                     updateDelayTimer.Start();
@@ -487,7 +488,7 @@ namespace slimCat.ViewModels
                     if (HasCurrentTheme && model.Name == CurrentTheme.Name && model.Version == CurrentTheme.Version)
                         continue;
 
-                    Dispatcher.BeginInvoke((Action)(() => Themes.Add(model)));
+                    Dispatcher.BeginInvoke((Action) (() => Themes.Add(model)));
                 }
 
                 parser.Close();

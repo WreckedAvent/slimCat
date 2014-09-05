@@ -45,8 +45,8 @@
                             Margin="0,2,5,0"
                             Visibility="{Binding Path=ShouldShowAvatar, Converter={StaticResource BoolConverter}}">
                         <Image Source="{Binding Path=TargetCharacter.Avatar}"
-                                       Height="75"
-                                       Width="75" />
+                               Height="75"
+                               Width="75" />
                     </Border>
 
                     <Grid>

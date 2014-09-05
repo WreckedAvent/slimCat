@@ -99,7 +99,7 @@
             <ScrollViewer CanContentScroll="False">
                 <StackPanel
                     x:Name="PopupAnchor">
-                    
+
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource ContentListBox}">
                             <Setter Property="ItemsPanel">
@@ -112,7 +112,7 @@
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate>
-                                        <ItemsPresenter/>
+                                        <ItemsPresenter />
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
@@ -121,7 +121,6 @@
 
                     <v:RightClickMenu />
                     <v:CreateReportView />
-                    
 
 
                     <Expander>

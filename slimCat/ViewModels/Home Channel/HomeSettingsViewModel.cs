@@ -1,19 +1,19 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="UtilityChannelViewModel.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="HomeSettingsViewModel.cs">
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,34 +21,22 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using Microsoft.Practices.Unity;
-    using Microsoft.VisualBasic.FileIO;
+    using System.Collections.Generic;
+    using System.Linq;
     using Models;
     using Services;
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Text;
-    using System.Timers;
-    using System.Windows.Media;
     using Utilities;
-    using Views;
 
     #endregion
 
     public class HomeSettingsViewModel : ViewModelBase, IHasTabs
     {
-
         #region Fields
 
         private readonly IAutomationService automation;
 
-        private readonly IconService iconService;
-
         private readonly ICharacterManager characterManager;
+        private readonly IconService iconService;
 
         private string selectedTab = "General";
 
@@ -56,8 +44,9 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public HomeSettingsViewModel(IChatState chatState, IAutomationService automationService, IconService iconService, ICharacterManager characterManager)
-            :base(chatState)
+        public HomeSettingsViewModel(IChatState chatState, IAutomationService automationService, IconService iconService,
+            ICharacterManager characterManager)
+            : base(chatState)
         {
             automation = automationService;
             this.iconService = iconService;
@@ -81,13 +70,13 @@ namespace slimCat.ViewModels
             get
             {
                 return new Dictionary<string, string>
-                    {
-                        {"American English", "en-US"},
-                        {"British English", "en-GB"},
-                        {"French", "fr"},
-                        {"German", "de"},
-                        {"Spanish", "es"}
-                    };
+                {
+                    {"American English", "en-US"},
+                    {"British English", "en-GB"},
+                    {"French", "fr"},
+                    {"German", "de"},
+                    {"Spanish", "es"}
+                };
             }
         }
 
@@ -153,6 +142,7 @@ namespace slimCat.ViewModels
                 Save();
             }
         }
+
         public bool AllowTexboxDisable
         {
             get { return ApplicationSettings.AllowTextboxDisable; }
@@ -192,12 +182,12 @@ namespace slimCat.ViewModels
             get
             {
                 return new Dictionary<string, GenderColorSettings>
-                    {
-                        {"No Coloring", GenderColorSettings.None},
-                        {"Minimal Coloring", GenderColorSettings.GenderOnly},
-                        {"Moderate Coloring", GenderColorSettings.GenderAndHerm},
-                        {"Full Coloring", GenderColorSettings.Full}
-                    };
+                {
+                    {"No Coloring", GenderColorSettings.None},
+                    {"Minimal Coloring", GenderColorSettings.GenderOnly},
+                    {"Moderate Coloring", GenderColorSettings.GenderAndHerm},
+                    {"Full Coloring", GenderColorSettings.Full}
+                };
             }
         }
 
@@ -241,6 +231,7 @@ namespace slimCat.ViewModels
                 Save();
             }
         }
+
         public bool AllowStatusDiscolor
         {
             get { return ApplicationSettings.AllowStatusDiscolor; }
@@ -492,6 +483,7 @@ namespace slimCat.ViewModels
             ApplicationSettings.SettingsVersion = Constants.ClientVer;
             SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
         }
+
         #endregion
 
         public override void Initialize()

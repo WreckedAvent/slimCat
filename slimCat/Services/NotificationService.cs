@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="NotificationService.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,10 +21,6 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using System.Windows.Documents.DocumentStructures;
-    using Libraries;
-    using Microsoft.Practices.Prism.Events;
-    using Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -32,9 +28,11 @@ namespace slimCat.Services
     using System.Web;
     using System.Windows;
     using System.Windows.Threading;
+    using Libraries;
+    using Microsoft.Practices.Prism.Events;
+    using Models;
     using Utilities;
     using ViewModels;
-    using Application = System.Windows.Application;
 
     #endregion
 
@@ -101,6 +99,7 @@ namespace slimCat.Services
 
             Application.Current.MainWindow.Activate();
         }
+
         #endregion
 
         #region Methods
@@ -160,7 +159,7 @@ namespace slimCat.Services
                 if ((channel.Settings.MessageNotifyOnlyForInteresting && IsOfInterest(message.Poster.Name))
                     || !channel.Settings.MessageNotifyOnlyForInteresting)
                 {
-                    NotifyUser(shouldDing, 
+                    NotifyUser(shouldDing,
                         shouldDing,
                         "{0} #{1}".FormatWith(message.Poster.Name, channel.Title) + '\n' + cleanMessageText,
                         channel.Id,
@@ -200,7 +199,7 @@ namespace slimCat.Services
                 }
             }
 
-            if (ApplicationSettings.CheckForOwnName) 
+            if (ApplicationSettings.CheckForOwnName)
             {
                 // Now our character's name is always added
                 var name = cm.CurrentCharacter.Name.ToLower();
@@ -356,7 +355,8 @@ namespace slimCat.Services
                         ? model.TargetCharacter.Name + "/notes"
                         : ((CommentEventArgs) args).Link;
 
-                    NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), link, null, model.TargetCharacter);
+                    NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), link,
+                        null, model.TargetCharacter);
                 }
                 else if (args is CharacterListChangedEventArgs)
                 {
@@ -364,22 +364,26 @@ namespace slimCat.Services
                     if (type == ListKind.SearchResult) return;
 
                     AddNotification(model);
-                    NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, null, model.TargetCharacter);
+                    NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()),
+                        targetCharacter, null, model.TargetCharacter);
                 }
                 else if (args is ReportHandledEventArgs)
                 {
                     AddNotification(model);
-                    NotifyUser(true, true, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, null, model.TargetCharacter);
+                    NotifyUser(true, true, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()),
+                        targetCharacter, null, model.TargetCharacter);
                 }
                 else if (args is ReportFiledEventArgs)
                 {
                     AddNotification(model);
-                    NotifyUser(true, true, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, "report", model.TargetCharacter);
+                    NotifyUser(true, true, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()),
+                        targetCharacter, "report", model.TargetCharacter);
                 }
                 else if (args is BroadcastEventArgs)
                 {
                     AddNotification(model);
-                    NotifyUser(true, true, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, null, model.TargetCharacter);
+                    NotifyUser(true, true, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()),
+                        targetCharacter, null, model.TargetCharacter);
                 }
                 else if (IsOfInterest(targetCharacter, false) && !model.TargetCharacter.IgnoreUpdates)
                 {
@@ -392,7 +396,8 @@ namespace slimCat.Services
                             return; // don't make a toast if we have their tab focused as it is redundant
                     }
 
-                    NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), targetCharacter, null, model.TargetCharacter);
+                    NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()),
+                        targetCharacter, null, model.TargetCharacter);
                 }
             }
             else
@@ -402,7 +407,9 @@ namespace slimCat.Services
                 if (!channelUpdate.TargetChannel.Settings.AlertAboutUpdates) return;
 
                 AddNotification(notification);
-                NotifyUser(false, false, "{0}\n{0} {1}".FormatWith(channelUpdate.TargetChannel.Title, notification.ToString()), channelUpdate.TargetChannel.Id);
+                NotifyUser(false, false,
+                    "{0}\n{0} {1}".FormatWith(channelUpdate.TargetChannel.Title, notification.ToString()),
+                    channelUpdate.TargetChannel.Id);
             }
         }
 
@@ -420,23 +427,23 @@ namespace slimCat.Services
             ICharacter character = null)
         {
             Action notify = () =>
-                {
-                    if (character != null)
-                        character.GetAvatar();
+            {
+                if (character != null)
+                    character.GetAvatar();
 
-                    if (flashWindow)
-                        FlashWindow();
+                if (flashWindow)
+                    FlashWindow();
 
-                    if (bingLing)
-                        DingTheCrapOutOfTheUser();
+                if (bingLing)
+                    DingTheCrapOutOfTheUser();
 
-                    if (message != null && ApplicationSettings.ShowNotificationsGlobal)
-                        toast.UpdateNotification(message);
+                if (message != null && ApplicationSettings.ShowNotificationsGlobal)
+                    toast.UpdateNotification(message);
 
-                    toast.Target = target;
-                    toast.Kind = kind;
-                    toast.TargetCharacter = character;
-                };
+                toast.Target = target;
+                toast.Kind = kind;
+                toast.TargetCharacter = character;
+            };
 
             Dispatcher.Invoke(notify);
         }
@@ -470,6 +477,7 @@ namespace slimCat.Services
         {
             Logging.Log(text, "notify serv");
         }
+
         #endregion
     }
 }

@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ObservingFlowDocumentReader.xaml.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,7 +21,6 @@ namespace slimCat.Views
 {
     #region Usings
 
-    using Models;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -29,6 +28,7 @@ namespace slimCat.Views
     using System.Linq;
     using System.Windows;
     using System.Windows.Documents;
+    using Models;
     using Utilities;
 
     #endregion
@@ -156,13 +156,13 @@ namespace slimCat.Views
         {
             Dispatcher.BeginInvoke(
                 (Action) delegate
-                    {
-                        var last = Messages.Blocks.LastBlock;
-                        if (last != null)
-                            Messages.Blocks.InsertBefore(Messages.Blocks.FirstBlock, item);
-                        else
-                            Messages.Blocks.Add(item);
-                    });
+                {
+                    var last = Messages.Blocks.LastBlock;
+                    if (last != null)
+                        Messages.Blocks.InsertBefore(Messages.Blocks.FirstBlock, item);
+                    else
+                        Messages.Blocks.Add(item);
+                });
         }
 
         private void AddAsync(Block item)

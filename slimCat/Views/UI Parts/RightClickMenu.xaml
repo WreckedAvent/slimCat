@@ -39,44 +39,44 @@
                                    FontSize="20" />
                         <TextBlock Text="{Binding Path=TargetGender}" />
                         <TextBlock Text="{Binding Path=TargetStatus}" />
-                        <TextBlock Text="Global Mod" 
-                                   Foreground="{StaticResource ModeratorBrush}" 
-                                   Visibility="{Binding Path=IsGlobalModerator, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
-                        <TextBlock Text="Channel Mod" 
-                                   Foreground="{StaticResource ContrastBrush}" 
-                                   Visibility="{Binding Path=IsChannelModerator, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
-                        
+                        <TextBlock Text="Global Mod"
+                                   Foreground="{StaticResource ModeratorBrush}"
+                                   Visibility="{Binding Path=IsGlobalModerator, Converter={StaticResource BoolConverter}, Mode=OneWay}" />
+                        <TextBlock Text="Channel Mod"
+                                   Foreground="{StaticResource ContrastBrush}"
+                                   Visibility="{Binding Path=IsChannelModerator, Converter={StaticResource BoolConverter}, Mode=OneWay}" />
+
                         <TextBlock Text="Friend"
                                    Foreground="{StaticResource ContrastBrush}"
-                                   Visibility="{Binding Path=IsFriend, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
-                        
+                                   Visibility="{Binding Path=IsFriend, Converter={StaticResource BoolConverter}, Mode=OneWay}" />
+
                         <TextBlock Text="Pending Friend"
                                    Foreground="{StaticResource ContrastBrush}"
-                                   Visibility="{Binding Path=IsPendingFriend, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
-                        
+                                   Visibility="{Binding Path=IsPendingFriend, Converter={StaticResource BoolConverter}, Mode=OneWay}" />
+
                         <TextBlock Text="Bookmarked"
                                    Foreground="{StaticResource ContrastBrush}"
-                                   Visibility="{Binding Path=IsBookmarked, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
+                                   Visibility="{Binding Path=IsBookmarked, Converter={StaticResource BoolConverter}, Mode=OneWay}" />
 
                         <TextBlock Text="Is Interesting"
                                    Foreground="{StaticResource ContrastBrush}"
-                                   Visibility="{Binding Path=IsOfInterest, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
-                        
+                                   Visibility="{Binding Path=IsOfInterest, Converter={StaticResource BoolConverter}, Mode=OneWay}" />
+
                         <TextBlock Text="Search Result"
                                    Foreground="{StaticResource ContrastBrush}"
-                                   Visibility="{Binding Path=CanRemoveSearchTag, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
+                                   Visibility="{Binding Path=CanRemoveSearchTag, Converter={StaticResource BoolConverter}, Mode=OneWay}" />
 
                         <TextBlock Text="Updates Ignored"
                                    Foreground="{StaticResource NotAvailableBrush}"
-                                   Visibility="{Binding Path=IsUpdatesIgnored, Converter={StaticResource BoolConverter}}"></TextBlock>
-                        
+                                   Visibility="{Binding Path=IsUpdatesIgnored, Converter={StaticResource BoolConverter}}" />
+
                         <TextBlock Text="Not Interesting"
                                    Foreground="{StaticResource NotAvailableBrush}"
-                                   Visibility="{Binding Path=IsUninteresting, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
-                        
+                                   Visibility="{Binding Path=IsUninteresting, Converter={StaticResource BoolConverter}, Mode=OneWay}" />
+
                         <TextBlock Text="Ignored"
                                    Foreground="{StaticResource NotAvailableBrush}"
-                                   Visibility="{Binding Path=IsIgnored, Converter={StaticResource BoolConverter}, Mode=OneWay}"/>
+                                   Visibility="{Binding Path=IsIgnored, Converter={StaticResource BoolConverter}, Mode=OneWay}" />
                     </StackPanel>
                 </DockPanel>
             </Border>
@@ -120,9 +120,9 @@
                         Content="Message" />
                 <Button Command="{Binding FindLogCommand}"
                         Content="View Logs" />
-                
+
                 <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" />
-                
+
                 <Button Command="{Binding InterestedCommand}"
                         Content="{Binding Path=RightClickMenuViewModel.MarkInterested}" />
                 <Button Command="{Binding NotInterestedCommand}"
@@ -135,20 +135,20 @@
                 <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" />
 
                 <Button Command="{Binding BookmarkCommand}"
-                        Content="{Binding Path=RightClickMenuViewModel.Bookmark}"/>
-                
+                        Content="{Binding Path=RightClickMenuViewModel.Bookmark}" />
+
                 <Button Command="{Binding AdvanceFriendCommand}"
                         Content="{Binding Path=RightClickMenuViewModel.AdvanceFriendRequest}"
-                        Visibility="{Binding Path=RightClickMenuViewModel.AdvanceFriendRequest, Converter={StaticResource EmptyConverter}}"/>
+                        Visibility="{Binding Path=RightClickMenuViewModel.AdvanceFriendRequest, Converter={StaticResource EmptyConverter}}" />
 
                 <Button Command="{Binding RegressFriendCommand}"
                         Content="{Binding Path=RightClickMenuViewModel.RegressFriendRequest}"
-                        Visibility="{Binding Path=RightClickMenuViewModel.RegressFriendRequest, Converter={StaticResource EmptyConverter}}"/>
+                        Visibility="{Binding Path=RightClickMenuViewModel.RegressFriendRequest, Converter={StaticResource EmptyConverter}}" />
 
                 <Button Command="{Binding SearchTagCommand}"
                         Content="Remove from Search Results"
                         Visibility="{Binding Path=RightClickMenuViewModel.CanRemoveSearchTag, Converter={StaticResource BoolConverter}}" />
-                
+
                 <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" />
 
                 <Button Command="{Binding IgnoreCommand}"
@@ -161,10 +161,11 @@
                 <Button Command="{Binding ReportCommand}"
                         Visibility="{Binding Path=RightClickMenuViewModel.HasReport, Converter={StaticResource OppositeBoolConverter}}"
                         Content="Report User" />
-                
+
                 <!-- Mod Commands -->
-                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" Visibility="{Binding HasPermissions, Converter={StaticResource BoolConverter}}" />
-                
+                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5"
+                      Visibility="{Binding HasPermissions, Converter={StaticResource BoolConverter}}" />
+
                 <Button Command="{Binding KickCommand}"
                         Content="Kick"
                         Visibility="{Binding HasPermissions, Converter={StaticResource BoolConverter}}" />

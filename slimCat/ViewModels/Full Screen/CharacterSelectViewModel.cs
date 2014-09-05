@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CharacterSelectViewModel.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,16 +21,16 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Windows.Input;
     using Utilities;
     using Views;
 
@@ -59,9 +59,8 @@ namespace slimCat.ViewModels
 
         private RelayCommand @select;
 
-        private RelayCommand switchAccount;
-
         private ICharacter selectedCharacter = new CharacterModel();
+        private RelayCommand switchAccount;
 
         #endregion
 
@@ -96,11 +95,11 @@ namespace slimCat.ViewModels
             {
                 return model.Characters.Select(
                     c =>
-                        {
-                            var temp = new CharacterModel {Name = c};
-                            temp.GetAvatar();
-                            return temp;
-                        });
+                    {
+                        var temp = new CharacterModel {Name = c};
+                        temp.GetAvatar();
+                        return temp;
+                    });
             }
         }
 

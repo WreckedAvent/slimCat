@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ChannelTextBoxEntryView.xaml.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,7 +21,6 @@ namespace slimCat.Views
 {
     #region Usings
 
-    using Models;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -29,6 +28,7 @@ namespace slimCat.Views
     using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Markup;
+    using Models;
     using ViewModels;
 
     #endregion
@@ -42,22 +42,22 @@ namespace slimCat.Views
 
         private static readonly IDictionary<Key, Tuple<string, bool>> AcceptedKeys =
             new Dictionary<Key, Tuple<string, bool>>
-                {
-                    // accepted shortcut keys.
-                    {Key.B, new Tuple<string, bool>("b", false)},
-                    {Key.S, new Tuple<string, bool>("s", false)},
-                    {Key.I, new Tuple<string, bool>("i", false)},
-                    {Key.U, new Tuple<string, bool>("u", false)},
-                    {Key.N, new Tuple<string, bool>("noparse", false)},
-                    {Key.L, new Tuple<string, bool>("url", true)},
-                    {Key.Up, new Tuple<string, bool>("sup", false)},
-                    {Key.Down, new Tuple<string, bool>("sub", false)},
-                    {Key.O, new Tuple<string, bool>("icon", false)},
-                    {Key.P, new Tuple<string, bool>("user", false)}
+            {
+                // accepted shortcut keys.
+                {Key.B, new Tuple<string, bool>("b", false)},
+                {Key.S, new Tuple<string, bool>("s", false)},
+                {Key.I, new Tuple<string, bool>("i", false)},
+                {Key.U, new Tuple<string, bool>("u", false)},
+                {Key.N, new Tuple<string, bool>("noparse", false)},
+                {Key.L, new Tuple<string, bool>("url", true)},
+                {Key.Up, new Tuple<string, bool>("sup", false)},
+                {Key.Down, new Tuple<string, bool>("sub", false)},
+                {Key.O, new Tuple<string, bool>("icon", false)},
+                {Key.P, new Tuple<string, bool>("user", false)}
 
-                    // format: 
-                    // target key, matching bbtag, if the bbtag takes arguments
-                };
+                // format: 
+                // target key, matching bbtag, if the bbtag takes arguments
+            };
 
         #endregion
 
@@ -90,15 +90,15 @@ namespace slimCat.Views
                 vm.PropertyChanged += PropertyChanged;
 
             DataContextChanged += (sender, args) =>
-                {
-                    if (vm != null)
-                        vm.PropertyChanged -= PropertyChanged;
+            {
+                if (vm != null)
+                    vm.PropertyChanged -= PropertyChanged;
 
-                    vm = DataContext as ChannelViewModelBase;
+                vm = DataContext as ChannelViewModelBase;
 
-                    if (vm != null)
-                        vm.PropertyChanged += PropertyChanged;
-                };
+                if (vm != null)
+                    vm.PropertyChanged += PropertyChanged;
+            };
         }
 
         private void PropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -166,6 +166,7 @@ namespace slimCat.Views
                 }
             }
         }
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             if (!ApplicationSettings.AllowGreedyTextboxFocus)
@@ -185,6 +186,7 @@ namespace slimCat.Views
 
             if (e.Key == Key.Up || e.Key == Key.Down) e.Handled = true;
         }
+
         #endregion
     }
 }

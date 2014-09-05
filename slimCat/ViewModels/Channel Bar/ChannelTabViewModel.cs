@@ -2,18 +2,18 @@
 
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ChannelTabViewModel.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
+//  
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,14 +21,14 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using Utilities;
     using Views;
 
@@ -39,7 +39,6 @@ namespace slimCat.ViewModels
     /// </summary>
     public class ChannelsTabViewModel : ChannelbarViewModelCommon
     {
-
         #region Constants
 
         public const string ChannelsTabView = "ChannelsTabView";
@@ -48,7 +47,11 @@ namespace slimCat.ViewModels
 
         #region Fields
 
+        private readonly IChannelListUpdater updater;
         public bool ShowOnlyAlphabet;
+        private RelayCommand createNewChannel;
+        private bool isCreatingNewChannel;
+        private string newChannelName;
 
         private bool showPrivate = true;
 
@@ -56,15 +59,7 @@ namespace slimCat.ViewModels
 
         private bool sortByName;
 
-        private readonly IChannelListUpdater updater;
-
-        private bool isCreatingNewChannel;
-
         private RelayCommand toggleIsCreatingNewChannel;
-
-        private RelayCommand createNewChannel;
-
-        private string newChannelName;
 
         #endregion
 
@@ -127,11 +122,6 @@ namespace slimCat.ViewModels
             }
         }
 
-        public void UpdateChannels()
-        {    
-            updater.UpdateChannels();
-        }
-
         public IEnumerable<GeneralChannelModel> SortedChannels
         {
             get
@@ -173,24 +163,12 @@ namespace slimCat.ViewModels
             }
         }
 
+        public void UpdateChannels()
+        {
+            updater.UpdateChannels();
+        }
+
         #endregion
-
-        private void Update(object sender, EventArgs e)
-        {
-            OnPropertyChanged("SearchSettings");
-            OnPropertyChanged("SortedChannels");
-        }
-
-        protected override void Dispose(bool isManaged)
-        {
-            if (isManaged)
-            {
-                ChatModel.AllChannels.CollectionChanged -= Update;
-                SearchSettings.Updated -= Update;
-
-            }
-            base.Dispose(isManaged);
-        }
 
         public bool IsCreatingNewChannel
         {
@@ -226,10 +204,26 @@ namespace slimCat.ViewModels
             }
         }
 
+        private void Update(object sender, EventArgs e)
+        {
+            OnPropertyChanged("SearchSettings");
+            OnPropertyChanged("SortedChannels");
+        }
+
+        protected override void Dispose(bool isManaged)
+        {
+            if (isManaged)
+            {
+                ChatModel.AllChannels.CollectionChanged -= Update;
+                SearchSettings.Updated -= Update;
+            }
+            base.Dispose(isManaged);
+        }
+
         public void CreateNewChannelEvent(object args)
         {
             IsCreatingNewChannel = false;
-            Events.SendUserCommand("makeroom", new[] { NewChannelName });
+            Events.SendUserCommand("makeroom", new[] {NewChannelName});
             NewChannelName = string.Empty;
         }
     }
