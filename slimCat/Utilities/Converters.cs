@@ -233,7 +233,7 @@ namespace slimCat.Utilities
                     ? Visibility.Visible
                     : Visibility.Collapsed;
             }
-            catch (ArithmeticException)
+            catch
             {
                 return Visibility.Collapsed;
             }
