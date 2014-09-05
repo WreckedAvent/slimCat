@@ -32,8 +32,8 @@
                          IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Appearance}" />
             <RadioButton Content="Automation"
                          IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Automation}" />
-            <RadioButton Content="Profile"
-                         IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Profile}" />
+            <!--<RadioButton Content="Profile"
+                         IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Profile}" />-->
         </WrapPanel>
         <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" />
 

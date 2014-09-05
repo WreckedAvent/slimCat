@@ -122,6 +122,34 @@
             </ContentControl>
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type models:GeneralChannelModel}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="15" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
+                <Rectangle Height="15" Width="15" Fill="{StaticResource HighlightBrush}">
+                    <Rectangle.OpacityMask>
+                        <ImageBrush
+                            ImageSource="{Binding Path=Type, Mode=OneTime, Converter={StaticResource ChannelTypeToImageConverter}}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+
+                <TextBlock TextWrapping="Wrap"
+                           Grid.Column="1"
+                           Margin="2,0,0,0"
+                           TextAlignment="Left"
+                           MaxWidth="165">
+                    <Hyperlink CommandParameter="{Binding Path=Id, Mode=OneTime}"
+                               Style="{StaticResource ChannelStyle}">
+                        <Run Text="{Binding Path=Title, Mode=OneTime}" />
+                        <Run Text="{Binding Path=DisplayNumber, Mode=OneWay}" />
+                    </Hyperlink>
+                </TextBlock>
+            </Grid>
+        </DataTemplate>
+
         <Style TargetType="ItemsControl" x:Key="AvatarBoxStyle">
 
             <Setter Property="BorderThickness" Value="0" />
@@ -295,12 +323,12 @@
                             Visibility="{Binding HasNewUpdate, Converter={StaticResource OppositeBoolConverter}}">
                             <Hyperlink CommandParameter="{Binding Path=ChangeLog, Mode=OneWay}">Changelog</Hyperlink>
                         </TextBlock>
-                        
+
                         <WrapPanel>
                             <TextBlock Text="by" />
                             <ContentControl Content="{Binding Path=slimCat}" Margin="5,0,0,0" />
                         </WrapPanel>
-                        
+
                         <StackPanel Visibility="{Binding HasNewUpdate, Converter={StaticResource BoolConverter}}">
                             <TextBlock Margin="0,5,0,0">
                                 <Run Foreground="{StaticResource ContrastBrush}"
@@ -373,11 +401,12 @@
                     <WrapPanel
                         Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Help}"
                         TextBlock.Foreground="{StaticResource ForegroundBrush}">
-                        <TextBlock>
-                            Help can be found by contacting 
-                        </TextBlock>
-
-                        <ContentControl Content="{Binding Path=slimCat}" />
+                        <TextBlock>Help can be found by contacting</TextBlock>
+                        <ContentControl Content="{Binding Path=slimCat}" Margin="5,0,5,0" />
+                        <WrapPanel Visibility="{Binding slimCatChannel, Converter={StaticResource NotNullConverter}}">
+                            <TextBlock>or by joining</TextBlock>
+                            <ContentControl Content="{Binding slimCatChannel}" Margin="5,0,0,0" />
+                        </WrapPanel>
                     </WrapPanel>
 
                     <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,10" />
