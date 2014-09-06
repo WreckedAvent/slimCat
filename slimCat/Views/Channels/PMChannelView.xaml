@@ -407,13 +407,19 @@
                                               HorizontalAlignment="Left">
                                     <ItemsControl.GroupStyle>
                                         <GroupStyle>
+                                            <GroupStyle.Panel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Orientation="Horizontal"/>
+                                                </ItemsPanelTemplate>
+                                            </GroupStyle.Panel>
                                             <GroupStyle.ContainerStyle>
                                                 <Style TargetType="{x:Type GroupItem}">
                                                     <Setter Property="Template">
                                                         <Setter.Value>
                                                             <ControlTemplate>
                                                                 <Expander Header="{Binding Name}"
-                                                                          HorizontalAlignment="Left">
+                                                                          HorizontalAlignment="Left" 
+                                                                          Margin="5,0">
                                                                     <ItemsPresenter />
                                                                 </Expander>
                                                             </ControlTemplate>
