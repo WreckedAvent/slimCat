@@ -283,7 +283,7 @@ namespace slimCat.ViewModels
                 var collection = ChatModel.CurrentPms;
                 if (!collection.Any())
                 {
-                    NavigateStub(false, false);
+                    NavigateStub(getTop, false);
                     return;
                 }
 
