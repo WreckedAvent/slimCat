@@ -637,6 +637,11 @@ namespace slimCat.ViewModels
                 case "IsSelected":
                     if (Model.IsSelected)
                     {
+                        if (isDisplayingChat && Model.Messages.Any())
+                            Model.Messages.Last().IsLastViewed = false;
+                        else if (IsDisplayingAds && Model.Ads.Any())
+                            Model.Ads.Last().IsLastViewed = false;
+
                         var chanModel = (GeneralChannelModel) Model;
                         if (!chanModel.ShowChannelDescription) break;
 
