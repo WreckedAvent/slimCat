@@ -26,6 +26,7 @@ namespace slimCat.Utilities
     using System.Globalization;
     using System.IO;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Web;
     using System.Windows;
     using System.Windows.Media;
@@ -341,6 +342,19 @@ namespace slimCat.Utilities
         {
             ApplicationSettings.SettingsVersion = Constants.ClientVer;
             SettingsService.SaveApplicationSettingsToXml(vm.ChatModel.CurrentCharacter.Name);
+        }
+
+        public static bool IsUpdate(string arg)
+        {
+            var versionString = arg.Substring(arg.LastIndexOf(' '));
+            var version = Convert.ToDouble(versionString, CultureInfo.InvariantCulture);
+
+            var toReturn = version > Constants.Version;
+
+            if (!toReturn && Math.Abs(version - Constants.Version) < 0.001)
+                toReturn = Constants.ClientVer.Contains("dev");
+
+            return toReturn;
         }
     }
 }

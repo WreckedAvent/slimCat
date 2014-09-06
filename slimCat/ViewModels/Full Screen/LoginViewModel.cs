@@ -244,15 +244,7 @@ namespace slimCat.ViewModels
 
                     Dispatcher.BeginInvoke((Action) delegate
                     {
-                        var versionString = args[0].Substring(args[0].LastIndexOf(' '));
-                        var version = Convert.ToDouble(versionString);
-
-                        HasNewUpdate = version > Constants.Version;
-
-                        if (!HasNewUpdate && Math.Abs(version - Constants.Version) < 0.001)
-                        {
-                            HasNewUpdate = Constants.ClientVer.Contains("dev");
-                        }
+                        HasNewUpdate = StaticFunctions.IsUpdate(args[0]);
 
                         UpdateName = args[0] + " update";
                         UpdateLink = args[1];
