@@ -84,6 +84,8 @@ namespace slimCat.ViewModels
 
         private Timer messageFloodTimer = new Timer(500);
 
+        private bool showChannelDescription;
+
         private RelayCommand @switch;
 
         private RelayCommand switchSearch;
@@ -493,30 +495,13 @@ namespace slimCat.ViewModels
 
         #region Properties
 
-        private IEnumerable<string> ThisDingTerms
+        public bool ShowChannelDescription
         {
-            get
+            get { return showChannelDescription; }
+            set
             {
-                const int characterNameOffset = 2; // how many ding terms we have to offset for the character's name
-                var count = thisDingTerms.Count;
-                var shouldBe = ApplicationSettings.GlobalNotifyTermsList.Count()
-                               + Model.Settings.EnumerableTerms.Count() + characterNameOffset;
-
-                if (count != shouldBe)
-                {
-                    thisDingTerms.Clear();
-
-                    foreach (var term in ApplicationSettings.GlobalNotifyTermsList)
-                        thisDingTerms.Add(term);
-
-                    foreach (var term in Model.Settings.EnumerableTerms)
-                        thisDingTerms.Add(term);
-
-                    thisDingTerms.Add(ChatModel.CurrentCharacter.Name);
-                    thisDingTerms.Add(ChatModel.CurrentCharacter.Name + "'s");
-                }
-
-                return thisDingTerms.Distinct().Where(term => !string.IsNullOrWhiteSpace(term));
+                showChannelDescription = value;
+                OnPropertyChanged("ShowChannelDescription");
             }
         }
 
@@ -632,6 +617,7 @@ namespace slimCat.ViewModels
             {
                 case "Description":
                     OnPropertyChanged("Description");
+                    ShowChannelDescription = ((GeneralChannelModel)Model).ShowChannelDescription;
                     break;
                 case "Type":
                     OnPropertyChanged("ChannelTypeString"); // fixes laggy room type change
@@ -649,7 +635,18 @@ namespace slimCat.ViewModels
                     OnPropertyChanged("CanSwitch");
                     break;
                 case "IsSelected":
-                    if (Model.IsSelected) break;
+                    if (Model.IsSelected)
+                    {
+                        var chanModel = (GeneralChannelModel) Model;
+                        if (!chanModel.ShowChannelDescription) break;
+
+                        ShowChannelDescription = true;
+                        ChannelSettings.LastChannelDescription = chanModel.Description;
+
+                        SettingsService.UpdateSettingsFile(
+                            ChannelSettings, ChatModel.CurrentCharacter.Name, Model.Title, Model.Id);
+                        break;
+                    }
 
                     if (isDisplayingChat && Model.Messages.Any())
                     {

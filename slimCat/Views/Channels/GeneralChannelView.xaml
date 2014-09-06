@@ -23,7 +23,7 @@
         </Grid.RowDefinitions>
 
         <Grid>
-            <Expander>
+            <Expander IsExpanded="{Binding ShowChannelDescription}">
                 <Expander.Header>
                     <TextBlock Margin="0"
                                Foreground="{StaticResource ForegroundBrush}"
