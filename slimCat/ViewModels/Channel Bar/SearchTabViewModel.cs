@@ -279,6 +279,14 @@ namespace slimCat.ViewModels
             {
                 Category = "furryprefs",
                 DisplayName = x
+            }).Union(new List<SearchTermModel>
+            {
+                new SearchTermModel
+                {
+                    Category = "furryprefs",
+                    DisplayName = "No furry preference set",
+                    UnderlyingValue = "None"
+                }
             });
 
             Dispatcher.BeginInvoke((Action) (() =>
@@ -299,6 +307,14 @@ namespace slimCat.ViewModels
                 {
                     Category = category,
                     DisplayName = WebUtility.HtmlDecode((string) x)
+                }).Union(new List<SearchTermModel>
+                {
+                    new SearchTermModel
+                    {
+                        Category = category,
+                        DisplayName = "No " + category.Substring(0, category.Length-1) + " set",
+                        UnderlyingValue = "None"
+                    }
                 });
         }
 
