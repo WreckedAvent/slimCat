@@ -426,6 +426,8 @@ namespace slimCat.Services
             string kind = null,
             ICharacter character = null)
         {
+            if (cm.CurrentCharacter.Status == StatusType.Dnd && ApplicationSettings.DisallowNotificationsWhenDnd) return;
+
             Action notify = () =>
             {
                 if (character != null)

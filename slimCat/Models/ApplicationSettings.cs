@@ -289,6 +289,8 @@ namespace slimCat.Models
 
         public static bool ToastsAreLocatedAtTop { get; set; }
 
+        public static bool DisallowNotificationsWhenDnd { get; set; }
+
         #endregion
     }
 

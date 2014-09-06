@@ -135,6 +135,11 @@
                       ToolTip="Allows slimCat to play sounds even if the window and the tab that generates the vent are focused.">
                 Play sounds even when window and tab are focused
             </CheckBox>
+            
+            <CheckBox IsChecked="{Binding DoNotAlertWhenDnd}"
+                      ToolTip="Disallows slimCat from playing sounds and generating toasts while your status is DND.">
+                Do not display toasts or play sounds while DND
+            </CheckBox>
 
             <StackPanel Margin="0,15,0,0"
                         ToolTip="Defines a global set of words that slimCat will check messages against and alert you if they match">
@@ -142,8 +147,8 @@
                 <TextBox
                     Text="{Binding Path=GlobalNotifyTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     TextWrapping="Wrap"
-                    Width="200"
                     AcceptsReturn="True"
+                    MinWidth="400"
                     MaxLines="5"
                     HorizontalAlignment="Left"
                     FontSize="12" />
@@ -178,7 +183,7 @@
                         SmallChange="1"
                         Minimum="8"
                         Maximum="20"
-                        Width="200"
+                        Width="400"
                         TickFrequency="1"
                         TickPlacement="BottomRight"
                         HorizontalAlignment="Left"
@@ -246,7 +251,7 @@
                         SmallChange="5"
                         Minimum="400"
                         Maximum="10400"
-                        Width="200"
+                        Width="400"
                         TickFrequency="1000"
                         TickPlacement="BottomRight"
                         HorizontalAlignment="Left"
@@ -269,7 +274,7 @@
                         SmallChange="5"
                         Minimum="5"
                         Maximum="60"
-                        Width="200"
+                        Width="400"
                         TickFrequency="5"
                         TickPlacement="BottomRight"
                         HorizontalAlignment="Left"
@@ -292,7 +297,7 @@
                         SmallChange="5"
                         Minimum="60"
                         Maximum="120"
-                        Width="200"
+                        Width="400"
                         TickFrequency="5"
                         TickPlacement="BottomRight"
                         HorizontalAlignment="Left"

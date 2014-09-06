@@ -472,6 +472,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool DoNotAlertWhenDnd
+        {
+            get { return ApplicationSettings.DisallowNotificationsWhenDnd; }
+            set
+            {
+                ApplicationSettings.DisallowNotificationsWhenDnd = value;
+                Save();
+            }
+        }
+
         #endregion
 
         public string SelectedTab
