@@ -438,6 +438,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool ToastsAreLocatedAtTop
+        {
+            get { return ApplicationSettings.ToastsAreLocatedAtTop; }
+            set
+            {
+                ApplicationSettings.ToastsAreLocatedAtTop = value;
+                Save();
+            }
+        }
+
         public bool ShowNotifications
         {
             get { return ApplicationSettings.ShowNotificationsGlobal; }

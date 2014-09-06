@@ -116,6 +116,11 @@
                 Display toast notifications for events
             </CheckBox>
 
+            <CheckBox IsChecked="{Binding ToastsAreLocatedAtTop}"
+                      ToolTip="Allows slimCat to display notifications at the top right of your screen, instead of bottom-right.">
+                Display toast notifications at the top of the screen
+            </CheckBox>
+
             <CheckBox IsChecked="{Binding AllowSound}"
                       ToolTip="Allows slimCat to play sounds during toasts when applicable.">
                 Play sounds for events

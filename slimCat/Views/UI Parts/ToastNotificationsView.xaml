@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         xmlns:vm="clr-namespace:slimCat.ViewModels"
         xmlns:v="clr-namespace:slimCat.Views"
+        xmlns:models="clr-namespace:slimCat.Models"
 
         Title="{Binding Path=Title}"
         WindowStyle="None"
@@ -19,7 +20,7 @@
         Background="Transparent"
 
         d:DataContext="{d:DesignInstance vm:ToastNotificationsViewModel}">
-    <Grid TextBlock.FontSize="14">
+    <Grid TextBlock.FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}">
         <Button Command="{Binding SnapToLatestCommand}"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Left"

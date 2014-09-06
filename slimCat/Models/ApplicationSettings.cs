@@ -88,6 +88,7 @@ namespace slimCat.Models
 
             ChannelDisplayThreshold = 5;
             AllowOfInterestColoring = true;
+            ToastsAreLocatedAtTop = false;
         }
 
         #endregion
@@ -285,6 +286,8 @@ namespace slimCat.Models
         public static int ChannelDisplayThreshold { get; set; }
 
         public static bool AllowOfInterestColoring { get; set; }
+
+        public static bool ToastsAreLocatedAtTop { get; set; }
 
         #endregion
     }

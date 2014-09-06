@@ -29,6 +29,7 @@ namespace slimCat.Views
     using System.Windows.Media.Animation;
     using System.Windows.Threading;
     using Libraries;
+    using Models;
     using ViewModels;
     using Point = System.Windows.Point;
 
@@ -83,10 +84,10 @@ namespace slimCat.Views
                             return;
 
                         var transform = presentationSource.CompositionTarget.TransformFromDevice;
-                        var corner = transform.Transform(new Point(workingArea.Right, workingArea.Bottom));
+                        var corner = transform.Transform(new Point(workingArea.Right, ApplicationSettings.ToastsAreLocatedAtTop ? workingArea.Top : workingArea.Bottom));
 
                         Left = corner.X - ActualWidth;
-                        Top = corner.Y - ActualHeight;
+                        Top = corner.Y - (ApplicationSettings.ToastsAreLocatedAtTop ? -ActualHeight : ActualHeight);
                     }));
         }
 
