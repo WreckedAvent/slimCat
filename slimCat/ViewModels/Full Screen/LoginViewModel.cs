@@ -247,13 +247,9 @@ namespace slimCat.ViewModels
                         var versionString = args[0].Substring(args[0].LastIndexOf(' '));
                         var version = Convert.ToDouble(versionString);
 
-                        var ourVersion = Convert.ToDouble(Constants.ClientVer.Contains(" ")
-                            ? Constants.ClientVer.Substring(0, Constants.ClientVer.LastIndexOf(' '))
-                            : Constants.ClientVer);
+                        HasNewUpdate = version > Constants.Version;
 
-                        HasNewUpdate = version > ourVersion;
-
-                        if (!HasNewUpdate && Math.Abs(version - ourVersion) < 0.001)
+                        if (!HasNewUpdate && Math.Abs(version - Constants.Version) < 0.001)
                         {
                             HasNewUpdate = Constants.ClientVer.Contains("dev");
                         }
