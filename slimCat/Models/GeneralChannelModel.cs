@@ -159,7 +159,12 @@ namespace slimCat.Models
 
         public bool ShowChannelDescription
         {
-            get { return description != null && description.Replace("\r\n", "\n") != Settings.LastChannelDescription; }
+            get
+            {
+                return description != null
+                       && description.Replace("\r\n", "\n") != Settings.LastChannelDescription
+                       && description != Settings.LastChannelDescription;
+            }
         }
 
         /// <summary>
