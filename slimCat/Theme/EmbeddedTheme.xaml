@@ -329,7 +329,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type ListBox}" x:Key="HorizontalListBoxStyle" BasedOn="{StaticResource NoScrollListBox}">
+    <Style TargetType="{x:Type ItemsControl}" x:Key="HorizontalListBoxStyle" BasedOn="{StaticResource NoScrollListBox}">
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
