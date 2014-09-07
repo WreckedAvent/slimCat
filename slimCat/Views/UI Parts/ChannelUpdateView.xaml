@@ -14,21 +14,6 @@
            FontFamily="Segoe UI, Verdanda"
            FontSize="13"
            ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
-    <InlineUIContainer BaselineAlignment="Bottom">
-        <Rectangle Height="15" Width="15" Fill="{StaticResource HighlightBrush}">
-            <Rectangle.OpacityMask>
-                <ImageBrush
-                    ImageSource="{Binding Path=TargetChannel.Type, Mode=OneTime, Converter={StaticResource ChannelTypeToImageConverter}}" />
-            </Rectangle.OpacityMask>
-        </Rectangle>
-    </InlineUIContainer>
-
-    <Hyperlink CommandParameter="{Binding Path=TargetChannel.Id, Mode=OneTime}"
-               Style="{StaticResource ChannelStyle}"
-               Foreground="{StaticResource HighlightBrush}">
-        <Run Text="{Binding Path=TargetChannel.Title, Mode=OneTime}" />
-    </Hyperlink>
-
     <Span
         lib:SpanHelper.InlineSource="{Binding Path=Arguments, Mode=OneTime, Converter={StaticResource BbCodeConverter}, IsAsync=True}" />
 
@@ -40,32 +25,3 @@
                            CommandParameter="{Binding}" />
     </InlineUIContainer>
 </Paragraph>
-
-<!--        <DataTemplate x:Key="ChannelUpdateTemplate"
-                  DataType="models:ChannelUpdateModel">
-            <Grid ToolTip="{Binding Path=TimeStamp, Mode=OneTime}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock TextWrapping="Wrap"
-                       TextAlignment="Left">
-                <InlineUIContainer BaselineAlignment="TextBottom">
-                    <Button Content="{Binding Path=ChannelTitle, Mode=OneWay}"
-                            Style="{StaticResource ChannelInterfaceButton}"
-                            CommandParameter="{Binding Path=ChannelId, Mode=OneWay}" />
-
-                </InlineUIContainer>
-                <Run Text="{Binding Path=Arguments, Mode=OneWay}"
-                     Foreground="{StaticResource ForegroundBrush}" />
-                </TextBlock>
-
-                <v:CloseButtonView Grid.Column="1"
-                               VerticalAlignment="Top"
-                               Command="{Binding Path=DataContext.RemoveNotificationCommand,
-                               RelativeSource={RelativeSource Mode=FindAncestor,
-                               AncestorType={x:Type ItemsControl}} }"
-                               CommandParameter="{Binding}" />
-            </Grid>
-        </DataTemplate>
--->

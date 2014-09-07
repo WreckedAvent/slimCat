@@ -19,13 +19,15 @@
 
 namespace slimCat.Models
 {
+    using Utilities;
+
     public class ChannelTypeChangedEventArgs : ChannelUpdateEventArgs
     {
         public bool IsOpen { get; set; }
 
         public override string ToString()
         {
-            return "is now " + (IsOpen ? "open" : "InviteOnly") + '.';
+            return "{0} is now {1}".FormatWith(GetChannelBbCode(), IsOpen ? "open" : "invite only");
         }
     }
 }

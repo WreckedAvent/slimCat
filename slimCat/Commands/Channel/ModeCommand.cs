@@ -26,9 +26,9 @@ namespace slimCat.Models
         public override string ToString()
         {
             if (NewMode != ChannelMode.Both)
-                return "now only allows " + NewMode + '.';
+                return GetChannelBbCode() + " now only allows " + NewMode + '.';
 
-            return "now allows Ads and chatting.";
+            return GetChannelBbCode() + " now allows both ads and chatting.";
         }
     }
 }

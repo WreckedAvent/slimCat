@@ -19,13 +19,15 @@
 
 namespace slimCat.Models
 {
+    using Utilities;
+
     public class ChannelInviteEventArgs : ChannelUpdateEventArgs
     {
         public string Inviter { get; set; }
 
         public override string ToString()
         {
-            return "(" + Inviter + ") has invited you to join their room.";
+            return "{0} has invited you to join {1}".FormatWith(WrapInUser(Inviter), GetChannelBbCode());
         }
     }
 }

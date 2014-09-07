@@ -125,8 +125,18 @@ namespace slimCat.Models
         internal virtual void SetToastData(ToastNotificationsViewModel toast)
         {
             toast.Title = Model.TargetChannel.Title;
-            toast.Content = Model.TargetChannel.Title + ToString();
+            toast.Content = ToString();
             toast.Navigator = Model;
+        }
+
+        internal string GetChannelBbCode()
+        {
+            return "[session={1}]{0}[/session]".FormatWith(Model.TargetChannel.Id, Model.TargetChannel.Title);
+        }
+
+        internal string WrapInUser(string user)
+        {
+            return "[user]{0}[/user]".FormatWith(user);
         }
     }
 }

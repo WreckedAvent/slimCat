@@ -31,7 +31,7 @@ namespace slimCat.Models
 
         public override string ToString()
         {
-            return "is now owned by [user]{0}[/user]".FormatWith(NewOwner);
+            return "{0} is now owned by {1}".FormatWith(GetChannelBbCode(), WrapInUser(NewOwner));
         }
     }
 }

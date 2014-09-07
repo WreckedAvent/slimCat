@@ -19,11 +19,13 @@
 
 namespace slimCat.Models
 {
+    using Utilities;
+
     public class ChannelDescriptionChangedEventArgs : ChannelUpdateEventArgs
     {
         public override string ToString()
         {
-            return "has a new description.";
+            return "{0} has a new description.".FormatWith(GetChannelBbCode());
         }
     }
 }
