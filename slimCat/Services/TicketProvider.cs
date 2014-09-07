@@ -35,7 +35,7 @@ namespace slimCat.Services
     {
         #region Fields
 
-        private const string siteIsDisabled = "The site has been disabled for maintenance, check back later.";
+        private const string SiteIsDisabled = "The site has been disabled for maintenance, check back later.";
         private readonly IBrowser browser;
 
         private IAccount lastAccount;
@@ -129,7 +129,7 @@ namespace slimCat.Services
 
             var buffer = browser.GetResponse(Constants.UrlConstants.GetTicket, ticketCredentials);
 
-            if (buffer.Equals(siteIsDisabled, StringComparison.OrdinalIgnoreCase))
+            if (buffer.Equals(SiteIsDisabled, StringComparison.OrdinalIgnoreCase))
                 throw new Exception("Site API disabled for maintenance.");
 
             // assign the data to our account model

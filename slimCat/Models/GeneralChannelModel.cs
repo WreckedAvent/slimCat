@@ -23,6 +23,7 @@ namespace slimCat.Models
 
     using System;
     using System.Collections.Specialized;
+    using System.Globalization;
     using Utilities;
 
     #endregion
@@ -172,7 +173,7 @@ namespace slimCat.Models
         /// </summary>
         public string DisplayNumber
         {
-            get { return UserCount > 0 ? userCount.ToString() : string.Empty; }
+            get { return UserCount > 0 ? userCount.ToString(CultureInfo.InvariantCulture) : string.Empty; }
         }
 
         /// <summary>

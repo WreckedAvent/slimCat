@@ -22,7 +22,6 @@ namespace slimCat.ViewModels
     #region Usings
 
     using System;
-    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Collections.Specialized;
     using System.ComponentModel;
@@ -57,8 +56,6 @@ namespace slimCat.ViewModels
         private readonly FilteredMessageCollection messageManager;
 
         private readonly GenericSearchSettingsModel searchSettings;
-
-        private readonly IList<string> thisDingTerms = new List<string>();
 
         private Timer adFloodTimer = new Timer(602000);
 

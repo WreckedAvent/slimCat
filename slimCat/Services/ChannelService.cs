@@ -103,12 +103,6 @@ namespace slimCat.Services
 
         #endregion
 
-        #region Delegates
-
-        private delegate void CommandHandler(IDictionary<string, object> command);
-
-        #endregion
-
         #region Public Methods and Operators
 
         public void AddChannel(ChannelType type, string id, string name)
@@ -308,7 +302,6 @@ namespace slimCat.Services
         public void QuickJoinChannel(string id, string name)
         {
             name = HttpUtility.HtmlDecode(name);
-            IEnumerable<string> history = new List<string>();
 
             var type = (id != name) ? ChannelType.Public : ChannelType.Private;
 

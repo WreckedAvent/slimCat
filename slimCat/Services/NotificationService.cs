@@ -203,10 +203,11 @@ namespace slimCat.Services
             // Tokenized List is the list of terms the message has
             // Check against is a combined set of terms that the user has identified as ding words
             // Is Matching String uses Check against to see if any terms are a match
+            var wordList = checkAgainst as IList<string> ?? checkAgainst.ToList();
             if (channel.Settings.NotifyIncludesCharacterNames)
             {
                 // if the poster's name contains a ding word
-                var match = checkAgainst
+                var match = wordList
                     .Select(dingword => message.Poster.Name.FirstMatch(dingword))
                     .FirstOrDefault(attemptedMatch => !string.IsNullOrWhiteSpace(attemptedMatch.Item1));
 
@@ -258,7 +259,7 @@ namespace slimCat.Services
 
             {
                 // check the message content
-                var match = checkAgainst.Select(cleanMessageText.FirstMatch)
+                var match = wordList.Select(cleanMessageText.FirstMatch)
                     .FirstOrDefault(attemptedMatch => !string.IsNullOrWhiteSpace(attemptedMatch.Item1));
 
                 if (match == null) return;

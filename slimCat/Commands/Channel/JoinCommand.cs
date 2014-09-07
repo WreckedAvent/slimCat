@@ -39,7 +39,6 @@ namespace slimCat.Models
         {
             var settings = chatState.GetChannelSettingsById(TargetChannelId);
             if (settings == null) return;
-            ;
 
             var setting = new ChannelSettingPair(settings.JoinLeaveNotifyLevel,
                 settings.JoinLeaveNotifyOnlyForInteresting);

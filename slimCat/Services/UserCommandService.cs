@@ -50,7 +50,6 @@ namespace slimCat.Services
         private readonly IChatConnection connection;
 
         private readonly IEventAggregator events;
-        private readonly IFriendRequestService friendRequestService;
         private readonly IIconService iconService;
 
         private readonly ILoggingService logger;
@@ -85,7 +84,6 @@ namespace slimCat.Services
                 this.channelService = channelService.ThrowIfNull("channelManager");
                 regionManager = regman.ThrowIfNull("regman");
                 characterManager = manager.ThrowIfNull("characterManager");
-                this.friendRequestService = friendRequestService;
                 this.iconService = iconService;
 
                 this.events.GetEvent<UserCommandEvent>().Subscribe(CommandReceived, ThreadOption.UIThread, true);
