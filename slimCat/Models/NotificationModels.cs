@@ -23,7 +23,6 @@ namespace slimCat.Models
 
     using System;
     using System.Windows.Documents;
-    using Microsoft.Practices.Prism.Events;
     using Services;
     using ViewModels;
 
@@ -36,9 +35,8 @@ namespace slimCat.Models
     {
         public abstract void Navigate(IChatState chatState);
 
-        public abstract Block View { get; }
-
         public abstract void DisplayNewToast(IChatState chatState, IManageToasts toastsManager);
+        public abstract Block View { get; }
     }
 
     public interface ICanNavigate

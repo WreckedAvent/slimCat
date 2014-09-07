@@ -249,8 +249,8 @@ namespace slimCat.Services
                          ?? (ChannelModel) model.CurrentChannels.FirstByIdOrNull(id);
             }
 
-            if (history.Any() 
-                && history.Count() > 1 
+            if (history.Any()
+                && history.Count() > 1
                 && toJoin.Messages.Count == 0
                 && toJoin.Ads.Count == 0)
             {

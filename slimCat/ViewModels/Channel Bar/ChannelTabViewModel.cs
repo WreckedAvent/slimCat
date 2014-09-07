@@ -47,6 +47,7 @@ namespace slimCat.ViewModels
 
         #region Fields
 
+        private readonly DeferredAction updateChannelList;
         private readonly IChannelListUpdater updater;
         public bool ShowOnlyAlphabet;
 
@@ -63,8 +64,6 @@ namespace slimCat.ViewModels
         private bool sortByName;
 
         private RelayCommand toggleIsCreatingNewChannel;
-
-        private readonly DeferredAction updateChannelList;
 
         #endregion
 

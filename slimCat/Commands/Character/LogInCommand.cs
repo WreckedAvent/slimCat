@@ -19,8 +19,12 @@
 
 namespace slimCat.Models
 {
+    #region Usings
+
     using Services;
     using Utilities;
+
+    #endregion
 
     /// <summary>
     ///     The login state changed event args.

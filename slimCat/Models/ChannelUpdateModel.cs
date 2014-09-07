@@ -71,6 +71,9 @@ namespace slimCat.Models
 
         public override void DisplayNewToast(IChatState chatState, IManageToasts toastManager)
         {
+            if (ApplicationSettings.DisallowNotificationsWhenDnd && chatState.ChatModel.CurrentCharacter.Status == StatusType.Busy)
+                return;
+
             Arguments.DisplayNewToast(chatState, toastManager);
         }
 
@@ -117,7 +120,7 @@ namespace slimCat.Models
 
         public virtual void NavigateTo(IChatState chatState)
         {
-            chatState.EventAggregator.SendUserCommand("join", new[] { Model.TargetChannel.Id });
+            chatState.EventAggregator.SendUserCommand("join", new[] {Model.TargetChannel.Id});
 
             NotificationService.ShowWindow();
         }

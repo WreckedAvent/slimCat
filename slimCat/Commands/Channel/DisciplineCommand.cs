@@ -19,7 +19,11 @@
 
 namespace slimCat.Models
 {
+    #region Usings
+
     using Utilities;
+
+    #endregion
 
     public class ChannelDisciplineEventArgs : ChannelUpdateEventArgs
     {
@@ -31,7 +35,8 @@ namespace slimCat.Models
 
         public override string ToString()
         {
-            return "{0} has {1} {2} from {3}".FormatWith(WrapInUser(Kicker), IsBan ? "banned" : "kicked", Kicked, GetChannelBbCode());
+            return "{0} has {1} {2} from {3}".FormatWith(WrapInUser(Kicker), IsBan ? "banned" : "kicked", Kicked,
+                GetChannelBbCode());
         }
     }
 }

@@ -19,7 +19,11 @@
 
 namespace slimCat.Models
 {
+    #region Usings
+
     using Services;
+
+    #endregion
 
     public class CharacterListChangedEventArgs : CharacterUpdateEventArgs
     {

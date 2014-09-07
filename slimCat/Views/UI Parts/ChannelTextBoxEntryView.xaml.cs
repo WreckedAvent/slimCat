@@ -64,13 +64,12 @@ namespace slimCat.Views
 
         #region Fields
 
-        private ChannelViewModelBase vm;
-
         private static bool bindingsAdded;
 
         private static KeyBinding lastFocusBind;
 
         private RelayCommand focusCommand;
+        private ChannelViewModelBase vm;
 
         #endregion
 

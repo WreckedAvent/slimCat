@@ -19,7 +19,11 @@
 
 namespace slimCat.Models
 {
+    #region Usings
+
     using Utilities;
+
+    #endregion
 
     public class ChannelDescriptionChangedEventArgs : ChannelUpdateEventArgs
     {

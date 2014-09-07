@@ -312,7 +312,7 @@ namespace slimCat.ViewModels
                     new SearchTermModel
                     {
                         Category = category,
-                        DisplayName = "No " + category.Substring(0, category.Length-1) + " set",
+                        DisplayName = "No " + category.Substring(0, category.Length - 1) + " set",
                         UnderlyingValue = "None"
                     }
                 });

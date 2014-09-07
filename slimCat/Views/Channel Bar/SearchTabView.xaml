@@ -51,7 +51,7 @@
             <Expander Header="Current Search Terms" IsExpanded="True"
                       Visibility="{Binding Path=SelectedSearchTerms.IsEmpty, Converter={StaticResource OppositeBoolConverter}}">
                 <ItemsControl ItemsSource="{Binding Path=SelectedSearchTerms, Mode=OneWay}"
-                         Style="{StaticResource HorizontalListBoxStyle}">
+                              Style="{StaticResource HorizontalListBoxStyle}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <TextBlock TextWrapping="Wrap" Margin="0,0,10,0">
@@ -81,7 +81,7 @@
                 <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,10" />
 
                 <ItemsControl ItemsSource="{Binding Path=AvailableSearchTerms, Mode=OneWay}"
-                         Style="{StaticResource HorizontalListBoxStyle}">
+                              Style="{StaticResource HorizontalListBoxStyle}">
                     <ItemsControl.GroupStyle>
                         <GroupStyle ContainerStyle="{StaticResource HeaderContainerStyle}" />
                     </ItemsControl.GroupStyle>

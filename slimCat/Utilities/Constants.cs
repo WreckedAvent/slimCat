@@ -36,11 +36,6 @@ namespace slimCat.Utilities
         /// </summary>
         public const string ClientName = "Puma";
 
-        /// <summary>
-        ///     The client's version.
-        /// </summary>
-        public static readonly string ClientVer = Version + " dev";
-
         public const double Version = 4.05;
 
         /// <summary>
@@ -62,6 +57,11 @@ namespace slimCat.Utilities
         ///     The the url for the index of available themes.
         /// </summary>
         public const string ThemeIndexUrl = SlimCatResourceUrl + "themes/index.csv";
+
+        /// <summary>
+        ///     The client's version.
+        /// </summary>
+        public static readonly string ClientVer = Version + " dev";
 
         #endregion
 

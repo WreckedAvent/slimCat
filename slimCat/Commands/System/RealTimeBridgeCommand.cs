@@ -144,7 +144,7 @@ namespace slimCat.Models
 
         public override void NavigateTo(IChatState chatState)
         {
-            chatState.EventAggregator.SendUserCommand("priv", new[] { Model.TargetCharacter.Name + "/notes" });
+            chatState.EventAggregator.SendUserCommand("priv", new[] {Model.TargetCharacter.Name + "/notes"});
 
             NotificationService.ShowWindow();
         }

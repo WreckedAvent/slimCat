@@ -23,7 +23,6 @@ namespace slimCat.Models
 
     using System;
     using System.Windows.Documents;
-    using System.Windows.Threading;
     using Services;
     using Utilities;
     using ViewModels;
@@ -78,6 +77,9 @@ namespace slimCat.Models
 
         public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
         {
+            if (ApplicationSettings.DisallowNotificationsWhenDnd && chatState.ChatModel.CurrentCharacter.Status == StatusType.Busy)
+                return;
+
             Arguments.DisplayNewToast(chatState, toastsManager);
         }
 
@@ -117,7 +119,7 @@ namespace slimCat.Models
 
         public virtual void NavigateTo(IChatState chatState)
         {
-            chatState.EventAggregator.SendUserCommand("priv", new[] { Model.TargetCharacter.Name });
+            chatState.EventAggregator.SendUserCommand("priv", new[] {Model.TargetCharacter.Name});
 
             NotificationService.ShowWindow();
         }

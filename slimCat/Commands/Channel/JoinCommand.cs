@@ -38,7 +38,8 @@ namespace slimCat.Models
         public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
         {
             var settings = chatState.GetChannelSettingsById(TargetChannelId);
-            if (settings == null) return;;
+            if (settings == null) return;
+            ;
 
             var setting = new ChannelSettingPair(settings.JoinLeaveNotifyLevel,
                 settings.JoinLeaveNotifyOnlyForInteresting);

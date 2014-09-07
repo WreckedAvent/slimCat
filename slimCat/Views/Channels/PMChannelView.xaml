@@ -409,7 +409,7 @@
                                         <GroupStyle>
                                             <GroupStyle.Panel>
                                                 <ItemsPanelTemplate>
-                                                    <StackPanel Orientation="Horizontal"/>
+                                                    <StackPanel Orientation="Horizontal" />
                                                 </ItemsPanelTemplate>
                                             </GroupStyle.Panel>
                                             <GroupStyle.ContainerStyle>
@@ -418,7 +418,7 @@
                                                         <Setter.Value>
                                                             <ControlTemplate>
                                                                 <Expander Header="{Binding Name}"
-                                                                          HorizontalAlignment="Left" 
+                                                                          HorizontalAlignment="Left"
                                                                           Margin="5,0">
                                                                     <ItemsPresenter />
                                                                 </Expander>

@@ -19,8 +19,12 @@
 
 namespace slimCat.Models
 {
+    #region Usings
+
     using Services;
     using Utilities;
+
+    #endregion
 
     public class PromoteDemoteEventArgs : CharacterUpdateInChannelEventArgs
     {

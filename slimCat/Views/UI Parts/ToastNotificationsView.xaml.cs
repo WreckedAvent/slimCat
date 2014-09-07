@@ -84,7 +84,9 @@ namespace slimCat.Views
                             return;
 
                         var transform = presentationSource.CompositionTarget.TransformFromDevice;
-                        var corner = transform.Transform(new Point(workingArea.Right, ApplicationSettings.ToastsAreLocatedAtTop ? workingArea.Top : workingArea.Bottom));
+                        var corner =
+                            transform.Transform(new Point(workingArea.Right,
+                                ApplicationSettings.ToastsAreLocatedAtTop ? workingArea.Top : workingArea.Bottom));
 
                         Left = corner.X - ActualWidth;
                         Top = corner.Y - (ApplicationSettings.ToastsAreLocatedAtTop ? -ActualHeight : ActualHeight);

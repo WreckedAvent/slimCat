@@ -617,7 +617,7 @@ namespace slimCat.ViewModels
             {
                 case "Description":
                     OnPropertyChanged("Description");
-                    ShowChannelDescription = ((GeneralChannelModel)Model).ShowChannelDescription;
+                    ShowChannelDescription = ((GeneralChannelModel) Model).ShowChannelDescription;
                     break;
                 case "Type":
                     OnPropertyChanged("ChannelTypeString"); // fixes laggy room type change

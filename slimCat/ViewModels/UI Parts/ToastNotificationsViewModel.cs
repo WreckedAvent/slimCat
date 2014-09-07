@@ -23,7 +23,6 @@ namespace slimCat.ViewModels
 
     using System;
     using System.Diagnostics;
-    using System.Linq;
     using System.Timers;
     using System.Web;
     using System.Windows.Input;

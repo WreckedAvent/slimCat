@@ -135,12 +135,12 @@
                       ToolTip="Allows slimCat to play sounds even if the window and the tab that generates the vent are focused.">
                 Play sounds even when window and tab are focused
             </CheckBox>
-            
+
             <CheckBox IsChecked="{Binding DoNotAlertWhenDnd}"
                       ToolTip="Disallows slimCat from playing sounds and generating toasts while your status is DND.">
                 Do not display toasts or play sounds while DND
             </CheckBox>
-            
+
             <CheckBox IsChecked="{Binding ShowAvatarsInToasts}"
                       ToolTip="Allows slimCat to display Avatars in toasts">
                 Display avatars in toasts related to characters
@@ -150,7 +150,7 @@
                       ToolTip="Allows slimCat to display the name of the user who triggered the notification">
                 Display names in toasts related to characters
             </CheckBox>
-            
+
             <CheckBox IsChecked="{Binding ShowMessagesInToasts}"
                       ToolTip="Allows slimCat to display parts of messages which triggered the notification">
                 Display user messages in toasts
