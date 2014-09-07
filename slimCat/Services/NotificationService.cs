@@ -72,9 +72,12 @@ namespace slimCat.Services
             {
                 AddNotification =
                     notification => Dispatcher.Invoke((Action) (() => cm.Notifications.Backlog(notification, 100))),
-                ShowToast = toast.ShowNotifications,
+                ShowToast = () => toast.ShowNotifications(),
                 FlashWindow = () => Dispatcher.Invoke((Action) FlashWindow),
-                PlaySound = () => Dispatcher.Invoke((Action) DingTheCrapOutOfTheUser),
+                PlaySound = () => Dispatcher.Invoke((Action) (() =>
+                {
+                    if (ApplicationSettings.AllowSound) DingTheCrapOutOfTheUser();
+                })),
                 Toast = toast
             };
 

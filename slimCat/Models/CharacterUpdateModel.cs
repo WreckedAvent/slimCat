@@ -77,9 +77,6 @@ namespace slimCat.Models
 
         public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
         {
-            if (ApplicationSettings.DisallowNotificationsWhenDnd && chatState.ChatModel.CurrentCharacter.Status == StatusType.Busy)
-                return;
-
             Arguments.DisplayNewToast(chatState, toastsManager);
         }
 

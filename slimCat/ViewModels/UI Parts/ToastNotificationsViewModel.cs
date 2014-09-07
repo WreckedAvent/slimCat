@@ -169,6 +169,12 @@ namespace slimCat.ViewModels
 
         public void ShowNotifications()
         {
+            if (ApplicationSettings.DisallowNotificationsWhenDnd && chatState.ChatModel.CurrentCharacter.Status == StatusType.Busy)
+                return;
+
+            if (!ApplicationSettings.ShowNotificationsGlobal)
+                return;
+
             hideDelay.Stop();
             if (view == null)
                 Dispatcher.Invoke((Action) (() => view = new NotificationsView(this)));
