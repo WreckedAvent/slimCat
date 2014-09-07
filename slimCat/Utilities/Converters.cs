@@ -306,7 +306,7 @@ namespace slimCat.Utilities
 
         private static readonly string[] ValidStartTerms = {"http://", "https://", "ftp://"};
 
-        private static readonly IDictionary<string, BbCodeType> Types = new Dictionary<string, BbCodeType>
+        public static readonly IDictionary<string, BbCodeType> Types = new Dictionary<string, BbCodeType>
         {
             {"big", BbCodeType.Big},
             {"b", BbCodeType.Bold},

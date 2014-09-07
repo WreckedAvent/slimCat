@@ -49,7 +49,9 @@ namespace slimCat.ViewModels
             var commands = CommandDefinitions.Commands.Select(x =>
             {
                 var command = x.Value;
-                var aliases = Aggregate(CommandDefinitions.CommandAliases.Where(y => y.Value.Equals(x.Key)).Select(y => y.Key).ToList());
+                var aliases =
+                    Aggregate(
+                        CommandDefinitions.CommandAliases.Where(y => y.Value.Equals(x.Key)).Select(y => y.Key).ToList());
                 var overrides = CommandDefinitions.CommandOverrides.FirstOrDefault(y => y.Key.Equals(x.Key)).Value;
 
                 var argumentNames = command.ArgumentNames;
@@ -81,8 +83,36 @@ namespace slimCat.ViewModels
                 .ToList();
 
             CommandReferences = new ListCollectionView(commands);
-            CommandReferences.GroupDescriptions.Add(new PropertyGroupDescription("Permissions", new PermissionToTextConverter()));
+            CommandReferences.GroupDescriptions.Add(new PropertyGroupDescription("Permissions",
+                new PermissionToTextConverter()));
             CommandReferences.SortDescriptions.Add(new SortDescription("CommandName", ListSortDirection.Ascending));
+
+            var examples = new Dictionary<string, string>
+            {
+                {"url", "[url=https://google.com]google![/url]"},
+                {"session", "[session=slimCat]{0}[/session]".FormatWith(ApplicationSettings.SlimCatChannelId)},
+                {"channel", "[channel]Frontpage[/channel]"},
+                {"color", "[color=red]red text![/color]"},
+                {"collapse", "[collapse=header]collapsed text![/collapse]"},
+                {"user", "[user]slimCat[/user]"},
+                {"icon", "[icon]slimCat[/icon]"},
+                {"hr", "[hr]"},
+                {"noparse", "[noparse][big]text[/big][/noparse]"}
+            };
+
+            BbCodeReferences = BbCodeBaseConverter.Types.Select(x =>
+            {
+                string example;
+
+                examples.TryGetValue(x.Key, out example);
+                example = example ?? "[{0}]inner text[/{0}]".FormatWith(x.Key);
+
+                return new BbCodeReference
+                {
+                    Example = example,
+                    Name = x.Value.ToString()
+                };
+            }).OrderBy(x => x.Name).ToList();
         }
 
         #endregion
@@ -90,6 +120,8 @@ namespace slimCat.ViewModels
         #region Public Properties
 
         public ListCollectionView CommandReferences { get; set; }
+
+        public IList<BbCodeReference> BbCodeReferences { get; set; }
 
         public ICharacter slimCat
         {
@@ -125,7 +157,9 @@ namespace slimCat.ViewModels
 
         private string Aggregate(IList<string> list)
         {
-            return list != null && list.Any() ? list.Aggregate((current, next) => current + ", {0}".FormatWith(next)) : null;
+            return list != null && list.Any()
+                ? list.Aggregate((current, next) => current + ", {0}".FormatWith(next))
+                : null;
         }
     }
 
@@ -154,5 +188,11 @@ namespace slimCat.ViewModels
             if (level == CommandModel.PermissionLevel.Admin) return "Admin commands";
             return string.Empty;
         }
+    }
+
+    public class BbCodeReference
+    {
+        public string Name { get; set; }
+        public string Example { get; set; }
     }
 }
