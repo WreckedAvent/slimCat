@@ -44,6 +44,7 @@ namespace slimCat.ViewModels
     /// </summary>
     public class HomeChannelViewModel : ChannelViewModelBase, IHasTabs
     {
+
         #region Fields
 
         private readonly IAutomationService automation;
@@ -67,9 +68,10 @@ namespace slimCat.ViewModels
         #region Constructors and Destructors
 
         public HomeChannelViewModel(string name, IChatState chatState, IAutomationService automation, IBrowser browser,
-            HomeSettingsViewModel settingsVm)
+            HomeSettingsViewModel settingsVm, HomeHelpViewModel helpVm)
             : base(chatState)
         {
+            HelpVm = helpVm;
             try
             {
                 Model = Container.Resolve<GeneralChannelModel>(name);
@@ -181,26 +183,6 @@ namespace slimCat.ViewModels
 
         #endregion
 
-        #region Help
-
-        public ICharacter slimCat
-        {
-            get { return CharacterManager.Find("slimCat"); }
-        }
-
-        public ChannelModel slimCatChannel
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(ApplicationSettings.SlimCatChannelId))
-                    return null;
-
-                return new GeneralChannelModel(ApplicationSettings.SlimCatChannelId, "slimCat", ChannelType.Private);
-            }
-        }
-
-        #endregion
-
         #region Reconnect
 
         public int DelayTime { get; set; }
@@ -300,6 +282,12 @@ namespace slimCat.ViewModels
         #endregion
 
         public HomeSettingsViewModel SettingsVm { get; set; }
+
+        public HomeHelpViewModel HelpVm { get; set; }
+        public ICharacter slimCat
+        {
+            get { return CharacterManager.Find("slimCat"); }
+        }
 
         public string SelectedTab
         {

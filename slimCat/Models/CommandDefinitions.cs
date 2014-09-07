@@ -150,9 +150,9 @@ namespace slimCat.Models
             "/me", "/warn", "/post"
         };
 
-        private static readonly IDictionary<string, string> CommandAliases = new Dictionary<string, string>();
+        public static readonly IDictionary<string, string> CommandAliases = new Dictionary<string, string>();
 
-        private static readonly IDictionary<string, CommandOverride> CommandOverrides = new Dictionary
+        public static readonly IDictionary<string, CommandOverride> CommandOverrides = new Dictionary
             <string, CommandOverride>(StringComparer.OrdinalIgnoreCase)
         {
             // command to override, command parameter to override, value to override with
@@ -335,7 +335,7 @@ namespace slimCat.Models
         /// <summary>
         ///     Represents a command argument override.
         /// </summary>
-        private class CommandOverride
+        public class CommandOverride
         {
             public readonly string ArgumentName;
 

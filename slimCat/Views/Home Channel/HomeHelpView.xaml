@@ -1,0 +1,81 @@
+﻿<UserControl x:Class="slimCat.Views.HomeHelpView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:vm="clr-namespace:slimCat.ViewModels"
+
+             d:DataContext="{d:DesignInstance vm:HomeHelpViewModel}">
+
+    <StackPanel Margin="0,0,0,10">
+        <WrapPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
+            <WrapPanel.Resources>
+                <Style TargetType="RadioButton" BasedOn="{StaticResource ActivatingToggleButton}">
+                    <Setter Property="Margin" Value="5" />
+                </Style>
+            </WrapPanel.Resources>
+
+            <RadioButton Content="How To"
+                         IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=HowTo}" />
+            <RadioButton Content="BBCode"
+                         IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=BBCode}" />
+            <RadioButton Content="Commands"
+                         IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Commands}" />
+        </WrapPanel>
+        <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" />
+
+        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
+                    Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=HowTo}" />
+
+        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
+                    Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=BBCode}" />
+
+        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
+                    Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Commands}">
+            <ItemsControl ItemsSource="{Binding CommandReferences}"
+                          Style="{StaticResource NoScrollListBox}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:CommandReference">
+                        <StackPanel Margin="0,0,0,10">
+                            <WrapPanel>
+                                <TextBlock Foreground="{StaticResource ForegroundBrush}">
+                                    <Run>/</Run>
+                                    <Run Text="{Binding CommandName}" />
+                                </TextBlock>
+
+                                <TextBlock Text="{Binding Arumgents}" Opacity="0.75"
+                                           Foreground="{StaticResource ForegroundBrush}"
+                                           Margin="5,0,0,0"/>
+                            </WrapPanel>
+
+                            <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                                       Visibility="{Binding Aliases, Converter={StaticResource NotNullConverter}}" >
+                                <Run Foreground="{StaticResource ContrastBrush}">Aliases:</Run>
+                                <Run Text="{Binding Aliases}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.ContainerStyle>
+                            <Style TargetType="{x:Type GroupItem}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate>
+                                            <Expander Header="{Binding Name}"
+                                                      HorizontalAlignment="Left">
+                                                <ItemsPresenter />
+                                            </Expander>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </GroupStyle.ContainerStyle>
+                    </GroupStyle>
+                </ItemsControl.GroupStyle>
+            </ItemsControl>
+        </StackPanel>
+    </StackPanel>
+</UserControl>
