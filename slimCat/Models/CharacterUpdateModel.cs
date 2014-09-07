@@ -124,8 +124,9 @@ namespace slimCat.Models
 
         internal virtual void SetToastData(ToastNotificationsViewModel toast)
         {
-            toast.Title = ApplicationSettings.ShowNamesInToasts ? Model.TargetCharacter.Name : "slimCat notification";
-            toast.Content = ToString();
+            var name = ApplicationSettings.ShowNamesInToasts ? Model.TargetCharacter.Name : "A user";
+            toast.Title = name;
+            toast.Content = (ApplicationSettings.ShowAvatarsInToasts ? "" : name) + ToString();
             toast.TargetCharacter = Model.TargetCharacter;
             Model.TargetCharacter.GetAvatar();
             toast.Navigator = Model;

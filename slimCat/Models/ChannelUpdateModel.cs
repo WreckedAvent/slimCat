@@ -23,8 +23,8 @@ namespace slimCat.Models
 
     using System;
     using System.Windows.Documents;
-    using Microsoft.Practices.Prism.Events;
     using Services;
+    using Utilities;
     using ViewModels;
     using Views;
 
@@ -44,6 +44,7 @@ namespace slimCat.Models
         {
             TargetChannel = model;
             Arguments = e;
+            Arguments.Model = this;
         }
 
         public ChannelUpdateModel()
@@ -54,37 +55,29 @@ namespace slimCat.Models
 
         #region Public Properties
 
-        /// <summary>
-        ///     Gets the arguments.
-        /// </summary>
         public ChannelUpdateEventArgs Arguments { get; private set; }
 
         public ChannelModel TargetChannel { get; set; }
-
-        public override void Navigate(IChatState chatState)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void DisplayNewToast(IChatState chatState, IManageToasts toastManager)
-        {
-        }
 
         public override Block View
         {
             get { return new ChannelUpdateView {DataContext = this}; }
         }
 
+        public override void Navigate(IChatState chatState)
+        {
+            Arguments.NavigateTo(chatState);
+        }
+
+        public override void DisplayNewToast(IChatState chatState, IManageToasts toastManager)
+        {
+            Arguments.DisplayNewToast(chatState, toastManager);
+        }
+
         #endregion
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     The to string.
-        /// </summary>
-        /// <returns>
-        ///     The <see cref="string" />.
-        /// </returns>
         public override string ToString()
         {
             return Arguments.ToString();
@@ -111,5 +104,29 @@ namespace slimCat.Models
     /// </summary>
     public abstract class ChannelUpdateEventArgs : EventArgs
     {
+        public ChannelUpdateModel Model { get; set; }
+
+        public virtual void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
+        {
+            if (!Model.TargetChannel.Settings.AlertAboutUpdates) return;
+
+            SetToastData(toastsManager.Toast);
+            toastsManager.AddNotification(Model);
+            toastsManager.ShowToast();
+        }
+
+        public virtual void NavigateTo(IChatState chatState)
+        {
+            chatState.EventAggregator.SendUserCommand("join", new[] { Model.TargetChannel.Id });
+
+            NotificationService.ShowWindow();
+        }
+
+        internal virtual void SetToastData(ToastNotificationsViewModel toast)
+        {
+            toast.Title = Model.TargetChannel.Title;
+            toast.Content = Model.TargetChannel.Title + ToString();
+            toast.Navigator = Model;
+        }
     }
 }

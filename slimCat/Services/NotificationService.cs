@@ -45,7 +45,6 @@ namespace slimCat.Services
     /// </summary>
     public class NotificationService : DispatcherObject, IDisposable
     {
-
         #region Fields
 
         private readonly IChatModel cm;
@@ -73,8 +72,8 @@ namespace slimCat.Services
             {
                 AddNotification = AddNotification,
                 ShowToast = toast.ShowNotifications,
-                FlashWindow = () => Dispatcher.Invoke((Action)FlashWindow),
-                PlaySound = () => Dispatcher.Invoke((Action)DingTheCrapOutOfTheUser),
+                FlashWindow = () => Dispatcher.Invoke((Action) FlashWindow),
+                PlaySound = () => Dispatcher.Invoke((Action) DingTheCrapOutOfTheUser),
                 Toast = toast
             };
 
@@ -114,7 +113,7 @@ namespace slimCat.Services
                     Application.Current.MainWindow.WindowState = WindowState.Normal;
 
                 Application.Current.MainWindow.Activate();
-            })) ;
+            }));
         }
 
         #endregion
@@ -173,15 +172,16 @@ namespace slimCat.Services
             {
                 if (!channel.Settings.MessageNotifyOnlyForInteresting || IsOfInterest(message.Poster.Name))
                 {
-
-                    if (notifyLevel > (int)ChannelSettingsModel.NotifyLevel.NotificationAndToast)
+                    if (notifyLevel > (int) ChannelSettingsModel.NotifyLevel.NotificationAndToast)
                     {
                         ToastManager.PlaySound();
                         ToastManager.FlashWindow();
                     }
 
                     toast.TargetCharacter = message.Poster;
-                    toast.Title = "{0} #{1}".FormatWith(ApplicationSettings.ShowNamesInToasts ? message.Poster.Name : "A user", channel.Title);
+                    toast.Title =
+                        "{0} #{1}".FormatWith(ApplicationSettings.ShowNamesInToasts ? message.Poster.Name : "A user",
+                            channel.Title);
                     toast.Content = ApplicationSettings.ShowMessagesInToasts ? cleanMessageText : "Has a new message";
                     toast.ShowNotifications();
                     toast.Navigator = new SimpleNavigator(chatState =>
@@ -214,7 +214,10 @@ namespace slimCat.Services
                     if (!isFocusedAndSelected)
                     {
                         toast.TargetCharacter = message.Poster;
-                        toast.Title = "{0}'s name matches {1} #{2}".FormatWith(ApplicationSettings.ShowNamesInToasts ? message.Poster.Name : "A user", match.Item1, channel.Title);
+                        toast.Title =
+                            "{0}'s name matches {1} #{2}".FormatWith(
+                                ApplicationSettings.ShowNamesInToasts ? message.Poster.Name : "A user", match.Item1,
+                                channel.Title);
                         toast.Content = match.Item2;
                         toast.ShowNotifications();
                         ToastManager.PlaySound();
@@ -262,7 +265,10 @@ namespace slimCat.Services
                 if (!isFocusedAndSelected)
                 {
                     toast.TargetCharacter = message.Poster;
-                    toast.Title = "{0} mentioned {1} #{2}".FormatWith(ApplicationSettings.ShowNamesInToasts ? message.Poster.Name : "A user", match.Item1, channel.Title);
+                    toast.Title =
+                        "{0} mentioned {1} #{2}".FormatWith(
+                            ApplicationSettings.ShowNamesInToasts ? message.Poster.Name : "A user", match.Item1,
+                            channel.Title);
                     toast.Content = match.Item2;
                     toast.ShowNotifications();
                     toast.TargetCharacter = message.Poster;
@@ -328,10 +334,12 @@ namespace slimCat.Services
             if (notifyLevel == ChannelSettingsModel.NotifyLevel.NotificationOnly) return;
 
             toast.Title = ApplicationSettings.ShowNamesInToasts ? poster.Name : "A user";
-            toast.Content = ApplicationSettings.ShowMessagesInToasts ? HttpUtility.HtmlDecode(message.Message) : "Sent you a new message";
+            toast.Content = ApplicationSettings.ShowMessagesInToasts
+                ? HttpUtility.HtmlDecode(message.Message)
+                : "Sent you a new message";
             toast.Navigator = new SimpleNavigator(chatState =>
             {
-                chatState.EventAggregator.SendUserCommand("priv", new[] { poster.Name });
+                chatState.EventAggregator.SendUserCommand("priv", new[] {poster.Name});
 
                 ShowWindow();
             });
@@ -347,27 +355,7 @@ namespace slimCat.Services
 
         private void HandleNotification(NotificationModel notification)
         {
-            var model = notification as CharacterUpdateModel;
-            if (model != null)
-            {
-                notification.DisplayNewToast(ChatState, ToastManager);
-                return;
-            }
-
-            var channelUpdate = (ChannelUpdateModel) notification;
-
-            if (!channelUpdate.TargetChannel.Settings.AlertAboutUpdates) return;
-
-            AddNotification(notification);
-            toast.Title = channelUpdate.TargetChannel.Title;
-            toast.Content = "{0} {1}".FormatWith(channelUpdate.TargetChannel.Title, notification.ToString());
-            toast.Navigator = new SimpleNavigator(chatState =>
-            {
-                chatState.EventAggregator.SendUserCommand("join", new[] { channelUpdate.TargetChannel.Id });
-
-                ShowWindow();
-            });
-            toast.ShowNotifications();
+            notification.DisplayNewToast(ChatState, ToastManager);
         }
 
         private bool IsOfInterest(string name, bool onlineOnly = true)
@@ -392,7 +380,7 @@ namespace slimCat.Services
         public Action ShowToast { get; set; }
     }
 
-    public class SimpleNavigator: ICanNavigate
+    public class SimpleNavigator : ICanNavigate
     {
         public SimpleNavigator(Action<IChatState> navigateAction)
         {
