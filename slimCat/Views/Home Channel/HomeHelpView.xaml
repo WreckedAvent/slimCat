@@ -16,7 +16,7 @@
                 </Style>
             </WrapPanel.Resources>
 
-            <RadioButton Content="How To"
+            <RadioButton Content="FAQ"
                          IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=HowTo}" />
             <RadioButton Content="BBCode"
                          IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=BBCode}" />
@@ -26,7 +26,90 @@
         <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" />
 
         <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
-                    Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=HowTo}" />
+                    Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=HowTo}">
+            <WrapPanel>
+            <TextBlock>General help can be found by contacting</TextBlock>
+            <ContentControl Content="{Binding Path=slimCat}" Margin="5,0,5,0" />
+            <WrapPanel Visibility="{Binding slimCatChannel, Converter={StaticResource NotNullConverter}}">
+                <TextBlock>or by joining</TextBlock>
+                <ContentControl Content="{Binding slimCatChannel}" Margin="5,0,0,0" />
+                <TextBlock>.</TextBlock>
+            </WrapPanel>
+            </WrapPanel>
+            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" />
+            
+            <TextBlock Foreground="{StaticResource ForegroundBrush}" TextWrapping="Wrap">
+                <Run Text="I don't like this/something/everything!" Foreground="{StaticResource ContrastBrush}" FontSize="18"/>
+                <LineBreak/>
+                <Run>
+                    A very large amount of behaviors in slimCat, such as opening profiles internally and not displaying colors and icons are settings which can be changed around with.
+                    If you have a problem with it, there's very likely a setting to make it better!
+                </Run>
+                <LineBreak/><LineBreak/>
+                
+                <Run Text="Where are my gender colors?" Foreground="{StaticResource ContrastBrush}" FontSize="18"/>
+                <LineBreak/>
+                <Run>Please read the above section.</Run>
+                <LineBreak/><LineBreak/>
+                
+                <Run Text="How do I make a channel?" Foreground="{StaticResource ContrastBrush}" FontSize="18"/>
+                <LineBreak/>
+                <Run>A channel can be created by doing /makeroom channelName or by using the interface on the right-hand expander, in the channels tab, by clicking 'Create new...'</Run>
+                <LineBreak/><LineBreak/>
+                
+                <Run Text="What does 'not interested' do?" Foreground="{StaticResource ContrastBrush}" FontSize="18"/>
+                <LineBreak/>
+                <Run>Not interested discolors the user and kicks them to the bottom of the user lists. Additionally, their ads are automatically hidden from view.</Run>
+                <LineBreak/><LineBreak/>
+                
+                <Run Text="What does 'interested' do?" Foreground="{StaticResource ContrastBrush}" FontSize="18"/>
+                <LineBreak/>
+                <Run>Interested behaves like a character-specific bookmark, and allows you to keep track of a user even when they do not wish to be bookmarked.</Run>
+                <LineBreak/><LineBreak/>
+                
+                <Run Text="What is that percentage when I view profiles?" Foreground="{StaticResource ContrastBrush}" FontSize="18"/>
+                <LineBreak/>
+                <Run>It is very fancy cat-powered math comparing a ballpark estimate to kink compatibility between your character and theirs. Only kinks are considered in the formula.</Run>
+                <LineBreak/><LineBreak/>
+                
+                <Run Text="My BFF Jill gives a very low match! What gives?" Foreground="{StaticResource ContrastBrush}" FontSize="18"/>
+                <LineBreak/>
+                <Run>
+                    Cat-powered math is unfortunately not the best kind of math. Some factors such as large disparity in kink amounts (as if you had 15 and they 250) can cause lower scores.
+                    Additionally, the formula is very heavily-weighted towards your favorite list.
+                </Run>
+                <LineBreak/><LineBreak/>
+                
+                <Run Text="What is the gray line that appears under messages?" Foreground="{StaticResource ContrastBrush}" FontSize="18"/>
+                <LineBreak/>
+                <Run>This line marks the last message viewed before you switch tabs. It does not appear if there are no new messages since you last viewed the channel.</Run>
+                <LineBreak/><LineBreak/>
+                                
+                <Run Text="How do I view ads/notes?" Foreground="{StaticResource ContrastBrush}" FontSize="18"/>
+                <LineBreak/>
+                <Run>
+                    slimCat has separate views for normal messages, ads, and notes. 
+                    In order to switch between regular messages and ads or notes, click the right-most icon just above the text-entry box.
+                </Run>
+                <LineBreak/><LineBreak/>
+                
+                <Run Text="How do I automatically post ads?" Foreground="{StaticResource ContrastBrush}" FontSize="18"/>
+                <LineBreak/>
+                <Run>Switch to ad viewing mode, click the rectangular button chasing its own tail, then post an ad normally. 
+                    The ad will then post 5 more times for you over the next hour. It must then be re-enabled to post over the next hour.</Run>
+                <LineBreak/><LineBreak/>
+                
+                <Run Text="Where do search results appear?" Foreground="{StaticResource ContrastBrush}" FontSize="18"/>
+                <LineBreak/>
+                <Run>In the heart tab after expanding the right expander.</Run>
+                <LineBreak/><LineBreak/>
+                
+                <Run Text="Can I see a complete list of my interested/bookmarks/etc.?" Foreground="{StaticResource ContrastBrush}" FontSize="18"/>
+                <LineBreak/>
+                <Run>In the heart tab after expanding the right expander, hit the filter icon in the bottom right and check 'show offline'.</Run>
+                <LineBreak/><LineBreak/>
+            </TextBlock>
+        </StackPanel>
 
         <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
                     Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=BBCode}" />
