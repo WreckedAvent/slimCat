@@ -502,8 +502,12 @@
                                         IsChecked="{Binding Path=ShowPreview, Mode=TwoWay}"
                                         Visibility="{Binding Path=IsViewingProfile, Converter={StaticResource OppositeBoolConverter}}" />
 
-                    <v:BrowserButtonView Command="{Binding OpenBrowserCommand}"
-                                         Visibility="{Binding Path=IsViewingProfile, Converter={StaticResource BoolConverter}}" />
+                    <WrapPanel Visibility="{Binding Path=IsViewingProfile, Converter={StaticResource BoolConverter}}">
+                        <v:BrowserButtonView Command="{Binding OpenBrowserCommand}" />
+                        <v:RestartButtonView Command="{Binding ClearCacheCommand}"
+                                             ToolTip="Clears slimCat's profile cache for this character and re-downloads this profile"
+                                             Visibility="{Binding Model.ProfileData, Converter={StaticResource NotNullConverter}}"/>
+                    </WrapPanel>
 
                     <v:ProfileButtonView IsChecked="{Binding IsViewingProfile, Mode=TwoWay}"
                                          Visibility="{Binding IsConversationWithSelf, Converter={StaticResource OppositeBoolConverter}}" />

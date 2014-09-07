@@ -48,6 +48,9 @@ namespace slimCat.Services
         private const string ProfileKinksSeletor = "//td[contains(@class,'Character_Fetishlist')]";
 
         private const string ProfileIdSelector = "//input[@id = 'profile-character-id']";
+
+        private const string ProfileStatBoxSelector = "//div[@class = 'statbox']";
+
         private readonly IBrowser browser;
 
         private readonly IChatModel cm;
@@ -58,6 +61,8 @@ namespace slimCat.Services
 
         private readonly IDictionary<string, ProfileData> profileCache =
             new Dictionary<string, ProfileData>(StringComparer.OrdinalIgnoreCase);
+
+        private readonly IList<string> invalidCacheList = new List<string>();  
 
         #endregion
 
@@ -93,21 +98,28 @@ namespace slimCat.Services
             {
             }
 
-            ProfileData cache;
-            profileCache.TryGetValue(characterName, out cache);
-            cache = cache ?? SettingsService.RetrieveProfile(characterName);
-            if (cache != null)
+            if (!invalidCacheList.Contains(characterName))
             {
-                if (!profileCache.ContainsKey(characterName))
-                    cache.Kinks = cache.Kinks.Select(GetFullKink).ToList();
+                ProfileData cache;
+                profileCache.TryGetValue(characterName, out cache);
+                cache = cache ?? SettingsService.RetrieveProfile(characterName);
+                if (cache != null)
+                {
+                    if (!profileCache.ContainsKey(characterName))
+                        cache.Kinks = cache.Kinks.Select(GetFullKink).ToList();
 
-                if (cm.CurrentCharacter.NameEquals(characterName))
-                    cm.CurrentCharacterData = cache;
-                if (model != null)
-                    model.ProfileData = cache;
+                    if (cm.CurrentCharacter.NameEquals(characterName))
+                        cm.CurrentCharacterData = cache;
+                    if (model != null)
+                        model.ProfileData = cache;
 
-                profileCache[characterName] = cache;
-                return;
+                    profileCache[characterName] = cache;
+                    return;
+                }
+            }
+            else
+            {
+                invalidCacheList.Remove(characterName);
             }
 
             var resp = browser.GetResponse(Constants.UrlConstants.CharacterPage + characterName, true);
@@ -133,21 +145,38 @@ namespace slimCat.Services
                 }
 
                 IEnumerable<ProfileTag> profileTags = new List<ProfileTag>();
-                var fullSelection = htmlDoc.DocumentNode.SelectNodes(ProfileTagsSelector);
-                if (fullSelection != null)
+                var statboxTags = htmlDoc.DocumentNode.SelectNodes(ProfileStatBoxSelector);
+                if (statboxTags != null && statboxTags.Count != 0)
                 {
-                    profileTags = fullSelection.SelectMany(selection =>
+                    profileTags = statboxTags[0].ChildNodes
+                        .Where(x => x.Name == "span" || x.Name == "#text")
+                        .Select(x => DoubleDecode(x.InnerText.Trim()))
+                        .Where(x => !string.IsNullOrWhiteSpace(x))
+                        .ToList()
+                        .Chunk(2)
+                        .Select(x => x.ToList())
+                        .Select(x => new ProfileTag
+                        {
+                            Label = x[0],
+                            Value = x[1].Substring(1).Trim()
+                        });
+                }
+
+                var otherTags = htmlDoc.DocumentNode.SelectNodes(ProfileTagsSelector);
+                if (otherTags != null)
+                {
+                    profileTags = profileTags.Union(otherTags.SelectMany(selection =>
                         selection.ChildNodes
                             .Where(x => x.Name == "span" || x.Name == "#text")
-                            .Select(x => x.InnerText)
+                            .Select(x => DoubleDecode(x.InnerText.Trim()))
                             .ToList()
                             .Chunk(2)
                             .Select(x => x.ToList())
                             .Select(x => new ProfileTag
                             {
-                                Label = DoubleDecode(x[0].Replace(":", "").Trim()),
-                                Value = DoubleDecode(x[1].Trim())
-                            }));
+                                Label = x[0].Replace(":", "").Trim(),
+                                Value = x[1]
+                            })));
                 }
 
                 var allKinks = new List<ProfileKink>();
@@ -253,6 +282,12 @@ namespace slimCat.Services
             var worker = new BackgroundWorker();
             worker.DoWork += GetProfileDataAsyncHandler;
             worker.RunWorkerAsync(character);
+        }
+
+        public void ClearCache(string character)
+        {
+            invalidCacheList.Add(character);
+            GetProfileDataAsync(character);
         }
 
         private ProfileKink GetFullKink(ProfileKink kink)

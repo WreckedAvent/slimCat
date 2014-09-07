@@ -28,5 +28,7 @@ namespace slimCat.Services
         ///     Retrieves the full profile data for the selected character.
         /// </summary>
         void GetProfileDataAsync(string character);
+
+        void ClearCache(string character);
     }
 }

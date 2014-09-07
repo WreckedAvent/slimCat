@@ -50,7 +50,9 @@ namespace slimCat.ViewModels
 
         private readonly PmChannelModel model;
         private readonly INoteService noteService;
+        private readonly IProfileService profileService;
         private Timer checkTick = new Timer(5000);
+        private RelayCommand clearCacheCommand;
 
         private Timer cooldownTimer = new Timer(500);
         private ProfileImage currentImage;
@@ -97,6 +99,7 @@ namespace slimCat.ViewModels
                 noteService = notes;
                 notes.GetNotesAsync(name);
 
+                profileService = profile;
                 profile.GetProfileDataAsync(name);
 
                 Model.PropertyChanged += OnModelPropertyChanged;
@@ -451,6 +454,19 @@ namespace slimCat.ViewModels
             }
         }
 
+        public ICommand ClearCacheCommand
+        {
+            get
+            {
+                return clearCacheCommand ??
+                       (clearCacheCommand = new RelayCommand(_ =>
+                       {
+                           profileService.ClearCache(ConversationWith.Name);
+                           model.ProfileData = null;
+                       }));
+            }
+        }
+
         public IList<ProfileKink> KinksInCommon
         {
             get
@@ -674,10 +690,13 @@ namespace slimCat.ViewModels
                 OnPropertyChanged("KinksInCommon");
                 OnPropertyChanged("OurTroubleKinks");
                 OnPropertyChanged("TheirTroubleKinks");
-                AllKinks = new ListCollectionView(model.ProfileData.Kinks);
-                AllKinks.GroupDescriptions.Add(new PropertyGroupDescription("KinkListKind"));
-                AllKinks.SortDescriptions.Add(new SortDescription("KinkListKind", ListSortDirection.Ascending));
-                AllKinks.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                if (model.ProfileData != null)
+                {
+                    AllKinks = new ListCollectionView(model.ProfileData.Kinks);
+                    AllKinks.GroupDescriptions.Add(new PropertyGroupDescription("KinkListKind"));
+                    AllKinks.SortDescriptions.Add(new SortDescription("KinkListKind", ListSortDirection.Ascending));
+                    AllKinks.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                }
                 OnPropertyChanged("AllKinks");
                 OnPropertyChanged("MatchPercent");
                 OnPropertyChanged("IsRoleMismatch");
