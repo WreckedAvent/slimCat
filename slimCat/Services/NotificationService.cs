@@ -109,11 +109,16 @@ namespace slimCat.Services
         {
             Dispatcher.CurrentDispatcher.Invoke((Action) (() =>
             {
-                Application.Current.MainWindow.Show();
-                if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
-                    Application.Current.MainWindow.WindowState = WindowState.Normal;
+                var window = Application.Current.MainWindow;
+                window.Show();
+                if (window.WindowState == WindowState.Minimized)
+                    window.WindowState = WindowState.Normal;
 
-                Application.Current.MainWindow.Activate();
+                window.Activate();
+                window.Topmost = true;
+                window.Topmost = false;
+                window.Focus();
+
             }));
         }
 
@@ -127,11 +132,6 @@ namespace slimCat.Services
                 return;
 
             toast.Dispose();
-        }
-
-        private void AddNotification(NotificationModel notification)
-        {
-            Dispatcher.Invoke((Action) (() => cm.Notifications.Add(notification)));
         }
 
         private void DingTheCrapOutOfTheUser()
