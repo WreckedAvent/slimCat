@@ -61,7 +61,7 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The client's version.
         /// </summary>
-        public static readonly string ClientVer = Version + " dev";
+        public static readonly string ClientVer = Version.ToString();
 
         #endregion
 
