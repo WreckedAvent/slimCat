@@ -1751,7 +1751,7 @@ namespace slimCat.Utilities
             var message = (IMessage) value;
 
             if (message.IsLastViewed)
-                return Application.Current.FindResource("BrightBackgroundBrush");
+                return Application.Current.FindResource(message.Type == MessageType.Ad ? "ContrastBrush" : "BrightBackgroundBrush");
 
             if (message.IsOfInterest)
                 return Application.Current.FindResource("HighlightBrush");
