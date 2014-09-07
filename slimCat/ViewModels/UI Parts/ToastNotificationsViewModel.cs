@@ -30,6 +30,7 @@ namespace slimCat.ViewModels
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Models;
+    using Services;
     using Utilities;
     using Views;
 
@@ -40,6 +41,8 @@ namespace slimCat.ViewModels
     /// </summary>
     public sealed class ToastNotificationsViewModel : SysProp
     {
+        private readonly IChatState chatState;
+
         #region Constants
 
         private const int CutoffLength = 300;
@@ -57,6 +60,7 @@ namespace slimCat.ViewModels
         private string content = string.Empty;
 
         private RelayCommand hide;
+
         private RelayCommand link;
 
         private RelayCommand snap;
@@ -64,16 +68,18 @@ namespace slimCat.ViewModels
         private ICharacter targetCharacter;
 
         private string title;
+
         private NotificationsView view;
 
         #endregion
 
         #region Constructors and Destructors
 
-        public ToastNotificationsViewModel(IEventAggregator eventAgg)
+        public ToastNotificationsViewModel(IChatState chatState)
         {
+            this.chatState = chatState;
             hideDelay.Elapsed += (s, e) => HideNotifications();
-            events = eventAgg;
+            events = chatState.EventAggregator;
         }
 
         #endregion
@@ -84,7 +90,7 @@ namespace slimCat.ViewModels
         {
             get { return content; }
 
-            private set
+            set
             {
                 if (value.Length < CutoffLength)
                     content = value;
@@ -104,17 +110,10 @@ namespace slimCat.ViewModels
             get { return hide ?? (hide = new RelayCommand(args => HideNotifications())); }
         }
 
-        public string Kind { get; set; }
-
         public ICommand SnapToLatestCommand
         {
             get { return snap ?? (snap = new RelayCommand(OnSnapToLatestEvent)); }
         }
-
-        /// <summary>
-        ///     Who we will try and snap to when the user clicks on it if this event doesn't generate an actual notification
-        /// </summary>
-        public string Target { get; set; }
 
         public ICharacter TargetCharacter
         {
@@ -127,15 +126,17 @@ namespace slimCat.ViewModels
             }
         }
 
+        public ICanNavigate Navigator { get; set; }
+
         public bool ShouldShowAvatar
         {
-            get { return targetCharacter != null; }
+            get { return targetCharacter != null && ApplicationSettings.ShowAvatarsInToasts; }
         }
 
         public string Title
         {
             get { return title; }
-            private set
+            set
             {
                 title = value;
                 OnPropertyChanged("Title");
@@ -163,45 +164,18 @@ namespace slimCat.ViewModels
 
         public void OnSnapToLatestEvent(object args)
         {
-            var toSend = CommandDefinitions.CreateCommand("lastupdate").ToDictionary();
-
-            if (Target != null)
-                toSend.Add("target", Target);
-
-            if (Kind != null)
-                toSend.Add("kind", Kind);
-
             HideNotifications();
-            events.GetEvent<UserCommandEvent>().Publish(toSend);
+            Navigator.Navigate(chatState);
         }
 
         public void ShowNotifications()
         {
             hideDelay.Stop();
             if (view == null)
-                view = new NotificationsView(this);
+                Dispatcher.Invoke((Action) (() => view = new NotificationsView(this)));
 
             Dispatcher.Invoke((Action) (() => view.OnShowCommand()));
             hideDelay.Start();
-        }
-
-        public void UpdateNotification(string newContent)
-        {
-            if (newContent.Contains('\n'))
-            {
-                var split = newContent.Split(splitChars, 2);
-                Title = split[0];
-                Content = split[1];
-                Logging.LogLine("Showing toast \"{0}\"".FormatWith(title), "toast vm");
-            }
-            else
-            {
-                Content = newContent;
-                Title = "slimCat notification";
-                Logging.LogLine("Showing toast", "toast vm");
-            }
-
-            ShowNotifications();
             view.OnContentChanged();
         }
 

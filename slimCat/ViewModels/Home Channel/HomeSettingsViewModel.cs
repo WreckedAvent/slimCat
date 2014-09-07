@@ -482,6 +482,36 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool ShowAvatarsInToasts
+        {
+            get { return ApplicationSettings.ShowAvatarsInToasts; }
+            set
+            {
+                ApplicationSettings.ShowAvatarsInToasts = value;
+                Save();
+            }
+        }
+
+        public bool ShowNamesInToasts
+        {
+            get { return ApplicationSettings.ShowNamesInToasts; }
+            set
+            {
+                ApplicationSettings.ShowNamesInToasts = value;
+                Save();
+            }
+        }
+
+        public bool ShowMessagesInToasts
+        {
+            get { return ApplicationSettings.ShowMessagesInToasts; }
+            set
+            {
+                ApplicationSettings.ShowMessagesInToasts = value;
+                Save();
+            }
+        }
+
         #endregion
 
         public string SelectedTab

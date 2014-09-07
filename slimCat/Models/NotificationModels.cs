@@ -21,15 +21,46 @@ namespace slimCat.Models
 {
     #region Usings
 
+    using System;
     using System.Windows.Documents;
+    using Microsoft.Practices.Prism.Events;
+    using Services;
+    using ViewModels;
 
     #endregion
 
     /// <summary>
     ///     The notification model.
     /// </summary>
-    public abstract class NotificationModel : MessageBase, IViewableObject
+    public abstract class NotificationModel : MessageBase, IViewableObject, ICanNavigate, IDisplayToast
     {
+        public abstract void Navigate(IChatState chatState);
+
         public abstract Block View { get; }
+
+        public abstract void DisplayNewToast(IChatState chatState, IManageToasts toastsManager);
+    }
+
+    public interface ICanNavigate
+    {
+        void Navigate(IChatState chatState);
+    }
+
+    public interface IDisplayToast
+    {
+        void DisplayNewToast(IChatState chatState, IManageToasts toastsManager);
+    }
+
+    public interface IManageToasts
+    {
+        Action FlashWindow { get; }
+
+        Action PlaySound { get; }
+
+        Action<NotificationModel> AddNotification { get; }
+
+        ToastNotificationsViewModel Toast { get; }
+
+        Action ShowToast { get; }
     }
 }

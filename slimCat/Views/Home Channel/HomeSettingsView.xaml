@@ -140,6 +140,21 @@
                       ToolTip="Disallows slimCat from playing sounds and generating toasts while your status is DND.">
                 Do not display toasts or play sounds while DND
             </CheckBox>
+            
+            <CheckBox IsChecked="{Binding ShowAvatarsInToasts}"
+                      ToolTip="Allows slimCat to display Avatars in toasts">
+                Display avatars in toasts related to characters
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding ShowNamesInToasts}"
+                      ToolTip="Allows slimCat to display the name of the user who triggered the notification">
+                Display names in toasts related to characters
+            </CheckBox>
+            
+            <CheckBox IsChecked="{Binding ShowMessagesInToasts}"
+                      ToolTip="Allows slimCat to display parts of messages which triggered the notification">
+                Display user messages in toasts
+            </CheckBox>
 
             <StackPanel Margin="0,15,0,0"
                         ToolTip="Defines a global set of words that slimCat will check messages against and alert you if they match">

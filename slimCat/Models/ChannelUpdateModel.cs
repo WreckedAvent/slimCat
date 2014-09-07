@@ -23,6 +23,9 @@ namespace slimCat.Models
 
     using System;
     using System.Windows.Documents;
+    using Microsoft.Practices.Prism.Events;
+    using Services;
+    using ViewModels;
     using Views;
 
     #endregion
@@ -57,6 +60,15 @@ namespace slimCat.Models
         public ChannelUpdateEventArgs Arguments { get; private set; }
 
         public ChannelModel TargetChannel { get; set; }
+
+        public override void Navigate(IChatState chatState)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DisplayNewToast(IChatState chatState, IManageToasts toastManager)
+        {
+        }
 
         public override Block View
         {

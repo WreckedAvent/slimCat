@@ -21,6 +21,8 @@ namespace slimCat.Models
 {
     #region Usings
 
+    using System.Diagnostics;
+    using Services;
     using Utilities;
 
     #endregion
@@ -64,6 +66,16 @@ namespace slimCat.Models
 
             return toReturn;
         }
+
+        public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
+        {
+            DoLoudToast(toastsManager);
+        }
+
+        public override void NavigateTo(IChatState chatState)
+        {
+            Process.Start(LogLink);
+        }
     }
 
     public class ReportHandledEventArgs : CharacterUpdateEventArgs
@@ -73,6 +85,11 @@ namespace slimCat.Models
         public override string ToString()
         {
             return "has handled a report filed by " + Handled;
+        }
+
+        public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
+        {
+            DoNormalToast(toastsManager);
         }
     }
 }

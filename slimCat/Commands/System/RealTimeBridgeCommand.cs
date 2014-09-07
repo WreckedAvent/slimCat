@@ -21,6 +21,8 @@ namespace slimCat.Models
 {
     #region Usings
 
+    using System.Diagnostics;
+    using Services;
     using Utilities;
 
     #endregion
@@ -110,6 +112,16 @@ namespace slimCat.Models
 
             return argument == CommentTypes.Feature ? "feature suggestion" : argument.ToString();
         }
+
+        public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
+        {
+            DoNormalToast(toastsManager);
+        }
+
+        public override void NavigateTo(IChatState chatState)
+        {
+            Process.Start(Link);
+        }
     }
 
     public class NoteEventArgs : CharacterUpdateEventArgs
@@ -123,6 +135,18 @@ namespace slimCat.Models
         public override string ToString()
         {
             return string.Format(@"has sent you a note: [url={0}]{1}[/url]", Target, Subject);
+        }
+
+        public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
+        {
+            DoLoudToast(toastsManager);
+        }
+
+        public override void NavigateTo(IChatState chatState)
+        {
+            chatState.EventAggregator.SendUserCommand("priv", new[] { Model.TargetCharacter.Name + "/notes" });
+
+            NotificationService.ShowWindow();
         }
     }
 }

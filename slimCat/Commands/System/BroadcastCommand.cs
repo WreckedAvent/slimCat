@@ -22,6 +22,7 @@ namespace slimCat.Models
     #region Usings
 
     using System.Linq;
+    using Services;
 
     #endregion
 
@@ -32,6 +33,11 @@ namespace slimCat.Models
         public override string ToString()
         {
             return "broadcasted " + Message + (char.IsPunctuation(Message.Last()) ? string.Empty : ".");
+        }
+
+        public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
+        {
+            DoLoudToast(toastsManager);
         }
     }
 }

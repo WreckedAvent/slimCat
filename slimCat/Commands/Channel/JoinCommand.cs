@@ -19,17 +19,30 @@
 
 namespace slimCat.Models
 {
-    public class JoinLeaveEventArgs : CharacterUpdateEventArgs
+    #region Usings
+
+    using Services;
+    using Utilities;
+
+    #endregion
+
+    public class JoinLeaveEventArgs : CharacterUpdateInChannelEventArgs
     {
         public bool Joined { get; set; }
-
-        public string TargetChannel { get; set; }
-
-        public string TargetChannelId { get; set; }
 
         public override string ToString()
         {
             return "has " + (Joined ? "joined" : "left") + string.Format(" {0}.", TargetChannel);
+        }
+
+        public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
+        {
+            var settings = chatState.GetChannelSettingsById(TargetChannelId);
+            if (settings == null) return;;
+
+            var setting = new ChannelSettingPair(settings.JoinLeaveNotifyLevel,
+                settings.JoinLeaveNotifyOnlyForInteresting);
+            DoToast(setting, toastsManager, chatState);
         }
     }
 }

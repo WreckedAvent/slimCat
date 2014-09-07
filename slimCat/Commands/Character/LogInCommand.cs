@@ -19,34 +19,27 @@
 
 namespace slimCat.Models
 {
+    using Services;
+    using Utilities;
+
     /// <summary>
     ///     The login state changed event args.
     /// </summary>
     public class LoginStateChangedEventArgs : CharacterUpdateEventArgs
     {
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether is log in.
-        /// </summary>
         public bool IsLogIn { get; set; }
 
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        ///     The to string.
-        /// </summary>
-        /// <returns>
-        ///     The <see cref="string" />.
-        /// </returns>
         public override string ToString()
         {
             return "has logged " + (IsLogIn ? "in." : "out.");
         }
 
-        #endregion
+        public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
+        {
+            if (!chatState.IsInteresting(Model.TargetCharacter.Name)) return;
+
+            DoNormalToast(toastsManager);
+        }
     }
 }
 

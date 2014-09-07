@@ -88,7 +88,10 @@ namespace slimCat.Models
 
             ChannelDisplayThreshold = 5;
             AllowOfInterestColoring = true;
-            ToastsAreLocatedAtTop = false;
+
+            ShowAvatarsInToasts = true;
+            ShowNamesInToasts = true;
+            ShowMessagesInToasts = true;
         }
 
         #endregion
@@ -290,6 +293,12 @@ namespace slimCat.Models
         public static bool ToastsAreLocatedAtTop { get; set; }
 
         public static bool DisallowNotificationsWhenDnd { get; set; }
+
+        public static bool ShowAvatarsInToasts { get; set; }
+
+        public static bool ShowNamesInToasts { get; set; }
+
+        public static bool ShowMessagesInToasts { get; set; }
 
         #endregion
     }

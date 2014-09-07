@@ -26,7 +26,6 @@ namespace slimCat.Utilities
     using System.Globalization;
     using System.IO;
     using System.Linq;
-    using System.Text.RegularExpressions;
     using System.Web;
     using System.Windows;
     using System.Windows.Media;
@@ -355,6 +354,48 @@ namespace slimCat.Utilities
                 toReturn = Constants.ClientVer.Contains("dev");
 
             return toReturn;
+        }
+
+        public static void NotifyWithSettings(this IManageToasts toasts, NotificationModel notification,
+            ChannelSettingsModel.NotifyLevel notifyLevel)
+        {
+            switch (notifyLevel)
+            {
+                case ChannelSettingsModel.NotifyLevel.NoNotification:
+                    break;
+                case ChannelSettingsModel.NotifyLevel.NotificationOnly:
+                    toasts.AddNotification(notification);
+                    break;
+                case ChannelSettingsModel.NotifyLevel.NotificationAndToast:
+                    toasts.AddNotification(notification);
+                    toasts.FlashWindow();
+                    toasts.ShowToast();
+                    break;
+                case ChannelSettingsModel.NotifyLevel.NotificationAndSound:
+                    toasts.AddNotification(notification);
+                    toasts.FlashWindow();
+                    toasts.PlaySound();
+                    toasts.ShowToast();
+                    break;
+            }
+        }
+
+        public static GeneralChannelModel GetChannelById(this IChatState chatState, string id)
+        {
+            return chatState.ChatModel.AllChannels.FirstByIdOrNull(id);
+        }
+
+        public static ChannelSettingsModel GetChannelSettingsById(this IChatState chatState, string id)
+        {
+            var channel = chatState.GetChannelById(id);
+
+            return channel == null ? null : channel.Settings;
+        }
+
+        public static bool IsInteresting(this IChatState chatState, string character, bool onlineOnly = false)
+        {
+            return chatState.CharacterManager.IsOfInterest(character, onlineOnly) ||
+                   chatState.ChatModel.CurrentPms.FirstByIdOrNull(character) != null;
         }
     }
 }

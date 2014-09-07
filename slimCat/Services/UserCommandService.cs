@@ -113,7 +113,6 @@ namespace slimCat.Services
                     {"_logger_open_log", OnOpenLogRequested},
                     {"_logger_open_folder", OnOpenLogFolderRequested},
                     {"code", OnChannelCodeRequested},
-                    {"_snap_to_last_update", OnNotificationFocusRequested},
                     {Commands.UserInvite, OnInviteToChannelRequested},
                     {"who", OnWhoInformationRequested},
                     {"getdescription", OnChannelDescriptionRequested},
@@ -151,86 +150,6 @@ namespace slimCat.Services
         #endregion
 
         #region Methods
-
-        private void OnNotificationFocusRequested(IDictionary<string, object> command)
-        {
-            string target = null;
-            string kind = null;
-
-            if (command.ContainsKey("target"))
-                target = command.Get("target");
-
-            if (command.ContainsKey("kind"))
-                kind = command.Get("kind");
-
-            // first off, see if we have a target defined. If we do, then let's see if it's one of our current channels
-            if (target != null)
-            {
-                if (target.StartsWith("http://"))
-                {
-                    // if our target is a command to get the latest link-able thing, let's grab that
-                    Process.Start(target);
-                    return;
-                }
-
-                if (kind != null && kind.Equals(Constants.Arguments.Report))
-                {
-                    command.Clear();
-                    command[Constants.Arguments.Name] = target;
-                    OnHandleLatestReportByUserRequested(command);
-                }
-
-                var channel = (ChannelModel) model.CurrentPms.FirstByIdOrNull(target)
-                              ?? model.CurrentChannels.FirstByIdOrNull(target);
-
-                if (!target.StartsWith("ADH-"))
-                {
-                    if (channel != null)
-                        events.GetEvent<RequestChangeTabEvent>().Publish(target);
-                    else
-                        events.SendUserCommand("priv", new[] {target});
-
-                    Dispatcher.Invoke((Action) NotificationService.ShowWindow);
-                    return;
-                }
-            }
-
-            var latest = model.Notifications.LastOrDefault();
-
-            // if we got to this point our notification is doesn't involve an active tab
-            if (latest == null)
-                return;
-
-            var newCharacterUpdate = latest as CharacterUpdateModel;
-            if (newCharacterUpdate != null)
-            {
-                // so tell our system to join the Pm Tab
-                channelService.JoinChannel(ChannelType.PrivateMessage, newCharacterUpdate.TargetCharacter.Name);
-
-                Dispatcher.Invoke((Action) NotificationService.ShowWindow);
-                return;
-            }
-
-            var stuffWith = latest as ChannelUpdateModel;
-            if (stuffWith == null)
-                return;
-
-            var doStuffWith = stuffWith;
-            var newChannel = model.AllChannels.FirstByIdOrNull(doStuffWith.TargetChannel.Id);
-
-            if (newChannel == null)
-            {
-                // if it's null, then we've got an invite to a new channel
-                var toSend = new {channel = doStuffWith.TargetChannel.Id};
-                connection.SendMessage(toSend, Commands.ChannelJoin);
-                Dispatcher.Invoke((Action) NotificationService.ShowWindow);
-                return;
-            }
-
-            var chanType = newChannel.Type;
-            channelService.JoinChannel(chanType, doStuffWith.TargetChannel.Id);
-            Dispatcher.Invoke((Action) NotificationService.ShowWindow);
-        }
 
         private void CommandReceived(IDictionary<string, object> command)
         {

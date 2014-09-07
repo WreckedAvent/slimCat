@@ -19,6 +19,8 @@
 
 namespace slimCat.Models
 {
+    using Services;
+
     public class CharacterListChangedEventArgs : CharacterUpdateEventArgs
     {
         public bool IsAdded { get; set; }
@@ -49,6 +51,12 @@ namespace slimCat.Models
 
             return "has been " + (IsAdded ? "added to" : "removed from") + " your " + listKind + " list"
                    + (IsTemporary ? " until this character logs out" : string.Empty) + '.';
+        }
+
+        public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
+        {
+            if (ListArgument == ListKind.NotInterested) return;
+            DoNormalToast(toastsManager);
         }
     }
 }

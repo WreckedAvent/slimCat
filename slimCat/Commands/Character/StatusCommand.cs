@@ -23,6 +23,8 @@ namespace slimCat.Models
 
     using System.Linq;
     using System.Text;
+    using Services;
+    using Utilities;
 
     #endregion
 
@@ -67,6 +69,13 @@ namespace slimCat.Models
                     toReturn.Append('.'); // if the last non-whitespace character is not punctuation, add a period
 
                 return toReturn.ToString();
+            }
+
+            public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
+            {
+                if (!chatState.IsInteresting(Model.TargetCharacter.Name)) return;
+                
+                DoNormalToast(toastsManager);
             }
         }
     }

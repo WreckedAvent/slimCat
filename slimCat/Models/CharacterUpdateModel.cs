@@ -23,6 +23,10 @@ namespace slimCat.Models
 
     using System;
     using System.Windows.Documents;
+    using System.Windows.Threading;
+    using Services;
+    using Utilities;
+    using ViewModels;
     using Views;
 
     #endregion
@@ -41,6 +45,7 @@ namespace slimCat.Models
         {
             TargetCharacter = target;
             Arguments = e;
+            Arguments.Model = this;
         }
 
         public CharacterUpdateModel()
@@ -64,6 +69,16 @@ namespace slimCat.Models
         public override Block View
         {
             get { return new CharacterUpdateView {DataContext = this}; }
+        }
+
+        public override void Navigate(IChatState chatState)
+        {
+            Arguments.NavigateTo(chatState);
+        }
+
+        public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
+        {
+            Arguments.DisplayNewToast(chatState, toastsManager);
         }
 
         #endregion
@@ -96,5 +111,66 @@ namespace slimCat.Models
     /// </summary>
     public abstract class CharacterUpdateEventArgs : EventArgs
     {
+        public CharacterUpdateModel Model { get; set; }
+
+        public abstract void DisplayNewToast(IChatState chatState, IManageToasts toastsManager);
+
+        public virtual void NavigateTo(IChatState chatState)
+        {
+            chatState.EventAggregator.SendUserCommand("priv", new[] { Model.TargetCharacter.Name });
+
+            NotificationService.ShowWindow();
+        }
+
+        internal virtual void SetToastData(ToastNotificationsViewModel toast)
+        {
+            toast.Title = ApplicationSettings.ShowNamesInToasts ? Model.TargetCharacter.Name : "slimCat notification";
+            toast.Content = ToString();
+            toast.TargetCharacter = Model.TargetCharacter;
+            Model.TargetCharacter.GetAvatar();
+            toast.Navigator = Model;
+        }
+
+        internal void DoNormalToast(IManageToasts toastManager)
+        {
+            SetToastData(toastManager.Toast);
+            toastManager.AddNotification(Model);
+            toastManager.ShowToast();
+        }
+
+        internal void DoLoudToast(IManageToasts toastManager)
+        {
+            DoNormalToast(toastManager);
+            toastManager.PlaySound();
+            toastManager.FlashWindow();
+        }
+    }
+
+    public abstract class CharacterUpdateInChannelEventArgs : CharacterUpdateEventArgs
+    {
+        public string TargetChannel { get; set; }
+
+        public string TargetChannelId { get; set; }
+
+        internal override void SetToastData(ToastNotificationsViewModel toast)
+        {
+            base.SetToastData(toast);
+            toast.Title = "{0} #{1}".FormatWith(Model.TargetCharacter.Name, TargetChannel);
+        }
+
+        public override void NavigateTo(IChatState chatState)
+        {
+            chatState.EventAggregator.GetEvent<RequestChangeTabEvent>().Publish(TargetChannelId);
+
+            NotificationService.ShowWindow();
+        }
+
+        internal void DoToast(ChannelSettingPair setting, IManageToasts toastManager, IChatState chatState)
+        {
+            if (setting.OnlyForInteresting && !chatState.IsInteresting(Model.TargetCharacter.Name)) return;
+
+            SetToastData(toastManager.Toast);
+            toastManager.NotifyWithSettings(Model, setting.NotifyLevel);
+        }
     }
 }

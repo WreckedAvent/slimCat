@@ -19,13 +19,12 @@
 
 namespace slimCat.Models
 {
-    public class PromoteDemoteEventArgs : CharacterUpdateEventArgs
+    using Services;
+    using Utilities;
+
+    public class PromoteDemoteEventArgs : CharacterUpdateInChannelEventArgs
     {
         public bool IsPromote { get; set; }
-
-        public string TargetChannel { get; set; }
-
-        public string TargetChannelId { get; set; }
 
         public override string ToString()
         {
@@ -34,6 +33,17 @@ namespace slimCat.Models
 
             return "has been " + (IsPromote ? "promoted to" : "demoted from") + " channel moderator in "
                    + TargetChannel + ".";
+        }
+
+        public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
+        {
+            var settings = chatState.GetChannelSettingsById(TargetChannelId);
+            if (settings == null) return;
+
+            var setting = new ChannelSettingPair(settings.PromoteDemoteNotifyLevel,
+                settings.PromoteDemoteNotifyOnlyForInteresting);
+
+            DoToast(setting, toastsManager, chatState);
         }
     }
 }

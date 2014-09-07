@@ -70,7 +70,6 @@ namespace slimCat.Models
                 Define("invite").As(C.UserInvite).WithArguments(A.Character, A.Channel),
                 Define("ignorelist").As(C.UserIgnore).WithArgument(A.Action),
                 Define("join").AsForChannels(),
-                Define("lastupdate").As("_snap_to_last_update").AsArgumentless(),
                 Define("logheader").As("_logger_new_header").WithArgument("title"),
                 Define("logsection").As("_logger_new_section").WithArgument("title"),
                 Define("lognewline").As("_logger_new_line").AsArgumentless(),

@@ -45,6 +45,7 @@ namespace slimCat.Services
     /// </summary>
     public class NotificationService : DispatcherObject, IDisposable
     {
+
         #region Fields
 
         private readonly IChatModel cm;
@@ -61,12 +62,21 @@ namespace slimCat.Services
 
         #region Constructors and Destructors
 
-        public NotificationService(IEventAggregator eventagg, IChatModel cm, ICharacterManager manager)
+        public NotificationService(IChatState chatState)
         {
-            events = eventagg;
-            this.cm = cm;
-            this.manager = manager;
-            toast = new ToastNotificationsViewModel(events);
+            ChatState = chatState;
+            events = chatState.EventAggregator;
+            cm = chatState.ChatModel;
+            manager = chatState.CharacterManager;
+            toast = new ToastNotificationsViewModel(chatState);
+            ToastManager = new ToastManager
+            {
+                AddNotification = AddNotification,
+                ShowToast = toast.ShowNotifications,
+                FlashWindow = () => Dispatcher.Invoke((Action)FlashWindow),
+                PlaySound = () => Dispatcher.Invoke((Action)DingTheCrapOutOfTheUser),
+                Toast = toast
+            };
 
             events.GetEvent<NewMessageEvent>().Subscribe(HandleNewChannelMessage, true);
             events.GetEvent<NewPmEvent>().Subscribe(HandleNewMessage, true);
@@ -82,6 +92,10 @@ namespace slimCat.Services
             get { return (bool) Dispatcher.Invoke(new Func<bool>(() => Application.Current.MainWindow.IsActive)); }
         }
 
+        private IChatState ChatState { get; set; }
+
+        private IManageToasts ToastManager { get; set; }
+
         #endregion
 
         #region Public Methods and Operators
@@ -93,11 +107,14 @@ namespace slimCat.Services
 
         public static void ShowWindow()
         {
-            Application.Current.MainWindow.Show();
-            if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
-                Application.Current.MainWindow.WindowState = WindowState.Normal;
+            Dispatcher.CurrentDispatcher.Invoke((Action) (() =>
+            {
+                Application.Current.MainWindow.Show();
+                if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
+                    Application.Current.MainWindow.WindowState = WindowState.Normal;
 
-            Application.Current.MainWindow.Activate();
+                Application.Current.MainWindow.Activate();
+            })) ;
         }
 
         #endregion
@@ -154,18 +171,27 @@ namespace slimCat.Services
             // now we check to see if we should notify because of settings
             if (notifyLevel > (int) ChannelSettingsModel.NotifyLevel.NotificationOnly && !isFocusedAndSelected)
             {
-                var shouldDing = notifyLevel > (int) ChannelSettingsModel.NotifyLevel.NotificationAndToast;
-
-                if ((channel.Settings.MessageNotifyOnlyForInteresting && IsOfInterest(message.Poster.Name))
-                    || !channel.Settings.MessageNotifyOnlyForInteresting)
+                if (!channel.Settings.MessageNotifyOnlyForInteresting || IsOfInterest(message.Poster.Name))
                 {
-                    NotifyUser(shouldDing,
-                        shouldDing,
-                        "{0} #{1}".FormatWith(message.Poster.Name, channel.Title) + '\n' + cleanMessageText,
-                        channel.Id,
-                        null,
-                        message.Poster);
-                    return; // and if we do, there is no need to evaluate further
+
+                    if (notifyLevel > (int)ChannelSettingsModel.NotifyLevel.NotificationAndToast)
+                    {
+                        ToastManager.PlaySound();
+                        ToastManager.FlashWindow();
+                    }
+
+                    toast.TargetCharacter = message.Poster;
+                    toast.Title = "{0} #{1}".FormatWith(ApplicationSettings.ShowNamesInToasts ? message.Poster.Name : "A user", channel.Title);
+                    toast.Content = ApplicationSettings.ShowMessagesInToasts ? cleanMessageText : "Has a new message";
+                    toast.ShowNotifications();
+                    toast.Navigator = new SimpleNavigator(chatState =>
+                    {
+                        chatState.EventAggregator.GetEvent<RequestChangeTabEvent>().Publish(channel.Id);
+
+                        ShowWindow();
+                    });
+                    toast.TargetCharacter = message.Poster;
+                    if (ApplicationSettings.ShowAvatarsInToasts) message.Poster.GetAvatar();
                 }
             }
 
@@ -187,10 +213,20 @@ namespace slimCat.Services
                 {
                     if (!isFocusedAndSelected)
                     {
-                        var notifyMessage = string.Format(
-                            "{0}'s name matches {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
+                        toast.TargetCharacter = message.Poster;
+                        toast.Title = "{0}'s name matches {1} #{2}".FormatWith(ApplicationSettings.ShowNamesInToasts ? message.Poster.Name : "A user", match.Item1, channel.Title);
+                        toast.Content = match.Item2;
+                        toast.ShowNotifications();
+                        ToastManager.PlaySound();
+                        ToastManager.FlashWindow();
+                        toast.Navigator = new SimpleNavigator(chatState =>
+                        {
+                            chatState.EventAggregator.GetEvent<RequestChangeTabEvent>().Publish(channel.Id);
 
-                        NotifyUser(true, true, notifyMessage, channel.Id);
+                            ShowWindow();
+                        });
+                        toast.TargetCharacter = message.Poster;
+                        if (ApplicationSettings.ShowAvatarsInToasts) message.Poster.GetAvatar();
                         channel.FlashTab();
                     }
 
@@ -225,11 +261,20 @@ namespace slimCat.Services
 
                 if (!isFocusedAndSelected)
                 {
-                    // if one of our words is a dingling word
-                    var notifyMessage = string.Format(
-                        "{0} mentioned {1}:\n{2}", message.Poster.Name, match.Item1, match.Item2);
+                    toast.TargetCharacter = message.Poster;
+                    toast.Title = "{0} mentioned {1} #{2}".FormatWith(ApplicationSettings.ShowNamesInToasts ? message.Poster.Name : "A user", match.Item1, channel.Title);
+                    toast.Content = match.Item2;
+                    toast.ShowNotifications();
+                    toast.TargetCharacter = message.Poster;
+                    if (ApplicationSettings.ShowAvatarsInToasts) message.Poster.GetAvatar();
+                    ToastManager.PlaySound();
+                    ToastManager.FlashWindow();
+                    toast.Navigator = new SimpleNavigator(chatState =>
+                    {
+                        chatState.EventAggregator.GetEvent<RequestChangeTabEvent>().Publish(channel.Id);
 
-                    NotifyUser(true, true, notifyMessage, channel.Id, null, message.Poster);
+                        ShowWindow();
+                    });
                     channel.FlashTab();
                 }
                 message.IsOfInterest = true;
@@ -276,203 +321,58 @@ namespace slimCat.Services
                     return;
             }
 
-            switch ((ChannelSettingsModel.NotifyLevel) channel.Settings.MessageNotifyLevel)
+            var notifyLevel = (ChannelSettingsModel.NotifyLevel) channel.Settings.MessageNotifyLevel;
+            if (notifyLevel == ChannelSettingsModel.NotifyLevel.NoNotification) return;
+
+            FlashWindow();
+            if (notifyLevel == ChannelSettingsModel.NotifyLevel.NotificationOnly) return;
+
+            toast.Title = ApplicationSettings.ShowNamesInToasts ? poster.Name : "A user";
+            toast.Content = ApplicationSettings.ShowMessagesInToasts ? HttpUtility.HtmlDecode(message.Message) : "Sent you a new message";
+            toast.Navigator = new SimpleNavigator(chatState =>
             {
-                case ChannelSettingsModel.NotifyLevel.NotificationAndToast:
-                    NotifyUser(
-                        false, false, poster.Name + '\n' + HttpUtility.HtmlDecode(message.Message), poster.Name, null,
-                        message.Poster);
-                    return;
+                chatState.EventAggregator.SendUserCommand("priv", new[] { poster.Name });
 
-                case ChannelSettingsModel.NotifyLevel.NotificationAndSound:
-                    NotifyUser(
-                        true, true, poster.Name + '\n' + HttpUtility.HtmlDecode(message.Message), poster.Name, null,
-                        message.Poster);
-                    return;
+                ShowWindow();
+            });
+            toast.TargetCharacter = message.Poster;
+            if (ApplicationSettings.ShowAvatarsInToasts) message.Poster.GetAvatar();
+            toast.ShowNotifications();
 
-                default:
-                    FlashWindow();
-                    return;
+            if (notifyLevel == ChannelSettingsModel.NotifyLevel.NotificationAndSound)
+            {
+                ToastManager.PlaySound();
             }
         }
 
         private void HandleNotification(NotificationModel notification)
         {
-            // TODO: I'M DYIN' OVER HERE! REFACTOR ME!
-
-            // character update models will be *most* of the notification the user will see
             var model = notification as CharacterUpdateModel;
             if (model != null)
             {
-                var targetCharacter = model.TargetCharacter.Name;
-                var args = model.Arguments;
-
-                // handle if the notification involves a character being promoted or demoted
-                var eventArgs = args as PromoteDemoteEventArgs;
-                if (eventArgs != null)
-                {
-                    var channelId = eventArgs.TargetChannelId;
-
-                    // find by ID, not name
-                    var channel = cm.CurrentChannels.FirstByIdOrNull(channelId);
-
-                    if (channel == null)
-                        return;
-
-                    if (channel.Settings.PromoteDemoteNotifyOnlyForInteresting)
-                    {
-                        if (!IsOfInterest(targetCharacter))
-                            return; // if we only want to know interesting people, no need to evalute further
-                    }
-
-                    ConvertNotificationLevelToAction(
-                        channel.Settings.PromoteDemoteNotifyLevel, channelId, model);
-                }
-                else if (args is JoinLeaveEventArgs)
-                {
-                    // special check for this as it has settings per channel
-                    var target = ((JoinLeaveEventArgs) args).TargetChannelId;
-
-                    // find by ID, not name
-                    var channel = cm.CurrentChannels.FirstByIdOrNull(target);
-
-                    if (channel == null)
-                        return;
-
-                    if (channel.Settings.JoinLeaveNotifyOnlyForInteresting)
-                    {
-                        if (!IsOfInterest(targetCharacter))
-                            return;
-                    }
-
-                    ConvertNotificationLevelToAction(channel.Settings.JoinLeaveNotifyLevel, target, model);
-                }
-                else if (args is NoteEventArgs || args is CommentEventArgs)
-                {
-                    AddNotification(model);
-
-                    var link = args is NoteEventArgs
-                        ? model.TargetCharacter.Name + "/notes"
-                        : ((CommentEventArgs) args).Link;
-
-                    NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()), link,
-                        null, model.TargetCharacter);
-                }
-                else if (args is CharacterListChangedEventArgs)
-                {
-                    var type = (args as CharacterListChangedEventArgs).ListArgument;
-                    if (type == ListKind.SearchResult) return;
-
-                    AddNotification(model);
-                    NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()),
-                        targetCharacter, null, model.TargetCharacter);
-                }
-                else if (args is ReportHandledEventArgs)
-                {
-                    AddNotification(model);
-                    NotifyUser(true, true, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()),
-                        targetCharacter, null, model.TargetCharacter);
-                }
-                else if (args is ReportFiledEventArgs)
-                {
-                    AddNotification(model);
-                    NotifyUser(true, true, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()),
-                        targetCharacter, "report", model.TargetCharacter);
-                }
-                else if (args is BroadcastEventArgs)
-                {
-                    AddNotification(model);
-                    NotifyUser(true, true, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()),
-                        targetCharacter, null, model.TargetCharacter);
-                }
-                else if (IsOfInterest(targetCharacter, false) && !model.TargetCharacter.IgnoreUpdates)
-                {
-                    AddNotification(model);
-
-                    if (cm.CurrentChannel is PmChannelModel)
-                    {
-                        if ((cm.CurrentChannel as PmChannelModel).Id.Equals(
-                            targetCharacter, StringComparison.OrdinalIgnoreCase))
-                            return; // don't make a toast if we have their tab focused as it is redundant
-                    }
-
-                    NotifyUser(false, false, "{0}\n {1}".FormatWith(targetCharacter, notification.ToString()),
-                        targetCharacter, null, model.TargetCharacter);
-                }
+                notification.DisplayNewToast(ChatState, ToastManager);
+                return;
             }
-            else
+
+            var channelUpdate = (ChannelUpdateModel) notification;
+
+            if (!channelUpdate.TargetChannel.Settings.AlertAboutUpdates) return;
+
+            AddNotification(notification);
+            toast.Title = channelUpdate.TargetChannel.Title;
+            toast.Content = "{0} {1}".FormatWith(channelUpdate.TargetChannel.Title, notification.ToString());
+            toast.Navigator = new SimpleNavigator(chatState =>
             {
-                var channelUpdate = (ChannelUpdateModel) notification;
+                chatState.EventAggregator.SendUserCommand("join", new[] { channelUpdate.TargetChannel.Id });
 
-                if (!channelUpdate.TargetChannel.Settings.AlertAboutUpdates) return;
-
-                AddNotification(notification);
-                NotifyUser(false, false,
-                    "{0}\n{0} {1}".FormatWith(channelUpdate.TargetChannel.Title, notification.ToString()),
-                    channelUpdate.TargetChannel.Id);
-            }
+                ShowWindow();
+            });
+            toast.ShowNotifications();
         }
 
         private bool IsOfInterest(string name, bool onlineOnly = true)
         {
             return cm.CurrentPms.Any(x => x.Id.Equals(name)) || manager.IsOfInterest(name, onlineOnly);
-        }
-
-        private void NotifyUser(
-            bool bingLing = false,
-            bool flashWindow = false,
-            string message = null,
-            string target = null,
-            string kind = null,
-            ICharacter character = null)
-        {
-            if (cm.CurrentCharacter.Status == StatusType.Dnd && ApplicationSettings.DisallowNotificationsWhenDnd) return;
-
-            Action notify = () =>
-            {
-                if (character != null)
-                    character.GetAvatar();
-
-                if (flashWindow)
-                    FlashWindow();
-
-                if (bingLing)
-                    DingTheCrapOutOfTheUser();
-
-                if (message != null && ApplicationSettings.ShowNotificationsGlobal)
-                    toast.UpdateNotification(message);
-
-                toast.Target = target;
-                toast.Kind = kind;
-                toast.TargetCharacter = character;
-            };
-
-            Dispatcher.Invoke(notify);
-        }
-
-        private void ConvertNotificationLevelToAction(
-            int notificationLevel, string actionId, NotificationModel notification)
-        {
-            switch ((ChannelSettingsModel.NotifyLevel) notificationLevel)
-            {
-                    // convert our int into an enum to avoid magic numbers
-                case ChannelSettingsModel.NotifyLevel.NoNotification:
-                    return;
-
-                case ChannelSettingsModel.NotifyLevel.NotificationOnly:
-                    AddNotification(notification);
-                    return;
-
-                case ChannelSettingsModel.NotifyLevel.NotificationAndToast:
-                    AddNotification(notification);
-                    NotifyUser(false, false, notification.ToString(), actionId);
-                    return;
-
-                case ChannelSettingsModel.NotifyLevel.NotificationAndSound:
-                    AddNotification(notification);
-                    NotifyUser(true, true, notification.ToString(), actionId);
-                    return;
-            }
         }
 
         private void Log(string text)
@@ -481,5 +381,29 @@ namespace slimCat.Services
         }
 
         #endregion
+    }
+
+    public class ToastManager : IManageToasts
+    {
+        public Action FlashWindow { get; set; }
+        public Action PlaySound { get; set; }
+        public Action<NotificationModel> AddNotification { get; set; }
+        public ToastNotificationsViewModel Toast { get; set; }
+        public Action ShowToast { get; set; }
+    }
+
+    public class SimpleNavigator: ICanNavigate
+    {
+        public SimpleNavigator(Action<IChatState> navigateAction)
+        {
+            Navigate = navigateAction;
+        }
+
+        public Action<IChatState> Navigate { get; set; }
+
+        void ICanNavigate.Navigate(IChatState chatState)
+        {
+            Navigate(chatState);
+        }
     }
 }
