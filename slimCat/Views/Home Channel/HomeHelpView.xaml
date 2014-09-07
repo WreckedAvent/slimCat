@@ -29,7 +29,7 @@
         <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
                     Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=HowTo}">
             <WrapPanel>
-                <TextBlock>General help can be found by contacting</TextBlock>
+                <TextBlock>Help can be found by contacting</TextBlock>
                 <ContentControl Content="{Binding Path=slimCat}" Margin="5,0,5,0" />
                 <WrapPanel Visibility="{Binding slimCatChannel, Converter={StaticResource NotNullConverter}}">
                     <TextBlock>or by joining</TextBlock>
@@ -72,14 +72,14 @@
                 <Run Text="What is that percentage when I view profiles?" Foreground="{StaticResource ContrastBrush}"
                      FontSize="18" />
                 <LineBreak />
-                <Run>It is very fancy cat-powered math comparing a ballpark estimate to kink compatibility between your character and theirs. Only kinks are considered in the formula.</Run>
+                <Run>It is very fancy cat-powered math calculating a ballpark estimate to kink compatibility between your character and theirs. Only kinks are considered in the formula.</Run>
                 <LineBreak /><LineBreak />
 
                 <Run Text="My BFF Jill gives a very low match! What gives?" Foreground="{StaticResource ContrastBrush}"
                      FontSize="18" />
                 <LineBreak />
                 <Run>
-                    Cat-powered math is unfortunately not the best kind of math. Some factors such as large disparity in kink amounts (as if you had 15 and they 250) can cause lower scores.
+                    Cat-powered math is unfortunately not the best kind of math. Some factors such as large disparity in kink amounts (as if you had 15 and they 250) can lower scores.
                     Additionally, the formula is very heavily-weighted towards your favorite list.
                 </Run>
                 <LineBreak /><LineBreak />
