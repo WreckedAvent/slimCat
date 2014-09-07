@@ -49,8 +49,11 @@ namespace slimCat.ViewModels
 
         private readonly IChannelListUpdater updater;
         public bool ShowOnlyAlphabet;
+
         private RelayCommand createNewChannel;
+
         private bool isCreatingNewChannel;
+
         private string newChannelName;
 
         private bool showPrivate = true;
@@ -60,6 +63,8 @@ namespace slimCat.ViewModels
         private bool sortByName;
 
         private RelayCommand toggleIsCreatingNewChannel;
+
+        private readonly DeferredAction updateChannelList;
 
         #endregion
 
@@ -74,6 +79,7 @@ namespace slimCat.ViewModels
             SearchSettings.Updated += Update;
 
             ChatModel.AllChannels.CollectionChanged += Update;
+            updateChannelList = DeferredAction.Create(() => OnPropertyChanged("SortedChannels"));
         }
 
         #endregion
@@ -159,7 +165,7 @@ namespace slimCat.ViewModels
 
                 ApplicationSettings.ChannelDisplayThreshold = value;
                 SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
-                OnPropertyChanged("SortedChannels");
+                updateChannelList.Defer(TimeSpan.FromSeconds(1));
             }
         }
 
@@ -207,7 +213,7 @@ namespace slimCat.ViewModels
         private void Update(object sender, EventArgs e)
         {
             OnPropertyChanged("SearchSettings");
-            OnPropertyChanged("SortedChannels");
+            updateChannelList.Defer(TimeSpan.FromSeconds(1));
         }
 
         protected override void Dispose(bool isManaged)
