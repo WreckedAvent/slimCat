@@ -167,8 +167,11 @@ namespace slimCat.Models
             if (listKind == ListKind.IgnoreUpdates)
                 UpdateIgnoreUpdatesMark(name, true);
 
-            if (!isTemporary)
-                TrySyncSavedLists(listKind);
+            TrySyncSavedLists(listKind);
+            if (listKind == ListKind.NotInterested)
+                TrySyncSavedLists(ListKind.Interested);
+            if (listKind == ListKind.Interested)
+                TrySyncSavedLists(ListKind.NotInterested);
 
             return toReturn;
         }
