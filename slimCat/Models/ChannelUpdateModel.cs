@@ -127,6 +127,7 @@ namespace slimCat.Models
             toast.Title = Model.TargetChannel.Title;
             toast.Content = ToString();
             toast.Navigator = Model;
+            toast.TargetCharacter = null;
         }
 
         internal string GetChannelBbCode()
