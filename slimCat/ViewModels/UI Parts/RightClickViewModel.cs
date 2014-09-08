@@ -105,7 +105,7 @@ namespace slimCat.ViewModels
             {
                 if (Target != null)
                 {
-                    return manager.IsOnList(Target.Name, ListKind.Interested)
+                    return manager.IsOnList(Target.Name, ListKind.Interested, false)
                         ? "Remove interested mark"
                         : "Add interested mark";
                 }
@@ -120,7 +120,7 @@ namespace slimCat.ViewModels
             {
                 if (Target != null)
                 {
-                    return manager.IsOnList(Target.Name, ListKind.NotInterested)
+                    return manager.IsOnList(Target.Name, ListKind.NotInterested, false)
                         ? "Remove not interested mark"
                         : "Add not interested mark";
                 }
