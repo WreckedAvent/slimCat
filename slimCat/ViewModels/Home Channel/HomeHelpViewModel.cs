@@ -54,10 +54,10 @@ namespace slimCat.ViewModels
                         CommandDefinitions.CommandAliases.Where(y => y.Value.Equals(x.Key)).Select(y => y.Key).ToList());
                 var overrides = CommandDefinitions.CommandOverrides.FirstOrDefault(y => y.Key.Equals(x.Key)).Value;
 
-                var argumentNames = command.ArgumentNames;
+                IEnumerable<string> argumentNames = command.ArgumentNames;
                 if (overrides != null)
                 {
-                    argumentNames.Remove(overrides.ArgumentName);
+                    argumentNames = argumentNames.Except(new []{overrides.ArgumentName});
                 }
 
                 var arguments = Aggregate(argumentNames);
@@ -155,7 +155,7 @@ namespace slimCat.ViewModels
         {
         }
 
-        private string Aggregate(IList<string> list)
+        private string Aggregate(IEnumerable<string> list)
         {
             return list != null && list.Any()
                 ? list.Aggregate((current, next) => current + ", {0}".FormatWith(next))
