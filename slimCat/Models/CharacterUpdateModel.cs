@@ -169,8 +169,10 @@ namespace slimCat.Models
         {
             if (setting.OnlyForInteresting && !chatState.IsInteresting(Model.TargetCharacter.Name)) return;
 
-            SetToastData(toastManager.Toast);
             toastManager.NotifyWithSettings(Model, setting.NotifyLevel);
+
+            if (setting.NotifyLevel >= ChannelSettingsModel.NotifyLevel.NotificationAndToast)
+                SetToastData(toastManager.Toast);
         }
     }
 }
