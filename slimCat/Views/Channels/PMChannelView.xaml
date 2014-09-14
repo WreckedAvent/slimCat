@@ -146,7 +146,8 @@
                                     Source="{Binding Path=ThumbnailUri, Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
                                     Height="75"
                                     Width="75"
-                                    Margin="0,10,0,0" />
+                                    Margin="0,10,0,0"
+                                    ToolTip="{Binding Path=Description}"/>
                             </Grid>
                         </DataTemplate>
                     </Grid.Resources>
@@ -275,7 +276,8 @@
                                         CanDelayPlacement="True">
                                     <Paragraph>
                                         <Button Command="{Binding SwitchImageViewCommand}"
-                                                Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}">
+                                                Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}"
+                                                ToolTip="{Binding CurrentImage.Description}">
                                             <Button.Template>
                                                 <ControlTemplate>
                                                     <Image
@@ -435,7 +437,8 @@
                     </FlowDocumentReader>
 
                     <Button Margin="5" Command="{Binding SwitchImageViewCommand}"
-                            Visibility="{Binding IsViewingFullImage, Converter={StaticResource BoolConverter}}">
+                            Visibility="{Binding IsViewingFullImage, Converter={StaticResource BoolConverter}}"
+                            ToolTip="{Binding CurrentImage.Description}">
                         <Button.Template>
                             <ControlTemplate>
                                 <Image
