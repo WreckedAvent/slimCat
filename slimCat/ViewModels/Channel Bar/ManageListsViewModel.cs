@@ -195,17 +195,17 @@ namespace slimCat.ViewModels
 
         public IEnumerable<ICharacter> Bookmarks
         {
-            get { return CharacterManager.GetCharacters(ListKind.Bookmark, !showOffline).OrderBy(x => x.Name); }
+            get { return GetList(ListKind.Bookmark); }
         }
 
         public IEnumerable<ICharacter> Friends
         {
-            get { return CharacterManager.GetCharacters(ListKind.Friend, !showOffline).OrderBy(x => x.Name); }
+            get { return GetList(ListKind.Friend); }
         }
 
         public IEnumerable<ICharacter> SearchResults
         {
-            get { return CharacterManager.GetCharacters(ListKind.SearchResult, !showOffline).OrderBy(x => x.Name); }
+            get { return GetList(ListKind.SearchResult); }
         }
 
         public GenderSettingsModel GenderSettings
@@ -232,12 +232,12 @@ namespace slimCat.ViewModels
 
         public IEnumerable<ICharacter> Ignored
         {
-            get { return CharacterManager.GetCharacters(ListKind.Ignored).OrderBy(x => x.Name); }
+            get { return GetList(ListKind.Ignored); }
         }
 
         public IEnumerable<ICharacter> Interested
         {
-            get { return CharacterManager.GetCharacters(ListKind.Interested, !showOffline).OrderBy(x => x.Name); }
+            get { return GetList(ListKind.Interested); }
         }
 
         public IEnumerable<ICharacter> Moderators
@@ -246,7 +246,10 @@ namespace slimCat.ViewModels
             {
                 var channel = ChatModel.CurrentChannel as GeneralChannelModel;
                 if (HasUsers && channel != null)
-                    return channel.CharacterManager.GetCharacters(ListKind.Moderator, !showOffline).OrderBy(x => x.Name);
+                    return
+                        channel.CharacterManager.GetCharacters(ListKind.Moderator, !showOffline)
+                            .Where(x => showOffline || x.Status != StatusType.Offline)
+                            .OrderBy(x => x.Name);
 
                 return null;
             }
@@ -254,7 +257,7 @@ namespace slimCat.ViewModels
 
         public IEnumerable<ICharacter> NotInterested
         {
-            get { return CharacterManager.GetCharacters(ListKind.NotInterested, !showOffline).OrderBy(x => x.Name); }
+            get { return GetList(ListKind.NotInterested); }
         }
 
         public bool ShowMods
@@ -281,6 +284,14 @@ namespace slimCat.ViewModels
         {
             return character.MeetsFilters(
                 GenderSettings, SearchSettings, CharacterManager, ChatModel.CurrentChannel as GeneralChannelModel);
+        }
+
+        private IEnumerable<ICharacter> GetList(ListKind listKind)
+        {
+            return
+                CharacterManager.GetCharacters(listKind, !showOffline)
+                    .Where(x => showOffline || x.Status != StatusType.Offline)
+                    .OrderBy(x => x.Name);
         }
 
         private void UpdateBindings()
