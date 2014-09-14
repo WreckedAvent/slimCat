@@ -64,34 +64,47 @@ namespace slimCat.Utilities
             if (startIndex == -1)
                 return new Tuple<string, string>(string.Empty, string.Empty);
 
-            // this checks for if the match is a whole word
-            if (startIndex > 0 && startIndex + 1 < fullString.Length)
+            // there is a subtle issue somewhere in here
+            // where the string we're checking against can become empty
+            // after we've done the check that our indexing is within bounds
+            // creating an out-of-bounds exception.
+            // this is a fix to resolve the symptom of crashing until the
+            // underlying problem can be found
+            try
             {
-                // this weeds out matches such as 'big man' from matching 'i'
-                var prevChar = fullString[startIndex - 1];
-                hasMatch = char.IsWhiteSpace(prevChar) || (char.IsPunctuation(prevChar) && !prevChar.Equals('\''));
-
-                if (!hasMatch)
+                // this checks for if the match is a whole word
+                if (startIndex > 0 && startIndex + 1 < fullString.Length)
                 {
-                    return new Tuple<string, string>(string.Empty, string.Empty);
+                    // this weeds out matches such as 'big man' from matching 'i'
+                    var prevChar = fullString[startIndex - 1];
+                    hasMatch = char.IsWhiteSpace(prevChar) || (char.IsPunctuation(prevChar) && !prevChar.Equals('\''));
 
-                    // don't need to evaluate further if this failed
+                    if (!hasMatch)
+                    {
+                        return new Tuple<string, string>(string.Empty, string.Empty);
+
+                        // don't need to evaluate further if this failed
+                    }
+                }
+
+                if (startIndex + checkAgainst.Length < fullString.Length)
+                {
+                    // this weeds out matches such as 'its' from matching 'i'
+                    var nextIndex = startIndex + checkAgainst.Length;
+                    var nextChar = fullString[nextIndex];
+                    hasMatch = char.IsWhiteSpace(nextChar) || char.IsPunctuation(nextChar);
+
+                    // we only want the ' to match sometimes, such as <match word>'s
+                    if (nextChar == '\'' && fullString.Length >= nextIndex++)
+                    {
+                        nextChar = fullString[nextIndex];
+                        hasMatch = char.ToLower(nextChar) == 's';
+                    }
                 }
             }
-
-            if (startIndex + checkAgainst.Length < fullString.Length)
+// ReSharper disable once EmptyGeneralCatchClause
+            catch
             {
-                // this weeds out matches such as 'its' from matching 'i'
-                var nextIndex = startIndex + checkAgainst.Length;
-                var nextChar = fullString[nextIndex];
-                hasMatch = char.IsWhiteSpace(nextChar) || char.IsPunctuation(nextChar);
-
-                // we only want the ' to match sometimes, such as <match word>'s
-                if (nextChar == '\'' && fullString.Length >= nextIndex++)
-                {
-                    nextChar = fullString[nextIndex];
-                    hasMatch = char.ToLower(nextChar) == 's';
-                }
             }
 
             if (checkAgainst.Length == fullString.Length &&
