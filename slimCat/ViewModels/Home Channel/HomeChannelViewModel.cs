@@ -311,7 +311,7 @@ namespace slimCat.ViewModels
             automation.ResetStatusTimers();
             OnPropertyChanged("RecentChannels");
             OnPropertyChanged("RecentCharacters");
-            OnPropertyChanged("IsTemplateCharacter");
+            SettingsVm.OnSettingsLoaded();
 
             CheckForUpdates();
             CheckForThemes();

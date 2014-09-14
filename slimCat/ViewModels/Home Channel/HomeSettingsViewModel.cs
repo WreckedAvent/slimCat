@@ -23,6 +23,7 @@ namespace slimCat.ViewModels
 
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using Models;
     using Services;
     using Utilities;
@@ -57,6 +58,7 @@ namespace slimCat.ViewModels
             };
 
             this.characterManager = characterManager;
+
         }
 
         #endregion
@@ -527,6 +529,11 @@ namespace slimCat.ViewModels
         #endregion
 
         #region Methods
+
+        public void OnSettingsLoaded()
+        {
+            GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Each(x => OnPropertyChanged(x.Name));
+        }
 
         private void Save()
         {
