@@ -69,6 +69,8 @@ namespace slimCat.Services
 
         private WebSocket socket;
 
+        private bool intentionallyDisconnected;
+
         #endregion
 
         #region Constructors
@@ -227,6 +229,7 @@ namespace slimCat.Services
             timeoutTimer.Stop();
             autoPingTimer.Stop();
             retryAttemptCount = 0;
+            intentionallyDisconnected = true;
         }
 
         #region logging
@@ -251,6 +254,7 @@ namespace slimCat.Services
         {
             if (character == null) return;
             Character = character;
+            intentionallyDisconnected = false;
 
             if (socket.State == WebSocketState.Open) return;
 
@@ -423,7 +427,7 @@ namespace slimCat.Services
         /// </summary>
         private void AttemptReconnect()
         {
-            if (staggerTimer.Enabled || socket.State == WebSocketState.Open) return;
+            if (staggerTimer.Enabled || socket.State == WebSocketState.Open || intentionallyDisconnected) return;
 
             staggerTimer.Start();
             isAuthenticated = false;

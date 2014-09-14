@@ -362,6 +362,7 @@ namespace slimCat.Services
                 }
 
                 ChatModel.CurrentPms.Each(pm => pm.TypingStatus = TypingStatus.Clear);
+                 ChatModel.IsAuthenticated = false;
             }));
         }
 

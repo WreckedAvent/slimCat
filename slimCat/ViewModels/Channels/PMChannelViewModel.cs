@@ -28,6 +28,7 @@ namespace slimCat.ViewModels
     using System.Diagnostics;
     using System.Linq;
     using System.Net;
+    using System.Text.RegularExpressions;
     using System.Timers;
     using System.Windows.Data;
     using System.Windows.Input;
@@ -51,6 +52,7 @@ namespace slimCat.ViewModels
         private readonly PmChannelModel model;
         private readonly INoteService noteService;
         private readonly IProfileService profileService;
+
         private Timer checkTick = new Timer(5000);
         private RelayCommand clearCacheCommand;
 
@@ -160,6 +162,12 @@ namespace slimCat.ViewModels
 
                 messageManager = new FilteredCollection<IMessage, IViewableObject>(
                     Model.Messages, message => true);
+
+                ChatModel.PropertyChanged += (sender, args) =>
+                {
+                    if (args.PropertyName == "CurrentCharacterData")
+                        UpdateProfileProperties();
+                };
 
                 LoggingSection = "pm channel vm";
             }
@@ -679,7 +687,13 @@ namespace slimCat.ViewModels
                     model.ShouldViewProfile = false;
                 }
 
-                if (IsViewingProfile) return;
+                if (IsViewingProfile)
+                {
+                    if (ChatModel.CurrentCharacterData == null)
+                        profileService.GetProfileDataAsync(ChatModel.CurrentCharacter.Name);
+                    return;
+                }
+
                 if (model.ShouldViewNotes ||
                     (ApplicationSettings.OpenOfflineChatsInNoteView && ConversationWith.Status == StatusType.Offline))
                     IsViewingChat = model.ShouldViewNotes = false;
@@ -687,20 +701,13 @@ namespace slimCat.ViewModels
 
             if (e.PropertyName == "ProfileData")
             {
-                OnPropertyChanged("KinksInCommon");
-                OnPropertyChanged("OurTroubleKinks");
-                OnPropertyChanged("TheirTroubleKinks");
-                if (model.ProfileData != null)
+                if (ChatModel.CurrentCharacterData == null)
                 {
-                    AllKinks = new ListCollectionView(model.ProfileData.Kinks);
-                    AllKinks.GroupDescriptions.Add(new PropertyGroupDescription("KinkListKind"));
-                    AllKinks.SortDescriptions.Add(new SortDescription("KinkListKind", ListSortDirection.Ascending));
-                    AllKinks.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+                    profileService.GetProfileDataAsync(ChatModel.CurrentCharacter.Name);
+                    return;
                 }
-                OnPropertyChanged("AllKinks");
-                OnPropertyChanged("MatchPercent");
-                OnPropertyChanged("IsRoleMismatch");
-                OnPropertyChanged("IsOrientationMismatch");
+
+                UpdateProfileProperties();
             }
 
             if (e.PropertyName != "NoteSubject") return;
@@ -733,6 +740,27 @@ namespace slimCat.ViewModels
                 SendPrivateMessage();
             else
                 SendNote();
+        }
+
+        private void UpdateProfileProperties()
+        {
+            if (ChatModel.CurrentCharacterData == null) return;
+
+            OnPropertyChanged("KinksInCommon");
+            OnPropertyChanged("OurTroubleKinks");
+            OnPropertyChanged("TheirTroubleKinks");
+            if (model.ProfileData != null)
+            {
+                AllKinks = new ListCollectionView(model.ProfileData.Kinks);
+                AllKinks.GroupDescriptions.Add(new PropertyGroupDescription("KinkListKind"));
+                AllKinks.SortDescriptions.Add(new SortDescription("KinkListKind", ListSortDirection.Ascending));
+                AllKinks.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+            }
+            OnPropertyChanged("AllKinks");
+            OnPropertyChanged("MatchPercent");
+            OnPropertyChanged("IsRoleMismatch");
+            OnPropertyChanged("IsOrientationMismatch");
+            OnPropertyChanged("ReadabilityIndex");
         }
 
         private void SendPrivateMessage()
