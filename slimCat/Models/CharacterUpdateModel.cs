@@ -125,7 +125,7 @@ namespace slimCat.Models
         {
             var name = ApplicationSettings.ShowNamesInToasts ? Model.TargetCharacter.Name : "A user";
             toast.Title = name;
-            toast.Content = (ApplicationSettings.ShowAvatarsInToasts ? "" : name) + ToString();
+            toast.Content = (ApplicationSettings.ShowAvatarsInToasts ? "" : name + " ") + ToString();
             toast.TargetCharacter = Model.TargetCharacter;
             Model.TargetCharacter.GetAvatar();
             toast.Navigator = Model;
