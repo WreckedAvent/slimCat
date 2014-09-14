@@ -288,7 +288,16 @@ namespace slimCat.ViewModels
         {
             get { return CharacterManager.Find("slimCat"); }
         }
+        public ChannelModel slimCatChannel
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(ApplicationSettings.SlimCatChannelId))
+                    return null;
 
+                return new GeneralChannelModel(ApplicationSettings.SlimCatChannelId, "slimCat", ChannelType.Private);
+            }
+        }
         public string SelectedTab
         {
             get { return selectedTab; }

@@ -346,6 +346,37 @@
                                 <Hyperlink CommandParameter="{Binding Path=UpdateLink, Mode=OneWay}">Update Now!</Hyperlink>
                             </TextBlock>
                         </StackPanel>
+
+                        <StackPanel>
+
+                            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,10" />
+
+                            <TextBlock TextWrapping="Wrap">
+                                <Span Foreground="{StaticResource HighlightBrush}" FontSize="20">Thank you!</Span>
+                                <LineBreak /><LineBreak />
+                                <Run>
+                                    Over two years of work have culminated into this version of slimCat.
+                                    I couldn't have done it without all of the support from all of the slimCat users.
+                                </Run>
+                                <LineBreak /><LineBreak />
+                                <Run>
+                                    However, this represents an end. I, slimCat, am putting any future effort onto
+                                    a new site. A site not limited by a lack of ambition.
+                                </Run>
+                                <LineBreak /><LineBreak />
+                                <Run>I can do better. I will do better.</Run>
+                                <LineBreak />
+                            </TextBlock>
+                            <WrapPanel>
+                                <TextBlock TextWrapping="Wrap">Come join me in the</TextBlock>
+                                <ContentControl Content="{Binding slimCatChannel}" Margin="5,0,5,0" />
+                                <TextBlock TextWrapping="Wrap">
+                                    <Run>channel to discuss</Run>
+                                    <Hyperlink CommandParameter="http://litphoria.com/">litphoria,</Hyperlink>
+                                    <Run>the future of roleplaying.</Run>
+                                </TextBlock>
+                            </WrapPanel>
+                        </StackPanel>
                     </StackPanel>
 
                     <StackPanel HorizontalAlignment="Stretch"
@@ -401,7 +432,7 @@
                     <WrapPanel
                         Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Help}"
                         TextBlock.Foreground="{StaticResource ForegroundBrush}">
-                        <v:HomeHelpView DataContext="{Binding HelpVm}"/>
+                        <v:HomeHelpView DataContext="{Binding HelpVm}" />
                     </WrapPanel>
 
                     <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,10" />
