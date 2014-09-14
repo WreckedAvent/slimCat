@@ -274,8 +274,13 @@ namespace slimCat.Services
                         if (!string.Equals(property.Name, element.Name.ToString(), StringComparison.Ordinal))
                             continue;
 
-                        var setter = Convert.ChangeType(element.Value, property.PropertyType);
-                        property.SetValue(baseObject, setter, null);
+                        try
+                        {
+                            var setter = Convert.ChangeType(element.Value, property.PropertyType);
+                            property.SetValue(baseObject, setter, null);
+                        }
+                        catch {}
+
                         break;
                     }
                 }

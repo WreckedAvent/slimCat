@@ -163,8 +163,7 @@ namespace slimCat.Models
             get
             {
                 return description != null
-                       && description.Replace("\r\n", "\n") != Settings.LastChannelDescription
-                       && description != Settings.LastChannelDescription;
+                       && description.GetHashCode() != Settings.LastChannelDescription;
             }
         }
 

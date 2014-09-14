@@ -665,7 +665,7 @@ namespace slimCat.ViewModels
                         if (!chanModel.ShowChannelDescription) break;
 
                         ShowChannelDescription = true;
-                        ChannelSettings.LastChannelDescription = chanModel.Description;
+                        ChannelSettings.LastChannelDescription = chanModel.Description.GetHashCode();
 
                         SettingsService.UpdateSettingsFile(
                             ChannelSettings, ChatModel.CurrentCharacter.Name, Model.Title, Model.Id);
