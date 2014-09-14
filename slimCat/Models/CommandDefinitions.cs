@@ -113,7 +113,7 @@ namespace slimCat.Models
                 Define("openroom").As(C.ChannelKind).WithArguments("status", A.Channel),
                 Define("promote", "cop").As(C.ChannelPromote).WithArguments(A.Character, A.Channel),
                 Define("setdescription").As(C.ChannelDescription).WithArguments("description", A.Channel),
-                Define("timeout").As(C.ChannelTimeOut).WithArguments(A.Character, "time", "reason"),
+                Define("timeout").As(C.ChannelTimeOut).WithArguments(A.Character, "length", A.Channel),
                 Define("unban").As(C.ChannelUnban).WithArguments(A.Character, A.Channel),
                 Define("setmode").As(C.ChannelMode).WithArguments(A.Mode, A.Channel)
                 );
