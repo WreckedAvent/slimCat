@@ -23,6 +23,8 @@
                          IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=BBCode}" />
             <RadioButton Content="Commands"
                          IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Commands}" />
+            <RadioButton Content="Shortcuts"
+                         IsChecked="{Binding SelectedTab, Converter={StaticResource EqualsConverter}, ConverterParameter=Shortcuts}" />
         </WrapPanel>
         <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,5" />
 
@@ -123,7 +125,7 @@
             <ItemsControl ItemsSource="{Binding BbCodeReferences}"
                           Style="{StaticResource NoScrollListBox}">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="vm:BbCodeReference">
+                    <DataTemplate DataType="vm:ExampleReference">
                         <StackPanel Margin="0,0,0,25">
                             <TextBlock Foreground="{StaticResource ForegroundBrush}">
                                 <Run Text="{Binding Name}" Foreground="{StaticResource ContrastBrush}" FontSize="16" />
@@ -145,7 +147,7 @@
             <ItemsControl ItemsSource="{Binding CommandReferences}"
                           Style="{StaticResource NoScrollListBox}">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="vm:BbCodeReference">
+                    <DataTemplate DataType="vm:ExampleReference">
                         <StackPanel Margin="0,0,0,10">
                             <WrapPanel>
                                 <TextBlock Foreground="{StaticResource ForegroundBrush}">
@@ -184,6 +186,23 @@
                         </GroupStyle.ContainerStyle>
                     </GroupStyle>
                 </ItemsControl.GroupStyle>
+            </ItemsControl>
+        </StackPanel>
+
+        <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
+                    Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Shortcuts}">
+            <ItemsControl ItemsSource="{Binding ShortcutReferences}"
+                          Style="{StaticResource NoScrollListBox}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:ExampleReference">
+                        <StackPanel Margin="0,0,0,15">
+                            <TextBlock Foreground="{StaticResource ForegroundBrush}">
+                                <Run Text="{Binding Name}" Foreground="{StaticResource ContrastBrush}" />
+                                <Run Text="{Binding Example}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
             </ItemsControl>
         </StackPanel>
     </StackPanel>

@@ -30,6 +30,7 @@ namespace slimCat.Views
     using System.Windows.Markup;
     using Libraries;
     using Models;
+    using Utilities;
     using ViewModels;
 
     #endregion
@@ -54,10 +55,17 @@ namespace slimCat.Views
                 {Key.Up, new Tuple<string, bool>("sup", false)},
                 {Key.Down, new Tuple<string, bool>("sub", false)},
                 {Key.O, new Tuple<string, bool>("icon", false)},
-                {Key.P, new Tuple<string, bool>("user", false)}
-
+                {Key.K, new Tuple<string, bool>("channel", false)},
+                {Key.J, new Tuple<string, bool>("color", false)}
                 // format: 
                 // target key, matching bbtag, if the bbtag takes arguments
+            };
+
+        private static readonly IDictionary<Key, string> TogglingKeys =
+            new Dictionary<Key, string>
+            {
+                {Key.K, "session"},
+                {Key.O, "user"},
             };
 
         #endregion
@@ -157,7 +165,40 @@ namespace slimCat.Views
                     var selected = Entry.SelectedText;
 
                     if (!useArgs)
+                    {
+                        if (TogglingKeys.ContainsKey(e.Key))
+                        {
+                            var altbbtag = TogglingKeys[e.Key];
+
+                            var openingBb = "[{0}]".FormatWith(bbtag);
+                            var openingAltBb = "[{0}]".FormatWith(altbbtag);
+                            var closingBb = "[/{0}]".FormatWith(bbtag);
+                            var closingAltBb = "[/{0}]".FormatWith(altbbtag);
+
+                            if (selected.Contains(openingBb))
+                            {
+                                Entry.SelectedText = selected.Replace(openingBb, openingAltBb)
+                                    .Replace(closingBb, closingAltBb);
+                                return;
+                            }
+                            if (selected.Contains(openingAltBb))
+                            {
+                                Entry.SelectedText = selected.Replace(openingAltBb, openingBb)
+                                    .Replace(closingAltBb, closingBb);
+                                return;
+                            }
+                        }
+                        if (Entry.SelectedText.Contains("[{0}]".FormatWith(bbtag)) &&
+                            TogglingKeys.ContainsKey(e.Key))
+                        {
+                            Entry.SelectedText = Entry.SelectedText.Replace("[{0}]".FormatWith(bbtag),
+                                "[{0}]".FormatWith(TogglingKeys[e.Key]));
+                            Entry.SelectedText = Entry.SelectedText.Replace("[/{0}]".FormatWith(bbtag),
+                                "[/{0}]".FormatWith(TogglingKeys[e.Key]));
+                        }
+
                         Entry.SelectedText = string.Format("[{0}]{1}[/{0}]", bbtag, selected);
+                    }
                     else
                     {
                         var toEnter = string.Format("[{0}={1}]", bbtag, selected);
@@ -170,8 +211,29 @@ namespace slimCat.Views
                 else
                 {
                     var caretIndex = Entry.CaretIndex;
+                    var bbfragment = "[{0}][/{0}]".FormatWith(bbtag);
+                    if (TogglingKeys.ContainsKey(e.Key) && caretIndex > 0)
+                    {
+                        var altbbtag = TogglingKeys[e.Key];
 
-                    Entry.Text = Entry.Text.Insert(caretIndex, string.Format("[{0}][/{0}]", bbtag));
+                        var altbbfragment = "[{0}][/{0}]".FormatWith(altbbtag);
+
+                        if (Entry.Text.Contains(bbfragment))
+                        {
+                            Entry.Text = ReplaceFirst(Entry.Text, bbfragment, altbbfragment);
+                            Entry.CaretIndex = caretIndex - (bbtag.Length - altbbtag.Length);
+                            return;
+                        }
+
+                        if (Entry.Text.Contains(altbbtag))
+                        {
+                            Entry.Text = ReplaceFirst(Entry.Text, altbbfragment, bbfragment);
+                            Entry.CaretIndex = caretIndex - (altbbtag.Length - bbtag.Length);
+                            return;
+                        }
+                    }
+
+                    Entry.Text = Entry.Text.Insert(caretIndex, bbfragment);
                     Entry.CaretIndex = caretIndex + bbtag.Length + 2;
 
                     // 2 is a magic number representing the brackets around the BbCode
@@ -221,6 +283,15 @@ namespace slimCat.Views
             if (e.KeyboardDevice.Modifiers != ModifierKeys.Control) return;
 
             if (e.Key == Key.Up || e.Key == Key.Down) e.Handled = true;
+        }
+
+        private static string ReplaceFirst(string text, string search, string replace)
+        {
+            var pos = text.IndexOf(search, StringComparison.OrdinalIgnoreCase);
+            if (pos < 0)
+                return text;
+
+            return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
         }
 
         #endregion

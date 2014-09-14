@@ -57,7 +57,7 @@ namespace slimCat.ViewModels
                 IEnumerable<string> argumentNames = command.ArgumentNames;
                 if (overrides != null)
                 {
-                    argumentNames = argumentNames.Except(new []{overrides.ArgumentName});
+                    argumentNames = argumentNames.Except(new[] {overrides.ArgumentName});
                 }
 
                 var arguments = Aggregate(argumentNames);
@@ -107,12 +107,37 @@ namespace slimCat.ViewModels
                 examples.TryGetValue(x.Key, out example);
                 example = example ?? "[{0}]inner text[/{0}]".FormatWith(x.Key);
 
-                return new BbCodeReference
+                return new ExampleReference
                 {
                     Example = example,
                     Name = x.Value.ToString()
                 };
             }).OrderBy(x => x.Name).ToList();
+
+            ShortcutReferences = (new Dictionary<string, string>
+            {
+                {"Tab", "Focuses entry box"},
+                {"Alt+Down", "Switch tab downwards"},
+                {"Alt+Up", "Switch tab upwards"},
+                {"Ctrl+Tab", "Switch tab upwards"},
+                {"Crtl+B", "[b][/b]"},
+                {"Crtl+I", "[i][/i]"},
+                {"Crtl+U", "[u][/u]"},
+                {"Ctrl+S", "[s][/s]"},
+                {"Ctrl+N", "[noparse][/noparse]"},
+                {"Ctrl+Up", "[sup][/sup]"},
+                {"Ctrl+Down", "[sub][/sub]"},
+                {"Ctrl+O", "[icon][/icon]"},
+                {"Ctrl+O x2", "[user][/user]"},
+                {"Ctrl+K", "[channel][/channel]"},
+                {"Ctrl+K x2", "[session][/session]"},
+                {"Ctrl+J", "[color][/color]"}
+            }).Select(x => new ExampleReference
+            {
+                Name = x.Key,
+                Example = x.Value
+            })
+                .ToList();
         }
 
         #endregion
@@ -121,7 +146,9 @@ namespace slimCat.ViewModels
 
         public ListCollectionView CommandReferences { get; set; }
 
-        public IList<BbCodeReference> BbCodeReferences { get; set; }
+        public IList<ExampleReference> BbCodeReferences { get; set; }
+
+        public IList<ExampleReference> ShortcutReferences { get; set; }
 
         public ICharacter slimCat
         {
@@ -190,7 +217,7 @@ namespace slimCat.ViewModels
         }
     }
 
-    public class BbCodeReference
+    public class ExampleReference
     {
         public string Name { get; set; }
         public string Example { get; set; }

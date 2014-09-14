@@ -723,12 +723,16 @@ namespace slimCat.Utilities
 
         private Inline MakeSmall(ParsedChunk arg)
         {
-            return new Span(WrapInRun(arg.InnerText)) {FontSize = 9};
+            var toReturn = new Span(WrapInRun(arg.InnerText));
+            toReturn.FontSize *= 0.75;
+            return toReturn;
         }
 
         private Inline MakeBig(ParsedChunk arg)
         {
-            return new Span(WrapInRun(arg.InnerText)) {FontSize = 16};
+            var toReturn = new Span(WrapInRun(arg.InnerText));
+            toReturn.FontSize *= 1.5;
+            return toReturn;
         }
 
         private Inline MakeChannel(ParsedChunk arg)
@@ -908,11 +912,22 @@ namespace slimCat.Utilities
 
         private Span MakeHeading(ParsedChunk arg)
         {
-            return new Span
+            var toReturn = new Span
             {
-                FontSize = 20,
-                Foreground = Locator.Find<SolidColorBrush>("HighlightBrush")
+                Foreground = Locator.Find<SolidColorBrush>("ContrastBrush")
             };
+            toReturn.FontSize *= 2;
+            SpanHelper.SetInlineSource(toReturn, arg.Children.Select(ToInline).ToList());
+
+            toReturn.Inlines.Add(new Line
+            {
+                Stretch = Stretch.Fill,
+                X2 = 1,
+                Stroke = new SolidColorBrush(Colors.Transparent)
+            });
+
+            arg.Children.Clear();
+            return toReturn;
         }
 
         private Inline MakeBlockText(ParsedChunk arg)
