@@ -47,6 +47,8 @@ namespace slimCat.ViewModels
     /// </summary>
     public class SearchTabViewModel : ChannelbarViewModelCommon
     {
+        private readonly IBrowser browser;
+
         #region Constants
 
         public const string SearchTabView = "SearchTabView";
@@ -55,19 +57,17 @@ namespace slimCat.ViewModels
 
         #region Fields
 
-        private readonly ObservableCollection<SearchTermModel> availableSearchTerms =
+        private ObservableCollection<SearchTermModel> availableSearchTerms =
             new ObservableCollection<SearchTermModel>();
 
-        private readonly ICollectionView availableView;
         private readonly Timer chatSearchCooldownTimer = new Timer(5500);
         private readonly TimeSpan searchDebounce = TimeSpan.FromMilliseconds(250);
 
-        private readonly ObservableCollection<SearchTermModel> selectedSearchTerms =
+        private ObservableCollection<SearchTermModel> selectedSearchTerms =
             new ObservableCollection<SearchTermModel>();
 
-        private readonly ICollectionView selectedView;
-
-        private readonly DeferredAction updateActiveViews;
+        private DeferredAction updateActiveViews;
+        private readonly DeferredAction saveTerms;
         private RelayCommand addSearch;
         private RelayCommand clearSearch;
 
@@ -83,23 +83,8 @@ namespace slimCat.ViewModels
         public SearchTabViewModel(IChatState chatState, IBrowser browser)
             : base(chatState)
         {
+            this.browser = browser;
             Container.RegisterType<object, SearchTabView>(SearchTabView);
-
-            var worker = new BackgroundWorker();
-            worker.DoWork +=
-                (sender, args) => PopulateSearchTerms(browser.GetResponse(Constants.UrlConstants.SearchFields));
-            worker.RunWorkerAsync();
-
-            availableView = new ListCollectionView(availableSearchTerms);
-            availableView.GroupDescriptions.Add(new PropertyGroupDescription("Category", new CategoryConverter()));
-            availableView.SortDescriptions.Add(new SortDescription("DisplayName", ListSortDirection.Ascending));
-            availableView.Filter = o => ((SearchTermModel) o).DisplayName.ContainsOrdinal(searchString);
-
-            selectedView = new ListCollectionView(selectedSearchTerms);
-            selectedView.SortDescriptions.Add(new SortDescription("Category", ListSortDirection.Ascending));
-            selectedView.SortDescriptions.Add(new SortDescription("DisplayName", ListSortDirection.Ascending));
-
-            updateActiveViews = DeferredAction.Create(availableView.Refresh);
 
             chatSearchCooldownTimer.Elapsed += (sender, args) =>
             {
@@ -107,6 +92,17 @@ namespace slimCat.ViewModels
                 OnPropertyChanged("CanStartSearch");
                 chatSearchCooldownTimer.Stop();
             };
+
+            saveTerms =
+                DeferredAction.Create(
+                    () => SettingsService.SaveSearchTerms(ChatModel.CurrentCharacter.Name, new SearchTermsModel
+                    {
+                        AvailableTerms = availableSearchTerms.ToList(),
+                        SelectedTerms = selectedSearchTerms.ToList()
+                    }));
+
+            if (ChatModel.CurrentCharacter == null) return;
+            GetSearchTerms(ChatModel.CurrentCharacter.Name);
         }
 
         #endregion
@@ -128,15 +124,9 @@ namespace slimCat.ViewModels
             get { return clearSearch ?? (clearSearch = new RelayCommand(ClearSearchTermEvent)); }
         }
 
-        public ICollectionView AvailableSearchTerms
-        {
-            get { return availableView; }
-        }
+        public ICollectionView AvailableSearchTerms { get; private set; }
 
-        public ICollectionView SelectedSearchTerms
-        {
-            get { return selectedView; }
-        }
+        public ICollectionView SelectedSearchTerms { get; private set; }
 
         public ICommand OpenSearchSettingsCommand
         {
@@ -207,6 +197,7 @@ namespace slimCat.ViewModels
             availableSearchTerms.AddRange(selectedSearchTerms);
             selectedSearchTerms.Clear();
             OnPropertyChanged("CanStartSearch");
+            SaveSearchTerms();
         }
 
         private void RemoveSearchTermEvent(object obj)
@@ -217,6 +208,38 @@ namespace slimCat.ViewModels
             availableSearchTerms.Add(term);
 
             OnPropertyChanged("CanStartSearch");
+            SaveSearchTerms();
+        }
+
+        private void GetSearchTerms(string character)
+        {
+            var cache = SettingsService.RetrieveTerms(character);
+
+            if (cache == null)
+            {
+                var worker = new BackgroundWorker();
+                worker.DoWork +=
+                    (sender, args) => PopulateSearchTerms(browser.GetResponse(Constants.UrlConstants.SearchFields));
+                worker.RunWorkerAsync();
+            }
+            else
+            {
+                availableSearchTerms = new ObservableCollection<SearchTermModel>(cache.AvailableTerms);
+                selectedSearchTerms = new ObservableCollection<SearchTermModel>(cache.SelectedTerms);
+            }
+
+            AvailableSearchTerms = new ListCollectionView(availableSearchTerms);
+            AvailableSearchTerms.GroupDescriptions.Add(new PropertyGroupDescription("Category", new CategoryConverter()));
+            AvailableSearchTerms.SortDescriptions.Add(new SortDescription("DisplayName", ListSortDirection.Ascending));
+            AvailableSearchTerms.Filter = o => ((SearchTermModel)o).DisplayName.ContainsOrdinal(searchString);
+
+            SelectedSearchTerms = new ListCollectionView(selectedSearchTerms);
+            SelectedSearchTerms.SortDescriptions.Add(new SortDescription("Category", ListSortDirection.Ascending));
+            SelectedSearchTerms.SortDescriptions.Add(new SortDescription("DisplayName", ListSortDirection.Ascending));
+
+            updateActiveViews = DeferredAction.Create(AvailableSearchTerms.Refresh);
+            OnPropertyChanged("AvailableSearchTerms");
+            OnPropertyChanged("SelectedSearchTerms");
         }
 
         private void AddSearchTermEvent(object obj)
@@ -227,6 +250,7 @@ namespace slimCat.ViewModels
             selectedSearchTerms.Add(term);
 
             OnPropertyChanged("CanStartSearch");
+            SaveSearchTerms();
         }
 
         private void SendSearchEvent(object obj)
@@ -246,6 +270,11 @@ namespace slimCat.ViewModels
             isInSearchCoolDown = true;
             chatSearchCooldownTimer.Start();
             OnPropertyChanged("CanStartSearch");
+        }
+
+        private void SaveSearchTerms()
+        {
+            saveTerms.Defer(TimeSpan.FromSeconds(3));
         }
 
         private void PopulateSearchTerms(string jsonString)
@@ -290,6 +319,8 @@ namespace slimCat.ViewModels
             });
 
             Dispatcher.BeginInvoke((Action) (() =>
+            {
+                availableSearchTerms = new ObservableCollection<SearchTermModel>();
                 availableSearchTerms
                     .AddRange(kinks)
                     .AddRange(genders)
@@ -297,7 +328,21 @@ namespace slimCat.ViewModels
                     .AddRange(orientations)
                     .AddRange(positions)
                     .AddRange(languages)
-                    .AddRange(furryPrefs)));
+                    .AddRange(furryPrefs);
+
+                selectedSearchTerms = new ObservableCollection<SearchTermModel>();
+
+                OnPropertyChanged("AvailableSearchTerms");
+                OnPropertyChanged("SelectedSearchTerms");
+
+                AvailableSearchTerms.Refresh();
+                SelectedSearchTerms.Refresh();
+
+                SettingsService.SaveSearchTerms(ChatModel.CurrentCharacter.Name, new SearchTermsModel
+                {
+                    AvailableTerms = availableSearchTerms.ToList()
+                });
+            }));
         }
 
         private static IEnumerable<SearchTermModel> SearchTermFromArray(JToken token, string category)

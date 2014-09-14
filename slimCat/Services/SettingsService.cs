@@ -50,6 +50,8 @@ namespace slimCat.Services
 
         private const string ProfileCacheFolderName = "!Profiles";
 
+        private const string SearchTermsFileName = "!search.xml";
+
         #endregion
 
         #region Public Methods and Operators
@@ -127,6 +129,53 @@ namespace slimCat.Services
             catch
             {
                 return null;
+            }
+        }
+
+        public static SearchTermsModel RetrieveTerms(string currentCharacter)
+        {
+            var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
+            if (!Directory.Exists(path))
+                return null;
+
+            path = Path.Combine(path, SearchTermsFileName);
+
+            if (!File.Exists(path))
+                return null;
+
+            try
+            {
+                using (var stream = File.OpenRead(path))
+                {
+                    var serializer = new XmlSerializer(typeof(SearchTermsModel));
+                    return serializer.Deserialize(stream) as SearchTermsModel;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public static void SaveSearchTerms(string currentCharacter, SearchTermsModel data)
+        {
+            var workingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
+
+            if (!Directory.Exists(workingPath))
+                Directory.CreateDirectory(workingPath);
+
+            var fileName = Path.Combine(workingPath, SearchTermsFileName);
+
+            try
+            {
+                using (var streamWriter = new StreamWriter(fileName, false, Encoding.UTF8))
+                {
+                    var serializer = new XmlSerializer(typeof(SearchTermsModel));
+                    serializer.Serialize(streamWriter, data);
+                }
+            }
+            catch
+            {
             }
         }
 

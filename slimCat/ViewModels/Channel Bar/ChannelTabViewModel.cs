@@ -212,7 +212,7 @@ namespace slimCat.ViewModels
         private void Update(object sender, EventArgs e)
         {
             OnPropertyChanged("SearchSettings");
-            updateChannelList.Defer(TimeSpan.FromSeconds(1));
+            updateChannelList.Defer(TimeSpan.FromSeconds(0.25));
         }
 
         protected override void Dispose(bool isManaged)

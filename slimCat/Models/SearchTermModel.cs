@@ -19,12 +19,35 @@
 
 namespace slimCat.Models
 {
+    #region Usings
+
+    using System;
+    using System.Collections.Generic;
+    using System.Windows.Documents;
+    using System.Xml.Serialization;
+
+    #endregion
+
+    [Serializable]
+    [XmlRoot("SearchTerms")]
     public class SearchTermModel
     {
+        [XmlAttribute]
         public string DisplayName { get; set; }
 
+        [XmlAttribute]
         public string Category { get; set; }
 
+        [XmlAttribute]
         public string UnderlyingValue { get; set; }
+    }
+
+    [Serializable]
+    [XmlInclude(typeof(SearchTermModel))]
+    public class SearchTermsModel
+    {
+        public List<SearchTermModel> SelectedTerms { get; set; }
+
+        public List<SearchTermModel> AvailableTerms { get; set; }
     }
 }
