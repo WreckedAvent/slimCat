@@ -36,7 +36,7 @@ namespace slimCat.Utilities
         /// </summary>
         public const string ClientName = "Puma";
 
-        public const double Version = 4.05;
+        public const double Version = 4.06;
 
         /// <summary>
         ///     The endpoint for F-chat websocket communication.
