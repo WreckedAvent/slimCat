@@ -23,13 +23,14 @@ namespace slimCat.Models
 
     using System;
     using Utilities;
+    using ViewModels;
 
     #endregion
 
     /// <summary>
     ///     The message base.
     /// </summary>
-    public abstract class MessageBase : IDisposable
+    public abstract class MessageBase : SysProp, IDisposable
     {
         #region Fields
 

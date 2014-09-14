@@ -27,6 +27,7 @@ namespace slimCat.ViewModels
     using System.ComponentModel;
     using System.Linq;
     using System.Timers;
+    using System.Windows;
     using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Unity;
@@ -191,6 +192,9 @@ namespace slimCat.ViewModels
                 Events.GetEvent<NewUpdateEvent>().Subscribe(UpdateChat);
 
                 LoggingSection = "general chan vm";
+
+                Application.Current.Dispatcher.Invoke(
+                    (Action) delegate { Application.Current.MainWindow.Deactivated += SetLastMessageMark; });
             }
             catch (Exception ex)
             {
@@ -582,6 +586,22 @@ namespace slimCat.ViewModels
             OnPropertyChanged("ChannelSettings");
         }
 
+        private void SetLastMessageMark(object s = null, EventArgs e = null)
+        {
+            if (!Model.IsSelected) return;
+            if (isDisplayingChat && Model.Messages.Any())
+            {
+                Model.Messages.Each(x => x.IsLastViewed = false);
+                Model.Messages.Last().IsLastViewed = true;
+                var n = Model.Messages.Last();
+            }
+            else if (IsDisplayingAds && Model.Ads.Any())
+            {
+                Model.Ads.Each(x => x.IsLastViewed = false);
+                Model.Ads.Last().IsLastViewed = true;
+            }
+        }
+
         protected override void Dispose(bool isManaged)
         {
             if (isManaged)
@@ -603,6 +623,8 @@ namespace slimCat.ViewModels
                 var model = (GeneralChannelModel) Model;
                 model.Description = null;
                 model.CharacterManager.Dispose();
+                Application.Current.Dispatcher.Invoke(
+                    (Action) delegate { Application.Current.MainWindow.Deactivated -= SetLastMessageMark; });
             }
 
             base.Dispose(isManaged);

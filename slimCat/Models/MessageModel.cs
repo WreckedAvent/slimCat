@@ -23,6 +23,7 @@ namespace slimCat.Models
 
     using System;
     using System.Windows.Documents;
+    using System.Windows.Media;
     using Views;
 
     #endregion
@@ -32,6 +33,9 @@ namespace slimCat.Models
     /// </summary>
     public class MessageModel : MessageBase, IMessage
     {
+        private bool isOfInterest;
+        private bool isLastViewed;
+
         #region Constructors and Destructors
 
         public MessageModel(ICharacter poster, string message, MessageType type = MessageType.Normal)
@@ -73,9 +77,27 @@ namespace slimCat.Models
 
         public bool IsHistoryMessage { get; private set; }
 
-        public bool IsOfInterest { get; set; }
+        public bool IsOfInterest
+        {
+            get { return isOfInterest; }
+            set
+            {
+                isOfInterest = value;
+                OnPropertyChanged(string.Empty);
+            }
+        }
 
-        public bool IsLastViewed { get; set; }
+        public bool IsLastViewed
+        {
+            get { return isLastViewed; }
+            set
+            {
+                isLastViewed = value;
+                OnPropertyChanged(string.Empty);
+            }
+        }
+
+        public MessageModel This { get { return this; } }
 
         public Block View
         {

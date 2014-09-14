@@ -13,9 +13,9 @@
            IsHyphenationEnabled="True"
            FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
 
-           Foreground="{Binding Converter={StaticResource ForegroundBrushConverter}, Mode=OneWay}"
-           BorderThickness="{Binding Converter={StaticResource MessageThicknessConverter}}"
-           BorderBrush="{Binding Converter={StaticResource DelimiterColorConverter}}"
+           Foreground="{Binding Path=This, Converter={StaticResource ForegroundBrushConverter}, Mode=OneWay}"
+           BorderThickness="{Binding Path=This, Converter={StaticResource MessageThicknessConverter}, Mode=OneWay}"
+           BorderBrush="{Binding Path=This, Converter={StaticResource DelimiterColorConverter}, Mode=OneWay}"
            TextAlignment="Left"
 
            d:DataContext="{d:DesignInstance models:MessageModel}">
