@@ -22,6 +22,11 @@ namespace slimCat.Services
     #region Usings
 
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Windows.Navigation;
+    using Microsoft.Practices.ObjectBuilder2;
+    using Models;
+    using Utilities;
 
     #endregion
 
@@ -33,6 +38,21 @@ namespace slimCat.Services
                 .Publish(
                     "Server, server, across the sea,\nWho is connected, most to thee?\nWhy, "
                     + model.CurrentCharacter.Name + " be!");
+        }
+
+        private void OnWhoIsRequested(IDictionary<string, object> command)
+        {
+            var character = command.Get(Constants.Arguments.Character);
+
+            var names = model.CurrentChannels
+                .Where(channel => channel.CharacterManager.IsOnList(character, ListKind.Online))
+                .Select(x => x.Title)
+                .JoinStrings(", ");
+
+            if (string.IsNullOrEmpty(names))
+                names = "no shared channels";
+
+            events.GetEvent<ErrorEvent>().Publish("User '{0}' present in {1}".FormatWith(character, names));
         }
     }
 }

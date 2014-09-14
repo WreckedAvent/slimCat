@@ -97,7 +97,8 @@ namespace slimCat.Models
                 Define("tempunignore").AsForCharacters(),
                 Define("tempnotinteresting").AsForCharacters(),
                 Define("unignore").As(C.UserIgnore).WithArguments(A.Character, A.Action),
-                Define("who").AsArgumentless()
+                Define("who").AsArgumentless(),
+                Define("whois").AsForCharacters()
                 );
 
 

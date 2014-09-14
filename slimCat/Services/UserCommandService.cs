@@ -128,7 +128,8 @@ namespace slimCat.Services
                     {"searchtag", OnSearchTagToggleRequested},
                     {"logout", OnLogoutRequested},
                     {"soundon", OnSoundOnRequested},
-                    {"soundoff", OnSoundOffRequested}
+                    {"soundoff", OnSoundOffRequested},
+                    {"whois", OnWhoIsRequested}
                 };
             }
             catch (Exception ex)
