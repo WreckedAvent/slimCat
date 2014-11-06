@@ -63,6 +63,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </Expander>
+            <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,10" />
         </StackPanel>
 
         <StackPanel DockPanel.Dock="Bottom">
@@ -76,9 +77,6 @@
 
         <ScrollViewer CanContentScroll="False">
             <StackPanel>
-
-
-                <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,10" />
 
                 <ItemsControl ItemsSource="{Binding Path=AvailableSearchTerms, Mode=OneWay}"
                               Style="{StaticResource HorizontalListBoxStyle}">

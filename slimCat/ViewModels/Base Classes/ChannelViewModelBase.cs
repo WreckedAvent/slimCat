@@ -303,6 +303,8 @@ namespace slimCat.ViewModels
             if (Message == null)
                 return;
 
+            Message = Message.Trim();
+
             if (CommandParser.HasNonCommand(Message))
             {
                 SendMessage();

@@ -108,9 +108,14 @@ namespace slimCat.Views
 
         private void OnSelected(object sender, RoutedEventArgs e)
         {
-            if (isAdded) return;
+            if (isAdded)
+            {
+                Reader.Document.BringIntoView(); // Scrolls to top, where the image is
+                return;
+            }
 
             ProfileParagraph.Inlines.InsertBefore(ProfileParagraph.Inlines.FirstInline, lastItem);
+            Reader.Document.BringIntoView(); // Scrolls to top, where the image is
 
             isAdded = true;
         }
