@@ -145,10 +145,15 @@ namespace slimCat.Models
 
         public static readonly IDictionary<string, CommandModel> Commands = new Dictionary<string, CommandModel>();
 
-        public static readonly string[] NonCommandCommands =
+        // prevents long ugly checking in our viewmodels for these
+        public static readonly Dictionary<string, Func<string, string>> NonCommandCommands = new Dictionary<string, Func<string, string>>()
         {
-            // prevents long ugly checking in our viewmodels for these
-            "/me", "/warn", "/post"
+            {"/me ",   (x) => { if (x[4]=='\'') return x.Substring("/me ".Length);
+                                           else return x.Substring("/me".Length); }},
+            {"/me's ", (x) => x.Substring("/me".Length)},
+            {"/my ",   (x) => "'s" + x.Substring("/my".Length)},
+            {"/post ", (x) => x.Substring("/post".Length) + " ~"},
+            {"/warn ", (x) => " warns," + x.Substring("/warn".Length)}
         };
 
         public static readonly IDictionary<string, string> CommandAliases = new Dictionary<string, string>();
