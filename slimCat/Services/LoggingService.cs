@@ -127,40 +127,18 @@ namespace slimCat.Services
             {
                 var thisMessage = HttpUtility.HtmlDecode(message.Message);
                 var timestamp = message.TimeStamp;
+
                 switch (message.Type)
                 {
                     case MessageType.Normal:
-                        if (thisMessage[0] != '/')
-                            writer.WriteLine(timestamp + ' ' + message.Poster.Name + ": " + thisMessage);
+                        var logMessage = timestamp + ' ' + message.Poster.Name;
+                        var check = thisMessage.Substring(0, thisMessage.IndexOf(' ') + 1);
+                        Func<string, string> nonCommandCommand;
+
+                        if (CommandDefinitions.NonCommandCommands.TryGetValue(check, out nonCommandCommand))
+                            writer.WriteLine(logMessage + nonCommandCommand(thisMessage));
                         else
-                        {
-                            string messageStart = message.Message.Substring(0, 4);
-                            switch (messageStart)
-                            {
-                                case "/me ":
-                                    if (thisMessage[4] == '\'')
-                                        writer.WriteLine(timestamp + ' ' + message.Poster.Name + thisMessage.Substring(4));
-                                    else
-                                        writer.WriteLine(timestamp + ' ' + message.Poster.Name + thisMessage.Substring(3));
-                                    break;
-                                case "/me'":
-                                    writer.WriteLine(timestamp + ' ' + message.Poster.Name + thisMessage.Substring(3));
-                                    break;
-                                case "/my ":
-                                    writer.WriteLine(timestamp + ' ' + message.Poster.Name +
-                                    "'s" + thisMessage.Substring(3));
-                                    break;
-                                case "/pos":
-                                    if (thisMessage.StartsWith("/post "))
-                                    {
-                                        writer.WriteLine(timestamp + ' ' + message.Poster.Name + thisMessage.Substring(5) + " ~");
-                                    }
-                                    break;
-                                default:
-                                    writer.WriteLine(timestamp + ' ' + message.Poster.Name + ": " + thisMessage);
-                                    break;
-                            }
-                        }
+                            writer.WriteLine(logMessage + ": " + thisMessage);
                         break;
                     case MessageType.Roll:
                         writer.WriteLine(timestamp + ' ' + thisMessage);
@@ -169,10 +147,8 @@ namespace slimCat.Services
                         if (!message.Message.StartsWith("/me "))
                             writer.WriteLine("Ad at " + timestamp + ": " + thisMessage + " ~By " + message.Poster.Name);
                         else
-                        {
                             writer.WriteLine(
-                            "Ad at " + timestamp + ": " + message.Poster.Name + " " + thisMessage.Substring(3));
-                        }
+                                "Ad at " + timestamp + ": " + message.Poster.Name + thisMessage.Substring(3));
                         break;
                 }
             }

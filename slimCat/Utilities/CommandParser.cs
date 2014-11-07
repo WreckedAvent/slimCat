@@ -131,7 +131,7 @@ namespace slimCat.Utilities
         /// </param>
         public static bool HasNonCommand(string input)
         {
-            return CommandDefinitions.NonCommandCommands.Any(input.StartsWith);
+            return CommandDefinitions.NonCommandCommands.Keys.Any(input.StartsWith);
         }
 
         /// <summary>
