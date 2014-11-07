@@ -127,28 +127,52 @@ namespace slimCat.Services
             {
                 var thisMessage = HttpUtility.HtmlDecode(message.Message);
                 var timestamp = message.TimeStamp;
-
                 switch (message.Type)
                 {
                     case MessageType.Normal:
-                        if (!message.Message.StartsWith("/me"))
+                        if (thisMessage[0] != '/')
                             writer.WriteLine(timestamp + ' ' + message.Poster.Name + ": " + thisMessage);
                         else
-                            writer.WriteLine(timestamp + ' ' + message.Poster.Name + thisMessage.Substring(3));
-
+                        {
+                            string messageStart = message.Message.Substring(0, 4);
+                            switch (messageStart)
+                            {
+                                case "/me ":
+                                    if (thisMessage[4] == '\'')
+                                        writer.WriteLine(timestamp + ' ' + message.Poster.Name + thisMessage.Substring(4));
+                                    else
+                                        writer.WriteLine(timestamp + ' ' + message.Poster.Name + thisMessage.Substring(3));
+                                    break;
+                                case "/me'":
+                                    writer.WriteLine(timestamp + ' ' + message.Poster.Name + thisMessage.Substring(3));
+                                    break;
+                                case "/my ":
+                                    writer.WriteLine(timestamp + ' ' + message.Poster.Name +
+                                    "'s" + thisMessage.Substring(3));
+                                    break;
+                                case "/pos":
+                                    if (thisMessage.StartsWith("/post "))
+                                    {
+                                        writer.WriteLine(timestamp + ' ' + message.Poster.Name + thisMessage.Substring(5) + " ~");
+                                    }
+                                    break;
+                                default:
+                                    writer.WriteLine(timestamp + ' ' + message.Poster.Name + ": " + thisMessage);
+                                    break;
+                            }
+                        }
                         break;
                     case MessageType.Roll:
                         writer.WriteLine(timestamp + ' ' + thisMessage);
                         break;
                     default:
-                        if (!message.Message.StartsWith("/me"))
+                        if (!message.Message.StartsWith("/me "))
                             writer.WriteLine("Ad at " + timestamp + ": " + thisMessage + " ~By " + message.Poster.Name);
                         else
                         {
                             writer.WriteLine(
-                                "Ad at " + timestamp + ": " + message.Poster.Name + " " + thisMessage.Substring(3));
+                            "Ad at " + timestamp + ": " + message.Poster.Name + " " + thisMessage.Substring(3));
                         }
-
                         break;
                 }
             }

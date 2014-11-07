@@ -148,7 +148,7 @@ namespace slimCat.Models
         public static readonly string[] NonCommandCommands =
         {
             // prevents long ugly checking in our viewmodels for these
-            "/me", "/warn", "/post"
+            "/me ", "/me'", "/my ", "/warn ", "/post "
         };
 
         public static readonly IDictionary<string, string> CommandAliases = new Dictionary<string, string>();

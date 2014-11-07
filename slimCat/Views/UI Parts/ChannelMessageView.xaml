@@ -45,8 +45,6 @@
                                         RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
                           CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}" />
         </Hyperlink.InputBindings>
-    </Hyperlink>
-
-    <Span
+    </Hyperlink><Span
         lib:SpanHelper.InlineSource="{Binding Mode=OneTime, Converter={StaticResource BbFlowConverter}, IsAsync=True}" />
 </Paragraph>

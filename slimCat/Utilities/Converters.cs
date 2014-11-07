@@ -1147,6 +1147,7 @@ namespace slimCat.Utilities
                 text = HttpUtility.HtmlDecode(text); // translate the HTML characters
                 var user = (ICharacter) values[1]; // this is our poster's name
                 var type = (MessageType) values[2]; // what kind of type our message is
+                bool emote;
 
                 if (type == MessageType.Roll)
                     return Parse(text);
@@ -1155,49 +1156,61 @@ namespace slimCat.Utilities
                 var nameLink = MakeUsernameLink(user);
                 inlines.Add(nameLink); // name first
 
-                if (text.Length > "/me".Length)
+                if (text[0] == '/')
                 {
-                    if (text.StartsWith("/me"))
+                    emote = false;
+                    var textCheck = text.Substring(0, 4);
+                    switch (textCheck)
                     {
-                        // if the post is a /me "command"
-                        text = text.Substring("/me".Length);
+                        case "/me ":
+                            text = text.Substring("/me".Length);
+                            if (text.StartsWith(" '"))
+                                text = text.Substring(" ".Length);
+                            emote = true;
+                            break;
+                        case "/me'":
+                            text = text.Substring("/me".Length);
+                            emote = true;
+                            break;
+                        case "/my ":
+                            text = text.Substring("/me".Length);
+                            text = text.Insert(0, "'s");
+                            emote = true;
+                            break;
+                        default:
+                            if (text.StartsWith("/warn "))
+                            {
+                                text = text.Substring("/warn ".Length);
+                                inlines.Add(new Run(" warns, "));
+                                var toAdd = Parse(text);
+                                toAdd.Foreground = Locator.Find<Brush>("ContrastBrush");
+                                toAdd.FontWeight = FontWeights.ExtraBold;
+                                inlines.Add(toAdd);
+                                return inlines;
+                            }
+                            else if (text.StartsWith("/post "))
+                            {
+                                text = text.Substring("/post ".Length);
+                                inlines.Insert(0, Parse(text));
+                                inlines.Insert(1, new Run(" ~"));
+                                return inlines;
+                            }
+                            break;
+                    }
+                    if (emote == true)
+                    {
                         inlines.Insert(0, new Run("*")); // push the name button to the second slot
                         inlines[1].FontStyle = FontStyles.Italic;
                         inlines.Add(new Italic(Parse(text)));
                         inlines.Add(new Run("*"));
                         return inlines;
                     }
-
-                    if (text.StartsWith("/post"))
-                    {
-                        // or a post "command"
-                        text = text.Substring("/post ".Length);
-
-                        inlines.Insert(0, Parse(text));
-                        inlines.Insert(1, new Run(" ~"));
-                        return inlines;
-                    }
-
-                    if (text.StartsWith("/warn"))
-                    {
-                        // or a warn "command"
-                        text = text.Substring("/warn ".Length);
-                        inlines.Add(new Run(" warns, "));
-                        var toAdd = Parse(text);
-
-                        toAdd.Foreground = Locator.Find<Brush>("ContrastBrush");
-                        toAdd.FontWeight = FontWeights.ExtraBold;
-                        inlines.Add(toAdd);
-
-                        return inlines;
-                    }
-
-                    inlines.Add(new Run(": "));
+                    inlines.Add(new Run(" : "));
                     inlines.Add(Parse(text));
                     return inlines;
                 }
 
-                inlines.Add(new Run(": "));
+                inlines.Add(new Run(" : "));
                 inlines.Add(new Run(text));
             }
             else if (values.Length == 1 && values[0] is NotificationModel)
@@ -1304,45 +1317,60 @@ namespace slimCat.Utilities
 
             text = HttpUtility.HtmlDecode(text); // translate the HTML characters
 
-            if (text.StartsWith("/me"))
+            if (text[0] == '/')
             {
-                // if the post is a /me "command"
-                text = text.Substring("/me".Length);
-                inlines.Add(new Italic(Parse(text)));
-            }
-            else if (text.StartsWith("/post"))
-            {
-                // or a post "command"
-                text = text.Substring("/post ".Length);
-
-                inlines.Insert(0, Parse(text));
-                inlines.Insert(1, new Run(" ~"));
-            }
-            else if (text.StartsWith("/warn")
-                     && message != null
-                     && permissions.IsModerator(message.Poster.Name))
-            {
-                // or a warn "command"
-                text = text.Substring("/warn ".Length);
-                inlines.Add(new Run(" warns, ")
+                var textCheck = text.Substring(0, 4);
+                switch (textCheck)
                 {
-                    FontWeight = FontWeights.Medium,
-                    Foreground = Locator.Find<Brush>("ModeratorBrush")
-                });
-
-                var toAdd = Parse(text);
-                toAdd.Foreground = Locator.Find<Brush>("ModeratorBrush");
-                toAdd.FontWeight = FontWeights.Medium;
-
-                inlines.Add(toAdd);
+                    case "/me ":
+                        text = text.Substring("/me".Length);
+                        if (text.StartsWith(" '"))
+                            text = text.Substring(" ".Length);
+                        inlines.Add(new Italic(Parse(text)));
+                        break;
+                    case "/me'":
+                        text = text.Substring("/me".Length);
+                        inlines.Add(new Italic(Parse(text)));
+                        break;
+                    case "/my ":
+                        text = text.Substring("/me".Length);
+                        text = text.Insert(0, "'s");
+                        inlines.Add(new Italic(Parse(text)));
+                        break;
+                    default:
+                        if (text.StartsWith("/warn ") &&
+                        message != null &&
+                        permissions.IsModerator(message.Poster.Name))
+                        {
+                            // or a warn "command"
+                            text = text.Substring("/warn ".Length);
+                            inlines.Add(new Run(" warns, ")
+                            {
+                                FontWeight = FontWeights.Medium,
+                                Foreground = Locator.Find<Brush>("ModeratorBrush")
+                            });
+                            var toAdd = Parse(text);
+                            toAdd.Foreground = Locator.Find<Brush>("ModeratorBrush");
+                            toAdd.FontWeight = FontWeights.Medium;
+                            inlines.Add(toAdd);
+                        }
+                        else if (text.StartsWith("/post "))
+                        {
+                            text = text.Substring("/post".Length);
+                            inlines.Insert(0, Parse(text));
+                            inlines.Insert(1, new Run(" ~"));
+                        }
+                        else
+                        {
+                            inlines.Add(new Run(" : "));
+                            inlines.Add(Parse(text));
+                        }
+                        break;
+                }
+                return inlines;
             }
-            else
-            {
-                inlines.Add(new Run(": "));
-
-                inlines.Add(Parse(text));
-            }
-
+            inlines.Add(new Run(" : "));
+            inlines.Add(Parse(text));
             return inlines;
         }
 
