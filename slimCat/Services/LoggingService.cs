@@ -131,24 +131,24 @@ namespace slimCat.Services
                 switch (message.Type)
                 {
                     case MessageType.Normal:
-                        if (!message.Message.StartsWith("/me"))
-                            writer.WriteLine(timestamp + ' ' + message.Poster.Name + ": " + thisMessage);
-                        else
-                            writer.WriteLine(timestamp + ' ' + message.Poster.Name + thisMessage.Substring(3));
+                        var logMessage = timestamp + ' ' + message.Poster.Name;
+                        var check = thisMessage.Substring(0, thisMessage.IndexOf(' ') + 1);
+                        Func<string, string> nonCommandCommand;
 
+                        if (CommandDefinitions.NonCommandCommands.TryGetValue(check, out nonCommandCommand))
+                            writer.WriteLine(logMessage + nonCommandCommand(thisMessage));
+                        else
+                            writer.WriteLine(logMessage + ": " + thisMessage);
                         break;
                     case MessageType.Roll:
                         writer.WriteLine(timestamp + ' ' + thisMessage);
                         break;
                     default:
-                        if (!message.Message.StartsWith("/me"))
+                        if (!message.Message.StartsWith("/me "))
                             writer.WriteLine("Ad at " + timestamp + ": " + thisMessage + " ~By " + message.Poster.Name);
                         else
-                        {
                             writer.WriteLine(
-                                "Ad at " + timestamp + ": " + message.Poster.Name + " " + thisMessage.Substring(3));
-                        }
-
+                                "Ad at " + timestamp + ": " + message.Poster.Name + thisMessage.Substring(3));
                         break;
                 }
             }
