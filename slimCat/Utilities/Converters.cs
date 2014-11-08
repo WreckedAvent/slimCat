@@ -270,6 +270,21 @@ namespace slimCat.Utilities
         }
     }
 
+    /// <summary>
+    ///     If string is not empty, return true.
+    /// </summary>
+    public class NotEmptyBoolConverter : OneWayConverter
+    {
+        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var parsed = (string)value;
+
+            return string.IsNullOrEmpty(parsed)
+                ? false
+                : true;
+        }
+    }
+
     public class CommaConverter : OneWayConverter
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)

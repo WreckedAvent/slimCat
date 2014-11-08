@@ -55,7 +55,9 @@
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type models:ProfileKink}">
-            <TextBlock Text="{Binding Name}" ToolTipService.ShowDuration="60000">
+            <TextBlock Text="{Binding Name}" ToolTipService.ShowDuration="60000"
+                       ToolTipService.IsEnabled="{Binding Tooltip,
+                                                  Converter={StaticResource NotEmptyBoolConverter}}">
                 <TextBlock.ToolTip>
                     <TextBlock Text="{Binding Tooltip}" TextWrapping="Wrap" MaxWidth="200" />
                 </TextBlock.ToolTip>
@@ -147,7 +149,8 @@
                                     Height="75"
                                     Width="75"
                                     Margin="0,10,0,0"
-                                    ToolTip="{Binding Path=Description}"/>
+                                    ToolTip="{Binding Path=Description}"
+                                    ToolTipService.IsEnabled="{Binding Path=Description, Converter={StaticResource NotEmptyBoolConverter}}"/>
                             </Grid>
                         </DataTemplate>
                     </Grid.Resources>

@@ -21,6 +21,7 @@
     <utilities:MessageThicknessConverter x:Key="MessageThicknessConverter" />
     <utilities:NotEmptyConverter x:Key="NotEmptyConverter" />
     <utilities:EmptyConverter x:Key="EmptyConverter" />
+    <utilities:NotEmptyBoolConverter x:Key="NotEmptyBoolConverter" />
     <utilities:ImagePathConverter x:Key="ImagePathConverter" />
     <utilities:NotNullConverter x:Key="NotNullConverter" />
     <utilities:NullConverter x:Key="NullConverter" />
