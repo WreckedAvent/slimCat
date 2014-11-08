@@ -280,7 +280,9 @@
                                     <Paragraph>
                                         <Button Command="{Binding SwitchImageViewCommand}"
                                                 Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}"
-                                                ToolTip="{Binding CurrentImage.Description}">
+                                                ToolTip="{Binding CurrentImage.Description}"
+                                                ToolTipService.IsEnabled="{Binding CurrentImage.Description,
+                                                  Converter={StaticResource NotEmptyBoolConverter}}">
                                             <Button.Template>
                                                 <ControlTemplate>
                                                     <Image
@@ -441,7 +443,9 @@
 
                     <Button Margin="5" Command="{Binding SwitchImageViewCommand}"
                             Visibility="{Binding IsViewingFullImage, Converter={StaticResource BoolConverter}}"
-                            ToolTip="{Binding CurrentImage.Description}">
+                            ToolTip="{Binding CurrentImage.Description}"
+                            ToolTipService.IsEnabled="{Binding CurrentImage.Description,
+                                                  Converter={StaticResource NotEmptyBoolConverter}}">
                         <Button.Template>
                             <ControlTemplate>
                                 <Image
