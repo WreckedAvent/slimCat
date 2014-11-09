@@ -358,6 +358,29 @@
         </Style.Triggers>
     </Style>
 
+    <!--Since the colors below display over an image rather than over the interface, and with a grey shadow,
+        using straight white and dark grey might ensure it looks right with the shadow-->
+    <Style TargetType="{x:Type Button}" x:Key="ImageContentWhiteButton" BasedOn="{StaticResource ImageButtonBase}">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Margin" Value="2,0" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
+                <Setter Property="Background" Value="Black" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="False">
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="Background" Value="Black" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Foreground" Value="DarkGray" />
+                <Setter Property="Background" Value="Black" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style TargetType="ToggleButton">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="BorderThickness" Value="0" />

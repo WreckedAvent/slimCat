@@ -96,9 +96,9 @@ namespace slimCat.Views
 
         #endregion
 
-        private void OnElementFocused(object sender, RoutedEventArgs e)
+        private void CloseImage(object sender, RoutedEventArgs e)
         {
-            if (vm == null || e.Source is Button || !isAdded) return;
+            if (vm == null || !isAdded) return;
 
             vm.CurrentImage = null;
             lastItem = ProfileParagraph.Inlines.FirstInline;

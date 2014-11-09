@@ -178,12 +178,20 @@
 
                             <StackPanel Visibility="{Binding Converter={StaticResource NotNullConverter}}"
                                         DataContext="{Binding Path=Model.ProfileData}"
-                                        Margin="0,0,80,0"
-                                        TextBlock.Foreground="{StaticResource ForegroundBrush}">
+                                        Margin="0,0,95,0"
+                                        TextBlock.Foreground="{StaticResource ForegroundBrush}"
+                                        MinHeight="64">
                                 <TextBlock TextWrapping="Wrap">
-                                    <Run Text="{Binding Age, Converter={StaticResource CommaConverter}}" />
-                                    <Run Text="{Binding Orientation, Converter={StaticResource CommaConverter}}" />
-                                    <Run Text="{Binding Species}" />
+                                     <Run>
+                                        <Run.Text>
+                                            <MultiBinding
+                                                Converter="{StaticResource CommaConverter}">
+                                                <Binding Path="Age" />
+                                                <Binding Path="Orientation" />
+                                                <Binding Path="Species" />
+                                            </MultiBinding>
+                                        </Run.Text>
+                                    </Run>
                                 </TextBlock>
 
                                 <TextBlock TextWrapping="Wrap">
@@ -256,7 +264,6 @@
                         Foreground="{StaticResource ForegroundBrush}"
                         Visibility="{Binding IsViewingFullImage, Converter={StaticResource OppositeBoolConverter}}"
                         Background="Transparent"
-                        GotFocus="OnElementFocused"
                         x:Name="Reader">
 
                         <FlowDocument
@@ -273,7 +280,7 @@
                                         <ColumnDefinition Width="8*" />
                                         <ColumnDefinition Width="1*" />
                                     </Grid.ColumnDefinitions>
-                                    
+
                                     <Button Command="{Binding SwitchImageViewCommand}"
                                             ToolTip="{Binding CurrentImage.Description}"
                                             ToolTipService.IsEnabled="{Binding CurrentImage.Description,
@@ -293,7 +300,25 @@
                                             </ControlTemplate>
                                         </Button.Template>
                                     </Button>
-                                                    
+
+                                    <v:CloseButtonView Margin="0,10,10,0"
+                                                       Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}"
+                                                       Grid.Column="1"
+                                                       HorizontalAlignment="Right"
+                                                       VerticalAlignment="Top"
+                                                       Click="CloseImage" >
+                                        <v:CloseButtonView.Effect>
+                                            <DropShadowEffect Color="Black"
+                                                              ShadowDepth="0"
+                                                              BlurRadius="2"
+                                                              Opacity="1"
+                                                              RenderingBias="Quality"/>
+                                        </v:CloseButtonView.Effect>
+                                        <v:CloseButtonView.Style>
+                                            <Style TargetType="{x:Type v:CloseButtonView}" BasedOn="{StaticResource ImageContentWhiteButton}"/>
+                                        </v:CloseButtonView.Style>
+                                    </v:CloseButtonView>
+
                                 </Grid>
                             </BlockUIContainer>
 
@@ -302,7 +327,7 @@
                                 IsHyphenationEnabled="True"
                                 TextAlignment="Left"
                                 FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
-                                Loaded="OnElementFocused"
+                                Loaded="CloseImage"
                                 x:Name="ProfileParagraph">
 
                                 <Line X1="1" Stroke="Transparent" Stretch="Fill" />
