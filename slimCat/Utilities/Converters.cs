@@ -279,14 +279,33 @@ namespace slimCat.Utilities
         }
     }
 
-    public class CommaConverter : OneWayConverter
+    public class CommaConverter : OneWayMultiConverter
     {
-        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            var parsed = (string) value;
+            // This was changed to ensure that a series of strings do not end with a comma
+            int stringCount = 0;
+            var returnSB = new StringBuilder(40);
+            string parsed;
+
+            for (int i = 0; i < values.Count(); i++)
+            {
+                parsed = values[i] as string;
+
+                if (parsed != null &&
+                !string.IsNullOrEmpty(parsed))
+                {
+                    stringCount++;
+                    if (stringCount >= 2)
+                        returnSB.Append(", ");
+                    returnSB.Append(parsed);
+                }
+            }
+
+            parsed = returnSB.ToString();
             return string.IsNullOrEmpty(parsed)
-                ? value
-                : value + ",";
+                ? ""
+                : parsed;
         }
     }
 
