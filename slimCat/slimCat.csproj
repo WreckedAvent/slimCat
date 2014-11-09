@@ -792,6 +792,9 @@
     <Content Include="icons\close.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="icons\close_border.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Content Include="icons\document.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
