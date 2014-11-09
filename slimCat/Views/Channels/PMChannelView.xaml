@@ -265,6 +265,37 @@
                             IsHyphenationEnabled="True"
                             ColumnRuleBrush="{StaticResource BrightBackgroundBrush}"
                             ColumnRuleWidth="5.00">
+                            
+                            <BlockUIContainer>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*" />
+                                        <ColumnDefinition Width="8*" />
+                                        <ColumnDefinition Width="1*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <Button Command="{Binding SwitchImageViewCommand}"
+                                            ToolTip="{Binding CurrentImage.Description}"
+                                            ToolTipService.IsEnabled="{Binding CurrentImage.Description,
+                                                Converter={StaticResource NotEmptyBoolConverter}}"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}">
+                                        <Button.Template>
+                                            <ControlTemplate>
+                                                <Image Source="{Binding CurrentImage.FullImageUri,
+                                                       Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
+                                                       Margin="5"
+                                                       RenderOptions.BitmapScalingMode="Fant"
+                                                       MinWidth="300"
+                                                       MaxWidth="{Binding Path=CurrentImage.Width, Converter={StaticResource ImageWidthConverter}}" />
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                                    
+                                </Grid>
+                            </BlockUIContainer>
 
                             <Paragraph
                                 FontFamily="Segoe UI, Verdanda"
@@ -273,44 +304,6 @@
                                 FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
                                 Loaded="OnElementFocused"
                                 x:Name="ProfileParagraph">
-
-                                <Figure VerticalAnchor="PageTop"
-                                        HorizontalAnchor="ColumnLeft"
-                                        CanDelayPlacement="True">
-                                    <Paragraph>
-                                        <Button Command="{Binding SwitchImageViewCommand}"
-                                                Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}"
-                                                ToolTip="{Binding CurrentImage.Description}">
-                                            <Button.Template>
-                                                <ControlTemplate>
-                                                    <Image
-                                                        Source="{Binding CurrentImage.FullImageUri, Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
-                                                        Margin="5"
-                                                        RenderOptions.BitmapScalingMode="Fant">
-                                                        <Image.Width>
-                                                            <MultiBinding
-                                                                Converter="{StaticResource ImageSizeConverter}">
-                                                                <Binding Path="CurrentImage.Width" />
-                                                                <Binding
-                                                                    RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=FlowDocumentReader}"
-                                                                    Path="ActualWidth" />
-                                                            </MultiBinding>
-                                                        </Image.Width>
-                                                        <Image.Height>
-                                                            <MultiBinding
-                                                                Converter="{StaticResource ImageSizeConverter}">
-                                                                <Binding Path="CurrentImage.Height" />
-                                                                <Binding
-                                                                    RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=FlowDocumentReader}"
-                                                                    Path="ActualWidth" />
-                                                            </MultiBinding>
-                                                        </Image.Height>
-                                                    </Image>
-                                                </ControlTemplate>
-                                            </Button.Template>
-                                        </Button>
-                                    </Paragraph>
-                                </Figure>
 
                                 <Line X1="1" Stroke="Transparent" Stretch="Fill" />
                                 <TextBlock FontSize="24"
@@ -439,17 +432,42 @@
                         </FlowDocument>
                     </FlowDocumentReader>
 
-                    <Button Margin="5" Command="{Binding SwitchImageViewCommand}"
-                            Visibility="{Binding IsViewingFullImage, Converter={StaticResource BoolConverter}}"
-                            ToolTip="{Binding CurrentImage.Description}">
-                        <Button.Template>
-                            <ControlTemplate>
-                                <Image
-                                    Source="{Binding CurrentImage.FullImageUri, Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
-                                    RenderOptions.BitmapScalingMode="Fant" />
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
+                    <Grid Visibility="{Binding IsViewingFullImage, Converter={StaticResource BoolConverter}}"
+                          VerticalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Button 
+                                Margin="5" Command="{Binding SwitchImageViewCommand}"
+                                Visibility="{Binding IsViewingFullImage, Converter={StaticResource BoolConverter}}">
+                            <Button.Template>
+                                <ControlTemplate>
+                                    <Image Grid.Row="0"
+                                           Source="{Binding CurrentImage.FullImageUri,
+                                                    Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
+                                           RenderOptions.BitmapScalingMode="Fant" 
+                                           Stretch="Uniform"
+                                           StretchDirection="Both" 
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center" />
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                        <TextBlock Grid.Row="1"
+                                   TextWrapping="Wrap"
+                                   TextAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Top"
+                                   Visibility="{Binding CurrentImage.Description,
+                                                Converter={StaticResource EmptyConverter}}"
+                                   Foreground="{StaticResource ForegroundBrush}"
+                                   FontWeight="Bold"
+                                   FontSize="17"
+                                   Margin="0, 0, 0, 5">
+                            <Run Text="{Binding CurrentImage.Description}" />
+                    </TextBlock>
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>
