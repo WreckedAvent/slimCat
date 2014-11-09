@@ -284,25 +284,25 @@ namespace slimCat.Utilities
         public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             // This was changed to ensure that a series of strings do not end with a comma
-            int stringCount = 0;
-            var returnSB = new StringBuilder(40);
+            var stringCount = 0;
+            var toReturn = new StringBuilder();
             string parsed;
 
             for (int i = 0; i < values.Count(); i++)
             {
                 parsed = values[i] as string;
 
-                if (parsed != null &&
-                !string.IsNullOrEmpty(parsed))
-                {
-                    stringCount++;
-                    if (stringCount >= 2)
-                        returnSB.Append(", ");
-                    returnSB.Append(parsed);
-                }
+                if (string.IsNullOrEmpty(parsed))
+                    continue;
+
+                stringCount++;
+                if (stringCount >= 2)
+                    toReturn.Append(", ");
+
+                toReturn.Append(parsed);
             }
 
-            parsed = returnSB.ToString();
+            parsed = toReturn.ToString();
             return string.IsNullOrEmpty(parsed)
                 ? ""
                 : parsed;

@@ -280,7 +280,7 @@
                                         <ColumnDefinition Width="8*" />
                                         <ColumnDefinition Width="1*" />
                                     </Grid.ColumnDefinitions>
-                                    
+
                                     <Button Command="{Binding SwitchImageViewCommand}"
                                             ToolTip="{Binding CurrentImage.Description}"
                                             ToolTipService.IsEnabled="{Binding CurrentImage.Description,
@@ -301,46 +301,21 @@
                                         </Button.Template>
                                     </Button>
 
-                                    <!-- This is a border around the following Close button to
-                                    ensure it stays visible inside profile image-->
-                                    <Rectangle Fill="{StaticResource BackgroundBrush}"
-                                               Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}"
-                                               Grid.Column="1"
-                                               HorizontalAlignment="Right"
-                                               VerticalAlignment="Top"
-                                               Height="17"
-                                               Width="23"
-                                               Margin="0,8.5,8.5,0">
-                                        <Rectangle.OpacityMask>
-                                            <ImageBrush ImageSource="pack://application:,,,/icons/close_border.png" />
-                                        </Rectangle.OpacityMask>
-                                    </Rectangle>
-
                                     <v:CloseButtonView Margin="0,10,10,0"
                                                        Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}"
                                                        Grid.Column="1"
                                                        HorizontalAlignment="Right"
                                                        VerticalAlignment="Top"
-                                                       Click="CloseImage">
-                                                       <!--Is Click acceptable? Appears okay...-->
+                                                       Click="CloseImage" >
+                                        <v:CloseButtonView.Effect>
+                                            <DropShadowEffect Color="Black"
+                                                              ShadowDepth="0"
+                                                              BlurRadius="2"
+                                                              Opacity="1"
+                                                              RenderingBias="Quality"/>
+                                        </v:CloseButtonView.Effect>
                                         <v:CloseButtonView.Style>
-                                            <Style TargetType="{x:Type v:CloseButtonView}" BasedOn="{StaticResource ImageContentButton}">
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Cursor" Value="Hand" />
-                                                        <Setter Property="Foreground" Value="{StaticResource HighlightBrush}" />
-                                                        <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
-                                                    </Trigger>
-                                                    <Trigger Property="IsMouseOver" Value="False">
-                                                        <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
-                                                        <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
-                                                    </Trigger>
-                                                    <Trigger Property="IsPressed" Value="True">
-                                                        <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
-                                                        <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
+                                            <Style TargetType="{x:Type v:CloseButtonView}" BasedOn="{StaticResource ImageContentWhiteButton}"/>
                                         </v:CloseButtonView.Style>
                                     </v:CloseButtonView>
 
