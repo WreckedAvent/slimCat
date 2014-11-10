@@ -512,8 +512,8 @@
 
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="auto" />
-                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
                 <WrapPanel Orientation="Horizontal"
