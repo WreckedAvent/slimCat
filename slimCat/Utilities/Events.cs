@@ -128,7 +128,7 @@ namespace slimCat
     /// <summary>
     ///     this event is fired when our established connection fails
     /// </summary>
-    public class ConnectionClosedEvent : CompositePresentationEvent<string>
+    public class ConnectionClosedEvent : CompositePresentationEvent<bool>
     {
     }
 

@@ -222,7 +222,7 @@ namespace slimCat.Services
                 socket = new WebSocket(Constants.ServerHost);
             }
 
-            events.GetEvent<ConnectionClosedEvent>().Publish(string.Empty);
+            events.GetEvent<ConnectionClosedEvent>().Publish(true);
             isAuthenticated = false;
             autoPingTimer.Stop();
             staggerTimer.Stop();
@@ -313,7 +313,7 @@ namespace slimCat.Services
                 return;
             }
 
-            events.GetEvent<ConnectionClosedEvent>().Publish(string.Empty);
+            events.GetEvent<ConnectionClosedEvent>().Publish(false);
             AttemptReconnect();
             autoPingTimer.Stop();
         }

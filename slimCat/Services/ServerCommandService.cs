@@ -320,6 +320,14 @@ namespace slimCat.Services
                 };
             }
 
+            var currentCharacter = ChatModel.CurrentCharacter;
+            if (currentCharacter.Status != StatusType.Online
+                || !string.IsNullOrWhiteSpace(currentCharacter.StatusMessage))
+            {
+                Events.SendUserCommand("status", 
+                    new[] { currentCharacter.Status.ToString(), currentCharacter.StatusMessage });
+            }
+
             waitTimer.Start();
         }
 
@@ -343,15 +351,18 @@ namespace slimCat.Services
                     });
         }
 
-        private void WipeState(string message)
+        private void WipeState(bool intentionalDisconnect)
         {
             Log("Resetting");
 
             CharacterManager.Clear();
             ChatModel.CurrentChannels.Each(x => x.CharacterManager.Clear());
 
-            ChatModel.CurrentCharacter.Status = StatusType.Online;
-            ChatModel.CurrentCharacter.StatusMessage = string.Empty;
+            if (intentionalDisconnect)
+            {
+                ChatModel.CurrentCharacter.Status = StatusType.Online;
+                ChatModel.CurrentCharacter.StatusMessage = string.Empty;
+            }
 
             Dispatcher.Invoke((Action) (() =>
             {

@@ -277,7 +277,8 @@
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="1*" />
-                                        <ColumnDefinition Width="8*" />
+                                        <ColumnDefinition Width="8*"
+                                                          MaxWidth="{Binding CurrentImage.Width, Converter={StaticResource ImageWidthConverter}}" />
                                         <ColumnDefinition Width="1*" />
                                     </Grid.ColumnDefinitions>
 
@@ -287,7 +288,6 @@
                                                 Converter={StaticResource NotEmptyBoolConverter}}"
                                             Grid.Column="1"
                                             HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
                                             Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}">
                                         <Button.Template>
                                             <ControlTemplate>
@@ -296,7 +296,7 @@
                                                        Margin="5"
                                                        RenderOptions.BitmapScalingMode="Fant"
                                                        MinWidth="300"
-                                                       MaxWidth="{Binding Path=CurrentImage.Width, Converter={StaticResource ImageWidthConverter}}" />
+                                                       HorizontalAlignment="Center" />
                                             </ControlTemplate>
                                         </Button.Template>
                                     </Button>
@@ -311,7 +311,6 @@
                                             <DropShadowEffect Color="Black"
                                                               ShadowDepth="0"
                                                               BlurRadius="2"
-                                                              Opacity="1"
                                                               RenderingBias="Quality"/>
                                         </v:CloseButtonView.Effect>
                                         <v:CloseButtonView.Style>
