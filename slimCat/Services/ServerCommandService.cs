@@ -320,12 +320,12 @@ namespace slimCat.Services
                 };
             }
 
-            var chr = ChatModel.CurrentCharacter;
-            if (chr.Status != StatusType.Online ||
-            chr.StatusMessage != string.Empty)
+            var currentCharacter = ChatModel.CurrentCharacter;
+            if (currentCharacter.Status != StatusType.Online
+                || !string.IsNullOrWhiteSpace(currentCharacter.StatusMessage))
             {
-                //Log("Restoring user status after unintentional disconnect");
-                Events.SendUserCommand("status", new[] { chr.Status.ToString(), chr.StatusMessage });
+                Events.SendUserCommand("status", 
+                    new[] { currentCharacter.Status.ToString(), currentCharacter.StatusMessage });
             }
 
             waitTimer.Start();
