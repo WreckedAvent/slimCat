@@ -62,7 +62,7 @@ namespace slimCat.Services
             lastUpdate = DateTime.Now;
         }
 
-        private void OnWipeState(string o)
+        private void OnWipeState(bool o)
         {
             lastUpdate = new DateTime();
         }

@@ -320,6 +320,14 @@ namespace slimCat.Services
                 };
             }
 
+            var chr = ChatModel.CurrentCharacter;
+            if (chr.Status != StatusType.Online ||
+            chr.StatusMessage != string.Empty)
+            {
+                //Log("Restoring user status after unintentional disconnect");
+                Events.SendUserCommand("status", new[] { chr.Status.ToString(), chr.StatusMessage });
+            }
+
             waitTimer.Start();
         }
 
@@ -343,15 +351,18 @@ namespace slimCat.Services
                     });
         }
 
-        private void WipeState(string message)
+        private void WipeState(bool intentionalDisconnect)
         {
             Log("Resetting");
 
             CharacterManager.Clear();
             ChatModel.CurrentChannels.Each(x => x.CharacterManager.Clear());
 
-            ChatModel.CurrentCharacter.Status = StatusType.Online;
-            ChatModel.CurrentCharacter.StatusMessage = string.Empty;
+            if (intentionalDisconnect)
+            {
+                ChatModel.CurrentCharacter.Status = StatusType.Online;
+                ChatModel.CurrentCharacter.StatusMessage = string.Empty;
+            }
 
             Dispatcher.Invoke((Action) (() =>
             {
