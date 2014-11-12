@@ -53,6 +53,7 @@ namespace slimCat.Models
 
             PortableMode = Environment.GetCommandLineArgs().Contains("portable", StringComparer.OrdinalIgnoreCase);
             FontSize = 13;
+            EntryFontSize = 13;
             GenderColorSettings = GenderColorSettings.GenderOnly;
 
             Langauge = Thread.CurrentThread.CurrentCulture.Name;
@@ -211,6 +212,8 @@ namespace slimCat.Models
         public static bool HideFriendsFromSearchResults { get; set; }
 
         public static int FontSize { get; set; }
+
+        public static int EntryFontSize { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether show notifications global.

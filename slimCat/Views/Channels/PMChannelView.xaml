@@ -82,7 +82,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition />
-            <RowDefinition Height="auto"
+            <RowDefinition Height="{Binding Path=EntryBoxRowHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                            x:Name="EntryBoxRowDefinition"
                            MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=60}" />
         </Grid.RowDefinitions>

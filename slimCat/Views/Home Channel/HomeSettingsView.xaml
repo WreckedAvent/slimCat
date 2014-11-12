@@ -205,6 +205,24 @@
                         Margin="5,0,0,0" />
             </StackPanel>
 
+            <StackPanel Margin="0,15,0,0"
+                        ToolTip="Changes the size of the font for your text entry box">
+                <WrapPanel>
+                    <TextBlock Text="Text Entry Font Size: " />
+                    <TextBlock Text="{Binding Path=EntryFontSize}" />
+                </WrapPanel>
+                <Slider Value="{Binding EntryFontSize}"
+                        LargeChange="4"
+                        SmallChange="1"
+                        Minimum="8"
+                        Maximum="20"
+                        Width="400"
+                        TickFrequency="1"
+                        TickPlacement="BottomRight"
+                        HorizontalAlignment="Left"
+                        Margin="5,0,0,0" />
+            </StackPanel>
+
             <StackPanel Margin="0,15,0,5"
                         ToolTip="Determines how slimCat applies gender coloring to users">
                 <TextBlock Text="Gender Color Settings" />
