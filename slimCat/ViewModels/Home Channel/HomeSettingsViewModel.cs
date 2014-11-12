@@ -258,6 +258,19 @@ namespace slimCat.ViewModels
             }
         }
 
+        public int EntryFontSize
+        {
+            get { return ApplicationSettings.EntryFontSize; }
+            set
+            {
+                if (value >= 8 && value <= 20)
+                    ApplicationSettings.EntryFontSize = value;
+
+                OnPropertyChanged("EntryFontSize");
+                Save();
+            }
+        }
+
         public GenderColorSettings GenderColorSettings
         {
             get { return ApplicationSettings.GenderColorSettings; }

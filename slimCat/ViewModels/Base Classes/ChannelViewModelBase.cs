@@ -31,6 +31,7 @@ namespace slimCat.ViewModels
     using Models;
     using Services;
     using Utilities;
+    using System.Windows;
 
     #endregion
 
@@ -53,6 +54,8 @@ namespace slimCat.ViewModels
         private RelayCommand clear;
 
         private RelayCommand clearLog;
+
+        private GridLength entryBoxRowHeight;
 
         private RelayCommand linebreak;
 
@@ -90,6 +93,8 @@ namespace slimCat.ViewModels
             errorRemoveTimer.Elapsed += (s, e) => { Error = null; };
 
             errorRemoveTimer.AutoReset = false;
+
+            entryBoxRowHeight = new GridLength(1, GridUnitType.Auto);
         }
 
         #endregion
@@ -116,6 +121,16 @@ namespace slimCat.ViewModels
                                args =>
                                    Events.GetEvent<UserCommandEvent>()
                                        .Publish(CommandDefinitions.CreateCommand("clear", null, Model.Id).ToDictionary())));
+            }
+        }
+
+        public GridLength EntryBoxRowHeight
+        {
+            get { return entryBoxRowHeight; }
+            set
+            {
+                entryBoxRowHeight = value;
+                OnPropertyChanged("EntryBoxRowHeight");
             }
         }
 
