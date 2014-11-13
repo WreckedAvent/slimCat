@@ -136,8 +136,9 @@ namespace slimCat.Services
 
         private void DingTheCrapOutOfTheUser()
         {
-            if ((DateTime.Now - lastDingLinged) <= TimeSpan.FromSeconds(1) || !ApplicationSettings.AllowSound)
-                return;
+            if ((DateTime.Now - lastDingLinged) <= TimeSpan.FromSeconds(1) || !ApplicationSettings.AllowSound
+                || (ApplicationSettings.DisallowNotificationsWhenDnd && ChatState.ChatModel.CurrentCharacter.Status == StatusType.Dnd))
+            { return; }
 
             Log("Playing sound");
             (new SoundPlayer(Environment.CurrentDirectory + @"\sounds\" + "newmessage.wav")).Play();
@@ -293,15 +294,17 @@ namespace slimCat.Services
 
         private void FlashWindow()
         {
-            if (!WindowIsFocused)
-            {
-                Log("Flashing window");
-                Application.Current.MainWindow.FlashWindow();
-            }
-            else
+            if (WindowIsFocused)
             {
                 Log("Wanted to flash window, but window was focused");
+                return;
             }
+            else if (ApplicationSettings.DisallowNotificationsWhenDnd
+                     && ChatState.ChatModel.CurrentCharacter.Status == StatusType.Dnd)
+            { return; }
+
+            Log("Flashing window");
+            Application.Current.MainWindow.FlashWindow();
         }
 
         private void HandleNewMessage(IMessage message)
