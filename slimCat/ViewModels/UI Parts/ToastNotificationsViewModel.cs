@@ -169,7 +169,7 @@ namespace slimCat.ViewModels
 
         public void ShowNotifications()
         {
-            if (ApplicationSettings.DisallowNotificationsWhenDnd && chatState.ChatModel.CurrentCharacter.Status == StatusType.Busy)
+            if (ApplicationSettings.DisallowNotificationsWhenDnd && chatState.ChatModel.CurrentCharacter.Status == StatusType.Dnd)
                 return;
 
             if (!ApplicationSettings.ShowNotificationsGlobal)
