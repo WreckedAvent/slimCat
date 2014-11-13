@@ -73,7 +73,9 @@ namespace slimCat.Models
 
             public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
             {
-                if (!chatState.IsInteresting(Model.TargetCharacter.Name)) return;
+                if (!ApplicationSettings.ShowStatusToasts
+                    || !chatState.IsInteresting(Model.TargetCharacter.Name))
+                { return; }
 
                 DoNormalToast(toastsManager);
             }
