@@ -497,6 +497,26 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool ShowLoginToasts
+        {
+            get { return ApplicationSettings.ShowLoginToasts; }
+            set
+            {
+                ApplicationSettings.ShowLoginToasts = value;
+                Save();
+            }
+        }
+
+        public bool ShowStatusToasts
+        {
+            get { return ApplicationSettings.ShowStatusToasts; }
+            set
+            {
+                ApplicationSettings.ShowStatusToasts = value;
+                Save();
+            }
+        }
+
         public bool ShowAvatarsInToasts
         {
             get { return ApplicationSettings.ShowAvatarsInToasts; }

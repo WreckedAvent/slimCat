@@ -90,6 +90,9 @@ namespace slimCat.Models
             ChannelDisplayThreshold = 5;
             AllowOfInterestColoring = true;
 
+            ShowStatusToasts = true;
+            ShowLoginToasts = true;
+
             ShowAvatarsInToasts = true;
             ShowNamesInToasts = true;
             ShowMessagesInToasts = true;
@@ -296,6 +299,10 @@ namespace slimCat.Models
         public static bool ToastsAreLocatedAtTop { get; set; }
 
         public static bool DisallowNotificationsWhenDnd { get; set; }
+
+        public static bool ShowLoginToasts { get; set; }
+
+        public static bool ShowStatusToasts { get; set; }
 
         public static bool ShowAvatarsInToasts { get; set; }
 
