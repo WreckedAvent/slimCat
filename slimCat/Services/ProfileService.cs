@@ -75,7 +75,7 @@ namespace slimCat.Services
 
             container = contain;
 
-            events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(GetProfileDataAsync);
+            events.GetEvent<LoginAuthenticatedEvent>().Subscribe(GetProfileDataAsync);
 
             var worker = new BackgroundWorker();
             worker.DoWork += GetKinkDataAsync;
@@ -279,6 +279,14 @@ namespace slimCat.Services
 
         public void GetProfileDataAsync(string character)
         {
+            var worker = new BackgroundWorker();
+            worker.DoWork += GetProfileDataAsyncHandler;
+            worker.RunWorkerAsync(character);
+        }
+
+        public void GetProfileDataAsync(bool? success)
+        {
+            var character = cm.CurrentCharacter.Name;
             var worker = new BackgroundWorker();
             worker.DoWork += GetProfileDataAsyncHandler;
             worker.RunWorkerAsync(character);
