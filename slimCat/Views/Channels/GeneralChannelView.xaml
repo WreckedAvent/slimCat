@@ -12,8 +12,8 @@
     <Grid Margin="10"
           TextBlock.FontSize="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"
-                           x:Name="ChannelDescriptionRowDefinition"
+            <RowDefinition Height="{Binding Path=HeaderRowHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                           x:Name="HeaderRowDefinition"
                            MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=92}"
                            MinHeight="35" />
             <RowDefinition Height="*" />
@@ -23,7 +23,9 @@
         </Grid.RowDefinitions>
 
         <Grid>
-            <Expander IsExpanded="{Binding ShowChannelDescription}">
+            <Expander x:Name="ChannelDescriptionExpander"
+                      IsExpanded="{Binding ShowChannelDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      Collapsed="OnChannelDescriptionCollapsed" >
                 <Expander.Header>
                     <TextBlock Margin="0"
                                Foreground="{StaticResource ForegroundBrush}"
@@ -64,7 +66,9 @@
                                       DataContext="{Binding Path=ChannelSettings}" />
             </WrapPanel>
         </Grid>
-        <GridSplitter Grid.Row="1" MouseDoubleClick="OnChannelDescriptionResizeRequested" />
+        <GridSplitter Grid.Row="1"
+                      MouseDoubleClick="OnHeaderRowResizeRequested"
+                      DragDelta="OnHeaderRowDragging"/>
 
         <v:ObservingFlowDocumentReader
             Grid.Row="1"

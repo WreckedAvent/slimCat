@@ -59,6 +59,8 @@ namespace slimCat.ViewModels
         private Timer cooldownTimer = new Timer(500);
         private ProfileImage currentImage;
 
+        private bool isCharacterStatusExpanded;
+
         private bool isInCoolDown;
 
         private bool isInNoteCoolDown;
@@ -169,6 +171,8 @@ namespace slimCat.ViewModels
                         UpdateProfileProperties();
                 };
 
+                isCharacterStatusExpanded = false;
+
                 LoggingSection = "pm channel vm";
             }
             catch (Exception ex)
@@ -236,6 +240,17 @@ namespace slimCat.ViewModels
         public bool HasStatus
         {
             get { return ConversationWith.StatusMessage.Length > 0; }
+        }
+
+        public bool IsCharacterStatusExpanded
+        {
+            get { return isCharacterStatusExpanded; }
+
+            set
+            {
+                isCharacterStatusExpanded = value;
+                OnPropertyChanged("IsCharacterStatusExpanded");
+            }
         }
 
         public bool IsTyping

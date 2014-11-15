@@ -77,16 +77,30 @@ namespace slimCat.Views
             DataContext = null;
         }
 
-        private void OnChannelDescriptionResizeRequested(object sender, MouseButtonEventArgs e)
+        private void OnHeaderRowResizeRequested(object sender, MouseButtonEventArgs e)
         {
-            ChannelDescriptionRowDefinition.Height = new GridLength();
+            ChannelDescriptionExpander.IsExpanded = false;
         }
 
-        #endregion
+        private void OnChannelDescriptionCollapsed(object sender, RoutedEventArgs e)
+        {
+            HeaderRowDefinition.Height = new GridLength();
+        }
+
+        private void OnHeaderRowDragging(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
+            if (HeaderRowDefinition.Height.Value == HeaderRowDefinition.MinHeight)
+                ChannelDescriptionExpander.IsExpanded = false;
+            else
+                ChannelDescriptionExpander.IsExpanded = true;
+        }
 
         private void OnEntryBoxResizeRequested(object sender, MouseButtonEventArgs e)
         {
             EntryBoxRowDefinition.Height = new GridLength();
         }
+
+        #endregion
+
     }
 }

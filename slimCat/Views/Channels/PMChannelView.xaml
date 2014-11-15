@@ -93,7 +93,8 @@
             <Grid>
                 <!-- Chat View Header -->
                 <Grid Visibility="{Binding IsViewingProfile, Converter={StaticResource OppositeBoolConverter}}">
-                    <Expander x:Name="CharacterStatusDisplayer">
+                    <Expander x:Name="CharacterStatusDisplayer"
+                              IsExpanded="{Binding Path=IsCharacterStatusExpanded}">
                         <Expander.Header>
                             <TextBlock TextWrapping="Wrap"
                                        TextAlignment="Left"
