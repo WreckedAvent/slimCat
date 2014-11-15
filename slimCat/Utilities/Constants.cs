@@ -82,6 +82,7 @@ namespace slimCat.Utilities
             public const string MultipleModerators = "ops";
             public const string MultipleUsers = "users";
             public const string Identity = "identity";
+            public const string Recipient = "recipient";
             public const string MultipleCharacters = "characters";
             public const string Action = "action";
             public const string Type = "type";

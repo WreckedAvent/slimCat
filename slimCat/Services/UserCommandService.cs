@@ -129,7 +129,8 @@ namespace slimCat.Services
                     {"logout", OnLogoutRequested},
                     {"soundon", OnSoundOnRequested},
                     {"soundoff", OnSoundOffRequested},
-                    {"whois", OnWhoIsRequested}
+                    {"whois", OnWhoIsRequested},
+                    {Commands.ChannelRoll, OnRollRequested}
                 };
             }
             catch (Exception ex)
