@@ -65,6 +65,7 @@ namespace slimCat.ViewModels
         private RelayCommand kick;
 
         private RelayCommand link;
+        private RelayCommand linkCopy;
 
         private RelayCommand logout;
         private RelayCommand openMenu;
@@ -165,6 +166,14 @@ namespace slimCat.ViewModels
         public ICommand NavigateTo
         {
             get { return link ?? (link = new RelayCommand(StartLinkInDefaultBrowser)); }
+        }
+
+        public ICommand CopyLink
+        {
+            get
+            {
+                return linkCopy ?? (linkCopy = new RelayCommand(CopyLinkToClipboard));
+            }
         }
 
         /// <summary>
@@ -417,6 +426,12 @@ namespace slimCat.ViewModels
             }
 
             Process.Start(interpret);
+        }
+
+        protected void CopyLinkToClipboard(object linkToCopy)
+        {
+            if (!string.IsNullOrWhiteSpace(linkToCopy.ToString()))
+                System.Windows.Clipboard.SetText(linkToCopy.ToString());
         }
 
         private void UpdateRightClickMenu(NotificationModel argument)
