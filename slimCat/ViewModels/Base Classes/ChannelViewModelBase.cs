@@ -51,6 +51,8 @@ namespace slimCat.ViewModels
 
         #region Fields
 
+        private GridLength headerRowHeight;
+
         private RelayCommand clear;
 
         private RelayCommand clearLog;
@@ -95,6 +97,7 @@ namespace slimCat.ViewModels
             errorRemoveTimer.AutoReset = false;
 
             entryBoxRowHeight = new GridLength(1, GridUnitType.Auto);
+            headerRowHeight = new GridLength(1, GridUnitType.Auto);
         }
 
         #endregion
@@ -104,6 +107,16 @@ namespace slimCat.ViewModels
         public ChannelSettingsModel ChannelSettings
         {
             get { return model.Settings; }
+        }
+
+        public GridLength HeaderRowHeight
+        {
+            get { return headerRowHeight; }
+            set
+            {
+                headerRowHeight = value;
+                OnPropertyChanged("HeaderRowHeight");
+            }
         }
 
         public ICommand ClearErrorCommand
