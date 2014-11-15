@@ -187,6 +187,11 @@
         </Style.Triggers>
     </Style>
 
+    <Style TargetType="MenuItem" x:Key="MenuItemCopy">
+        <Setter Property="Command" Value="{Binding Path=PlacementTarget.DataContext.CopyLink, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+        <Setter Property="Header" Value="Copy link address" />
+    </Style>
+    
     <ControlTemplate x:Key="GenderCheckBoxes" TargetType="ContentControl"
                      d:DataContext="{d:DesignInstance models:GenderSettingsModel}">
         <StackPanel Orientation="Vertical">

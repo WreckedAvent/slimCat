@@ -817,10 +817,19 @@ namespace slimCat.Utilities
             if (arg.Children != null)
                 arg.Children.Clear();
 
+            var contextMenu = new ContextMenu();
+            var menuItemCopyLink = new MenuItem()
+            {
+                CommandParameter = url,
+                Style = Locator.FindStyle("MenuItemCopy")
+            };
+            contextMenu.Items.Add(menuItemCopyLink);
+
             return new Hyperlink(WrapInRun(display))
             {
                 CommandParameter = url,
                 ToolTip = url,
+                ContextMenu = contextMenu,
                 Style = Locator.FindStyle("Hyperlink")
             };
         }
