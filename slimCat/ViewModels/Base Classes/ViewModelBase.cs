@@ -35,6 +35,7 @@ namespace slimCat.ViewModels
     using Models;
     using Services;
     using Utilities;
+    using System.Windows;
 
     #endregion
 
@@ -403,29 +404,37 @@ namespace slimCat.ViewModels
 
         protected virtual void StartLinkInDefaultBrowser(object linkToOpen)
         {
-            Log("Opening link " + linkToOpen);
-            var interpret = linkToOpen as string;
-            if (string.IsNullOrEmpty(interpret)) return;
-
-            if (!interpret.Contains(".") || interpret.Contains(" "))
+            try
             {
-                if (interpret.EndsWith("/notes"))
+                Log("Opening link " + linkToOpen);
+                var interpret = linkToOpen as string;
+                if (string.IsNullOrEmpty(interpret)) return;
+
+                if (!interpret.Contains(".") || interpret.Contains(" "))
                 {
-                    Events.SendUserCommand("priv", new[] {interpret});
+                    if (interpret.EndsWith("/notes"))
+                    {
+                        Events.SendUserCommand("priv", new[] { interpret });
+                        return;
+                    }
+
+                    if (!ApplicationSettings.OpenProfilesInClient)
+                    {
+                        Process.Start(Constants.UrlConstants.CharacterPage + HttpUtility.HtmlEncode(interpret));
+                        return;
+                    }
+
+                    Events.SendUserCommand("priv", new[] { interpret + "/profile" });
                     return;
                 }
 
-                if (!ApplicationSettings.OpenProfilesInClient)
-                {
-                    Process.Start(Constants.UrlConstants.CharacterPage + HttpUtility.HtmlEncode(interpret));
-                    return;
-                }
-
-                Events.SendUserCommand("priv", new[] {interpret + "/profile"});
-                return;
+                Process.Start(interpret);
             }
-
-            Process.Start(interpret);
+            catch
+            {
+                Log("Link encountered an error! " + linkToOpen);
+                MessageBox.Show("Encountered an error opening the URL. Try right-click copy & pasting it into your browser instead.");
+            }
         }
 
         protected void CopyLinkToClipboard(object linkToCopy)
