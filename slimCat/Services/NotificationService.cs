@@ -158,6 +158,8 @@ namespace slimCat.Services
 
             var temp = new List<string>(channel.Settings.EnumerableTerms);
             temp.AddRange(ApplicationSettings.GlobalNotifyTermsList);
+            if (ApplicationSettings.CheckForOwnName)
+                temp.Add(cm.CurrentCharacter.Name.ToLower());
 
             var checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase).Select(x => x.Trim());
 
@@ -239,23 +241,6 @@ namespace slimCat.Services
                     message.IsOfInterest = true;
                     return;
                 }
-            }
-
-            if (ApplicationSettings.CheckForOwnName)
-            {
-                // Now our character's name is always added
-                var name = cm.CurrentCharacter.Name.ToLower();
-
-                temp.Add(name); // fixes an issue where a user's name would ding constantly
-                if (name.Last() != 's' && name.Last() != 'z')
-                    temp.Add(name + @"'s"); // possessive fix
-                else
-                {
-                    temp.Add(name + @"'");
-                    temp.Add(name + "'s");
-                }
-
-                checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase);
             }
 
             {
