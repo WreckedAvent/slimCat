@@ -29,14 +29,9 @@
 
     <Hyperlink CommandParameter="{Binding Path=TargetCharacter.Name, Mode=OneTime}"
                Style="{StaticResource UsernameStyle}"
-               Foreground="{Binding Path=TargetCharacter, Converter={StaticResource NameplateColorConverter}, Mode=OneWay}">
+               Foreground="{Binding Path=TargetCharacter, Converter={StaticResource NameplateColorConverter}, Mode=OneWay}"
+               MouseRightButtonUp="OnMouseRightButtonUp">
         <Run Text="{Binding Path=TargetCharacter.Name, Mode=OneTime}" />
-        <Hyperlink.InputBindings>
-            <MouseBinding MouseAction="RightClick"
-                          Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
-                                    RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
-                          CommandParameter="{Binding Path=TargetCharacter.Name, Mode=OneTime}" />
-        </Hyperlink.InputBindings>
     </Hyperlink>
 
     <Span

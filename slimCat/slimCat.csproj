@@ -259,6 +259,7 @@
     <Compile Include="Services\SettingsService.cs" />
     <Compile Include="Services\FriendRequestService.cs" />
     <Compile Include="Services\TicketProvider.cs" />
+    <Compile Include="Theme\EmbeddedTheme.xaml.cs" />
     <Compile Include="Utilities\CacheCount.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\KeepToCurrentScrollViewer.cs" />

@@ -21,6 +21,7 @@ namespace slimCat.Views
 {
     #region Usings
 
+    using Utilities;
     using ViewModels;
 
     #endregion
@@ -44,6 +45,13 @@ namespace slimCat.Views
             DataContext = vm;
         }
 
+        private void OnMouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            ExtensionMethods.TryOpenRightClickMenuCommand(sender, 2);
+        }
+
         #endregion
+
     }
 }

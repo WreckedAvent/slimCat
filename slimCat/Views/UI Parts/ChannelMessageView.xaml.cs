@@ -19,6 +19,8 @@
 
 namespace slimCat.Views
 {
+    using slimCat.Utilities;
+
     /// <summary>
     ///     Interaction logic for MessageView.xaml
     /// </summary>
@@ -35,5 +37,11 @@ namespace slimCat.Views
         }
 
         #endregion
+
+        private void OnMouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            ExtensionMethods.TryOpenRightClickMenuCommand(sender, 1);
+        }
     }
 }

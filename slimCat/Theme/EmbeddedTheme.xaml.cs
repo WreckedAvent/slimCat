@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="GlobalUserListView.xaml.cs">
+// <copyright file="CharacterUpdateView.xaml.cs">
 //     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
 //  
 //     This source is subject to the Simplified BSD License.
@@ -17,37 +17,21 @@
 
 #endregion
 
-namespace slimCat.Views
+namespace slimCat.Theme
 {
     #region Usings
-
     using Utilities;
-    using ViewModels;
-
     #endregion
 
-    /// <summary>
-    ///     The actual view for the tab on the right-hand side labeled 'global'
-    /// </summary>
-    public partial class GlobalTabView
+    public partial class EmbeddedTheme
     {
-        #region Constructors and Destructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="GlobalTabView" /> class.
-        /// </summary>
-        /// <param name="vm">
-        ///     The vm.
-        /// </param>
-        public GlobalTabView(GlobalTabViewModel vm)
+        private void OnMouseRightButtonUpForIcon(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            InitializeComponent();
-            DataContext = vm;
+            e.Handled = true;
+            ExtensionMethods.TryOpenRightClickMenuCommand(sender, 1);
         }
 
-        #endregion
-
-        private void OnMouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void OnMouseRightButtonUpForName(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             e.Handled = true;
             ExtensionMethods.TryOpenRightClickMenuCommand(sender, 2);
