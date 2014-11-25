@@ -413,23 +413,15 @@ namespace slimCat.Utilities
                    chatState.ChatModel.CurrentPms.FirstByIdOrNull(character) != null;
         }
 
-        public static void TryOpenRightClickMenuCommand<T>(this object sender, int ancestorLevel)
+        public static void TryOpenRightClickMenuCommand<T>(object sender, int ancestorLevel)
             where T : DependencyObject
         {
             var hyperlink = (Hyperlink)sender;
             
             var characterName = string.Empty;
-            Action action;
-            var nameSwitch = new Dictionary<Type, Action>{
-                { typeof(CharacterModel),
-                    () => characterName = ((CharacterModel)hyperlink.DataContext).Name },
-                { typeof(MessageModel),
-                    () => characterName = ((MessageModel)hyperlink.DataContext).Poster.Name },
-                { typeof(CharacterUpdateModel),
-                    () => characterName = ((CharacterUpdateModel)hyperlink.DataContext).TargetCharacter.Name }
-            };
-            if (nameSwitch.TryGetValue(hyperlink.DataContext.GetType(), out action))
-                action();
+            Func<Hyperlink, string> nameFunc;
+            if (TypeToGetName.TryGetValue(hyperlink.DataContext.GetType(), out nameFunc))
+                characterName = nameFunc(hyperlink);
             else
                 return;
 
@@ -438,17 +430,28 @@ namespace slimCat.Utilities
                 return;
 
             ViewModelBase parentDataContext;
-            if (parentObject is FrameworkElement)
+            var frameworkElement = parentObject as FrameworkElement;
+            var contentElement = parentObject as ContentElement;
+            if (frameworkElement != null)
                 parentDataContext = (parentObject as FrameworkElement).DataContext as ViewModelBase;
-            else if (parentObject is ContentElement)
+            else if (contentElement != null)
                 parentDataContext = (parentObject as FrameworkContentElement).DataContext as ViewModelBase;
-            else return;
+            else
+                return;
 
             var relayCommand = parentDataContext.OpenRightClickMenuCommand;
             if (relayCommand.CanExecute(characterName))
                 relayCommand.Execute(characterName);
         }
 
+        private static Dictionary<Type, Func<Hyperlink, string>> TypeToGetName = new Dictionary<Type, Func<Hyperlink, string>>{
+            { typeof(CharacterModel),
+                (x) => ((CharacterModel)x.DataContext).Name },
+            { typeof(MessageModel),
+                (x) => ((MessageModel)x.DataContext).Poster.Name },
+            { typeof(CharacterUpdateModel),
+                (x) => ((CharacterUpdateModel)x.DataContext).TargetCharacter.Name }
+        };
 
     }
 }
