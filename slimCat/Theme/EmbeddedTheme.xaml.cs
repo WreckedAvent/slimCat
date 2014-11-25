@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CharacterUpdateView.xaml.cs">
+// <copyright file="EmbeddedTheme.xaml.cs">
 //     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
 //  
 //     This source is subject to the Simplified BSD License.
@@ -20,6 +20,7 @@
 namespace slimCat.Theme
 {
     #region Usings
+    using System.Windows.Controls;
     using Utilities;
     #endregion
 
@@ -28,13 +29,13 @@ namespace slimCat.Theme
         private void OnMouseRightButtonUpForIcon(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             e.Handled = true;
-            ExtensionMethods.TryOpenRightClickMenuCommand(sender, 1);
+            StaticFunctions.TryOpenRightClickMenuCommand<Grid>(sender, 1);
         }
 
         private void OnMouseRightButtonUpForName(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             e.Handled = true;
-            ExtensionMethods.TryOpenRightClickMenuCommand(sender, 2);
+            StaticFunctions.TryOpenRightClickMenuCommand<Grid>(sender, 2);
         }
     }
 }

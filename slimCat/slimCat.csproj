@@ -183,6 +183,7 @@
     <Compile Include="Commands\Channel\JoinCommand.cs" />
     <Compile Include="Commands\Character\PrivateMessageCommand.cs" />
     <Compile Include="lib\DeferredAction.cs" />
+    <Compile Include="lib\FindAncestor.cs" />
     <Compile Include="lib\FlashWindowHelper.cs" />
     <Compile Include="lib\FullScreenHelper.cs" />
     <Compile Include="lib\NonTopmostPopup.cs" />

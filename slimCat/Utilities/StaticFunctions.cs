@@ -34,6 +34,8 @@ namespace slimCat.Utilities
     using Newtonsoft.Json;
     using Services;
     using ViewModels;
+    using slimCat.lib;
+    using System.Windows.Documents;
 
     #endregion
 
@@ -410,5 +412,43 @@ namespace slimCat.Utilities
             return chatState.CharacterManager.IsOfInterest(character, onlineOnly) ||
                    chatState.ChatModel.CurrentPms.FirstByIdOrNull(character) != null;
         }
+
+        public static void TryOpenRightClickMenuCommand<T>(this object sender, int ancestorLevel)
+            where T : DependencyObject
+        {
+            var hyperlink = (Hyperlink)sender;
+            
+            var characterName = string.Empty;
+            Action action;
+            var nameSwitch = new Dictionary<Type, Action>{
+                { typeof(CharacterModel),
+                    () => characterName = ((CharacterModel)hyperlink.DataContext).Name },
+                { typeof(MessageModel),
+                    () => characterName = ((MessageModel)hyperlink.DataContext).Poster.Name },
+                { typeof(CharacterUpdateModel),
+                    () => characterName = ((CharacterUpdateModel)hyperlink.DataContext).TargetCharacter.Name }
+            };
+            if (nameSwitch.TryGetValue(hyperlink.DataContext.GetType(), out action))
+                action();
+            else
+                return;
+
+            var parentObject = FindAncestor.TryFindAncestor<T>(hyperlink, ancestorLevel);
+            if (parentObject == null)
+                return;
+
+            ViewModelBase parentDataContext;
+            if (parentObject is FrameworkElement)
+                parentDataContext = (parentObject as FrameworkElement).DataContext as ViewModelBase;
+            else if (parentObject is ContentElement)
+                parentDataContext = (parentObject as FrameworkContentElement).DataContext as ViewModelBase;
+            else return;
+
+            var relayCommand = parentDataContext.OpenRightClickMenuCommand;
+            if (relayCommand.CanExecute(characterName))
+                relayCommand.Execute(characterName);
+        }
+
+
     }
 }

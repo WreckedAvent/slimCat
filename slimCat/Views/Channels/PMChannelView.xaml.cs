@@ -23,6 +23,7 @@ namespace slimCat.Views
 
     using System;
     using System.Windows;
+    using System.Windows.Controls;
     using System.Windows.Documents;
     using System.Windows.Input;
     using Utilities;
@@ -127,7 +128,7 @@ namespace slimCat.Views
         private void OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
-            ExtensionMethods.TryOpenRightClickMenuCommand(sender, 2);
+            StaticFunctions.TryOpenRightClickMenuCommand<Grid>(sender, 2);
         }
     }
 }
