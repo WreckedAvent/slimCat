@@ -22,7 +22,9 @@ namespace slimCat.Views
     #region Usings
 
     using System.Windows;
+    using System.Windows.Controls;
     using System.Windows.Input;
+    using Utilities;
     using ViewModels;
 
     #endregion
@@ -73,5 +75,11 @@ namespace slimCat.Views
         }
 
         #endregion
+
+        private void OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            StaticFunctions.TryOpenRightClickMenuCommand<Grid>(sender, 2);
+        }
     }
 }

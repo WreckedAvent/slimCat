@@ -124,5 +124,11 @@ namespace slimCat.Views
         {
             EntryBoxRowDefinition.Height = new GridLength();
         }
+
+        private void OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            StaticFunctions.TryOpenRightClickMenuCommand<Grid>(sender, 2);
+        }
     }
 }

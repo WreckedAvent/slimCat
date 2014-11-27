@@ -106,13 +106,9 @@
                                 <Hyperlink CommandParameter="{Binding Path=Name, Mode=OneTime}"
                                            Command="{Binding Path=DataContext.NavigateTo, RelativeSource={RelativeSource AncestorType={x:Type v:DisposableView}}}"
                                            Style="{StaticResource UsernameStyle}"
-                                           Foreground="{Binding Converter={StaticResource NameplateColorConverter}, Mode=OneWay}">
+                                           Foreground="{Binding Converter={StaticResource NameplateColorConverter}, Mode=OneWay}"
+                                           MouseRightButtonUp="OnMouseRightButtonUp">
                                     <Run Text="{Binding Path=Name, Mode=OneTime}" />
-                                    <Hyperlink.InputBindings>
-                                        <MouseBinding MouseAction="RightClick"
-                                                      Command="{Binding Path=DataContext.OpenRightClickMenuCommand, RelativeSource={RelativeSource AncestorType={x:Type v:DisposableView}}}"
-                                                      CommandParameter="{Binding Path=Name, Mode=OneTime}" />
-                                    </Hyperlink.InputBindings>
                                 </Hyperlink>
                             </TextBlock>
 

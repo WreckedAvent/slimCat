@@ -37,14 +37,9 @@
     <Hyperlink CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}"
                Command="{Binding Path=DataContext.NavigateTo, RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
                Style="{StaticResource UsernameStyle}"
-               Foreground="{Binding Converter={StaticResource NameplateMessageColorConverter}, Mode=OneWay}">
+               Foreground="{Binding Converter={StaticResource NameplateMessageColorConverter}, Mode=OneWay}"
+               MouseRightButtonUp="OnMouseRightButtonUp">
         <Run Text="{Binding Path=Poster.Name, Mode=OneTime}" />
-        <Hyperlink.InputBindings>
-            <MouseBinding MouseAction="RightClick"
-                          Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
-                                        RelativeSource={RelativeSource AncestorType={x:Type FlowDocument}}}"
-                          CommandParameter="{Binding Path=Poster.Name, Mode=OneTime}" />
-        </Hyperlink.InputBindings>
     <!--Below line is written like this to prevent XML from automatically adding a space here-->
     </Hyperlink><Span
         lib:SpanHelper.InlineSource="{Binding Mode=OneTime, Converter={StaticResource BbFlowConverter}, IsAsync=True}" />

@@ -27,6 +27,8 @@ namespace slimCat.Utilities
     using System.Windows.Documents;
     using Microsoft.Practices.Prism.Events;
     using Models;
+    using System.Windows.Media;
+    using System.Windows;
 
     #endregion
 

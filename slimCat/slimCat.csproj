@@ -183,6 +183,7 @@
     <Compile Include="Commands\Channel\JoinCommand.cs" />
     <Compile Include="Commands\Character\PrivateMessageCommand.cs" />
     <Compile Include="lib\DeferredAction.cs" />
+    <Compile Include="lib\FindAncestor.cs" />
     <Compile Include="lib\FlashWindowHelper.cs" />
     <Compile Include="lib\FullScreenHelper.cs" />
     <Compile Include="lib\NonTopmostPopup.cs" />
@@ -259,6 +260,7 @@
     <Compile Include="Services\SettingsService.cs" />
     <Compile Include="Services\FriendRequestService.cs" />
     <Compile Include="Services\TicketProvider.cs" />
+    <Compile Include="Theme\EmbeddedTheme.xaml.cs" />
     <Compile Include="Utilities\CacheCount.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\KeepToCurrentScrollViewer.cs" />

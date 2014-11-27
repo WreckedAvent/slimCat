@@ -19,6 +19,9 @@
 
 namespace slimCat.Views
 {
+    using slimCat.Utilities;
+    using System.Windows.Documents;
+
     /// <summary>
     ///     Interaction logic for CharacterUpdateView.xaml
     /// </summary>
@@ -35,5 +38,11 @@ namespace slimCat.Views
         }
 
         #endregion
+
+        private void OnMouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            StaticFunctions.TryOpenRightClickMenuCommand<FlowDocument>(sender, 1);
+        }
     }
 }

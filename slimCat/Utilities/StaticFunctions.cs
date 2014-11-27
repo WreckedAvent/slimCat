@@ -34,6 +34,8 @@ namespace slimCat.Utilities
     using Newtonsoft.Json;
     using Services;
     using ViewModels;
+    using slimCat.lib;
+    using System.Windows.Documents;
 
     #endregion
 
@@ -410,5 +412,46 @@ namespace slimCat.Utilities
             return chatState.CharacterManager.IsOfInterest(character, onlineOnly) ||
                    chatState.ChatModel.CurrentPms.FirstByIdOrNull(character) != null;
         }
+
+        public static void TryOpenRightClickMenuCommand<T>(object sender, int ancestorLevel)
+            where T : DependencyObject
+        {
+            var hyperlink = (Hyperlink)sender;
+            
+            var characterName = string.Empty;
+            Func<Hyperlink, string> nameFunc;
+            if (TypeToGetName.TryGetValue(hyperlink.DataContext.GetType(), out nameFunc))
+                characterName = nameFunc(hyperlink);
+            else
+                return;
+
+            var parentObject = FindAncestor.TryFindAncestor<T>(hyperlink, ancestorLevel);
+            if (parentObject == null)
+                return;
+
+            ViewModelBase parentDataContext;
+            var frameworkElement = parentObject as FrameworkElement;
+            var contentElement = parentObject as ContentElement;
+            if (frameworkElement != null)
+                parentDataContext = (parentObject as FrameworkElement).DataContext as ViewModelBase;
+            else if (contentElement != null)
+                parentDataContext = (parentObject as FrameworkContentElement).DataContext as ViewModelBase;
+            else
+                return;
+
+            var relayCommand = parentDataContext.OpenRightClickMenuCommand;
+            if (relayCommand.CanExecute(characterName))
+                relayCommand.Execute(characterName);
+        }
+
+        private static Dictionary<Type, Func<Hyperlink, string>> TypeToGetName = new Dictionary<Type, Func<Hyperlink, string>>{
+            { typeof(CharacterModel),
+                (x) => ((CharacterModel)x.DataContext).Name },
+            { typeof(MessageModel),
+                (x) => ((MessageModel)x.DataContext).Poster.Name },
+            { typeof(CharacterUpdateModel),
+                (x) => ((CharacterUpdateModel)x.DataContext).TargetCharacter.Name }
+        };
+
     }
 }
