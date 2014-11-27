@@ -43,6 +43,7 @@ namespace slimCat.Views
         private readonly UserbarViewModel vm;
 
         private Point lastPoint;
+        private ListBoxItem draggedItem;
 
         #endregion
 
@@ -66,7 +67,7 @@ namespace slimCat.Views
 
         private void OnPreviewMouseClick(object sender, MouseEventArgs e)
         {
-            var draggedItem = sender as ListBoxItem;
+            draggedItem = sender as ListBoxItem;
             if (draggedItem == null) return;
             if (e.LeftButton != MouseButtonState.Pressed) return;
             if (e.OriginalSource is Rectangle) return;
@@ -139,7 +140,6 @@ namespace slimCat.Views
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
-            var draggedItem = sender as ListBoxItem;
             if (draggedItem == null) return;
             if (e.LeftButton != MouseButtonState.Pressed) return;
             if (e.OriginalSource is Rectangle) return;
@@ -149,6 +149,7 @@ namespace slimCat.Views
             if (Math.Abs(lastPoint.Y - current.Y) >= minDragDistance)
             {
                 DragDrop.DoDragDrop(draggedItem, draggedItem.DataContext, DragDropEffects.Move);
+                draggedItem = null;
             }
         }
     }
