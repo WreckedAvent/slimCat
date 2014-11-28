@@ -79,7 +79,7 @@
             <RowDefinition />
             <RowDefinition Height="{Binding Path=EntryBoxRowHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                            x:Name="EntryBoxRowDefinition"
-                           MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=60}" />
+                           MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=200}" />
         </Grid.RowDefinitions>
 
         <Border BorderBrush="{StaticResource HighlightBrush}"

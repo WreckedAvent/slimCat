@@ -32,6 +32,7 @@
     <utilities:CacheUriForeverConverter x:Key="CacheUriForeverConverter" />
     <utilities:AutoOrStarConverter x:Key="AutoOrStarConverter" />
     <utilities:RemoveSomeConverter x:Key="RemoveSomeConverter" />
+    <utilities:ReduceRowConverter x:Key="ReduceRowConverter" />
     <utilities:EqualsConverter x:Key="EqualsConverter" />
 
     <utilities:ConverterChain x:Key="EqualsVisibilityConverterChain">

@@ -14,18 +14,32 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="{Binding Path=HeaderRowHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                            x:Name="HeaderRowDefinition"
-                           MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=92}"
-                           MinHeight="35" />
+                           MinHeight="35">
+                <RowDefinition.MaxHeight>
+                    <MultiBinding
+                         Converter="{StaticResource ReduceRowConverter}" ConverterParameter="20">
+                        <Binding RelativeSource="{RelativeSource AncestorType=v:DisposableView}" Path="ActualHeight" />
+                        <Binding ElementName="EntryBoxRowGrid" Path="ActualHeight" />
+                    </MultiBinding>
+                </RowDefinition.MaxHeight>
+            </RowDefinition>
             <RowDefinition Height="*" />
             <RowDefinition Height="{Binding Path=EntryBoxRowHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                           x:Name="EntryBoxRowDefinition"
-                           MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=60}" />
+                           x:Name="EntryBoxRowDefinition">
+                <RowDefinition.MaxHeight>
+                    <MultiBinding
+                         Converter="{StaticResource ReduceRowConverter}" ConverterParameter="0">
+                        <Binding RelativeSource="{RelativeSource AncestorType=v:DisposableView}" Path="ActualHeight" />
+                        <Binding ElementName="HeaderRowGrid" Path="ActualHeight" />
+                    </MultiBinding>
+                </RowDefinition.MaxHeight>
+            </RowDefinition>
         </Grid.RowDefinitions>
 
-        <Grid>
+        <Grid x:Name="HeaderRowGrid">
             <Expander x:Name="ChannelDescriptionExpander"
                       IsExpanded="{Binding ShowChannelDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                      Collapsed="OnChannelDescriptionCollapsed" >
+                      Collapsed="OnChannelDescriptionCollapsed">
                 <Expander.Header>
                     <TextBlock Margin="0"
                                Foreground="{StaticResource ForegroundBrush}"
@@ -38,8 +52,14 @@
                         <Run Text="{Binding Path=ChatContentString, Mode=OneWay}" />
                     </TextBlock>
                 </Expander.Header>
-                <ScrollViewer
-                    MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=90}">
+                <ScrollViewer>
+                    <ScrollViewer.MaxHeight>
+                        <MultiBinding
+                            Converter="{StaticResource ReduceRowConverter}" ConverterParameter="60">
+                            <Binding RelativeSource="{RelativeSource AncestorType=v:DisposableView}" Path="ActualHeight" />
+                            <Binding ElementName="EntryBoxRowGrid" Path="ActualHeight" />
+                        </MultiBinding>
+                    </ScrollViewer.MaxHeight>
                     <TextBlock Margin="0"
                                FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
                                Foreground="{StaticResource ForegroundBrush}"
@@ -113,7 +133,8 @@
 
         <GridSplitter Grid.Row="2" MouseDoubleClick="OnEntryBoxResizeRequested" />
 
-        <Grid Grid.Row="2"
+        <Grid x:Name="EntryBoxRowGrid"
+              Grid.Row="2"
               Height="auto"
               Margin="0,4,0,0"
               MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=65}">

@@ -1878,6 +1878,14 @@ namespace slimCat.Utilities
         }
     }
 
+    public class ReduceRowConverter : OneWayMultiConverter
+    {
+        public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            return Math.Max(((double)values[0] * 0.8) - ((double)values[1]) - (System.Convert.ToDouble(parameter)), 0);
+        }
+    }
+
     /// <summary>Represents a chain of <see cref="IValueConverter" />s to be executed in succession.</summary>
     [ContentProperty("Converters")]
     [ContentWrapper(typeof (ValueConverterCollection))]
