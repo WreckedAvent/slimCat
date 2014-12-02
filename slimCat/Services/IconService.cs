@@ -31,6 +31,7 @@ namespace slimCat.Services
     using Properties;
     using Utilities;
     using Application = System.Windows.Application;
+    using System.ComponentModel;
 
     #endregion
 
@@ -43,8 +44,6 @@ namespace slimCat.Services
 
         private readonly NotifyIcon icon = new NotifyIcon();
 
-        public event EventHandler SettingsChanged;
-
         #endregion
 
         #region Constructors
@@ -55,6 +54,7 @@ namespace slimCat.Services
             cm = chatModel;
 
             eventagg.GetEvent<CharacterSelectedLoginEvent>().Subscribe(OnCharacterSelected);
+            eventagg.GetEvent<LoginAuthenticatedEvent>().Subscribe(OnLoginAuthenticated);
         }
 
         #endregion
@@ -69,23 +69,13 @@ namespace slimCat.Services
         public void ToggleSound()
         {
             ApplicationSettings.AllowSound = !ApplicationSettings.AllowSound;
-            AllowSound.Checked = ApplicationSettings.AllowSound;
-
-            if (SettingsChanged != null)
-            {
-                SettingsChanged(this, new EventArgs());
-            }
+            AllowSoundUpdate();
         }
 
         public void ToggleToasts()
         {
             ApplicationSettings.ShowNotificationsGlobal = !ApplicationSettings.ShowNotificationsGlobal;
-            AllowToast.Checked = ApplicationSettings.ShowNotificationsGlobal;
-
-            if (SettingsChanged != null)
-            {
-                SettingsChanged(this, new EventArgs());
-            }
+            AllowToastUpdate();
         }
 
         public void ShutDown()
@@ -106,14 +96,14 @@ namespace slimCat.Services
 
         #region Methods
 
-        private MenuItem AllowSound
+        public void AllowSoundUpdate()
         {
-            get { return icon.ContextMenu.MenuItems[2]; }
+            icon.ContextMenu.MenuItems[2].Checked = ApplicationSettings.AllowSound;
         }
 
-        private MenuItem AllowToast
+        public void AllowToastUpdate()
         {
-            get { return icon.ContextMenu.MenuItems[3]; }
+            icon.ContextMenu.MenuItems[3].Checked = ApplicationSettings.ShowNotificationsGlobal;
         }
 
         private void BuildIcon(string character)
@@ -176,6 +166,12 @@ namespace slimCat.Services
             BuildIcon(character);
         }
 
+        private void OnLoginAuthenticated(bool? obj)
+        {
+            AllowSoundUpdate();
+            AllowToastUpdate();
+        }
+
         private void ToggleSound(object sender, EventArgs e)
         {
             ToggleSound();
@@ -217,7 +213,5 @@ namespace slimCat.Services
     {
         void ToggleSound();
         void ToggleToasts();
-
-        event EventHandler SettingsChanged;
     }
 }

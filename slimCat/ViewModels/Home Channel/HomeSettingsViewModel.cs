@@ -51,14 +51,7 @@ namespace slimCat.ViewModels
         {
             automation = automationService;
             this.iconService = iconService;
-            iconService.SettingsChanged += (s, e) =>
-            {
-                OnPropertyChanged("AllowSound");
-                OnPropertyChanged("ShowNotifications");
-            };
-
             this.characterManager = characterManager;
-
         }
 
         #endregion
@@ -436,9 +429,8 @@ namespace slimCat.ViewModels
             get { return ApplicationSettings.AllowSound; }
             set
             {
-                if (ApplicationSettings.AllowSound == value) return;
-
-                iconService.ToggleSound();
+                ApplicationSettings.AllowSound = value;
+                iconService.AllowSoundUpdate();
                 Save();
             }
         }
@@ -469,9 +461,8 @@ namespace slimCat.ViewModels
 
             set
             {
-                if (ApplicationSettings.ShowNotificationsGlobal == value) return;
-
-                iconService.ToggleToasts();
+                ApplicationSettings.ShowNotificationsGlobal = value;
+                iconService.AllowToastUpdate();
                 Save();
             }
         }
