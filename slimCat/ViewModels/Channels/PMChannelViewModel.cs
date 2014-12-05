@@ -486,6 +486,8 @@ namespace slimCat.ViewModels
                        {
                            profileService.ClearCache(ConversationWith.Name);
                            model.ProfileData = null;
+                           IsViewingFullImage = false;
+                           CurrentImage = null;
                        }));
             }
         }
@@ -694,7 +696,12 @@ namespace slimCat.ViewModels
 
             if (e.PropertyName == "IsSelected")
             {
-                if (model.IsSelected == false) return;
+                if (model.IsSelected == false)
+                {
+                    IsViewingFullImage = false;
+                    CurrentImage = null;
+                    return;
+                }
 
                 if (model.ShouldViewProfile)
                 {
