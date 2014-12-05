@@ -111,7 +111,8 @@
 
         <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
                     Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Notifications}">
-            <CheckBox IsChecked="{Binding ShowNotifications}"
+            <CheckBox Name="ShowNotificationsCheckbox"
+                      IsChecked="{Binding ShowNotifications}"
                       ToolTip="Allows slimCat to display small windows on the bottom-right of your screen for new notifications. This will override any channel-specific settings if off.">
                 Display toast notifications for events
             </CheckBox>
