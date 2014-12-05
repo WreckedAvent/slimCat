@@ -464,6 +464,7 @@ namespace slimCat.ViewModels
                 ApplicationSettings.ShowNotificationsGlobal = value;
                 iconService.AllowToastUpdate();
                 Save();
+                OnPropertyChanged("ShowNotifications");
             }
         }
 
