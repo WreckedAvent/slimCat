@@ -74,7 +74,7 @@ namespace slimCat.Views
 
         private static bool bindingsAdded;
 
-        private static KeyBinding lastFocusBind;
+        private static readonly IList<KeyBinding> lastBinds = new List<KeyBinding>(); 
 
         private RelayCommand focusCommand;
         private ChannelViewModelBase vm;
@@ -252,18 +252,18 @@ namespace slimCat.Views
                     bindings.Add(new KeyBinding(vm.NavigateUpCommand, Key.Up, ModifierKeys.Alt));
                     bindings.Add(new KeyBinding(vm.NavigateDownCommand, Key.Down, ModifierKeys.Alt));
                     bindings.Add(new KeyBinding(vm.NavigateUpCommand, Key.Tab, ModifierKeys.Control));
-                    lastFocusBind = new KeyBinding(FocusCommand, new KeyGesture(Key.Tab));
-                    bindings.Add(lastFocusBind);
+                    bindings.Add(new KeyBinding(vm.NavigateDownCommand, Key.Tab, ModifierKeys.Control | ModifierKeys.Shift));
+
+                    ReAddContextualKeybinds();
 
                     bindingsAdded = true;
                 }
                 else
                 {
-                    bindings.Remove(lastFocusBind);
+                    lastBinds.Each(bindings.Remove);
+                    lastBinds.Clear();
 
-
-                    lastFocusBind = new KeyBinding(FocusCommand, new KeyGesture(Key.Tab));
-                    bindings.Add(lastFocusBind);
+                    ReAddContextualKeybinds();
                 }
             }
 
@@ -276,6 +276,33 @@ namespace slimCat.Views
             Entry.Focus();
             Entry.ScrollToEnd();
             if (!string.IsNullOrEmpty(vm.Message)) Entry.CaretIndex = vm.Message.Length;
+        }
+
+        private void ReAddContextualKeybinds()
+        {
+            AddContextualBinding(new KeyBinding(FocusCommand, new KeyGesture(Key.Tab)));
+            AddContextualBinding(new KeyBinding(vm.TogglePreviewCommand, new KeyGesture(Key.Enter, ModifierKeys.Alt)));
+
+            var pmVm = vm as PmChannelViewModel;
+            var channelVm = vm as GeneralChannelViewModel;
+            if (pmVm != null)
+            {
+                AddContextualBinding(new KeyBinding(pmVm.SwitchCommand, new KeyGesture(Key.Tab, ModifierKeys.Shift)));
+            }
+
+            if (channelVm != null)
+            {
+                AddContextualBinding(new KeyBinding(channelVm.SwitchCommand, new KeyGesture(Key.Tab, ModifierKeys.Shift)));
+
+                AddContextualBinding(new KeyBinding(channelVm.SwitchSearchCommand,
+                    new KeyGesture(Key.F, ModifierKeys.Control)));
+            }
+        }
+
+        private void AddContextualBinding(KeyBinding binding)
+        {
+            lastBinds.Add(binding);
+            Application.Current.MainWindow.InputBindings.Add(binding);
         }
 
         private void OnPreviewKeyDown(object sender, KeyEventArgs e)

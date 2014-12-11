@@ -75,6 +75,8 @@ namespace slimCat.ViewModels
 
         private RelayCommand sendText;
 
+        private RelayCommand togglePreview;
+
         private bool showPreview;
 
         #endregion
@@ -135,6 +137,11 @@ namespace slimCat.ViewModels
                                    Events.GetEvent<UserCommandEvent>()
                                        .Publish(CommandDefinitions.CreateCommand("clear", null, Model.Id).ToDictionary())));
             }
+        }
+
+        public ICommand TogglePreviewCommand
+        {
+            get { return togglePreview ?? (togglePreview = new RelayCommand(_ => ShowPreview = !ShowPreview)); }
         }
 
         public GridLength EntryBoxRowHeight

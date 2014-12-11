@@ -273,9 +273,7 @@ namespace slimCat.Utilities
         {
             var parsed = (string)value;
 
-            return string.IsNullOrEmpty(parsed)
-                ? false
-                : true;
+            return !string.IsNullOrEmpty(parsed);
         }
     }
 
@@ -1194,13 +1192,12 @@ namespace slimCat.Utilities
 
                 if (text[0] == '/')
                 {
-                    var command = ' ';
                     var check = text.Substring(0, text.IndexOf(' ')+1);
                     Func<string, string> nonCommandCommand;
 
                     if (CommandDefinitions.NonCommandCommands.TryGetValue(check, out nonCommandCommand))
                     {
-                        command = text[1];
+                        var command = text[1];
                         text = nonCommandCommand(text);
 
                         if (command == 'm')  // is an emote

@@ -367,13 +367,17 @@ namespace slimCat.Services
             Dispatcher.Invoke((Action) (() =>
             {
                 ChatModel.AllChannels.Clear();
-                while (ChatModel.CurrentChannels.Count > 1)
-                {
-                    ChatModel.CurrentChannels.RemoveAt(1);
-                }
+                ChatModel.CurrentChannels
+                    .Where(x => x.Id != "Home")
+                    .ToList()
+                    .Each(x =>
+                    {
+                        ChatModel.CurrentChannels.Remove(x);
+                        x.Dispose();
+                    });
 
                 ChatModel.CurrentPms.Each(pm => pm.TypingStatus = TypingStatus.Clear);
-                 ChatModel.IsAuthenticated = false;
+                ChatModel.IsAuthenticated = false;
             }));
         }
 
