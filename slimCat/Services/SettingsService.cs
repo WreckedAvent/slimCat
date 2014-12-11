@@ -296,7 +296,7 @@ namespace slimCat.Services
         {
             var root = new XElement("settings");
             var fileName = Path.Combine(
-                StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global"), SettingsFileName);
+                StaticFunctions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName), SettingsFileName);
 
             foreach (var property in typeof (ApplicationSettings).GetProperties())
             {
@@ -329,7 +329,18 @@ namespace slimCat.Services
                 }
             }
 
-            File.Delete(fileName);
+            if (File.Exists(fileName))
+            {
+                var old = fileName + ".old";
+                if (File.Exists(old))
+                {
+                    File.Delete(old);
+                }
+
+                File.Move(fileName, old);
+                File.Delete(fileName);
+            }
+
             using (var fs = File.OpenWrite(fileName))
                 root.Save(fs);
 
@@ -429,7 +440,21 @@ namespace slimCat.Services
         }
 
         private static bool CopyDefaultGlobalSettingsIfExist(string currentCharacter)
-        {
+        {            
+            var destPath =
+                Path.Combine(StaticFunctions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName),
+                    SettingsFileName);
+
+
+            var backup = Path.Combine(
+                StaticFunctions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName), (SettingsFileName + ".old"));
+
+            if (File.Exists(backup))
+            {
+                File.Copy(backup, destPath);
+                return true;
+            }
+
             var path = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, GlobalFolderName, GlobalFolderName);
 
             if (!Directory.Exists(path))
@@ -440,9 +465,6 @@ namespace slimCat.Services
             if (!File.Exists(sourcePath))
                 return false;
 
-            var destPath =
-                Path.Combine(StaticFunctions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName),
-                    SettingsFileName);
 
             File.Copy(sourcePath, destPath);
 
