@@ -119,14 +119,12 @@
 
             <CheckBox IsChecked="{Binding ShowLoginToasts}"
                       Visibility="{Binding ShowNotifications, Converter={StaticResource BoolConverter}}"
-                      Margin="25, 15, 0, 0"
                       ToolTip="Allows slimCat to display notification windows that inform when a bookmarked or interesting person logs in or out.">
                 Display login and logout toasts
             </CheckBox>
 
             <CheckBox IsChecked="{Binding ShowStatusToasts}"
                       Visibility="{Binding ShowNotifications, Converter={StaticResource BoolConverter}}"
-                      Margin="25, 15, 0, 0"
                       ToolTip="Allows slimCat to display notification windows when a bookmarked or interesting person changes their status. Busy, Looking, etc.">
                 Display status change toasts
             </CheckBox>
