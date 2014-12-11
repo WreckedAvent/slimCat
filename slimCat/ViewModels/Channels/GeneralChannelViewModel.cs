@@ -636,7 +636,7 @@ namespace slimCat.ViewModels
             {
                 case "Description":
                     OnPropertyChanged("Description");
-                    ShowChannelDescription = ((GeneralChannelModel) Model).ShowChannelDescription;
+                    ShowChannelDescription = ((GeneralChannelModel)Model).ShowChannelDescription;
                     break;
                 case "Type":
                     OnPropertyChanged("ChannelTypeString"); // fixes laggy room type change
@@ -664,8 +664,8 @@ namespace slimCat.ViewModels
                         var chanModel = (GeneralChannelModel) Model;
                         if (!chanModel.ShowChannelDescription) break;
 
-                        ShowChannelDescription = true;
-                        ChannelSettings.LastChannelDescription = chanModel.Description.GetHashCode();
+                        ShowChannelDescription = false;
+                        chanModel.LastChannelDescription = chanModel.Description.GetHashCode();
 
                         SettingsService.UpdateSettingsFile(
                             ChannelSettings, ChatModel.CurrentCharacter.Name, Model.Title, Model.Id);

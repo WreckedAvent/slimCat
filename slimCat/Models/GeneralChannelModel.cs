@@ -153,19 +153,17 @@ namespace slimCat.Models
 
             set
             {
+                ShowChannelDescription = !string.IsNullOrWhiteSpace(description) 
+                                       && !string.IsNullOrWhiteSpace(value)
+                                       && description != value;
                 description = value;
                 OnPropertyChanged("Description");
             }
         }
 
-        public bool ShowChannelDescription
-        {
-            get
-            {
-                return description != null
-                       && description.GetHashCode() != Settings.LastChannelDescription;
-            }
-        }
+        public int LastChannelDescription { get; set; }
+
+        public bool ShowChannelDescription { get; set; }
 
         /// <summary>
         ///     Gets the display number.

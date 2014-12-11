@@ -392,8 +392,6 @@ namespace slimCat.Models
             }
         }
 
-        public int LastChannelDescription { get; set; }
-
         #endregion
 
         #region Methods
