@@ -33,12 +33,6 @@ namespace slimCat.Services
     {
         private static void ClearChannel(ChannelModel channel)
         {
-            foreach (var item in channel.Messages)
-                item.Dispose();
-
-            foreach (var item in channel.Ads)
-                item.Dispose();
-
             channel.Messages.Clear();
             channel.Ads.Clear();
         }
