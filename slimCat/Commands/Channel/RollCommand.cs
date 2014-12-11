@@ -56,16 +56,25 @@ namespace slimCat.Services
         {
             object channel;
             object recipient;
+            object character;
             command.TryGetValue(Constants.Arguments.Channel, out channel);
             command.TryGetValue(Constants.Arguments.Recipient, out recipient);
+            command.TryGetValue(Constants.Arguments.Character, out character);
+
             var message = command.Get(Constants.Arguments.Message);
             var poster = command.Get(Constants.Arguments.Character);
 
-            if (channel == null)
-                channel = recipient;
+            var target = (string)channel 
+                ?? (ChatModel.CurrentCharacter.NameEquals((string) recipient)
+                    ? (string) character
+                    : (string) recipient);
+
+            // note: Recipient in this case is actually the sender. 
+            if (recipient != null && ChatModel.CurrentPms.FirstByIdOrNull(target) == null)
+                manager.AddChannel(ChannelType.PrivateMessage, target);
 
             if (!CharacterManager.IsOnList(poster, ListKind.Ignored))
-                manager.AddMessage(message, (string)channel, poster, MessageType.Roll);
+                manager.AddMessage(message, target, poster, MessageType.Roll);
         }
     }
 }
