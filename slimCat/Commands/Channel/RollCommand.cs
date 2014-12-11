@@ -69,7 +69,6 @@ namespace slimCat.Services
                     ? (string) character
                     : (string) recipient);
 
-            // note: Recipient in this case is actually the sender. 
             if (recipient != null && ChatModel.CurrentPms.FirstByIdOrNull(target) == null)
                 manager.AddChannel(ChannelType.PrivateMessage, target);
 
