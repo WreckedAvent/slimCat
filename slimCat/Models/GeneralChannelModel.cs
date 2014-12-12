@@ -40,6 +40,7 @@ namespace slimCat.Models
         private int lastAdCount;
 
         private int userCount;
+        private bool adsContainsInteresting;
 
         #endregion
 
@@ -161,6 +162,16 @@ namespace slimCat.Models
             }
         }
 
+        public bool AdsContainsInteresting
+        {
+            get { return adsContainsInteresting; }
+            set
+            {
+                adsContainsInteresting = value;
+                OnPropertyChanged("NeedsAttention");
+            }
+        }
+
         public int LastChannelDescription { get; set; }
 
         public bool ShowChannelDescription { get; set; }
@@ -183,8 +194,14 @@ namespace slimCat.Models
             set
             {
                 base.IsSelected = value;
-                if (!value)
-                    LastReadAdCount = Ads.Count;
+
+                if (value)
+                {
+                    AdsContainsInteresting = false;
+                    return;
+                }
+
+                LastReadAdCount = Ads.Count;
             }
         }
 
@@ -217,26 +234,21 @@ namespace slimCat.Models
 
                 if (Messages.Count == 0 && Ads.Count == 0) return false;
 
-                var messageNotifyMatters = Mode == ChannelMode.Chat || Mode == ChannelMode.Both;
-                var adNotifyMatters = Mode == ChannelMode.Ads || Mode == ChannelMode.Both;
+                var messagesMatter = (Mode == ChannelMode.Chat || Mode == ChannelMode.Both) 
+                                        && Settings.MessageNotifyLevel != 0;
 
-                var doNotFlash = true;
+                var adsMatter = (Mode == ChannelMode.Ads || Mode == ChannelMode.Both) 
+                                    && Settings.AdNotifyLevel != 0;
 
-                if (messageNotifyMatters)
-                    doNotFlash = Settings.MessageNotifyLevel == 0;
-
-                if (adNotifyMatters)
-                    doNotFlash = doNotFlash && Settings.AdNotifyLevel == 0;
-
-                if (doNotFlash)
+                if (!messagesMatter && !adsMatter)
                     return false; // terminate early upon user request
 
                 // base.NeedsAttention will check if our messages are of interest, but not ads
                 if (Settings.MessageNotifyOnlyForInteresting)
                     return base.NeedsAttention;
 
-                if (adNotifyMatters)
-                    return base.NeedsAttention || UnreadAds >= 1;
+                if (adsMatter)
+                    return base.NeedsAttention || AdsContainsInteresting;
 
                 return base.NeedsAttention;
             }

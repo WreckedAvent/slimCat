@@ -770,6 +770,8 @@ namespace slimCat.ViewModels
                 &&
                 e.NewItems.OfType<IMessage>()
                     .Any(x => !CharacterManager.IsOnList(x.Poster.Name, ListKind.NotInterested));
+            ((GeneralChannelModel) Model).AdsContainsInteresting = OtherTabHasMessages;
+
             if (Model.Ads.All(x => x.IsHistoryMessage)) OtherTabHasMessages = false;
         }
 
