@@ -17,6 +17,66 @@
 
 #endregion
 
+namespace slimCat.Models
+{
+    using Services;
+    using Utilities;
+
+    public class ChannelMentionUpdateEventArgs : CharacterUpdateEventArgs
+    {
+        private object[] Args
+        {
+            get
+            {
+                return new object[]
+                {
+                    ApplicationSettings.ShowNamesInToasts ? Model.TargetCharacter.Name : "A user",
+                    TriggeredWord,
+                    Channel.Title
+                };
+            }
+        }
+
+        public string TriggeredWord { get; set; }
+
+        public bool IsNameMention { get; set; }
+
+        public string Context { get; set; }
+
+        public ChannelModel Channel { get; set; }
+
+        public override string ToString()
+        {
+            return (IsNameMention ? "'s name matches {1} in {2}" : "mentioned {1} in {2}").FormatWith(Args) + ": \"" + Context + "\"";
+        }
+
+        public string Title
+        {
+            get
+            {
+                return (IsNameMention ? "{0}'s name matches {1} #{2}" : "{0} mentioned {1} #{2}").FormatWith(Args);
+            }
+        }
+
+        public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
+        {
+            SetToastData(toastsManager.Toast);
+
+            toastsManager.Toast.Title = Title;
+            toastsManager.Toast.Navigator = new SimpleNavigator(chat => 
+                chat.EventAggregator.GetEvent<RequestChangeTabEvent>().Publish(Channel.Id));
+            toastsManager.Toast.Content = Context;
+
+            toastsManager.AddNotification(Model);
+
+            if (Channel.IsSelected) return;
+            toastsManager.ShowToast();
+            toastsManager.PlaySound();
+            toastsManager.FlashWindow();
+        }
+    }
+}
+
 namespace slimCat.Services
 {
     #region Usings

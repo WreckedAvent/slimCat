@@ -152,6 +152,9 @@ namespace slimCat.Services
 
             if (message == null || channel == null) return;
 
+            if (message.Poster.NameEquals(cm.CurrentCharacter.Name))
+                return;
+
             var isFocusedAndSelected = (channel.IsSelected && WindowIsFocused);
 
             var cleanMessageText = HttpUtility.HtmlDecode(message.Message);
@@ -216,27 +219,17 @@ namespace slimCat.Services
 
                 if (match != null)
                 {
-                    if (!isFocusedAndSelected)
+                    var newUpdate = new CharacterUpdateModel(message.Poster, new ChannelMentionUpdateEventArgs
                     {
-                        toast.TargetCharacter = message.Poster;
-                        toast.Title =
-                            "{0}'s name matches {1} #{2}".FormatWith(
-                                ApplicationSettings.ShowNamesInToasts ? message.Poster.Name : "A user", match.Item1,
-                                channel.Title);
-                        toast.Content = match.Item2;
-                        toast.ShowNotifications();
-                        ToastManager.PlaySound();
-                        ToastManager.FlashWindow();
-                        toast.Navigator = new SimpleNavigator(chatState =>
-                        {
-                            chatState.EventAggregator.GetEvent<RequestChangeTabEvent>().Publish(channel.Id);
+                        Channel = channel,
+                        Context = match.Item2,
+                        TriggeredWord = match.Item1,
+                        IsNameMention = true
+                    });
+                    events.GetEvent<NewUpdateEvent>().Publish(newUpdate);
 
-                            ShowWindow();
-                        });
-                        toast.TargetCharacter = message.Poster;
-                        if (ApplicationSettings.ShowAvatarsInToasts) message.Poster.GetAvatar();
+                    if (!isFocusedAndSelected)
                         channel.FlashTab();
-                    }
 
                     message.IsOfInterest = true;
                     return;
@@ -249,28 +242,18 @@ namespace slimCat.Services
                     .FirstOrDefault(attemptedMatch => !string.IsNullOrWhiteSpace(attemptedMatch.Item1));
 
                 if (match == null) return;
+                var newUpdate = new CharacterUpdateModel(message.Poster, new ChannelMentionUpdateEventArgs
+                {
+                    Channel = channel,
+                    Context = match.Item2,
+                    TriggeredWord = match.Item1,
+                    IsNameMention = false
+                });
+                events.GetEvent<NewUpdateEvent>().Publish(newUpdate);
 
                 if (!isFocusedAndSelected)
-                {
-                    toast.TargetCharacter = message.Poster;
-                    toast.Title =
-                        "{0} mentioned {1} #{2}".FormatWith(
-                            ApplicationSettings.ShowNamesInToasts ? message.Poster.Name : "A user", match.Item1,
-                            channel.Title);
-                    toast.Content = match.Item2;
-                    toast.ShowNotifications();
-                    toast.TargetCharacter = message.Poster;
-                    if (ApplicationSettings.ShowAvatarsInToasts) message.Poster.GetAvatar();
-                    ToastManager.PlaySound();
-                    ToastManager.FlashWindow();
-                    toast.Navigator = new SimpleNavigator(chatState =>
-                    {
-                        chatState.EventAggregator.GetEvent<RequestChangeTabEvent>().Publish(channel.Id);
-
-                        ShowWindow();
-                    });
                     channel.FlashTab();
-                }
+
                 message.IsOfInterest = true;
             }
 
