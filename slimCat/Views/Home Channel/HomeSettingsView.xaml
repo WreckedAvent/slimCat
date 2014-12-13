@@ -281,6 +281,12 @@
                       ToolTip="Allows slimCat to automatically set your status to 'busy' you have a full-screen application open for a period of time">
                 Automatically go busy when in full screen applications
             </CheckBox>
+
+            <CheckBox IsChecked="{Binding WipeNotificationsOnTabChange}"
+                            ToolTip="Allows slimCat to automatically clear your notifications after you view the notification tab.">
+                Automatically wipe notifications after viewing them
+            </CheckBox>
+            
             <CheckBox IsChecked="{Binding AllowAdTruncating}"
                       ToolTip="Allows slimCat to automatically collapse very long ads with a 'show more' collapse">
                 Automatically collapse long ads

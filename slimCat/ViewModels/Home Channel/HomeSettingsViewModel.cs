@@ -300,6 +300,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool WipeNotificationsOnTabChange
+        {
+            get { return ApplicationSettings.WipeNotificationsOnTabChange; }
+            set
+            {
+                ApplicationSettings.WipeNotificationsOnTabChange = value;
+                Save();
+            }
+        }
+
         public int AutoIdleTime
         {
             get { return ApplicationSettings.AutoIdleTime; }

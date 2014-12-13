@@ -28,6 +28,7 @@ namespace slimCat.ViewModels
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
+    using Models;
     using Services;
     using Utilities;
     using Views;
@@ -246,6 +247,9 @@ namespace slimCat.ViewModels
             {
                 // if we just came from notifications, we have nothing new to see
                 HasUpdate = false;
+
+                if (ApplicationSettings.WipeNotificationsOnTabChange)
+                    ChatModel.Notifications.Clear();
             }
 
             var newSelected = args as string;

@@ -310,6 +310,8 @@ namespace slimCat.Models
 
         public static bool ShowMessagesInToasts { get; set; }
 
+        public static bool WipeNotificationsOnTabChange { get; set; }
+
         #endregion
     }
 
