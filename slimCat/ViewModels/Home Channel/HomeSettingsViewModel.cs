@@ -419,6 +419,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool AllowMarkupPastedLink
+        {
+            get { return ApplicationSettings.AllowMarkupPastedLinks; }
+            set
+            {
+                ApplicationSettings.AllowMarkupPastedLinks = value;
+                Save();
+            }
+        }
+
         #endregion
 
         #region Notifications

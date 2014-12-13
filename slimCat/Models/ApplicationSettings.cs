@@ -96,6 +96,8 @@ namespace slimCat.Models
             ShowAvatarsInToasts = true;
             ShowNamesInToasts = true;
             ShowMessagesInToasts = true;
+
+            AllowMarkupPastedLinks = true;
         }
 
         #endregion
@@ -311,6 +313,8 @@ namespace slimCat.Models
         public static bool ShowMessagesInToasts { get; set; }
 
         public static bool WipeNotificationsOnTabChange { get; set; }
+
+        public static bool AllowMarkupPastedLinks { get; set; }
 
         #endregion
     }

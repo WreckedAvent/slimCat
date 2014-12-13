@@ -261,14 +261,19 @@
 
         <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
                     Visibility="{Binding SelectedTab, Converter={StaticResource EqualsVisibilityConverterChain}, ConverterParameter=Automation}">
+            <CheckBox IsChecked="{Binding AllowMarkupPastedLink}"
+                      ToolTip="Allows slimCat to automatically mark up links that you paste into the entry box with [url].">
+                Automatically markup links I paste
+            </CheckBox>
+
             <CheckBox IsChecked="{Binding AllowAdDedpulication}"
-                      ToolTip="Allows slimCat to automatically supress identical ads from the same user.">
+                      ToolTip="Allows slimCat to automatically suppress identical ads from the same user.">
                 Hide duplicate ads from others
             </CheckBox>
 
             <CheckBox IsChecked="{Binding AllowAggressiveAdDedpulication}"
                       Visibility="{Binding Path=AllowAdDedpulication, Converter={StaticResource BoolConverter}}"
-                      ToolTip="Allows slimCat to automatically supress multiple ads from the same user. Only the first ad the person sends will be seen.">
+                      ToolTip="Allows slimCat to automatically suppress multiple ads from the same user. Only the first ad the person sends will be seen.">
                 Show only the first ad from each person
             </CheckBox>
 

@@ -74,9 +74,10 @@ namespace slimCat.Views
 
         private static bool bindingsAdded;
 
-        private static readonly IList<KeyBinding> lastBinds = new List<KeyBinding>(); 
+        private static readonly IList<KeyBinding> LastBinds = new List<KeyBinding>(); 
 
         private RelayCommand focusCommand;
+
         private ChannelViewModelBase vm;
 
         #endregion
@@ -89,6 +90,8 @@ namespace slimCat.Views
         public ChannelTextBoxEntryView()
         {
             InitializeComponent();
+
+            DataObject.AddPastingHandler(this, OnPaste);
 
             Entry.FocusableChanged += (s, e) =>
             {
@@ -253,15 +256,14 @@ namespace slimCat.Views
                     bindings.Add(new KeyBinding(vm.NavigateDownCommand, Key.Down, ModifierKeys.Alt));
                     bindings.Add(new KeyBinding(vm.NavigateUpCommand, Key.Tab, ModifierKeys.Control));
                     bindings.Add(new KeyBinding(vm.NavigateDownCommand, Key.Tab, ModifierKeys.Control | ModifierKeys.Shift));
-
                     ReAddContextualKeybinds();
 
                     bindingsAdded = true;
                 }
                 else
                 {
-                    lastBinds.Each(bindings.Remove);
-                    lastBinds.Clear();
+                    LastBinds.Each(bindings.Remove);
+                    LastBinds.Clear();
 
                     ReAddContextualKeybinds();
                 }
@@ -276,6 +278,31 @@ namespace slimCat.Views
             Entry.Focus();
             Entry.ScrollToEnd();
             if (!string.IsNullOrEmpty(vm.Message)) Entry.CaretIndex = vm.Message.Length;
+        }
+
+        private void OnPaste(object sender, DataObjectPastingEventArgs e)
+        {
+            if (!ApplicationSettings.AllowMarkupPastedLinks) return;
+
+            if (!e.SourceDataObject.GetDataPresent(DataFormats.Text, true)) return;
+
+            var text = e.SourceDataObject.GetData(DataFormats.Text) as string;
+            if (string.IsNullOrWhiteSpace(text)) return;
+
+            // only auto-markup links
+            if (!(text.StartsWith("http://") || text.StartsWith("https://")) || text.Contains(" ")) return;
+
+            var newPasteText = "[url={0}][/url]".FormatWith(text);
+            var lengthToAdd = newPasteText.IndexOf("[/url]", StringComparison.Ordinal);
+
+            e.CancelCommand();
+
+            if (string.IsNullOrWhiteSpace(Entry.SelectedText))
+                Entry.Text = Entry.Text.Insert(Entry.CaretIndex, newPasteText);
+            else
+                Entry.SelectedText = newPasteText;
+
+            Entry.CaretIndex += lengthToAdd;
         }
 
         private void ReAddContextualKeybinds()
@@ -301,7 +328,7 @@ namespace slimCat.Views
 
         private void AddContextualBinding(KeyBinding binding)
         {
-            lastBinds.Add(binding);
+            LastBinds.Add(binding);
             Application.Current.MainWindow.InputBindings.Add(binding);
         }
 
