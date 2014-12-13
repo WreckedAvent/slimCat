@@ -212,6 +212,8 @@ namespace slimCat.Models
             bookmarks.Set(account.Bookmarks);
             friends.Set(account.AllFriends.Select(x => x.Key));
             localFriends.Set(account.AllFriends.Where(x => x.Value.Contains(name)).Select(x => x.Key));
+
+            SettingsService.ReadApplicationSettingsFromXml(name, this);
         }
 
         private void TrySyncSavedLists(ListKind listKind, bool save = true)
