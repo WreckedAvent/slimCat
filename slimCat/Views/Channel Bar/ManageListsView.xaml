@@ -159,15 +159,22 @@
                         <ListBox ItemsSource="{Binding Path=Interested, Mode=OneWay}" />
                     </Expander>
 
-                    <Expander Visibility="{Binding HasSearchResults, Converter={StaticResource BoolConverter}}">
+                    <Expander Visibility="{Binding HasSearchResults, Converter={StaticResource BoolConverter}}"
+                              IsExpanded="{Binding Path=HasNewSearchResults}">
                         <Expander.Header>
                             <TextBlock Foreground="{StaticResource ForegroundBrush}">
                                 <Run Text="Search Results -" />
                                 <Run Text="{Binding Path=SearchResults.Count, Mode=OneWay}" />
                             </TextBlock>
                         </Expander.Header>
-                        <ListBox ItemsSource="{Binding Path=SearchResults, Mode=OneWay}" />
-                    </Expander>
+                        <StackPanel>
+                            <v:RestartButtonView Command="{Binding Path=ClearSearchResultsCommand}"
+                             ToolTip="Clear all search results"
+                             DockPanel.Dock="Top"
+                             Margin="0,10,0,0" />
+                            <ListBox ItemsSource="{Binding Path=SearchResults, Mode=OneWay}" />
+                        </StackPanel>
+                      </Expander>
 
                     <Expander>
                         <Expander.Header>

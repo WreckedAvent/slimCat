@@ -54,7 +54,7 @@ namespace slimCat.Services
                 CharacterManager.Add(character, ListKind.SearchResult);
             }
 
-            Events.GetEvent<ChatSearchResultEvent>().Publish(null);
+            Events.GetEvent<ChatSearchResultEvent>().Publish(resultsList.Any());
             Events.GetEvent<ErrorEvent>()
                 .Publish(resultsList.Any()
                     ? "Got search results successfully."

@@ -49,6 +49,12 @@ namespace slimCat.Views
                 if (NotificationButton.IsChecked == false)
                     NotificationButton.IsChecked = true;
             };
+
+            vm.OnJumpToSearch += (s, e) =>
+            {
+                if (ManageListsButton.IsChecked == false)
+                    ManageListsButton.IsChecked = true;
+            };
         }
 
         #endregion

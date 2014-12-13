@@ -24,9 +24,12 @@ namespace slimCat.ViewModels
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Windows.Input;
+    using Libraries;
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
+    using SimpleJson;
     using Utilities;
     using Views;
 
@@ -59,6 +62,9 @@ namespace slimCat.ViewModels
         };
 
         private bool showOffline;
+        private bool hasNewSearchResults;
+
+        private RelayCommand clearSearch;
 
         #endregion
 
@@ -174,6 +180,7 @@ namespace slimCat.ViewModels
             {
                 OnPropertyChanged("SearchResults");
                 OnPropertyChanged("HasSearchResults");
+                HasNewSearchResults = true;
             });
         }
 
@@ -230,6 +237,16 @@ namespace slimCat.ViewModels
             get { return SearchResults.Any(); }
         }
 
+        public bool HasNewSearchResults
+        {
+            get { return hasNewSearchResults; }
+            set
+            {
+                hasNewSearchResults = value; 
+                OnPropertyChanged("HasNewSearchResults");
+            }
+        }
+
         public IEnumerable<ICharacter> Ignored
         {
             get { return GetList(ListKind.Ignored); }
@@ -273,6 +290,21 @@ namespace slimCat.ViewModels
             {
                 showOffline = value;
                 UpdateBindings();
+            }
+        }
+
+        public ICommand ClearSearchResultsCommand
+        {
+            get
+            {
+                return clearSearch ??
+                       (clearSearch =
+                           new RelayCommand(_ =>
+                           {
+                               CharacterManager.Set(new List<string>(), ListKind.SearchResult);
+                               OnPropertyChanged("SearchResults");
+                               OnPropertyChanged("HasSearchResults");
+                           }));
             }
         }
 

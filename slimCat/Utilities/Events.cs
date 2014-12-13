@@ -132,7 +132,7 @@ namespace slimCat
     {
     }
 
-    public class ChatSearchResultEvent : CompositePresentationEvent<object>
+    public class ChatSearchResultEvent : CompositePresentationEvent<bool>
     {
     }
 }

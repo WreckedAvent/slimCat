@@ -46,8 +46,8 @@
                                           Visibility="{Binding Path=HasUsers, Converter={StaticResource BoolConverter}}" />
 
                     <v:ManageButtonView CommandParameter="ManageLists"
-                                        Command="{Binding Path=ChangeTabCommand}"
-                                        v:Properties.NeedsAttention="{Binding HasNewSearchResults}" />
+                                        x:Name="ManageListsButton"
+                                        Command="{Binding Path=ChangeTabCommand}" />
 
                     <v:NotificationsButtonView CommandParameter="Notifications"
                                                x:Name="NotificationButton"

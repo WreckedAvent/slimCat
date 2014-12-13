@@ -52,8 +52,6 @@ namespace slimCat.ViewModels
         #region Fields
 
         private string currentSelected;
-        private bool hasNewNotifications;
-        private bool hasNewSearchResults;
         private bool hasUpdate;
 
         private bool isExpanded = true;
@@ -84,7 +82,19 @@ namespace slimCat.ViewModels
 
                 ChatModel.Notifications.CollectionChanged += (s, e) => HasUpdate = ChatModel.Notifications.Any();
 
-                Events.GetEvent<ChatSearchResultEvent>().Subscribe(_ => HasNewSearchResults = true);
+                Events.GetEvent<ChatSearchResultEvent>().Subscribe(success =>
+                {
+                    if (!success) return;
+
+                    if (!IsExpanded) 
+                        IsExpanded = true;
+
+                    if (currentSelected != "ManageLists")
+                        NavigateToTabEvent("ManageLists");
+
+                    if (OnJumpToSearch != null)
+                        OnJumpToSearch(this, null);
+                }, ThreadOption.UIThread);
 
                 LoggingSection = "channel bar vm";
             }
@@ -100,6 +110,8 @@ namespace slimCat.ViewModels
         #region Public Events
 
         public event EventHandler OnJumpToNotifications;
+
+        public event EventHandler OnJumpToSearch;
 
         #endregion
 
@@ -141,22 +153,9 @@ namespace slimCat.ViewModels
             {
                 if (value == hasUpdate && needsAttention == value) return;
 
-                NeedsAttention = ((value || hasNewSearchResults) && !IsExpanded);
+                NeedsAttention = value && !IsExpanded;
                 hasUpdate = value;
                 OnPropertyChanged("HasUpdate");
-            }
-        }
-
-        public bool HasNewSearchResults
-        {
-            get { return hasNewSearchResults; }
-            set
-            {
-                if (value == hasNewSearchResults && needsAttention == value) return;
-
-                NeedsAttention = ((value || hasUpdate) && !IsExpanded);
-                hasNewSearchResults = value;
-                OnPropertyChanged("HasNewSearchResults");
             }
         }
 
@@ -292,7 +291,6 @@ namespace slimCat.ViewModels
                 case "ManageLists":
                 {
                     RegionManager.Regions[TabViewRegion].RequestNavigate(ManageListsViewModel.ManageListsTabView);
-                    HasNewSearchResults = false;
                     break;
                 }
 
