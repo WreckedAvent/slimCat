@@ -62,6 +62,7 @@ namespace slimCat.Services
         public static ChannelSettingsModel GetChannelSettings(
             string currentCharacter, string title, string id, ChannelType chanType)
         {
+            Log("Reading settings for " + id);
             MakeSettingsFileIfNotExist(currentCharacter, title, id, chanType);
             var workingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
             workingPath = Path.Combine(workingPath, SettingsFileName);
@@ -75,6 +76,7 @@ namespace slimCat.Services
             }
             catch
             {
+                Log("Settings for {0} could not be read".FormatWith(id));
                 return new ChannelSettingsModel(chanType == ChannelType.PrivateMessage);
 
                 // return a default if it's not legible
@@ -97,6 +99,8 @@ namespace slimCat.Services
                     var serializer = new XmlSerializer(typeof (ProfileData));
                     serializer.Serialize(streamWriter, profileData);
                 }
+
+                Log("Saved profile cache for " + targetCharacter);
             }
             catch
             {
@@ -184,6 +188,7 @@ namespace slimCat.Services
         /// </summary>
         public static void ReadApplicationSettingsFromXml(string currentCharacter, ICharacterManager cm)
         {
+            Log("Reading global settings");
             MakeGlobalSettingsFileIfNotExist(currentCharacter);
 
             var type = typeof (ApplicationSettings);
@@ -244,6 +249,8 @@ namespace slimCat.Services
                         }
                     }
                 }
+
+                Log("Global settings read");
             }
             catch (InvalidOperationException)
             {
@@ -294,6 +301,7 @@ namespace slimCat.Services
         /// </summary>
         public static void SaveApplicationSettingsToXml(string currentCharacter)
         {
+            Log("Saving global settings");
             var root = new XElement("settings");
             var fileName = Path.Combine(
                 StaticFunctions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName), SettingsFileName);
@@ -384,6 +392,7 @@ namespace slimCat.Services
         /// </summary>
         public static void UpdateSettingsFile(object newSettingsModel, string currentCharacter, string title, string id)
         {
+            Log("Updating settings for " + id);
             var workingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
             workingPath = Path.Combine(workingPath, SettingsFileName);
 
@@ -420,6 +429,7 @@ namespace slimCat.Services
             if (CopyDefaultGlobalSettingsIfExist(currentCharacter))
                 return;
 
+            Log("Global settings could not be restored; regenerating");
             SaveApplicationSettingsToXml(currentCharacter);
         }
 
@@ -451,6 +461,7 @@ namespace slimCat.Services
 
             if (File.Exists(backup))
             {
+                Log("Restoring global settings from backup");
                 File.Copy(backup, destPath);
                 return true;
             }
@@ -465,7 +476,7 @@ namespace slimCat.Services
             if (!File.Exists(sourcePath))
                 return false;
 
-
+            Log("Restoring global settings from default settings");
             File.Copy(sourcePath, destPath);
 
             return true;
@@ -486,7 +497,12 @@ namespace slimCat.Services
 
             // make a new XML settings document
             var newSettings = GetDefaultSettings(title, id, chanType == ChannelType.PrivateMessage);
+            Log("Making new settings for " + id);
             SerializeObjectToXml(newSettings, workingPath);
+        }
+        private static void Log(string log)
+        {
+            Logging.LogLine(log, "setting serv");
         }
 
         #endregion
