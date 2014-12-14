@@ -800,10 +800,7 @@ namespace slimCat.ViewModels
             }
 
             if (string.IsNullOrWhiteSpace(Message))
-            {
-                UpdateError("Hmm. Did you ... did you write anything?");
                 return;
-            }
 
             Events.SendUserCommand(CommandDefinitions.ClientSendPm, new[] {Message, ConversationWith.Name});
 
@@ -833,10 +830,7 @@ namespace slimCat.ViewModels
             }
 
             if (string.IsNullOrWhiteSpace(Message))
-            {
-                UpdateError("Hmm. I can't send nothing.");
                 return;
-            }
 
             noteService.SendNoteAsync(Message, ConversationWith.Name, NoteSubject);
             isInNoteCoolDown = true;

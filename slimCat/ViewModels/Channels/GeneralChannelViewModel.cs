@@ -706,10 +706,7 @@ namespace slimCat.ViewModels
             }
 
             if (string.IsNullOrWhiteSpace(Message))
-            {
-                UpdateError("I'm sure you didn't mean to do that.");
                 return;
-            }
 
             var command = IsDisplayingChat
                 ? CommandDefinitions.ClientSendChannelMessage
