@@ -21,10 +21,14 @@ namespace slimCat
 {
     #region Usings
 
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Reflection;
+    using System.Web.UI.WebControls;
     using System.Windows;
     using Properties;
     using Utilities;
@@ -37,6 +41,52 @@ namespace slimCat
     [ExcludeFromCodeCoverage]
     public partial class App
     {
+        #region Fields
+
+        private IList<string> requiredFiles = new[]
+        {
+            "Theme\\Colors.xaml",
+            "Theme\\theme.csv",
+            "Theme\\Theme.xaml",
+            "icons\\auto.png",
+            "icons\\auto.png",
+            "icons\\browser.png",
+            "icons\\channels.png",
+            "icons\\chat.png",
+            "icons\\close.png",
+            "icons\\document.png",
+            "icons\\down.png",
+            "icons\\edit.png",
+            "icons\\filter.png",
+            "icons\\folder.png",
+            "icons\\friend.png",
+            "icons\\global.png",
+            "icons\\logout.png",
+            "icons\\male.png",
+            "icons\\female.png",
+            "icons\\markup.png",
+            "icons\\more.png",
+            "icons\\none.png",
+            "icons\\notifications.png",
+            "icons\\pin.png",
+            "icons\\private_closed.png",
+            "icons\\private_open.png",
+            "icons\\profile.png",
+            "icons\\public.png",
+            "icons\\restart.png",
+            "icons\\search.png",
+            "icons\\send_ad.png",
+            "icons\\send_chat.png",
+            "icons\\send_console.png",
+            "icons\\send_note.png",
+            "icons\\settings.png",
+            "icons\\stats.png",
+            "icons\\transgender.png",
+            "icons\\up.png",
+            "icons\\userlist.png"
+        };
+        #endregion
+
         #region Constructors and Destructors
 
         /// <summary>
@@ -62,6 +112,18 @@ namespace slimCat
             {
                 Settings.Default.Upgrade();
                 Settings.Default.ApplicationVersion = appVersionString;
+            }
+
+            foreach (var file in requiredFiles)
+            {
+                if (File.Exists(file)) continue;
+
+                Exceptions.ShowErrorBox(
+                    "slimCat will now exit. \nReason: Required theme file \"{0}\" is missing. This is likely due to a bad theme install.\n".FormatWith(file) +
+                    "Please install themes by extracting a theme over the default theme, overwriting when prompted to.",
+                    "slimCat Fatal Error");
+
+                Environment.Exit(-1);
             }
 
             var bstrap = new Bootstrapper();
