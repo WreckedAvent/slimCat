@@ -286,23 +286,37 @@ namespace slimCat.Views
 
             if (!e.SourceDataObject.GetDataPresent(DataFormats.Text, true)) return;
 
-            var text = e.SourceDataObject.GetData(DataFormats.Text) as string;
-            if (string.IsNullOrWhiteSpace(text)) return;
+            var pasteText = e.SourceDataObject.GetData(DataFormats.Text) as string;
+            if (string.IsNullOrWhiteSpace(pasteText)) return;
 
             // only auto-markup links
-            if (!(text.StartsWith("http://") || text.StartsWith("https://")) || text.Contains(" ")) return;
+            if (!(pasteText.StartsWith("http://") || pasteText.StartsWith("https://")) || pasteText.Contains(" ")) return;
 
-            var newPasteText = "[url={0}][/url]".FormatWith(text);
-            var lengthToAdd = newPasteText.IndexOf("[/url]", StringComparison.Ordinal);
 
             e.CancelCommand();
 
             if (string.IsNullOrWhiteSpace(Entry.SelectedText))
-                Entry.Text = Entry.Text.Insert(Entry.CaretIndex, newPasteText);
+            {
+                var formattedPaste = "[url={0}][/url]".FormatWith(pasteText);
+                Entry.Text = Entry.Text.Insert(Entry.CaretIndex, formattedPaste);
+                Entry.CaretIndex += formattedPaste.IndexOf("[/url]", StringComparison.Ordinal);
+            }
             else
+            {
+                var oldText = Entry.SelectedText;
+                var newPasteText = "[url={0}]{1}[/url]".FormatWith(pasteText, oldText);
                 Entry.SelectedText = newPasteText;
 
-            Entry.CaretIndex += lengthToAdd;
+                // why invoke? Entry.Text doesn't update immediately, it's updated on a scheduler or something
+                // this just schedules it after that
+                Dispatcher.BeginInvoke((Action) (() =>
+                {
+                    var startIndex = Entry.Text.IndexOf("{0}[/url]".FormatWith(oldText), StringComparison.Ordinal);
+                    if (startIndex == -1) return; // don't want to crash if something weird happens
+                    Entry.Select(startIndex, oldText.Length);
+                }));
+            }
+
         }
 
         private void ReAddContextualKeybinds()

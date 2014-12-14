@@ -21,8 +21,10 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Libraries;
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
@@ -48,6 +50,10 @@ namespace slimCat.ViewModels
 
         private GeneralChannelModel currentChan;
 
+        private readonly TimeSpan searchDebounce = TimeSpan.FromMilliseconds(250);
+
+        private readonly DeferredAction updateUserList;
+
         #endregion
 
         #region Constructors and Destructors
@@ -58,17 +64,9 @@ namespace slimCat.ViewModels
             Container.RegisterType<object, UsersTabView>(UsersTabView);
             genderSettings = new GenderSettingsModel();
 
-            SearchSettings.Updated += (s, e) =>
-            {
-                OnPropertyChanged("SortedUsers");
-                OnPropertyChanged("SearchSettings");
-            };
+            SearchSettings.Updated += OnSearchSettingsUpdated;
 
-            GenderSettings.Updated += (s, e) =>
-            {
-                OnPropertyChanged("GenderSettings");
-                OnPropertyChanged("SortedUsers");
-            };
+            GenderSettings.Updated += OnSearchSettingsUpdated;
 
             ChatModel.SelectedChannelChanged += (s, e) =>
             {
@@ -92,6 +90,8 @@ namespace slimCat.ViewModels
                              || thisNotification.Arguments is CharacterListChangedEventArgs)
                         OnPropertyChanged("SortedUsers");
                 });
+
+            updateUserList = DeferredAction.Create(() => OnPropertyChanged("SortedUsers"));
         }
 
         #endregion
@@ -142,6 +142,13 @@ namespace slimCat.ViewModels
         private string RelationshipToUser(ICharacter character)
         {
             return character.RelationshipToUser(CharacterManager, ChatModel.CurrentChannel as GeneralChannelModel);
+        }
+
+        private void OnSearchSettingsUpdated(object sender, EventArgs e)
+        {
+            OnPropertyChanged("GenderSettings");
+            OnPropertyChanged("SearchSettings");
+            updateUserList.Defer(searchDebounce);
         }
 
         #endregion

@@ -29,7 +29,6 @@ namespace slimCat.ViewModels
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
-    using SimpleJson;
     using Utilities;
     using Views;
 
@@ -49,6 +48,9 @@ namespace slimCat.ViewModels
         #region Fields
 
         private readonly GenderSettingsModel genderSettings;
+
+        private readonly DeferredAction updateLists;
+        private readonly TimeSpan searchDebounce = TimeSpan.FromMilliseconds(250);
 
         private readonly IDictionary<ListKind, string> listKinds = new Dictionary<ListKind, string>
         {
@@ -79,17 +81,8 @@ namespace slimCat.ViewModels
             SearchSettings.ShowNotInterested = true;
             SearchSettings.ShowIgnored = true;
 
-            SearchSettings.Updated += (s, e) =>
-            {
-                OnPropertyChanged("SearchSettings");
-                UpdateBindings();
-            };
-
-            GenderSettings.Updated += (s, e) =>
-            {
-                OnPropertyChanged("GenderSettings");
-                UpdateBindings();
-            };
+            SearchSettings.Updated += OnSearchSettingsUpdated;
+            GenderSettings.Updated += OnSearchSettingsUpdated;
 
             ChatModel.PropertyChanged += (s, e) =>
             {
@@ -182,6 +175,8 @@ namespace slimCat.ViewModels
                 OnPropertyChanged("HasSearchResults");
                 HasNewSearchResults = true;
             });
+
+            updateLists = DeferredAction.Create(UpdateBindings);
         }
 
         #endregion
@@ -190,29 +185,22 @@ namespace slimCat.ViewModels
 
         public IEnumerable<ICharacter> Banned
         {
-            get
-            {
-                var channel = ChatModel.CurrentChannel as GeneralChannelModel;
-                if (HasUsers && channel != null)
-                    return channel.CharacterManager.GetCharacters(ListKind.Banned, false).OrderBy(x => x.Name);
-
-                return null;
-            }
+            get { return GetChannelList(ListKind.Banned, false); }
         }
 
         public IEnumerable<ICharacter> Bookmarks
         {
-            get { return GetList(ListKind.Bookmark); }
+            get { return GetGlobalList(ListKind.Bookmark); }
         }
 
         public IEnumerable<ICharacter> Friends
         {
-            get { return GetList(ListKind.Friend); }
+            get { return GetGlobalList(ListKind.Friend); }
         }
 
         public IEnumerable<ICharacter> SearchResults
         {
-            get { return GetList(ListKind.SearchResult); }
+            get { return GetGlobalList(ListKind.SearchResult); }
         }
 
         public GenderSettingsModel GenderSettings
@@ -222,14 +210,7 @@ namespace slimCat.ViewModels
 
         public bool HasBanned
         {
-            get
-            {
-                var channel = ChatModel.CurrentChannel as GeneralChannelModel;
-                if (HasUsers && channel != null)
-                    return channel.CharacterManager.GetNames(ListKind.Banned, false).Count > 0;
-
-                return false;
-            }
+            get { return Banned.Any(); }
         }
 
         public bool HasSearchResults
@@ -249,32 +230,22 @@ namespace slimCat.ViewModels
 
         public IEnumerable<ICharacter> Ignored
         {
-            get { return GetList(ListKind.Ignored); }
+            get { return GetGlobalList(ListKind.Ignored); }
         }
 
         public IEnumerable<ICharacter> Interested
         {
-            get { return GetList(ListKind.Interested); }
+            get { return GetGlobalList(ListKind.Interested); }
         }
 
         public IEnumerable<ICharacter> Moderators
         {
-            get
-            {
-                var channel = ChatModel.CurrentChannel as GeneralChannelModel;
-                if (HasUsers && channel != null)
-                    return
-                        channel.CharacterManager.GetCharacters(ListKind.Moderator, !showOffline)
-                            .Where(x => showOffline || x.Status != StatusType.Offline)
-                            .OrderBy(x => x.Name);
-
-                return null;
-            }
+            get { return GetChannelList(ListKind.Moderator, !showOffline); }
         }
 
         public IEnumerable<ICharacter> NotInterested
         {
-            get { return GetList(ListKind.NotInterested); }
+            get { return GetGlobalList(ListKind.NotInterested); }
         }
 
         public bool ShowMods
@@ -318,13 +289,28 @@ namespace slimCat.ViewModels
                 GenderSettings, SearchSettings, CharacterManager, ChatModel.CurrentChannel as GeneralChannelModel);
         }
 
-        private IEnumerable<ICharacter> GetList(ListKind listKind)
+        private IEnumerable<ICharacter> GetList(ICharacterManager manager, ListKind listKind, bool onlineOnly = true)
         {
             return
-                CharacterManager.GetCharacters(listKind, !showOffline)
-                    .Where(x => showOffline || x.Status != StatusType.Offline)
+                manager.GetCharacters(listKind, onlineOnly)
+                    .Where(x => !onlineOnly || x.Status != StatusType.Offline)
+                    .Where(MeetsFilter)
                     .OrderBy(x => x.Name);
         }
+
+        private IEnumerable<ICharacter> GetGlobalList(ListKind listkind)
+        {
+            return GetList(CharacterManager, listkind, !showOffline);
+        }
+
+        private IEnumerable<ICharacter> GetChannelList(ListKind listKind, bool onlineOnly)
+        {
+            var channel = ChatModel.CurrentChannel as GeneralChannelModel;
+            if (HasUsers && channel != null)
+                return GetList(channel.CharacterManager, listKind, onlineOnly);
+
+            return new List<ICharacter>();
+        } 
 
         private void UpdateBindings()
         {
@@ -335,6 +321,14 @@ namespace slimCat.ViewModels
             OnPropertyChanged("Ignored");
             OnPropertyChanged("Moderators");
             OnPropertyChanged("Banned");
+            OnPropertyChanged("SearchResults");
+        }
+
+        private void OnSearchSettingsUpdated(object sender, EventArgs e)
+        {
+            OnPropertyChanged("SearchSettings");
+            OnPropertyChanged("GenderSettings");
+            updateLists.Defer(searchDebounce);
         }
 
         #endregion

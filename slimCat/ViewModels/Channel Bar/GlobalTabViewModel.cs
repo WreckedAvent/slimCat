@@ -21,8 +21,10 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Libraries;
     using Microsoft.Practices.Unity;
     using Models;
     using Services;
@@ -45,6 +47,8 @@ namespace slimCat.ViewModels
         #region Fields
 
         private readonly GenderSettingsModel genderSettings;
+        private readonly DeferredAction updateUserList;
+        private readonly TimeSpan searchDebounce = TimeSpan.FromMilliseconds(250);
 
         #endregion
 
@@ -56,17 +60,8 @@ namespace slimCat.ViewModels
             Container.RegisterType<object, GlobalTabView>(GlobalTabView);
             genderSettings = new GenderSettingsModel();
 
-            SearchSettings.Updated += (s, e) =>
-            {
-                OnPropertyChanged("SortedUsers");
-                OnPropertyChanged("SearchSettings");
-            };
-
-            GenderSettings.Updated += (s, e) =>
-            {
-                OnPropertyChanged("GenderSettings");
-                OnPropertyChanged("SortedUsers");
-            };
+            SearchSettings.Updated += OnSearchSettingsUpdated;
+            GenderSettings.Updated += OnSearchSettingsUpdated;
 
             Events.GetEvent<NewUpdateEvent>().Subscribe(
                 args =>
@@ -79,6 +74,9 @@ namespace slimCat.ViewModels
                         || thisNotification.Arguments is LoginStateChangedEventArgs)
                         OnPropertyChanged("SortedUsers");
                 });
+
+
+            updateUserList = DeferredAction.Create(() => OnPropertyChanged("SortedUsers"));
         }
 
         #endregion
@@ -116,6 +114,14 @@ namespace slimCat.ViewModels
         private string RelationshipToUser(ICharacter character)
         {
             return character.RelationshipToUser(CharacterManager, null);
+        }
+
+
+        private void OnSearchSettingsUpdated(object sender, EventArgs e)
+        {
+            OnPropertyChanged("GenderSettings");
+            OnPropertyChanged("SearchSettings");
+            updateUserList.Defer(searchDebounce);
         }
 
         #endregion
