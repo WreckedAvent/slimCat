@@ -342,6 +342,11 @@ namespace slimCat.ViewModels
 
             if (CommandParser.HasNonCommand(Message))
             {
+                if (Message.StartsWith("/my "))
+                    Message = "/me 's " + Message.Substring("/my ".Length);
+                else if (Message.StartsWith("/me's "))
+                    Message = "/me 's " + Message.Substring("/me's ".Length);
+
                 SendMessage();
                 return;
             }
