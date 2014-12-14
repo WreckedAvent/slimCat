@@ -79,7 +79,7 @@ namespace slimCat.Views
         private void OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
-            StaticFunctions.TryOpenRightClickMenuCommand<Grid>(sender, 2);
+            StaticFunctions.TryOpenRightClickMenuCommand<DisposableView>(sender, 1);
         }
     }
 }
