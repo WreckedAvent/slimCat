@@ -431,11 +431,11 @@ namespace slimCat.Utilities
 
             ViewModelBase parentDataContext;
             var frameworkElement = parentObject as FrameworkElement;
-            var contentElement = parentObject as ContentElement;
+            var contentElement = parentObject as FrameworkContentElement;
             if (frameworkElement != null)
-                parentDataContext = (parentObject as FrameworkElement).DataContext as ViewModelBase;
+                parentDataContext = frameworkElement.DataContext as ViewModelBase;
             else if (contentElement != null)
-                parentDataContext = (parentObject as FrameworkContentElement).DataContext as ViewModelBase;
+                parentDataContext = contentElement.DataContext as ViewModelBase;
             else
                 return;
 
@@ -446,11 +446,11 @@ namespace slimCat.Utilities
 
         private static Dictionary<Type, Func<Hyperlink, string>> TypeToGetName = new Dictionary<Type, Func<Hyperlink, string>>{
             { typeof(CharacterModel),
-                (x) => ((CharacterModel)x.DataContext).Name },
+                x => ((CharacterModel)x.DataContext).Name },
             { typeof(MessageModel),
-                (x) => ((MessageModel)x.DataContext).Poster.Name },
+                x => ((MessageModel)x.DataContext).Poster.Name },
             { typeof(CharacterUpdateModel),
-                (x) => ((CharacterUpdateModel)x.DataContext).TargetCharacter.Name }
+                x => ((CharacterUpdateModel)x.DataContext).TargetCharacter.Name }
         };
 
     }
