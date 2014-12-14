@@ -141,6 +141,7 @@ namespace slimCat.Libraries
             if (inlines == null || span == null)
                 return;
 
+            span.Inlines.Clear();
             foreach (var inline in inlines)
                 span.Inlines.Add(inline);
         }
