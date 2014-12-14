@@ -293,7 +293,6 @@ namespace slimCat.ViewModels
         {
             return
                 manager.GetCharacters(listKind, onlineOnly)
-                    .Where(x => !onlineOnly || x.Status != StatusType.Offline)
                     .Where(MeetsFilter)
                     .OrderBy(x => x.Name);
         }
