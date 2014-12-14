@@ -247,7 +247,7 @@ namespace slimCat.ViewModels
                 // if we just came from notifications, we have nothing new to see
                 HasUpdate = false;
 
-                if (ApplicationSettings.WipeNotificationsOnTabChange)
+                if (ApplicationSettings.WipeNotificationsOnTabChange && !isExpanded)
                     ChatModel.Notifications.Clear();
             }
 
