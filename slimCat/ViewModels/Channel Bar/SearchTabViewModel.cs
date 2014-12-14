@@ -61,7 +61,6 @@ namespace slimCat.ViewModels
             new ObservableCollection<SearchTermModel>();
 
         private readonly Timer chatSearchCooldownTimer = new Timer(5500);
-        private readonly TimeSpan searchDebounce = TimeSpan.FromMilliseconds(250);
 
         private ObservableCollection<SearchTermModel> selectedSearchTerms =
             new ObservableCollection<SearchTermModel>();
@@ -189,7 +188,7 @@ namespace slimCat.ViewModels
 
         private void UpdateAvailableViews()
         {
-            updateActiveViews.Defer(searchDebounce);
+            updateActiveViews.Defer(Constants.SearchDebounce);
         }
 
         private void ClearSearchTermEvent(object obj)

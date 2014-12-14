@@ -50,8 +50,6 @@ namespace slimCat.ViewModels
 
         private GeneralChannelModel currentChan;
 
-        private readonly TimeSpan searchDebounce = TimeSpan.FromMilliseconds(250);
-
         private readonly DeferredAction updateUserList;
 
         #endregion
@@ -148,7 +146,7 @@ namespace slimCat.ViewModels
         {
             OnPropertyChanged("GenderSettings");
             OnPropertyChanged("SearchSettings");
-            updateUserList.Defer(searchDebounce);
+            updateUserList.Defer(Constants.SearchDebounce);
         }
 
         #endregion

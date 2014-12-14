@@ -92,6 +92,8 @@ namespace slimCat.ViewModels
 
         private Timer updateTimer = new Timer(1000);
 
+        private readonly DeferredAction updateSearch;
+
         #endregion
 
         #region Constructors and Destructor
@@ -188,6 +190,8 @@ namespace slimCat.ViewModels
                 };
 
                 PropertyChanged += OnPropertyChanged;
+
+                updateSearch = DeferredAction.Create(() => messageManager.IsFiltering = isSearching);
 
                 Events.GetEvent<NewUpdateEvent>().Subscribe(UpdateChat);
 
@@ -799,7 +803,7 @@ namespace slimCat.ViewModels
                 case "SearchSettings":
                 {
                     if (!SearchSettings.IsChangingSettings)
-                        messageManager.IsFiltering = isSearching;
+                        updateSearch.Defer(Constants.SearchDebounce);
                     break;
                 }
                 case "IsSearching":

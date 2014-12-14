@@ -50,7 +50,6 @@ namespace slimCat.ViewModels
         private readonly GenderSettingsModel genderSettings;
 
         private readonly DeferredAction updateLists;
-        private readonly TimeSpan searchDebounce = TimeSpan.FromMilliseconds(250);
 
         private readonly IDictionary<ListKind, string> listKinds = new Dictionary<ListKind, string>
         {
@@ -328,7 +327,7 @@ namespace slimCat.ViewModels
         {
             OnPropertyChanged("SearchSettings");
             OnPropertyChanged("GenderSettings");
-            updateLists.Defer(searchDebounce);
+            updateLists.Defer(Constants.SearchDebounce);
         }
 
         #endregion

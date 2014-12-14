@@ -48,7 +48,6 @@ namespace slimCat.ViewModels
 
         private readonly GenderSettingsModel genderSettings;
         private readonly DeferredAction updateUserList;
-        private readonly TimeSpan searchDebounce = TimeSpan.FromMilliseconds(250);
 
         #endregion
 
@@ -121,7 +120,7 @@ namespace slimCat.ViewModels
         {
             OnPropertyChanged("GenderSettings");
             OnPropertyChanged("SearchSettings");
-            updateUserList.Defer(searchDebounce);
+            updateUserList.Defer(Constants.SearchDebounce);
         }
 
         #endregion

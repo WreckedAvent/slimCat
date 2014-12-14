@@ -19,6 +19,8 @@
 
 namespace slimCat.Utilities
 {
+    using System;
+
     /// <summary>
     ///     The constants used by slimCat.
     /// </summary>
@@ -62,6 +64,8 @@ namespace slimCat.Utilities
         ///     The client's version.
         /// </summary>
         public static readonly string ClientVer = Version.ToString();
+
+        public static readonly TimeSpan SearchDebounce = TimeSpan.FromMilliseconds(250);
 
         #endregion
 
