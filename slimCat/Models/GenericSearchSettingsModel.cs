@@ -90,6 +90,8 @@ namespace slimCat.Models
             }
         }
 
+        public bool ShowOffline { get; set; }
+
         /// <summary>
         ///     Gets the open search settings command.
         /// </summary>
@@ -320,7 +322,7 @@ namespace slimCat.Models
                     return showNormal;
 
                 default:
-                    return false;
+                    return ShowOffline;
             }
         }
 

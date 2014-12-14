@@ -259,6 +259,7 @@ namespace slimCat.ViewModels
             set
             {
                 showOffline = value;
+                SearchSettings.ShowOffline = showOffline;
                 UpdateBindings();
             }
         }

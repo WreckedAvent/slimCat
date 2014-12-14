@@ -217,12 +217,12 @@ namespace slimCat.Utilities
             };
 
             // weee thread-safe functions
-            foreach (var pair in map.Where(pair => cm.IsOnList(name, pair.Key)))
+            foreach (var pair in map.Where(pair => cm.IsOnList(name, pair.Key, false)))
                 return pair.Value;
 
             if (channel == null) return search.MeetsStatusFilter(character);
 
-            return channel.CharacterManager.IsOnList(name, ListKind.Moderator)
+            return channel.CharacterManager.IsOnList(name, ListKind.Moderator, false)
                 ? search.ShowMods
                 : search.MeetsStatusFilter(character);
         }
