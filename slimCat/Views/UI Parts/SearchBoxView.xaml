@@ -14,13 +14,14 @@
         </Grid.ColumnDefinitions>
 
         <v:ImageTextBox
+            x:Name="Entry"
             Text="{Binding Path=SearchString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             TextWrapping="Wrap"
             FontSize="13"
             BorderThickness="2"
             ScrollViewer.CanContentScroll="True"
             AcceptsReturn="False"
-            ToolTip="Search the above content for these terms. Seperate search terms with a comma as neccesary."
+            ToolTip="Search the above content for these terms. Separate search terms with a comma as necessary."
             LabelText="Search ..."
             IconSource="pack://application:,,,/icons/search.png"
             TextAlignment="Left"

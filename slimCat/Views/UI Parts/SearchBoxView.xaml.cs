@@ -19,11 +19,19 @@
 
 namespace slimCat.Views
 {
+    using Models;
+
     /// <summary>
     ///     Interaction logic for SearchBoxView.xaml
     /// </summary>
     public partial class SearchBoxView
     {
+        #region Fields
+        private GenericSearchSettingsModel vm;
+        private ShortcutManager shortcuts;
+        #endregion
+
+
         #region Constructors and Destructors
 
         /// <summary>
@@ -32,8 +40,19 @@ namespace slimCat.Views
         public SearchBoxView()
         {
             InitializeComponent();
+
+            OnContextChanged();
+
+            DataContextChanged += (s, e) => OnContextChanged();
         }
 
         #endregion
+
+        private void OnContextChanged()
+        {
+            vm = DataContext as GenericSearchSettingsModel;
+            if (vm != null)
+                shortcuts = new ShortcutManager(Entry, vm);
+        }
     }
 }

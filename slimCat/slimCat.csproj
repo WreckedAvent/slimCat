@@ -439,6 +439,7 @@
     <Compile Include="Views\UI Parts\SearchBoxView.xaml.cs">
       <DependentUpon>SearchBoxView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\UI Parts\ShortcutManager.cs" />
     <Compile Include="Views\User Bar\UserbarChannelView.xaml.cs">
       <DependentUpon>UserbarChannelView.xaml</DependentUpon>
     </Compile>
