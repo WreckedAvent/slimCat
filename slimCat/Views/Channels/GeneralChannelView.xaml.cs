@@ -95,6 +95,12 @@ namespace slimCat.Views
                 ChannelDescriptionExpander.IsExpanded = true;
         }
 
+        private void OnHeaderRowDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            if (HeaderRowDefinition.Height.Value == HeaderRowDefinition.MinHeight)
+                HeaderRowDefinition.Height = new GridLength();
+        }
+
         private void OnEntryBoxResizeRequested(object sender, MouseButtonEventArgs e)
         {
             EntryBoxRowDefinition.Height = new GridLength();
