@@ -34,6 +34,11 @@ namespace slimCat.Models
         #region Public Properties
 
         /// <summary>
+        ///     Gets or sets the host name.
+        /// </summary>
+        string ServerHost { get; set; }
+
+        /// <summary>
         ///     Gets or sets the account name.
         /// </summary>
         string AccountName { get; set; }

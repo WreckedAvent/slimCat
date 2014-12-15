@@ -124,6 +124,20 @@ namespace slimCat.ViewModels
             }
         }
 
+        public string ServerHost
+        {
+            get { return model.ServerHost; }
+
+            set
+            {
+                if (model.ServerHost == value)
+                    return;
+
+                model.ServerHost = value;
+                OnPropertyChanged("ServerHost");
+            }
+        }
+
         public string RelayMessage
         {
             get { return relayMessage; }
@@ -218,12 +232,14 @@ namespace slimCat.ViewModels
                 {
                     Settings.Default.UserName = model.AccountName;
                     Settings.Default.Password = model.Password;
+                    Settings.Default.Host = model.ServerHost;
                     Settings.Default.Save();
                 }
                 else
                 {
                     Settings.Default.UserName = null;
                     Settings.Default.Password = null;
+                    Settings.Default.Host = null;
                     Settings.Default.Save();
                 }
 

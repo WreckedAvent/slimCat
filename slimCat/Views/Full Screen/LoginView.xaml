@@ -37,6 +37,19 @@
                     <KeyBinding Key="Enter" Command="{Binding LoginCommand}" />
                 </PasswordBox.InputBindings>
             </PasswordBox>
+            <Expander>
+                <Expander.Header>
+                    <TextBlock Foreground="{StaticResource DepressedBrush}" Text="Advanced" FontSize="16" />
+                </Expander.Header>
+                <StackPanel Margin="20, 0, 0, 0">
+                    <TextBlock Foreground="{StaticResource DepressedBrush}"
+                               Margin="10,0">
+                        Host
+                    </TextBlock>
+                    <TextBox Text="{Binding ServerHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="10, 0, 10, 10" />
+                </StackPanel>
+            </Expander>
         </StackPanel>
 
         <WrapPanel Orientation="Horizontal"
