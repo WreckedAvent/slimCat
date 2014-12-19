@@ -148,7 +148,10 @@ namespace slimCat.Models
         // prevents long ugly checking in our viewmodels for these
         public static readonly Dictionary<string, Func<string, string>> NonCommandCommands = new Dictionary<string, Func<string, string>>
         {
-            {"/me ",   x => x.Substring(x[4] == '\'' ? "/me ".Length : "/me".Length)},
+            {"/me ",   x => {if (x.Length > "/me ".Length)
+                                 return x.Substring(x[4] == '\'' ? "/me ".Length : "/me".Length);
+                             else
+                                 return string.Empty;}},
             {"/me's ", x => x.Substring("/me".Length)},
             {"/my ",   x => "'s" + x.Substring("/my".Length)},
             {"/post ", x => x.Substring("/post".Length) + " ~"},
