@@ -96,6 +96,7 @@ namespace slimCat.Utilities
             public const string Report = "report";
             public const string LogId = "logid";
             public const string CallId = "callid";
+            public const string Gender = "gender";
             public const string Status = "status";
             public const string StatusMessage = "statusmsg";
             public const string ThisCharacter = "_thisCharacter";

@@ -103,7 +103,7 @@ namespace slimCat
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-
+            
             var assembly = Assembly.GetExecutingAssembly();
             var appVersion = assembly.GetName().Version;
             var appVersionString = appVersion.ToString();
@@ -112,6 +112,14 @@ namespace slimCat
             {
                 Settings.Default.Upgrade();
                 Settings.Default.ApplicationVersion = appVersionString;
+            }
+
+            if (e.Args != null) {
+                foreach (var arg in e.Args) {
+                    if (string.Equals(arg, "advanced", StringComparison.InvariantCultureIgnoreCase)) {
+                        Settings.Default.Advanced = true;
+                    }
+                }
             }
 
             foreach (var file in requiredFiles)
