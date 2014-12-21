@@ -160,6 +160,13 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool Advanced {
+            get { return Settings.Default.Advanced; }
+            set {
+                Settings.Default.Advanced = value;
+            }
+        }
+
         public bool SaveLogin
         {
             get { return Settings.Default.SaveLogin; }

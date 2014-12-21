@@ -80,7 +80,7 @@ namespace slimCat.Models
         /// <summary>
         ///     The dispose.
         /// </summary>
-        public void Dispose()
+        public new void Dispose()
         {
             Dispose(true);
         }
@@ -89,7 +89,7 @@ namespace slimCat.Models
 
         #region Methods
 
-        protected abstract void Dispose(bool isManaged);
+        protected abstract override void Dispose(bool isManaged);
 
         #endregion
     }

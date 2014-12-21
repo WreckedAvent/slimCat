@@ -8,7 +8,9 @@
              xmlns:vm="clr-namespace:slimCat.ViewModels"
 
              d:DataContext="{d:DesignInstance vm:LoginViewModel}">
-
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
     <StackPanel IsEnabled="{Binding RequestSent, Converter={StaticResource BoolConverter}}"
                 VerticalAlignment="Center"
                 Margin="20"
@@ -37,7 +39,7 @@
                     <KeyBinding Key="Enter" Command="{Binding LoginCommand}" />
                 </PasswordBox.InputBindings>
             </PasswordBox>
-            <Expander>
+            <Expander Visibility="{Binding Advanced, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Expander.Header>
                     <TextBlock Foreground="{StaticResource DepressedBrush}" Text="Advanced" FontSize="16" />
                 </Expander.Header>

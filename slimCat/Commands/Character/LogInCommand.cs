@@ -63,13 +63,13 @@ namespace slimCat.Services
     {
         private void UserLoggedInCommand(IDictionary<string, object> command)
         {
-            var character = command.Get(Constants.Arguments.Identity);
+            var character = command.Get(Constants.Arguments.Character);
 
             var temp = new CharacterModel
             {
                 Name = character,
-                Gender = ParseGender(command.Get("gender")),
-                Status = command.Get("status").ToEnum<StatusType>()
+                Gender = ParseGender(command.Get(Constants.Arguments.Gender)),
+                Status = command.Get(Constants.Arguments.Status).ToEnum<StatusType>()
             };
 
             CharacterManager.SignOn(temp);

@@ -130,7 +130,6 @@ namespace slimCat.Services
                     {"soundon", OnSoundOnRequested},
                     {"soundoff", OnSoundOffRequested},
                     {"whois", OnWhoIsRequested},
-                    {"raw", OnRawRequested},
                     {Commands.ChannelRoll, OnRollRequested}
                 };
             }
