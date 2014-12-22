@@ -160,7 +160,8 @@ namespace slimCat.ViewModels
             }
         }
 
-        public bool Advanced {
+        public bool Advanced
+        {
             get { return Settings.Default.Advanced; }
             set {
                 Settings.Default.Advanced = value;
