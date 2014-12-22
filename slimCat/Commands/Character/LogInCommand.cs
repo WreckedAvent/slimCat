@@ -68,8 +68,8 @@ namespace slimCat.Services
             var temp = new CharacterModel
             {
                 Name = character,
-                Gender = ParseGender(command.Get("gender")),
-                Status = command.Get("status").ToEnum<StatusType>()
+                Gender = ParseGender(command.Get(Constants.Arguments.Gender)),
+                Status = command.Get(Constants.Arguments.Status).ToEnum<StatusType>()
             };
 
             CharacterManager.SignOn(temp);

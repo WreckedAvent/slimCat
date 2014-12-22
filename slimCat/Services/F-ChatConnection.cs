@@ -145,7 +145,7 @@ namespace slimCat.Services
         {
             socket.Close();
 
-            socket = new WebSocket(Constants.ServerHost);
+            socket = new WebSocket(Account.ServerHost);
 
             DoReconnect();
 
@@ -219,7 +219,7 @@ namespace slimCat.Services
             }
             else
             {
-                socket = new WebSocket(Constants.ServerHost);
+                socket = new WebSocket(Account.ServerHost);
             }
 
             events.GetEvent<ConnectionClosedEvent>().Publish(true);
@@ -260,7 +260,7 @@ namespace slimCat.Services
 
             Logging.LogLine("opening socket", "chat");
 
-            socket = new WebSocket(Constants.ServerHost);
+            socket = new WebSocket(Account.ServerHost);
 
             // define socket behavior
             socket.Opened += ConnectionOpened;

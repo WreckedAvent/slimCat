@@ -24,6 +24,7 @@ namespace slimCat.Models
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using Properties;
+    using slimCat.Utilities;
 
     #endregion
 
@@ -55,11 +56,18 @@ namespace slimCat.Models
 
             if (!string.IsNullOrWhiteSpace(Settings.Default.UserName))
                 AccountName = Settings.Default.UserName;
+
+            ServerHost = Settings.Default.Host ?? Constants.ServerHost;
         }
 
         #endregion
 
         #region Public Properties
+
+        /// <summary>
+        ///     Gets or sets the account name.
+        /// </summary>
+        public string ServerHost { get; set; }
 
         /// <summary>
         ///     Gets or sets the account name.

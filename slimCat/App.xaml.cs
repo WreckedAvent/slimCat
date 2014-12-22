@@ -32,6 +32,7 @@ namespace slimCat
     using System.Windows;
     using Properties;
     using Utilities;
+    using System.Linq;
 
     #endregion
 
@@ -103,7 +104,7 @@ namespace slimCat
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-
+            
             var assembly = Assembly.GetExecutingAssembly();
             var appVersion = assembly.GetName().Version;
             var appVersionString = appVersion.ToString();
@@ -112,6 +113,10 @@ namespace slimCat
             {
                 Settings.Default.Upgrade();
                 Settings.Default.ApplicationVersion = appVersionString;
+            }
+
+            if (e.Args != null) {
+                Settings.Default.Advanced = e.Args.Any(x => x.Equals("advanced", StringComparison.OrdinalIgnoreCase));
             }
 
             foreach (var file in requiredFiles)

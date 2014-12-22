@@ -72,7 +72,7 @@ namespace slimCat.Utilities
                 RegisterSingleton<IChatState, ChatState>();
 
                 Register<Application, Application>(Application.Current);
-                Register<WebSocket, WebSocket>(new WebSocket(Constants.ServerHost));
+                Register<WebSocket, WebSocket>(new WebSocket(Container.Resolve<IAccount>().ServerHost));
 
                 // these are services that are not directly used by our singletons or modules
                 Instantiate<NotificationService>();

@@ -240,8 +240,8 @@ namespace slimCat.Services
                     return ChannelInitializedCommand;
                 case Commands.ChannelDescription:
                     return ChannelDescriptionCommand;
-                case Commands.SystemError:
                 case Commands.SystemMessage:
+                case Commands.SystemError:
                     return ErrorCommand;
                 case Commands.UserInvite:
                     return InviteCommand;
@@ -333,7 +333,7 @@ namespace slimCat.Services
 
         private void UptimeCommand(IDictionary<string, object> command)
         {
-            var time = (long) command["starttime"];
+            var time = (long)command["starttime"];
             ChatModel.ServerUpTime = HelperConverter.UnixTimeToDateTime(time);
         }
 

@@ -99,7 +99,7 @@ namespace slimCat.Services
             manager.JoinChannel(kind, id, title);
         }
 
-        private void JoinChannelCommand(IDictionary<string, object> command)
+        private new void JoinChannelCommand(IDictionary<string, object> command)
         {
             var title = command.Get(Constants.Arguments.Title);
             var id = command.Get(Constants.Arguments.Channel);
