@@ -63,7 +63,7 @@ namespace slimCat.Services
     {
         private void UserLoggedInCommand(IDictionary<string, object> command)
         {
-            var character = command.Get(Constants.Arguments.Character);
+            var character = command.Get(Constants.Arguments.Identity);
 
             var temp = new CharacterModel
             {

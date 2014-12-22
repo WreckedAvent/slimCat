@@ -42,8 +42,6 @@ namespace slimCat.Models
 
         private readonly IDictionary<string, IList<string>> friends = new Dictionary<string, IList<string>>();
 
-        private string host = Constants.ServerHost;
-
         #endregion
 
         #region Constructors and Destructors
@@ -59,8 +57,7 @@ namespace slimCat.Models
             if (!string.IsNullOrWhiteSpace(Settings.Default.UserName))
                 AccountName = Settings.Default.UserName;
 
-            if (!string.IsNullOrWhiteSpace(Settings.Default.Host))
-                ServerHost = Settings.Default.Host;
+            ServerHost = Settings.Default.Host ?? Constants.ServerHost;
         }
 
         #endregion
@@ -70,7 +67,7 @@ namespace slimCat.Models
         /// <summary>
         ///     Gets or sets the account name.
         /// </summary>
-        public string ServerHost { get { return this.host; } set { this.host = value; } }
+        public string ServerHost { get; set; }
 
         /// <summary>
         ///     Gets or sets the account name.

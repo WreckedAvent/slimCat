@@ -32,6 +32,7 @@ namespace slimCat
     using System.Windows;
     using Properties;
     using Utilities;
+    using System.Linq;
 
     #endregion
 
@@ -115,11 +116,7 @@ namespace slimCat
             }
 
             if (e.Args != null) {
-                foreach (var arg in e.Args) {
-                    if (string.Equals(arg, "advanced", StringComparison.InvariantCultureIgnoreCase)) {
-                        Settings.Default.Advanced = true;
-                    }
-                }
+                Settings.Default.Advanced = e.Args.Any(x => x.Equals("advanced", StringComparison.OrdinalIgnoreCase));
             }
 
             foreach (var file in requiredFiles)
