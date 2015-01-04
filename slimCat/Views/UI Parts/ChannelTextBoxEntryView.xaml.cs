@@ -94,8 +94,9 @@ namespace slimCat.Views
             if (string.IsNullOrWhiteSpace(Entry.SelectedText))
             {
                 var formattedPaste = "[url={0}][/url]".FormatWith(pasteText);
+                var caretPasteIndex = Entry.CaretIndex;
                 Entry.Text = Entry.Text.Insert(Entry.CaretIndex, formattedPaste);
-                Entry.CaretIndex += formattedPaste.IndexOf("[/url]", StringComparison.Ordinal);
+                Entry.CaretIndex = caretPasteIndex + formattedPaste.IndexOf("[/url]", StringComparison.Ordinal);
             }
             else
             {
