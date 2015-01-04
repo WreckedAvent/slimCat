@@ -25,15 +25,8 @@
             </RowDefinition>
             <RowDefinition Height="*" />
             <RowDefinition Height="{Binding Path=EntryBoxRowHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                           x:Name="EntryBoxRowDefinition">
-                <RowDefinition.MaxHeight>
-                    <MultiBinding
-                         Converter="{StaticResource ReduceRowConverter}" ConverterParameter="0">
-                        <Binding RelativeSource="{RelativeSource AncestorType=v:DisposableView}" Path="ActualHeight" />
-                        <Binding ElementName="HeaderRowGrid" Path="ActualHeight" />
-                    </MultiBinding>
-                </RowDefinition.MaxHeight>
-            </RowDefinition>
+                           x:Name="EntryBoxRowDefinition"
+                           MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=160}" />
         </Grid.RowDefinitions>
 
         <Grid x:Name="HeaderRowGrid">
