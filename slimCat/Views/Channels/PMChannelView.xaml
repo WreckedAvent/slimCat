@@ -373,7 +373,7 @@
 
                                 <Expander Header="Other Characters"
                                           Visibility="{Binding Model.ProfileData.Alts.Count, Converter={StaticResource GreaterThanZeroConverter}}">
-                                    <ItemsControl ItemsSource="{Binding AltCharacters}"
+                                    <ItemsControl ItemsSource="{Binding AltCharacters, UpdateSourceTrigger=PropertyChanged}"
                                                   HorizontalAlignment="Left"
                                                   VerticalContentAlignment="Top"
                                                   HorizontalContentAlignment="Left"

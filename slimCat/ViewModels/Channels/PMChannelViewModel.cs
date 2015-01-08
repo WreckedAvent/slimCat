@@ -496,6 +496,9 @@ namespace slimCat.ViewModels
         {
             get
             {
+                if (model.ProfileData == null)
+                    return new ICharacter[0];
+
                 var toReturn = model.ProfileData.Alts
                     .Select(x => CharacterManager.Find(x))
                     .ToList();
@@ -737,6 +740,8 @@ namespace slimCat.ViewModels
 
             if (e.PropertyName == "ProfileData")
             {
+                OnPropertyChanged("AltCharacters");
+
                 if (ChatModel.CurrentCharacterData == null)
                 {
                     profileService.GetProfileDataAsync(ChatModel.CurrentCharacter.Name);
