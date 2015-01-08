@@ -371,6 +371,15 @@
                                     </StackPanel>
                                 </Expander>
 
+                                <Expander Header="Other Characters"
+                                          Visibility="{Binding Model.ProfileData.Alts.Count, Converter={StaticResource GreaterThanZeroConverter}}">
+                                    <ItemsControl ItemsSource="{Binding AltCharacters}"
+                                                  HorizontalAlignment="Left"
+                                                  VerticalContentAlignment="Top"
+                                                  HorizontalContentAlignment="Left"
+                                                  Style="{StaticResource AvatarBoxStyle}" />
+                                </Expander>
+
                                 <Expander Header="Kinks in Common"
                                           Visibility="{Binding KinksInCommon.Count, Converter={StaticResource GreaterThanZeroConverter}}">
                                     <StackPanel>

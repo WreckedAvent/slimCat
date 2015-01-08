@@ -151,7 +151,7 @@ namespace slimCat.ViewModels
 
                 Model.Settings = SettingsService.GetChannelSettings(
                     ChatModel.CurrentCharacter.Name, Model.Title, Model.Id, Model.Type);
-
+                
                 ChannelSettings.Updated += (s, e) =>
                 {
                     OnPropertyChanged("ChannelSettings");
@@ -489,6 +489,20 @@ namespace slimCat.ViewModels
                            IsViewingFullImage = false;
                            CurrentImage = null;
                        }));
+            }
+        }
+
+        public IList<ICharacter> AltCharacters
+        {
+            get
+            {
+                var toReturn = model.ProfileData.Alts
+                    .Select(x => CharacterManager.Find(x))
+                    .ToList();
+
+                toReturn.Each(x => x.GetAvatar());
+
+                return toReturn;
             }
         }
 

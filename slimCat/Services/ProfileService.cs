@@ -45,7 +45,9 @@ namespace slimCat.Services
 
         private const string ProfileTagsSelector = "//div[@class = 'itgroup']";
 
-        private const string ProfileKinksSeletor = "//td[contains(@class,'Character_Fetishlist')]";
+        private const string ProfileKinksSelector = "//td[contains(@class,'Character_Fetishlist')]";
+
+        private const string ProfileAltsSelector = "//div[@class = 'charbox']";
 
         private const string ProfileIdSelector = "//input[@id = 'profile-character-id']";
 
@@ -179,8 +181,19 @@ namespace slimCat.Services
                             })));
                 }
 
+                IEnumerable<string> allAlts = new List<String>();
+                var profileAlts = htmlDoc.DocumentNode.SelectNodes(ProfileAltsSelector);
+                if (profileAlts != null)
+                {
+                    allAlts = profileAlts[0].ChildNodes
+                        .Where(x => x.Name == "a")
+                        .Select(x => DoubleDecode(x.InnerText.Trim()))
+                        .Where(x => !string.IsNullOrWhiteSpace(x))
+                        .ToList();
+                }
+
                 var allKinks = new List<ProfileKink>();
-                var profileKinks = htmlDoc.DocumentNode.SelectNodes(ProfileKinksSeletor);
+                var profileKinks = htmlDoc.DocumentNode.SelectNodes(ProfileKinksSelector);
                 if (profileKinks != null)
                 {
                     allKinks = profileKinks.SelectMany(selection =>
@@ -217,7 +230,7 @@ namespace slimCat.Services
                     new Dictionary<string, object> {{"character_id", id}}, true);
                 var images = JsonConvert.DeserializeObject<ApiProfileImagesResponse>(imageResp);
 
-                var profileData = CreateModel(profileBody, profileTags, images, allKinks);
+                var profileData = CreateModel(profileBody, profileTags, images, allKinks, allAlts);
                 SettingsService.SaveProfile(characterName, profileData);
 
                 profileCache[characterName] = profileData;
@@ -309,14 +322,15 @@ namespace slimCat.Services
         }
 
         private ProfileData CreateModel(string profileText, IEnumerable<ProfileTag> tags,
-            ApiProfileImagesResponse imageResponse, IEnumerable<ProfileKink> kinks)
+            ApiProfileImagesResponse imageResponse, IEnumerable<ProfileKink> kinks, IEnumerable<String> alts)
         {
             var allKinks = kinks.Select(GetFullKink);
 
             var toReturn = new ProfileData
             {
                 ProfileText = profileText,
-                Kinks = allKinks.ToList()
+                Kinks = allKinks.ToList(),
+                Alts = alts.ToList()
             };
 
             var tagActions = new Dictionary<string, Action<string>>(StringComparer.OrdinalIgnoreCase)

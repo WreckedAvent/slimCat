@@ -56,6 +56,8 @@ namespace slimCat.Models
 
         public List<ProfileKink> Kinks { get; set; }
 
+        public List<string> Alts { get; set; }
+
         [XmlAttribute]
         public DateTime LastRetrieved { get; set; }
 
