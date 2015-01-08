@@ -1355,7 +1355,10 @@ namespace slimCat.Utilities
                 else if (command == 'm')  // is an emote
                     inlines.Add(new Italic(Parse(text)));
                 else
+                {
+                    inlines.Add(new Run(" : "));
                     inlines.Add(Parse(text));
+                }
 
                 return inlines;
             }
