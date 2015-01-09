@@ -76,7 +76,7 @@
                         <ContentControl Template="{StaticResource GenderCheckBoxes}"
                                         DataContext="{Binding Path=GenderSettings}" />
 
-                        <ContentControl Template="{StaticResource GeneralFilterCheckBoxes}"
+                        <ContentControl Template="{StaticResource StatusCheckBoxes}"
                                         DataContext="{Binding Path=SearchSettings}" />
 
                         <CheckBox Content="Offline"
