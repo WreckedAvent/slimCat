@@ -285,8 +285,7 @@ namespace slimCat.ViewModels
 
         private bool MeetsFilter(ICharacter character)
         {
-            return character.MeetsFilters(
-                GenderSettings, SearchSettings, CharacterManager, ChatModel.CurrentChannel as GeneralChannelModel);
+            return SearchSettings.MeetsStatusFilter(character);
         }
 
         private IEnumerable<ICharacter> GetList(ICharacterManager manager, ListKind listKind, bool onlineOnly = true)
