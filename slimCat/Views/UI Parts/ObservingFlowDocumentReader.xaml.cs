@@ -58,8 +58,6 @@ namespace slimCat.Views
         private bool loaded;
         private KeepToCurrentScrollViewer scroller;
 
-        private const int FastLoadLimit = 10;
-
         #endregion
 
         #region Constructors
@@ -67,6 +65,7 @@ namespace slimCat.Views
         public ObservingFlowDocumentReader()
         {
             InitializeComponent();
+            Root.VerticalContentAlignment = ApplicationSettings.StickNewMessagesToBottom ? VerticalAlignment.Bottom : VerticalAlignment.Top;
         }
 
         #endregion
@@ -86,7 +85,6 @@ namespace slimCat.Views
 
             set { SetValue(LoadInReverseProperty, value); }
         }
-
         #endregion
 
         #region Methods
@@ -120,13 +118,13 @@ namespace slimCat.Views
                     .Select(x => x.View)
                     .GetEnumerator();
 
-                while (count <= FastLoadLimit && messages.MoveNext())
+                while (count <= ApplicationSettings.PreloadMessageAmount && messages.MoveNext())
                 {
                     count++;
                     AddInReverseAsync(messages.Current, DispatcherPriority.DataBind);
                 }
 
-                if (count >= FastLoadLimit)
+                if (count >= ApplicationSettings.PreloadMessageAmount)
                 {
                     var delayTimer = new DispatcherTimer(DispatcherPriority.DataBind)
                     {

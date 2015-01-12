@@ -11,5 +11,5 @@
     <FlowDocument PagePadding="2,5"
                   IsHyphenationEnabled="True"
                   Loaded="OnLoad"
-                  x:Name="Messages" />
+                  x:Name="Messages"/>
 </FlowDocumentScrollViewer>

@@ -98,6 +98,7 @@ namespace slimCat.Models
             ShowMessagesInToasts = true;
 
             AllowMarkupPastedLinks = true;
+            PreloadMessageAmount = 10;
         }
 
         #endregion
@@ -315,6 +316,10 @@ namespace slimCat.Models
         public static bool WipeNotificationsOnTabChange { get; set; }
 
         public static bool AllowMarkupPastedLinks { get; set; }
+
+        public static bool StickNewMessagesToBottom { get; set; }
+
+        public static int PreloadMessageAmount { get; set; }
 
         #endregion
     }

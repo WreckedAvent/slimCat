@@ -200,6 +200,11 @@
                 Display indent
             </CheckBox>
 
+            <CheckBox IsChecked="{Binding StickMessageToBottom}"
+                      ToolTip="Allows slimCat to stick the channel backlog to the bottom of the screen rather than the top.">
+                Stick Channel Messages To The Bottom
+            </CheckBox>
+
             <StackPanel Margin="0,15,0,0"
                         ToolTip="Changes the size of the font for messages displayed in channels">
                 <WrapPanel>
@@ -246,6 +251,24 @@
                           Width="200"
                           DisplayMemberPath="Key"
                           SelectedValuePath="Value" />
+            </StackPanel>
+
+            <StackPanel Margin="0,15,0,0"
+                        ToolTip="Changes how many messages must be rendered before slimCat renders a tab switch">
+                <WrapPanel>
+                    <TextBlock Text="Channel Message Preload Amount: " />
+                    <TextBlock Text="{Binding Path=PreloadMessageAmount}" />
+                </WrapPanel>
+                <Slider Value="{Binding PreloadMessageAmount}"
+                        LargeChange="20"
+                        SmallChange="5"
+                        Minimum="10"
+                        Maximum="200"
+                        Width="400"
+                        TickFrequency="10"
+                        TickPlacement="BottomRight"
+                        HorizontalAlignment="Left"
+                        Margin="5,0,0,0" />
             </StackPanel>
 
             <CheckBox IsChecked="{Binding AllowStatusDiscolor}"

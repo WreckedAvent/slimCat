@@ -284,6 +284,27 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool StickMessageToBottom
+        {
+            get { return ApplicationSettings.StickNewMessagesToBottom;  }
+            set
+            {
+                ApplicationSettings.StickNewMessagesToBottom = value;
+                Save();
+            }
+        }
+
+        public int PreloadMessageAmount
+        {
+            get { return ApplicationSettings.PreloadMessageAmount; }
+            set
+            {
+                ApplicationSettings.PreloadMessageAmount = value;
+                Save();
+                OnPropertyChanged("PreloadMessageAmount");
+            }
+        }
+
         #endregion
 
         #region Automation
