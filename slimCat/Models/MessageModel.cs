@@ -23,7 +23,6 @@ namespace slimCat.Models
 
     using System;
     using System.Windows.Documents;
-    using System.Windows.Media;
     using Views;
 
     #endregion

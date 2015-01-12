@@ -44,7 +44,7 @@ namespace slimCat
     {
         #region Fields
 
-        private IList<string> requiredFiles = new[]
+        private readonly IList<string> requiredFiles = new[]
         {
             "Theme\\Colors.xaml",
             "Theme\\theme.csv",
@@ -115,14 +115,10 @@ namespace slimCat
                 Settings.Default.ApplicationVersion = appVersionString;
             }
 
-            if (e.Args != null) {
-                Settings.Default.Advanced = e.Args.Any(x => x.Equals("advanced", StringComparison.OrdinalIgnoreCase));
-            }
+            Settings.Default.Advanced = e.Args.Any(x => x.Equals("advanced", StringComparison.OrdinalIgnoreCase));
 
-            foreach (var file in requiredFiles)
+            foreach (var file in requiredFiles.Where(file => !File.Exists(file)))
             {
-                if (File.Exists(file)) continue;
-
                 Exceptions.ShowErrorBox(
                     "slimCat will now exit. \nReason: Required theme file \"{0}\" is missing. This is likely due to a bad theme install.\n".FormatWith(file) +
                     "Please install themes by extracting a theme over the default theme, overwriting when prompted to.",
@@ -136,7 +132,7 @@ namespace slimCat
         }
 
         [Conditional("DEBUG")]
-        private void InitLog()
+        private static void InitLog()
         {
             if (File.Exists("trace.log")) File.Delete("trace.log");
 

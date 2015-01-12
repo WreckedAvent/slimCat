@@ -267,8 +267,8 @@ namespace slimCat.Services
                 Log("Wanted to flash window, but window was focused");
                 return;
             }
-            else if (ApplicationSettings.DisallowNotificationsWhenDnd
-                     && ChatState.ChatModel.CurrentCharacter.Status == StatusType.Dnd)
+            if (ApplicationSettings.DisallowNotificationsWhenDnd
+                && ChatState.ChatModel.CurrentCharacter.Status == StatusType.Dnd)
             { return; }
 
             Log("Flashing window");

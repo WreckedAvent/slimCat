@@ -816,7 +816,7 @@ namespace slimCat.Utilities
                 arg.Children.Clear();
 
             var contextMenu = new ContextMenu();
-            var menuItemCopyLink = new MenuItem()
+            var menuItemCopyLink = new MenuItem
             {
                 CommandParameter = url,
                 Style = Locator.FindStyle("MenuItemCopy")

@@ -148,15 +148,19 @@ namespace slimCat.Models
         // prevents long ugly checking in our viewmodels for these
         public static readonly Dictionary<string, Func<string, string>> NonCommandCommands = new Dictionary<string, Func<string, string>>
         {
-            {"/me ",   x => {if (x.Length > "/me ".Length)
-                                 return x.Substring(x[4] == '\'' ? "/me ".Length : "/me".Length);
-                             else
-                                 return string.Empty;}},
+            {"/me ", x =>
+            {
+                var toReturn = x.Substring("/me ".Length);
+                // give /me some space, but not /me 's
+                return toReturn.Length >= 1 && toReturn[0] == '\'' ? toReturn : ' ' + toReturn;
+            }},
             {"/me's ", x => x.Substring("/me".Length)},
             {"/my ",   x => "'s" + x.Substring("/my".Length)},
             {"/post ", x => x.Substring("/post".Length) + " ~"},
             {"/warn ", x => " warns," + x.Substring("/warn".Length)}
         };
+
+        private static readonly IList<string> WarningList = new[] {"me", "me's", "my", "post", "warn"}; 
 
         public static readonly IDictionary<string, string> CommandAliases = new Dictionary<string, string>();
 
@@ -227,6 +231,9 @@ namespace slimCat.Models
         public static CommandDataModel CreateCommand(
             string familiarName, IList<string> args = null, string channel = null)
         {
+            if (WarningList.Contains(familiarName))
+                throw new ArgumentException("Command '{0}' must be sent with text.".FormatWith(familiarName));
+
             if (!IsValidCommand(familiarName))
                 throw new ArgumentException("Unknown command: {0}.".FormatWith(familiarName));
 

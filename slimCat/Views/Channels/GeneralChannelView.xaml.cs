@@ -89,10 +89,7 @@ namespace slimCat.Views
 
         private void OnHeaderRowDragging(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
         {
-            if (HeaderRowDefinition.Height.Value == HeaderRowDefinition.MinHeight)
-                ChannelDescriptionExpander.IsExpanded = false;
-            else
-                ChannelDescriptionExpander.IsExpanded = true;
+            ChannelDescriptionExpander.IsExpanded = HeaderRowDefinition.Height.Value != HeaderRowDefinition.MinHeight;
         }
 
         private void OnHeaderRowDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)

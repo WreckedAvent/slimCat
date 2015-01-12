@@ -19,7 +19,7 @@
 
 namespace slimCat.Views
 {
-    using slimCat.Utilities;
+    using Utilities;
     using System.Windows.Controls;
 
     /// <summary>

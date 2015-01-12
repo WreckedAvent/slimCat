@@ -41,6 +41,7 @@ namespace slimCat.Views
 
         private readonly double minDragDistance;
         private readonly UserbarViewModel vm;
+        private bool skipNextDrag;
 
         private Point lastPoint;
         private ListBoxItem draggedItem;
@@ -72,8 +73,16 @@ namespace slimCat.Views
             if (e.LeftButton != MouseButtonState.Pressed) return;
             if (e.OriginalSource is Rectangle) return;
 
-            lastPoint = e.GetPosition(this);
             draggedItem.IsSelected = true;
+            if (skipNextDrag)
+            {
+                skipNextDrag = false;
+                draggedItem = null;
+            
+                return;
+            }
+
+            lastPoint = e.GetPosition(this);
             e.Handled = true;
         }
 
@@ -108,7 +117,7 @@ namespace slimCat.Views
                 vm.PmSelected = newIndex;
         }
 
-        private void CheckAs<T>(object sender, DragEventArgs e)
+        private static void CheckAs<T>(DragEventArgs e)
             where T : ChannelModel
         {
             var possible = e.Data.GetData(typeof (T)) as T;
@@ -130,12 +139,12 @@ namespace slimCat.Views
 
         private void CheckAsChannel(object sender, DragEventArgs e)
         {
-            CheckAs<GeneralChannelModel>(sender, e);
+            CheckAs<GeneralChannelModel>(e);
         }
 
         private void CheckAsPm(object sender, DragEventArgs e)
         {
-            CheckAs<PmChannelModel>(sender, e);
+            CheckAs<PmChannelModel>(e);
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
@@ -151,6 +160,11 @@ namespace slimCat.Views
                 DragDrop.DoDragDrop(draggedItem, draggedItem.DataContext, DragDropEffects.Move);
                 draggedItem = null;
             }
+        }
+
+        private void OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            skipNextDrag = true;
         }
     }
 }

@@ -22,13 +22,10 @@ namespace slimCat.Views
     #region Usings
 
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Windows;
-    using System.Windows.Controls;
     using System.Windows.Input;
     using System.Windows.Markup;
-    using Libraries;
     using Models;
     using Utilities;
     using ViewModels;

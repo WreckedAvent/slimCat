@@ -23,7 +23,6 @@ namespace slimCat.Models
 
     using System;
     using System.Collections.Generic;
-    using System.Windows.Documents;
     using System.Xml.Serialization;
 
     #endregion

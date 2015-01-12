@@ -46,8 +46,6 @@ namespace slimCat.ViewModels
 
         private const int CutoffLength = 300;
 
-        private readonly char[] splitChars = {'\n'};
-
         #endregion
 
         #region Fields

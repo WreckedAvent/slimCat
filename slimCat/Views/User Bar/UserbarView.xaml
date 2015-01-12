@@ -7,7 +7,8 @@
              xmlns:vm="clr-namespace:slimCat.ViewModels"
              xmlns:v="clr-namespace:slimCat.Views"
              xmlns:libraries="clr-namespace:slimCat.Libraries"
-
+             MouseLeave="OnMouseLeave"
+             
              d:DataContext="{d:DesignInstance vm:UserbarViewModel}">
 
     <DockPanel TextBlock.FontSize="14"

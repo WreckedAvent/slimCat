@@ -23,7 +23,6 @@ namespace slimCat.Services
 
     using System.Collections.Generic;
     using System.Linq;
-    using System.Windows.Navigation;
     using Microsoft.Practices.ObjectBuilder2;
     using Models;
     using Utilities;

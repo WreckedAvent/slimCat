@@ -31,7 +31,6 @@ namespace slimCat.Services
     using Properties;
     using Utilities;
     using Application = System.Windows.Application;
-    using System.ComponentModel;
 
     #endregion
 

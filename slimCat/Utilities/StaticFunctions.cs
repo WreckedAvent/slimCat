@@ -34,7 +34,7 @@ namespace slimCat.Utilities
     using Newtonsoft.Json;
     using Services;
     using ViewModels;
-    using slimCat.lib;
+    using lib;
     using System.Windows.Documents;
 
     #endregion
@@ -418,14 +418,14 @@ namespace slimCat.Utilities
         {
             var hyperlink = (Hyperlink)sender;
             
-            var characterName = string.Empty;
+            string characterName;
             Func<Hyperlink, string> nameFunc;
             if (TypeToGetName.TryGetValue(hyperlink.DataContext.GetType(), out nameFunc))
                 characterName = nameFunc(hyperlink);
             else
                 return;
 
-            var parentObject = FindAncestor.TryFindAncestor<T>(hyperlink, ancestorLevel);
+            var parentObject = hyperlink.TryFindAncestor<T>(ancestorLevel);
             if (parentObject == null)
                 return;
 
@@ -444,13 +444,11 @@ namespace slimCat.Utilities
                 relayCommand.Execute(characterName);
         }
 
-        private static Dictionary<Type, Func<Hyperlink, string>> TypeToGetName = new Dictionary<Type, Func<Hyperlink, string>>{
-            { typeof(CharacterModel),
-                x => ((CharacterModel)x.DataContext).Name },
-            { typeof(MessageModel),
-                x => ((MessageModel)x.DataContext).Poster.Name },
-            { typeof(CharacterUpdateModel),
-                x => ((CharacterUpdateModel)x.DataContext).TargetCharacter.Name }
+        private static readonly Dictionary<Type, Func<Hyperlink, string>> TypeToGetName = new Dictionary<Type, Func<Hyperlink, string>>
+        {
+            { typeof(CharacterModel), x => ((CharacterModel)x.DataContext).Name },
+            { typeof(MessageModel), x => ((MessageModel)x.DataContext).Poster.Name },
+            { typeof(CharacterUpdateModel), x => ((CharacterUpdateModel)x.DataContext).TargetCharacter.Name }
         };
 
     }

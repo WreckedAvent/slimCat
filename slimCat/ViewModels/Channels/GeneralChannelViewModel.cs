@@ -597,7 +597,6 @@ namespace slimCat.ViewModels
             {
                 Model.Messages.Each(x => x.IsLastViewed = false);
                 Model.Messages.Last().IsLastViewed = true;
-                var n = Model.Messages.Last();
             }
             else if (IsDisplayingAds && Model.Ads.Any())
             {

@@ -22,7 +22,6 @@ namespace slimCat.Views
     #region Usings
 
     using System.Windows;
-    using System.Windows.Controls;
     using System.Windows.Input;
     using Utilities;
     using ViewModels;
