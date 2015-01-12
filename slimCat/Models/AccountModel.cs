@@ -57,7 +57,7 @@ namespace slimCat.Models
             if (!string.IsNullOrWhiteSpace(Settings.Default.UserName))
                 AccountName = Settings.Default.UserName;
 
-            ServerHost = Settings.Default.Host ?? Constants.ServerHost;
+            ServerHost = string.IsNullOrWhiteSpace(Settings.Default.Host) ? Constants.ServerHost : Settings.Default.Host;
         }
 
         #endregion
