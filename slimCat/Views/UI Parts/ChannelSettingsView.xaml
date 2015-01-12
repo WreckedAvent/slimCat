@@ -49,7 +49,7 @@
                             LargeChange="25"
                             SmallChange="10"
                             Minimum="50"
-                            Maximum="250"
+                            Maximum="500"
                             Width="300"
                             TickFrequency="25"
                             TickPlacement="BottomRight"
