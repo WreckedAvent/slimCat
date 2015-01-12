@@ -1289,6 +1289,9 @@ namespace slimCat.Utilities
             var message = value as IMessage; // this is the beef of the message
             var text = message == null ? value as string : message.Message;
 
+            if (string.IsNullOrEmpty(text))
+                return null;
+
             // show more logic
             if (message != null)
             {
