@@ -28,6 +28,7 @@ namespace slimCat.Views
     using System.Linq;
     using System.Windows;
     using System.Windows.Documents;
+    using System.Windows.Threading;
     using Models;
     using Utilities;
 
@@ -56,6 +57,8 @@ namespace slimCat.Views
 
         private bool loaded;
         private KeepToCurrentScrollViewer scroller;
+
+        private const int FastLoadLimit = 10;
 
         #endregion
 
@@ -111,10 +114,43 @@ namespace slimCat.Views
 
             if (LoadInReverse)
             {
-                messageSource
+                var count = 0;
+                var messages = messageSource
                     .Reverse()
                     .Select(x => x.View)
-                    .Each(AddInReverseAsync);
+                    .GetEnumerator();
+
+                while (count <= FastLoadLimit && messages.MoveNext())
+                {
+                    count++;
+                    AddInReverseAsync(messages.Current, DispatcherPriority.DataBind);
+                }
+
+                if (count >= FastLoadLimit)
+                {
+                    var delayTimer = new DispatcherTimer(DispatcherPriority.DataBind)
+                    {
+                        Interval = TimeSpan.FromMilliseconds(450)
+                    };
+                    delayTimer.Tick += (o, args) =>
+                    {
+                        var batch = count + 25;
+                        while (count < batch)
+                        {
+                            if (messages.MoveNext())
+                            {
+                                count++;
+                                AddInReverseAsync(messages.Current, DispatcherPriority.DataBind);
+                            }
+                            else
+                            {
+                                delayTimer.Stop();
+                                break;
+                            }
+                        }
+                    };
+                    delayTimer.Start();
+                }
 
                 loaded = true;
                 return;
@@ -126,6 +162,7 @@ namespace slimCat.Views
 
             loaded = true;
         }
+
 
         private void OnMessagesUpdate(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -152,7 +189,7 @@ namespace slimCat.Views
             }
         }
 
-        private void AddInReverseAsync(Block item)
+        private void AddInReverseAsync(Block item, DispatcherPriority priority)
         {
             Dispatcher.BeginInvoke(
                 (Action) delegate
@@ -162,7 +199,7 @@ namespace slimCat.Views
                         Messages.Blocks.InsertBefore(Messages.Blocks.FirstBlock, item);
                     else
                         Messages.Blocks.Add(item);
-                });
+                }, priority);
         }
 
         private void AddAsync(Block item)
