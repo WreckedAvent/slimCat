@@ -141,10 +141,12 @@ namespace slimCat.ViewModels
                             break;
                         case ListKind.Ignored:
                             OnPropertyChanged("Ignored");
+                            OnPropertyChanged("SearchResults");
                             break;
                         case ListKind.NotInterested:
                             OnPropertyChanged("NotInterested");
                             OnPropertyChanged("Interested");
+                            OnPropertyChanged("SearchResults");
                             break;
                         case ListKind.Bookmark:
                             OnPropertyChanged("Bookmarks");
@@ -199,7 +201,22 @@ namespace slimCat.ViewModels
 
         public IEnumerable<ICharacter> SearchResults
         {
-            get { return GetGlobalList(ListKind.SearchResult); }
+            get
+            {
+                var searchResults = GetGlobalList(ListKind.SearchResult)
+                    .Where(x => !CharacterManager.IsOnList((string)x.Name, ListKind.NotInterested))
+                    .Where(x => !CharacterManager.IsOnList((string)x.Name, ListKind.Ignored));
+
+                if (ApplicationSettings.HideFriendsFromSearchResults)
+                {
+                    searchResults = searchResults
+                        .Where(x => !CharacterManager.IsOnList((string)x.Name, ListKind.Interested))
+                        .Where(x => !CharacterManager.IsOnList((string)x.Name, ListKind.Friend))
+                        .Where(x => !CharacterManager.IsOnList((string)x.Name, ListKind.Bookmark));
+                }
+
+                return searchResults;
+            }
         }
 
         public GenderSettingsModel GenderSettings
