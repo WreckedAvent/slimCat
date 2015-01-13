@@ -101,7 +101,7 @@ namespace slimCat.Models
             PreloadMessageAmount = 10;
 
             UseCustomTimeStamp = false;
-            CustomTimeStamp = "[h:m tt]";
+            CustomTimeStamp = "[h:mm tt]";
         }
 
         #endregion
