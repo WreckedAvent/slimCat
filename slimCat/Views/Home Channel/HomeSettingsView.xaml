@@ -80,11 +80,6 @@
                 Hide of interest characters from search results
             </CheckBox>
 
-            <CheckBox IsChecked="{Binding UseMilitaryTime}"
-                      ToolTip="Allows slimCat to use military (24-hour) labels for time stamps.">
-                Use 24-hour time for time stamps
-            </CheckBox>
-
             <CheckBox IsChecked="{Binding OpenOfflineChatsInNoteView}"
                       ToolTip="Allows slimCat to automatically switch your view to notes if a new conversation with a character is opened while they are offline.">
                 Open new conversations with offline users in note mode
@@ -284,6 +279,12 @@
             <CheckBox IsChecked="{Binding UseCustomTimeStamp}"
                       ToolTip="Allows you to customize the timestamp that appears before every message.">
                 Customize message timestamps
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding UseMilitaryTime}"
+                      ToolTip="Allows slimCat to use military (24-hour) labels for time stamps."
+                      Visibility="{Binding Path=UseCustomTimeStamp, Converter={StaticResource OppositeBoolConverter}}">
+                Use 24-hour time for time stamps
             </CheckBox>
 
             <TextBlock Text="(h=12-Hour, H=24-Hour, m=Minute, s=Second, tt=AM or PM)"
