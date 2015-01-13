@@ -138,19 +138,24 @@ namespace slimCat.ViewModels
                         case ListKind.Interested:
                             OnPropertyChanged("Interested");
                             OnPropertyChanged("NotInterested");
+                            OnPropertyChanged("SearchResults");
                             break;
                         case ListKind.Ignored:
                             OnPropertyChanged("Ignored");
+                            OnPropertyChanged("SearchResults");
                             break;
                         case ListKind.NotInterested:
                             OnPropertyChanged("NotInterested");
                             OnPropertyChanged("Interested");
+                            OnPropertyChanged("SearchResults");
                             break;
                         case ListKind.Bookmark:
                             OnPropertyChanged("Bookmarks");
+                            OnPropertyChanged("SearchResults");
                             break;
                         case ListKind.Friend:
                             OnPropertyChanged("Friends");
+                            OnPropertyChanged("SearchResults");
                             break;
                         case ListKind.SearchResult:
                             OnPropertyChanged("SearchResults");
@@ -199,7 +204,22 @@ namespace slimCat.ViewModels
 
         public IEnumerable<ICharacter> SearchResults
         {
-            get { return GetGlobalList(ListKind.SearchResult); }
+            get
+            {
+                var searchResults = GetGlobalList(ListKind.SearchResult)
+                    .Where(x => !CharacterManager.IsOnList((string)x.Name, ListKind.NotInterested))
+                    .Where(x => !CharacterManager.IsOnList((string)x.Name, ListKind.Ignored));
+
+                if (ApplicationSettings.HideFriendsFromSearchResults)
+                {
+                    searchResults = searchResults
+                        .Where(x => !CharacterManager.IsOnList((string)x.Name, ListKind.Interested))
+                        .Where(x => !CharacterManager.IsOnList((string)x.Name, ListKind.Friend))
+                        .Where(x => !CharacterManager.IsOnList((string)x.Name, ListKind.Bookmark));
+                }
+
+                return searchResults;
+            }
         }
 
         public GenderSettingsModel GenderSettings

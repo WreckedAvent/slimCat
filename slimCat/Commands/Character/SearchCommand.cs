@@ -33,22 +33,9 @@ namespace slimCat.Services
     {
         private void SearchResultCommand(IDictionary<string, object> command)
         {
-            var characters = (JsonArray) command[Constants.Arguments.MultipleCharacters];
+            var resultsList = ((JsonArray)command[Constants.Arguments.MultipleCharacters]).ToList();
             CharacterManager.Set(new JsonArray(), ListKind.SearchResult);
 
-            var resultsEnumerable = characters
-                .Where(x => !CharacterManager.IsOnList((string) x, ListKind.NotInterested))
-                .Where(x => !CharacterManager.IsOnList((string) x, ListKind.Ignored));
-
-            if (ApplicationSettings.HideFriendsFromSearchResults)
-            {
-                resultsEnumerable = resultsEnumerable
-                    .Where(x => !CharacterManager.IsOnList((string) x, ListKind.Interested))
-                    .Where(x => !CharacterManager.IsOnList((string) x, ListKind.Friend))
-                    .Where(x => !CharacterManager.IsOnList((string) x, ListKind.Bookmark));
-            }
-
-            var resultsList = resultsEnumerable.ToList();
             foreach (string character in resultsList)
             {
                 CharacterManager.Add(character, ListKind.SearchResult);
