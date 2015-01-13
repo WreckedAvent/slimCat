@@ -12,7 +12,6 @@
              d:DataContext="{d:DesignInstance vm:UserbarViewModel}">
 
     <DockPanel TextBlock.FontSize="14"
-               Visibility="{Binding Path=ChatModel.IsAuthenticated, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                TextBlock.Foreground="{StaticResource ForegroundBrush}"
                TextBlock.TextAlignment="Center">
 
@@ -98,11 +97,16 @@
                                            Visibility="{Binding Path=ConnectionIsGood, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
                                 <Rectangle Height="15"
                                            Visibility="{Binding Path=ConnectionIsPerfect, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
+                                <TextBlock Visibility="{Binding Path=IsDisconnected, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                                           Foreground="{StaticResource ContrastBrush}"
+                                           FontSize="16">disconnected</TextBlock>
                             </WrapPanel>
 
-                            <v:LogoutButtonView Command="{Binding LogoutCommand}" />
+                            <v:LogoutButtonView Command="{Binding LogoutCommand}" 
+                                                Visibility="{Binding Path=IsDisconnected, Mode=OneWay, Converter={StaticResource OppositeBoolConverter}}"/>
 
-                            <v:PinButtonView Command="{Binding SaveChannelsCommand}" />
+                            <v:PinButtonView Command="{Binding SaveChannelsCommand}" 
+                                             Visibility="{Binding Path=IsDisconnected, Mode=OneWay, Converter={StaticResource OppositeBoolConverter}}"/>
 
                         </WrapPanel>
                     </Grid>

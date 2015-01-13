@@ -136,6 +136,8 @@ namespace slimCat.ViewModels
                 updateTick.Elapsed += UpdateConnectionBars;
 
                 LoggingSection = "userbar vm";
+                IsDisconnected = true;
+                OnPropertyChanged("IsDisconnected");
             }
             catch (Exception ex)
             {
@@ -191,6 +193,8 @@ namespace slimCat.ViewModels
         public bool ConnectionIsModerate { get; set; }
 
         public bool ConnectionIsPerfect { get; set; }
+
+        public bool IsDisconnected { get; set; }
 
         public string ExpandString
         {
@@ -503,10 +507,11 @@ namespace slimCat.ViewModels
         private void UpdateConnectionBars(object sender, EventArgs e)
         {
             var difference = DateTime.Now - ChatModel.LastMessageReceived;
-            ConnectionIsPerfect = true;
-            ConnectionIsGood = true;
-            ConnectionIsModerate = true;
-            ConnectionIsConnected = true;
+            ConnectionIsPerfect = ChatModel.IsAuthenticated;
+            ConnectionIsGood = ChatModel.IsAuthenticated;
+            ConnectionIsModerate = ChatModel.IsAuthenticated;
+            ConnectionIsConnected = ChatModel.IsAuthenticated;
+            IsDisconnected = !ChatModel.IsAuthenticated;
 
             if (difference.TotalSeconds > 5)
                 ConnectionIsPerfect = false;
@@ -524,6 +529,7 @@ namespace slimCat.ViewModels
             OnPropertyChanged("ConnectionIsGood");
             OnPropertyChanged("ConnectionIsModerate");
             OnPropertyChanged("ConnectionIsConnected");
+            OnPropertyChanged("IsDisconnected");
         }
 
         private void UpdateFlashingTabs()

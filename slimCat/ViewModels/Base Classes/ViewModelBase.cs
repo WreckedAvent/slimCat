@@ -180,41 +180,26 @@ namespace slimCat.ViewModels
         /// <summary>
         ///     Gets or sets the chat model. The chat model is used to contain chat-related data unrelated to characters.
         /// </summary>
-        /// <value>
-        ///     The chat model.
-        /// </value>
         public IChatModel ChatModel { get; set; }
 
         /// <summary>
         ///     Gets or sets the container. The container is used to resolve dependencies.
         /// </summary>
-        /// <value>
-        ///     The container.
-        /// </value>
         protected IUnityContainer Container { get; set; }
 
         /// <summary>
         ///     Gets or sets the region manager. The region manager is used to handle the views being displayed.
         /// </summary>
-        /// <value>
-        ///     The region manager.
-        /// </value>
         protected IRegionManager RegionManager { get; set; }
 
         /// <summary>
         ///     Gets or sets the events. The event aggregator is for intra program communication.
         /// </summary>
-        /// <value>
-        ///     The events.
-        /// </value>
         protected IEventAggregator Events { get; set; }
 
         /// <summary>
         ///     Gets or sets the character manager. The character manage is used to handle all character data.
         /// </summary>
-        /// <value>
-        ///     The character manager.
-        /// </value>
         protected ICharacterManager CharacterManager { get; set; }
 
         protected IChatConnection ChatConnection { get; set; }

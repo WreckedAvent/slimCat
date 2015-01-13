@@ -154,27 +154,7 @@
     </UserControl.Resources>
 
     <Grid TextBlock.FontSize="16">
-        <Border HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Visibility="{Binding Path=ChatModel.IsAuthenticated, Converter={StaticResource OppositeBoolConverter}}">
-            <StackPanel>
-                <TextBlock Foreground="{StaticResource ForegroundBrush}"
-                           FontSize="24"
-                           TextWrapping="Wrap">
-                    <Run Text="{Binding ConnectFlavorText, Mode=OneWay}" />
-                </TextBlock>
-
-                <Button MaxWidth="200"
-                        Margin="0,20,0,0"
-                        FontSize="20"
-                        Command="{Binding Path=LogoutCommand}">
-                    Cancel Connecting
-                </Button>
-            </StackPanel>
-        </Border>
-
-        <Grid Margin="10"
-              Visibility="{Binding Path=ChatModel.IsAuthenticated, Converter={StaticResource BoolConverter}}">
+        <Grid Margin="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition />
@@ -219,7 +199,8 @@
             <ScrollViewer Grid.Row="1"
                           CanContentScroll="False"
                           HorizontalAlignment="Stretch"
-                          HorizontalContentAlignment="Stretch">
+                          HorizontalContentAlignment="Stretch"
+                          Visibility="{Binding Path=ChatModel.IsAuthenticated, Converter={StaticResource BoolConverter}}">
                 <StackPanel HorizontalAlignment="Stretch">
                     <WrapPanel TextBlock.Foreground="{StaticResource ForegroundBrush}">
                         <WrapPanel.Resources>
@@ -365,6 +346,26 @@
                     <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,10" />
                 </StackPanel>
             </ScrollViewer>
+
+            <Border HorizontalAlignment="Center"
+                    Grid.Row="1"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding Path=ChatModel.IsAuthenticated, Converter={StaticResource OppositeBoolConverter}}">
+                <StackPanel>
+                    <TextBlock Foreground="{StaticResource ForegroundBrush}"
+                           FontSize="24"
+                           TextWrapping="Wrap">
+                    <Run Text="{Binding ConnectFlavorText, Mode=OneWay}" />
+                    </TextBlock>
+
+                    <Button MaxWidth="200"
+                        Margin="0,20,0,0"
+                        FontSize="20"
+                        Command="{Binding Path=LogoutCommand}">
+                        Cancel Connecting
+                    </Button>
+                </StackPanel>
+            </Border>
 
             <v:RightClickMenu Grid.Row="1" />
 

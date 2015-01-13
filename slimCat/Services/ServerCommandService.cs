@@ -55,6 +55,10 @@ namespace slimCat.Services
 
         private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
 
+        private bool ignoreAutoRejoin;
+
+        private IList<string> rejoinChannelList = new List<string>(); 
+
         #endregion
 
         #region Constructors and Destructors
@@ -297,11 +301,13 @@ namespace slimCat.Services
 
             // auto join
             var waitTimer = new Timer(200);
-            var channels = (from c in ApplicationSettings.SavedChannels
-                where !string.IsNullOrWhiteSpace(c)
-                select new {channel = c})
+            var channelsId =
+                rejoinChannelList.Count == 0 ? ApplicationSettings.SavedChannels : rejoinChannelList;
+
+            var channels = channelsId
+                .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Distinct()
-                .ToList();
+                .Select(x => new { channel = x });
 
             var walk = channels.GetEnumerator();
 
@@ -366,26 +372,36 @@ namespace slimCat.Services
 
             Dispatcher.Invoke((Action) (() =>
             {
-                ChatModel.AllChannels.Clear();
-                ChatModel.CurrentChannels
-                    .Where(x => x.Id != "Home")
-                    .ToList()
-                    .Each(x =>
-                    {
-                        ChatModel.CurrentChannels.Remove(x);
-                        x.Dispose();
-                    });
-
                 ChatModel.CurrentPms.Each(pm => pm.TypingStatus = TypingStatus.Clear);
+                rejoinChannelList.Clear();
 
                 if (intentionalDisconnect)
                 {
+                    ChatModel.AllChannels.Clear();
+                    ChatModel.CurrentChannels
+                        .Where(x => x.Id != "Home")
+                        .ToList()
+                        .Each(x =>
+                        {
+                            ChatModel.CurrentChannels.Remove(x);
+                            x.Dispose();
+                        });
+
                     ChatModel.CurrentPms.ToList().Each(x =>
                     {
                         ChatModel.CurrentPms.Remove(x);
                         x.Dispose();
                     });
                 }
+                else
+                {
+                    rejoinChannelList = ChatModel.CurrentChannels
+                        .Where(x => x.Id != "Home")
+                        .Select(x => x.Id)
+                        .ToList();
+                }
+
+                ignoreAutoRejoin = !intentionalDisconnect;
                 ChatModel.IsAuthenticated = false;
             }));
         }

@@ -12,7 +12,6 @@
              d:DataContext="{d:DesignInstance vm:ChannelbarViewModel}">
 
     <DockPanel TextBlock.FontSize="14"
-               Visibility="{Binding Path=ChatModel.IsAuthenticated, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                TextBlock.Foreground="{StaticResource ForegroundBrush}"
                TextBlock.TextAlignment="Center">
 
