@@ -28,6 +28,7 @@ namespace slimCat.ViewModels
     using System.Timers;
     using System.Windows.Input;
     using Libraries;
+    using Microsoft.Practices.Prism.Events;
     using Models;
     using Services;
     using Utilities;
@@ -100,6 +101,9 @@ namespace slimCat.ViewModels
 
             entryBoxRowHeight = new GridLength(1, GridUnitType.Auto);
             headerRowHeight = new GridLength(1, GridUnitType.Auto);
+
+
+            Events.GetEvent<ConnectionClosedEvent>().Subscribe(OnDisconnect, ThreadOption.PublisherThread, true);
         }
 
         #endregion
@@ -270,12 +274,19 @@ namespace slimCat.ViewModels
 
         #region Methods
 
+        private void OnDisconnect(bool isIntentional)
+        {
+            if (isIntentional) return;
+            ChannelSettings.LastMessage = Message;
+        }
+
         protected override void Dispose(bool isManaged)
         {
             if (isManaged)
             {
                 PropertyChanged -= OnThisPropertyChanged;
                 Model.PropertyChanged -= OnModelPropertyChanged;
+                Events.GetEvent<ConnectionClosedEvent>().Unsubscribe(OnDisconnect);
                 model = null;
             }
 

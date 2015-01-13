@@ -68,6 +68,7 @@ namespace slimCat.Models
         private bool promoteDemoteNotifyOnlyForInteresting;
 
         private int shouldFlashInterval = 1;
+        private string lastMessage;
 
         #endregion
 
@@ -86,9 +87,6 @@ namespace slimCat.Models
         /// <summary>
         ///     Initializes a new instance of the <see cref="ChannelSettingsModel" /> class.
         /// </summary>
-        /// <param name="isPm">
-        ///     The is PrivateMessage.
-        /// </param>
         public ChannelSettingsModel(bool isPm = false)
         {
             if (isPm)
@@ -104,9 +102,6 @@ namespace slimCat.Models
 
         #region Public Events
 
-        /// <summary>
-        ///     The updated.
-        /// </summary>
         public event EventHandler Updated;
 
         #endregion
@@ -388,6 +383,16 @@ namespace slimCat.Models
             set
             {
                 promoteDemoteNotifyOnlyForInteresting = value;
+                CallUpdate();
+            }
+        }
+
+        public string LastMessage
+        {
+            get { return lastMessage; }
+            set
+            {
+                lastMessage = value;
                 CallUpdate();
             }
         }

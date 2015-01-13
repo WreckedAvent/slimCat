@@ -197,6 +197,11 @@ namespace slimCat.ViewModels
 
                 LoggingSection = "general chan vm";
 
+                if (!string.IsNullOrWhiteSpace(ChannelSettings.LastMessage)) return;
+
+                Message = ChannelSettings.LastMessage;
+                ChannelSettings.LastMessage = null;
+
                 Application.Current.Dispatcher.Invoke(
                     (Action) delegate { Application.Current.MainWindow.Deactivated += SetLastMessageMark; });
             }

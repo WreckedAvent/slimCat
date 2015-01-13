@@ -172,6 +172,11 @@ namespace slimCat.ViewModels
 
                 isCharacterStatusExpanded = false;
 
+                if (!string.IsNullOrWhiteSpace(ChannelSettings.LastMessage)) return;
+
+                Message = ChannelSettings.LastMessage;
+                ChannelSettings.LastMessage = null;
+
                 LoggingSection = "pm channel vm";
             }
             catch (Exception ex)
