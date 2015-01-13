@@ -174,6 +174,9 @@ namespace slimCat.Services
             if (channel == null)
                 return; // exception circumstance, swallow message
 
+            if (messageType == MessageType.Ad && characterManager.IsOnList(poster, ListKind.NotInterested, false))
+                return; // don't want these clogging up our filter or.. anything really
+
             Dispatcher.Invoke(
                 (Action) delegate
                 {
