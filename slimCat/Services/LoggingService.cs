@@ -154,6 +154,17 @@ namespace slimCat.Services
             }
         }
 
+        public void LogMessage(string title, NotificationModel model)
+        {
+            using (var writer = AccessLog(title, title))
+            {
+                var thisMessage = HttpUtility.HtmlDecode(model.ToString());
+                var timestamp = model.TimeStamp;
+
+                writer.WriteLine(timestamp + ' ' + thisMessage);
+            }
+        }
+
         public void OpenLog(bool isFolder = false, string title = null, string id = null)
         {
             if (id == null)

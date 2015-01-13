@@ -61,7 +61,7 @@ namespace slimCat.Services
 
         #region Constructors and Destructors
 
-        public NotificationService(IChatState chatState)
+        public NotificationService(IChatState chatState, LoggingService loggingService)
         {
             ChatState = chatState;
             events = chatState.EventAggregator;
@@ -71,7 +71,11 @@ namespace slimCat.Services
             ToastManager = new ToastManager
             {
                 AddNotification =
-                    notification => Dispatcher.Invoke((Action) (() => cm.Notifications.Backlog(notification, 100))),
+                    notification =>
+                    {
+                        Dispatcher.Invoke((Action) (() => cm.Notifications.Backlog(notification, 100)));
+                        loggingService.LogMessage("!Notifications", notification);
+                    },
                 ShowToast = toast.ShowNotifications,
                 FlashWindow = () => Dispatcher.Invoke((Action) FlashWindow),
                 PlaySound = () => Dispatcher.Invoke((Action) DingTheCrapOutOfTheUser),
