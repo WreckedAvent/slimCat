@@ -287,7 +287,7 @@
                 Use 24-hour time for time stamps
             </CheckBox>
 
-            <TextBlock Text="(h=12-Hour, H=24-Hour, m=Minute, s=Second, tt=AM or PM)"
+            <TextBlock Text="(h=12-Hour, H=24-Hour, mm=Minute, s=Second, tt=AM or PM)"
                        Visibility="{Binding Path=UseCustomTimeStamp, Converter={StaticResource BoolConverter}}"/>
             <TextBox
                     Text="{Binding Path=CustomTimeStamp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
