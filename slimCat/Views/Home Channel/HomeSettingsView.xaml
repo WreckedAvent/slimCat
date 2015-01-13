@@ -280,6 +280,22 @@
                       ToolTip="Allows slimCat to color friends, bookmarks, and interested users a contrasting color.">
                 Color of interest users differently
             </CheckBox>
+
+            <CheckBox IsChecked="{Binding UseCustomTimeStamp}"
+                      ToolTip="Allows you to customize the timestamp that appears before every message.">
+                Customize message timestamps
+            </CheckBox>
+
+            <TextBlock Text="(h=12-Hour, H=24-Hour, m=Minute, s=Second, tt=AM or PM)"
+                       Visibility="{Binding Path=UseCustomTimeStamp, Converter={StaticResource BoolConverter}}"/>
+            <TextBox
+                    Text="{Binding Path=CustomTimeStamp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    AcceptsReturn="False"
+                    MinWidth="400"
+                    MaxLines="1"
+                    HorizontalAlignment="Left"
+                    FontSize="12"
+                    Visibility="{Binding Path=UseCustomTimeStamp, Converter={StaticResource BoolConverter}}" />
         </StackPanel>
 
         <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
