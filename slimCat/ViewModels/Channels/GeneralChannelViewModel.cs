@@ -761,7 +761,7 @@ namespace slimCat.ViewModels
         private bool ConstantFilter(IMessage message)
         {
             if (message.Type == MessageType.Ad)
-                return !CharacterManager.IsOnList(message.Poster.Name, ListKind.NotInterested);
+                return !CharacterManager.IsOnList(message.Poster.Name, ListKind.NotInterested, false);
             return true;
         }
 
@@ -774,7 +774,7 @@ namespace slimCat.ViewModels
                 && e.NewItems.Count > 0
                 &&
                 e.NewItems.OfType<IMessage>()
-                    .Any(x => !CharacterManager.IsOnList(x.Poster.Name, ListKind.NotInterested));
+                    .Any(x => !CharacterManager.IsOnList(x.Poster.Name, ListKind.NotInterested, false));
             ((GeneralChannelModel) Model).AdsContainsInteresting = OtherTabHasMessages;
 
             if (Model.Ads.All(x => x.IsHistoryMessage)) OtherTabHasMessages = false;
