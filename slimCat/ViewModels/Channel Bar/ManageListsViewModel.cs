@@ -305,6 +305,9 @@ namespace slimCat.ViewModels
 
         private bool MeetsFilter(ICharacter character)
         {
+            if (!character.NameContains(SearchSettings.SearchString))
+                return false;
+
             return SearchSettings.MeetsStatusFilter(character);
         }
 
