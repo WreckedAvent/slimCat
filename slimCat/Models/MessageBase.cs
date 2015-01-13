@@ -70,7 +70,12 @@ namespace slimCat.Models
         /// </summary>
         public string TimeStamp
         {
-            get { return posted.ToTimeStamp(); }
+            get 
+            {
+                return !ApplicationSettings.UseCustomTimeStamp
+                    ? posted.ToTimeStamp()
+                    : posted.ToString(ApplicationSettings.CustomTimeStamp);
+            }
         }
 
         #endregion

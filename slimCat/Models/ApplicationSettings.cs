@@ -99,6 +99,9 @@ namespace slimCat.Models
 
             AllowMarkupPastedLinks = true;
             PreloadMessageAmount = 10;
+
+            UseCustomTimeStamp = false;
+            CustomTimeStamp = "[h:m tt]";
         }
 
         #endregion
@@ -320,6 +323,10 @@ namespace slimCat.Models
         public static bool StickNewMessagesToBottom { get; set; }
 
         public static int PreloadMessageAmount { get; set; }
+
+        public static bool UseCustomTimeStamp { get; set; }
+
+        public static string CustomTimeStamp { get; set; }
 
         #endregion
     }

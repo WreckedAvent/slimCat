@@ -305,6 +305,28 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool UseCustomTimeStamp
+        {
+            get { return ApplicationSettings.UseCustomTimeStamp; }
+            set
+            {
+                ApplicationSettings.UseCustomTimeStamp = value;
+                Save();
+                OnPropertyChanged("UseCustomTimeStamp");
+            }
+        }
+
+        public string CustomTimeStamp
+        {
+            get { return ApplicationSettings.CustomTimeStamp; }
+            set
+            {
+                ApplicationSettings.CustomTimeStamp = value;
+                Save();
+                OnPropertyChanged("CustomTimeStamp");
+            }
+        }
+
         #endregion
 
         #region Automation
