@@ -138,6 +138,7 @@ namespace slimCat.ViewModels
                         case ListKind.Interested:
                             OnPropertyChanged("Interested");
                             OnPropertyChanged("NotInterested");
+                            OnPropertyChanged("SearchResults");
                             break;
                         case ListKind.Ignored:
                             OnPropertyChanged("Ignored");
@@ -150,9 +151,11 @@ namespace slimCat.ViewModels
                             break;
                         case ListKind.Bookmark:
                             OnPropertyChanged("Bookmarks");
+                            OnPropertyChanged("SearchResults");
                             break;
                         case ListKind.Friend:
                             OnPropertyChanged("Friends");
+                            OnPropertyChanged("SearchResults");
                             break;
                         case ListKind.SearchResult:
                             OnPropertyChanged("SearchResults");
