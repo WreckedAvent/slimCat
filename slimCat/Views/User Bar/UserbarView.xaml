@@ -50,7 +50,7 @@
                     HorizontalAlignment="Stretch">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
@@ -62,8 +62,7 @@
                     </Border>
 
                     <Grid Margin="5,-5,0,0"
-                          Grid.Column="1"
-                          HorizontalAlignment="Left">
+                          Grid.Column="1">
 
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -72,34 +71,35 @@
                         </Grid.RowDefinitions>
 
                         <TextBlock Text="{Binding Path=ChatModel.CurrentCharacter.Name, Mode=OneWay}"
-                                   HorizontalAlignment="Right"
-                                   TextAlignment="Right"
+                                   HorizontalAlignment="Left"
+                                   TextAlignment="Left"
                                    MaxWidth="100"
                                    TextWrapping="Wrap"
                                    FontSize="20" />
 
                         <DockPanel Grid.Row="1">
-                            <v:AutoButtonView
-                                IsChecked="{Binding AutoReplyEnabled, Mode=TwoWay}"
-                                ToolTip="Change auto reply settings"
-                                Margin="2,0,0,0"
-                                Command="{Binding ToggleAutoReplyWindowCommand}"
-                                VerticalAlignment="Center"
-                                DockPanel.Dock="Right" />
 
                             <Button Content="{Binding Path=ChatModel.CurrentCharacter.Status, Mode=OneWay}"
                                     VerticalAlignment="Top"
-                                    HorizontalAlignment="Right"
+                                    HorizontalAlignment="Left"
                                     ToolTip="Change status"
                                     Style="{StaticResource ImageContentButton}"
                                     Command="{Binding ToggleStatusWindowCommand}"
                                     Margin="0,4,0,0"
                                     FontSize="16"
-                                    DockPanel.Dock="Right" />
+                                    DockPanel.Dock="Left" />
+                            
+                            <v:AutoButtonView
+                                IsChecked="{Binding AutoReplyEnabled, Mode=TwoWay}"
+                                ToolTip="Change auto reply settings"
+                                Command="{Binding ToggleAutoReplyWindowCommand}"
+                                VerticalAlignment="Center"
+                                DockPanel.Dock="Left"
+                                Margin="2,0,0,0" />
 
                         </DockPanel>
 
-                        <WrapPanel HorizontalAlignment="Right"
+                        <WrapPanel HorizontalAlignment="Left"
                                    Grid.Row="2"
                                    VerticalAlignment="Center">
 
