@@ -252,7 +252,7 @@
 
                     <FlowDocumentReader
                         ScrollViewer.CanContentScroll="False"
-
+                        PreviewMouseWheel="OnProfileMouseWheelPreview"
                         ViewingMode="Scroll"
                         IsFindEnabled="False"
                         HorizontalAlignment="Left"

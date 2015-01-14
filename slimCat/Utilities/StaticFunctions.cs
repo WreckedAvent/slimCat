@@ -451,5 +451,19 @@ namespace slimCat.Utilities
             { typeof(CharacterUpdateModel), x => ((CharacterUpdateModel)x.DataContext).TargetCharacter.Name }
         };
 
+        public static double GetScrollDistance(int scrollTicks, int fontSize)
+        {
+            var linesPerTick = SystemParameters.WheelScrollLines;
+            // This solves Windows 7 wheel setting "One screen at a time"
+            if (linesPerTick < 1)
+                linesPerTick = 10;
+
+            // An estimation for the height of each line
+            var lineSize = (fontSize * 0.89d) + 9.72d;
+
+            // 120 is standard for one mousewheel tick
+            return ((scrollTicks / 120) * linesPerTick * lineSize);
+        }
+
     }
 }
