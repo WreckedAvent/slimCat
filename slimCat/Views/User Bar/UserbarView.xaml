@@ -7,9 +7,23 @@
              xmlns:vm="clr-namespace:slimCat.ViewModels"
              xmlns:v="clr-namespace:slimCat.Views"
              xmlns:libraries="clr-namespace:slimCat.Libraries"
+             xmlns:utilities="clr-namespace:slimCat.Utilities"
+             xmlns:models="clr-namespace:slimCat.Models"
              MouseLeave="OnMouseLeave"
              
              d:DataContext="{d:DesignInstance vm:UserbarViewModel}">
+    
+    <UserControl.Resources>
+        <utilities:PmOrChannelTemplateSelector x:Key="PmOrChannelTemplateSelector"/>
+
+        <DataTemplate x:Key="GeneralChannelTemplate">
+            <v:ChannelSelectView />
+        </DataTemplate>
+        
+        <DataTemplate x:Key="PmChannelTemplate">
+            <v:PmSelectView/>
+        </DataTemplate>
+    </UserControl.Resources>
 
     <DockPanel TextBlock.FontSize="14"
                TextBlock.Foreground="{StaticResource ForegroundBrush}"
@@ -34,13 +48,22 @@
                     BorderThickness="0,0,0,1"
                     x:Name="PopupAnchor"
                     HorizontalAlignment="Stretch">
-                <DockPanel>
-                    <Image Source="{Binding Path=ChatModel.CurrentCharacter.Avatar, Mode=OneWay}"
-                           Height="75"
-                           Width="75" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border MaxHeight="75" 
+                            MaxWidth="75" 
+                            Margin="0,0,10,0"
+                            Visibility="{Binding Source={x:Static models:ApplicationSettings.ShowAvatars}, Converter={StaticResource BoolConverter}}">
+                        <Image Source="{Binding Path=ChatModel.CurrentCharacter.Avatar, Mode=OneWay}" />
+                    </Border>
+
                     <Grid Margin="5,-5,0,0"
-                          DockPanel.Dock="Right"
-                          HorizontalAlignment="Right">
+                          Grid.Column="1"
+                          HorizontalAlignment="Left">
 
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -110,7 +133,7 @@
 
                         </WrapPanel>
                     </Grid>
-                </DockPanel>
+                </Grid>
             </Border>
 
             <libraries:NonTopmostPopup IsOpen="{Binding Path=IsChangingStatus, Mode=OneWay}"
@@ -211,12 +234,9 @@
                               Visibility="{Binding Path=HasPms, Converter={StaticResource BoolConverter}}">
                         <ListBox ItemsSource="{Binding Path=ChatModel.CurrentPms, Mode=OneWay}"
                                  HorizontalContentAlignment="Stretch"
-                                 SelectedIndex="{Binding Path=PmSelected, Mode=TwoWay}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <v:PmSelectView />
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
+                                 SelectedIndex="{Binding Path=PmSelected, Mode=TwoWay}"
+                                 ItemTemplate="{x:Null}"
+                                 ItemTemplateSelector="{StaticResource PmOrChannelTemplateSelector}">
                             <ListBox.ItemContainerStyle>
                                 <Style>
                                     <Setter Property="ListBoxItem.AllowDrop" Value="True" />
@@ -234,12 +254,8 @@
                               IsExpanded="{Binding Path=ChannelsAreExpanded}">
                         <ListBox ItemsSource="{Binding Path=ChatModel.CurrentChannels, Mode=OneWay}"
                                  HorizontalContentAlignment="Stretch"
-                                 SelectedIndex="{Binding Path=ChannelSelected, Mode=TwoWay}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <v:ChannelSelectView />
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
+                                 SelectedIndex="{Binding Path=ChannelSelected, Mode=TwoWay}"
+                                 ItemTemplate="{StaticResource GeneralChannelTemplate}">
                             <ListBox.ItemContainerStyle>
                                 <Style>
                                     <Setter Property="ListBoxItem.AllowDrop" Value="True" />

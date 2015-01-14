@@ -187,12 +187,17 @@
 
             <CheckBox IsChecked="{Binding AllowIcons}"
                       ToolTip="Allows slimCat to parse [icon] tags and present the bbcode as an in-line image.">
-                Display icons
+                Display bbcode icons
             </CheckBox>
 
             <CheckBox IsChecked="{Binding AllowIndent}"
                       ToolTip="Allows slimCat to parse [indent] tags and present the bbcode indented text.">
-                Display indent
+                Display bbcode indent
+            </CheckBox>
+            
+            <CheckBox IsChecked="{Binding AllowAvatars}"
+                      ToolTip="Allows slimCat to display avatars for users around the program, such as in right-click menus and private-message tabs.">
+                Display avatars
             </CheckBox>
 
             <CheckBox IsChecked="{Binding StickMessageToBottom}"

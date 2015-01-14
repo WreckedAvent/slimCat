@@ -93,6 +93,11 @@ namespace slimCat.Models
             get { return Unread; }
         }
 
+        public int CompositeUnreadCount
+        {
+            get { return Unread; }
+        }
+
         /// <summary>
         ///     Gets or sets the PrivateMessage character.
         /// </summary>
@@ -208,6 +213,12 @@ namespace slimCat.Models
             }
 
             base.Dispose(isManaged);
+        }
+
+        protected override void UpdateBindings()
+        {
+            base.UpdateBindings();
+            OnPropertyChanged("CompositeUnreadCount");
         }
 
         #endregion

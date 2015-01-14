@@ -327,6 +327,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool AllowAvatars
+        {
+            get { return ApplicationSettings.ShowAvatars; }
+            set
+            {
+                ApplicationSettings.ShowAvatars = value;
+                Save();
+            }
+        }
+
         #endregion
 
         #region Automation

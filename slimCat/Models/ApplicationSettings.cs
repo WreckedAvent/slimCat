@@ -102,6 +102,8 @@ namespace slimCat.Models
 
             UseCustomTimeStamp = false;
             CustomTimeStamp = "[h:mm tt]";
+            
+            ShowAvatars = true;
         }
 
         #endregion
@@ -327,6 +329,8 @@ namespace slimCat.Models
         public static bool UseCustomTimeStamp { get; set; }
 
         public static string CustomTimeStamp { get; set; }
+
+        public static bool ShowAvatars { get; set; }
 
         #endregion
     }

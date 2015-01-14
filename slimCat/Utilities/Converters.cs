@@ -2015,4 +2015,19 @@ namespace slimCat.Utilities
 
         #endregion
     }
+
+    public class PmOrChannelTemplateSelector : DataTemplateSelector
+    {
+        public override DataTemplate
+            SelectTemplate(object item, DependencyObject container)
+        {
+            var element = container as FrameworkElement;
+
+            if (element == null) return null;
+
+            return (ApplicationSettings.ShowAvatars)
+                ? element.FindResource("PmChannelTemplate") as DataTemplate
+                : element.FindResource("GeneralChannelTemplate") as DataTemplate;
+        }
+    }
 }
