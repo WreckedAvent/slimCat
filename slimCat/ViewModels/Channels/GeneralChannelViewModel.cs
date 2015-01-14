@@ -201,6 +201,7 @@ namespace slimCat.ViewModels
 
                 Message = ChannelSettings.LastMessage;
                 ChannelSettings.LastMessage = null;
+                searchSettings.ShowOffline = true;
 
                 Application.Current.Dispatcher.Invoke(
                     (Action) delegate { Application.Current.MainWindow.Deactivated += SetLastMessageMark; });
