@@ -187,6 +187,12 @@ namespace slimCat.Views
             }
         }
 
+        private void OnMouseWheelPreview(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            scroller.Scroll(e.Delta);
+            e.Handled = true;
+        }
+
         private void AddInReverseAsync(Block item, DispatcherPriority priority)
         {
             Dispatcher.BeginInvoke(

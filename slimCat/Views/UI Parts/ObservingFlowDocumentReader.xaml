@@ -11,5 +11,6 @@
     <FlowDocument PagePadding="2,5"
                   IsHyphenationEnabled="True"
                   Loaded="OnLoad"
+                  PreviewMouseWheel="OnMouseWheelPreview"
                   x:Name="Messages"/>
 </FlowDocumentScrollViewer>

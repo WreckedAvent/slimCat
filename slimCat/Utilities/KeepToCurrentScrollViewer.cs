@@ -21,6 +21,7 @@ namespace slimCat.Utilities
 {
     #region Usings
 
+    using slimCat.Models;
     using System;
     using System.Windows;
     using System.Windows.Controls;
@@ -68,6 +69,11 @@ namespace slimCat.Utilities
         public void Stick()
         {
             lastValue = scroller.ScrollableHeight;
+        }
+
+        public void Scroll(int scrollTicks)
+        {
+            scroller.ScrollToVerticalOffset(scroller.VerticalOffset - StaticFunctions.GetScrollDistance(scrollTicks, ApplicationSettings.FontSize));
         }
 
         #endregion
