@@ -21,6 +21,7 @@ namespace slimCat.Views
 {
     #region Usings
 
+    using slimCat.Models;
     using System;
     using System.Windows;
     using System.Windows.Controls;
@@ -41,6 +42,7 @@ namespace slimCat.Views
         private bool isAdded = true;
         private Inline lastItem;
         private PmChannelViewModel vm;
+        private ScrollViewer scroller;
 
         #endregion
 
@@ -129,6 +131,20 @@ namespace slimCat.Views
         {
             e.Handled = true;
             StaticFunctions.TryOpenRightClickMenuCommand<Grid>(sender, 2);
+        }
+
+        private void OnProfileMouseWheelPreview(object sender, MouseWheelEventArgs e)
+        {
+            if (scroller == null)
+            {
+                scroller = StaticFunctions.FindChild<ScrollViewer>(sender as DependencyObject);
+                if (scroller == null)
+                    return;
+            }
+
+            scroller.ScrollToVerticalOffset(scroller.VerticalOffset - StaticFunctions.GetScrollDistance(e.Delta, ApplicationSettings.FontSize-4));
+
+            e.Handled = true;
         }
     }
 }
