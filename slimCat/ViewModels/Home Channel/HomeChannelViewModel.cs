@@ -357,9 +357,6 @@ namespace slimCat.ViewModels
 
         public void UpdateConnectText(object sender, EventArgs e)
         {
-            if (ChatModel.IsAuthenticated)
-                return;
-
             ConnectTime++;
 
             if (connectDotDot.Length >= 3)
