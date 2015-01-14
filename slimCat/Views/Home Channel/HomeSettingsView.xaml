@@ -249,7 +249,7 @@
             </StackPanel>
 
             <StackPanel Margin="0,15,0,0"
-                        ToolTip="Changes how many messages must be rendered before slimCat renders a tab switch">
+                        ToolTip="Changes how many messages must be loaded before slimCat renders a tab switch. Lower values improves tab switch performance, higher values reduce tab message pop-in.">
                 <WrapPanel>
                     <TextBlock Text="Channel Message Preload Amount: " />
                     <TextBlock Text="{Binding Path=PreloadMessageAmount}" />
@@ -257,7 +257,7 @@
                 <Slider Value="{Binding PreloadMessageAmount}"
                         LargeChange="20"
                         SmallChange="5"
-                        Minimum="10"
+                        Minimum="0"
                         Maximum="200"
                         Width="400"
                         TickFrequency="10"
