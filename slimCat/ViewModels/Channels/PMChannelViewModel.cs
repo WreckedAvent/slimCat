@@ -128,7 +128,8 @@ namespace slimCat.ViewModels
                     OnPropertyChanged("CanShowNoteTimeLeft");
                 };
 
-                AllKinks = new ListCollectionView(new ProfileKink[0]);
+                if (AllKinks == null)
+                    AllKinks = new ListCollectionView(new ProfileKink[0]);
 
                 noteCooldownUpdateTick.Elapsed += (s, e) => OnPropertyChanged("NoteTimeLeft");
 
