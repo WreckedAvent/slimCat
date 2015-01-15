@@ -92,7 +92,7 @@ namespace slimCatTest
         [TestInitialize]
         public void Initialize()
         {
-            eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Publish(null);
+            eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Publish("testing character");
         }
 
         [TestMethod]

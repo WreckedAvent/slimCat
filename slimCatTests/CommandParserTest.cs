@@ -104,9 +104,9 @@ namespace slimCatTest
             Assert.AreEqual(Constants.ClientCommands.ChannelTimeOut, result[Constants.Arguments.Type]);
             Assert.AreEqual("trouble maker", result[Constants.Arguments.Character]);
 
-            result = TestOf("/timeout trouble maker, 1800, you're a naughty boy").ToDictionary();
+            result = TestOf("/chattimeout trouble maker, 1800, you're a naughty boy").ToDictionary();
 
-            Assert.AreEqual(Constants.ClientCommands.ChannelTimeOut, result[Constants.Arguments.Type]);
+            Assert.AreEqual(Constants.ClientCommands.AdminTimeout, result[Constants.Arguments.Type]);
             Assert.AreEqual("trouble maker", result[Constants.Arguments.Character]);
             Assert.AreEqual("you're a naughty boy", result["reason"]);
         }
