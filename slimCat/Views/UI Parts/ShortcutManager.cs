@@ -26,6 +26,7 @@ namespace slimCat.Views
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
+    using System.Windows.Threading;
     using Libraries;
     using Models;
     using Utilities;
@@ -70,6 +71,8 @@ namespace slimCat.Views
         private static readonly IList<KeyBinding> LastBinds = new List<KeyBinding>();
 
         private RelayCommand focusCommand;
+
+        private string lastNameComplete;
         #endregion
 
         #region Constructors
@@ -111,13 +114,36 @@ namespace slimCat.Views
         #region Commands
         public ICommand FocusCommand
         {
-            get { return focusCommand = focusCommand ?? (focusCommand = new RelayCommand(_ => Focus())); }
+            get { return focusCommand = focusCommand ?? (focusCommand = new RelayCommand(FocusEvent)); }
+        }
+
+        private void FocusEvent(object o)
+        {
+            if (entry.IsFocused)
+            {
+                var character = vm.TabComplete(lastNameComplete);
+
+                lastNameComplete = character;
+                if (character == null) return;
+
+                // why invoke? Entry.Text doesn't update immediately, it's updated on a scheduler or something
+                // this just schedules it after that
+                Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
+                {
+                    var startIndex = entry.Text.IndexOf(character, StringComparison.Ordinal);
+                    if (startIndex == -1) return; // don't want to crash if something weird happens
+                    entry.Select(startIndex, character.Length);
+                }));
+            }
+            else Focus();
         }
         #endregion
 
         #region Methods
         private void OnKeyUp(object sender, KeyEventArgs e)
         {
+            if (e.Key != Key.Tab) lastNameComplete = null;
+
             // this defines shortcuts when the textbox has focus --- in particular, ones which modify the content of the textbox
             if (e.Key == Key.Return && e.KeyboardDevice.Modifiers == ModifierKeys.Control)
             {
@@ -242,7 +268,7 @@ namespace slimCat.Views
                     bindings.Remove(focusBind);
                     LastBinds.Remove(focusBind);
                 }
-                AddContextualBinding(new KeyBinding(FocusCommand, new KeyGesture(Key.Tab)));
+                AddContextualBinding(FocusCommand, new KeyGesture(Key.Tab));
                 return;
             }
 
@@ -282,27 +308,27 @@ namespace slimCat.Views
 
         private void ReAddContextualKeybinds()
         {
-            AddContextualBinding(new KeyBinding(FocusCommand, new KeyGesture(Key.Tab)));
-            AddContextualBinding(new KeyBinding(vm.TogglePreviewCommand, new KeyGesture(Key.Enter, ModifierKeys.Alt)));
+            AddContextualBinding(FocusCommand, new KeyGesture(Key.Tab));
+            AddContextualBinding(vm.TogglePreviewCommand, new KeyGesture(Key.Enter, ModifierKeys.Alt));
 
             var pmVm = vm as PmChannelViewModel;
             var channelVm = vm as GeneralChannelViewModel;
             if (pmVm != null)
             {
-                AddContextualBinding(new KeyBinding(pmVm.SwitchCommand, new KeyGesture(Key.Tab, ModifierKeys.Shift)));
+                AddContextualBinding(pmVm.SwitchCommand, new KeyGesture(Key.Tab, ModifierKeys.Shift));
             }
 
             if (channelVm != null)
             {
-                AddContextualBinding(new KeyBinding(channelVm.SwitchCommand, new KeyGesture(Key.Tab, ModifierKeys.Shift)));
+                AddContextualBinding(channelVm.SwitchCommand, new KeyGesture(Key.Tab, ModifierKeys.Shift));
 
-                AddContextualBinding(new KeyBinding(channelVm.SwitchSearchCommand,
-                    new KeyGesture(Key.F, ModifierKeys.Control)));
+                AddContextualBinding(channelVm.SwitchSearchCommand, new KeyGesture(Key.F, ModifierKeys.Control));
             }
         }
 
-        private static void AddContextualBinding(KeyBinding binding)
+        private static void AddContextualBinding(ICommand command, KeyGesture keyGesture)
         {
+            var binding = new KeyBinding(command, keyGesture);
             LastBinds.Add(binding);
             Application.Current.MainWindow.InputBindings.Add(binding);
         }

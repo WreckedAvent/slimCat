@@ -80,6 +80,10 @@ namespace slimCat.ViewModels
 
         private bool showPreview;
 
+        private int tabCompleteIdx;
+
+        private string tabCompleteStartString;
+
         #endregion
 
         #region Constructors and Destructors
@@ -422,5 +426,33 @@ namespace slimCat.ViewModels
         }
 
         #endregion
+
+        public string TabComplete(string character)
+        {
+            if (string.IsNullOrWhiteSpace(Message)) return null;
+
+            var lastSpaceIdx = string.IsNullOrWhiteSpace(character) ? Message.LastIndexOf(' ') : tabCompleteIdx;
+            var lastWord = Message.Substring(lastSpaceIdx == -1 ? 0 : lastSpaceIdx + 1);
+
+            IEnumerable<ICharacter> characters = CharacterManager.Characters.OrderBy(x => x.Name).ThenBy(x => x.Name);
+
+            if (!string.IsNullOrWhiteSpace(character))
+                characters = characters
+                    .SkipWhile(x => !String.Equals(x.Name, character, StringComparison.CurrentCultureIgnoreCase))
+                    .Skip(1);
+            else
+            {
+                tabCompleteStartString = lastWord;
+                tabCompleteIdx = lastSpaceIdx;
+            }
+
+            var match = characters.FirstOrDefault(x => x.Name.StartsWith(tabCompleteStartString, true, null));
+
+            if (match == null) return null;
+
+            Message = Message.Replace(lastWord, match.Name);
+
+            return match.Name;
+        }
     }
 }
