@@ -160,13 +160,6 @@ namespace slimCat.ViewModels
                     return false;
                 }
 
-                if (!selectedSearchTerms.Any(term => term.Category.Equals("kinks")))
-                {
-                    SearchButtonText = "Must have at least one kink";
-                    OnPropertyChanged("SearchButtonText");
-                    return false;
-                }
-
                 if (selectedSearchTerms.Count(term => term.Category.Equals("kinks")) > 5)
                 {
                     SearchButtonText = "Too many kinks";
@@ -255,6 +248,7 @@ namespace slimCat.ViewModels
         private void SendSearchEvent(object obj)
         {
             var toSend = new Dictionary<string, IList<string>>();
+            toSend["kinks"] = new List<string>();
 
             selectedSearchTerms.Each(term =>
             {
