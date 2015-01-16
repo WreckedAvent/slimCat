@@ -43,8 +43,6 @@ namespace slimCat.ViewModels
     /// </summary>
     public class LoginViewModel : ViewModelBase
     {
-        private readonly IBrowser browser;
-
         #region Constants
 
         internal const string LoginViewName = "LoginView";
@@ -60,6 +58,8 @@ namespace slimCat.ViewModels
         private string relayMessage = Constants.FriendlyName; // message relayed to the user
 
         private bool requestIsSent; // used for determining Login UI state
+
+        private readonly IBrowser browser;
 
         #endregion
 
@@ -123,6 +123,8 @@ namespace slimCat.ViewModels
                 OnPropertyChanged("Password");
             }
         }
+
+        public bool ShowCapslockWarning { get { return Console.CapsLock; } }
 
         public string ServerHost
         {
@@ -203,6 +205,11 @@ namespace slimCat.ViewModels
                 ex.Source = "Login ViewModel, init";
                 Exceptions.HandleException(ex);
             }
+        }
+
+        public void UpdateCapsLockWarning()
+        {
+            OnPropertyChanged("ShowCapslockWarning");
         }
 
         #endregion

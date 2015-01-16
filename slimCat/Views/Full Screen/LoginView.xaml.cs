@@ -22,6 +22,8 @@ namespace slimCat.Views
     #region Usings
 
     using System;
+    using System.Windows;
+    using System.Windows.Input;
     using Utilities;
     using ViewModels;
 
@@ -32,6 +34,8 @@ namespace slimCat.Views
     /// </summary>
     public partial class LoginView
     {
+        private readonly LoginViewModel vm;
+
         #region Constructors and Destructors
 
         /// <summary>
@@ -42,6 +46,7 @@ namespace slimCat.Views
         /// </param>
         public LoginView(LoginViewModel vm)
         {
+            this.vm = vm;
             try
             {
                 InitializeComponent();
@@ -55,5 +60,10 @@ namespace slimCat.Views
         }
 
         #endregion
+
+        private void OnPasswordKeyDown(object sender, RoutedEventArgs routedEventArgs)
+        {
+            vm.UpdateCapsLockWarning();
+        }
     }
 }

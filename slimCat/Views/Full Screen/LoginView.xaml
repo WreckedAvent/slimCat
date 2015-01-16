@@ -31,11 +31,16 @@
             </TextBlock>
             <PasswordBox Margin="10, 0, 10, 10"
                          lib:PasswordBoxAssistant.BindPassword="true"
-                         lib:PasswordBoxAssistant.BoundPassword="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                         lib:PasswordBoxAssistant.BoundPassword="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         KeyDown="OnPasswordKeyDown"
+                         GotFocus="OnPasswordKeyDown">
                 <PasswordBox.InputBindings>
                     <KeyBinding Key="Enter" Command="{Binding LoginCommand}" />
                 </PasswordBox.InputBindings>
             </PasswordBox>
+            
+            <TextBlock Visibility="{Binding ShowCapslockWarning, Converter={StaticResource BoolConverter}}" Margin="10,0,0,10">Capslock is on!</TextBlock>
+            
             <Expander Visibility="{Binding Advanced, Converter={StaticResource BoolConverter}}">
                 <Expander.Header>
                     <TextBlock Foreground="{StaticResource DepressedBrush}" Text="Advanced" FontSize="16" />

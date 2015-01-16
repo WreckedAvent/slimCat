@@ -23,6 +23,7 @@ namespace slimCat.ViewModels
 
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Windows.Input;
     using Libraries;
@@ -197,6 +198,23 @@ namespace slimCat.ViewModels
         {
             if (!should)
                 return;
+
+            if (Characters.Count() == 1)
+            {
+                CurrentCharacter = Characters.First();
+                SendCharacterSelectEvent();
+                return;
+            }
+
+            if (!Characters.Any())
+            {
+                Exceptions.ShowErrorBox(
+                    "slimCat will now exit. \nReason: No characters to connect with. \n\n"
+                    + "Please create a character to sign into f-chat.",
+                    "No characters for chat!");
+
+                Environment.Exit(-3);
+            }
 
             RelayMessage = "Done! Now pick a character.";
             RegionManager.RequestNavigate(Shell.MainRegion, new Uri(CharacterSelectViewName, UriKind.Relative));
