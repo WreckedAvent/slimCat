@@ -138,6 +138,7 @@ namespace slimCat.Views
                             if (messages.MoveNext())
                             {
                                 count++;
+                                scroller.StabilizeNextScroll();
                                 AddInReverseAsync(messages.Current, DispatcherPriority.DataBind);
                             }
                             else

@@ -43,6 +43,8 @@ namespace slimCat.Utilities
 
         private double lastValue;
 
+        private double distanceToBottom;
+
         #endregion
 
         #region Constructors and Destructors
@@ -76,6 +78,11 @@ namespace slimCat.Utilities
             scroller.ScrollToVerticalOffset(scroller.VerticalOffset - StaticFunctions.GetScrollDistance(scrollTicks, ApplicationSettings.FontSize));
         }
 
+        public void StabilizeNextScroll()
+        {
+            distanceToBottom = scroller.ExtentHeight - scroller.VerticalOffset;
+        }
+
         #endregion
 
         #region Methods
@@ -89,11 +96,15 @@ namespace slimCat.Utilities
             {
                 if (hookedToBottom)
                     scroller.ScrollToBottom();
+                else if (distanceToBottom != 0.0d)
+                    scroller.ScrollToVerticalOffset(scroller.ExtentHeight - distanceToBottom);
             }
             else if (Math.Abs(e.VerticalOffset - scroller.ScrollableHeight) < 20)
                 hookedToBottom = true;
             else
                 hookedToBottom = false;
+
+            distanceToBottom = 0.0d;
         }
 
         #endregion
