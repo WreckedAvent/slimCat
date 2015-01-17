@@ -416,17 +416,16 @@ http://www.foo.bar.com";
 
                 var result = GetBbCode<Span>(text).ToList();
                 result[0].TextShouldBe("o ");
-
                 Assert.IsFalse(result[1] is Bold);
-                result[1].TextShouldBe("[b]");
+                result[1].TextShouldBe("[b]b o");
 
-                Assert.IsTrue(result[2] is Bold);
-                result[2].TextShouldBe("b");
+                var improperChildren = result[1].Inlines.OfType<Span>().ToList();
 
-                Assert.IsFalse(result[3] is Bold);
-                result[3].TextShouldBe(" o");
+                Assert.IsTrue(improperChildren[0] is Bold);
+                improperChildren[0].TextShouldBe("b");
 
-                Assert.IsTrue(result[3].Equals(result.Last()));
+                Assert.IsFalse(improperChildren[1] is Bold);
+                improperChildren[1].TextShouldBe(" o");
             }
 
             [TestMethod]
@@ -437,12 +436,9 @@ http://www.foo.bar.com";
                 var result = GetBbCode<Span>(text).ToList();
 
                 result[0].TextShouldBe("o ");
-
                 Assert.IsTrue(result[1] is Bold);
-                var boldChildren = result[1].Inlines.OfType<Span>().ToList();
-                boldChildren[0].TextShouldBe("some well-formed bold with a run-away ");
-                boldChildren[1].TextShouldBe("[user]");
-                boldChildren[2].TextShouldBe(" tag");
+                result[1].TextShouldBe("some well-formed bold with a run-away [user] tag");
+                result[2].TextShouldBe(" o");
             }
 
             [TestMethod]
@@ -475,6 +471,17 @@ http://www.foo.bar.com";
                 // result[1] should actually be "test", TODO
                 result[1].TextShouldBe("]");
                 result[2].TextShouldBe("test");
+            }
+
+            [TestMethod]
+            public void NoParseSeparateTagsShouldWork()
+            {
+                const string text = "[noparse][b][/noparse] test [noparse][/b][/noparse]";
+
+                var result = GetBbCode<Span>(text).ToList();
+                result[0].TextShouldBe("[b]");
+                result[1].TextShouldBe(" test ");
+                result[2].TextShouldBe("[/b]");
             }
         }
 
@@ -524,17 +531,19 @@ http://www.foo.bar.com";
     public static class ExtensionHelpers
     {
         public static string GetText<T>(this T element)
-            where T : Span
+            where T : Inline
         {
-            var span = element.GetChildren<Span>().FirstOrDefault();
+            var run = element as Run;
+            if (run != null)
+                return run.Text;
 
-            var run = span != null
-                ? span.GetChildren<Run>().FirstOrDefault()
-                : element.GetChildren<Run>().FirstOrDefault();
+            var total = string.Empty;
+            var span = element as Span;
 
-            Assert.IsNotNull(run);
+            if (span != null)
+                span.Inlines.Select(GetText).Each(x => total += x);
 
-            return run.Text;
+            return total;
         }
 
         public static bool IsColor(this Brush brush, Color suspectColor)

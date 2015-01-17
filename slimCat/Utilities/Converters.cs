@@ -566,22 +566,6 @@ namespace slimCat.Utilities
 
             #endregion
 
-            #region handle unbalanced tags
-
-            var unbalancedTags =
-                (from t in tags
-                    where t.Type != BbCodeType.None
-                    where t.Type != BbCodeType.HorizontalRule
-                    group t by t.Type
-                    into g
-                    select new {Type = g.Key, Tags = g})
-                    .Where(x => x.Tags.Count()%2 == 1);
-
-            foreach (var tagGroup in unbalancedTags.ToList())
-                tagGroup.Tags.First().Type = BbCodeType.None;
-
-            #endregion
-
             while (tags.Count > 0)
             {
                 // get the next tag to process
@@ -594,24 +578,37 @@ namespace slimCat.Utilities
                 if (openTags.Count > 0)
                 {
                     var lastOpen = openTags.Peek();
+                    var lastMatching = openTags.FirstOrDefault(x => tag.IsClosing && x.Type == tag.Type);
 
-                    // check if we're the closing for the last open tag
-                    if (lastOpen.Type == tag.Type
-                        && tag.IsClosing)
+                    // check if we're closing any previous tags
+                    if (lastMatching != null)
                     {
-                        lastOpen.ClosingTag = tag;
-                        openTags.Pop();
+                        lastMatching.ClosingTag = tag;
+
+                        // keep going through our opened tag stack until we find the one 
+                        // we're closing
+                        do
+                        {
+                            lastOpen = openTags.Pop();
+
+                            // if we end up with a tag that isn't the one we're closing,
+                            // it must not have been closed correctly, e.g
+                            // [i] [b] [/i]
+                            // we'll treat that '[b]' as text
+                            if (lastOpen != lastMatching) lastOpen.Type = BbCodeType.None;
+                        } while (lastOpen != lastMatching);
+                        
 
                         #region handle noparse
 
-                        if (lastOpen.Type == BbCodeType.NoParse)
+                        if (lastMatching.Type == BbCodeType.NoParse)
                         {
-                            lastOpen.Children = lastOpen.Children ?? new List<BbTag>();
-                            lastOpen.Children.Add(new BbTag
+                            lastMatching.Children = lastMatching.Children ?? new List<BbTag>();
+                            lastMatching.Children.Add(new BbTag
                             {
                                 Type = BbCodeType.None,
                                 End = tag.Start,
-                                Start = lastOpen.End
+                                Start = lastMatching.End
                             });
                         }
 
@@ -619,13 +616,17 @@ namespace slimCat.Utilities
                     }
                     else
                     {
-                        if (lastOpen.Type != BbCodeType.NoParse)
+                        if (openTags.All(x => x.Type != BbCodeType.NoParse))
                         {
                             // if not, we have to be a child of it
                             lastOpen.Children = lastOpen.Children ?? new List<BbTag>();
 
                             lastOpen.Children.Add(tag);
                         }
+
+                        // any matching closing tags would be caught in the if part of this
+                        // branch, this is an invalid tag, treat as text
+                        if (tag.IsClosing) tag.Type = BbCodeType.None;
 
                         addToQueue = false;
                     }
@@ -645,9 +646,12 @@ namespace slimCat.Utilities
                 if (addToQueue) processedQueue.Enqueue(tag);
             }
 
-            // if in the process of removing improper tags we end up with no bbcode,
-            // return original
-            if (processedQueue.All(x => x.Type == BbCodeType.None))
+            // these tags haven't been closed, so treat them as invalid
+            foreach (var openTag in openTags)
+                openTag.Type = BbCodeType.None;
+           
+            // if we have no bbcode present, just return the text as-is
+            if (processedQueue.All(x => x.Type == BbCodeType.None && x.Children == null))
                 return new[] {AsChunk(input)};
 
             toReturn.AddRange(processedQueue.Select(x => FromTag(x, input)));
