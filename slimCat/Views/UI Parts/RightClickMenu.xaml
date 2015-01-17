@@ -31,8 +31,8 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     
-                    <Border MaxHeight="75" 
-                            MaxWidth="75" 
+                    <Border Height="75" 
+                            Width="75" 
                             Margin="0,0,10,0"
                             Visibility="{Binding Source={x:Static models:ApplicationSettings.ShowAvatars}, Converter={StaticResource BoolConverter}}">
                         <Image Source="{Binding Path=Target.Avatar}"/>
