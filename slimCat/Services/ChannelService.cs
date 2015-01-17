@@ -306,13 +306,16 @@ namespace slimCat.Services
         {
             name = HttpUtility.HtmlDecode(name);
 
-            var type = (id != name) ? ChannelType.Public : ChannelType.Private;
+            var type = (id == name) ? ChannelType.Public : ChannelType.Private;
+
+            if (model.CurrentChannels.FirstByIdOrNull(id) != null)
+                return;
 
             Log((id != name && !string.IsNullOrEmpty(name))
                 ? "Quick Joining {0} Channel {1} \"{2}\"".FormatWith(type, id, name)
                 : "Quick Joining {0} Channel {1}".FormatWith(type, id));
 
-            var temp = new GeneralChannelModel(id, name, id == name ? ChannelType.Public : ChannelType.Private);
+            var temp = new GeneralChannelModel(id, name, type);
             Dispatcher.Invoke((Action) (() =>
             {
                 model.AllChannels.Add(temp);

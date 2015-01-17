@@ -55,8 +55,6 @@ namespace slimCat.Services
 
         private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
 
-        private bool ignoreAutoRejoin;
-
         private IList<string> rejoinChannelList = new List<string>(); 
 
         #endregion
@@ -167,12 +165,14 @@ namespace slimCat.Services
         {
             if (data == null) return;
 
-            if (autoJoinedChannels.Count != 0 && data.Get(Constants.Arguments.Command) == Commands.ChannelJoin)
+            var isChannelJoin = data.Get(Constants.Arguments.Command) == Commands.ChannelJoin;
+            if (autoJoinedChannels.Count != 0 && isChannelJoin)
             {
                 AutoJoinChannelCommand(data);
                 return;
             }
-            if (data.Get(Constants.Arguments.Command) == Commands.ChannelJoin)
+
+            if (isChannelJoin)
             {
                 var characterDict = data.Get<IDictionary<string, object>>(Constants.Arguments.Character);
                 var character = characterDict.Get(Constants.Arguments.Identity);
@@ -401,7 +401,6 @@ namespace slimCat.Services
                         .ToList();
                 }
 
-                ignoreAutoRejoin = !intentionalDisconnect;
                 ChatModel.IsAuthenticated = false;
             }));
         }

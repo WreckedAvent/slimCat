@@ -64,27 +64,20 @@ namespace slimCat.Services
         {
             var id = command.Get(Constants.Arguments.Channel);
 
-            if (!ignoreAutoRejoin)
+            var title = command.Get(Constants.Arguments.Title);
+
+            var characterDict = command.Get<IDictionary<string, object>>(Constants.Arguments.Character);
+            var character = characterDict.Get(Constants.Arguments.Identity);
+
+            if (character != ChatModel.CurrentCharacter.Name || !autoJoinedChannels.Contains(id))
             {
-
-                var title = command.Get(Constants.Arguments.Title);
-
-                var characterDict = command.Get<IDictionary<string, object>>(Constants.Arguments.Character);
-                var character = characterDict.Get(Constants.Arguments.Identity);
-
-                if (character != ChatModel.CurrentCharacter.Name || !autoJoinedChannels.Contains(id))
-                {
-                    JoinChannelCommand(command);
-                    return;
-                }
-
-                manager.QuickJoinChannel(id, title);
+                JoinChannelCommand(command);
+                return;
             }
 
-            autoJoinedChannels.Remove(id);
+            manager.QuickJoinChannel(id, title);
 
-            if (autoJoinedChannels.Count == 0)
-                ignoreAutoRejoin = false;
+            autoJoinedChannels.Remove(id);
         }
 
         private void QuickJoinChannelCommand(IDictionary<string, object> command)
