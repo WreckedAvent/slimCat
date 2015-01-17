@@ -317,7 +317,7 @@ http://www.foo.bar.com";
                 root.GetFirstChild().TextShouldBe("bbcode ");
 
                 var second = root.GetFirstChild<Underline>();
-                second.TextShouldBe("with ");
+                second.GetFirstChild<Span>().TextShouldBe("with ");
 
                 second.GetFirstChild<Italic>().TextShouldBe("lots");
                 second.GetChildren().Last().TextShouldBe(" of");
@@ -403,7 +403,11 @@ http://www.foo.bar.com";
                 const string slightlyWrong = "this is some [bu]slightly wrong[/bu] bbcode";
                 const string typoWrong = "this is [is]typoed[/i] bbcode";
 
-                ShouldNotContainMarkup(missingCloseWrong);
+                var missingCloseBb = GetBbCode<Span>(missingCloseWrong).ToList();
+                missingCloseBb[0].TextShouldBe("start text ");
+                missingCloseBb[1].TextShouldBe("[b] run away bbcode end text");
+                Assert.IsTrue(missingCloseBb.All(x => !(x is Bold)));
+
                 ShouldNotContainMarkup(totallyWrong);
                 ShouldNotContainMarkup(slightlyWrong);
                 ShouldNotContainMarkup(typoWrong);
@@ -582,7 +586,7 @@ http://www.foo.bar.com";
 
         public static void TextShouldBe(this Span element, string expected)
         {
-            Assert.IsTrue(element.GetText().Equals(expected));
+            Assert.AreEqual(expected, element.GetText());
         }
 
         public static void FirstTextShouldBe(this IEnumerable<Span> elements, string expected)
