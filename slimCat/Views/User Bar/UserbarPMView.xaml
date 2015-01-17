@@ -34,7 +34,6 @@
                     <TextBlock.Effect>
                         <DropShadowEffect BlurRadius="1"
                                           ShadowDepth="2"
-
                                           Color="{StaticResource BackgroundColor}" />
                     </TextBlock.Effect>
                 </TextBlock>
@@ -84,9 +83,10 @@
             </v:CloseButtonView>
 
             <TextBlock Text="{Binding Path=Id, Mode=OneTime}"
-                       MaxWidth="135"
+                       MaxWidth="110"
                        TextAlignment="Left"
-                       TextWrapping="Wrap"
+                       TextWrapping="NoWrap"
+                       TextTrimming="CharacterEllipsis"
                        Margin="0"
                        HorizontalAlignment="Right"
                        VerticalAlignment="Top" />

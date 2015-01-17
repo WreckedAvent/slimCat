@@ -24,7 +24,9 @@
                    HorizontalAlignment="Left"
                    TextAlignment="Left"
                    VerticalAlignment="Center"
-                   TextWrapping="Wrap" />
+                   TextWrapping="NoWrap"
+                   TextTrimming="CharacterEllipsis"
+                   MaxWidth="150"/>
         <TextBlock Text="{Binding Path=CompositeUnreadCount, Mode=OneWay}"
                    VerticalAlignment="Center"
                    Grid.Column="1"
