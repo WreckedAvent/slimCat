@@ -48,6 +48,8 @@ namespace slimCat.ViewModels
 
         private static Timer errorRemoveTimer;
 
+        private static Timer saveMessageTimer;
+
         #endregion
 
         #region Fields
@@ -102,6 +104,9 @@ namespace slimCat.ViewModels
             errorRemoveTimer.Elapsed += (s, e) => { Error = null; };
 
             errorRemoveTimer.AutoReset = false;
+
+            saveMessageTimer = new Timer(10000);
+            saveMessageTimer.AutoReset = false;
 
             entryBoxRowHeight = new GridLength(1, GridUnitType.Auto);
             headerRowHeight = new GridLength(1, GridUnitType.Auto);
@@ -186,6 +191,15 @@ namespace slimCat.ViewModels
             {
                 message = value;
                 OnPropertyChanged("Message");
+
+                if (string.IsNullOrEmpty(message))
+                    ChannelSettings.LastMessage = null;
+                else if (saveMessageTimer.Enabled == false
+                        && message.Length > 30)
+                {
+                    ChannelSettings.LastMessage = message;
+                    saveMessageTimer.Start();
+                }
             }
         }
 
