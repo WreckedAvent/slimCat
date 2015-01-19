@@ -462,7 +462,7 @@ namespace slimCat.Utilities
             var lineSize = (fontSize * 0.89d) + 9.72d;
 
             // 120 is standard for one mousewheel tick
-            return ((scrollTicks / 120) * linesPerTick * lineSize);
+            return ((scrollTicks / 120.0d) * linesPerTick * lineSize);
         }
 
     }
