@@ -197,10 +197,11 @@ namespace slimCat.ViewModels
 
                 LoggingSection = "general chan vm";
 
-                if (!string.IsNullOrWhiteSpace(ChannelSettings.LastMessage)) return;
-
-                Message = ChannelSettings.LastMessage;
-                ChannelSettings.LastMessage = null;
+                if (!string.IsNullOrWhiteSpace(ChannelSettings.LastMessage))
+                {
+                    Message = ChannelSettings.LastMessage;
+                    ChannelSettings.LastMessage = null;
+                }
                 searchSettings.ShowOffline = true;
 
                 Application.Current.Dispatcher.Invoke(
