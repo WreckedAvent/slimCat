@@ -80,6 +80,7 @@ namespace slimCat.Utilities
 
         public void StabilizeNextScroll()
         {
+            if (scroller == null) return;
             distanceToBottom = scroller.ExtentHeight - scroller.VerticalOffset;
         }
 

@@ -121,6 +121,7 @@ namespace slimCat.Views
         {
             if (entry.IsFocused)
             {
+                if (vm == null) return;
                 var character = vm.TabComplete(lastNameComplete);
 
                 lastNameComplete = character;
