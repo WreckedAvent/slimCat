@@ -75,6 +75,7 @@ namespace slimCat.Utilities
 
         public void Scroll(int scrollTicks)
         {
+            if (scroller == null) return;
             scroller.ScrollToVerticalOffset(scroller.VerticalOffset - StaticFunctions.GetScrollDistance(scrollTicks, ApplicationSettings.FontSize));
         }
 
