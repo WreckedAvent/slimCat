@@ -21,7 +21,11 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Windows.Forms.VisualStyles;
+    using Models;
     using Utilities;
 
     #endregion
@@ -38,7 +42,15 @@ namespace slimCat.Services
             if (command.ContainsKey(Constants.Arguments.Channel))
             {
                 var toOpen = command.Get(Constants.Arguments.Channel);
-                if (!string.IsNullOrWhiteSpace(toOpen))
+                if (string.IsNullOrWhiteSpace(toOpen)) return;
+
+                var match =
+                    model.AllChannels.FirstByIdOrNull(toOpen)
+                    ?? (ChannelModel) model.CurrentPms.FirstByIdOrNull(toOpen);
+
+                if (match != null) 
+                    logger.OpenLog(true, match.Title, match.Id);
+                else
                     logger.OpenLog(true, toOpen, toOpen);
             }
             else
