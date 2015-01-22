@@ -67,8 +67,14 @@ namespace slimCat.Services
         {
             CurrentCharacter = character;
 
-            FullPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "slimCat", CurrentCharacter);
+            if (!ApplicationSettings.PortableMode)
+                FullPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "slimCat", CurrentCharacter);
+            else
+            {
+                var exeFolder = (new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location)).Directory.ToString();
+                FullPath = Path.Combine(exeFolder, "logs", CurrentCharacter);
+            }
 
             if (!Directory.Exists(FullPath))
                 Directory.CreateDirectory(FullPath);
