@@ -35,7 +35,7 @@ namespace slimCat.Utilities
     {
         #region Fields
 
-        private readonly ScrollViewer scroller;
+        private ScrollViewer scroller;
 
         private bool hookedToBottom = true;
 
@@ -45,6 +45,8 @@ namespace slimCat.Utilities
 
         private double distanceToBottom;
 
+        private DependencyObject toManage;
+
         #endregion
 
         #region Constructors and Destructors
@@ -52,10 +54,9 @@ namespace slimCat.Utilities
         public KeepToCurrentScrollViewer(DependencyObject toManage)
         {
             toManage.ThrowIfNull("toManage");
+            this.toManage = toManage;
 
-            scroller = StaticFunctions.FindChild<ScrollViewer>(toManage);
-            if (scroller != null)
-                scroller.ScrollChanged += OnScrollChanged;
+            CheckScroller();
         }
 
         #endregion
@@ -75,14 +76,14 @@ namespace slimCat.Utilities
 
         public void Scroll(int scrollTicks)
         {
-            if (scroller == null) return;
-            scroller.ScrollToVerticalOffset(scroller.VerticalOffset - StaticFunctions.GetScrollDistance(scrollTicks, ApplicationSettings.FontSize));
+            if (CheckScroller())
+                scroller.ScrollToVerticalOffset(scroller.VerticalOffset - StaticFunctions.GetScrollDistance(scrollTicks, ApplicationSettings.FontSize));
         }
 
         public void StabilizeNextScroll()
         {
-            if (scroller == null) return;
-            distanceToBottom = scroller.ExtentHeight - scroller.VerticalOffset;
+            if (CheckScroller())
+                distanceToBottom = scroller.ExtentHeight - scroller.VerticalOffset;
         }
 
         #endregion
@@ -107,6 +108,22 @@ namespace slimCat.Utilities
                 hookedToBottom = false;
 
             distanceToBottom = 0.0d;
+        }
+
+        private bool CheckScroller()
+        {
+            if (scroller != null)
+                return true;
+
+            scroller = StaticFunctions.FindChild<ScrollViewer>(toManage);
+
+            if (scroller != null)
+            {
+                scroller.ScrollChanged += OnScrollChanged;
+                return true;
+            }
+            else
+                return false;
         }
 
         #endregion
