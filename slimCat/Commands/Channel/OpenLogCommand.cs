@@ -44,9 +44,7 @@ namespace slimCat.Services
                 var toOpen = command.Get(Constants.Arguments.Channel);
                 if (string.IsNullOrWhiteSpace(toOpen)) return;
 
-                var match =
-                    model.AllChannels.FirstByIdOrNull(toOpen)
-                    ?? (ChannelModel) model.CurrentPms.FirstByIdOrNull(toOpen);
+                var match = model.AllChannels.FirstByIdOrNull(toOpen);
 
                 if (match != null) 
                     logger.OpenLog(true, match.Title, match.Id);
