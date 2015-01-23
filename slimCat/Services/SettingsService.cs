@@ -30,6 +30,8 @@ namespace slimCat.Services
     using System.Xml.Serialization;
     using Models;
     using Utilities;
+    using System.Threading;
+    using System.Windows;
 
     #endregion
 
@@ -380,8 +382,18 @@ namespace slimCat.Services
                 root.Add(new XElement(property.Name, property.GetValue(toSerialize, null)));
 
             File.Delete(fileName);
-            using (var fs = File.OpenWrite(fileName))
-                root.Save(fs);
+            try
+            {
+                using (var fs = File.OpenWrite(fileName))
+                    root.Save(fs);
+            }
+            catch
+            {
+                Thread.Sleep(250);
+                MessageBox.Show("The crash error occured. Please let Tyney or slimCat know if the program crashes after this message box! :)");
+                using (var fs = File.OpenWrite(fileName))
+                    root.Save(fs);
+            }
 
             if (encrypt)
                 File.Encrypt(fileName);
