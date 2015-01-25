@@ -147,9 +147,7 @@ namespace slimCat.Utilities
 
                 case NotifyCollectionChangedAction.Remove:
                 {
-                    var items = e.OldItems.Cast<T>();
-
-                    items.Each(item => Collection.Remove(item));
+                    e.OldItems.OfType<T>().Each(item => Collection.Remove(item));
                     break;
                 }
             }
