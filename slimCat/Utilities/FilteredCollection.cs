@@ -147,10 +147,7 @@ namespace slimCat.Utilities
 
                 case NotifyCollectionChangedAction.Remove:
                 {
-                    if (e.OldStartingIndex == -1 || Collection.Count == 0)
-                        return;
-
-                    Collection.RemoveAt(e.OldStartingIndex);
+                    e.OldItems.OfType<T>().Each(item => Collection.Remove(item));
                     break;
                 }
             }

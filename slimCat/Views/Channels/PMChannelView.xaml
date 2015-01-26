@@ -269,53 +269,55 @@
                             ColumnRuleBrush="{StaticResource BrightBackgroundBrush}"
                             ColumnRuleWidth="5.00">
                             
-                            <BlockUIContainer>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*" />
-                                        <ColumnDefinition Width="8*"
-                                                          MaxWidth="{Binding CurrentImage.Width, Converter={StaticResource ImageWidthConverter}}" />
-                                        <ColumnDefinition Width="1*" />
-                                    </Grid.ColumnDefinitions>
+                            <Paragraph>
+                                <InlineUIContainer>
+                                    <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*" />
+                                            <ColumnDefinition Width="8*"
+                                                              MaxWidth="{Binding CurrentImage.Width, Converter={StaticResource ImageWidthConverter}}" />
+                                            <ColumnDefinition Width="1*" />
+                                        </Grid.ColumnDefinitions>
 
-                                    <Button Command="{Binding SwitchImageViewCommand}"
-                                            ToolTip="{Binding CurrentImage.Description}"
-                                            ToolTipService.IsEnabled="{Binding CurrentImage.Description,
-                                                Converter={StaticResource NotEmptyBoolConverter}}"
-                                            Grid.Column="1"
-                                            HorizontalAlignment="Center"
-                                            Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}">
-                                        <Button.Template>
-                                            <ControlTemplate>
-                                                <Image Source="{Binding CurrentImage.FullImageUri,
-                                                       Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
-                                                       Margin="5"
-                                                       RenderOptions.BitmapScalingMode="Fant"
-                                                       MinWidth="300"
-                                                       HorizontalAlignment="Center" />
-                                            </ControlTemplate>
-                                        </Button.Template>
-                                    </Button>
+                                        <Button Command="{Binding SwitchImageViewCommand}"
+                                                ToolTip="{Binding CurrentImage.Description}"
+                                                ToolTipService.IsEnabled="{Binding CurrentImage.Description,
+                                                    Converter={StaticResource NotEmptyBoolConverter}}"
+                                                Grid.Column="1"
+                                                HorizontalAlignment="Center"
+                                                Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}">
+                                            <Button.Template>
+                                                <ControlTemplate>
+                                                    <Image Source="{Binding CurrentImage.FullImageUri,
+                                                           Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
+                                                           Margin="5"
+                                                           RenderOptions.BitmapScalingMode="Fant"
+                                                           MinWidth="300"
+                                                           HorizontalAlignment="Center" />
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
 
-                                    <v:CloseButtonView Margin="0,10,10,0"
-                                                       Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}"
-                                                       Grid.Column="1"
-                                                       HorizontalAlignment="Right"
-                                                       VerticalAlignment="Top"
-                                                       Click="CloseImage" >
-                                        <v:CloseButtonView.Effect>
-                                            <DropShadowEffect Color="Black"
-                                                              ShadowDepth="0"
-                                                              BlurRadius="2"
-                                                              RenderingBias="Quality"/>
-                                        </v:CloseButtonView.Effect>
-                                        <v:CloseButtonView.Style>
-                                            <Style TargetType="{x:Type v:CloseButtonView}" BasedOn="{StaticResource ImageContentWhiteButton}"/>
-                                        </v:CloseButtonView.Style>
-                                    </v:CloseButtonView>
+                                        <v:CloseButtonView Margin="0,10,10,0"
+                                                           Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}"
+                                                           Grid.Column="1"
+                                                           HorizontalAlignment="Right"
+                                                           VerticalAlignment="Top"
+                                                           Click="CloseImage" >
+                                            <v:CloseButtonView.Effect>
+                                                <DropShadowEffect Color="Black"
+                                                                  ShadowDepth="0"
+                                                                  BlurRadius="2"
+                                                                  RenderingBias="Quality"/>
+                                            </v:CloseButtonView.Effect>
+                                            <v:CloseButtonView.Style>
+                                                <Style TargetType="{x:Type v:CloseButtonView}" BasedOn="{StaticResource ImageContentWhiteButton}"/>
+                                            </v:CloseButtonView.Style>
+                                        </v:CloseButtonView>
 
-                                </Grid>
-                            </BlockUIContainer>
+                                    </Grid>
+                                </InlineUIContainer>
+                            </Paragraph>
 
                             <Paragraph
                                 FontFamily="Segoe UI, Verdanda"

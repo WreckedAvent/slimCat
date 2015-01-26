@@ -446,6 +446,8 @@ namespace slimCat.ViewModels
             var lastSpaceIdx = string.IsNullOrWhiteSpace(character) ? Message.LastIndexOf(' ') : tabCompleteIdx;
             var lastWord = Message.Substring(lastSpaceIdx == -1 ? 0 : lastSpaceIdx + 1);
 
+            if (string.IsNullOrWhiteSpace(lastWord)) return null;
+
             IEnumerable<ICharacter> characters = CharacterManager.Characters.OrderBy(x => x.Name).ThenBy(x => x.Name);
 
             if (!string.IsNullOrWhiteSpace(character))
