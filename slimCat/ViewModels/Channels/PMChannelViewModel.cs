@@ -208,7 +208,7 @@ namespace slimCat.ViewModels
 
         public bool CanDisplayChat
         {
-            get { return false; }
+            get { return true; }
         }
 
         public bool CanDisplayAds
