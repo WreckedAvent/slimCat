@@ -69,7 +69,13 @@ namespace slimCat.Models
 
             toastsManager.AddNotification(Model);
 
-            if (Channel.IsSelected) return;
+            if (Channel.IsSelected)
+            {
+                if (ApplicationSettings.PlaySoundEvenWhenTabIsFocused)
+                    toastsManager.PlaySound();
+                return;
+            }
+
             toastsManager.ShowToast();
             toastsManager.PlaySound();
             toastsManager.FlashWindow();
