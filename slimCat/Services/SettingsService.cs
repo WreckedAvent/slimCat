@@ -390,7 +390,6 @@ namespace slimCat.Services
             catch
             {
                 Thread.Sleep(250);
-                MessageBox.Show("The crash error occured. Please let Tyney or slimCat know if the program crashes after this message box! :)");
                 using (var fs = File.OpenWrite(fileName))
                     root.Save(fs);
             }
