@@ -368,6 +368,7 @@ namespace slimCat.Services
             {
                 ChatModel.CurrentCharacter.Status = StatusType.Online;
                 ChatModel.CurrentCharacter.StatusMessage = string.Empty;
+                RequestChannelJoinEvent(ChatModel.CurrentChannels.FirstByIdOrNull("Home").Id);
             }
 
             Dispatcher.Invoke((Action) (() =>
