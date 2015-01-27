@@ -74,6 +74,12 @@ namespace slimCat.Services
         /// <param name="name">The name.</param>
         void QuickJoinChannel(string id, string name);
 
+        /// <summary>
+        ///     Switches to another existing channel tab.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        void RequestNavigate(string id);
+
         #endregion
     }
 }

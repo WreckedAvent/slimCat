@@ -342,7 +342,7 @@ namespace slimCat.Services
             JoinChannel(ChannelType.Utility, "Home");
         }
 
-        private void RequestNavigate(string channelId)
+        public void RequestNavigate(string channelId)
         {
             automation.UserDidAction();
 
