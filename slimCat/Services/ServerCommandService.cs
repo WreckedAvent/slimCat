@@ -361,8 +361,6 @@ namespace slimCat.Services
         {
             Log("Resetting");
 
-            RequestChannelJoinEvent(ChatModel.CurrentChannels.FirstByIdOrNull("Home").Id);
-
             CharacterManager.Clear();
             ChatModel.CurrentChannels.Each(x => x.CharacterManager.Clear());
 
@@ -370,6 +368,7 @@ namespace slimCat.Services
             {
                 ChatModel.CurrentCharacter.Status = StatusType.Online;
                 ChatModel.CurrentCharacter.StatusMessage = string.Empty;
+                RequestChannelJoinEvent(ChatModel.CurrentChannels.FirstByIdOrNull("Home").Id);
             }
 
             Dispatcher.Invoke((Action) (() =>
