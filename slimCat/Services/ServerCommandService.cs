@@ -361,7 +361,7 @@ namespace slimCat.Services
         {
             Log("Resetting");
 
-            manager.RequestNavigate("Home");
+            RequestChannelJoinEvent(ChatModel.CurrentChannels.FirstByIdOrNull("Home").Id);
 
             CharacterManager.Clear();
             ChatModel.CurrentChannels.Each(x => x.CharacterManager.Clear());
