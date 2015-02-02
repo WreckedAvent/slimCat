@@ -260,19 +260,26 @@
                             <Line Stretch="Fill" Stroke="{StaticResource HighlightBrush}" X2="1" Margin="0,10" />
 
                             <TextBlock TextWrapping="Wrap">
-                                <Span Foreground="{StaticResource HighlightBrush}" FontSize="20">Thank you!</Span>
-                                <LineBreak /><LineBreak />
                                 <Run>
-                                    Over two years of work have culminated into this version of slimCat.
-                                    I couldn't have done it without all of the support from all of the slimCat users.
+                                    I am not working on slimCat. These patches are coming from the amazing slimCat community. slimCat will remain 
+                                    connecting to F-chat and even bug free so long as people continue to help make it the best it can be.
                                 </Run>
                                 <LineBreak /><LineBreak />
                                 <Run>
-                                    However, this represents an end. I, slimCat, am putting any future effort onto
-                                    a new site. A site not limited by a lack of ambition.
+                                    What am I doing though, you may ask? Why,</Run>  <Hyperlink CommandParameter="http://litphoria.com/">litphoria,</Hyperlink> <Run>of course!
                                 </Run>
                                 <LineBreak /><LineBreak />
-                                <Run>I can do better. I will do better.</Run>
+                                <Run>
+                                    I announced litphoria a few months ago. Since then, it has blossomed into the site I've always wanted
+                                    F-list to be. If you remember your excitement when learning about learning pasting a link auto-links in slimCat,
+                                    imagine that experience for all of F-list. Litphoria is to F-list what slimCat is to the webclients; a community-driven
+                                    iteration which leaves no stone unturned to give you the best experience possible.
+                                </Run>
+                                <LineBreak /><LineBreak />
+                                <Run>
+                                    This is just the start, though. With every person that contributes their awesome ideas, the site gets just that
+                                    little bit better. Will you help make the future of roleplaying even more awesome? 
+                                </Run>
                                 <LineBreak />
                             </TextBlock>
                             <WrapPanel>
