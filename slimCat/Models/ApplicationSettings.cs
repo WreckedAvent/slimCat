@@ -332,6 +332,10 @@ namespace slimCat.Models
 
         public static bool ShowAvatars { get; set; }
 
+        public static bool AllowAlignment { get; set; }
+
+        public static bool SortUsersAlphabetically { get; set; }
+
         #endregion
     }
 

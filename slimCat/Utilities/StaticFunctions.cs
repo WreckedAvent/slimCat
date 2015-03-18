@@ -281,11 +281,11 @@ namespace slimCat.Utilities
 
             var statusMap = new Dictionary<StatusType, string>
             {
-                {StatusType.Looking, "e"},
-                {StatusType.Busy, "g"},
-                {StatusType.Idle, "h"},
-                {StatusType.Away, "i"},
-                {StatusType.Dnd, "y"}
+                {StatusType.Looking, "f"},
+                {StatusType.Busy, ApplicationSettings.SortUsersAlphabetically ? "f" : "g"},
+                {StatusType.Idle, ApplicationSettings.SortUsersAlphabetically ? "f" : "h"},
+                {StatusType.Away, ApplicationSettings.SortUsersAlphabetically ? "f" : "i"},
+                {StatusType.Dnd, ApplicationSettings.SortUsersAlphabetically ? "f" : "y"}
             };
 
             foreach (var pair in map.Where(pair => cm.IsOnList(character.Name, pair.Key)))

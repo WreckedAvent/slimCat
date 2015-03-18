@@ -191,10 +191,15 @@
             </CheckBox>
 
             <CheckBox IsChecked="{Binding AllowIndent}"
-                      ToolTip="Allows slimCat to parse [indent] tags and present the bbcode indented text.">
+                      ToolTip="Allows slimCat to parse [indent] tags and present the bbcode-indented text.">
                 Display bbcode indent
             </CheckBox>
-            
+
+            <CheckBox IsChecked="{Binding AllowAlignment}"
+                      ToolTip="Allows slimCat to parse [left], [right], and [center] tags and present the bbcode-aligned text.">
+                Display bbcode alignment
+            </CheckBox>
+
             <CheckBox IsChecked="{Binding AllowAvatars}"
                       ToolTip="Allows slimCat to display avatars for users around the program, such as in right-click menus and private-message tabs.">
                 Display avatars
@@ -203,6 +208,11 @@
             <CheckBox IsChecked="{Binding StickMessageToBottom}"
                       ToolTip="Allows slimCat to stick the channel backlog to the bottom of the screen rather than the top.">
                 Stick Channel Messages To The Bottom
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding SortUsersAlphabetically}"
+                      ToolTip="Allows slimCat to order the user lists alphbetically instead of by status.">
+                Order user lists alphabetically 
             </CheckBox>
 
             <StackPanel Margin="0,15,0,0"

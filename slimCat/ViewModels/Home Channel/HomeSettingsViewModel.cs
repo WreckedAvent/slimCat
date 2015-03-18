@@ -206,6 +206,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool AllowAlignment
+        {
+            get { return ApplicationSettings.AllowAlignment; }
+            set
+            {
+                ApplicationSettings.AllowAlignment = value;
+                Save();
+            }
+        }
+
         public bool ViewProfilesInChat
         {
             get { return ApplicationSettings.OpenProfilesInClient; }
@@ -333,6 +343,16 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.ShowAvatars = value;
+                Save();
+            }
+        }
+
+        public bool SortUsersAlphabetically
+        {
+            get { return ApplicationSettings.SortUsersAlphabetically; }
+            set
+            {
+                ApplicationSettings.SortUsersAlphabetically = value;
                 Save();
             }
         }

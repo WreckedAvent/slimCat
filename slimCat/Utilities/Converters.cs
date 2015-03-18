@@ -1013,12 +1013,18 @@ namespace slimCat.Utilities
 
         private Inline MakeRightText(ParsedChunk arg)
         {
-            return MakeBlockWithAlignment(arg, TextAlignment.Right, new Thickness(0));
+            return ApplicationSettings.AllowAlignment
+                ? MakeBlockWithAlignment(arg, TextAlignment.Right, new Thickness(0))
+                : MakeNormalText(arg);
         }
 
         private Inline MakeCenterText(ParsedChunk arg)
         {
-            return MakeBlockWithAlignment(arg, TextAlignment.Center, new Thickness(ApplicationSettings.AllowIndent ? 15 : 0, 0, ApplicationSettings.AllowIndent ? 15 : 0, 0));
+            var padding = ApplicationSettings.AllowIndent ? 15 : 0;
+
+            return ApplicationSettings.AllowAlignment
+                ? MakeBlockWithAlignment(arg, TextAlignment.Center, new Thickness(padding, 0, padding, 0))
+                : MakeNormalText(arg);
         }
 
         #endregion
