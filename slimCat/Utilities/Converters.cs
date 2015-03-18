@@ -70,7 +70,10 @@ namespace slimCat.Utilities
         Quote,
         HorizontalRule,
         Justify,
-        Heading
+        Heading,
+        Left,
+        Right,
+        Center
     }
 
     /// <summary>
@@ -354,7 +357,10 @@ namespace slimCat.Utilities
             {"hr", BbCodeType.HorizontalRule},
             {"indent", BbCodeType.Indent},
             {"justify", BbCodeType.Justify},
-            {"heading", BbCodeType.Heading}
+            {"heading", BbCodeType.Heading},
+            {"left", BbCodeType.Left},
+            {"right", BbCodeType.Right},
+            {"center", BbCodeType.Center}
         };
 
         #endregion
@@ -518,7 +524,10 @@ namespace slimCat.Utilities
                 {BbCodeType.HorizontalRule, MakeHorizontalRule},
                 {BbCodeType.Indent, MakeBlockText},
                 {BbCodeType.Heading, MakeHeading},
-                {BbCodeType.Justify, MakeNormalText}
+                {BbCodeType.Justify, MakeNormalText},
+                {BbCodeType.Right, MakeRightText},
+                {BbCodeType.Center, MakeCenterText},
+                {BbCodeType.Left, MakeBlockText}
             };
 
             var converter = converters[chunk.Type];
@@ -971,6 +980,11 @@ namespace slimCat.Utilities
 
         private Inline MakeBlockText(ParsedChunk arg)
         {
+            return MakeBlockWithAlignment(arg, TextAlignment.Left, new Thickness(0));
+        }
+
+        private Inline MakeBlockWithAlignment(ParsedChunk arg, TextAlignment alignment, Thickness thickness)
+        {
             if (arg.Children == null || !arg.Children.Any()) return MakeNormalText(arg);
 
             var container = new InlineUIContainer();
@@ -978,8 +992,9 @@ namespace slimCat.Utilities
             var text = new TextBlock
             {
                 Foreground = Locator.Find<SolidColorBrush>("ForegroundBrush"),
-                Margin = new Thickness(ApplicationSettings.AllowIndent ? 15 : 0, 0, 0, 0),
+                Margin = thickness,
                 TextWrapping = TextWrapping.Wrap,
+                TextAlignment = alignment
             };
             TextBlockHelper.SetInlineList(text, arg.Children.Select(ToInline).ToList());
 
@@ -994,6 +1009,16 @@ namespace slimCat.Utilities
             container.Child = panel;
             arg.Children.Clear();
             return container;
+        }
+
+        private Inline MakeRightText(ParsedChunk arg)
+        {
+            return MakeBlockWithAlignment(arg, TextAlignment.Right, new Thickness(0));
+        }
+
+        private Inline MakeCenterText(ParsedChunk arg)
+        {
+            return MakeBlockWithAlignment(arg, TextAlignment.Center, new Thickness(ApplicationSettings.AllowIndent ? 15 : 0, 0, ApplicationSettings.AllowIndent ? 15 : 0, 0));
         }
 
         #endregion
