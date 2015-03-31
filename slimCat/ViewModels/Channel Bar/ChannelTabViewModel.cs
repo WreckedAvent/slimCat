@@ -159,7 +159,7 @@ namespace slimCat.ViewModels
 
             set
             {
-                if (ApplicationSettings.ChannelDisplayThreshold == value || value <= 0 || value >= 1000)
+                if (ApplicationSettings.ChannelDisplayThreshold == value || value < 0 || value >= 1000)
                     return;
 
                 ApplicationSettings.ChannelDisplayThreshold = value;
