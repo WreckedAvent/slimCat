@@ -111,6 +111,8 @@ namespace slimCat.Services
 
                 var toUpload = new Dictionary<string, object>
                 {
+                    {"account", model.AccountName.ToLower()},
+                    {"ticket", ticketProvider.Ticket},
                     {"character", report.Reporter.Name},
                     {"log", sb.ToString()},
                     {"reportText", report.Complaint},
@@ -120,6 +122,14 @@ namespace slimCat.Services
 
                 var buffer = browser.GetResponse(Constants.UrlConstants.UploadLog, toUpload, true);
                 var result = buffer.DeserializeTo<ApiUploadLogResponse>();
+
+                var hasError = !string.IsNullOrWhiteSpace(result.Error);
+
+                if (hasError)
+                {
+                    ticketProvider.ShouldGetNewTicket = true;
+                    UploadLog(report, log);
+                }
 
                 if (result.LogId != null)
                 {
