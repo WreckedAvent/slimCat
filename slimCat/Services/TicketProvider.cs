@@ -25,6 +25,7 @@ namespace slimCat.Services
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using HtmlAgilityPack;
     using Models;
     using Models.Api;
     using Utilities;
@@ -35,6 +36,7 @@ namespace slimCat.Services
     {
         #region Fields
 
+        private const string CsrfTokenSelector = "//input[@name = 'csrf_token']";
         private const string SiteIsDisabled = "The site has been disabled for maintenance, check back later.";
         private readonly IBrowser browser;
 
@@ -168,7 +170,30 @@ namespace slimCat.Services
 
         private void ReAuthenticate()
         {
-            browser.GetResponse(Constants.UrlConstants.Login, loginCredentials, true);
+            var buffer = browser.GetResponse(Constants.UrlConstants.Domain);
+
+            if (buffer.Equals(SiteIsDisabled, StringComparison.OrdinalIgnoreCase))
+                throw new Exception("Site API disabled for maintenance.");
+
+            var htmlDoc = new HtmlDocument
+            {
+                OptionCheckSyntax = false
+            };
+
+            HtmlNode.ElementsFlags.Remove("option");
+            htmlDoc.LoadHtml(buffer);
+
+            if (htmlDoc.DocumentNode == null)
+                throw new Exception("Could not parse login page. Please try again later.");
+
+            var csrfField = htmlDoc.DocumentNode.SelectSingleNode(CsrfTokenSelector);
+            var csrfToken = csrfField.Attributes.First(y => y.Name.Equals("value")).Value;
+
+            loginCredentials["csrf_token"] = csrfToken;
+
+            var resp = browser.GetResponse(Constants.UrlConstants.Login, loginCredentials, true);
+
+            Console.WriteLine(resp);
         }
 
         [Conditional("DEBUG")]
