@@ -374,6 +374,10 @@ namespace slimCat.Utilities
             ChatModel = chatModel;
         }
 
+        protected BbCodeBaseConverter()
+        {
+        }
+
         #endregion
 
         #region Properties
@@ -1202,6 +1206,11 @@ namespace slimCat.Utilities
         {
         }
 
+        public BbCodePostConverter()
+            : base()
+        {
+        }
+
         #endregion
 
         #region Public Methods and Operators
@@ -1308,6 +1317,11 @@ namespace slimCat.Utilities
             : base(chatModel, characterManager, locator)
         {
             this.permissions = permissions;
+        }
+
+        public BbFlowConverter()
+            : base()
+        { 
         }
 
         #endregion
@@ -1423,6 +1437,11 @@ namespace slimCat.Utilities
         public BbCodeConverter(IChatModel chatModel, ICharacterManager characterManager, IThemeLocator locator)
             : base(chatModel, characterManager, locator)
         {
+        }
+
+        public BbCodeConverter()
+            : base()
+        { 
         }
 
         #endregion
@@ -1887,6 +1906,11 @@ namespace slimCat.Utilities
         {
             this.chatModel = chatModel;
             this.locator = locator;
+        }
+
+        public ForegroundBrushConverter()
+            : base()
+        { 
         }
 
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
