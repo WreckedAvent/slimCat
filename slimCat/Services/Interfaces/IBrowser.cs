@@ -39,7 +39,7 @@ namespace slimCat.Services
         /// <returns>
         ///     The full response from the endpoint serialized to a string.
         /// </returns>
-        string GetResponse(string host, IEnumerable<KeyValuePair<string, object>> arguments,
+        string GetResponse(string host, IDictionary<string, object> arguments,
             bool useCookies = false);
 
         string GetResponse(string host, bool useCookies = false);

@@ -191,7 +191,7 @@ namespace slimCat.Services
 
             loginCredentials["csrf_token"] = csrfToken;
 
-            var resp = browser.GetResponse(Constants.UrlConstants.Login, loginCredentials, true);
+            browser.GetResponse(Constants.UrlConstants.Login, loginCredentials, true);
         }
 
         [Conditional("DEBUG")]

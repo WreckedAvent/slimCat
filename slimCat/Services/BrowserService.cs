@@ -21,6 +21,7 @@ namespace slimCat.Services
 {
     #region Usings
 
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -28,6 +29,7 @@ namespace slimCat.Services
     using System.Net.Cache;
     using System.Text;
     using System.Web;
+    using HtmlAgilityPack;
     using Utilities;
 
     #endregion
@@ -35,8 +37,11 @@ namespace slimCat.Services
     internal class BrowserService : IBrowser
     {
         private readonly CookieContainer loginCookies = new CookieContainer();
+        private string csrfString;
+        private const string CsrfTokenSelector = "//meta[@name = 'csrf-token']";
+        private const string SiteIsDisabled = "The site has been disabled for maintenance, check back later.";
 
-        public string GetResponse(string host, IEnumerable<KeyValuePair<string, object>> arguments,
+        public string GetResponse(string host, IDictionary<string, object> arguments,
             bool useCookies = false)
         {
             const string contentType = "application/x-www-form-urlencoded";
@@ -45,6 +50,12 @@ namespace slimCat.Services
             Logging.LogLine("POSTing to " + host + " " + arguments.GetHashCode(), "browser serv");
 
             var isFirst = true;
+
+            if (useCookies)
+            {
+                if (!arguments.ContainsKey("csrf_token"))
+                    arguments["csrf_token"] = GetCsrfToken();
+            }
 
             var totalRequest = new StringBuilder();
             foreach (var arg in arguments.Where(arg => arg.Key != "type"))
@@ -103,6 +114,32 @@ namespace slimCat.Services
                 using (var answerReader = new StreamReader(answerStream))
                     return answerReader.ReadToEnd();
             }
+        }
+
+        private string GetCsrfToken()
+        {
+            if (!string.IsNullOrWhiteSpace(csrfString)) return csrfString;
+
+            var buffer = GetResponse(Constants.UrlConstants.Domain);
+
+            if (buffer.Equals(SiteIsDisabled, StringComparison.OrdinalIgnoreCase))
+                throw new Exception("Site API disabled for maintenance.");
+
+            var htmlDoc = new HtmlDocument
+            {
+                OptionCheckSyntax = false
+            };
+
+            HtmlNode.ElementsFlags.Remove("option");
+            htmlDoc.LoadHtml(buffer);
+
+            if (htmlDoc.DocumentNode == null)
+                throw new Exception("Could not parse login page. Please try again later.");
+
+            var csrfField = htmlDoc.DocumentNode.SelectSingleNode(CsrfTokenSelector);
+            csrfString = csrfField.Attributes.First(y => y.Name.Equals("content")).Value;
+
+            return csrfString;
         }
     }
 }
