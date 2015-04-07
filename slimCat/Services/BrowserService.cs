@@ -120,7 +120,7 @@ namespace slimCat.Services
         {
             if (!string.IsNullOrWhiteSpace(csrfString)) return csrfString;
 
-            var buffer = GetResponse(Constants.UrlConstants.Domain);
+            var buffer = GetResponse(Constants.UrlConstants.Domain, true);
 
             if (buffer.Equals(SiteIsDisabled, StringComparison.OrdinalIgnoreCase))
                 throw new Exception("Site API disabled for maintenance.");
