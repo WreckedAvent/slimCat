@@ -211,7 +211,7 @@ namespace slimCat.ViewModels
             {
                 var worker = new BackgroundWorker();
                 worker.DoWork +=
-                    (sender, args) => PopulateSearchTerms(browser.GetResponse(Constants.UrlConstants.SearchFields));
+                    (sender, args) => PopulateSearchTerms(browser.GetResponse(Constants.UrlConstants.SearchFields, true));
                 worker.RunWorkerAsync();
             }
             else
