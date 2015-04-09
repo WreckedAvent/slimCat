@@ -266,36 +266,57 @@ namespace slimCat.Utilities
             return character.Name.Equals(compare, StringComparison.OrdinalIgnoreCase);
         }
 
+        public static HashSet<KeyValuePair<ListKind, string>> ListKindSet = new HashSet<KeyValuePair<ListKind, string>>            
+        {
+            new KeyValuePair<ListKind, string>(ListKind.Friend, "a"),
+            new KeyValuePair<ListKind, string>(ListKind.Bookmark, "b"),
+            new KeyValuePair<ListKind, string>(ListKind.Interested, "c"),
+            new KeyValuePair<ListKind, string>(ListKind.Moderator, "d"),
+            new KeyValuePair<ListKind, string>(ListKind.Ignored, "z"),
+            new KeyValuePair<ListKind, string>(ListKind.NotInterested, "z"),
+        };
+
+        public static Dictionary<StatusType, string> AlphabeticalSortDictionary = new Dictionary<StatusType, string>
+        {
+            {StatusType.Looking, "f"},
+            {StatusType.Online, "f"},
+            {StatusType.Busy, "f"},
+            {StatusType.Idle, "f"},
+            {StatusType.Away, "f"},
+            {StatusType.Dnd, "f" },
+            {StatusType.Offline, "z"}
+        };
+
+        public static Dictionary<StatusType, string> DefaultSortDictionary = new Dictionary<StatusType, string>
+        {
+            {StatusType.Looking, "e"},
+            {StatusType.Online, "f"},
+            {StatusType.Busy, "g"},
+            {StatusType.Idle, "h"},
+            {StatusType.Away, "i"},
+            {StatusType.Dnd, "y"},
+            {StatusType.Offline, "z"}
+        };
+
+        public static Dictionary<StatusType, string> SortDictionary
+        {
+            get
+            {
+                return ApplicationSettings.SortUsersAlphabetically ? AlphabeticalSortDictionary : DefaultSortDictionary;
+            }
+        }
+
         public static string RelationshipToUser(this ICharacter character, ICharacterManager cm,
             GeneralChannelModel channel)
         {
-            var map = new HashSet<KeyValuePair<ListKind, string>>
-            {
-                new KeyValuePair<ListKind, string>(ListKind.Friend, "a"),
-                new KeyValuePair<ListKind, string>(ListKind.Bookmark, "b"),
-                new KeyValuePair<ListKind, string>(ListKind.Interested, "c"),
-                new KeyValuePair<ListKind, string>(ListKind.Moderator, "d"),
-                new KeyValuePair<ListKind, string>(ListKind.Ignored, "z"),
-                new KeyValuePair<ListKind, string>(ListKind.NotInterested, "z"),
-            };
-
-            var statusMap = new Dictionary<StatusType, string>
-            {
-                {StatusType.Looking, "f"},
-                {StatusType.Busy, ApplicationSettings.SortUsersAlphabetically ? "f" : "g"},
-                {StatusType.Idle, ApplicationSettings.SortUsersAlphabetically ? "f" : "h"},
-                {StatusType.Away, ApplicationSettings.SortUsersAlphabetically ? "f" : "i"},
-                {StatusType.Dnd, ApplicationSettings.SortUsersAlphabetically ? "f" : "y"}
-            };
-
-            foreach (var pair in map.Where(pair => cm.IsOnList(character.Name, pair.Key)))
+            foreach (var pair in ListKindSet.Where(pair => cm.IsOnList(character.Name, pair.Key)))
                 return pair.Value;
 
             if (channel != null && channel.CharacterManager.IsOnList(character.Name, ListKind.Moderator))
                 return "d";
 
             string result;
-            return statusMap.TryGetValue(character.Status, out result)
+            return SortDictionary.TryGetValue(character.Status, out result)
                 ? result
                 : "f";
         }
