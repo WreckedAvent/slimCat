@@ -62,6 +62,10 @@ namespace slimCat.Services
 
         public async Task<bool> TryUpdateAsync()
         {
+            #if DEBUG
+            return true;
+            #endif
+
             var config = await GetLatestAsync();
 
             if (config == null) return true;
@@ -117,7 +121,11 @@ namespace slimCat.Services
             SlimCatChannelId = args[4];
             UpdateImpactsTheme = bool.Parse(args[5]);
 
+            #if DEBUG
+            IsNewUpdate = false;
+            #else 
             IsNewUpdate = StaticFunctions.IsUpdate(ClientName);
+            #endif
         }
 
         public string ClientName { get; private set; }
