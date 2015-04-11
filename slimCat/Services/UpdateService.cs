@@ -75,7 +75,7 @@ namespace slimCat.Services
             using (var client = new WebClient())
             {
                 var tempLocation = downloadLocation;
-                var basePath = Path.GetDirectoryName(Settings.Default.BasePath);
+                var basePath = Settings.Default.BasePath;
 
                 if (string.IsNullOrWhiteSpace(tempLocation))
                 {
@@ -99,7 +99,7 @@ namespace slimCat.Services
                     try { file.ExtractToFile(filePath, true); }
                     catch
                     {
-                        //if (fileDir.EndsWith("icons", StringComparison.OrdinalIgnoreCase)) continue;
+                        if (fileDir.EndsWith("icons", StringComparison.OrdinalIgnoreCase)) continue;
                         return false;
                     }
                 }

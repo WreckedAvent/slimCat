@@ -119,7 +119,7 @@ namespace slimCat
 
             Settings.Default.Advanced = args.Any(x => x.Equals("advanced", StringComparison.OrdinalIgnoreCase));
             Settings.Default.PortableMode = args.Any(x => x.Equals("portable", StringComparison.OrdinalIgnoreCase));
-            Settings.Default.BasePath = AppDomain.CurrentDomain.GetData("path") as string ?? assembly.Location;
+            Settings.Default.BasePath = AppDomain.CurrentDomain.GetData("path") as string ?? Path.GetDirectoryName(assembly.Location);
 
             foreach (var file in requiredFiles.Where(file => !File.Exists(file)))
             {
