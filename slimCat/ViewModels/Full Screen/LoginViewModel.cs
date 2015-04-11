@@ -46,6 +46,8 @@ namespace slimCat.ViewModels
     /// </summary>
     public class LoginViewModel : ViewModelBase
     {
+        private readonly IUpdateService updateService;
+
         #region Constants
 
         internal const string LoginViewName = "LoginView";
@@ -62,19 +64,17 @@ namespace slimCat.ViewModels
 
         private bool requestIsSent; // used for determining Login UI state
 
-        private readonly IBrowser browser;
-
         #endregion
 
         #region Constructors and Destructors
 
-        public LoginViewModel(IChatState chatState, IBrowser browser)
+        public LoginViewModel(IChatState chatState, IUpdateService updateService)
             : base(chatState)
         {
             try
             {
                 model = chatState.Account;
-                this.browser = browser;
+                this.updateService = updateService;
                 CheckForUpdates();
 
                 LoggingSection = "login vm";
@@ -190,6 +190,10 @@ namespace slimCat.ViewModels
 
         public string UpdateLink { get; set; }
 
+        public bool UpdateFailed { get; set; }
+
+        public bool UpdateCompleted { get; set; }
+
         #endregion
 
         #region Public Methods and Operators
@@ -267,66 +271,28 @@ namespace slimCat.ViewModels
 
         private async void CheckForUpdates()
         {
-            try
+            var latest = await updateService.GetLatestAsync();
+            Dispatcher.BeginInvoke((Action) delegate
             {
-                var resp = await browser.GetResponseAsync(Constants.NewVersionUrl);
-                if (resp == null) return;
-                var args = resp.Split(',');
+                HasNewUpdate = latest.IsNewUpdate;
 
-                var isNewUpdate = StaticFunctions.IsUpdate(args[0]);
-                var updateFailed = false;
+                UpdateName = latest.ClientName;
+                UpdateLink = latest.DownloadLink;
+                ApplicationSettings.SlimCatChannelId = latest.SlimCatChannelId;
 
-                if (isNewUpdate)
-                using (var client = new WebClient())
-                {
-                    var basePath = Path.GetDirectoryName(Settings.Default.BasePath);
-                    var tempLocation = Path.GetTempFileName().Replace(".tmp", ".zip");
-                    await client.DownloadFileTaskAsync(new Uri(args[1]), tempLocation);
+                OnPropertyChanged("HasNewUpdate");
+                OnPropertyChanged("UpdateName");
+                OnPropertyChanged("UpdateLink");
+            });
 
-                    using (var zip = ZipFile.OpenRead(tempLocation))
-                    foreach (var file in zip.Entries)
-                    {
-                        var filePath = Path.Combine(basePath, file.FullName);
-                        var fileDir = Path.GetDirectoryName(filePath);
-
-                        // don't update theme or bootstrapper
-                        if (fileDir.EndsWith("theme", StringComparison.OrdinalIgnoreCase)) continue;
-                        if (filePath.EndsWith("bootstrapper.exe", StringComparison.OrdinalIgnoreCase)) continue;
-
-                        if (!Directory.Exists(fileDir)) Directory.CreateDirectory(fileDir);
-
-                        try
-                        {
-                            file.ExtractToFile(filePath, true);
-                        }
-                        catch
-                        {
-                            if (fileDir.EndsWith("icons", StringComparison.OrdinalIgnoreCase)) continue;
-
-                            updateFailed = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (updateFailed) MessageBox.Show("Oops! Update failed");
-
-                Dispatcher.BeginInvoke((Action) delegate
-                {
-                    HasNewUpdate = HasNewUpdate;
-
-                    UpdateName = args[0] + " update";
-                    UpdateLink = args[1];
-                    ApplicationSettings.SlimCatChannelId = args[4];
-
-                    OnPropertyChanged("HasNewUpdate");
-                    OnPropertyChanged("UpdateName");
-                    OnPropertyChanged("UpdateLink");
-                });
-            }
-            catch
+            var updated = await updateService.TryUpdateAsync();
+            Dispatcher.BeginInvoke((Action) delegate
             {
-            }
+                UpdateFailed = !updated;
+                UpdateCompleted = true;
+                OnPropertyChanged("UpdateFailed");
+                OnPropertyChanged("UpdateCompleted");
+            });
         }
 
         #endregion

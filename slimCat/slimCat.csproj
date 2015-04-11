@@ -257,12 +257,14 @@
     <Compile Include="Models\ProfileData.cs" />
     <Compile Include="Models\ProfileImage.cs" />
     <Compile Include="Models\ProfileKink.cs" />
+    <Compile Include="Services\Interfaces\IUpdateService.cs" />
     <Compile Include="Services\ProfileService.cs" />
     <Compile Include="Services\NoteService.cs" />
     <Compile Include="Services\PermissionService.cs" />
     <Compile Include="Services\SettingsService.cs" />
     <Compile Include="Services\FriendRequestService.cs" />
     <Compile Include="Services\TicketProvider.cs" />
+    <Compile Include="Services\UpdateService.cs" />
     <Compile Include="Theme\EmbeddedTheme.xaml.cs" />
     <Compile Include="Utilities\CacheCount.cs" />
     <Compile Include="Utilities\Constants.cs" />

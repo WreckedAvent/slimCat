@@ -61,11 +61,21 @@
             <TextBlock>
                 <Hyperlink CommandParameter="http://chat.f-list.net:9002/stats/">Chat Stats</Hyperlink>
             </TextBlock>
-            <TextBlock Visibility="{Binding Path=HasNewUpdate, Converter={StaticResource  BoolConverter}}"
+            <TextBlock Visibility="{Binding Path=HasNewUpdate, Converter={StaticResource BoolConverter}}"
                        Margin="15,0,0,0">
-                <Hyperlink CommandParameter="{Binding Path=UpdateLink}">
-                    <TextBlock Text="{Binding UpdateName}" />
-                </Hyperlink>
+                <TextBlock Visibility="{Binding Path=UpdateFailed, Converter={StaticResource OppositeBoolConverter}}">
+                    <TextBlock Visibility="{Binding Path=UpdateCompleted, Converter={StaticResource OppositeBoolConverter}}">       
+                        <Run>Updating to</Run>
+                        <Run Text="{Binding Path=UpdateName}"></Run>
+                    </TextBlock>
+                    <TextBlock Visibility="{Binding Path=UpdateCompleted, Converter={StaticResource BoolConverter}}">
+                        <Run>Update complete! Restart to finish.</Run>
+                    </TextBlock>
+                </TextBlock>
+                <TextBlock Visibility="{Binding Path=UpdateFailed, Converter={StaticResource BoolConverter}}">
+                    Update failed. 
+                    <Hyperlink CommandParameter="{Binding Path=UpdateLink}">Update Manually</Hyperlink>
+                </TextBlock>
             </TextBlock>
         </WrapPanel>
 
