@@ -22,7 +22,10 @@ namespace slimCat.ViewModels
     #region Usings
 
     using System;
-    using System.Threading;
+    using System.IO;
+    using System.IO.Compression;
+    using System.Net;
+    using System.Windows;
     using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
@@ -262,34 +265,68 @@ namespace slimCat.ViewModels
             }
         }
 
-        private void CheckForUpdates()
+        private async void CheckForUpdates()
         {
-            new Thread(() =>
+            try
             {
-                Thread.CurrentThread.IsBackground = true;
-                try
-                {
-                    var resp = browser.GetResponse(Constants.NewVersionUrl);
-                    if (resp == null) return;
-                    var args = resp.Split(',');
+                var resp = await browser.GetResponseAsync(Constants.NewVersionUrl);
+                if (resp == null) return;
+                var args = resp.Split(',');
 
-                    Dispatcher.BeginInvoke((Action) delegate
+                var isNewUpdate = StaticFunctions.IsUpdate(args[0]);
+                var updateFailed = false;
+
+                if (isNewUpdate)
+                using (var client = new WebClient())
+                {
+                    var basePath = Path.GetDirectoryName(Settings.Default.BasePath);
+                    var tempLocation = Path.GetTempFileName().Replace(".tmp", ".zip");
+                    await client.DownloadFileTaskAsync(new Uri(args[1]), tempLocation);
+
+                    using (var zip = ZipFile.OpenRead(tempLocation))
+                    foreach (var file in zip.Entries)
                     {
-                        HasNewUpdate = StaticFunctions.IsUpdate(args[0]);
+                        var filePath = Path.Combine(basePath, file.FullName);
+                        var fileDir = Path.GetDirectoryName(filePath);
 
-                        UpdateName = args[0] + " update";
-                        UpdateLink = args[1];
-                        ApplicationSettings.SlimCatChannelId = args[4];
+                        // don't update theme or bootstrapper
+                        if (fileDir.EndsWith("theme", StringComparison.OrdinalIgnoreCase)) continue;
+                        if (filePath.EndsWith("bootstrapper.exe", StringComparison.OrdinalIgnoreCase)) continue;
 
-                        OnPropertyChanged("HasNewUpdate");
-                        OnPropertyChanged("UpdateName");
-                        OnPropertyChanged("UpdateLink");
-                    });
+                        if (!Directory.Exists(fileDir)) Directory.CreateDirectory(fileDir);
+
+                        try
+                        {
+                            file.ExtractToFile(filePath, true);
+                        }
+                        catch
+                        {
+                            if (fileDir.EndsWith("icons", StringComparison.OrdinalIgnoreCase)) continue;
+
+                            updateFailed = true;
+                            break;
+                        }
+                    }
                 }
-                catch
+
+                if (updateFailed) MessageBox.Show("Oops! Update failed");
+
+                Dispatcher.BeginInvoke((Action) delegate
                 {
-                }
-            }).Start();
+                    HasNewUpdate = HasNewUpdate;
+
+                    UpdateName = args[0] + " update";
+                    UpdateLink = args[1];
+                    ApplicationSettings.SlimCatChannelId = args[4];
+
+                    OnPropertyChanged("HasNewUpdate");
+                    OnPropertyChanged("UpdateName");
+                    OnPropertyChanged("UpdateLink");
+                });
+            }
+            catch
+            {
+            }
         }
 
         #endregion

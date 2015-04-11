@@ -28,8 +28,10 @@ namespace slimCat.Services
     using System.Net;
     using System.Net.Cache;
     using System.Text;
+    using System.Threading.Tasks;
     using System.Web;
     using HtmlAgilityPack;
+    using Microsoft.VisualBasic.Logging;
     using Utilities;
 
     #endregion
@@ -113,6 +115,26 @@ namespace slimCat.Services
                     return null;
                 using (var answerReader = new StreamReader(answerStream))
                     return answerReader.ReadToEnd();
+            }
+        }
+
+        public async Task<string> GetResponseAsync(string host, bool useCookies = false)
+        {
+            var req = (HttpWebRequest) WebRequest.Create(host);
+            req.Method = "GET";
+
+            if (useCookies) req.CookieContainer = loginCookies;
+
+            req.UserAgent = Constants.FriendlyName;
+
+            using (var rep = await req.GetResponseAsync())
+            using (var answerStream = rep.GetResponseStream())
+            {
+                if (answerStream == null)
+                    return null;
+
+                using (var answerReader = new StreamReader(answerStream))
+                    return await answerReader.ReadToEndAsync();
             }
         }
 

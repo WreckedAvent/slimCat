@@ -22,13 +22,11 @@ namespace slimCat
     #region Usings
 
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Reflection;
-    using System.Web.UI.WebControls;
     using System.Windows;
     using Properties;
     using Utilities;
@@ -113,9 +111,15 @@ namespace slimCat
             {
                 Settings.Default.Upgrade();
                 Settings.Default.ApplicationVersion = appVersionString;
+
+                if (File.Exists("stacktrace.log")) File.Delete("stacktrace.log");
             }
 
-            Settings.Default.Advanced = e.Args.Any(x => x.Equals("advanced", StringComparison.OrdinalIgnoreCase));
+            var args = Environment.GetCommandLineArgs();
+
+            Settings.Default.Advanced = args.Any(x => x.Equals("advanced", StringComparison.OrdinalIgnoreCase));
+            Settings.Default.PortableMode = args.Any(x => x.Equals("portable", StringComparison.OrdinalIgnoreCase));
+            Settings.Default.BasePath = AppDomain.CurrentDomain.GetData("path") as string ?? assembly.Location;
 
             foreach (var file in requiredFiles.Where(file => !File.Exists(file)))
             {
@@ -127,8 +131,7 @@ namespace slimCat
                 Environment.Exit(-1);
             }
 
-            var bstrap = new Bootstrapper();
-            bstrap.Run();
+            new Bootstrapper().Run();
         }
 
         [Conditional("DEBUG")]

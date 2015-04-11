@@ -32,6 +32,7 @@ namespace slimCat.Utilities
     using Microsoft.Practices.Prism.Events;
     using Models;
     using Newtonsoft.Json;
+    using Properties;
     using Services;
     using ViewModels;
     using lib;
@@ -196,7 +197,7 @@ namespace slimCat.Utilities
                 folderName = folderName.Replace('\\', '-');
             }
 
-            return ApplicationSettings.PortableMode
+            return Settings.Default.PortableMode
                 ? Path.Combine("logs", character, folderName)
                 : Path.Combine(basePath, "slimCat", character, folderName);
         }

@@ -198,6 +198,7 @@ namespace slimCat.Services
             var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
             path = Path.Combine(path, SettingsFileName);
 
+            // this clusterfuck is why you don't have static classes for settings
             try
             {
                 using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))

@@ -29,6 +29,7 @@ namespace slimCat.Services
     using System.Web;
     using Microsoft.Practices.Prism.Events;
     using Models;
+    using Properties;
     using Utilities;
 
     #endregion
@@ -67,7 +68,7 @@ namespace slimCat.Services
         {
             CurrentCharacter = character;
 
-            if (!ApplicationSettings.PortableMode)
+            if (!Settings.Default.PortableMode)
                 FullPath = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "slimCat", CurrentCharacter);
             else
