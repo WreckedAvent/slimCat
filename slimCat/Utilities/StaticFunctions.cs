@@ -26,6 +26,7 @@ namespace slimCat.Utilities
     using System.Globalization;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Web;
     using System.Windows;
     using System.Windows.Media;
@@ -497,6 +498,10 @@ namespace slimCat.Utilities
 
             // 120 is standard for one mousewheel tick
             return ((scrollTicks / 120.0d) * linesPerTick * lineSize);
+        }
+
+        public static void FireAndForget(this Task task)
+        {
         }
 
     }

@@ -266,7 +266,7 @@ namespace slimCat.ViewModels
             var latest = await updateService.GetLatestAsync();
             if (latest == null) return;
 
-            Dispatcher.BeginInvoke((Action) delegate
+            await Dispatcher.BeginInvoke((Action) delegate
             {
                 HasNewUpdate = latest.IsNewUpdate;
 
@@ -280,7 +280,7 @@ namespace slimCat.ViewModels
             });
 
             var updated = await updateService.TryUpdateAsync();
-            Dispatcher.BeginInvoke((Action) delegate
+            await Dispatcher.BeginInvoke((Action) delegate
             {
                 UpdateFailed = !updated;
                 UpdateCompleted = true;

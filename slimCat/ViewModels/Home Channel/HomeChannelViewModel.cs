@@ -395,7 +395,7 @@ namespace slimCat.ViewModels
         {
             var latest = await updateService.GetLatestAsync();
 
-            Dispatcher.BeginInvoke((Action) delegate
+            await Dispatcher.BeginInvoke((Action) delegate
             {
                 HasNewUpdate = latest.IsNewUpdate;
                 UpdateName = latest.ClientName;
