@@ -31,7 +31,6 @@ namespace slimCat.Services
     using System.Threading.Tasks;
     using System.Web;
     using HtmlAgilityPack;
-    using Microsoft.VisualBasic.Logging;
     using Utilities;
 
     #endregion

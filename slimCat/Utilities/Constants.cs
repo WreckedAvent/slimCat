@@ -54,7 +54,7 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The the url for checking for new updates.
         /// </summary>
-        public const string NewVersionUrl = SlimCatResourceUrl + "latest.csv";
+        public const string NewVersionUrl = SlimCatResourceUrl + "latest%20dev.csv";
 
         /// <summary>
         ///     The the url for the index of available themes.

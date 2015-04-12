@@ -31,12 +31,11 @@ namespace slimCat.Services
     using Models;
     using Utilities;
     using System.Threading;
-    using System.Windows;
 
     #endregion
 
     /// <summary>
-    ///     Allows interaction with persistant settings.
+    ///     Allows interaction with persistent settings.
     /// </summary>
     public static class SettingsService
     {
@@ -53,6 +52,10 @@ namespace slimCat.Services
         private const string ProfileCacheFolderName = "!Profiles";
 
         private const string SearchTermsFileName = "!search.xml";
+
+        private const string PreferencesFileName = "!preferences.xml";
+
+        private static UserPreferences preferences;
 
         #endregion
 
@@ -89,100 +92,36 @@ namespace slimCat.Services
         {
             var workingPath = StaticFunctions.MakeSafeFolderPath(ProfileCacheFolderName, string.Empty, string.Empty);
 
-            if (!Directory.Exists(workingPath))
-                Directory.CreateDirectory(workingPath);
-
             var fileName = Path.Combine(workingPath, ProfileCacheFileName.FormatWith(targetCharacter));
-
-            try
-            {
-                using (var streamWriter = new StreamWriter(fileName, false, Encoding.UTF8))
-                {
-                    var serializer = new XmlSerializer(typeof (ProfileData));
-                    serializer.Serialize(streamWriter, profileData);
-                }
-
-                Log("Saved profile cache for " + targetCharacter);
-            }
-            catch
-            {
-            }
+            Serialize(fileName, profileData);
         }
 
         public static ProfileData RetrieveProfile(string targetCharacter)
         {
             var workingPath = StaticFunctions.MakeSafeFolderPath(ProfileCacheFolderName, string.Empty, string.Empty);
 
-            if (!Directory.Exists(workingPath))
-                return null;
-
             var fileName = Path.Combine(workingPath, ProfileCacheFileName.FormatWith(targetCharacter));
 
-            if (!File.Exists(fileName))
-                return null;
+            var toReturn = Deserialize<ProfileData>(fileName);
+            if (toReturn == null) return null;
 
-            try
-            {
-                using (var stream = File.OpenRead(fileName))
-                {
-                    var serializer = new XmlSerializer(typeof (ProfileData));
-                    var toReturn = serializer.Deserialize(stream) as ProfileData;
-                    if (toReturn == null) return null;
-
-                    return toReturn.LastRetrieved.AddDays(7) < DateTime.Now ? null : toReturn;
-                }
-            }
-            catch
-            {
-                return null;
-            }
+            return toReturn.LastRetrieved.AddDays(7) < DateTime.Now ? null : toReturn;
         }
 
         public static SearchTermsModel RetrieveTerms(string currentCharacter)
         {
             var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
-            if (!Directory.Exists(path))
-                return null;
-
             path = Path.Combine(path, SearchTermsFileName);
 
-            if (!File.Exists(path))
-                return null;
-
-            try
-            {
-                using (var stream = File.OpenRead(path))
-                {
-                    var serializer = new XmlSerializer(typeof(SearchTermsModel));
-                    return serializer.Deserialize(stream) as SearchTermsModel;
-                }
-            }
-            catch
-            {
-                return null;
-            }
+            return Deserialize<SearchTermsModel>(path);
         }
 
         public static void SaveSearchTerms(string currentCharacter, SearchTermsModel data)
         {
             var workingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
 
-            if (!Directory.Exists(workingPath))
-                Directory.CreateDirectory(workingPath);
-
             var fileName = Path.Combine(workingPath, SearchTermsFileName);
-
-            try
-            {
-                using (var streamWriter = new StreamWriter(fileName, false, Encoding.UTF8))
-                {
-                    var serializer = new XmlSerializer(typeof(SearchTermsModel));
-                    serializer.Serialize(streamWriter, data);
-                }
-            }
-            catch
-            {
-            }
+            Serialize(fileName, data);
         }
 
         /// <summary>
@@ -367,6 +306,25 @@ namespace slimCat.Services
             File.Copy(fileName, workingPath, true);
         }
 
+        public static UserPreferences Preferences
+        {
+            get
+            {
+                if (preferences != null) return preferences;
+
+                var path = Path.Combine(StaticFunctions.BaseFolderPath, PreferencesFileName);
+                preferences = Deserialize<UserPreferences>(path) ?? new UserPreferences();
+
+                return preferences;
+            }
+            set
+            {
+                preferences = value;
+                var path = Path.Combine(StaticFunctions.BaseFolderPath, PreferencesFileName);
+                Serialize(path, value);
+            }
+        }
+
         /// <summary>
         ///     Serialize and object to XML through reflection
         /// </summary>
@@ -515,6 +473,44 @@ namespace slimCat.Services
         private static void Log(string log)
         {
             Logging.LogLine(log, "setting serv");
+        }
+
+        private static T Deserialize<T>(string path)
+            where T: class 
+        {
+            try
+            {
+                if (!File.Exists(path)) return null;
+
+                using (var stream = File.OpenRead(path))
+                {
+                    var serializer = new XmlSerializer(typeof(T));
+                    return serializer.Deserialize(stream) as T;
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static void Serialize<T>(string path, T toSave)
+            where T: class
+        {
+            try
+            {
+                var folder = Path.GetDirectoryName(path);
+                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+
+                using (var streamWriter = new StreamWriter(path, false, Encoding.UTF8))
+                {
+                    var serializer = new XmlSerializer(typeof(T));
+                    serializer.Serialize(streamWriter, toSave);
+                }
+            }
+            catch
+            {
+            }
         }
 
         #endregion

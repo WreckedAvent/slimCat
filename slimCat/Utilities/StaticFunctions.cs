@@ -32,7 +32,6 @@ namespace slimCat.Utilities
     using Microsoft.Practices.Prism.Events;
     using Models;
     using Newtonsoft.Json;
-    using Properties;
     using Services;
     using ViewModels;
     using lib;
@@ -171,7 +170,6 @@ namespace slimCat.Utilities
 
         public static string MakeSafeFolderPath(string character, string title, string id)
         {
-            var basePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             string folderName;
 
             if (!title.Equals(id))
@@ -197,9 +195,23 @@ namespace slimCat.Utilities
                 folderName = folderName.Replace('\\', '-');
             }
 
-            return Settings.Default.PortableMode
-                ? Path.Combine("logs", character, folderName)
-                : Path.Combine(basePath, "slimCat", character, folderName);
+            return Path.Combine(BaseFolderPath, character, folderName);
+        }
+
+        public static string BaseFolderPath
+        {
+            get
+            {
+                // this check has to be done here, as it is used to determine where to get the class
+                // that normally has this property on it
+                var isPortable = Environment
+                    .GetCommandLineArgs()
+                    .Any(x => x.Equals("portable", StringComparison.OrdinalIgnoreCase));
+
+                return isPortable
+                    ? Path.Combine("logs", "")
+                    : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "slimCat");
+            }
         }
 
         public static bool MeetsChatModelLists(

@@ -22,17 +22,12 @@ namespace slimCat.ViewModels
     #region Usings
 
     using System;
-    using System.IO;
-    using System.IO.Compression;
-    using System.Net;
-    using System.Windows;
     using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
-    using Properties;
     using Services;
     using Utilities;
     using Views;
@@ -56,13 +51,15 @@ namespace slimCat.ViewModels
 
         #region Fields
 
-        private readonly IAccount model; // the model to interact with
+        private readonly IAccount model; 
 
         private RelayCommand login;
 
-        private string relayMessage = Constants.FriendlyName; // message relayed to the user
+        private string relayMessage = Constants.FriendlyName; 
 
-        private bool requestIsSent; // used for determining Login UI state
+        private bool requestIsSent;
+
+        private readonly UserPreferences preferences = SettingsService.Preferences;
 
         #endregion
 
@@ -93,7 +90,6 @@ namespace slimCat.ViewModels
         public string AccountName
         {
             get { return model.AccountName; }
-
             set
             {
                 if (model.AccountName == value)
@@ -116,7 +112,6 @@ namespace slimCat.ViewModels
         public string Password
         {
             get { return model.Password; }
-
             set
             {
                 if (model.Password == value)
@@ -132,7 +127,6 @@ namespace slimCat.ViewModels
         public string ServerHost
         {
             get { return model.ServerHost; }
-
             set
             {
                 if (model.ServerHost == value)
@@ -146,7 +140,6 @@ namespace slimCat.ViewModels
         public string RelayMessage
         {
             get { return relayMessage; }
-
             set
             {
                 relayMessage = value;
@@ -157,7 +150,6 @@ namespace slimCat.ViewModels
         public bool RequestSent
         {
             get { return requestIsSent; }
-
             set
             {
                 requestIsSent = value;
@@ -167,20 +159,19 @@ namespace slimCat.ViewModels
 
         public bool Advanced
         {
-            get { return Settings.Default.Advanced; }
-            set {
-                Settings.Default.Advanced = value;
+            get { return preferences.IsAdvanced; }
+            set 
+            {
+                preferences.IsAdvanced = value;
             }
         }
 
         public bool SaveLogin
         {
-            get { return Settings.Default.SaveLogin; }
-
+            get { return preferences.SaveLogin; }
             set
             {
-                Settings.Default.SaveLogin = value;
-                Settings.Default.Save();
+                preferences.SaveLogin = value;
             }
         }
 
@@ -235,6 +226,7 @@ namespace slimCat.ViewModels
             RequestSent = true;
             Events.GetEvent<LoginEvent>().Publish(true);
             Events.GetEvent<LoginCompleteEvent>().Subscribe(HandleLogin, ThreadOption.UIThread);
+
             Log("Sending login request");
         }
 
@@ -252,18 +244,18 @@ namespace slimCat.ViewModels
                 Log("Login successful");
                 if (SaveLogin)
                 {
-                    Settings.Default.UserName = model.AccountName;
-                    Settings.Default.Password = model.Password;
-                    Settings.Default.Host = model.ServerHost;
-                    Settings.Default.Save();
+                    preferences.Username = AccountName;
+                    preferences.Password = Password;
+                    preferences.Host = ServerHost;
                 }
                 else
                 {
-                    Settings.Default.UserName = null;
-                    Settings.Default.Password = null;
-                    Settings.Default.Host = null;
-                    Settings.Default.Save();
+                    preferences.Username = null;
+                    preferences.Password = null;
+                    preferences.Host = null;
                 }
+
+                SettingsService.Preferences = preferences;
 
                 RelayMessage = Constants.FriendlyName;
             }
@@ -272,6 +264,8 @@ namespace slimCat.ViewModels
         private async void CheckForUpdates()
         {
             var latest = await updateService.GetLatestAsync();
+            if (latest == null) return;
+
             Dispatcher.BeginInvoke((Action) delegate
             {
                 HasNewUpdate = latest.IsNewUpdate;

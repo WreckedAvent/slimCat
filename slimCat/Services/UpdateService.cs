@@ -23,7 +23,6 @@ namespace slimCat.Services
     using System.IO;
     using System.IO.Compression;
     using System.Net;
-    using Properties;
     using Utilities;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -75,7 +74,7 @@ namespace slimCat.Services
             using (var client = new WebClient())
             {
                 var tempLocation = downloadLocation;
-                var basePath = Settings.Default.BasePath;
+                var basePath = SettingsService.Preferences.BasePath;
 
                 if (string.IsNullOrWhiteSpace(tempLocation))
                 {

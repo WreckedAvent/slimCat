@@ -23,7 +23,7 @@ namespace slimCat.Models
 
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using Properties;
+    using Services;
     using Utilities;
 
     #endregion
@@ -51,13 +51,16 @@ namespace slimCat.Models
         /// </summary>
         public AccountModel()
         {
-            if (!string.IsNullOrWhiteSpace(Settings.Default.Password))
-                Password = Settings.Default.Password;
+            var preferences = SettingsService.Preferences;
+            if (!string.IsNullOrWhiteSpace(preferences.Password))
+                Password = preferences.Password;
 
-            if (!string.IsNullOrWhiteSpace(Settings.Default.UserName))
-                AccountName = Settings.Default.UserName;
+            if (!string.IsNullOrWhiteSpace(preferences.Username))
+                AccountName = preferences.Username;
 
-            ServerHost = string.IsNullOrWhiteSpace(Settings.Default.Host) ? Constants.ServerHost : Settings.Default.Host;
+            ServerHost = string.IsNullOrWhiteSpace(preferences.Host) 
+                ? Constants.ServerHost 
+                : preferences.Host;
         }
 
         #endregion
