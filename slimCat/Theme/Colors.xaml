@@ -5,22 +5,22 @@
     Do not modify above this line, period.-->
 
     <!-- Foreground Color is used as the primary color for text. -->
-    <Color x:Key="ForegroundColor">#E5EFF2</Color>
+    <Color x:Key="ForegroundColor">#E6E5E5</Color>
 
     <!-- Highlight color is used to draw attention to controls, such as when a control is focused. -->
-    <Color x:Key="HighlightColor">#0099D8</Color>
+    <Color x:Key="HighlightColor">#00A1E6</Color>
 
     <!-- Contrast color is used in some places where a contrasting color is needed, such as for the friend's nameplates -->
-    <Color x:Key="ContrastColor">#49D590</Color>
+    <Color x:Key="ContrastColor">#00e645</Color>
 
     <!-- Background is used as the basis for every UI element. -->
-    <Color x:Key="BackgroundColor">#101010</Color>
+    <Color x:Key="BackgroundColor">#171717</Color>
 
     <!-- Depressed color is used primarily used for borders and UI controls which cannot be interacted with. -->
-    <Color x:Key="DepressedColor">#535363</Color>
+    <Color x:Key="DepressedColor">#747272</Color>
 
     <!-- Bright background is used for some odds and ends, most notably the 'expand' bars on either side of the screen. -->
-    <Color x:Key="BrightBackgroundColor">#323234</Color>
+    <Color x:Key="BrightBackgroundColor">#403F3F</Color>
 
     <Color x:Key="MaleColor">#6DBAD8</Color>
     <Color x:Key="FemaleColor">#DA6CB0</Color>
