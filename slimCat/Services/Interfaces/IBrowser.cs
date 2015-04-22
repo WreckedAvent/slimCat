@@ -22,6 +22,7 @@ namespace slimCat.Services
     #region Usings
 
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     #endregion
 
@@ -43,5 +44,7 @@ namespace slimCat.Services
             bool useCookies = false);
 
         string GetResponse(string host, bool useCookies = false);
+
+        Task<string> GetResponseAsync(string host, bool useCookies = false);
     }
 }

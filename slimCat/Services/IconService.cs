@@ -28,7 +28,6 @@ namespace slimCat.Services
     using System.Windows.Threading;
     using Microsoft.Practices.Prism.Events;
     using Models;
-    using Properties;
     using Utilities;
     using Application = System.Windows.Application;
 
@@ -112,8 +111,8 @@ namespace slimCat.Services
 
             icon.BalloonTipClicked += (s, e) =>
             {
-                Settings.Default.ShowStillRunning = false;
-                Settings.Default.Save();
+                SettingsService.Preferences.ShowStillRunning = false;
+                SettingsService.Preferences = SettingsService.Preferences;
             };
 
             var iconMenu = new ContextMenu();
@@ -185,7 +184,7 @@ namespace slimCat.Services
         {
             Application.Current.MainWindow.Hide();
             icon.Visible = true;
-            if (Settings.Default.ShowStillRunning)
+            if (SettingsService.Preferences.ShowStillRunning)
             {
                 icon.ShowBalloonTip(
                     5,

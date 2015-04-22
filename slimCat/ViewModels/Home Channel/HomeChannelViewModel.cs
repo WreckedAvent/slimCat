@@ -44,6 +44,7 @@ namespace slimCat.ViewModels
     /// </summary>
     public class HomeChannelViewModel : ChannelViewModelBase, IHasTabs
     {
+        private readonly IUpdateService updateService;
 
         #region Fields
 
@@ -68,16 +69,18 @@ namespace slimCat.ViewModels
         #region Constructors and Destructors
 
         public HomeChannelViewModel(string name, IChatState chatState, IAutomationService automation, IBrowser browser,
-            HomeSettingsViewModel settingsVm, HomeHelpViewModel helpVm)
+            HomeSettingsViewModel settingsVm, HomeHelpViewModel helpVm, IUpdateService updateService)
             : base(chatState)
         {
-            HelpVm = helpVm;
             try
             {
                 Model = Container.Resolve<GeneralChannelModel>(name);
                 ConnectTime = 0;
                 flavorText = new StringBuilder("Connecting");
                 connectDotDot = new StringBuilder();
+
+                this.updateService = updateService;
+                HelpVm = helpVm;
 
                 Container.RegisterType<object, HomeChannelView>(Model.Id, new InjectionConstructor(this));
                 minuteOnlineCount = new CacheCount(OnlineCountPrime, 15, 1000*15);
@@ -388,76 +391,64 @@ namespace slimCat.ViewModels
             UpdateError("Cannot send messages to the home tab!");
         }
 
-        private void CheckForUpdates()
+        private async void CheckForUpdates()
         {
-            try
+            var latest = await updateService.GetLatestAsync();
+
+            await Dispatcher.BeginInvoke((Action) delegate
             {
-                var resp = browser.GetResponse(Constants.NewVersionUrl);
-                if (resp == null) return;
-                var args = resp.Split(',');
-
-                HasNewUpdate = StaticFunctions.IsUpdate(args[0]);
-
-                var updateDelayTimer = new Timer(10*1000);
-                updateDelayTimer.Elapsed += (s, e) =>
-                {
-                    Events.GetEvent<ErrorEvent>()
-                        .Publish(
-                            "{0} is now available! \nPlease Update with the link in the home tab.".FormatWith(
-                                args[0]));
-                    updateDelayTimer.Stop();
-                    updateDelayTimer = null;
-                    Model.FlashTab();
-                };
-
-                if (HasNewUpdate)
-                    updateDelayTimer.Start();
-
-                UpdateName = args[0];
-                UpdateLink = args[1];
-                UpdateBuildTime = args[2];
-                ChangeLog = args[3];
+                HasNewUpdate = latest.IsNewUpdate;
+                UpdateName = latest.ClientName;
+                UpdateLink = latest.DownloadLink;
+                UpdateBuildTime = latest.PublishDate;
+                ChangeLog = latest.ChangelogLink;
 
                 OnPropertyChanged("HasNewUpdate");
                 OnPropertyChanged("UpdateName");
                 OnPropertyChanged("UpdateLink");
                 OnPropertyChanged("UpdateBuildTime");
                 OnPropertyChanged("ChangeLog");
-            }
-            catch (WebException)
-            {
-            }
+            });
+
+            if (!latest.IsNewUpdate) return;
+
+            var updated = await updateService.TryUpdateAsync();
+            var message = "Automatic update successful, restart to finish applying updates.";
+
+            if (!updated) message = "Automatic update failed, please install update manually.";
+            
+            Events.GetEvent<ErrorEvent>().Publish(message);
         }
 
         private void CheckForThemes()
         {
             try
             {
-                try
-                {
-                    var currentThemeParser =
-                        new TextFieldParser(new FileStream("Theme\\theme.csv", FileMode.Open, FileAccess.Read,
-                            FileShare.Read));
+                var currentThemeParser =
+                    new TextFieldParser(new FileStream("Theme\\theme.csv", FileMode.Open, FileAccess.Read,
+                        FileShare.Read));
 
-                    currentThemeParser.SetDelimiters(",");
+                currentThemeParser.SetDelimiters(",");
 
-                    // go through header
-                    currentThemeParser.ReadLine();
+                // go through header
+                currentThemeParser.ReadLine();
 
-                    CurrentTheme = GetThemeModel(currentThemeParser.ReadFields());
-                    OnPropertyChanged("CurrentTheme");
+                CurrentTheme = GetThemeModel(currentThemeParser.ReadFields());
+                OnPropertyChanged("CurrentTheme");
 
-                    currentThemeParser.Close();
+                currentThemeParser.Close();
 
-                    HasCurrentTheme = true;
-                    OnPropertyChanged("HasCurrentTheme");
-                }
-                catch
-                {
-                    HasCurrentTheme = false;
-                    OnPropertyChanged("HasCurrentTheme");
-                }
+                HasCurrentTheme = true;
+                OnPropertyChanged("HasCurrentTheme");
+            }
+            catch
+            {
+                HasCurrentTheme = false;
+                OnPropertyChanged("HasCurrentTheme");
+            }
 
+            try
+            {
                 var resp = browser.GetResponse(Constants.ThemeIndexUrl);
                 if (resp == null) return;
 

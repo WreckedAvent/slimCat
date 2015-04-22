@@ -51,7 +51,6 @@ namespace slimCat.Models
             RecentChannels = new List<string>(10);
             RecentCharacters = new List<string>(20);
 
-            PortableMode = Environment.GetCommandLineArgs().Contains("portable", StringComparer.OrdinalIgnoreCase);
             FontSize = 13;
             EntryFontSize = 13;
             GenderColorSettings = GenderColorSettings.GenderOnly;
@@ -230,8 +229,6 @@ namespace slimCat.Models
         ///     Gets or sets a value indicating whether show notifications global.
         /// </summary>
         public static bool ShowNotificationsGlobal { get; set; }
-
-        public static bool PortableMode { get; set; }
 
         /// <summary>
         ///     Gets the list of characters interesting to this user.

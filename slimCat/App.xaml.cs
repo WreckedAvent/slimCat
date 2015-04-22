@@ -22,15 +22,13 @@ namespace slimCat
     #region Usings
 
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Reflection;
-    using System.Web.UI.WebControls;
     using System.Windows;
-    using Properties;
+    using Services;
     using Utilities;
     using System.Linq;
 
@@ -107,15 +105,21 @@ namespace slimCat
             
             var assembly = Assembly.GetExecutingAssembly();
             var appVersion = assembly.GetName().Version;
-            var appVersionString = appVersion.ToString();
+            var preferences = SettingsService.Preferences;
 
-            if (Settings.Default.ApplicationVersion != appVersion.ToString())
+            if (preferences.Version != appVersion.ToString())
             {
-                Settings.Default.Upgrade();
-                Settings.Default.ApplicationVersion = appVersionString;
+                preferences.Version = appVersion.ToString();
+                if (File.Exists("stacktrace.log")) File.Delete("stacktrace.log");
             }
 
-            Settings.Default.Advanced = e.Args.Any(x => x.Equals("advanced", StringComparison.OrdinalIgnoreCase));
+            var args = Environment.GetCommandLineArgs();
+
+            preferences.IsAdvanced = args.Any(x => x.Equals("advanced", StringComparison.OrdinalIgnoreCase));
+            preferences.IsPortable = args.Any(x => x.Equals("portable", StringComparison.OrdinalIgnoreCase));
+            preferences.BasePath = AppDomain.CurrentDomain.GetData("path") as string ?? Path.GetDirectoryName(assembly.Location);
+
+            SettingsService.Preferences = preferences;
 
             foreach (var file in requiredFiles.Where(file => !File.Exists(file)))
             {
@@ -127,8 +131,7 @@ namespace slimCat
                 Environment.Exit(-1);
             }
 
-            var bstrap = new Bootstrapper();
-            bstrap.Run();
+            new Bootstrapper().Run();
         }
 
         [Conditional("DEBUG")]

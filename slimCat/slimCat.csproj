@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>slimCat</RootNamespace>
     <AssemblyName>slimCat</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -58,6 +58,7 @@
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup>
@@ -129,6 +130,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
@@ -254,12 +257,15 @@
     <Compile Include="Models\ProfileData.cs" />
     <Compile Include="Models\ProfileImage.cs" />
     <Compile Include="Models\ProfileKink.cs" />
+    <Compile Include="Services\Interfaces\IUpdateService.cs" />
     <Compile Include="Services\ProfileService.cs" />
     <Compile Include="Services\NoteService.cs" />
     <Compile Include="Services\PermissionService.cs" />
     <Compile Include="Services\SettingsService.cs" />
     <Compile Include="Services\FriendRequestService.cs" />
     <Compile Include="Services\TicketProvider.cs" />
+    <Compile Include="Services\UpdateService.cs" />
+    <Compile Include="Services\UserPreferences.cs" />
     <Compile Include="Theme\EmbeddedTheme.xaml.cs" />
     <Compile Include="Utilities\CacheCount.cs" />
     <Compile Include="Utilities\Constants.cs" />
@@ -778,7 +784,6 @@
   <ItemGroup>
     <Resource Include="catIcon.ico" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="icons\auto.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

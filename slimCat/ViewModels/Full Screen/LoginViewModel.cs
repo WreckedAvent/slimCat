@@ -22,14 +22,12 @@ namespace slimCat.ViewModels
     #region Usings
 
     using System;
-    using System.Threading;
     using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
-    using Properties;
     using Services;
     using Utilities;
     using Views;
@@ -43,6 +41,8 @@ namespace slimCat.ViewModels
     /// </summary>
     public class LoginViewModel : ViewModelBase
     {
+        private readonly IUpdateService updateService;
+
         #region Constants
 
         internal const string LoginViewName = "LoginView";
@@ -51,27 +51,27 @@ namespace slimCat.ViewModels
 
         #region Fields
 
-        private readonly IAccount model; // the model to interact with
+        private readonly IAccount model; 
 
         private RelayCommand login;
 
-        private string relayMessage = Constants.FriendlyName; // message relayed to the user
+        private string relayMessage = Constants.FriendlyName; 
 
-        private bool requestIsSent; // used for determining Login UI state
+        private bool requestIsSent;
 
-        private readonly IBrowser browser;
+        private readonly UserPreferences preferences = SettingsService.Preferences;
 
         #endregion
 
         #region Constructors and Destructors
 
-        public LoginViewModel(IChatState chatState, IBrowser browser)
+        public LoginViewModel(IChatState chatState, IUpdateService updateService)
             : base(chatState)
         {
             try
             {
                 model = chatState.Account;
-                this.browser = browser;
+                this.updateService = updateService;
                 CheckForUpdates();
 
                 LoggingSection = "login vm";
@@ -90,7 +90,6 @@ namespace slimCat.ViewModels
         public string AccountName
         {
             get { return model.AccountName; }
-
             set
             {
                 if (model.AccountName == value)
@@ -113,7 +112,6 @@ namespace slimCat.ViewModels
         public string Password
         {
             get { return model.Password; }
-
             set
             {
                 if (model.Password == value)
@@ -129,7 +127,6 @@ namespace slimCat.ViewModels
         public string ServerHost
         {
             get { return model.ServerHost; }
-
             set
             {
                 if (model.ServerHost == value)
@@ -143,7 +140,6 @@ namespace slimCat.ViewModels
         public string RelayMessage
         {
             get { return relayMessage; }
-
             set
             {
                 relayMessage = value;
@@ -154,7 +150,6 @@ namespace slimCat.ViewModels
         public bool RequestSent
         {
             get { return requestIsSent; }
-
             set
             {
                 requestIsSent = value;
@@ -164,20 +159,19 @@ namespace slimCat.ViewModels
 
         public bool Advanced
         {
-            get { return Settings.Default.Advanced; }
-            set {
-                Settings.Default.Advanced = value;
+            get { return preferences.IsAdvanced; }
+            set 
+            {
+                preferences.IsAdvanced = value;
             }
         }
 
         public bool SaveLogin
         {
-            get { return Settings.Default.SaveLogin; }
-
+            get { return preferences.SaveLogin; }
             set
             {
-                Settings.Default.SaveLogin = value;
-                Settings.Default.Save();
+                preferences.SaveLogin = value;
             }
         }
 
@@ -186,6 +180,10 @@ namespace slimCat.ViewModels
         public string UpdateName { get; set; }
 
         public string UpdateLink { get; set; }
+
+        public bool UpdateFailed { get; set; }
+
+        public bool UpdateCompleted { get; set; }
 
         #endregion
 
@@ -228,6 +226,7 @@ namespace slimCat.ViewModels
             RequestSent = true;
             Events.GetEvent<LoginEvent>().Publish(true);
             Events.GetEvent<LoginCompleteEvent>().Subscribe(HandleLogin, ThreadOption.UIThread);
+
             Log("Sending login request");
         }
 
@@ -245,51 +244,49 @@ namespace slimCat.ViewModels
                 Log("Login successful");
                 if (SaveLogin)
                 {
-                    Settings.Default.UserName = model.AccountName;
-                    Settings.Default.Password = model.Password;
-                    Settings.Default.Host = model.ServerHost;
-                    Settings.Default.Save();
+                    preferences.Username = AccountName;
+                    preferences.Password = Password;
+                    preferences.Host = ServerHost;
                 }
                 else
                 {
-                    Settings.Default.UserName = null;
-                    Settings.Default.Password = null;
-                    Settings.Default.Host = null;
-                    Settings.Default.Save();
+                    preferences.Username = null;
+                    preferences.Password = null;
+                    preferences.Host = null;
                 }
+
+                SettingsService.Preferences = preferences;
 
                 RelayMessage = Constants.FriendlyName;
             }
         }
 
-        private void CheckForUpdates()
+        private async void CheckForUpdates()
         {
-            new Thread(() =>
+            var latest = await updateService.GetLatestAsync();
+            if (latest == null) return;
+
+            await Dispatcher.BeginInvoke((Action) delegate
             {
-                Thread.CurrentThread.IsBackground = true;
-                try
-                {
-                    var resp = browser.GetResponse(Constants.NewVersionUrl);
-                    if (resp == null) return;
-                    var args = resp.Split(',');
+                HasNewUpdate = latest.IsNewUpdate;
 
-                    Dispatcher.BeginInvoke((Action) delegate
-                    {
-                        HasNewUpdate = StaticFunctions.IsUpdate(args[0]);
+                UpdateName = latest.ClientName;
+                UpdateLink = latest.DownloadLink;
+                ApplicationSettings.SlimCatChannelId = latest.SlimCatChannelId;
 
-                        UpdateName = args[0] + " update";
-                        UpdateLink = args[1];
-                        ApplicationSettings.SlimCatChannelId = args[4];
+                OnPropertyChanged("HasNewUpdate");
+                OnPropertyChanged("UpdateName");
+                OnPropertyChanged("UpdateLink");
+            });
 
-                        OnPropertyChanged("HasNewUpdate");
-                        OnPropertyChanged("UpdateName");
-                        OnPropertyChanged("UpdateLink");
-                    });
-                }
-                catch
-                {
-                }
-            }).Start();
+            var updated = await updateService.TryUpdateAsync();
+            await Dispatcher.BeginInvoke((Action) delegate
+            {
+                UpdateFailed = !updated;
+                UpdateCompleted = true;
+                OnPropertyChanged("UpdateFailed");
+                OnPropertyChanged("UpdateCompleted");
+            });
         }
 
         #endregion

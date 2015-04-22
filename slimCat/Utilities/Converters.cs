@@ -526,7 +526,7 @@ namespace slimCat.Utilities
                 {BbCodeType.Collapse, MakeCollapse},
                 {BbCodeType.Quote, MakeQuote},
                 {BbCodeType.HorizontalRule, MakeHorizontalRule},
-                {BbCodeType.Indent, MakeBlockText},
+                {BbCodeType.Indent, MakeIndentText},
                 {BbCodeType.Heading, MakeHeading},
                 {BbCodeType.Justify, MakeNormalText},
                 {BbCodeType.Right, MakeRightText},
@@ -985,6 +985,11 @@ namespace slimCat.Utilities
         private Inline MakeBlockText(ParsedChunk arg)
         {
             return MakeBlockWithAlignment(arg, TextAlignment.Left, new Thickness(0));
+        }
+
+        private Inline MakeIndentText(ParsedChunk arg)
+        {
+            return MakeBlockWithAlignment(arg, TextAlignment.Left, new Thickness(ApplicationSettings.AllowIndent ? 15 : 0, 0, 0, 0));
         }
 
         private Inline MakeBlockWithAlignment(ParsedChunk arg, TextAlignment alignment, Thickness thickness)

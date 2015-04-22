@@ -70,6 +70,7 @@ namespace slimCat.Utilities
                 RegisterSingleton<IFriendRequestService, FriendRequestService>();
                 RegisterSingleton<IProfileService, ProfileService>();
                 RegisterSingleton<IChatState, ChatState>();
+                RegisterSingleton<IUpdateService, UpdateService>();
 
                 Register<Application, Application>(Application.Current);
                 var host = Container.Resolve<IAccount>().ServerHost;
@@ -85,7 +86,7 @@ namespace slimCat.Utilities
                 Instantiate<IIconService>();
                 Instantiate<ProfileService>();
 
-                // some resources that are dependant on our singletons
+                // some resources that are dependent on our singletons
                 Application.Current.Resources.Add("BbCodeConverter", Container.Resolve<BbCodeConverter>());
                 Application.Current.Resources.Add("BbFlowConverter", Container.Resolve<BbFlowConverter>());
                 Application.Current.Resources.Add("BbPostConverter", Container.Resolve<BbCodePostConverter>());

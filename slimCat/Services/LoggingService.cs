@@ -67,7 +67,7 @@ namespace slimCat.Services
         {
             CurrentCharacter = character;
 
-            if (!ApplicationSettings.PortableMode)
+            if (!SettingsService.Preferences.IsPortable)
                 FullPath = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "slimCat", CurrentCharacter);
             else
