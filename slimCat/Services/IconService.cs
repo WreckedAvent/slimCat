@@ -41,6 +41,9 @@ namespace slimCat.Services
         private readonly IEventAggregator events;
 
         private readonly NotifyIcon icon = new NotifyIcon();
+        private readonly Icon catIcon;
+        private readonly Icon balloonIcon;
+        private bool hasNotification; 
 
         #endregion
 
@@ -53,6 +56,8 @@ namespace slimCat.Services
 
             eventagg.GetEvent<CharacterSelectedLoginEvent>().Subscribe(OnCharacterSelected);
             eventagg.GetEvent<LoginAuthenticatedEvent>().Subscribe(OnLoginAuthenticated);
+            catIcon = new Icon(Environment.CurrentDirectory + @"\icons\catIcon.ico");
+            balloonIcon = new Icon(Environment.CurrentDirectory + @"\icons\balloonIcon.ico");
         }
 
         #endregion
@@ -76,9 +81,27 @@ namespace slimCat.Services
             AllowToastUpdate();
         }
 
+
+        public void SetIconNotificationLevel(bool newMsgs)
+        {
+            if (newMsgs & !hasNotification)
+            {
+                icon.Icon = balloonIcon;
+                hasNotification = true;
+            }
+            else if (!newMsgs & hasNotification)
+            {
+                icon.Icon = catIcon;
+                hasNotification = false;
+            }
+
+        }
+
         public void ShutDown()
         {
             icon.Dispose();
+            catIcon.Dispose();
+            balloonIcon.Dispose(); 
             Dispatcher.InvokeShutdown();
         }
 
@@ -88,6 +111,8 @@ namespace slimCat.Services
                 return;
 
             icon.Dispose();
+            catIcon.Dispose();
+            balloonIcon.Dispose(); 
         }
 
         #endregion
@@ -106,7 +131,8 @@ namespace slimCat.Services
 
         private void BuildIcon(string character)
         {
-            icon.Icon = new Icon(Environment.CurrentDirectory + @"\icons\catIcon.ico");
+
+            icon.Icon = catIcon; 
             icon.DoubleClick += (s, e) => ShowWindow();
 
             icon.BalloonTipClicked += (s, e) =>
@@ -211,5 +237,6 @@ namespace slimCat.Services
     {
         void ToggleSound();
         void ToggleToasts();
+        void SetIconNotificationLevel(bool newMsg);
     }
 }
