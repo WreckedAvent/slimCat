@@ -21,7 +21,7 @@ namespace slimCat.Theme
 {
     #region Usings
     using System.Windows.Controls;
-    using Utilities;
+    using slimCat.Utilities;
     #endregion
 
     public partial class EmbeddedTheme

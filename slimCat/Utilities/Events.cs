@@ -104,6 +104,14 @@ namespace slimCat
     {
     }
 
+
+    /// <summary>
+    ///     This event is fired when the user has a tab flash or reads the last flashing tab.
+    /// </summary>
+    public class UnreadUpdatesEvent: CompositePresentationEvent<bool>
+    {
+    }
+
     /// <summary>
     ///     This event is used when the server has sent us an error or a module needs to display an error
     /// </summary>

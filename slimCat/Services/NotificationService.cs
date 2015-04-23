@@ -55,18 +55,21 @@ namespace slimCat.Services
 
         private readonly ToastNotificationsViewModel toast;
 
+        private readonly IIconService iserv; 
+
         private DateTime lastDingLinged;
 
         #endregion
 
         #region Constructors and Destructors
 
-        public NotificationService(IChatState chatState, LoggingService loggingService)
+        public NotificationService(IChatState chatState, LoggingService loggingService, IIconService iconService)
         {
             ChatState = chatState;
             events = chatState.EventAggregator;
             cm = chatState.ChatModel;
             manager = chatState.CharacterManager;
+            iserv = iconService;
             toast = new ToastNotificationsViewModel(chatState);
             ToastManager = new ToastManager
             {
@@ -85,6 +88,7 @@ namespace slimCat.Services
             events.GetEvent<NewMessageEvent>().Subscribe(HandleNewChannelMessage, true);
             events.GetEvent<NewPmEvent>().Subscribe(HandleNewMessage, true);
             events.GetEvent<NewUpdateEvent>().Subscribe(HandleNotification, true);
+            events.GetEvent<UnreadUpdatesEvent>().Subscribe(HandleUnreadUpdates, true); 
         }
 
         #endregion
@@ -308,6 +312,8 @@ namespace slimCat.Services
             if (notifyLevel == ChannelSettingsModel.NotifyLevel.NoNotification) return;
 
             FlashWindow();
+            iserv.SetIconNotificationLevel(true);
+
             if (notifyLevel == ChannelSettingsModel.NotifyLevel.NotificationOnly) return;
 
             toast.Title = ApplicationSettings.ShowNamesInToasts ? poster.Name : "A user";
@@ -333,6 +339,11 @@ namespace slimCat.Services
         private void HandleNotification(NotificationModel notification)
         {
             notification.DisplayNewToast(ChatState, ToastManager);
+        }
+
+        private void HandleUnreadUpdates(bool newMsgs)
+        {
+            iserv.SetIconNotificationLevel(newMsgs);
         }
 
         private bool IsOfInterest(string name, bool onlineOnly = true)
