@@ -541,6 +541,7 @@ namespace slimCat.ViewModels
 
             HasNewPm = ChatModel.CurrentPms.Cast<ChannelModel>().Any(cm => cm.NeedsAttention);
             HasNewMessage = ChatModel.CurrentChannels.Cast<ChannelModel>().Any(cm => cm.NeedsAttention);
+            Events.GetEvent<UnreadUpdatesEvent>().Publish(HasUpdate);
         }
 
         #endregion
