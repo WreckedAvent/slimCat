@@ -50,24 +50,8 @@ namespace slimCat.ViewModels
                 Events.GetEvent<CharacterSelectedLoginEvent>()
                     .Subscribe(HandleCurrentCharacter, ThreadOption.UIThread, true);
 
-                LoggingSection = "chat wrapper vm";
-            }
-            catch (Exception ex)
-            {
-                ex.Source = "Chat Wrapper ViewModel, init";
-                Exceptions.HandleException(ex);
-            }
-        }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public override void Initialize()
-        {
-            try
-            {
                 Container.RegisterType<object, ChatWrapperView>(ChatWrapperView);
+                LoggingSection = "chat wrapper vm";
             }
             catch (Exception ex)
             {

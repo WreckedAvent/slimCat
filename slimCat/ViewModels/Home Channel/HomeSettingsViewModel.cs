@@ -43,10 +43,6 @@ namespace slimCat.ViewModels
 
         #endregion
 
-        public override void Initialize()
-        {
-        }
-
         #region Fields
 
         private readonly IAutomateThings automation;

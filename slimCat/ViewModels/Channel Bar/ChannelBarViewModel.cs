@@ -55,6 +55,7 @@ namespace slimCat.ViewModels
                 Container.Resolve<GlobalTabViewModel>();
                 Container.Resolve<ManageListsTabView>();
                 Container.Resolve<SearchTabViewModel>();
+                Container.RegisterType<object, ChannelbarView>(ChannelbarView);
 
                 ChatModel.Notifications.CollectionChanged += (s, e) => HasUpdate = ChatModel.Notifications.Any();
 
@@ -72,23 +73,6 @@ namespace slimCat.ViewModels
                 }, ThreadOption.UIThread);
 
                 LoggingSection = "channel bar vm";
-            }
-            catch (Exception ex)
-            {
-                ex.Source = "Channelbar ViewModel, init";
-                Exceptions.HandleException(ex);
-            }
-        }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public override void Initialize()
-        {
-            try
-            {
-                Container.RegisterType<object, ChannelbarView>(ChannelbarView);
             }
             catch (Exception ex)
             {

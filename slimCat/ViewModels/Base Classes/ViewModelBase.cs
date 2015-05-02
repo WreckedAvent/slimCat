@@ -2,11 +2,11 @@
 
 // <copyright file="ViewModelBase.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -28,7 +28,6 @@ namespace slimCat.ViewModels
     using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
-    using Microsoft.Practices.Prism.Modularity;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Unity;
     using Models;
@@ -40,7 +39,7 @@ namespace slimCat.ViewModels
     /// <summary>
     ///     The view model base.
     /// </summary>
-    public abstract class ViewModelBase : SysProp, IModule
+    public abstract class ViewModelBase : SysProp
     {
         #region Constructors and Destructors
 
@@ -249,8 +248,6 @@ namespace slimCat.ViewModels
         #endregion
 
         #region Public Methods and Operators
-
-        public abstract void Initialize();
 
         public bool CanHandleReport(object args)
         {

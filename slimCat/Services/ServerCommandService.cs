@@ -76,14 +76,6 @@ namespace slimCat.Services
 
         #endregion
 
-        #region Public Methods and Operators
-
-        public override void Initialize()
-        {
-        }
-
-        #endregion
-
         #region Delegates
 
         /// <summary>

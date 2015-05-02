@@ -22,6 +22,7 @@ namespace slimCat.Utilities
     using System;
     using System.Windows;
     using Microsoft.Practices.Prism.Modularity;
+    using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Prism.UnityExtensions;
     using Microsoft.Practices.ServiceLocation;
     using Microsoft.Practices.Unity;
@@ -29,6 +30,7 @@ namespace slimCat.Utilities
     using Services;
     using ViewModels;
     using WebSocket4Net;
+    using slimCat;
 
     #endregion
 
@@ -72,8 +74,7 @@ namespace slimCat.Utilities
 
                 Register<Application, Application>(Application.Current);
                 var host = Container.Resolve<IAccount>().ServerHost;
-                if (string.IsNullOrWhiteSpace(host))
-                    host = Constants.ServerHost;
+                if (string.IsNullOrWhiteSpace(host)) host = Constants.ServerHost;
 
                 Register<WebSocket, WebSocket>(new WebSocket(host));
 
@@ -83,6 +84,13 @@ namespace slimCat.Utilities
                 Instantiate<UserCommandService>();
                 Instantiate<IHandleIcons>();
                 Instantiate<ProfileService>();
+
+                // we create our viewmodels which always run here (the ones that manage the main screens, basically)
+                Instantiate<LoginViewModel>();
+                Instantiate<CharacterSelectViewModel>();
+                Instantiate<ChatWrapperViewModel>();
+                Instantiate<UserbarViewModel>();
+                Instantiate<ChannelbarViewModel>();
 
                 // some resources that are dependent on our singletons
                 Application.Current.Resources.Add("BbCodeConverter", Container.Resolve<BbCodeConverter>());
@@ -131,15 +139,6 @@ namespace slimCat.Utilities
             try
             {
                 base.ConfigureModuleCatalog();
-
-                // modules
-                AddModule(typeof (LoginViewModel));
-                AddModule(typeof (CharacterSelectViewModel));
-
-                AddModule(typeof (ChatWrapperViewModel));
-
-                AddModule(typeof (UserbarViewModel));
-                AddModule(typeof (ChannelbarViewModel));
             }
             catch (Exception ex)
             {
@@ -151,9 +150,6 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The create shell.
         /// </summary>
-        /// <returns>
-        ///     The <see cref="DependencyObject" />.
-        /// </returns>
         protected override DependencyObject CreateShell()
         {
             return ServiceLocator.Current.GetInstance<Shell>();
@@ -166,16 +162,7 @@ namespace slimCat.Utilities
         {
             Application.Current.MainWindow = (Window) Shell;
             Application.Current.MainWindow.Show();
-        }
-
-        private void AddModule(Type moduleType)
-        {
-            ModuleCatalog.AddModule(
-                new ModuleInfo
-                {
-                    ModuleName = moduleType.Name,
-                    ModuleType = moduleType.AssemblyQualifiedName
-                });
+            (Container.Resolve<IRegionManager>()).RequestNavigate(slimCat.Shell.MainRegion, new Uri(LoginViewModel.LoginViewName, UriKind.Relative));
         }
 
         #endregion

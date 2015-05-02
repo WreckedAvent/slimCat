@@ -263,10 +263,6 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
-        public override void Initialize()
-        {
-        }
-
         public void OnOpenLogEvent(object args)
         {
             OpenLogEvent(args, false);

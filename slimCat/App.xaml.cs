@@ -2,11 +2,11 @@
 
 // <copyright file="App.xaml.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -100,9 +100,13 @@ namespace slimCat
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            var assembly = Assembly.GetExecutingAssembly();
+            var cwd = AppDomain.CurrentDomain.GetData("path") as string ?? Path.GetDirectoryName(assembly.Location);
+
+            Directory.SetCurrentDirectory(cwd);
+
             base.OnStartup(e);
 
-            var assembly = Assembly.GetExecutingAssembly();
             var appVersion = assembly.GetName().Version;
             var preferences = SettingsService.Preferences;
 
@@ -116,9 +120,7 @@ namespace slimCat
 
             preferences.IsAdvanced = args.Any(x => x.Equals("advanced", StringComparison.OrdinalIgnoreCase));
             preferences.IsPortable = args.Any(x => x.Equals("portable", StringComparison.OrdinalIgnoreCase));
-            preferences.BasePath = AppDomain.CurrentDomain.GetData("path") as string ??
-                                   Path.GetDirectoryName(assembly.Location);
-
+            preferences.BasePath = cwd;
             SettingsService.Preferences = preferences;
 
             foreach (var file in requiredFiles.Where(file => !File.Exists(file)))

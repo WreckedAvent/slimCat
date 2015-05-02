@@ -4,8 +4,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://siteoforigin:,,,/Theme/Colors.xaml" />
-                <ResourceDictionary Source="pack://siteoforigin:,,,/Theme/Theme.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Theme/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Theme/Theme.xaml" />
                 <ResourceDictionary Source="Theme\EmbeddedTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

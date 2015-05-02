@@ -2,11 +2,11 @@
 
 // <copyright file="CharacterSelectViewModel.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -60,22 +60,7 @@ namespace slimCat.ViewModels
                     .Subscribe(HandleLoginComplete, ThreadOption.UIThread, true);
 
                 LoggingSection = "character select vm";
-            }
-            catch (Exception ex)
-            {
-                ex.Source = "Character Select ViewModel, init";
-                Exceptions.HandleException(ex);
-            }
-        }
 
-        #endregion
-
-        #region Public Methods and Operators
-
-        public override void Initialize()
-        {
-            try
-            {
                 Container.RegisterType<object, CharacterSelectView>(CharacterSelectViewName);
             }
             catch (Exception ex)

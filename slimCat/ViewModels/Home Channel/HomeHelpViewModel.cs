@@ -2,11 +2,11 @@
 
 // <copyright file="HomeHelpViewModel.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -143,12 +143,7 @@ namespace slimCat.ViewModels
         }
 
         #endregion
-
-        public override void Initialize()
-        {
-        }
-
-        private string Aggregate(IEnumerable<string> list)
+        private static string Aggregate(IEnumerable<string> list)
         {
             return list != null && list.Any()
                 ? list.Aggregate((current, next) => current + ", {0}".FormatWith(next))
