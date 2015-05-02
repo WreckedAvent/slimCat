@@ -261,12 +261,16 @@
 
                             <TextBlock TextWrapping="Wrap">
                                 <Run>
-                                    I am not working on slimCat. These patches are coming from the amazing slimCat community. slimCat will remain 
+                                    I am not working on slimCat. These patches are coming from the amazing slimCat community. slimCat will remain
                                     connecting to F-chat and even bug free so long as people continue to help make it the best it can be.
                                 </Run>
                                 <LineBreak /><LineBreak />
                                 <Run>
-                                    What am I doing though, you may ask? Why,</Run>  <Hyperlink CommandParameter="http://litphoria.com/">litphoria,</Hyperlink> <Run>of course!
+                                    What am I doing though, you may ask? Why,
+                                </Run>
+                                <Hyperlink CommandParameter="http://litphoria.com/">litphoria,</Hyperlink>
+                                <Run>
+                                    of course!
                                 </Run>
                                 <LineBreak /><LineBreak />
                                 <Run>
@@ -278,7 +282,7 @@
                                 <LineBreak /><LineBreak />
                                 <Run>
                                     This is just the start, though. With every person that contributes their awesome ideas, the site gets just that
-                                    little bit better. Will you help make the future of roleplaying even more awesome? 
+                                    little bit better. Will you help make the future of roleplaying even more awesome?
                                 </Run>
                                 <LineBreak />
                             </TextBlock>
@@ -360,15 +364,15 @@
                     Visibility="{Binding Path=ChatModel.IsAuthenticated, Converter={StaticResource OppositeBoolConverter}}">
                 <StackPanel>
                     <TextBlock Foreground="{StaticResource ForegroundBrush}"
-                           FontSize="24"
-                           TextWrapping="Wrap">
-                    <Run Text="{Binding ConnectFlavorText, Mode=OneWay}" />
+                               FontSize="24"
+                               TextWrapping="Wrap">
+                        <Run Text="{Binding ConnectFlavorText, Mode=OneWay}" />
                     </TextBlock>
 
                     <Button MaxWidth="200"
-                        Margin="0,20,0,0"
-                        FontSize="20"
-                        Command="{Binding Path=LogoutCommand}">
+                            Margin="0,20,0,0"
+                            FontSize="20"
+                            Command="{Binding Path=LogoutCommand}">
                         Cancel Connecting
                     </Button>
                 </StackPanel>

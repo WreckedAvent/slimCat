@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ParserTest.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -124,167 +122,6 @@ http://www.foo.bar.com";
         [TestClass]
         public class BbCodeMarkupTest : ParserTest
         {
-            #region Bbcode Smoke Tests
-
-            [TestMethod]
-            public void BoldWorks()
-            {
-                const string textAtEnd = "some well-formed [b]bold text[/b]";
-                const string textAtStart = "[b]some well-formed[/b] bold text";
-                const string textAtMiddle = "some well-[b]formed bold[/b] text";
-
-                GetBbCode<Bold>(textAtEnd).FirstTextShouldBe("bold text");
-                GetBbCode<Bold>(textAtMiddle).FirstTextShouldBe("formed bold");
-                GetBbCode<Bold>(textAtStart).FirstTextShouldBe("some well-formed");
-            }
-
-            [TestMethod]
-            public void ItalicWorks()
-            {
-                const string text = "some well-formed [i]italic[/i] text";
-
-                GetBbCode<Italic>(text).FirstTextShouldBe("italic");
-            }
-
-            [TestMethod]
-            public void UnderlineWorks()
-            {
-                const string text = "some well-formed [u]underline[/u] text";
-
-                GetBbCode<Underline>(text).FirstTextShouldBe("underline");
-            }
-
-            [TestMethod]
-            public void StrikeThroughWorks()
-            {
-                const string text = "some well-formed [s]strike-through[/s] text";
-
-                var result =
-                    GetBbCode<Span>(text).First(x => x.TextDecorations.Equals(TextDecorations.Strikethrough));
-
-                result.TextShouldBe("strike-through");
-            }
-
-            [TestMethod]
-            public void UrlWorks()
-            {
-                const string text = "some well formed [url=https://www.google.com]url[/url] text";
-
-                GetBbCode<Hyperlink>(text).FirstTextShouldBe("url");
-            }
-
-            [TestMethod]
-            public void SimpleUrlWorks()
-            {
-                const string text = "some well-formed [url]https://www.google.com[/url] text";
-
-                GetBbCode<Hyperlink>(text).FirstTextShouldBe("google.com");
-            }
-
-            [TestMethod]
-            public void SessionWorks()
-            {
-                const string text = "some well-formed [session=Love Bar]ADH-SOMENONSENSE[/session] session";
-
-                GetBbCode<InlineUIContainer>(text);
-                // not sure how to grab text out of InlineUIContainer. TODO
-            }
-
-            [TestMethod]
-            public void ChannelWorks()
-            {
-                const string text = "some well-formed [channel]Helpdesk[/channel] channel text";
-
-                GetBbCode<InlineUIContainer>(text);
-            }
-
-            [TestMethod]
-            public void BigWorks()
-            {
-                const string text = "some well-formed [big]big[/big] text";
-
-                GetBbCode<Span>(text).First(x => x.FontSize > 12).TextShouldBe("big");
-            }
-
-            [TestMethod]
-            public void UserWorks()
-            {
-                const string text = "some well-formed [user]user[/user] text";
-
-                GetBbCode<InlineUIContainer>(text);
-            }
-
-            [TestMethod]
-            public void SmallWorks()
-            {
-                const string text = "some well-formed [small]small[/small] text";
-
-                GetBbCode<Span>(text).First(x => x.FontSize < 12).TextShouldBe("small");
-            }
-
-            [TestMethod]
-            public void SubscriptWorks()
-            {
-                const string text = "some well-formed [sub]sub[/sub] text";
-
-                GetBbCode<Span>(text)
-                    .First(x => x.BaselineAlignment == BaselineAlignment.Subscript)
-                    .TextShouldBe("sub");
-            }
-
-            [TestMethod]
-            public void SuperWorks()
-            {
-                const string text = "some well-formed [sup]sup[/sup] text";
-
-                GetBbCode<Span>(text)
-                    .First(x => x.BaselineAlignment == BaselineAlignment.Superscript)
-                    .TextShouldBe("sup");
-            }
-
-            [TestMethod]
-            public void ColorWorks()
-            {
-                ApplicationSettings.AllowColors = true; // TODO : get this as a dependency
-                const string text = "some well-formed [color=green]color[/color] text";
-
-                GetBbCode<Span>(text)
-                    .First(x => x.Foreground.IsColor(Colors.Green))
-                    .TextShouldBe("color");
-            }
-
-            [TestMethod]
-            public void ColorToggleWorks()
-            {
-                ApplicationSettings.AllowColors = false;
-                const string text = "some well-formed [color=green]color[/color] text";
-
-                var result = GetBbCode<Span>(text).First(x => x.GetText().Equals("color"));
-                result.ShouldBeDefaultColor();
-            }
-
-            [TestMethod]
-            public void MissingColorIsHandledGracefully()
-            {
-                ApplicationSettings.AllowColors = true;
-                const string text = "some well-formed [color]color[/color] text";
-
-                var result = GetBbCode<Span>(text).First(x => x.GetText().Equals("color"));
-                result.ShouldBeDefaultColor();
-            }
-
-            [TestMethod]
-            public void InvalidColorIsHandledGracefully()
-            {
-                ApplicationSettings.AllowColors = true;
-                const string text = "this is some text with [color=badcolor]a bad color in it[/color].";
-
-                var result = GetBbCode<Span>(text).First(x => x.GetText().Equals("a bad color in it"));
-                result.ShouldBeDefaultColor();
-            }
-
-            #endregion
-
             [TestMethod]
             public void StackedBbCodeWorks()
             {
@@ -487,6 +324,167 @@ http://www.foo.bar.com";
                 result[1].TextShouldBe(" test ");
                 result[2].TextShouldBe("[/b]");
             }
+
+            #region Bbcode Smoke Tests
+
+            [TestMethod]
+            public void BoldWorks()
+            {
+                const string textAtEnd = "some well-formed [b]bold text[/b]";
+                const string textAtStart = "[b]some well-formed[/b] bold text";
+                const string textAtMiddle = "some well-[b]formed bold[/b] text";
+
+                GetBbCode<Bold>(textAtEnd).FirstTextShouldBe("bold text");
+                GetBbCode<Bold>(textAtMiddle).FirstTextShouldBe("formed bold");
+                GetBbCode<Bold>(textAtStart).FirstTextShouldBe("some well-formed");
+            }
+
+            [TestMethod]
+            public void ItalicWorks()
+            {
+                const string text = "some well-formed [i]italic[/i] text";
+
+                GetBbCode<Italic>(text).FirstTextShouldBe("italic");
+            }
+
+            [TestMethod]
+            public void UnderlineWorks()
+            {
+                const string text = "some well-formed [u]underline[/u] text";
+
+                GetBbCode<Underline>(text).FirstTextShouldBe("underline");
+            }
+
+            [TestMethod]
+            public void StrikeThroughWorks()
+            {
+                const string text = "some well-formed [s]strike-through[/s] text";
+
+                var result =
+                    GetBbCode<Span>(text).First(x => x.TextDecorations.Equals(TextDecorations.Strikethrough));
+
+                result.TextShouldBe("strike-through");
+            }
+
+            [TestMethod]
+            public void UrlWorks()
+            {
+                const string text = "some well formed [url=https://www.google.com]url[/url] text";
+
+                GetBbCode<Hyperlink>(text).FirstTextShouldBe("url");
+            }
+
+            [TestMethod]
+            public void SimpleUrlWorks()
+            {
+                const string text = "some well-formed [url]https://www.google.com[/url] text";
+
+                GetBbCode<Hyperlink>(text).FirstTextShouldBe("google.com");
+            }
+
+            [TestMethod]
+            public void SessionWorks()
+            {
+                const string text = "some well-formed [session=Love Bar]ADH-SOMENONSENSE[/session] session";
+
+                GetBbCode<InlineUIContainer>(text);
+                // not sure how to grab text out of InlineUIContainer. TODO
+            }
+
+            [TestMethod]
+            public void ChannelWorks()
+            {
+                const string text = "some well-formed [channel]Helpdesk[/channel] channel text";
+
+                GetBbCode<InlineUIContainer>(text);
+            }
+
+            [TestMethod]
+            public void BigWorks()
+            {
+                const string text = "some well-formed [big]big[/big] text";
+
+                GetBbCode<Span>(text).First(x => x.FontSize > 12).TextShouldBe("big");
+            }
+
+            [TestMethod]
+            public void UserWorks()
+            {
+                const string text = "some well-formed [user]user[/user] text";
+
+                GetBbCode<InlineUIContainer>(text);
+            }
+
+            [TestMethod]
+            public void SmallWorks()
+            {
+                const string text = "some well-formed [small]small[/small] text";
+
+                GetBbCode<Span>(text).First(x => x.FontSize < 12).TextShouldBe("small");
+            }
+
+            [TestMethod]
+            public void SubscriptWorks()
+            {
+                const string text = "some well-formed [sub]sub[/sub] text";
+
+                GetBbCode<Span>(text)
+                    .First(x => x.BaselineAlignment == BaselineAlignment.Subscript)
+                    .TextShouldBe("sub");
+            }
+
+            [TestMethod]
+            public void SuperWorks()
+            {
+                const string text = "some well-formed [sup]sup[/sup] text";
+
+                GetBbCode<Span>(text)
+                    .First(x => x.BaselineAlignment == BaselineAlignment.Superscript)
+                    .TextShouldBe("sup");
+            }
+
+            [TestMethod]
+            public void ColorWorks()
+            {
+                ApplicationSettings.AllowColors = true; // TODO : get this as a dependency
+                const string text = "some well-formed [color=green]color[/color] text";
+
+                GetBbCode<Span>(text)
+                    .First(x => x.Foreground.IsColor(Colors.Green))
+                    .TextShouldBe("color");
+            }
+
+            [TestMethod]
+            public void ColorToggleWorks()
+            {
+                ApplicationSettings.AllowColors = false;
+                const string text = "some well-formed [color=green]color[/color] text";
+
+                var result = GetBbCode<Span>(text).First(x => x.GetText().Equals("color"));
+                result.ShouldBeDefaultColor();
+            }
+
+            [TestMethod]
+            public void MissingColorIsHandledGracefully()
+            {
+                ApplicationSettings.AllowColors = true;
+                const string text = "some well-formed [color]color[/color] text";
+
+                var result = GetBbCode<Span>(text).First(x => x.GetText().Equals("color"));
+                result.ShouldBeDefaultColor();
+            }
+
+            [TestMethod]
+            public void InvalidColorIsHandledGracefully()
+            {
+                ApplicationSettings.AllowColors = true;
+                const string text = "this is some text with [color=badcolor]a bad color in it[/color].";
+
+                var result = GetBbCode<Span>(text).First(x => x.GetText().Equals("a bad color in it"));
+                result.ShouldBeDefaultColor();
+            }
+
+            #endregion
         }
 
         #region Helpers

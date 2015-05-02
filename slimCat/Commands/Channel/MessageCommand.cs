@@ -1,26 +1,28 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="MessageCommand.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
 namespace slimCat.Models
 {
+    #region Usings
+
     using Services;
     using Utilities;
+
+    #endregion
 
     public class ChannelMentionUpdateEventArgs : CharacterUpdateEventArgs
     {
@@ -32,26 +34,25 @@ namespace slimCat.Models
         };
 
         public string TriggeredWord { get; set; }
-
         public bool IsNameMention { get; set; }
-
         public string Context { get; set; }
-
         public ChannelModel Channel { get; set; }
+
+        public string Title
+            => (IsNameMention ? "{0}'s name matches {1} #{2}" : "{0} mentioned {1} #{2}").FormatWith(Args);
 
         public override string ToString()
         {
-            return (IsNameMention ? "'s name matches {1} in {2}" : "mentioned {1} in {2}").FormatWith(Args) + ": \"" + Context + "\"";
+            return (IsNameMention ? "'s name matches {1} in {2}" : "mentioned {1} in {2}").FormatWith(Args) + ": \"" +
+                   Context + "\"";
         }
-
-        public string Title => (IsNameMention ? "{0}'s name matches {1} #{2}" : "{0} mentioned {1} #{2}").FormatWith(Args);
 
         public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
         {
             SetToastData(toastsManager.Toast);
 
             toastsManager.Toast.Title = Title;
-            toastsManager.Toast.Navigator = new SimpleNavigator(chat => 
+            toastsManager.Toast.Navigator = new SimpleNavigator(chat =>
                 chat.EventAggregator.GetEvent<RequestChangeTabEvent>().Publish(Channel.Id));
             toastsManager.Toast.Content = Context;
 

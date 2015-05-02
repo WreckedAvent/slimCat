@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Converters.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -191,10 +189,13 @@ namespace slimCat.Utilities
         {
             var imageWidthString = value as string;
             try
-                { return int.Parse(imageWidthString); }
+            {
+                return int.Parse(imageWidthString);
+            }
             catch
-                { }
-            
+            {
+            }
+
             return 150;
         }
     }
@@ -274,7 +275,7 @@ namespace slimCat.Utilities
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var parsed = (string)value;
+            var parsed = (string) value;
 
             return !string.IsNullOrEmpty(parsed);
         }
@@ -289,7 +290,7 @@ namespace slimCat.Utilities
             var toReturn = new StringBuilder();
             string parsed;
 
-            for (int i = 0; i < values.Count(); i++)
+            for (var i = 0; i < values.Count(); i++)
             {
                 parsed = values[i] as string;
 
@@ -328,8 +329,14 @@ namespace slimCat.Utilities
     /// </summary>
     public abstract class BbCodeBaseConverter
     {
-        internal readonly IThemeLocator Locator;
         private readonly ICharacterManager characterManager;
+        internal readonly IThemeLocator Locator;
+
+        #region Properties
+
+        internal IChatModel ChatModel { get; set; }
+
+        #endregion
 
         #region Static Fields
 
@@ -377,12 +384,6 @@ namespace slimCat.Utilities
         protected BbCodeBaseConverter()
         {
         }
-
-        #endregion
-
-        #region Properties
-
-        internal IChatModel ChatModel { get; set; }
 
         #endregion
 
@@ -610,7 +611,6 @@ namespace slimCat.Utilities
                             // we'll treat that '[b]' as text
                             if (lastOpen != lastMatching) lastOpen.Type = BbCodeType.None;
                         } while (lastOpen != lastMatching);
-                        
 
                         #region handle noparse
 
@@ -662,7 +662,7 @@ namespace slimCat.Utilities
             // these tags haven't been closed, so treat them as invalid
             foreach (var openTag in openTags)
                 openTag.Type = BbCodeType.None;
-           
+
             // if we have no bbcode present, just return the text as-is
             if (processedQueue.All(x => x.Type == BbCodeType.None && x.Children == null))
                 return new[] {AsChunk(input)};
@@ -988,7 +988,8 @@ namespace slimCat.Utilities
 
         private Inline MakeIndentText(ParsedChunk arg)
         {
-            return MakeBlockWithAlignment(arg, TextAlignment.Left, new Thickness(ApplicationSettings.AllowIndent ? 15 : 0, 0, 0, 0));
+            return MakeBlockWithAlignment(arg, TextAlignment.Left,
+                new Thickness(ApplicationSettings.AllowIndent ? 15 : 0, 0, 0, 0));
         }
 
         private Inline MakeBlockWithAlignment(ParsedChunk arg, TextAlignment alignment, Thickness thickness)
@@ -1051,7 +1052,6 @@ namespace slimCat.Utilities
             }
 
             public BbTag Last { get; private set; }
-
             public bool HasReachedEnd { get; private set; }
 
             private BbTag ReturnAsTextBetween(int start, int end)
@@ -1164,34 +1164,22 @@ namespace slimCat.Utilities
         public class BbTag
         {
             public BbCodeType Type { get; set; }
-
             public int Start { get; set; }
-
             public int End { get; set; }
-
             public string Arguments { get; set; }
-
             public bool IsClosing { get; set; }
-
             public BbTag ClosingTag { get; set; }
-
             public IList<BbTag> Children { get; set; }
-
             public BbTag Parent { get; set; }
         }
 
         public class ParsedChunk
         {
             public int Start { get; set; }
-
             public int End { get; set; }
-
             public string InnerText { get; set; }
-
             public string Arguments { get; set; }
-
             public BbCodeType Type { get; set; }
-
             public IList<ParsedChunk> Children { get; set; }
         }
 
@@ -1239,7 +1227,7 @@ namespace slimCat.Utilities
 
                 if (text[0] == '/')
                 {
-                    var check = text.Substring(0, text.IndexOf(' ')+1);
+                    var check = text.Substring(0, text.IndexOf(' ') + 1);
                     Func<string, string> nonCommandCommand;
 
                     if (CommandDefinitions.NonCommandCommands.TryGetValue(check, out nonCommandCommand))
@@ -1247,21 +1235,21 @@ namespace slimCat.Utilities
                         var command = text[1];
                         text = nonCommandCommand(text);
 
-                        if (command == 'm')  // is an emote
+                        if (command == 'm') // is an emote
                         {
                             inlines.Insert(0, new Run("*")); // push the name button to the second slot
                             inlines[1].FontStyle = FontStyles.Italic;
                             inlines.Add(new Italic(Parse(text)));
                             inlines.Add(new Run("*"));
                         }
-                        else if (command == 'w')  // is a warn
+                        else if (command == 'w') // is a warn
                         {
                             var toAdd = Parse(text);
                             toAdd.Foreground = Locator.Find<Brush>("ModeratorBrush");
                             toAdd.FontWeight = FontWeights.Medium;
                             inlines.Add(toAdd);
                         }
-                        else if (command == 'p')  // is a post
+                        else if (command == 'p') // is a post
                             inlines.Add(Parse(text));
 
                         return inlines;
@@ -1323,7 +1311,7 @@ namespace slimCat.Utilities
         }
 
         public BbFlowConverter()
-        { 
+        {
         }
 
         #endregion
@@ -1388,7 +1376,7 @@ namespace slimCat.Utilities
 
             if (text[0] == '/')
             {
-                var check = text.Substring(0, text.IndexOf(' ')+1);
+                var check = text.Substring(0, text.IndexOf(' ') + 1);
                 var command = ' ';
                 Func<string, string> nonCommandCommand;
 
@@ -1406,7 +1394,7 @@ namespace slimCat.Utilities
                     toAdd.FontWeight = FontWeights.Medium;
                     inlines.Add(toAdd);
                 }
-                else if (command == 'm')  // is an emote
+                else if (command == 'm') // is an emote
                     inlines.Add(new Italic(Parse(text)));
                 else
                 {
@@ -1442,7 +1430,7 @@ namespace slimCat.Utilities
         }
 
         public BbCodeConverter()
-        { 
+        {
         }
 
         #endregion
@@ -1477,8 +1465,6 @@ namespace slimCat.Utilities
     /// </summary>
     public abstract class GenderColorConverterBase : OneWayConverter
     {
-        internal readonly IGetPermissions Permissions;
-
         private readonly IDictionary<Gender, Gender> genderFallbacks = new Dictionary<Gender, Gender>
         {
             {Gender.Male, Gender.Male},
@@ -1504,6 +1490,7 @@ namespace slimCat.Utilities
         };
 
         private readonly ICharacterManager manager;
+        internal readonly IGetPermissions Permissions;
 
         protected GenderColorConverterBase(IGetPermissions permissions, ICharacterManager manager)
         {
@@ -1908,7 +1895,7 @@ namespace slimCat.Utilities
         }
 
         public ForegroundBrushConverter()
-        { 
+        {
         }
 
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -1942,7 +1929,7 @@ namespace slimCat.Utilities
     {
         public override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            return Math.Max(((double)values[0] * 0.8) - ((double)values[1]) - (System.Convert.ToDouble(parameter)), 0);
+            return Math.Max(((double) values[0]*0.8) - ((double) values[1]) - (System.Convert.ToDouble(parameter)), 0);
         }
     }
 
@@ -1952,7 +1939,6 @@ namespace slimCat.Utilities
     public class ConverterChain : OneWayConverter
     {
         private ValueConverterCollection converters;
-
         public ValueConverterCollection Converters => converters ?? (converters = new ValueConverterCollection());
 
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)

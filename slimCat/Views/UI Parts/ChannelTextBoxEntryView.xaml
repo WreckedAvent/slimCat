@@ -16,7 +16,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="{Binding ShowPreview, Converter={StaticResource AutoOrStarConverter}}" />
             <RowDefinition Height="*"
-                           MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=200}"/>
+                           MaxHeight="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=v:DisposableView}, Converter={StaticResource RemoveSomeConverter}, ConverterParameter=200}" />
         </Grid.RowDefinitions>
 
         <DockPanel Visibility="{Binding Error, Mode=OneWay, Converter={StaticResource EmptyConverter}}">

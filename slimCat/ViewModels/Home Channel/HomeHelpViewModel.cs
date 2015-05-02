@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="HomeHelpViewModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -146,6 +144,17 @@ namespace slimCat.ViewModels
 
         #endregion
 
+        public override void Initialize()
+        {
+        }
+
+        private string Aggregate(IEnumerable<string> list)
+        {
+            return list != null && list.Any()
+                ? list.Aggregate((current, next) => current + ", {0}".FormatWith(next))
+                : null;
+        }
+
         #region Public Properties
 
         public ListCollectionView CommandReferences { get; set; }
@@ -156,8 +165,8 @@ namespace slimCat.ViewModels
 
         public ICharacter slimCat => CharacterManager.Find("slimCat");
 
-        public ChannelModel slimCatChannel => string.IsNullOrWhiteSpace(ApplicationSettings.SlimCatChannelId) 
-            ? null 
+        public ChannelModel slimCatChannel => string.IsNullOrWhiteSpace(ApplicationSettings.SlimCatChannelId)
+            ? null
             : new GeneralChannelModel(ApplicationSettings.SlimCatChannelId, "slimCat", ChannelType.Private);
 
         public string SelectedTab
@@ -171,29 +180,14 @@ namespace slimCat.ViewModels
         }
 
         #endregion
-
-        public override void Initialize()
-        {
-        }
-
-        private string Aggregate(IEnumerable<string> list)
-        {
-            return list != null && list.Any()
-                ? list.Aggregate((current, next) => current + ", {0}".FormatWith(next))
-                : null;
-        }
     }
 
     public class CommandReference
     {
         public string CommandName { get; set; }
-
         public string Arumgents { get; set; }
-
         public string Aliases { get; set; }
-
         public string Examples { get; set; }
-
         public CommandModel.PermissionLevel Permissions { get; set; }
     }
 

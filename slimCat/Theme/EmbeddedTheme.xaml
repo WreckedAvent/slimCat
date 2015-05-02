@@ -175,10 +175,11 @@
     </Style>
 
     <Style TargetType="MenuItem" x:Key="MenuItemCopy">
-        <Setter Property="Command" Value="{Binding Path=PlacementTarget.DataContext.CopyLink, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+        <Setter Property="Command"
+                Value="{Binding Path=PlacementTarget.DataContext.CopyLink, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
         <Setter Property="Header" Value="Copy link address" />
     </Style>
-    
+
     <ControlTemplate x:Key="GenderCheckBoxes" TargetType="ContentControl"
                      d:DataContext="{d:DesignInstance models:GenderSettingsModel}">
         <StackPanel Orientation="Vertical">
@@ -397,14 +398,14 @@
 
                         <StackPanel.InputBindings>
                             <MouseBinding MouseAction="RightClick"
-                                              Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
+                                          Command="{Binding Path=DataContext.OpenRightClickMenuCommand,
                                                                 RelativeSource={RelativeSource AncestorType={x:Type Grid},AncestorLevel=2}}"
-                                              CommandParameter="{Binding Path=Name, Mode=OneTime}" />
+                                          CommandParameter="{Binding Path=Name, Mode=OneTime}" />
 
                             <MouseBinding MouseAction="LeftClick"
-                                              Command="{Binding Path=DataContext.RequestPmCommand,
+                                          Command="{Binding Path=DataContext.RequestPmCommand,
                                                                 RelativeSource={RelativeSource AncestorType={x:Type Grid},AncestorLevel=2}}"
-                                              CommandParameter="{Binding Path=Name, Mode=OneTime}" />
+                                          CommandParameter="{Binding Path=Name, Mode=OneTime}" />
                         </StackPanel.InputBindings>
                     </StackPanel>
                 </DataTemplate>

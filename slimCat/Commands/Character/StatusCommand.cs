@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="StatusCommand.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -32,11 +30,8 @@ namespace slimCat.Models
         public class StatusChangedEventArgs : CharacterUpdateEventArgs
         {
             public bool IsStatusMessageChanged => NewStatusMessage != null;
-
             public bool IsStatusTypeChanged => NewStatusType != StatusType.Offline;
-
             public string NewStatusMessage { get; set; }
-
             public StatusType NewStatusType { get; set; }
 
             public override string ToString()
@@ -69,7 +64,9 @@ namespace slimCat.Models
                 if (!ApplicationSettings.ShowStatusToasts
                     || !chatState.IsInteresting(Model.TargetCharacter.Name)
                     || chatState.CharacterManager.IsOnList(Model.TargetCharacter.Name, ListKind.IgnoreUpdates, false))
-                { return; }
+                {
+                    return;
+                }
 
                 DoNormalToast(toastsManager);
             }

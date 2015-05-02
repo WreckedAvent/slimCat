@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ChannelTabViewModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -45,6 +43,74 @@ namespace slimCat.ViewModels
 
         #endregion
 
+        #region Constructors and Destructors
+
+        public ChannelsTabViewModel(IChatState chatState, IUpdateChannelLists updater)
+            : base(chatState)
+        {
+            this.updater = updater;
+            Container.RegisterType<object, ChannelTabView>(ChannelsTabView);
+
+            SearchSettings.Updated += Update;
+
+            ChatModel.AllChannels.CollectionChanged += Update;
+            updateChannelList = DeferredAction.Create(() => OnPropertyChanged("SortedChannels"));
+        }
+
+        #endregion
+
+        public bool IsCreatingNewChannel
+        {
+            get { return isCreatingNewChannel; }
+            set
+            {
+                isCreatingNewChannel = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand ToggleIsCreatingNewChannelCommand => toggleIsCreatingNewChannel ??
+                                                             (toggleIsCreatingNewChannel =
+                                                                 new RelayCommand(
+                                                                     _ => IsCreatingNewChannel = !IsCreatingNewChannel))
+            ;
+
+        public ICommand CreateNewChannelCommand
+            => createNewChannel ?? (createNewChannel = new RelayCommand(CreateNewChannelEvent));
+
+        public string NewChannelName
+        {
+            get { return newChannelName; }
+            set
+            {
+                newChannelName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private void Update(object sender, EventArgs e)
+        {
+            OnPropertyChanged("SearchSettings");
+            updateChannelList.Defer(TimeSpan.FromSeconds(0.25));
+        }
+
+        protected override void Dispose(bool isManaged)
+        {
+            if (isManaged)
+            {
+                ChatModel.AllChannels.CollectionChanged -= Update;
+                SearchSettings.Updated -= Update;
+            }
+            base.Dispose(isManaged);
+        }
+
+        public void CreateNewChannelEvent(object args)
+        {
+            IsCreatingNewChannel = false;
+            Events.SendUserCommand("makeroom", new[] {NewChannelName});
+            NewChannelName = string.Empty;
+        }
+
         #region Fields
 
         private readonly DeferredAction updateChannelList;
@@ -64,22 +130,6 @@ namespace slimCat.ViewModels
         private bool sortByName;
 
         private RelayCommand toggleIsCreatingNewChannel;
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        public ChannelsTabViewModel(IChatState chatState, IUpdateChannelLists updater)
-            : base(chatState)
-        {
-            this.updater = updater;
-            Container.RegisterType<object, ChannelTabView>(ChannelsTabView);
-
-            SearchSettings.Updated += Update;
-
-            ChatModel.AllChannels.CollectionChanged += Update;
-            updateChannelList = DeferredAction.Create(() => OnPropertyChanged("SortedChannels"));
-        }
 
         #endregion
 
@@ -174,53 +224,5 @@ namespace slimCat.ViewModels
         }
 
         #endregion
-
-        public bool IsCreatingNewChannel
-        {
-            get { return isCreatingNewChannel; }
-            set
-            {
-                isCreatingNewChannel = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public ICommand ToggleIsCreatingNewChannelCommand => toggleIsCreatingNewChannel ??
-                                                             (toggleIsCreatingNewChannel = new RelayCommand(_ => IsCreatingNewChannel = !IsCreatingNewChannel));
-
-        public ICommand CreateNewChannelCommand => createNewChannel ?? (createNewChannel = new RelayCommand(CreateNewChannelEvent));
-
-        public string NewChannelName
-        {
-            get { return newChannelName; }
-            set
-            {
-                newChannelName = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private void Update(object sender, EventArgs e)
-        {
-            OnPropertyChanged("SearchSettings");
-            updateChannelList.Defer(TimeSpan.FromSeconds(0.25));
-        }
-
-        protected override void Dispose(bool isManaged)
-        {
-            if (isManaged)
-            {
-                ChatModel.AllChannels.CollectionChanged -= Update;
-                SearchSettings.Updated -= Update;
-            }
-            base.Dispose(isManaged);
-        }
-
-        public void CreateNewChannelEvent(object args)
-        {
-            IsCreatingNewChannel = false;
-            Events.SendUserCommand("makeroom", new[] {NewChannelName});
-            NewChannelName = string.Empty;
-        }
     }
 }

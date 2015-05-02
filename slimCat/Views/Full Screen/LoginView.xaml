@@ -38,9 +38,12 @@
                     <KeyBinding Key="Enter" Command="{Binding LoginCommand}" />
                 </PasswordBox.InputBindings>
             </PasswordBox>
-            
-            <TextBlock Visibility="{Binding ShowCapslockWarning, Converter={StaticResource BoolConverter}}" Margin="10,0,0,10">Capslock is on!</TextBlock>
-            
+
+            <TextBlock Visibility="{Binding ShowCapslockWarning, Converter={StaticResource BoolConverter}}"
+                       Margin="10,0,0,10">
+                Capslock is on!
+            </TextBlock>
+
             <Expander Visibility="{Binding Advanced, Converter={StaticResource BoolConverter}}">
                 <Expander.Header>
                     <TextBlock Foreground="{StaticResource DepressedBrush}" Text="Advanced" FontSize="16" />
@@ -64,16 +67,17 @@
             <TextBlock Visibility="{Binding Path=HasNewUpdate, Converter={StaticResource BoolConverter}}"
                        Margin="15,0,0,0">
                 <TextBlock Visibility="{Binding Path=UpdateFailed, Converter={StaticResource OppositeBoolConverter}}">
-                    <TextBlock Visibility="{Binding Path=UpdateCompleted, Converter={StaticResource OppositeBoolConverter}}">       
+                    <TextBlock
+                        Visibility="{Binding Path=UpdateCompleted, Converter={StaticResource OppositeBoolConverter}}">
                         <Run>Updating to</Run>
-                        <Run Text="{Binding Path=UpdateName}"></Run>
+                        <Run Text="{Binding Path=UpdateName}" />
                     </TextBlock>
                     <TextBlock Visibility="{Binding Path=UpdateCompleted, Converter={StaticResource BoolConverter}}">
                         <Run>Update complete! Restart to finish.</Run>
                     </TextBlock>
                 </TextBlock>
                 <TextBlock Visibility="{Binding Path=UpdateFailed, Converter={StaticResource BoolConverter}}">
-                    Update failed. 
+                    Update failed.
                     <Hyperlink CommandParameter="{Binding Path=UpdateLink}">Update Manually</Hyperlink>
                 </TextBlock>
             </TextBlock>

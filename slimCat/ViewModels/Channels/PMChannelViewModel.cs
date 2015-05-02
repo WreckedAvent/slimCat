@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="PMChannelViewModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -46,49 +44,6 @@ namespace slimCat.ViewModels
     /// </summary>
     public class PmChannelViewModel : ChannelViewModelBase
     {
-        #region Fields
-
-        private readonly PmChannelModel model;
-        private readonly IManageNotes noteService;
-        private readonly IGetProfiles profileService;
-
-        private Timer checkTick = new Timer(5000);
-        private RelayCommand clearCacheCommand;
-
-        private Timer cooldownTimer = new Timer(500);
-        private ProfileImage currentImage;
-
-        private bool isCharacterStatusExpanded;
-
-        private bool isInCoolDown;
-
-        private bool isInNoteCoolDown;
-
-        private bool isTyping;
-
-        private bool isViewingChat = true;
-        private bool isViewingFullImage;
-        private bool isViewingProfile;
-
-        private FilteredCollection<IMessage, IViewableObject> messageManager;
-
-        private string messageMessage;
-        private Timer noteCooldownTimer = new Timer(21000);
-
-        private Timer noteCooldownUpdateTick = new Timer(1000);
-        private string noteMessage;
-
-        private DateTimeOffset noteTimeLeft;
-        private RelayCommand openInBrowserCommand;
-
-        private bool showSubject;
-        private RelayCommand @switch;
-
-        private RelayCommand switchViewingImageCommand;
-        private int typingLengthCache;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public PmChannelViewModel(string name, IChatState chatState, IManageNotes notes, IGetProfiles profile)
@@ -151,7 +106,7 @@ namespace slimCat.ViewModels
 
                 Model.Settings = SettingsService.GetChannelSettings(
                     ChatModel.CurrentCharacter.Name, Model.Title, Model.Id, Model.Type);
-                
+
                 ChannelSettings.Updated += (s, e) =>
                 {
                     OnPropertyChanged("ChannelSettings");
@@ -192,6 +147,49 @@ namespace slimCat.ViewModels
         #region Public Events
 
         public event EventHandler StatusChanged;
+
+        #endregion
+
+        #region Fields
+
+        private readonly PmChannelModel model;
+        private readonly IManageNotes noteService;
+        private readonly IGetProfiles profileService;
+
+        private Timer checkTick = new Timer(5000);
+        private RelayCommand clearCacheCommand;
+
+        private Timer cooldownTimer = new Timer(500);
+        private ProfileImage currentImage;
+
+        private bool isCharacterStatusExpanded;
+
+        private bool isInCoolDown;
+
+        private bool isInNoteCoolDown;
+
+        private bool isTyping;
+
+        private bool isViewingChat = true;
+        private bool isViewingFullImage;
+        private bool isViewingProfile;
+
+        private FilteredCollection<IMessage, IViewableObject> messageManager;
+
+        private string messageMessage;
+        private Timer noteCooldownTimer = new Timer(21000);
+
+        private Timer noteCooldownUpdateTick = new Timer(1000);
+        private string noteMessage;
+
+        private DateTimeOffset noteTimeLeft;
+        private RelayCommand openInBrowserCommand;
+
+        private bool showSubject;
+        private RelayCommand @switch;
+
+        private RelayCommand switchViewingImageCommand;
+        private int typingLengthCache;
 
         #endregion
 
@@ -377,7 +375,8 @@ namespace slimCat.ViewModels
             }
         }
 
-        public bool IsConversationWithSelf => ConversationWith != null && ConversationWith.NameEquals(ChatModel.CurrentCharacter.Name);
+        public bool IsConversationWithSelf
+            => ConversationWith != null && ConversationWith.NameEquals(ChatModel.CurrentCharacter.Name);
 
         public ICommand SwitchCommand
         {

@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ChannelManagementViewModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -37,6 +35,26 @@ namespace slimCat.ViewModels
     /// </summary>
     public class ChannelManagementViewModel : SysProp, IDisposable
     {
+        #region Constructors and Destructors
+
+        public ChannelManagementViewModel(IEventAggregator eventagg, GeneralChannelModel model)
+        {
+            this.model = model;
+            description = this.model.Description;
+            events = eventagg;
+            this.model.PropertyChanged += UpdateDescription;
+
+            modeTypes = new[] {"Ads", "chat", "both"};
+        }
+
+        #endregion
+
+        #region Explicit Interface Methods
+
+        void IDisposable.Dispose() => Dispose(true);
+
+        #endregion
+
         #region Fields
 
         /// <summary>
@@ -55,20 +73,6 @@ namespace slimCat.ViewModels
         private RelayCommand open;
 
         private RelayCommand toggleType;
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        public ChannelManagementViewModel(IEventAggregator eventagg, GeneralChannelModel model)
-        {
-            this.model = model;
-            description = this.model.Description;
-            events = eventagg;
-            this.model.PropertyChanged += UpdateDescription;
-
-            modeTypes = new[] {"Ads", "chat", "both"};
-        }
 
         #endregion
 
@@ -105,7 +109,8 @@ namespace slimCat.ViewModels
 
         public IEnumerable<string> ModeTypes => modeTypes;
 
-        public ICommand OpenChannelManagementCommand => open ?? (open = new RelayCommand(args => IsManaging = !IsManaging));
+        public ICommand OpenChannelManagementCommand
+            => open ?? (open = new RelayCommand(args => IsManaging = !IsManaging));
 
         public string RoomModeString
         {
@@ -160,7 +165,8 @@ namespace slimCat.ViewModels
         }
 
         public ICommand ToggleRoomTypeCommand => toggleType
-            ?? (toggleType = new RelayCommand(OnToggleRoomType, CanToggleRoomType));
+                                                 ?? (toggleType = new RelayCommand(OnToggleRoomType, CanToggleRoomType))
+            ;
 
         public string ToggleRoomTypeString
         {
@@ -172,12 +178,6 @@ namespace slimCat.ViewModels
                 return model.Type == ChannelType.Private ? "Close this channel" : "Cannot close channel";
             }
         }
-
-        #endregion
-
-        #region Explicit Interface Methods
-
-        void IDisposable.Dispose() => Dispose(true);
 
         #endregion
 
@@ -200,7 +200,8 @@ namespace slimCat.ViewModels
         private void OnRoomModeChanged(object args)
         {
             events.GetEvent<UserCommandEvent>()
-                .Publish(CommandDefinitions.CreateCommand("setmode", new[] {model.Mode.ToString()}, model.Id).ToDictionary());
+                .Publish(
+                    CommandDefinitions.CreateCommand("setmode", new[] {model.Mode.ToString()}, model.Id).ToDictionary());
         }
 
         private void OnToggleRoomType(object args)
@@ -236,7 +237,8 @@ namespace slimCat.ViewModels
             {
                 // if its us updating it
                 events.GetEvent<UserCommandEvent>()
-                    .Publish(CommandDefinitions.CreateCommand("setdescription", new[] {description}, model.Id).ToDictionary());
+                    .Publish(
+                        CommandDefinitions.CreateCommand("setdescription", new[] {description}, model.Id).ToDictionary());
             }
         }
 

@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="TextBlockHelper.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -43,20 +41,6 @@ namespace slimCat.Libraries
 
         #endregion
 
-        #region Public Methods and Operators
-
-        public static List<Inline> GetInlineList(TextBlock element)
-        {
-            return element?.GetValue(ArticleContentProperty) as List<Inline>;
-        }
-
-        public static void SetInlineList(TextBlock element, List<Inline> value)
-        {
-            element?.SetValue(ArticleContentProperty, value);
-        }
-
-        #endregion
-
         #region Methods
 
         private static void OnInlineListPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
@@ -70,6 +54,20 @@ namespace slimCat.Libraries
             // add new inlines
             var inlines = e.NewValue as List<Inline>;
             inlines?.ForEach(inl => tb.Inlines.Add(inl));
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public static List<Inline> GetInlineList(TextBlock element)
+        {
+            return element?.GetValue(ArticleContentProperty) as List<Inline>;
+        }
+
+        public static void SetInlineList(TextBlock element, List<Inline> value)
+        {
+            element?.SetValue(ArticleContentProperty, value);
         }
 
         #endregion
@@ -92,6 +90,22 @@ namespace slimCat.Libraries
                 typeof (IEnumerable<Inline>),
                 typeof (SpanHelper),
                 new UIPropertyMetadata(null, OnInlineChanged));
+
+        #endregion
+
+        #region Methods
+
+        private static void OnInlineChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var span = d as Span;
+            var inlines = GetInlineSource(span);
+            if (inlines == null || span == null)
+                return;
+
+            span.Inlines.Clear();
+            foreach (var inline in inlines)
+                span.Inlines.Add(inline);
+        }
 
         #endregion
 
@@ -123,22 +137,6 @@ namespace slimCat.Libraries
         public static void SetInlineSource(DependencyObject obj, IEnumerable<Inline> value)
         {
             obj.SetValue(InlineSourceProperty, value);
-        }
-
-        #endregion
-
-        #region Methods
-
-        private static void OnInlineChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var span = d as Span;
-            var inlines = GetInlineSource(span);
-            if (inlines == null || span == null)
-                return;
-
-            span.Inlines.Clear();
-            foreach (var inline in inlines)
-                span.Inlines.Add(inline);
         }
 
         #endregion

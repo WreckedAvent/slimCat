@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="SearchBoxView.xaml.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+// <copyright file="ShortcutManager.cs">
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -38,6 +36,7 @@ namespace slimCat.Views
     public class ShortcutManager
     {
         #region Fields
+
         private static readonly IDictionary<Key, Tuple<string, bool>> AcceptedKeys =
             new Dictionary<Key, Tuple<string, bool>>
             {
@@ -75,9 +74,11 @@ namespace slimCat.Views
         private RelayCommand focusCommand;
 
         private string lastNameComplete;
+
         #endregion
 
         #region Constructors
+
         public ShortcutManager(TextBox entry, ChannelViewModelBase vm)
             : this(entry)
         {
@@ -85,7 +86,7 @@ namespace slimCat.Views
         }
 
         public ShortcutManager(TextBox entry, GenericSearchSettingsModel model)
-            : this (entry)
+            : this(entry)
         {
             this.model = model;
         }
@@ -95,7 +96,7 @@ namespace slimCat.Views
             this.entry = entry;
             entry.FocusableChanged += (s, e) =>
             {
-                if (!(bool)e.NewValue) return;
+                if (!(bool) e.NewValue) return;
 
                 entry.Focus();
             };
@@ -105,7 +106,8 @@ namespace slimCat.Views
             entry.KeyUp += OnKeyUp;
         }
 
-        private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        private void OnIsVisibleChanged(object sender,
+            DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
             if (entry.IsVisible)
                 OnLoaded(sender, null);
@@ -114,6 +116,7 @@ namespace slimCat.Views
         #endregion
 
         #region Commands
+
         public ICommand FocusCommand
         {
             get { return focusCommand = focusCommand ?? (focusCommand = new RelayCommand(FocusEvent)); }
@@ -131,7 +134,7 @@ namespace slimCat.Views
 
                 // why invoke? Entry.Text doesn't update immediately, it's updated on a scheduler or something
                 // this just schedules it after that
-                Dispatcher.CurrentDispatcher.BeginInvoke((Action)(() =>
+                Dispatcher.CurrentDispatcher.BeginInvoke((Action) (() =>
                 {
                     var startIndex = entry.Text.IndexOf(character, StringComparison.Ordinal);
                     if (startIndex == -1) return; // don't want to crash if something weird happens
@@ -140,9 +143,11 @@ namespace slimCat.Views
             }
             else Focus();
         }
+
         #endregion
 
         #region Methods
+
         private void OnKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Tab) lastNameComplete = null;
@@ -344,6 +349,7 @@ namespace slimCat.Views
 
             return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
         }
+
         #endregion
     }
 }

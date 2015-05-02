@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="F-ChatConnection.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+// <copyright file="Program.cs">
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -29,15 +27,19 @@
 
 namespace Bootstrapper
 {
+    #region Usings
+
     using System;
     using System.IO;
     using System.Reflection;
 
-    class Program
+    #endregion
+
+    internal class Program
     {
         [LoaderOptimization(LoaderOptimization.MultiDomainHost)]
         [STAThread]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var startupPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             if (startupPath == null) return;
@@ -64,8 +66,13 @@ namespace Bootstrapper
 
             // we can do slimCat clean up here if necessary
             AppDomain.Unload(domain);
-            try { Directory.Delete(cachePath, true); } 
-            catch { }
+            try
+            {
+                Directory.Delete(cachePath, true);
+            }
+            catch
+            {
+            }
         }
     }
 }

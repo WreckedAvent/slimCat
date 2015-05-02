@@ -146,7 +146,7 @@
                                     Width="75"
                                     Margin="0,10,0,0"
                                     ToolTip="{Binding Path=Description}"
-                                    ToolTipService.IsEnabled="{Binding Path=Description, Converter={StaticResource NotEmptyBoolConverter}}"/>
+                                    ToolTipService.IsEnabled="{Binding Path=Description, Converter={StaticResource NotEmptyBoolConverter}}" />
                             </Grid>
                         </DataTemplate>
                     </Grid.Resources>
@@ -178,7 +178,7 @@
                                         TextBlock.Foreground="{StaticResource ForegroundBrush}"
                                         MinHeight="64">
                                 <TextBlock TextWrapping="Wrap">
-                                     <Run>
+                                    <Run>
                                         <Run.Text>
                                             <MultiBinding
                                                 Converter="{StaticResource CommaConverter}">
@@ -268,10 +268,11 @@
                             IsHyphenationEnabled="True"
                             ColumnRuleBrush="{StaticResource BrightBackgroundBrush}"
                             ColumnRuleWidth="5.00">
-                            
+
                             <Paragraph>
                                 <InlineUIContainer>
-                                    <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}">
+                                    <Grid
+                                        Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="1*" />
                                             <ColumnDefinition Width="8*"
@@ -288,12 +289,13 @@
                                                 Visibility="{Binding CurrentImage, Converter={StaticResource NotNullConverter}}">
                                             <Button.Template>
                                                 <ControlTemplate>
-                                                    <Image Source="{Binding CurrentImage.FullImageUri,
+                                                    <Image
+                                                        Source="{Binding CurrentImage.FullImageUri,
                                                            Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
-                                                           Margin="5"
-                                                           RenderOptions.BitmapScalingMode="Fant"
-                                                           MinWidth="300"
-                                                           HorizontalAlignment="Center" />
+                                                        Margin="5"
+                                                        RenderOptions.BitmapScalingMode="Fant"
+                                                        MinWidth="300"
+                                                        HorizontalAlignment="Center" />
                                                 </ControlTemplate>
                                             </Button.Template>
                                         </Button>
@@ -303,15 +305,16 @@
                                                            Grid.Column="1"
                                                            HorizontalAlignment="Right"
                                                            VerticalAlignment="Top"
-                                                           Click="CloseImage" >
+                                                           Click="CloseImage">
                                             <v:CloseButtonView.Effect>
                                                 <DropShadowEffect Color="Black"
                                                                   ShadowDepth="0"
                                                                   BlurRadius="2"
-                                                                  RenderingBias="Quality"/>
+                                                                  RenderingBias="Quality" />
                                             </v:CloseButtonView.Effect>
                                             <v:CloseButtonView.Style>
-                                                <Style TargetType="{x:Type v:CloseButtonView}" BasedOn="{StaticResource ImageContentWhiteButton}"/>
+                                                <Style TargetType="{x:Type v:CloseButtonView}"
+                                                       BasedOn="{StaticResource ImageContentWhiteButton}" />
                                             </v:CloseButtonView.Style>
                                         </v:CloseButtonView>
 
@@ -375,11 +378,12 @@
 
                                 <Expander Header="Other Characters"
                                           Visibility="{Binding Model.ProfileData.Alts.Count, Converter={StaticResource GreaterThanZeroConverter}}">
-                                    <ItemsControl ItemsSource="{Binding AltCharacters, UpdateSourceTrigger=PropertyChanged}"
-                                                  HorizontalAlignment="Left"
-                                                  VerticalContentAlignment="Top"
-                                                  HorizontalContentAlignment="Left"
-                                                  Style="{StaticResource AvatarBoxStyle}" />
+                                    <ItemsControl
+                                        ItemsSource="{Binding AltCharacters, UpdateSourceTrigger=PropertyChanged}"
+                                        HorizontalAlignment="Left"
+                                        VerticalContentAlignment="Top"
+                                        HorizontalContentAlignment="Left"
+                                        Style="{StaticResource AvatarBoxStyle}" />
                                 </Expander>
 
                                 <Expander Header="Kinks in Common"
@@ -469,18 +473,19 @@
                             <RowDefinition />
                             <RowDefinition Height="auto" />
                         </Grid.RowDefinitions>
-                        <Button 
-                                Margin="5" Command="{Binding SwitchImageViewCommand}"
-                                Visibility="{Binding IsViewingFullImage, Converter={StaticResource BoolConverter}}">
+                        <Button
+                            Margin="5" Command="{Binding SwitchImageViewCommand}"
+                            Visibility="{Binding IsViewingFullImage, Converter={StaticResource BoolConverter}}">
                             <Button.Template>
                                 <ControlTemplate>
-                                    <Image Source="{Binding CurrentImage.FullImageUri,
+                                    <Image
+                                        Source="{Binding CurrentImage.FullImageUri,
                                                     Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
-                                           RenderOptions.BitmapScalingMode="Fant" 
-                                           Stretch="Uniform"
-                                           StretchDirection="Both" 
-                                           VerticalAlignment="Center"
-                                           HorizontalAlignment="Center" />
+                                        RenderOptions.BitmapScalingMode="Fant"
+                                        Stretch="Uniform"
+                                        StretchDirection="Both"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center" />
                                 </ControlTemplate>
                             </Button.Template>
                         </Button>
@@ -496,7 +501,7 @@
                                    FontSize="17"
                                    Margin="0, 0, 0, 5">
                             <Run Text="{Binding CurrentImage.Description}" />
-                    </TextBlock>
+                        </TextBlock>
                     </Grid>
                 </Grid>
             </Grid>
@@ -560,7 +565,7 @@
                         <v:BrowserButtonView Command="{Binding OpenBrowserCommand}" />
                         <v:RestartButtonView Command="{Binding ClearCacheCommand}"
                                              ToolTip="Clears slimCat's profile cache for this character and re-downloads this profile"
-                                             Visibility="{Binding Model.ProfileData, Converter={StaticResource NotNullConverter}}"/>
+                                             Visibility="{Binding Model.ProfileData, Converter={StaticResource NotNullConverter}}" />
                     </WrapPanel>
 
                     <v:ProfileButtonView IsChecked="{Binding IsViewingProfile, Mode=TwoWay}"

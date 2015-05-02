@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CommandParser.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -35,15 +33,6 @@ namespace slimCat.Utilities
     /// </summary>
     public class CommandParser
     {
-        #region Fields
-
-        private readonly string currentChannel;
-
-        private readonly string type;
-        private IList<string> arguments;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
@@ -98,6 +87,32 @@ namespace slimCat.Utilities
 
         #endregion
 
+        #region Private Methods
+
+        private void ParseMultipleArguments(string input)
+        {
+            var parser = new TextFieldParser(new StringReader(input))
+            {
+                TextFieldType = FieldType.Delimited
+            };
+
+            parser.SetDelimiters(",");
+
+            arguments = parser.ReadFields().Select(x => x.Trim()).ToList();
+            parser.Close();
+        }
+
+        #endregion
+
+        #region Fields
+
+        private readonly string currentChannel;
+
+        private readonly string type;
+        private IList<string> arguments;
+
+        #endregion
+
         #region Public Properties
 
         /// <summary>
@@ -132,23 +147,6 @@ namespace slimCat.Utilities
         public IDictionary<string, object> ToDictionary()
         {
             return CommandDefinitions.CreateCommand(Type, arguments, currentChannel).ToDictionary();
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private void ParseMultipleArguments(string input)
-        {
-            var parser = new TextFieldParser(new StringReader(input))
-            {
-                TextFieldType = FieldType.Delimited
-            };
-
-            parser.SetDelimiters(",");
-
-            arguments = parser.ReadFields().Select(x => x.Trim()).ToList();
-            parser.Close();
         }
 
         #endregion

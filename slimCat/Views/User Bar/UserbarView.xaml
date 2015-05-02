@@ -10,18 +10,18 @@
              xmlns:utilities="clr-namespace:slimCat.Utilities"
              xmlns:models="clr-namespace:slimCat.Models"
              MouseLeave="OnMouseLeave"
-             
+
              d:DataContext="{d:DesignInstance vm:UserbarViewModel}">
-    
+
     <UserControl.Resources>
-        <utilities:PmOrChannelTemplateSelector x:Key="PmOrChannelTemplateSelector"/>
+        <utilities:PmOrChannelTemplateSelector x:Key="PmOrChannelTemplateSelector" />
 
         <DataTemplate x:Key="GeneralChannelTemplate">
             <v:ChannelSelectView />
         </DataTemplate>
-        
+
         <DataTemplate x:Key="PmChannelTemplate">
-            <v:PmSelectView/>
+            <v:PmSelectView />
         </DataTemplate>
     </UserControl.Resources>
 
@@ -50,12 +50,12 @@
                     HorizontalAlignment="Stretch">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <Border MaxHeight="75" 
-                            MaxWidth="75" 
+                    <Border MaxHeight="75"
+                            MaxWidth="75"
                             Margin="0,0,10,0"
                             Visibility="{Binding Source={x:Static models:ApplicationSettings.ShowAvatars}, Converter={StaticResource BoolConverter}}">
                         <Image Source="{Binding Path=ChatModel.CurrentCharacter.Avatar, Mode=OneWay}" />
@@ -88,7 +88,7 @@
                                     Margin="0,4,0,0"
                                     FontSize="16"
                                     DockPanel.Dock="Left" />
-                            
+
                             <v:AutoButtonView
                                 IsChecked="{Binding AutoReplyEnabled, Mode=TwoWay}"
                                 ToolTip="Change auto reply settings"
@@ -120,16 +120,19 @@
                                            Visibility="{Binding Path=ConnectionIsGood, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
                                 <Rectangle Height="15"
                                            Visibility="{Binding Path=ConnectionIsPerfect, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
-                                <TextBlock Visibility="{Binding Path=IsDisconnected, Mode=OneWay, Converter={StaticResource BoolConverter}}"
-                                           Foreground="{StaticResource ContrastBrush}"
-                                           FontSize="16">disconnected</TextBlock>
+                                <TextBlock
+                                    Visibility="{Binding Path=IsDisconnected, Mode=OneWay, Converter={StaticResource BoolConverter}}"
+                                    Foreground="{StaticResource ContrastBrush}"
+                                    FontSize="16">
+                                    disconnected
+                                </TextBlock>
                             </WrapPanel>
 
-                            <v:LogoutButtonView Command="{Binding LogoutCommand}" 
-                                                Visibility="{Binding Path=IsDisconnected, Mode=OneWay, Converter={StaticResource OppositeBoolConverter}}"/>
+                            <v:LogoutButtonView Command="{Binding LogoutCommand}"
+                                                Visibility="{Binding Path=IsDisconnected, Mode=OneWay, Converter={StaticResource OppositeBoolConverter}}" />
 
-                            <v:PinButtonView Command="{Binding SaveChannelsCommand}" 
-                                             Visibility="{Binding Path=IsDisconnected, Mode=OneWay, Converter={StaticResource OppositeBoolConverter}}"/>
+                            <v:PinButtonView Command="{Binding SaveChannelsCommand}"
+                                             Visibility="{Binding Path=IsDisconnected, Mode=OneWay, Converter={StaticResource OppositeBoolConverter}}" />
 
                         </WrapPanel>
                     </Grid>

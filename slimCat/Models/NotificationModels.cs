@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="NotificationModels.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -34,7 +32,6 @@ namespace slimCat.Models
     public abstract class NotificationModel : MessageBase, IViewableObject, ICanNavigate, IDisplayToast
     {
         public abstract void Navigate(IChatState chatState);
-
         public abstract void DisplayNewToast(IChatState chatState, IManageToasts toastsManager);
         public abstract Block View { get; }
     }
@@ -52,13 +49,9 @@ namespace slimCat.Models
     public interface IManageToasts
     {
         Action FlashWindow { get; }
-
         Action PlaySound { get; }
-
         Action<NotificationModel> AddNotification { get; }
-
         ToastNotificationsViewModel Toast { get; }
-
         Action ShowToast { get; }
     }
 }

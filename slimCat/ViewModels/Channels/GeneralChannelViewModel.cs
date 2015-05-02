@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="GeneralChannelViewModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -47,48 +45,6 @@ namespace slimCat.ViewModels
         #region Constants
 
         private const int MaxAutoPosts = 6;
-
-        #endregion
-
-        #region Fields
-
-        private readonly FilteredMessageCollection messageManager;
-
-        private Timer adFloodTimer = new Timer(602000);
-
-        private string adMessage = string.Empty;
-
-        private bool autoPostAds;
-
-        private int autoPostCount;
-
-        private DateTimeOffset autoTimeLeft;
-
-        private bool hasNewAds;
-
-        private bool hasNewMessages;
-
-        private bool isDisplayingChat;
-
-        private bool isInCoolDownAd;
-
-        private bool isInCoolDownMessage;
-
-        private bool isSearching;
-
-        private Timer messageFloodTimer = new Timer(500);
-
-        private bool showChannelDescription;
-
-        private RelayCommand @switch;
-
-        private RelayCommand switchSearch;
-
-        private DateTimeOffset timeLeftAd;
-
-        private Timer updateTimer = new Timer(1000);
-
-        private readonly DeferredAction updateSearch;
 
         #endregion
 
@@ -200,7 +156,8 @@ namespace slimCat.ViewModels
                 }
                 SearchSettings.ShowOffline = true;
 
-                Application.Current.Dispatcher.Invoke(() => Application.Current.MainWindow.Deactivated += SetLastMessageMark);
+                Application.Current.Dispatcher.Invoke(
+                    () => Application.Current.MainWindow.Deactivated += SetLastMessageMark);
             }
             catch (Exception ex)
             {
@@ -208,6 +165,111 @@ namespace slimCat.ViewModels
                 Exceptions.HandleException(ex);
             }
         }
+
+        #endregion
+
+        #region Properties
+
+        public bool ShowChannelDescription
+        {
+            get { return showChannelDescription; }
+            set
+            {
+                showChannelDescription = value;
+                OnPropertyChanged();
+            }
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public void SendAutoAd()
+        {
+            var messageToSend = IsDisplayingChat ? adMessage : Message;
+            if (messageToSend == null)
+            {
+                UpdateError("There is no ad to auto-post!");
+                AutoPost = false;
+                isInCoolDownAd = false;
+                return;
+            }
+
+            var last = Model.Ads.Last();
+            if (last != null)
+            {
+                if (!last.Poster.NameEquals(ChatModel.CurrentCharacter.Name))
+                {
+                    Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new[] {messageToSend}, Model.Id);
+                    Log("sending auto-ad");
+                }
+            }
+            else
+            {
+                Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new[] {messageToSend}, Model.Id);
+                Log("sending auto-ad");
+            }
+
+            adFloodTimer.Interval = Model.Settings.AutopostTime*60*1000 + 2000;
+            timeLeftAd = DateTimeOffset.Now.AddMilliseconds(adFloodTimer.Interval);
+
+            isInCoolDownAd = true;
+            adFloodTimer.Start();
+
+            OnPropertyChanged("CanPost");
+            OnPropertyChanged("CannotPost");
+
+            autoPostCount++;
+
+            if (autoPostCount < MaxAutoPosts) return;
+
+            autoTimeLeft = DateTime.Now.AddMilliseconds(adFloodTimer.Interval*(MaxAutoPosts - autoPostCount));
+            AutoPost = false;
+            OnPropertyChanged("CanShowAutoTimeLeft");
+            autoPostCount = 0;
+        }
+
+        #endregion
+
+        #region Fields
+
+        private readonly FilteredMessageCollection messageManager;
+
+        private Timer adFloodTimer = new Timer(602000);
+
+        private string adMessage = string.Empty;
+
+        private bool autoPostAds;
+
+        private int autoPostCount;
+
+        private DateTimeOffset autoTimeLeft;
+
+        private bool hasNewAds;
+
+        private bool hasNewMessages;
+
+        private bool isDisplayingChat;
+
+        private bool isInCoolDownAd;
+
+        private bool isInCoolDownMessage;
+
+        private bool isSearching;
+
+        private Timer messageFloodTimer = new Timer(500);
+
+        private bool showChannelDescription;
+
+        private RelayCommand @switch;
+
+        private RelayCommand switchSearch;
+
+        private DateTimeOffset timeLeftAd;
+
+        private Timer updateTimer = new Timer(1000);
+
+        private readonly DeferredAction updateSearch;
 
         #endregion
 
@@ -305,8 +367,10 @@ namespace slimCat.ViewModels
             }
         }
 
-        public bool CanDisplayAds 
-            => (Model.Mode == ChannelMode.Both || Model.Mode == ChannelMode.Ads) && Model.Type != ChannelType.PrivateMessage;
+        public bool CanDisplayAds
+            =>
+                (Model.Mode == ChannelMode.Both || Model.Mode == ChannelMode.Ads) &&
+                Model.Type != ChannelType.PrivateMessage;
 
         public bool CanDisplayChat => Model.Mode == ChannelMode.Both || Model.Mode == ChannelMode.Chat;
 
@@ -393,9 +457,11 @@ namespace slimCat.ViewModels
             }
         }
 
-        public ICommand SwitchCommand => @switch ?? (@switch = new RelayCommand(_ => IsDisplayingChat = !IsDisplayingChat));
+        public ICommand SwitchCommand
+            => @switch ?? (@switch = new RelayCommand(_ => IsDisplayingChat = !IsDisplayingChat));
 
-        public ICommand SwitchSearchCommand => switchSearch ?? (switchSearch = new RelayCommand(_ => IsSearching = !IsSearching));
+        public ICommand SwitchSearchCommand
+            => switchSearch ?? (switchSearch = new RelayCommand(_ => IsSearching = !IsSearching));
 
         /// <summary>
         ///     Gets the time left before the next ad can be posted.
@@ -411,69 +477,6 @@ namespace slimCat.ViewModels
         public override string EntryTextBoxLabel => isDisplayingChat
             ? "Chat here ..."
             : "Write a pretty ad here ...";
-
-        #endregion
-
-        #region Properties
-
-        public bool ShowChannelDescription
-        {
-            get { return showChannelDescription; }
-            set
-            {
-                showChannelDescription = value;
-                OnPropertyChanged();
-            }
-        }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public void SendAutoAd()
-        {
-            var messageToSend = IsDisplayingChat ? adMessage : Message;
-            if (messageToSend == null)
-            {
-                UpdateError("There is no ad to auto-post!");
-                AutoPost = false;
-                isInCoolDownAd = false;
-                return;
-            }
-
-            var last = Model.Ads.Last();
-            if (last != null)
-            {
-                if (!last.Poster.NameEquals(ChatModel.CurrentCharacter.Name))
-                {
-                    Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new[] { messageToSend }, Model.Id);
-                    Log("sending auto-ad");
-                }
-            }
-            else
-            {
-                Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new[] { messageToSend }, Model.Id);
-                Log("sending auto-ad");
-            }
-
-            adFloodTimer.Interval = Model.Settings.AutopostTime*60*1000 + 2000;
-            timeLeftAd = DateTimeOffset.Now.AddMilliseconds(adFloodTimer.Interval);
-
-            isInCoolDownAd = true;
-            adFloodTimer.Start();
-
-            OnPropertyChanged("CanPost");
-            OnPropertyChanged("CannotPost");
-
-            autoPostCount++;
-
-            if (autoPostCount < MaxAutoPosts) return;
-
-            autoTimeLeft = DateTime.Now.AddMilliseconds(adFloodTimer.Interval*(MaxAutoPosts - autoPostCount));
-            AutoPost = false;
-            OnPropertyChanged("CanShowAutoTimeLeft");
-            autoPostCount = 0;
-        }
 
         #endregion
 
@@ -542,7 +545,8 @@ namespace slimCat.ViewModels
                 var model = (GeneralChannelModel) Model;
                 model.Description = null;
                 model.CharacterManager.Dispose();
-                Application.Current.Dispatcher.Invoke(() => Application.Current.MainWindow.Deactivated -= SetLastMessageMark);
+                Application.Current.Dispatcher.Invoke(
+                    () => Application.Current.MainWindow.Deactivated -= SetLastMessageMark);
             }
 
             base.Dispose(isManaged);
@@ -554,7 +558,7 @@ namespace slimCat.ViewModels
             {
                 case "Description":
                     OnPropertyChanged("Description");
-                    ShowChannelDescription = ((GeneralChannelModel)Model).ShowChannelDescription;
+                    ShowChannelDescription = ((GeneralChannelModel) Model).ShowChannelDescription;
                     break;
                 case "Type":
                     OnPropertyChanged("ChannelTypeString"); // fixes laggy room type change

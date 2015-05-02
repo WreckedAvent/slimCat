@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ViewModelBase.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -44,6 +42,41 @@ namespace slimCat.ViewModels
     /// </summary>
     public abstract class ViewModelBase : SysProp, IModule
     {
+        #region Constructors and Destructors
+
+        protected ViewModelBase(IChatState chatState)
+        {
+            try
+            {
+                Container = chatState.Container;
+                RegionManager = chatState.RegionManager;
+                Events = chatState.EventAggregator;
+                ChatModel = chatState.ChatModel;
+                CharacterManager = chatState.CharacterManager;
+                ChatConnection = chatState.ChatConnection;
+
+                RightClickMenuViewModel = new RightClickMenuViewModel(ChatModel.IsGlobalModerator, CharacterManager,
+                    Container.Resolve<IGetPermissions>());
+                CreateReportViewModel = new CreateReportViewModel(Events, ChatModel);
+                ChatModel.SelectedChannelChanged += OnSelectedChannelChanged;
+
+                Events.GetEvent<NewUpdateEvent>().Subscribe(UpdateRightClickMenu);
+            }
+            catch (Exception ex)
+            {
+                ex.Source = "Generic ViewModel, init";
+                Exceptions.HandleException(ex);
+            }
+        }
+
+        #endregion
+
+        #region Properties
+
+        internal string LoggingSection { get; set; }
+
+        #endregion
+
         #region Fields
 
         private RelayCommand advanceFriend;
@@ -77,35 +110,6 @@ namespace slimCat.ViewModels
 
         private RelayCommand searchTag;
         private RelayCommand unignore;
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        protected ViewModelBase(IChatState chatState)
-        {
-            try
-            {
-                Container = chatState.Container;
-                RegionManager = chatState.RegionManager;
-                Events = chatState.EventAggregator;
-                ChatModel = chatState.ChatModel;
-                CharacterManager = chatState.CharacterManager;
-                ChatConnection = chatState.ChatConnection;
-
-                RightClickMenuViewModel = new RightClickMenuViewModel(ChatModel.IsGlobalModerator, CharacterManager,
-                    Container.Resolve<IGetPermissions>());
-                CreateReportViewModel = new CreateReportViewModel(Events, ChatModel);
-                ChatModel.SelectedChannelChanged += OnSelectedChannelChanged;
-
-                Events.GetEvent<NewUpdateEvent>().Subscribe(UpdateRightClickMenu);
-            }
-            catch (Exception ex)
-            {
-                ex.Source = "Generic ViewModel, init";
-                Exceptions.HandleException(ex);
-            }
-        }
 
         #endregion
 
@@ -206,22 +210,24 @@ namespace slimCat.ViewModels
 
         public ICommand InvertCommand => invert ?? (invert = new RelayCommand(InvertButton));
 
-        public ICommand JoinChannelCommand => @join ?? (@join = new RelayCommand(RequestChannelJoinEvent, CanJoinChannel));
+        public ICommand JoinChannelCommand
+            => @join ?? (@join = new RelayCommand(RequestChannelJoinEvent, CanJoinChannel));
 
         public ICommand KickCommand => kick ?? (kick = new RelayCommand(KickEvent, param => HasPermissions));
 
-        public ICommand NotInterestedCommand => isNotInterested ?? (isNotInterested = new RelayCommand(IsUninterestedEvent));
+        public ICommand NotInterestedCommand
+            => isNotInterested ?? (isNotInterested = new RelayCommand(IsUninterestedEvent));
 
         public ICommand SearchTagCommand => searchTag ?? (searchTag = new RelayCommand(SearchTagEvent));
 
         public ICommand LogoutCommand => logout ?? (logout = new RelayCommand(LogoutEvent));
 
-        public ICommand OpenRightClickMenuCommand => openMenu 
-            ?? (openMenu = new RelayCommand(args =>
-            {
-                var newTarget = CharacterManager.Find(args as string);
-                OnRightClickMenuUpdated(newTarget);
-            }));
+        public ICommand OpenRightClickMenuCommand => openMenu
+                                                     ?? (openMenu = new RelayCommand(args =>
+                                                     {
+                                                         var newTarget = CharacterManager.Find(args as string);
+                                                         OnRightClickMenuUpdated(newTarget);
+                                                     }));
 
         public ICommand ReportCommand => report ?? (report = new RelayCommand(FileReportEvent));
 
@@ -229,7 +235,8 @@ namespace slimCat.ViewModels
 
         public ICommand UnignoreCommand => unignore ?? (unignore = new RelayCommand(RemoveIgnoreEvent, CanUnIgnore));
 
-        public ICommand IgnoreUpdateCommand => ignoreUpdate ?? (ignoreUpdate = new RelayCommand(IgnoreUpdatesEvent, CanIgnoreUpdate));
+        public ICommand IgnoreUpdateCommand
+            => ignoreUpdate ?? (ignoreUpdate = new RelayCommand(IgnoreUpdatesEvent, CanIgnoreUpdate));
 
         public ICommand AdvanceFriendCommand => advanceFriend ?? (advanceFriend = new RelayCommand(AdvanceFriendEvent));
 
@@ -238,12 +245,6 @@ namespace slimCat.ViewModels
         public ICommand RegressFriendCommand => regressFriend ?? (regressFriend = new RelayCommand(RegressFriendEvent));
 
         #endregion
-
-        #endregion
-
-        #region Properties
-
-        internal string LoggingSection { get; set; }
 
         #endregion
 
@@ -327,7 +328,7 @@ namespace slimCat.ViewModels
                 {
                     if (interpret.EndsWith("/notes"))
                     {
-                        Events.SendUserCommand("priv", new[] { interpret });
+                        Events.SendUserCommand("priv", new[] {interpret});
                         return;
                     }
 
@@ -337,7 +338,7 @@ namespace slimCat.ViewModels
                         return;
                     }
 
-                    Events.SendUserCommand("priv", new[] { interpret + "/profile" });
+                    Events.SendUserCommand("priv", new[] {interpret + "/profile"});
                     return;
                 }
 
@@ -346,7 +347,8 @@ namespace slimCat.ViewModels
             catch
             {
                 Log("Link encountered an error! " + linkToOpen);
-                MessageBox.Show("Encountered an error opening the URL. Try right-click copy & pasting it into your browser instead.");
+                MessageBox.Show(
+                    "Encountered an error opening the URL. Try right-click copy & pasting it into your browser instead.");
             }
         }
 

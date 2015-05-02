@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ChannelBarViewModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -41,28 +39,6 @@ namespace slimCat.ViewModels
     /// </summary>
     public class ChannelbarViewModel : ChannelbarViewModelCommon
     {
-        #region Constants
-
-        internal const string ChannelbarView = "ChannelbarView";
-
-        private const string TabViewRegion = "TabViewRegion";
-
-        #endregion
-
-        #region Fields
-
-        private string currentSelected;
-        private bool hasUpdate;
-
-        private bool isExpanded = true;
-        private bool needsAttention;
-
-        private RelayCommand @select;
-
-        private RelayCommand toggle;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public ChannelbarViewModel(IChatState chatState)
@@ -86,7 +62,7 @@ namespace slimCat.ViewModels
                 {
                     if (!success) return;
 
-                    if (!IsExpanded) 
+                    if (!IsExpanded)
                         IsExpanded = true;
 
                     if (currentSelected != "ManageLists")
@@ -103,6 +79,45 @@ namespace slimCat.ViewModels
                 Exceptions.HandleException(ex);
             }
         }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public override void Initialize()
+        {
+            try
+            {
+                Container.RegisterType<object, ChannelbarView>(ChannelbarView);
+            }
+            catch (Exception ex)
+            {
+                ex.Source = "Channelbar ViewModel, init";
+                Exceptions.HandleException(ex);
+            }
+        }
+
+        #endregion
+
+        #region Constants
+
+        internal const string ChannelbarView = "ChannelbarView";
+
+        private const string TabViewRegion = "TabViewRegion";
+
+        #endregion
+
+        #region Fields
+
+        private string currentSelected;
+        private bool hasUpdate;
+
+        private bool isExpanded = true;
+        private bool needsAttention;
+
+        private RelayCommand @select;
+
+        private RelayCommand toggle;
 
         #endregion
 
@@ -199,23 +214,6 @@ namespace slimCat.ViewModels
                 NavigateToTabEvent("NoTab");
             }
         }));
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public override void Initialize()
-        {
-            try
-            {
-                Container.RegisterType<object, ChannelbarView>(ChannelbarView);
-            }
-            catch (Exception ex)
-            {
-                ex.Source = "Channelbar ViewModel, init";
-                Exceptions.HandleException(ex);
-            }
-        }
 
         #endregion
 

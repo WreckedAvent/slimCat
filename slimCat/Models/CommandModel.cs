@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CommandModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -176,16 +174,6 @@ namespace slimCat.Models
     /// </summary>
     public class CommandDataModel
     {
-        #region Fields
-
-        private readonly IList<string> arguments;
-
-        private readonly string channelName;
-
-        private readonly CommandModel commandInformation;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
@@ -247,6 +235,16 @@ namespace slimCat.Models
 
             return toSend;
         }
+
+        #endregion
+
+        #region Fields
+
+        private readonly IList<string> arguments;
+
+        private readonly string channelName;
+
+        private readonly CommandModel commandInformation;
 
         #endregion
     }

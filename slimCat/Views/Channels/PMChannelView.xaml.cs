@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="PMChannelView.xaml.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-//
+// 
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -37,15 +35,6 @@ namespace slimCat.Views
     /// </summary>
     public partial class PmChannelView
     {
-        #region Fields
-
-        private bool isAdded = true;
-        private Inline lastItem;
-        private PmChannelViewModel vm;
-        private ScrollViewer scroller;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
@@ -70,29 +59,6 @@ namespace slimCat.Views
                 ex.Source = "PmChannel View, init";
                 Exceptions.HandleException(ex);
             }
-        }
-
-        #endregion
-
-        #region Methods
-
-        protected override void Dispose(bool isManaged)
-        {
-            if (!isManaged)
-                return;
-
-            vm.StatusChanged -= OnStatusChanged;
-            DataContext = null;
-            vm = null;
-        }
-
-        private void OnStatusChanged(object sender, EventArgs e)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                if (!CharacterStatusDisplayer.IsExpanded)
-                    CharacterStatusDisplayer.IsExpanded = true;
-            });
         }
 
         #endregion
@@ -140,9 +106,43 @@ namespace slimCat.Views
                 if (scroller == null) return;
             }
 
-            scroller.ScrollToVerticalOffset(scroller.VerticalOffset - GeneralExtensions.GetScrollDistance(e.Delta, ApplicationSettings.FontSize-4));
+            scroller.ScrollToVerticalOffset(scroller.VerticalOffset -
+                                            GeneralExtensions.GetScrollDistance(e.Delta,
+                                                ApplicationSettings.FontSize - 4));
 
             e.Handled = true;
         }
+
+        #region Fields
+
+        private bool isAdded = true;
+        private Inline lastItem;
+        private PmChannelViewModel vm;
+        private ScrollViewer scroller;
+
+        #endregion
+
+        #region Methods
+
+        protected override void Dispose(bool isManaged)
+        {
+            if (!isManaged)
+                return;
+
+            vm.StatusChanged -= OnStatusChanged;
+            DataContext = null;
+            vm = null;
+        }
+
+        private void OnStatusChanged(object sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (!CharacterStatusDisplayer.IsExpanded)
+                    CharacterStatusDisplayer.IsExpanded = true;
+            });
+        }
+
+        #endregion
     }
 }

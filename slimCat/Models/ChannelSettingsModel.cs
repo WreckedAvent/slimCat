@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ChannelSettingsModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -34,6 +32,51 @@ namespace slimCat.Models
     /// </summary>
     public class ChannelSettingsModel
     {
+        #region Enums
+
+        /// <summary>
+        ///     The notify level.
+        /// </summary>
+        public enum NotifyLevel
+        {
+            /// <summary>
+            ///     The no notification.
+            /// </summary>
+            NoNotification,
+
+            /// <summary>
+            ///     The notification only.
+            /// </summary>
+            NotificationOnly,
+
+            /// <summary>
+            ///     The notification and toast.
+            /// </summary>
+            NotificationAndToast,
+
+            /// <summary>
+            ///     The notification and sound.
+            /// </summary>
+            NotificationAndSound
+        }
+
+        #endregion
+
+        #region Public Events
+
+        public event EventHandler Updated;
+
+        #endregion
+
+        #region Methods
+
+        private void CallUpdate()
+        {
+            Updated?.Invoke(this, new EventArgs());
+        }
+
+        #endregion
+
         #region Fields
 
         private int adNotifyLevel;
@@ -96,42 +139,6 @@ namespace slimCat.Models
             }
             else
                 MaxBackLogItems = 100;
-        }
-
-        #endregion
-
-        #region Public Events
-
-        public event EventHandler Updated;
-
-        #endregion
-
-        #region Enums
-
-        /// <summary>
-        ///     The notify level.
-        /// </summary>
-        public enum NotifyLevel
-        {
-            /// <summary>
-            ///     The no notification.
-            /// </summary>
-            NoNotification,
-
-            /// <summary>
-            ///     The notification only.
-            /// </summary>
-            NotificationOnly,
-
-            /// <summary>
-            ///     The notification and toast.
-            /// </summary>
-            NotificationAndToast,
-
-            /// <summary>
-            ///     The notification and sound.
-            /// </summary>
-            NotificationAndSound
         }
 
         #endregion
@@ -395,15 +402,6 @@ namespace slimCat.Models
                 lastMessage = value;
                 CallUpdate();
             }
-        }
-
-        #endregion
-
-        #region Methods
-
-        private void CallUpdate()
-        {
-            Updated?.Invoke(this, new EventArgs());
         }
 
         #endregion

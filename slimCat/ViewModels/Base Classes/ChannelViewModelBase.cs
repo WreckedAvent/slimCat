@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ChannelViewModelBase.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -42,6 +40,64 @@ namespace slimCat.ViewModels
     /// </summary>
     public abstract class ChannelViewModelBase : ViewModelBase
     {
+        #region Constructors and Destructors
+
+        protected ChannelViewModelBase(IChatState chatState)
+            : base(chatState)
+        {
+            Events.GetEvent<ErrorEvent>().Subscribe(UpdateError);
+
+            PropertyChanged += OnThisPropertyChanged;
+
+            if (errorRemoveTimer != null)
+                return;
+
+            errorRemoveTimer = new Timer(5000);
+            errorRemoveTimer.Elapsed += (s, e) => Error = null;
+
+            errorRemoveTimer.AutoReset = false;
+
+            saveMessageTimer = new Timer(10000) {AutoReset = false};
+
+            entryBoxRowHeight = new GridLength(1, GridUnitType.Auto);
+            headerRowHeight = new GridLength(1, GridUnitType.Auto);
+
+
+            Events.GetEvent<ConnectionClosedEvent>().Subscribe(OnDisconnect, ThreadOption.PublisherThread, true);
+        }
+
+        #endregion
+
+        public string TabComplete(string character)
+        {
+            if (string.IsNullOrWhiteSpace(Message)) return null;
+
+            var lastSpaceIdx = string.IsNullOrWhiteSpace(character) ? Message.LastIndexOf(' ') : tabCompleteIdx;
+            var lastWord = Message.Substring(lastSpaceIdx == -1 ? 0 : lastSpaceIdx + 1);
+
+            if (string.IsNullOrWhiteSpace(lastWord)) return null;
+
+            IEnumerable<ICharacter> characters = CharacterManager.Characters.OrderBy(x => x.Name).ThenBy(x => x.Name);
+
+            if (!string.IsNullOrWhiteSpace(character))
+                characters = characters
+                    .SkipWhile(x => !string.Equals(x.Name, character, StringComparison.CurrentCultureIgnoreCase))
+                    .Skip(1);
+            else
+            {
+                tabCompleteStartString = lastWord;
+                tabCompleteIdx = lastSpaceIdx;
+            }
+
+            var match = characters.FirstOrDefault(x => x.Name.StartsWith(tabCompleteStartString, true, null));
+
+            if (match == null) return null;
+
+            Message = Message.Replace(lastWord, match.Name);
+
+            return match.Name;
+        }
+
         #region Static Fields
 
         private static string error;
@@ -88,34 +144,6 @@ namespace slimCat.ViewModels
 
         #endregion
 
-        #region Constructors and Destructors
-
-        protected ChannelViewModelBase(IChatState chatState)
-            : base(chatState)
-        {
-            Events.GetEvent<ErrorEvent>().Subscribe(UpdateError);
-
-            PropertyChanged += OnThisPropertyChanged;
-
-            if (errorRemoveTimer != null)
-                return;
-
-            errorRemoveTimer = new Timer(5000);
-            errorRemoveTimer.Elapsed += (s, e) => Error = null;
-
-            errorRemoveTimer.AutoReset = false;
-
-            saveMessageTimer = new Timer(10000) { AutoReset = false };
-
-            entryBoxRowHeight = new GridLength(1, GridUnitType.Auto);
-            headerRowHeight = new GridLength(1, GridUnitType.Auto);
-
-
-            Events.GetEvent<ConnectionClosedEvent>().Subscribe(OnDisconnect, ThreadOption.PublisherThread, true);
-        }
-
-        #endregion
-
         #region Public Properties
 
         public ChannelSettingsModel ChannelSettings => model.Settings;
@@ -133,8 +161,10 @@ namespace slimCat.ViewModels
         public ICommand ClearErrorCommand => clear ?? (clear = new RelayCommand(_ => Error = null));
 
         public ICommand ClearLogCommand => clearLog
-            ?? (clearLog = new RelayCommand(args => Events.GetEvent<UserCommandEvent>()
-                                                          .Publish(CommandDefinitions.CreateCommand("clear", null, Model.Id).ToDictionary())));
+                                           ?? (clearLog = new RelayCommand(args => Events.GetEvent<UserCommandEvent>()
+                                               .Publish(
+                                                   CommandDefinitions.CreateCommand("clear", null, Model.Id)
+                                                       .ToDictionary())));
 
         public ICommand TogglePreviewCommand
         {
@@ -179,7 +209,7 @@ namespace slimCat.ViewModels
                 if (string.IsNullOrEmpty(message))
                     ChannelSettings.LastMessage = null;
                 else if (saveMessageTimer.Enabled == false
-                        && message.Length > 30)
+                         && message.Length > 30)
                 {
                     ChannelSettings.LastMessage = message;
                     saveMessageTimer.Start();
@@ -211,13 +241,17 @@ namespace slimCat.ViewModels
         }
 
         public ICommand NavigateDownCommand => navDown
-            ?? (navDown = new RelayCommand(_ => RequestNavigateDirectionalEvent(false)));
+                                               ??
+                                               (navDown = new RelayCommand(_ => RequestNavigateDirectionalEvent(false)))
+            ;
 
-        public ICommand NavigateUpCommand => navUp ?? (navUp = new RelayCommand(_ => RequestNavigateDirectionalEvent(true)));
+        public ICommand NavigateUpCommand
+            => navUp ?? (navUp = new RelayCommand(_ => RequestNavigateDirectionalEvent(true)));
 
         public ICommand OpenLogCommand => openLog ?? (openLog = new RelayCommand(OnOpenLogEvent));
 
-        public ICommand OpenLogFolderCommand => openLogFolder ?? (openLogFolder = new RelayCommand(OnOpenLogFolderEvent));
+        public ICommand OpenLogFolderCommand
+            => openLogFolder ?? (openLogFolder = new RelayCommand(OnOpenLogFolderEvent));
 
         public ICommand SendMessageCommand => sendText ?? (sendText = new RelayCommand(_ => ParseAndSend()));
 
@@ -398,35 +432,5 @@ namespace slimCat.ViewModels
         }
 
         #endregion
-
-        public string TabComplete(string character)
-        {
-            if (string.IsNullOrWhiteSpace(Message)) return null;
-
-            var lastSpaceIdx = string.IsNullOrWhiteSpace(character) ? Message.LastIndexOf(' ') : tabCompleteIdx;
-            var lastWord = Message.Substring(lastSpaceIdx == -1 ? 0 : lastSpaceIdx + 1);
-
-            if (string.IsNullOrWhiteSpace(lastWord)) return null;
-
-            IEnumerable<ICharacter> characters = CharacterManager.Characters.OrderBy(x => x.Name).ThenBy(x => x.Name);
-
-            if (!string.IsNullOrWhiteSpace(character))
-                characters = characters
-                    .SkipWhile(x => !string.Equals(x.Name, character, StringComparison.CurrentCultureIgnoreCase))
-                    .Skip(1);
-            else
-            {
-                tabCompleteStartString = lastWord;
-                tabCompleteIdx = lastSpaceIdx;
-            }
-
-            var match = characters.FirstOrDefault(x => x.Name.StartsWith(tabCompleteStartString, true, null));
-
-            if (match == null) return null;
-
-            Message = Message.Replace(lastWord, match.Name);
-
-            return match.Name;
-        }
     }
 }

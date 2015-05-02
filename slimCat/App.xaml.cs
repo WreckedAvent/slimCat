@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="App.xaml.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -84,6 +82,7 @@ namespace slimCat
             "icons\\up.png",
             "icons\\userlist.png"
         };
+
         #endregion
 
         #region Constructors and Destructors
@@ -102,7 +101,7 @@ namespace slimCat
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            
+
             var assembly = Assembly.GetExecutingAssembly();
             var appVersion = assembly.GetName().Version;
             var preferences = SettingsService.Preferences;
@@ -117,14 +116,16 @@ namespace slimCat
 
             preferences.IsAdvanced = args.Any(x => x.Equals("advanced", StringComparison.OrdinalIgnoreCase));
             preferences.IsPortable = args.Any(x => x.Equals("portable", StringComparison.OrdinalIgnoreCase));
-            preferences.BasePath = AppDomain.CurrentDomain.GetData("path") as string ?? Path.GetDirectoryName(assembly.Location);
+            preferences.BasePath = AppDomain.CurrentDomain.GetData("path") as string ??
+                                   Path.GetDirectoryName(assembly.Location);
 
             SettingsService.Preferences = preferences;
 
             foreach (var file in requiredFiles.Where(file => !File.Exists(file)))
             {
                 Exceptions.ShowErrorBox(
-                    "slimCat will now exit. \nReason: Required theme file \"{0}\" is missing. This is likely due to a bad theme install.\n".FormatWith(file) +
+                    "slimCat will now exit. \nReason: Required theme file \"{0}\" is missing. This is likely due to a bad theme install.\n"
+                        .FormatWith(file) +
                     "Please install themes by extracting a theme over the default theme, overwriting when prompted to.",
                     "slimCat Fatal Error");
 

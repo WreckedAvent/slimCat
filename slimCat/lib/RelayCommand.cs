@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="RelayCommand.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -34,14 +32,6 @@ namespace slimCat.Libraries
     [ExcludeFromCodeCoverage]
     public class RelayCommand : ICommand
     {
-        #region Fields
-
-        private readonly Predicate<object> canExecute;
-
-        private readonly Action<object> execute;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
@@ -77,6 +67,14 @@ namespace slimCat.Libraries
 
             remove { CommandManager.RequerySuggested -= value; }
         }
+
+        #endregion
+
+        #region Fields
+
+        private readonly Predicate<object> canExecute;
+
+        private readonly Action<object> execute;
 
         #endregion
 

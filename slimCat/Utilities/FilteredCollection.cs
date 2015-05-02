@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="FilteredCollection.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -39,17 +37,6 @@ namespace slimCat.Utilities
     public class FilteredCollection<T, TR> : SysProp
         where T : TR
     {
-        #region Fields
-
-        protected readonly Func<T, bool> ActiveFilter;
-
-        protected readonly object Locker = new object();
-        private bool isFiltering;
-
-        private ObservableCollection<T> originalCollection;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public FilteredCollection(ObservableCollection<T> toWatch, Func<T, bool> activeFilter, bool isFiltering = false)
@@ -62,6 +49,35 @@ namespace slimCat.Utilities
             this.isFiltering = isFiltering;
             RebuildItems();
         }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public void RebuildItems()
+        {
+            lock (Locker)
+            {
+                Collection.Clear();
+
+                IEnumerable<T> items = originalCollection;
+
+                items = items.Where(MeetsFilter);
+
+                items.Each(item => Collection.Add(item));
+            }
+        }
+
+        #endregion
+
+        #region Fields
+
+        protected readonly Func<T, bool> ActiveFilter;
+
+        protected readonly object Locker = new object();
+        private bool isFiltering;
+
+        private ObservableCollection<T> originalCollection;
 
         #endregion
 
@@ -97,24 +113,6 @@ namespace slimCat.Utilities
 
                 originalCollection.CollectionChanged += OnCollectionChanged;
                 RebuildItems();
-            }
-        }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public void RebuildItems()
-        {
-            lock (Locker)
-            {
-                Collection.Clear();
-
-                IEnumerable<T> items = originalCollection;
-
-                items = items.Where(MeetsFilter);
-
-                items.Each(item => Collection.Add(item));
             }
         }
 

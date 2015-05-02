@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ChannelBarViewModelCommon.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -31,10 +29,6 @@ namespace slimCat.ViewModels
     /// </summary>
     public class ChannelbarViewModelCommon : ViewModelBase
     {
-        #region Fields
-
-        #endregion
-
         #region Constructors and Destructors
 
         protected ChannelbarViewModelCommon(IChatState chatState)
@@ -42,6 +36,18 @@ namespace slimCat.ViewModels
         {
             ChatModel.SelectedChannelChanged += (s, e) => OnPropertyChanged("HasUsers");
         }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public override void Initialize()
+        {
+        }
+
+        #endregion
+
+        #region Fields
 
         #endregion
 
@@ -60,14 +66,6 @@ namespace slimCat.ViewModels
         }
 
         public GenericSearchSettingsModel SearchSettings { get; } = new GenericSearchSettingsModel();
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public override void Initialize()
-        {
-        }
 
         #endregion
     }

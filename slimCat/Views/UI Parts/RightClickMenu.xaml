@@ -27,18 +27,18 @@
                     Padding="10">
                 <Grid d:DataContext="{d:DesignInstance vm:RightClickMenuViewModel}">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    
-                    <Border Height="75" 
-                            Width="75" 
+
+                    <Border Height="75"
+                            Width="75"
                             Margin="0,0,10,0"
                             Visibility="{Binding Source={x:Static models:ApplicationSettings.ShowAvatars}, Converter={StaticResource BoolConverter}}">
-                        <Image Source="{Binding Path=Target.Avatar}"/>
+                        <Image Source="{Binding Path=Target.Avatar}" />
                     </Border>
-                    
-                    <StackPanel Grid.Column="1" 
+
+                    <StackPanel Grid.Column="1"
                                 HorizontalAlignment="Stretch"
                                 TextBlock.TextAlignment="Left"
                                 Margin="0,-6,0,0">

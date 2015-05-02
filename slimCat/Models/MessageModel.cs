@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="MessageModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -32,8 +30,20 @@ namespace slimCat.Models
     /// </summary>
     public class MessageModel : MessageBase, IMessage
     {
-        private bool isOfInterest;
         private bool isLastViewed;
+        private bool isOfInterest;
+
+        #region Methods
+
+        protected override void Dispose(bool isManaged)
+        {
+            if (!isManaged)
+                return;
+
+            Poster = null;
+        }
+
+        #endregion
 
         #region Constructors and Destructors
 
@@ -107,18 +117,6 @@ namespace slimCat.Models
 
                 return new MessageView {DataContext = this};
             }
-        }
-
-        #endregion
-
-        #region Methods
-
-        protected override void Dispose(bool isManaged)
-        {
-            if (!isManaged)
-                return;
-
-            Poster = null;
         }
 
         #endregion

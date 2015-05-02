@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="LoginViewModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -41,27 +39,13 @@ namespace slimCat.ViewModels
     /// </summary>
     public class LoginViewModel : ViewModelBase
     {
-        private readonly IUpdateMyself updateService;
-
         #region Constants
 
         internal const string LoginViewName = "LoginView";
 
         #endregion
 
-        #region Fields
-
-        private readonly IAccount model; 
-
-        private RelayCommand login;
-
-        private string relayMessage = Constants.FriendlyName; 
-
-        private bool requestIsSent;
-
-        private readonly UserPreferences preferences = SettingsService.Preferences;
-
-        #endregion
+        private readonly IUpdateMyself updateService;
 
         #region Constructors and Destructors
 
@@ -85,6 +69,20 @@ namespace slimCat.ViewModels
 
         #endregion
 
+        #region Fields
+
+        private readonly IAccount model;
+
+        private RelayCommand login;
+
+        private string relayMessage = Constants.FriendlyName;
+
+        private bool requestIsSent;
+
+        private readonly UserPreferences preferences = SettingsService.Preferences;
+
+        #endregion
+
         #region Public Properties
 
         public string AccountName
@@ -101,7 +99,7 @@ namespace slimCat.ViewModels
         }
 
         public ICommand LoginCommand => login
-            ?? (login = new RelayCommand(_ => SendTicketRequest(), _ => CanLogin()));
+                                        ?? (login = new RelayCommand(_ => SendTicketRequest(), _ => CanLogin()));
 
         public string Password
         {
@@ -154,19 +152,13 @@ namespace slimCat.ViewModels
         public bool Advanced
         {
             get { return preferences.IsAdvanced; }
-            set 
-            {
-                preferences.IsAdvanced = value;
-            }
+            set { preferences.IsAdvanced = value; }
         }
 
         public bool SaveLogin
         {
             get { return preferences.SaveLogin; }
-            set
-            {
-                preferences.SaveLogin = value;
-            }
+            set { preferences.SaveLogin = value; }
         }
 
         public bool HasNewUpdate { get; set; }
@@ -208,9 +200,9 @@ namespace slimCat.ViewModels
 
         #region Methods
 
-        private bool CanLogin() => !string.IsNullOrWhiteSpace(AccountName) 
-                                && !string.IsNullOrWhiteSpace(Password)
-                                && !RequestSent;
+        private bool CanLogin() => !string.IsNullOrWhiteSpace(AccountName)
+                                   && !string.IsNullOrWhiteSpace(Password)
+                                   && !RequestSent;
 
         private void SendTicketRequest()
         {

@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="GlobalCharacterManager.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -32,26 +30,6 @@ namespace slimCat.Models
 
     public class GlobalCharacterManager : CharacterManagerBase
     {
-        #region Fields
-
-        private readonly IAccount account;
-
-        private readonly CollectionPair bookmarks = new CollectionPair();
-        private readonly CollectionPair friendRequestsReceived = new CollectionPair();
-        private readonly CollectionPair friendRequestsSent = new CollectionPair();
-        private readonly CollectionPair friends = new CollectionPair();
-        private readonly CollectionPair ignoreUpdates = new CollectionPair();
-        private readonly CollectionPair ignored = new CollectionPair();
-        private readonly CollectionPair interested = new CollectionPair();
-        private readonly CollectionPair localFriends = new CollectionPair();
-        private readonly CollectionPair moderators = new CollectionPair();
-        private readonly CollectionPair notInterested = new CollectionPair();
-        private readonly IDictionary<ListKind, IList<string>> savedCollections;
-        private readonly CollectionPair searchResults = new CollectionPair();
-        private string currentCharacter;
-
-        #endregion
-
         #region Constructors
 
         public GlobalCharacterManager(IAccount account, IEventAggregator eventAggregator)
@@ -101,6 +79,26 @@ namespace slimCat.Models
 
             eventAggregator.GetEvent<CharacterSelectedLoginEvent>().Subscribe(Initialize);
         }
+
+        #endregion
+
+        #region Fields
+
+        private readonly IAccount account;
+
+        private readonly CollectionPair bookmarks = new CollectionPair();
+        private readonly CollectionPair friendRequestsReceived = new CollectionPair();
+        private readonly CollectionPair friendRequestsSent = new CollectionPair();
+        private readonly CollectionPair friends = new CollectionPair();
+        private readonly CollectionPair ignoreUpdates = new CollectionPair();
+        private readonly CollectionPair ignored = new CollectionPair();
+        private readonly CollectionPair interested = new CollectionPair();
+        private readonly CollectionPair localFriends = new CollectionPair();
+        private readonly CollectionPair moderators = new CollectionPair();
+        private readonly CollectionPair notInterested = new CollectionPair();
+        private readonly IDictionary<ListKind, IList<string>> savedCollections;
+        private readonly CollectionPair searchResults = new CollectionPair();
+        private string currentCharacter;
 
         #endregion
 
@@ -166,7 +164,7 @@ namespace slimCat.Models
 
             if (listKind == ListKind.IgnoreUpdates)
                 UpdateIgnoreUpdatesMark(name, true);
-            
+
             if (isTemporary) return toReturn;
 
             TrySyncSavedLists(listKind);

@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ServerCommandService.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-//
+// 
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -40,28 +38,6 @@ namespace slimCat.Services
     /// </summary>
     public partial class ServerCommandService : ViewModelBase
     {
-        #region Fields
-
-        private readonly HashSet<string> autoJoinedChannels = new HashSet<string>();
-
-        private readonly IAutomateThings automation;
-
-        private readonly IFriendRequestService friendRequestService;
-
-        private readonly object locker = new object();
-
-        private readonly IManageChannels manager;
-
-        private readonly string[] noisyTypes;
-
-        private readonly IManageNotes notes;
-
-        private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
-
-        private IList<string> rejoinChannelList = new List<string>();
-
-        #endregion
-
         #region Constructors and Destructors
 
         public ServerCommandService(IChatState chatState,
@@ -100,6 +76,14 @@ namespace slimCat.Services
 
         #endregion
 
+        #region Public Methods and Operators
+
+        public override void Initialize()
+        {
+        }
+
+        #endregion
+
         #region Delegates
 
         /// <summary>
@@ -109,11 +93,25 @@ namespace slimCat.Services
 
         #endregion
 
-        #region Public Methods and Operators
+        #region Fields
 
-        public override void Initialize()
-        {
-        }
+        private readonly HashSet<string> autoJoinedChannels = new HashSet<string>();
+
+        private readonly IAutomateThings automation;
+
+        private readonly IFriendRequestService friendRequestService;
+
+        private readonly object locker = new object();
+
+        private readonly IManageChannels manager;
+
+        private readonly string[] noisyTypes;
+
+        private readonly IManageNotes notes;
+
+        private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
+
+        private IList<string> rejoinChannelList = new List<string>();
 
         #endregion
 
@@ -123,7 +121,7 @@ namespace slimCat.Services
         {
             switch (input)
             {
-                    // manually determine some really annoyingly-named genders
+                // manually determine some really annoyingly-named genders
                 case "Male-Herm":
                     return Gender.HermM;
 
@@ -309,7 +307,7 @@ namespace slimCat.Services
             var channels = channelsId
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Distinct()
-                .Select(x => new { channel = x });
+                .Select(x => new {channel = x});
 
             var walk = channels.GetEnumerator();
 
@@ -333,7 +331,7 @@ namespace slimCat.Services
                 || !string.IsNullOrWhiteSpace(currentCharacter.StatusMessage))
             {
                 Events.SendUserCommand("status",
-                    new[] { currentCharacter.Status.ToString(), currentCharacter.StatusMessage });
+                    new[] {currentCharacter.Status.ToString(), currentCharacter.StatusMessage});
             }
 
             waitTimer.Start();
@@ -341,7 +339,7 @@ namespace slimCat.Services
 
         private void UptimeCommand(IDictionary<string, object> command)
         {
-            var time = (long)command["starttime"];
+            var time = (long) command["starttime"];
             ChatModel.ServerUpTime = HelperConverter.UnixTimeToDateTime(time);
         }
 
@@ -352,7 +350,7 @@ namespace slimCat.Services
 
             Dispatcher.Invoke(() =>
                 Application.Current.MainWindow.Title = $"{Constants.ClientId} {Constants.ClientNickname} ({character})"
-            );
+                );
         }
 
         private void WipeState(bool intentionalDisconnect)

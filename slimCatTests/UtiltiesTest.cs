@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ListManagerTests.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="UtiltiesTest.cs">
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -34,7 +32,7 @@ namespace slimCatTest
         [TestMethod]
         public void NameEqualsWorks()
         {
-            var model = new CharacterModel { Name = "foobarbaz" };
+            var model = new CharacterModel {Name = "foobarbaz"};
 
             Assert.IsTrue(model.NameEquals("foobarbaz"));
             Assert.IsFalse(model.NameEquals("blah"));
@@ -44,7 +42,7 @@ namespace slimCatTest
         [TestMethod]
         public void NamesContainsWorks()
         {
-            var model = new CharacterModel { Name = "foobarbaz" };
+            var model = new CharacterModel {Name = "foobarbaz"};
 
             Assert.IsTrue(model.NameContains("bar"));
             Assert.IsTrue(model.NameContains("foobarbaz"));
@@ -71,7 +69,8 @@ namespace slimCatTest
         {
             const string character = "character name";
 
-            Func<string, string, string> getPath = (title, id) => StringExtensions.MakeSafeFolderPath(character, title, id);
+            Func<string, string, string> getPath =
+                (title, id) => StringExtensions.MakeSafeFolderPath(character, title, id);
 
             Assert.IsTrue(getPath("bar", "bar").Contains("character name\\bar"));
             Assert.IsTrue(getPath("bar", "ADH-2").Contains("character name\\bar (ADH-2)"));
@@ -106,7 +105,7 @@ namespace slimCatTest
             Assert.AreEqual(getMatch(punctuation, "with"), punctuation);
 
             const string looong =
-            "start this is a really long string is a really long. string is a really long string is a really long string needle string is a really long string is a really long string end";
+                "start this is a really long string is a really long. string is a really long string is a really long string needle string is a really long string is a really long string end";
 
             Assert.IsTrue(getMatch(looong, "really long").Contains("is a really long string"));
             Assert.IsTrue(getMatch(looong, "needle").Contains("needle"));

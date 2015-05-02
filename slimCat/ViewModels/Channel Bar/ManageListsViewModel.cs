@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ManageListsViewModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -42,28 +40,6 @@ namespace slimCat.ViewModels
         #region Constants
 
         public const string ManageListsTabView = "ManageListsTabView";
-
-        #endregion
-
-        #region Fields
-
-        private readonly DeferredAction updateLists;
-
-        private readonly IDictionary<ListKind, string> listKinds = new Dictionary<ListKind, string>
-        {
-            {ListKind.Banned, "Banned"},
-            {ListKind.Bookmark, "Bookmarks"},
-            {ListKind.Friend, "Friends"},
-            {ListKind.Moderator, "Moderators"},
-            {ListKind.Interested, "Interested"},
-            {ListKind.NotInterested, "NotInterested"},
-            {ListKind.Ignored, "Ignored"}
-        };
-
-        private bool showOffline;
-        private bool hasNewSearchResults;
-
-        private RelayCommand clearSearch;
 
         #endregion
 
@@ -183,6 +159,28 @@ namespace slimCat.ViewModels
 
         #endregion
 
+        #region Fields
+
+        private readonly DeferredAction updateLists;
+
+        private readonly IDictionary<ListKind, string> listKinds = new Dictionary<ListKind, string>
+        {
+            {ListKind.Banned, "Banned"},
+            {ListKind.Bookmark, "Bookmarks"},
+            {ListKind.Friend, "Friends"},
+            {ListKind.Moderator, "Moderators"},
+            {ListKind.Interested, "Interested"},
+            {ListKind.NotInterested, "NotInterested"},
+            {ListKind.Ignored, "Ignored"}
+        };
+
+        private bool showOffline;
+        private bool hasNewSearchResults;
+
+        private RelayCommand clearSearch;
+
+        #endregion
+
         #region Public Properties
 
         public IEnumerable<ICharacter> Banned => GetChannelList(ListKind.Banned, false);
@@ -222,7 +220,7 @@ namespace slimCat.ViewModels
             get { return hasNewSearchResults; }
             set
             {
-                hasNewSearchResults = value; 
+                hasNewSearchResults = value;
                 OnPropertyChanged();
             }
         }
@@ -260,14 +258,16 @@ namespace slimCat.ViewModels
 
         #region Methods
 
-        private bool MeetsFilter(ICharacter character) => character.NameContains(SearchSettings.SearchString) && SearchSettings.MeetsStatusFilter(character);
+        private bool MeetsFilter(ICharacter character)
+            => character.NameContains(SearchSettings.SearchString) && SearchSettings.MeetsStatusFilter(character);
 
-        private IEnumerable<ICharacter> GetList(ICharacterManager manager, ListKind listKind, bool onlineOnly = true) => 
+        private IEnumerable<ICharacter> GetList(ICharacterManager manager, ListKind listKind, bool onlineOnly = true) =>
             manager.GetCharacters(listKind, onlineOnly)
                 .Where(MeetsFilter)
                 .OrderBy(x => x.Name);
 
-        private IEnumerable<ICharacter> GetGlobalList(ListKind listkind) => GetList(CharacterManager, listkind, !showOffline);
+        private IEnumerable<ICharacter> GetGlobalList(ListKind listkind)
+            => GetList(CharacterManager, listkind, !showOffline);
 
         private IEnumerable<ICharacter> GetChannelList(ListKind listKind, bool onlineOnly)
         {
@@ -276,7 +276,7 @@ namespace slimCat.ViewModels
                 return GetList(channel.CharacterManager, listKind, onlineOnly);
 
             return new List<ICharacter>();
-        } 
+        }
 
         private void UpdateBindings()
         {

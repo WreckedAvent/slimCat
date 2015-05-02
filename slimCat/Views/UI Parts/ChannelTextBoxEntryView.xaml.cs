@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ChannelTextBoxEntryView.xaml.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -38,8 +36,10 @@ namespace slimCat.Views
     public partial class ChannelTextBoxEntryView
     {
         #region Fields
+
         private ChannelViewModelBase vm;
         private ShortcutManager shortcuts;
+
         #endregion
 
         #region Constructors and Destructors
@@ -83,7 +83,8 @@ namespace slimCat.Views
             if (string.IsNullOrWhiteSpace(pasteText)) return;
 
             // only auto-markup links
-            if (!(pasteText.StartsWith("http://") || pasteText.StartsWith("https://")) || pasteText.Contains(" ")) return;
+            if (!(pasteText.StartsWith("http://") || pasteText.StartsWith("https://")) || pasteText.Contains(" "))
+                return;
 
 
             e.CancelCommand();
@@ -110,7 +111,6 @@ namespace slimCat.Views
                     Entry.Select(startIndex, oldText.Length);
                 }));
             }
-
         }
 
         private void OnPreviewKeyDown(object sender, KeyEventArgs e)

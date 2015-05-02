@@ -17,7 +17,7 @@
                            MinHeight="35">
                 <RowDefinition.MaxHeight>
                     <MultiBinding
-                         Converter="{StaticResource ReduceRowConverter}" ConverterParameter="20">
+                        Converter="{StaticResource ReduceRowConverter}" ConverterParameter="20">
                         <Binding RelativeSource="{RelativeSource AncestorType=v:DisposableView}" Path="ActualHeight" />
                         <Binding ElementName="EntryBoxRowGrid" Path="ActualHeight" />
                     </MultiBinding>
@@ -49,7 +49,8 @@
                     <ScrollViewer.MaxHeight>
                         <MultiBinding
                             Converter="{StaticResource ReduceRowConverter}" ConverterParameter="60">
-                            <Binding RelativeSource="{RelativeSource AncestorType=v:DisposableView}" Path="ActualHeight" />
+                            <Binding RelativeSource="{RelativeSource AncestorType=v:DisposableView}"
+                                     Path="ActualHeight" />
                             <Binding ElementName="EntryBoxRowGrid" Path="ActualHeight" />
                         </MultiBinding>
                     </ScrollViewer.MaxHeight>
@@ -82,7 +83,7 @@
         <GridSplitter Grid.Row="1"
                       MouseDoubleClick="OnHeaderRowResizeRequested"
                       DragDelta="OnHeaderRowDragging"
-                      DragCompleted="OnHeaderRowDragCompleted"/>
+                      DragCompleted="OnHeaderRowDragCompleted" />
 
         <v:ObservingFlowDocumentReader
             Grid.Row="1"

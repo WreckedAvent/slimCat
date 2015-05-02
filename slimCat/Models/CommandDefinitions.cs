@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CommandDefinitions.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -21,15 +19,14 @@ namespace slimCat.Models
 {
     #region Usings
 
-    // I know these are bad names, but it makes the giant list below more legible
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using Utilities;
-    using A = Utilities.Constants.Arguments;
-    using C = Utilities.Constants.ClientCommands;
-    using P = CommandModel.PermissionLevel;
-    using T = CommandModel.CommandTypes;
+    using static Utilities.Constants.Arguments;
+    using static Utilities.Constants.ClientCommands;
+    using static CommandModel.PermissionLevel;
+    using static CommandModel.CommandTypes;
 
     #endregion
 
@@ -39,6 +36,147 @@ namespace slimCat.Models
     /// </summary>
     public static class CommandDefinitions
     {
+        static CommandDefinitions()
+        {
+            UserCommands(
+                Define("acceptfriendrequest", "acceptrequest").As("request-accept").AsForCharacters(),
+                Define("addbookmark").As("bookmark-add").WithArgument(Name),
+                Define("bottle").As(ChannelRoll).WithArguments("dice", Channel),
+                Define("code").AsArgumentless(),
+                Define("clear").AsForChannels(),
+                Define("clearall").AsArgumentless(),
+                Define("close").AsForChannels(),
+                Define("coplist", "modlist").As(ChannelModeratorList).AsForChannels(),
+                Define("denyfriendrequest", "denyrequest").As("request-deny").AsForCharacters(),
+                Define("forceclose").AsForChannels(),
+                Define("ignore").As(UserIgnore).WithArguments(Character, Constants.Arguments.Action),
+                Define("ignoreUpdates").AsForCharacters(),
+                Define("interesting").AsForCharacters(),
+                Define("invite").As(UserInvite).WithArguments(Character, Channel),
+                Define("ignorelist").As(UserIgnore).WithArgument(Constants.Arguments.Action),
+                Define("join").AsForChannels(),
+                Define("logheader").As("_logger_new_header").WithArgument("title"),
+                Define("logsection").As("_logger_new_section").WithArgument("title"),
+                Define("lognewline").As("_logger_new_line").AsArgumentless(),
+                Define("logout").AsArgumentless(),
+                Define("makeroom").As(ChannelCreate).AsForChannels(),
+                Define("notinteresting").AsForCharacters(),
+                Define("openlog").As("_logger_open_log").AsForChannels(),
+                Define("openlogfolder", "openfolder").As("_logger_open_folder").AsForChannels(),
+                Define("priv", "pm", "tell").AsForCharacters(),
+                Define("rejoin").AsForChannels(),
+                Define("removebookmark").As("bookmark-remove").WithArgument(Name),
+                Define("removefriend").As("friend-remove").AsForCharacters(),
+                Define("cancelrequest", "cancelfriendrequest").As("request-cancel").AsForCharacters(),
+                Define("roll").As(ChannelRoll).WithArguments("dice", Channel),
+                Define("report").As(AdminAlert).WithArguments(Name, Report, Constants.Arguments.Action, Channel),
+                Define("status", "online", "away", "busy", "idle", "dnd", "looking")
+                    .As(UserStatus)
+                    .WithArguments(Status, StatusMessage),
+                Define("setowner").As(ChannelSetOwner).WithArguments(Character, Channel),
+                Define("soundon").AsArgumentless(),
+                Define("soundoff").AsArgumentless(),
+                Define("sendfriendrequest", "sendrequest", "addfriend").As("request-send").AsForCharacters(),
+                Define("searchtag").AsForCharacters(),
+                Define("tempignore").AsForCharacters(),
+                Define("tempunignore").AsForCharacters(),
+                Define("tempnotinteresting").AsForCharacters(),
+                Define("unignore").As(UserIgnore).WithArguments(Character, Constants.Arguments.Action),
+                Define("who").AsArgumentless(),
+                Define("whois").AsForCharacters()
+                );
+
+
+            ModeratorCommands(
+                Define("ban").As(ChannelBan).WithArguments(Character, Channel),
+                Define("banlist").As(ChannelBanList).AsForChannels(),
+                Define("closeroom").As(ChannelKind).WithArguments("status", Channel),
+                Define("demote", "dop").As(ChannelDemote).WithArguments(Character, Channel),
+                Define("getdescription").WithArgument(Channel),
+                Define("kick").As(ChannelKick).WithArguments(Character, Channel),
+                Define("killchannel").As(ChannelKill).WithArgument(Channel),
+                Define("openroom").As(ChannelKind).WithArguments("status", Channel),
+                Define("promote", "cop").As(ChannelPromote).WithArguments(Character, Channel),
+                Define("setdescription").As(ChannelDescription).WithArguments("description", Channel),
+                Define("timeout").As(ChannelTimeOut).WithArguments(Character, "length", Channel),
+                Define("unban").As(ChannelUnban).WithArguments(Character, Channel),
+                Define("setmode").As(Constants.ClientCommands.ChannelMode).WithArguments(Mode, Channel)
+                );
+
+
+            AdminCommands(
+                Define("chatban", "accountban", "gban").As(AdminBan).AsForCharacters(),
+                Define("chatkick", "gkick").As(AdminKick).AsForCharacters(),
+                Define("chatunban", "gunban").As(AdminUnban).AsForCharacters(),
+                Define("reward").As(AdminReward).AsForCharacters(),
+                Define("chattimeout", "gtimeout").As(AdminTimeout).WithArguments(Character, "time", "reason"),
+                Define("handlereport", "hr").WithArgument(Name),
+                Define("handlelatest", "r").WithArgument(Name),
+                Define("broadcast").As(AdminBroadcast).AsForCharacters(),
+                Define("chatdemote", "deop").As(AdminDemote).AsForCharacters(),
+                Define("chatpromote", "op").As(AdminPromote).AsForCharacters(),
+                Define("makechannel", "createchannel").As(SystemChannelCreate).AsForChannels()
+                );
+
+            SystemCommands(
+                Define(ClientSendTypingStatus).As(UserTyping).WithArguments("status", Character),
+                Define(ClientSendPm).As(UserMessage).WithArguments(Message, Recipient),
+                Define(ClientSendChannelMessage).As(ChannelMessage).WithArguments(Message, Channel),
+                Define(ClientSendChannelAd).As(ChannelAd).WithArguments(Message, Channel)
+                );
+        }
+
+        private static FluentCommandBuilder Define(string commonName, params string[] aliases)
+        {
+            return new FluentCommandBuilder(commonName, aliases);
+        }
+
+        private static void UserCommands(params FluentCommandBuilder[] commands)
+        {
+            commands.Each(x => Commands.Add(x.Build()));
+            AddAliases(commands);
+        }
+
+        private static void ModeratorCommands(params FluentCommandBuilder[] commands)
+        {
+            commands.Select(x => x.ForModerators()).Each(x => Commands.Add(x.Build()));
+            AddAliases(commands);
+        }
+
+        private static void AdminCommands(params FluentCommandBuilder[] commands)
+        {
+            commands.Select(x => x.ForAdmins()).Each(x => Commands.Add(x.Build()));
+            AddAliases(commands);
+        }
+
+        private static void SystemCommands(params FluentCommandBuilder[] commands)
+        {
+            commands.Each(x => Commands.Add(x.Build()));
+            AddAliases(commands);
+        }
+
+        private static void AddAliases(params FluentCommandBuilder[] commands)
+        {
+            commands.Each(command =>
+                command.Aliases.Each(alias =>
+                    CommandAliases.Add(alias, command.CommonName)));
+        }
+
+        /// <summary>
+        ///     Represents a command argument override.
+        /// </summary>
+        public class CommandOverride
+        {
+            public readonly string ArgumentName;
+            public readonly string ArgumentValue;
+
+            public CommandOverride(string argName, string argValue)
+            {
+                ArgumentName = argName;
+                ArgumentValue = argValue;
+            }
+        }
+
         #region Constants
 
         public const string ClientSendChannelAd = "_send_channel_ad";
@@ -51,116 +189,29 @@ namespace slimCat.Models
 
         #endregion
 
-        static CommandDefinitions()
-        {
-            UserCommands(
-                Define("acceptfriendrequest", "acceptrequest").As("request-accept").AsForCharacters(),
-                Define("addbookmark").As("bookmark-add").WithArgument(A.Name),
-                Define("bottle").As(C.ChannelRoll).WithArguments("dice", A.Channel),
-                Define("code").AsArgumentless(),
-                Define("clear").AsForChannels(),
-                Define("clearall").AsArgumentless(),
-                Define("close").AsForChannels(),
-                Define("coplist", "modlist").As(C.ChannelModeratorList).AsForChannels(),
-                Define("denyfriendrequest", "denyrequest").As("request-deny").AsForCharacters(),
-                Define("forceclose").AsForChannels(),
-                Define("ignore").As(C.UserIgnore).WithArguments(A.Character, A.Action),
-                Define("ignoreUpdates").AsForCharacters(),
-                Define("interesting").AsForCharacters(),
-                Define("invite").As(C.UserInvite).WithArguments(A.Character, A.Channel),
-                Define("ignorelist").As(C.UserIgnore).WithArgument(A.Action),
-                Define("join").AsForChannels(),
-                Define("logheader").As("_logger_new_header").WithArgument("title"),
-                Define("logsection").As("_logger_new_section").WithArgument("title"),
-                Define("lognewline").As("_logger_new_line").AsArgumentless(),
-                Define("logout").AsArgumentless(),
-                Define("makeroom").As(C.ChannelCreate).AsForChannels(),
-                Define("notinteresting").AsForCharacters(),
-                Define("openlog").As("_logger_open_log").AsForChannels(),
-                Define("openlogfolder", "openfolder").As("_logger_open_folder").AsForChannels(),
-                Define("priv", "pm", "tell").AsForCharacters(),
-                Define("rejoin").AsForChannels(),
-                Define("removebookmark").As("bookmark-remove").WithArgument(A.Name),
-                Define("removefriend").As("friend-remove").AsForCharacters(),
-                Define("cancelrequest", "cancelfriendrequest").As("request-cancel").AsForCharacters(),
-                Define("roll").As(C.ChannelRoll).WithArguments("dice", A.Channel),
-                Define("report").As(C.AdminAlert).WithArguments(A.Name, A.Report, A.Action, A.Channel),
-                Define("status", "online", "away", "busy", "idle", "dnd", "looking")
-                    .As(C.UserStatus)
-                    .WithArguments(A.Status, A.StatusMessage),
-                Define("setowner").As(C.ChannelSetOwner).WithArguments(A.Character, A.Channel),
-                Define("soundon").AsArgumentless(),
-                Define("soundoff").AsArgumentless(),
-                Define("sendfriendrequest", "sendrequest", "addfriend").As("request-send").AsForCharacters(),
-                Define("searchtag").AsForCharacters(),
-                Define("tempignore").AsForCharacters(),
-                Define("tempunignore").AsForCharacters(),
-                Define("tempnotinteresting").AsForCharacters(),
-                Define("unignore").As(C.UserIgnore).WithArguments(A.Character, A.Action),
-                Define("who").AsArgumentless(),
-                Define("whois").AsForCharacters()
-                );
-
-
-            ModeratorCommands(
-                Define("ban").As(C.ChannelBan).WithArguments(A.Character, A.Channel),
-                Define("banlist").As(C.ChannelBanList).AsForChannels(),
-                Define("closeroom").As(C.ChannelKind).WithArguments("status", A.Channel),
-                Define("demote", "dop").As(C.ChannelDemote).WithArguments(A.Character, A.Channel),
-                Define("getdescription").WithArgument(A.Channel),
-                Define("kick").As(C.ChannelKick).WithArguments(A.Character, A.Channel),
-                Define("killchannel").As(C.ChannelKill).WithArgument(A.Channel),
-                Define("openroom").As(C.ChannelKind).WithArguments("status", A.Channel),
-                Define("promote", "cop").As(C.ChannelPromote).WithArguments(A.Character, A.Channel),
-                Define("setdescription").As(C.ChannelDescription).WithArguments("description", A.Channel),
-                Define("timeout").As(C.ChannelTimeOut).WithArguments(A.Character, "length", A.Channel),
-                Define("unban").As(C.ChannelUnban).WithArguments(A.Character, A.Channel),
-                Define("setmode").As(C.ChannelMode).WithArguments(A.Mode, A.Channel)
-                );
-
-
-            AdminCommands(
-                Define("chatban", "accountban", "gban").As(C.AdminBan).AsForCharacters(),
-                Define("chatkick", "gkick").As(C.AdminKick).AsForCharacters(),
-                Define("chatunban", "gunban").As(C.AdminUnban).AsForCharacters(),
-                Define("reward").As(C.AdminReward).AsForCharacters(),
-                Define("chattimeout", "gtimeout").As(C.AdminTimeout).WithArguments(A.Character, "time", "reason"),
-                Define("handlereport", "hr").WithArgument(A.Name),
-                Define("handlelatest", "r").WithArgument(A.Name),
-                Define("broadcast").As(C.AdminBroadcast).AsForCharacters(),
-                Define("chatdemote", "deop").As(C.AdminDemote).AsForCharacters(),
-                Define("chatpromote", "op").As(C.AdminPromote).AsForCharacters(),
-                Define("makechannel", "createchannel").As(C.SystemChannelCreate).AsForChannels()
-                );
-
-            SystemCommands(
-                Define(ClientSendTypingStatus).As(C.UserTyping).WithArguments("status", A.Character),
-                Define(ClientSendPm).As(C.UserMessage).WithArguments(A.Message, A.Recipient),
-                Define(ClientSendChannelMessage).As(C.ChannelMessage).WithArguments(A.Message, A.Channel),
-                Define(ClientSendChannelAd).As(C.ChannelAd).WithArguments(A.Message, A.Channel)
-                );
-        }
-
         #region Static Fields
 
         public static readonly IDictionary<string, CommandModel> Commands = new Dictionary<string, CommandModel>();
 
         // prevents long ugly checking in our viewmodels for these
-        public static readonly Dictionary<string, Func<string, string>> NonCommandCommands = new Dictionary<string, Func<string, string>>
+        public static readonly Dictionary<string, Func<string, string>> NonCommandCommands = new Dictionary
+            <string, Func<string, string>>
         {
-            {"/me ", x =>
             {
-                var toReturn = x.Substring("/me ".Length);
-                // give /me some space, but not /me 's
-                return toReturn.Length >= 1 && toReturn[0] == '\'' ? toReturn : ' ' + toReturn;
-            }},
+                "/me ", x =>
+                {
+                    var toReturn = x.Substring("/me ".Length);
+                    // give /me some space, but not /me 's
+                    return toReturn.Length >= 1 && toReturn[0] == '\'' ? toReturn : ' ' + toReturn;
+                }
+            },
             {"/me's ", x => x.Substring("/me".Length)},
-            {"/my ",   x => "'s" + x.Substring("/my".Length)},
+            {"/my ", x => "'s" + x.Substring("/my".Length)},
             {"/post ", x => x.Substring("/post".Length) + " ~"},
             {"/warn ", x => " warns," + x.Substring("/warn".Length)}
         };
 
-        private static readonly IList<string> WarningList = new[] {"me", "me's", "my", "post", "warn"}; 
+        private static readonly IList<string> WarningList = new[] {"me", "me's", "my", "post", "warn"};
 
         public static readonly IDictionary<string, string> CommandAliases = new Dictionary<string, string>();
 
@@ -169,46 +220,46 @@ namespace slimCat.Models
         {
             // command to override, command parameter to override, value to override with
             {
-                "online", new CommandOverride(A.Status, "online")
+                "online", new CommandOverride(Status, "online")
             },
             {
-                "busy", new CommandOverride(A.Status, "busy")
+                "busy", new CommandOverride(Status, "busy")
             },
             {
-                "looking", new CommandOverride(A.Status, "looking")
+                "looking", new CommandOverride(Status, "looking")
             },
             {
-                "away", new CommandOverride(A.Status, "away")
+                "away", new CommandOverride(Status, "away")
             },
             {
-                "dnd", new CommandOverride(A.Status, "dnd")
+                "dnd", new CommandOverride(Status, "dnd")
             },
             {
-                "idle", new CommandOverride(A.Status, "idle")
+                "idle", new CommandOverride(Status, "idle")
             },
             {
-                "ignore", new CommandOverride(A.Action, A.ActionAdd)
+                "ignore", new CommandOverride(Constants.Arguments.Action, ActionAdd)
             },
             {
-                "unignore", new CommandOverride(A.Action, A.ActionDelete)
+                "unignore", new CommandOverride(Constants.Arguments.Action, ActionDelete)
             },
             {
-                "openroom", new CommandOverride(A.Status, "public")
+                "openroom", new CommandOverride(Status, "public")
             },
             {
-                "closeroom", new CommandOverride(A.Status, "private")
+                "closeroom", new CommandOverride(Status, "private")
             },
             {
                 "bottle", new CommandOverride("dice", "bottle")
             },
             {
-                "report", new CommandOverride(A.Action, A.ActionReport)
+                "report", new CommandOverride(Constants.Arguments.Action, ActionReport)
             },
             {
-                "handlereport", new CommandOverride(A.Action, A.ActionConfirm)
+                "handlereport", new CommandOverride(Constants.Arguments.Action, ActionConfirm)
             },
             {
-                "ignorelist", new CommandOverride(A.Action, "list")
+                "ignorelist", new CommandOverride(Constants.Arguments.Action, "list")
             }
         };
 
@@ -239,7 +290,7 @@ namespace slimCat.Models
 
             var model = GetCommandModelFromName(familiarName);
 
-            // having an empty argument is the same as none for our purposes 
+            // having an empty argument is the same as none for our purposes
             if (args != null && string.IsNullOrEmpty(args[0]))
                 args = null;
 
@@ -284,9 +335,9 @@ namespace slimCat.Models
             // error out if we have less arguments, but not if we are only missing the channel argument provided by the active channel
             if (difference == -1)
             {
-                if (missingArgument == A.Channel && channel != null && channel != "Home")
+                if (missingArgument == Channel && channel != null && channel != "Home")
                     return toReturn;
-                if (missingArgument == A.StatusMessage || missingArgument == "reason")
+                if (missingArgument == StatusMessage || missingArgument == "reason")
                     return toReturn;
             }
 
@@ -310,58 +361,6 @@ namespace slimCat.Models
         }
 
         #endregion
-
-        private static FluentCommandBuilder Define(string commonName, params string[] aliases)
-        {
-            return new FluentCommandBuilder(commonName, aliases);
-        }
-
-        private static void UserCommands(params FluentCommandBuilder[] commands)
-        {
-            commands.Each(x => Commands.Add(x.Build()));
-            AddAliases(commands);
-        }
-
-        private static void ModeratorCommands(params FluentCommandBuilder[] commands)
-        {
-            commands.Select(x => x.ForModerators()).Each(x => Commands.Add(x.Build()));
-            AddAliases(commands);
-        }
-
-        private static void AdminCommands(params FluentCommandBuilder[] commands)
-        {
-            commands.Select(x => x.ForAdmins()).Each(x => Commands.Add(x.Build()));
-            AddAliases(commands);
-        }
-
-        private static void SystemCommands(params FluentCommandBuilder[] commands)
-        {
-            commands.Each(x => Commands.Add(x.Build()));
-            AddAliases(commands);
-        }
-
-        private static void AddAliases(params FluentCommandBuilder[] commands)
-        {
-            commands.Each(command =>
-                command.Aliases.Each(alias =>
-                    CommandAliases.Add(alias, command.CommonName)));
-        }
-
-        /// <summary>
-        ///     Represents a command argument override.
-        /// </summary>
-        public class CommandOverride
-        {
-            public readonly string ArgumentName;
-
-            public readonly string ArgumentValue;
-
-            public CommandOverride(string argName, string argValue)
-            {
-                ArgumentName = argName;
-                ArgumentValue = argValue;
-            }
-        }
     }
 
     internal class FluentCommandBuilder
@@ -371,21 +370,18 @@ namespace slimCat.Models
             CommonName = commonName;
             Arguments = new List<string>();
             Aliases = aliases;
-            CommandType = T.SingleWord;
-            PermissionLevel = P.User;
+            CommandType = SingleWord;
+            PermissionLevel = User;
         }
 
         public string CommonName { get; set; }
-        public T CommandType { get; set; }
-
-        public P PermissionLevel { get; set; }
-
+        public CommandModel.CommandTypes CommandType { get; set; }
+        public CommandModel.PermissionLevel PermissionLevel { get; set; }
         public string RemoteName { get; set; }
         public IList<string> Arguments { get; set; }
-
         public IList<string> Aliases { get; set; }
 
-        public FluentCommandBuilder OfType(T type)
+        public FluentCommandBuilder OfType(CommandModel.CommandTypes type)
         {
             CommandType = type;
             return this;
@@ -393,34 +389,34 @@ namespace slimCat.Models
 
         public FluentCommandBuilder AsArgumentless()
         {
-            CommandType = T.NoArgs;
+            CommandType = NoArgs;
             Arguments = null;
             return this;
         }
 
         public FluentCommandBuilder WithArgument(string argument)
         {
-            CommandType = T.SingleWord;
+            CommandType = SingleWord;
             Arguments.Add(argument);
 
-            if (argument == A.Character)
-                CommandType = T.SingleSentence;
+            if (argument == Character)
+                CommandType = SingleSentence;
 
-            if (argument == A.Channel)
-                CommandType = T.OnlyChannel;
+            if (argument == Channel)
+                CommandType = OnlyChannel;
 
             return this;
         }
 
         public FluentCommandBuilder WithArguments(string first, string second, string third = null, string fourth = null)
         {
-            if (first == A.Channel || second == A.Channel)
-                CommandType = T.SingleArgsAndChannel;
+            if (first == Channel || second == Channel)
+                CommandType = SingleArgsAndChannel;
             else
-                CommandType = T.TwoArgs;
+                CommandType = TwoArgs;
 
-            if (third == A.Channel || fourth == A.Channel)
-                CommandType = T.TwoArgsAndChannel;
+            if (third == Channel || fourth == Channel)
+                CommandType = TwoArgsAndChannel;
 
             Arguments.Add(first);
             Arguments.Add(second);
@@ -436,23 +432,23 @@ namespace slimCat.Models
 
         public FluentCommandBuilder AsForChannels()
         {
-            return WithArgument(A.Channel);
+            return WithArgument(Channel);
         }
 
         public FluentCommandBuilder AsForCharacters()
         {
-            return WithArgument(A.Character);
+            return WithArgument(Character);
         }
 
         public FluentCommandBuilder ForModerators()
         {
-            PermissionLevel = P.Moderator;
+            PermissionLevel = Moderator;
             return this;
         }
 
         public FluentCommandBuilder ForAdmins()
         {
-            PermissionLevel = P.GlobalMod;
+            PermissionLevel = GlobalMod;
             return this;
         }
 
@@ -461,7 +457,6 @@ namespace slimCat.Models
             RemoteName = name;
             return this;
         }
-
 
         public KeyValuePair<string, CommandModel> Build()
         {

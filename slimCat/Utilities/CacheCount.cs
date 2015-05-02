@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CacheCount.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -34,24 +32,6 @@ namespace slimCat.Utilities
     /// </summary>
     public sealed class CacheCount : IDisposable
     {
-        #region Fields
-
-        private readonly int updateResolution;
-
-        private Func<int> getNewCount;
-
-        private bool initialized;
-
-        private int newCount;
-
-        private int oldCount;
-
-        private IList<int> oldCounts;
-
-        private Timer updateTick;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
@@ -89,6 +69,24 @@ namespace slimCat.Utilities
             else
                 updateTick.Start();
         }
+
+        #endregion
+
+        #region Fields
+
+        private readonly int updateResolution;
+
+        private Func<int> getNewCount;
+
+        private bool initialized;
+
+        private int newCount;
+
+        private int oldCount;
+
+        private IList<int> oldCounts;
+
+        private Timer updateTick;
 
         #endregion
 

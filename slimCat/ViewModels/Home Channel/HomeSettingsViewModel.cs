@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="HomeSettingsViewModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -32,17 +30,6 @@ namespace slimCat.ViewModels
 
     public class HomeSettingsViewModel : ViewModelBase, IHasTabs
     {
-        #region Fields
-
-        private readonly IAutomateThings automation;
-
-        private readonly ICharacterManager characterManager;
-        private readonly IconService iconService;
-
-        private string selectedTab = "General";
-
-        #endregion
-
         #region Constructors and Destructors
 
         public HomeSettingsViewModel(IChatState chatState, IAutomateThings automationService, IconService iconService,
@@ -53,6 +40,21 @@ namespace slimCat.ViewModels
             this.iconService = iconService;
             this.characterManager = characterManager;
         }
+
+        #endregion
+
+        public override void Initialize()
+        {
+        }
+
+        #region Fields
+
+        private readonly IAutomateThings automation;
+
+        private readonly ICharacterManager characterManager;
+        private readonly IconService iconService;
+
+        private string selectedTab = "General";
 
         #endregion
 
@@ -166,7 +168,8 @@ namespace slimCat.ViewModels
 
         #region Appearance
 
-        public static IEnumerable<KeyValuePair<string, GenderColorSettings>> GenderSettings { get; } = new Dictionary<string, GenderColorSettings>
+        public static IEnumerable<KeyValuePair<string, GenderColorSettings>> GenderSettings { get; } = new Dictionary
+            <string, GenderColorSettings>
         {
             {"No Coloring", GenderColorSettings.None},
             {"Minimal Coloring", GenderColorSettings.GenderOnly},
@@ -284,7 +287,7 @@ namespace slimCat.ViewModels
 
         public bool StickMessageToBottom
         {
-            get { return ApplicationSettings.StickNewMessagesToBottom;  }
+            get { return ApplicationSettings.StickNewMessagesToBottom; }
             set
             {
                 ApplicationSettings.StickNewMessagesToBottom = value;
@@ -638,7 +641,9 @@ namespace slimCat.ViewModels
 
         public void OnSettingsLoaded()
         {
-            GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).Each(x => OnPropertyChanged(x.Name));
+            GetType()
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                .Each(x => OnPropertyChanged(x.Name));
         }
 
         private void Save()
@@ -648,9 +653,5 @@ namespace slimCat.ViewModels
         }
 
         #endregion
-
-        public override void Initialize()
-        {
-        }
     }
 }

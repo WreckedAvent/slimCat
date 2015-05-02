@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="GenericSearchSettingsModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -33,6 +31,15 @@ namespace slimCat.Models
     /// </summary>
     public class GenericSearchSettingsModel
     {
+        #region Public Events
+
+        /// <summary>
+        ///     Called when our search settings are updated
+        /// </summary>
+        public event EventHandler Updated;
+
+        #endregion
+
         #region Fields
 
         private RelayCommand expandSearch;
@@ -58,15 +65,6 @@ namespace slimCat.Models
         private bool showNormal = true;
 
         private bool showNotInterested;
-
-        #endregion
-
-        #region Public Events
-
-        /// <summary>
-        ///     Called when our search settings are updated
-        /// </summary>
-        public event EventHandler Updated;
 
         #endregion
 
@@ -341,7 +339,5 @@ namespace slimCat.Models
         }
 
         #endregion
-
-        // dev note: I haven't really found a better way to do a lot of properties like this. UI can't access dictionaries.
     }
 }

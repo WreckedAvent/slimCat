@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="RealTimeBridgeCommand.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -43,7 +41,6 @@ namespace slimCat.Models
         }
 
         public long CommentId { get; set; }
-
         public CommentTypes CommentType { get; set; }
 
         public string Link
@@ -80,7 +77,7 @@ namespace slimCat.Models
             if (ParentId == 0)
             {
                 // not a comment, but a suggestion, newspost, etc.
-                return $"has replied to your {CommentTypeToString(CommentType)}, " 
+                return $"has replied to your {CommentTypeToString(CommentType)}, "
                        + $"[url={Link}]{Title}[/url]";
             }
 
@@ -111,9 +108,7 @@ namespace slimCat.Models
     public class NoteEventArgs : CharacterUpdateEventArgs
     {
         public string Target { get; set; }
-
         public long NoteId { get; set; }
-
         public string Subject { get; set; }
 
         public override string ToString()

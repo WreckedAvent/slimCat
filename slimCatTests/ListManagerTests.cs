@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ListManagerTests.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -43,7 +41,6 @@ namespace slimCatTest
         private readonly IEventAggregator eventAggregator;
         private readonly ICharacter friendCharacter;
         private readonly ICharacter interestedCharacter;
-
         private readonly ICharacterManager manager;
         private readonly ICharacter otherCharacter;
 
@@ -109,7 +106,6 @@ namespace slimCatTest
             ShouldBeOffline(bookmarkCharacter);
             ShouldNotBeOnList(ListKind.Bookmark, bookmarkCharacter);
         }
-
 
         [TestMethod]
         public void ManagerSignsOnCorrectly()

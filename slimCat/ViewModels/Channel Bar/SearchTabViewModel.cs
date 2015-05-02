@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="SearchTabViewModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -47,35 +45,13 @@ namespace slimCat.ViewModels
     /// </summary>
     public class SearchTabViewModel : ChannelbarViewModelCommon
     {
-        private readonly IBrowseThings browser;
-
         #region Constants
 
         public const string SearchTabView = "SearchTabView";
 
         #endregion
 
-        #region Fields
-
-        private ObservableCollection<SearchTermModel> availableSearchTerms =
-            new ObservableCollection<SearchTermModel>();
-
-        private readonly Timer chatSearchCooldownTimer = new Timer(5500);
-
-        private ObservableCollection<SearchTermModel> selectedSearchTerms =
-            new ObservableCollection<SearchTermModel>();
-
-        private DeferredAction updateActiveViews;
-        private readonly DeferredAction saveTerms;
-        private RelayCommand addSearch;
-        private RelayCommand clearSearch;
-
-        private bool isInSearchCoolDown;
-        private RelayCommand removeSearch;
-        private string searchString = string.Empty;
-        private RelayCommand sendSearch;
-
-        #endregion
+        private readonly IBrowseThings browser;
 
         #region Constructors and Destructors
 
@@ -106,13 +82,37 @@ namespace slimCat.ViewModels
 
         #endregion
 
+        #region Fields
+
+        private ObservableCollection<SearchTermModel> availableSearchTerms =
+            new ObservableCollection<SearchTermModel>();
+
+        private readonly Timer chatSearchCooldownTimer = new Timer(5500);
+
+        private ObservableCollection<SearchTermModel> selectedSearchTerms =
+            new ObservableCollection<SearchTermModel>();
+
+        private DeferredAction updateActiveViews;
+        private readonly DeferredAction saveTerms;
+        private RelayCommand addSearch;
+        private RelayCommand clearSearch;
+
+        private bool isInSearchCoolDown;
+        private RelayCommand removeSearch;
+        private string searchString = string.Empty;
+        private RelayCommand sendSearch;
+
+        #endregion
+
         #region Public Properties
 
         public ICommand AddSearchTermCommand => addSearch ?? (addSearch = new RelayCommand(AddSearchTermEvent));
 
-        public ICommand RemoveSearchTermCommand => removeSearch ?? (removeSearch = new RelayCommand(RemoveSearchTermEvent));
+        public ICommand RemoveSearchTermCommand
+            => removeSearch ?? (removeSearch = new RelayCommand(RemoveSearchTermEvent));
 
-        public ICommand ClearSearchTermsCommand => clearSearch ?? (clearSearch = new RelayCommand(ClearSearchTermEvent));
+        public ICommand ClearSearchTermsCommand => clearSearch ?? (clearSearch = new RelayCommand(ClearSearchTermEvent))
+            ;
 
         public ICollectionView AvailableSearchTerms { get; private set; }
 
@@ -120,7 +120,8 @@ namespace slimCat.ViewModels
 
         public ICommand OpenSearchSettingsCommand => null;
 
-        public ICommand SendSearchCommand => sendSearch ?? (sendSearch = new RelayCommand(SendSearchEvent, param => CanStartSearch));
+        public ICommand SendSearchCommand
+            => sendSearch ?? (sendSearch = new RelayCommand(SendSearchEvent, param => CanStartSearch));
 
         public string SearchString
         {
@@ -196,7 +197,8 @@ namespace slimCat.ViewModels
             {
                 var worker = new BackgroundWorker();
                 worker.DoWork +=
-                    (sender, args) => PopulateSearchTerms(browser.GetResponse(Constants.UrlConstants.SearchFields, true));
+                    (sender, args) =>
+                        PopulateSearchTerms(browser.GetResponse(Constants.UrlConstants.SearchFields, true));
                 worker.RunWorkerAsync();
             }
             else
@@ -208,7 +210,7 @@ namespace slimCat.ViewModels
             AvailableSearchTerms = new ListCollectionView(availableSearchTerms);
             AvailableSearchTerms.GroupDescriptions.Add(new PropertyGroupDescription("Category", new CategoryConverter()));
             AvailableSearchTerms.SortDescriptions.Add(new SortDescription("DisplayName", ListSortDirection.Ascending));
-            AvailableSearchTerms.Filter = o => ((SearchTermModel)o).DisplayName.ContainsOrdinal(searchString);
+            AvailableSearchTerms.Filter = o => ((SearchTermModel) o).DisplayName.ContainsOrdinal(searchString);
 
             SelectedSearchTerms = new ListCollectionView(selectedSearchTerms);
             SelectedSearchTerms.SortDescriptions.Add(new SortDescription("Category", ListSortDirection.Ascending));
@@ -232,7 +234,7 @@ namespace slimCat.ViewModels
 
         private void SendSearchEvent(object obj)
         {
-            var toSend = new Dictionary<string, IList<string>> { ["kinks"] = new List<string>() };
+            var toSend = new Dictionary<string, IList<string>> {["kinks"] = new List<string>()};
 
             selectedSearchTerms.Each(term =>
             {

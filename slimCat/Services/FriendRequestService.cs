@@ -2,11 +2,11 @@
 
 // <copyright file="FriendRequestService.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-//
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-//
+// 
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -34,11 +34,8 @@ namespace slimCat.Services
     internal class FriendRequestService : IFriendRequestService
     {
         private readonly IAccount account;
-
         private readonly IBrowseThings browser;
-
         private readonly ICharacterManager characterManager;
-
         private readonly IEventAggregator events;
 
         private readonly IDictionary<string, int> requestsReceived =
@@ -48,7 +45,6 @@ namespace slimCat.Services
             new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
         private readonly IGetTickets ticketService;
-
         private string selectedCharacter;
 
         public FriendRequestService(IBrowseThings browser, IGetTickets ticketService,

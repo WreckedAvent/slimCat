@@ -2,11 +2,11 @@
 
 // <copyright file="NotificationService.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-//
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-//
+// 
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -133,7 +133,9 @@ namespace slimCat.Services
             // or if we disallow notifications when we're DND and we're DND, do not play sounds.
             if ((DateTime.Now - lastDingLinged) <= TimeSpan.FromSeconds(1)
                 || !ApplicationSettings.AllowSound
-                || (ApplicationSettings.DisallowNotificationsWhenDnd && ChatState.ChatModel.CurrentCharacter.Status == StatusType.Dnd))
+                ||
+                (ApplicationSettings.DisallowNotificationsWhenDnd &&
+                 ChatState.ChatModel.CurrentCharacter.Status == StatusType.Dnd))
             {
                 return;
             }

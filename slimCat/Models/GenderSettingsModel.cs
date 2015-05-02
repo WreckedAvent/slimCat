@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="GenderSettingsModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -32,7 +30,22 @@ namespace slimCat.Models
     /// </summary>
     public class GenderSettingsModel
     {
-        #region Fields
+        #region Properties
+
+        /// <summary>
+        ///     Gets the gender filter.
+        /// </summary>
+        private IDictionary<Gender, bool> GenderFilter { get; } = new Dictionary<Gender, bool>
+        {
+            {Gender.Male, true},
+            {Gender.Female, true},
+            {Gender.HermF, true},
+            {Gender.HermM, true},
+            {Gender.Cuntboy, true},
+            {Gender.Shemale, true},
+            {Gender.None, true},
+            {Gender.Transgender, true}
+        };
 
         #endregion
 
@@ -42,6 +55,37 @@ namespace slimCat.Models
         ///     Called whenever the UI updates one of the genders
         /// </summary>
         public event EventHandler Updated;
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     The meets gender filter.
+        /// </summary>
+        /// <param name="character">
+        ///     The character.
+        /// </param>
+        /// <returns>
+        ///     The <see cref="bool" />.
+        /// </returns>
+        public bool MeetsGenderFilter(ICharacter character)
+        {
+            return GenderFilter[character.Gender];
+        }
+
+        #endregion
+
+        #region Methods
+
+        private void CallUpdate()
+        {
+            Updated?.Invoke(this, new EventArgs());
+        }
+
+        #endregion
+
+        #region Fields
 
         #endregion
 
@@ -189,52 +233,6 @@ namespace slimCat.Models
                 GenderFilter[Gender.Transgender] = value;
                 Updated?.Invoke(this, new EventArgs());
             }
-        }
-
-        #endregion
-
-        #region Properties
-
-        /// <summary>
-        ///     Gets the gender filter.
-        /// </summary>
-        private IDictionary<Gender, bool> GenderFilter { get; } = new Dictionary<Gender, bool>
-        {
-            {Gender.Male, true},
-            {Gender.Female, true},
-            {Gender.HermF, true},
-            {Gender.HermM, true},
-            {Gender.Cuntboy, true},
-            {Gender.Shemale, true},
-            {Gender.None, true},
-            {Gender.Transgender, true}
-        };
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        ///     The meets gender filter.
-        /// </summary>
-        /// <param name="character">
-        ///     The character.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="bool" />.
-        /// </returns>
-        public bool MeetsGenderFilter(ICharacter character)
-        {
-            return GenderFilter[character.Gender];
-        }
-
-        #endregion
-
-        #region Methods
-
-        private void CallUpdate()
-        {
-            Updated?.Invoke(this, new EventArgs());
         }
 
         #endregion

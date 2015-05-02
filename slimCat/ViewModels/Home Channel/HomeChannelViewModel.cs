@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="HomeChannelViewModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -45,26 +43,6 @@ namespace slimCat.ViewModels
     public class HomeChannelViewModel : ChannelViewModelBase, IHasTabs
     {
         private readonly IUpdateMyself updateService;
-
-        #region Fields
-
-        private readonly IAutomateThings automation;
-
-        private readonly IBrowseThings browser;
-
-        private readonly StringBuilder connectDotDot;
-
-        private readonly CacheCount minuteOnlineCount;
-
-        private readonly Timer updateTimer = new Timer(1000); // every second
-
-        private StringBuilder flavorText;
-
-        private bool inStagger;
-
-        private string selectedTab = "About";
-
-        #endregion
 
         #region Constructors and Destructors
 
@@ -128,13 +106,35 @@ namespace slimCat.ViewModels
 
         #endregion
 
+        #region Fields
+
+        private readonly IAutomateThings automation;
+
+        private readonly IBrowseThings browser;
+
+        private readonly StringBuilder connectDotDot;
+
+        private readonly CacheCount minuteOnlineCount;
+
+        private readonly Timer updateTimer = new Timer(1000); // every second
+
+        private StringBuilder flavorText;
+
+        private bool inStagger;
+
+        private string selectedTab = "About";
+
+        #endregion
+
         #region Public Properties
 
         #region Header
 
-        public static string ClientIdString => $"{Constants.ClientId} {Constants.ClientNickname} ({Constants.ClientVersion})";
+        public static string ClientIdString
+            => $"{Constants.ClientId} {Constants.ClientNickname} ({Constants.ClientVersion})";
 
-        public string LastMessageReceived => HelperConverter.DateTimeToRough(ChatModel.LastMessageReceived, true, false);
+        public string LastMessageReceived => HelperConverter.DateTimeToRough(ChatModel.LastMessageReceived, true, false)
+            ;
 
         public int OnlineBookmarksCount => CharacterManager.GetNames(ListKind.Bookmark).Count;
 
@@ -259,6 +259,7 @@ namespace slimCat.ViewModels
                 return new GeneralChannelModel(ApplicationSettings.SlimCatChannelId, "slimCat", ChannelType.Private);
             }
         }
+
         public string SelectedTab
         {
             get { return selectedTab; }
@@ -374,7 +375,7 @@ namespace slimCat.ViewModels
             var message = "Automatic update successful, restart to finish applying updates.";
 
             if (!updated) message = "Automatic update failed, please install update manually.";
-            
+
             Events.GetEvent<ErrorEvent>().Publish(message);
         }
 

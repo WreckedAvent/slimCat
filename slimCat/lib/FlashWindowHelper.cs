@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="FlashWindowHelper.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -35,22 +33,6 @@ namespace slimCat.Libraries
     [ExcludeFromCodeCoverage]
     public static class NativeMethods
     {
-        #region Window Flashing API Stuff
-
-        private const uint FlashwStop = 0; // Stop flashing. The system restores the window to its original state.
-
-        private const uint FlashwCaption = 1; // Flash the window caption.
-
-        private const uint FlashwTray = 2; // Flash the taskbar button.
-
-        private const uint FlashwAll = 3; // Flash both the window caption and taskbar button.
-
-        private const uint FlashwTimer = 4; // Flash continuously, until the FLASHW_STOP flag is set.
-
-        private const uint FlashwTimernofg = 12; // Flash continuously until the window comes to the foreground.
-
-        #endregion
-
         /// <summary>
         ///     The flash window.
         /// </summary>
@@ -99,7 +81,6 @@ namespace slimCat.Libraries
             FlashWindowEx(ref info);
         }
 
-
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool FlashWindowEx(ref Flashwinfo pwfi);
@@ -134,5 +115,21 @@ namespace slimCat.Libraries
 
             // The rate at which the Window is to be flashed, in milliseconds. If Zero, the function uses the default cursor blink rate.
         }
+
+        #region Window Flashing API Stuff
+
+        private const uint FlashwStop = 0; // Stop flashing. The system restores the window to its original state.
+
+        private const uint FlashwCaption = 1; // Flash the window caption.
+
+        private const uint FlashwTray = 2; // Flash the taskbar button.
+
+        private const uint FlashwAll = 3; // Flash both the window caption and taskbar button.
+
+        private const uint FlashwTimer = 4; // Flash continuously, until the FLASHW_STOP flag is set.
+
+        private const uint FlashwTimernofg = 12; // Flash continuously until the window comes to the foreground.
+
+        #endregion
     }
 }

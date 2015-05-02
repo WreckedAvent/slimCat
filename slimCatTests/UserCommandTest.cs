@@ -1,48 +1,52 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CommandDefinitions.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="UserCommandTest.cs">
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
 namespace slimCatTest
 {
+    #region Usings
+
     using System;
     using System.Collections.Generic;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using slimCat.Models;
     using slimCat.Utilities;
 
+    #endregion
+
     [TestClass]
     public class UserCommandTest
     {
         private const string type = Constants.Arguments.Type;
-        private static IDictionary<string, object> GetCommand(string name, IList<string> args = null, string channel = null)
+
+        private static IDictionary<string, object> GetCommand(string name, IList<string> args = null,
+            string channel = null)
         {
             return CommandDefinitions.CreateCommand(name, args, channel).ToDictionary();
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof (ArgumentException))]
         public void UnknownCommandsThrowExceptions()
         {
             GetCommand("zzz");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof (ArgumentException))]
         public void MissingArgumentsThrowExceptions()
         {
             GetCommand("priv");
@@ -60,7 +64,7 @@ namespace slimCatTest
         [TestMethod]
         public void CorrectCommandWithOneArgumentWorks()
         {
-            var cmnd = GetCommand("priv", new[] { "foo" });
+            var cmnd = GetCommand("priv", new[] {"foo"});
 
             Assert.AreEqual(2, cmnd.Keys.Count);
             Assert.AreEqual("priv", cmnd[type]);
@@ -80,7 +84,7 @@ namespace slimCatTest
         [TestMethod]
         public void CommandWithOverrideWorks()
         {
-            var cmnd = GetCommand("online", new []{"foobar"});
+            var cmnd = GetCommand("online", new[] {"foobar"});
 
             Assert.AreEqual(3, cmnd.Keys.Count);
             Assert.AreEqual("foobar", cmnd["statusmsg"]);

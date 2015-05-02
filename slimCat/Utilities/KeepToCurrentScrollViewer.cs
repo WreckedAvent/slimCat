@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="KeepToCurrentScrollViewer.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-//
+// 
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -33,6 +31,18 @@ namespace slimCat.Utilities
     /// </summary>
     public class KeepToCurrentScrollViewer
     {
+        #region Constructors and Destructors
+
+        public KeepToCurrentScrollViewer(DependencyObject toManage)
+        {
+            toManage.ThrowIfNull("toManage");
+            this.toManage = toManage;
+
+            CheckScroller();
+        }
+
+        #endregion
+
         #region Fields
 
         private ScrollViewer scroller;
@@ -46,18 +56,6 @@ namespace slimCat.Utilities
         private double distanceToBottom;
 
         private readonly DependencyObject toManage;
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        public KeepToCurrentScrollViewer(DependencyObject toManage)
-        {
-            toManage.ThrowIfNull("toManage");
-            this.toManage = toManage;
-
-            CheckScroller();
-        }
 
         #endregion
 
@@ -77,7 +75,9 @@ namespace slimCat.Utilities
         public void Scroll(int scrollTicks)
         {
             if (CheckScroller())
-                scroller.ScrollToVerticalOffset(scroller.VerticalOffset - GeneralExtensions.GetScrollDistance(scrollTicks, ApplicationSettings.FontSize));
+                scroller.ScrollToVerticalOffset(scroller.VerticalOffset -
+                                                GeneralExtensions.GetScrollDistance(scrollTicks,
+                                                    ApplicationSettings.FontSize));
         }
 
         public void StabilizeNextScroll()

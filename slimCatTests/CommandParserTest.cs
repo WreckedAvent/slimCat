@@ -1,32 +1,33 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ListManagerTests.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="CommandParserTest.cs">
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
 namespace slimCatTest
 {
+    #region Usings
+
     using System;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using slimCat.Utilities;
 
+    #endregion
+
     [TestClass]
     public class CommandParserTest
     {
-
         private static CommandParser TestOf(string input, string channel = "")
         {
             return new CommandParser(input, channel);
@@ -47,7 +48,7 @@ namespace slimCatTest
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof (ArgumentException))]
         public void FailsOnUnknownCommand()
         {
             TestOf("/foobar").ToDictionary();
@@ -93,7 +94,8 @@ namespace slimCatTest
 
             Assert.AreEqual(Constants.ClientCommands.UserStatus, result[Constants.Arguments.Type]);
             Assert.AreEqual("online", result[Constants.Arguments.Status]);
-            Assert.AreEqual("I'm really tired today, hope I don't fall asleep!", result[Constants.Arguments.StatusMessage]);
+            Assert.AreEqual("I'm really tired today, hope I don't fall asleep!",
+                result[Constants.Arguments.StatusMessage]);
         }
 
         [TestMethod]

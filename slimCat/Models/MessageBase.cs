@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="MessageBase.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -32,6 +30,24 @@ namespace slimCat.Models
     /// </summary>
     public abstract class MessageBase : SysProp, IDisposable
     {
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     The dispose.
+        /// </summary>
+        public new void Dispose()
+        {
+            Dispose(true);
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected abstract override void Dispose(bool isManaged);
+
+        #endregion
+
         #region Fields
 
         #endregion
@@ -66,24 +82,6 @@ namespace slimCat.Models
         public string TimeStamp => !ApplicationSettings.UseCustomTimeStamp
             ? PostedTime.ToTimeStamp()
             : PostedTime.ToString(ApplicationSettings.CustomTimeStamp);
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        ///     The dispose.
-        /// </summary>
-        public new void Dispose()
-        {
-            Dispose(true);
-        }
-
-        #endregion
-
-        #region Methods
-
-        protected abstract override void Dispose(bool isManaged);
 
         #endregion
     }

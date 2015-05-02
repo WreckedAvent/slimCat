@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="IChatModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-//
+// 
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -33,6 +31,18 @@ namespace slimCat.Models
     [Obsolete("Use chat state instead")]
     public interface IChatModel
     {
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     Returns the ChannelModel for a given id/title, if it exists
+        /// </summary>
+        /// <param name="id">ID of the channel to find</param>
+        /// <param name="title">Title of the channel used to create if not existant</param>
+        /// <returns></returns>
+        ChannelModel FindChannel(string id, string title = null);
+
+        #endregion
+
         #region Public Events
 
         /// <summary>
@@ -119,18 +129,6 @@ namespace slimCat.Models
         ///     Gets or sets the automatic reply message.
         /// </summary>
         string AutoReplyMessage { get; set; }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        ///     Returns the ChannelModel for a given id/title, if it exists
-        /// </summary>
-        /// <param name="id">ID of the channel to find</param>
-        /// <param name="title">Title of the channel used to create if not existant</param>
-        /// <returns></returns>
-        ChannelModel FindChannel(string id, string title = null);
 
         #endregion
     }

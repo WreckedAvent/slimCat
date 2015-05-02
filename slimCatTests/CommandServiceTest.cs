@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CommandInterceptorTest.cs">
-//    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
-//    This source is subject to the Simplified BSD License.
-//    Please see the License.txt file for more information.
-//    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
-//    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-//    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//    PARTICULAR PURPOSE.
+// <copyright file="CommandServiceTest.cs">
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
+//     This source is subject to the Simplified BSD License.
+//     Please see the License.txt file for more information.
+//     All other rights reserved.
+// 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+//     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//     PARTICULAR PURPOSE.
 // </copyright>
-//  --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -43,16 +41,6 @@ namespace slimCatTest
     [TestClass]
     public class CommandServiceTest
     {
-        #region Fields
-
-        private readonly Mock<IManageChannels> channelManager;
-        private readonly Mock<ICharacterManager> characterManager;
-        private readonly Mock<IHandleChatConnection> chatConnection;
-        private readonly Mock<IChatModel> chatModel;
-        private readonly IEventAggregator eventAggregator;
-
-        #endregion
-
         #region Constructor
 
         public CommandServiceTest()
@@ -73,7 +61,7 @@ namespace slimCatTest
             var friendRequest = Mock.Of<IFriendRequestService>();
             var account = Mock.Of<IAccount>();
 
-            eventAggregator = new EventAggregator(); 
+            eventAggregator = new EventAggregator();
             var state = new ChatState(
                 contain,
                 regman,
@@ -94,101 +82,9 @@ namespace slimCatTest
 
         #endregion
 
-        #region Helpers
-
-        internal void MockCommand(params KeyValuePair<string, object>[] command)
-        {
-            eventAggregator.GetEvent<ChatCommandEvent>().Publish(CommandLike(command));
-
-            AllowProcessingTime();
-        }
-
-        private static IDictionary<string, object> CommandLike(params KeyValuePair<string, object>[] command)
-        {
-            return command.ToDictionary(x => x.Key, y => y.Value);
-        }
-
-        internal static KeyValuePair<string, object> WithArgument(string argument, object value)
-        {
-            return new KeyValuePair<string, object>(argument, value);
-        }
-
-        internal static ICharacter CharacterWithName(string name)
-        {
-            return new CharacterModel {Name = name};
-        }
-
-        internal static IDictionary<string, object> WithIdentity(string id)
-        {
-            return new Dictionary<string, object> {{Constants.Arguments.Identity, id}};
-        }
-
-        private static void AllowProcessingTime()
-        {
-            // this is all async, so wait a bit to let the other thread do what it is doing
-            // this is imperfect, but best we can do without coupling to a specific interceptor
-            Thread.Sleep(25);
-        }
-
-        private static Tuple<CharacterUpdateModel, T> ShouldBeCharacterUpdate<T>(NotificationModel model)
-            where T : CharacterUpdateEventArgs
-        {
-            var x = model as CharacterUpdateModel;
-            Assert.IsNotNull(x);
-
-            var y = x.Arguments as T;
-            Assert.IsNotNull(y);
-
-            return new Tuple<CharacterUpdateModel, T>(x, y);
-        }
-
-        private static Tuple<ChannelUpdateModel, T> ShouldBeChannelUpdate<T>(NotificationModel model)
-            where T : ChannelUpdateEventArgs
-        {
-            var x = model as ChannelUpdateModel;
-            Assert.IsNotNull(x);
-
-            var y = x.Arguments as T;
-            Assert.IsNotNull(y);
-
-            return new Tuple<ChannelUpdateModel, T>(x, y);
-        }
-
-        internal void ShouldCreateUpdate(Action<NotificationModel> action)
-        {
-            eventAggregator.GetEvent<NewUpdateEvent>().Subscribe(action);
-        }
-
-        internal void ShouldNotCreateUpdate()
-        {
-            ShouldCreateUpdate(x => Assert.Fail("Should not have generated update"));
-        }
-
-        internal void SetCurrentCharacterTo(string name)
-        {
-            chatModel.SetupGet(x => x.CurrentCharacter).Returns(CharacterWithName(name));
-        }
-
-        internal void LogInCharacter(string name)
-        {
-            characterManager.Setup(x => x.Find(name)).Returns(CharacterWithName(name));
-        }
-
-        #endregion
-
         [TestClass]
         public class ChannelCommandTests : CommandServiceTest
         {
-            #region Fields
-
-            private const string ChannelName = "testing channel";
-
-            private const string First = "testing character one";
-            private const string Second = "testing character two";
-            private readonly GeneralChannelModel channelModel;
-
-            #endregion
-
             #region Constructor
 
             public ChannelCommandTests()
@@ -202,26 +98,6 @@ namespace slimCatTest
                     .Returns(new ObservableCollection<GeneralChannelModel> {channelModel});
 
                 chatModel.Setup(x => x.FindChannel(ChannelName, null)).Returns(channelModel);
-            }
-
-            #endregion
-
-            #region Helpers
-
-            private void SetupLists()
-            {
-                characterManager
-                    .Setup(x => x.Find(First))
-                    .Returns(new CharacterModel {Name = First});
-
-                characterManager
-                    .Setup(x => x.Find(Second))
-                    .Returns(new CharacterModel {Name = Second});
-            }
-
-            private void JoinCurrentChannel(string name)
-            {
-                channelModel.CharacterManager.SignOn(CharacterWithName(name));
             }
 
             #endregion
@@ -258,45 +134,6 @@ namespace slimCatTest
 
             #endregion
 
-            #region CDS
-
-            [TestMethod]
-            public void ChannelDescriptionInitializeWorks()
-            {
-                const string description = "testing description";
-
-                ShouldNotCreateUpdate();
-
-                MockCommand(
-                    WithArgument(Constants.Arguments.Command, Commands.ChannelDescription),
-                    WithArgument(Constants.Arguments.Channel, ChannelName),
-                    WithArgument("description", description));
-
-                Assert.IsTrue(channelModel.Description.Equals(description));
-            }
-
-            [TestMethod]
-            public void ChangeChannelDescriptionWorks()
-            {
-                const string description = "testing description";
-                channelModel.Description = "some other description";
-
-                ShouldCreateUpdate(x =>
-                    {
-                        var result = ShouldBeChannelUpdate<ChannelDescriptionChangedEventArgs>(x);
-                        Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
-                    });
-
-                MockCommand(
-                    WithArgument(Constants.Arguments.Command, Commands.ChannelDescription),
-                    WithArgument(Constants.Arguments.Channel, ChannelName),
-                    WithArgument("description", description));
-
-                Assert.IsTrue(channelModel.Description.Equals(description));
-            }
-
-            #endregion
-
             #region COL
 
             [TestMethod]
@@ -324,11 +161,11 @@ namespace slimCatTest
             public void ChannelModeChangeWorks()
             {
                 ShouldCreateUpdate(x =>
-                    {
-                        var result = ShouldBeChannelUpdate<ChannelModeUpdateEventArgs>(x);
-                        Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
-                        Assert.IsTrue(result.Item2.NewMode == ChannelMode.Ads);
-                    });
+                {
+                    var result = ShouldBeChannelUpdate<ChannelModeUpdateEventArgs>(x);
+                    Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
+                    Assert.IsTrue(result.Item2.NewMode == ChannelMode.Ads);
+                });
 
                 MockCommand(
                     WithArgument(Constants.Arguments.Command, Commands.ChannelMode),
@@ -337,6 +174,106 @@ namespace slimCatTest
 
                 chatModel.VerifyGet(x => x.CurrentChannels);
                 Assert.IsTrue(channelModel.Mode == ChannelMode.Ads);
+            }
+
+            #endregion
+
+            #region LCH
+
+            [TestMethod]
+            public void LeaveChannelWorks()
+            {
+                const string leaverName = "testing leaving character";
+                var leaver = CharacterWithName(leaverName);
+
+                channelModel.CharacterManager.SignOn(leaver);
+                LogInCharacter(leaverName);
+                SetCurrentCharacterTo("foobar");
+
+                ShouldCreateUpdate(x =>
+                {
+                    var result = ShouldBeCharacterUpdate<JoinLeaveEventArgs>(x);
+                    Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(leaverName));
+                    Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
+                    Assert.IsFalse(result.Item2.Joined);
+                });
+
+                MockCommand(
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelLeave),
+                    WithArgument(Constants.Arguments.Channel, ChannelName),
+                    WithArgument(Constants.Arguments.Character, leaverName));
+
+                characterManager.VerifyAll();
+                Assert.IsFalse(channelModel.CharacterManager.IsOnList(leaverName, ListKind.Online));
+            }
+
+            #endregion
+
+            #region Fields
+
+            private const string ChannelName = "testing channel";
+
+            private const string First = "testing character one";
+            private const string Second = "testing character two";
+            private readonly GeneralChannelModel channelModel;
+
+            #endregion
+
+            #region Helpers
+
+            private void SetupLists()
+            {
+                characterManager
+                    .Setup(x => x.Find(First))
+                    .Returns(new CharacterModel {Name = First});
+
+                characterManager
+                    .Setup(x => x.Find(Second))
+                    .Returns(new CharacterModel {Name = Second});
+            }
+
+            private void JoinCurrentChannel(string name)
+            {
+                channelModel.CharacterManager.SignOn(CharacterWithName(name));
+            }
+
+            #endregion
+
+            #region CDS
+
+            [TestMethod]
+            public void ChannelDescriptionInitializeWorks()
+            {
+                const string description = "testing description";
+
+                ShouldNotCreateUpdate();
+
+                MockCommand(
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelDescription),
+                    WithArgument(Constants.Arguments.Channel, ChannelName),
+                    WithArgument("description", description));
+
+                Assert.IsTrue(channelModel.Description.Equals(description));
+            }
+
+            [TestMethod]
+            public void ChangeChannelDescriptionWorks()
+            {
+                const string description = "testing description";
+                channelModel.Description = "some other description";
+
+                ShouldCreateUpdate(x =>
+                {
+                    var result = ShouldBeChannelUpdate<ChannelDescriptionChangedEventArgs>(x);
+                    Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
+                });
+
+                MockCommand(
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelDescription),
+                    WithArgument(Constants.Arguments.Channel, ChannelName),
+                    WithArgument("description", description));
+
+                Assert.IsTrue(channelModel.Description.Equals(description));
             }
 
             #endregion
@@ -350,13 +287,13 @@ namespace slimCatTest
                 const string kicked = "testing kickee";
 
                 ShouldCreateUpdate(x =>
-                    {
-                        var result = ShouldBeChannelUpdate<ChannelDisciplineEventArgs>(x);
-                        Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
-                        Assert.IsTrue(result.Item2.IsBan == false);
-                        Assert.IsTrue(result.Item2.Kicker == op);
-                        Assert.IsTrue(result.Item2.Kicked == kicked);
-                    });
+                {
+                    var result = ShouldBeChannelUpdate<ChannelDisciplineEventArgs>(x);
+                    Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
+                    Assert.IsTrue(result.Item2.IsBan == false);
+                    Assert.IsTrue(result.Item2.Kicker == op);
+                    Assert.IsTrue(result.Item2.Kicked == kicked);
+                });
 
                 SetCurrentCharacterTo("foobar");
                 JoinCurrentChannel(kicked);
@@ -379,13 +316,13 @@ namespace slimCatTest
                 const string kicked = "testing kickee";
 
                 ShouldCreateUpdate(x =>
-                    {
-                        var result = ShouldBeChannelUpdate<ChannelDisciplineEventArgs>(x);
-                        Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
-                        Assert.IsTrue(result.Item2.IsBan == false);
-                        Assert.IsTrue(result.Item2.Kicker == op);
-                        Assert.IsTrue(result.Item2.Kicked == kicked);
-                    });
+                {
+                    var result = ShouldBeChannelUpdate<ChannelDisciplineEventArgs>(x);
+                    Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
+                    Assert.IsTrue(result.Item2.IsBan == false);
+                    Assert.IsTrue(result.Item2.Kicker == op);
+                    Assert.IsTrue(result.Item2.Kicked == kicked);
+                });
 
                 SetCurrentCharacterTo(kicked);
                 JoinCurrentChannel(kicked);
@@ -409,13 +346,13 @@ namespace slimCatTest
                 const string kicked = "testing kickee";
 
                 ShouldCreateUpdate(x =>
-                    {
-                        var result = ShouldBeChannelUpdate<ChannelDisciplineEventArgs>(x);
-                        Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
-                        Assert.IsTrue(result.Item2.IsBan);
-                        Assert.IsTrue(result.Item2.Kicker == op);
-                        Assert.IsTrue(result.Item2.Kicked == kicked);
-                    });
+                {
+                    var result = ShouldBeChannelUpdate<ChannelDisciplineEventArgs>(x);
+                    Assert.IsTrue(result.Item1.TargetChannel.Equals(channelModel));
+                    Assert.IsTrue(result.Item2.IsBan);
+                    Assert.IsTrue(result.Item2.Kicker == op);
+                    Assert.IsTrue(result.Item2.Kicked == kicked);
+                });
 
                 SetCurrentCharacterTo("foobar");
                 channelModel.CharacterManager.SignOn(CharacterWithName(kicked));
@@ -443,12 +380,12 @@ namespace slimCatTest
                 channelModel.CharacterManager.SignOn(CharacterWithName(promotee));
 
                 ShouldCreateUpdate(x =>
-                    {
-                        var result = ShouldBeCharacterUpdate<PromoteDemoteEventArgs>(x);
-                        Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(promotee));
-                        Assert.IsTrue(result.Item2.IsPromote);
-                        Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
-                    });
+                {
+                    var result = ShouldBeCharacterUpdate<PromoteDemoteEventArgs>(x);
+                    Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(promotee));
+                    Assert.IsTrue(result.Item2.IsPromote);
+                    Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
+                });
 
                 characterManager.Setup(x => x.Find(promotee)).Returns(CharacterWithName(promotee));
 
@@ -468,12 +405,12 @@ namespace slimCatTest
                 channelModel.CharacterManager.Add(promotee, ListKind.Moderator);
 
                 ShouldCreateUpdate(x =>
-                    {
-                        var result = ShouldBeCharacterUpdate<PromoteDemoteEventArgs>(x);
-                        Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(promotee));
-                        Assert.IsFalse(result.Item2.IsPromote);
-                        Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
-                    });
+                {
+                    var result = ShouldBeCharacterUpdate<PromoteDemoteEventArgs>(x);
+                    Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(promotee));
+                    Assert.IsFalse(result.Item2.IsPromote);
+                    Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
+                });
 
                 characterManager.Setup(x => x.Find(promotee)).Returns(CharacterWithName(promotee));
 
@@ -495,17 +432,17 @@ namespace slimCatTest
                 const string joinerName = "testing joiner character";
                 var joiner = CharacterWithName(joinerName);
 
-                chatModel.Setup(x => x.CurrentCharacter).Returns(new CharacterModel { Name = "Foo bar" });
+                chatModel.Setup(x => x.CurrentCharacter).Returns(new CharacterModel {Name = "Foo bar"});
 
                 LogInCharacter(joinerName);
 
                 ShouldCreateUpdate(x =>
-                    {
-                        var result = ShouldBeCharacterUpdate<JoinLeaveEventArgs>(x);
-                        Assert.IsTrue(result.Item1.TargetCharacter.Equals(joiner));
-                        Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
-                        Assert.IsTrue(result.Item2.Joined);
-                    });
+                {
+                    var result = ShouldBeCharacterUpdate<JoinLeaveEventArgs>(x);
+                    Assert.IsTrue(result.Item1.TargetCharacter.Equals(joiner));
+                    Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
+                    Assert.IsTrue(result.Item2.Joined);
+                });
 
                 MockCommand(
                     WithArgument(Constants.Arguments.Command, Commands.ChannelJoin),
@@ -522,7 +459,7 @@ namespace slimCatTest
             {
                 const string joinerName = "testing joiner character";
 
-                chatModel.Setup(x => x.CurrentCharacter).Returns(new CharacterModel { Name = joinerName });
+                chatModel.Setup(x => x.CurrentCharacter).Returns(new CharacterModel {Name = joinerName});
                 chatModel.SetupGet(x => x.CurrentChannels).Returns(new ObservableCollection<GeneralChannelModel>());
                 channelManager.Setup(x => x.JoinChannel(ChannelType.Public, ChannelName, ChannelName));
 
@@ -539,49 +476,11 @@ namespace slimCatTest
             }
 
             #endregion
-
-            #region LCH
-
-            [TestMethod]
-            public void LeaveChannelWorks()
-            {
-                const string leaverName = "testing leaving character";
-                var leaver = CharacterWithName(leaverName);
-
-                channelModel.CharacterManager.SignOn(leaver);
-                LogInCharacter(leaverName);
-                SetCurrentCharacterTo("foobar");
-
-                ShouldCreateUpdate(x =>
-                    {
-                        var result = ShouldBeCharacterUpdate<JoinLeaveEventArgs>(x);
-                        Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(leaverName));
-                        Assert.IsTrue(result.Item2.TargetChannel.Equals(ChannelName));
-                        Assert.IsFalse(result.Item2.Joined);
-                    });
-
-                MockCommand(
-                    WithArgument(Constants.Arguments.Command, Commands.ChannelLeave),
-                    WithArgument(Constants.Arguments.Channel, ChannelName),
-                    WithArgument(Constants.Arguments.Character, leaverName));
-
-                characterManager.VerifyAll();
-                Assert.IsFalse(channelModel.CharacterManager.IsOnList(leaverName, ListKind.Online));
-            }
-
-            #endregion
         }
 
         [TestClass]
         public class MessageCommandTests : CommandServiceTest
         {
-            #region Fields
-
-            private const string Character = "testing character";
-            private const string Message = "testing message";
-
-            #endregion
-
             #region Helpers
 
             private void IgnoreIncomingCharacter()
@@ -589,6 +488,38 @@ namespace slimCatTest
                 characterManager.Setup(
                     x => x.IsOnList(Character, ListKind.Ignored, true)).Returns(true);
             }
+
+            #endregion
+
+            #region BRO
+
+            [TestMethod]
+            public void BroadcastWorks()
+            {
+                characterManager.Setup(x => x.Find(Character)).Returns(new CharacterModel {Name = Character});
+
+                ShouldCreateUpdate(x =>
+                {
+                    var result = ShouldBeCharacterUpdate<BroadcastEventArgs>(x);
+                    Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(Character));
+                    Assert.IsTrue(result.Item2.Message.Equals(Message));
+                });
+
+                MockCommand(
+                    WithArgument(Constants.Arguments.Command, Commands.AdminBroadcast),
+                    WithArgument(Constants.Arguments.Character, Character),
+                    WithArgument(Constants.Arguments.Message, Message));
+
+
+                characterManager.VerifyAll();
+            }
+
+            #endregion
+
+            #region Fields
+
+            private const string Character = "testing character";
+            private const string Message = "testing message";
 
             #endregion
 
@@ -613,9 +544,9 @@ namespace slimCatTest
             public void PrivateMethodFromExistingPmWorks()
             {
                 var currentModel = new PmChannelModel(new CharacterModel {Name = Character})
-                    {
-                        TypingStatus = TypingStatus.Typing
-                    };
+                {
+                    TypingStatus = TypingStatus.Typing
+                };
 
                 characterManager.Setup(
                     x => x.IsOnList(Character, ListKind.Ignored, true)).Returns(false);
@@ -645,11 +576,11 @@ namespace slimCatTest
 
                 chatConnection.Setup(
                     x => x.SendMessage(new Dictionary<string, object>
-                        {
-                            {Constants.Arguments.Action, Constants.Arguments.ActionNotify},
-                            {Constants.Arguments.Character, Character},
-                            {Constants.Arguments.Type, Commands.UserIgnore}
-                        }));
+                    {
+                        {Constants.Arguments.Action, Constants.Arguments.ActionNotify},
+                        {Constants.Arguments.Character, Character},
+                        {Constants.Arguments.Type, Commands.UserIgnore}
+                    }));
 
                 MockCommand(
                     WithArgument(Constants.Arguments.Command, Commands.UserMessage),
@@ -745,31 +676,6 @@ namespace slimCatTest
 
             #endregion
 
-            #region BRO
-
-            [TestMethod]
-            public void BroadcastWorks()
-            {
-                characterManager.Setup(x => x.Find(Character)).Returns(new CharacterModel {Name = Character});
-
-                ShouldCreateUpdate(x =>
-                    {
-                        var result = ShouldBeCharacterUpdate<BroadcastEventArgs>(x);
-                        Assert.IsTrue(result.Item1.TargetCharacter.Name.Equals(Character));
-                        Assert.IsTrue(result.Item2.Message.Equals(Message));
-                    });
-
-                MockCommand(
-                    WithArgument(Constants.Arguments.Command, Commands.AdminBroadcast),
-                    WithArgument(Constants.Arguments.Character, Character),
-                    WithArgument(Constants.Arguments.Message, Message));
-
-
-                characterManager.VerifyAll();
-            }
-
-            #endregion
-
             #region RLL
 
             [TestMethod]
@@ -810,5 +716,97 @@ namespace slimCatTest
 
             #endregion
         }
+
+        #region Fields
+
+        private readonly Mock<IManageChannels> channelManager;
+        private readonly Mock<ICharacterManager> characterManager;
+        private readonly Mock<IHandleChatConnection> chatConnection;
+        private readonly Mock<IChatModel> chatModel;
+        private readonly IEventAggregator eventAggregator;
+
+        #endregion
+
+        #region Helpers
+
+        internal void MockCommand(params KeyValuePair<string, object>[] command)
+        {
+            eventAggregator.GetEvent<ChatCommandEvent>().Publish(CommandLike(command));
+
+            AllowProcessingTime();
+        }
+
+        private static IDictionary<string, object> CommandLike(params KeyValuePair<string, object>[] command)
+        {
+            return command.ToDictionary(x => x.Key, y => y.Value);
+        }
+
+        internal static KeyValuePair<string, object> WithArgument(string argument, object value)
+        {
+            return new KeyValuePair<string, object>(argument, value);
+        }
+
+        internal static ICharacter CharacterWithName(string name)
+        {
+            return new CharacterModel {Name = name};
+        }
+
+        internal static IDictionary<string, object> WithIdentity(string id)
+        {
+            return new Dictionary<string, object> {{Constants.Arguments.Identity, id}};
+        }
+
+        private static void AllowProcessingTime()
+        {
+            // this is all async, so wait a bit to let the other thread do what it is doing
+            // this is imperfect, but best we can do without coupling to a specific interceptor
+            Thread.Sleep(25);
+        }
+
+        private static Tuple<CharacterUpdateModel, T> ShouldBeCharacterUpdate<T>(NotificationModel model)
+            where T : CharacterUpdateEventArgs
+        {
+            var x = model as CharacterUpdateModel;
+            Assert.IsNotNull(x);
+
+            var y = x.Arguments as T;
+            Assert.IsNotNull(y);
+
+            return new Tuple<CharacterUpdateModel, T>(x, y);
+        }
+
+        private static Tuple<ChannelUpdateModel, T> ShouldBeChannelUpdate<T>(NotificationModel model)
+            where T : ChannelUpdateEventArgs
+        {
+            var x = model as ChannelUpdateModel;
+            Assert.IsNotNull(x);
+
+            var y = x.Arguments as T;
+            Assert.IsNotNull(y);
+
+            return new Tuple<ChannelUpdateModel, T>(x, y);
+        }
+
+        internal void ShouldCreateUpdate(Action<NotificationModel> action)
+        {
+            eventAggregator.GetEvent<NewUpdateEvent>().Subscribe(action);
+        }
+
+        internal void ShouldNotCreateUpdate()
+        {
+            ShouldCreateUpdate(x => Assert.Fail("Should not have generated update"));
+        }
+
+        internal void SetCurrentCharacterTo(string name)
+        {
+            chatModel.SetupGet(x => x.CurrentCharacter).Returns(CharacterWithName(name));
+        }
+
+        internal void LogInCharacter(string name)
+        {
+            characterManager.Setup(x => x.Find(name)).Returns(CharacterWithName(name));
+        }
+
+        #endregion
     }
 }

@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="GeneralChannelModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -33,6 +31,45 @@ namespace slimCat.Models
     /// </summary>
     public sealed class GeneralChannelModel : ChannelModel
     {
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     The add message.
+        /// </summary>
+        /// <param name="message">
+        ///     The message.
+        /// </param>
+        /// <param name="isOfInterest">
+        ///     The is of interest.
+        /// </param>
+        public override void AddMessage(IMessage message, bool isOfInterest = false)
+        {
+            var messageCollection = message.Type == MessageType.Ad ? Ads : Messages;
+
+            messageCollection.Backlog(message, Settings.MaxBackLogItems);
+
+            if (IsSelected)
+            {
+                if (message.Type == MessageType.Normal)
+                    LastReadCount = messageCollection.Count;
+                else
+                    LastReadAdCount = messageCollection.Count;
+            }
+            else if (messageCollection.Count >= Settings.MaxBackLogItems)
+            {
+                if (message.Type == MessageType.Normal)
+                    LastReadCount--;
+                else
+                    LastReadAdCount--;
+            }
+            else if (!IsSelected)
+                UnreadContainsInteresting = isOfInterest;
+
+            UpdateBindings();
+        }
+
+        #endregion
+
         #region Fields
 
         private string description;
@@ -148,9 +185,9 @@ namespace slimCat.Models
 
             set
             {
-                ShowChannelDescription = !string.IsNullOrWhiteSpace(description) 
-                                       && !string.IsNullOrWhiteSpace(value)
-                                       && description != value;
+                ShowChannelDescription = !string.IsNullOrWhiteSpace(description)
+                                         && !string.IsNullOrWhiteSpace(value)
+                                         && description != value;
                 description = value;
                 OnPropertyChanged();
             }
@@ -225,11 +262,11 @@ namespace slimCat.Models
 
                 if (Messages.Count == 0 && Ads.Count == 0) return false;
 
-                var messagesMatter = (Mode == ChannelMode.Chat || Mode == ChannelMode.Both) 
-                                        && Settings.MessageNotifyLevel != 0;
+                var messagesMatter = (Mode == ChannelMode.Chat || Mode == ChannelMode.Both)
+                                     && Settings.MessageNotifyLevel != 0;
 
-                var adsMatter = (Mode == ChannelMode.Ads || Mode == ChannelMode.Both) 
-                                    && Settings.AdNotifyLevel != 0;
+                var adsMatter = (Mode == ChannelMode.Ads || Mode == ChannelMode.Both)
+                                && Settings.AdNotifyLevel != 0;
 
                 if (!messagesMatter && !adsMatter)
                     return false; // terminate early upon user request
@@ -262,45 +299,6 @@ namespace slimCat.Models
                 userCount = value;
                 UpdateBindings();
             }
-        }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        ///     The add message.
-        /// </summary>
-        /// <param name="message">
-        ///     The message.
-        /// </param>
-        /// <param name="isOfInterest">
-        ///     The is of interest.
-        /// </param>
-        public override void AddMessage(IMessage message, bool isOfInterest = false)
-        {
-            var messageCollection = message.Type == MessageType.Ad ? Ads : Messages;
-
-            messageCollection.Backlog(message, Settings.MaxBackLogItems);
-
-            if (IsSelected)
-            {
-                if (message.Type == MessageType.Normal)
-                    LastReadCount = messageCollection.Count;
-                else
-                    LastReadAdCount = messageCollection.Count;
-            }
-            else if (messageCollection.Count >= Settings.MaxBackLogItems)
-            {
-                if (message.Type == MessageType.Normal)
-                    LastReadCount--;
-                else
-                    LastReadAdCount--;
-            }
-            else if (!IsSelected)
-                UnreadContainsInteresting = isOfInterest;
-
-            UpdateBindings();
         }
 
         #endregion

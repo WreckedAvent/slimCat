@@ -1,19 +1,17 @@
 #region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CharacterUpdateModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -35,6 +33,28 @@ namespace slimCat.Models
     /// </summary>
     public partial class CharacterUpdateModel : NotificationModel
     {
+        #region Public Methods and Operators
+
+        public override string ToString()
+        {
+            return TargetCharacter.Name + " " + Arguments;
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected override void Dispose(bool isManaged)
+        {
+            if (!isManaged)
+                return;
+
+            TargetCharacter = null;
+            Arguments = null;
+        }
+
+        #endregion
+
         #region Constructors and Destructors
 
         /// <summary>
@@ -65,7 +85,7 @@ namespace slimCat.Models
         /// </summary>
         public ICharacter TargetCharacter { get; private set; }
 
-        public override Block View => new CharacterUpdateView { DataContext = this };
+        public override Block View => new CharacterUpdateView {DataContext = this};
 
         public override void Navigate(IChatState chatState)
         {
@@ -78,28 +98,6 @@ namespace slimCat.Models
         }
 
         #endregion
-
-        #region Public Methods and Operators
-
-        public override string ToString()
-        {
-            return TargetCharacter.Name + " " + Arguments;
-        }
-
-        #endregion
-
-        #region Methods
-
-        protected override void Dispose(bool isManaged)
-        {
-            if (!isManaged)
-                return;
-
-            TargetCharacter = null;
-            Arguments = null;
-        }
-
-        #endregion
     }
 
     /// <summary>
@@ -108,7 +106,6 @@ namespace slimCat.Models
     public abstract class CharacterUpdateEventArgs : EventArgs
     {
         public CharacterUpdateModel Model { get; set; }
-
         public abstract void DisplayNewToast(IChatState chatState, IManageToasts toastsManager);
 
         public virtual void NavigateTo(IChatState chatState)
@@ -146,7 +143,6 @@ namespace slimCat.Models
     public abstract class CharacterUpdateInChannelEventArgs : CharacterUpdateEventArgs
     {
         public string TargetChannel { get; set; }
-
         public string TargetChannelId { get; set; }
 
         internal override void SetToastData(ToastNotificationsViewModel toast)

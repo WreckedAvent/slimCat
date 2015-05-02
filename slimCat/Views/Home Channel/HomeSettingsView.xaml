@@ -212,7 +212,7 @@
 
             <CheckBox IsChecked="{Binding SortUsersAlphabetically}"
                       ToolTip="Allows slimCat to order the user lists alphbetically instead of by status.">
-                Order user lists alphabetically 
+                Order user lists alphabetically
             </CheckBox>
 
             <StackPanel Margin="0,15,0,0"
@@ -303,15 +303,15 @@
             </CheckBox>
 
             <TextBlock Text="(h=12-Hour, H=24-Hour, mm=Minute, ss=Second, tt=AM or PM)"
-                       Visibility="{Binding Path=UseCustomTimeStamp, Converter={StaticResource BoolConverter}}"/>
+                       Visibility="{Binding Path=UseCustomTimeStamp, Converter={StaticResource BoolConverter}}" />
             <TextBox
-                    Text="{Binding Path=CustomTimeStamp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    AcceptsReturn="False"
-                    MinWidth="400"
-                    MaxLines="1"
-                    HorizontalAlignment="Left"
-                    FontSize="12"
-                    Visibility="{Binding Path=UseCustomTimeStamp, Converter={StaticResource BoolConverter}}" />
+                Text="{Binding Path=CustomTimeStamp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                AcceptsReturn="False"
+                MinWidth="400"
+                MaxLines="1"
+                HorizontalAlignment="Left"
+                FontSize="12"
+                Visibility="{Binding Path=UseCustomTimeStamp, Converter={StaticResource BoolConverter}}" />
         </StackPanel>
 
         <StackPanel TextBlock.Foreground="{StaticResource ForegroundBrush}"
@@ -343,10 +343,10 @@
             </CheckBox>
 
             <CheckBox IsChecked="{Binding WipeNotificationsOnTabChange}"
-                            ToolTip="Allows slimCat to automatically clear your notifications after you view the notification tab.">
+                      ToolTip="Allows slimCat to automatically clear your notifications after you view the notification tab.">
                 Automatically wipe notifications after viewing them
             </CheckBox>
-            
+
             <CheckBox IsChecked="{Binding AllowAdTruncating}"
                       ToolTip="Allows slimCat to automatically collapse very long ads with a 'show more' collapse">
                 Automatically collapse long ads

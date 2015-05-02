@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="RightClickViewModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -32,6 +30,78 @@ namespace slimCat.ViewModels
     /// </summary>
     public sealed class RightClickMenuViewModel : SysProp
     {
+        #region Constructors and Destructors
+
+        public RightClickMenuViewModel(bool isModerator, ICharacterManager manager, IGetPermissions permissionService)
+        {
+            this.isModerator = isModerator;
+            this.manager = manager;
+            this.permissionService = permissionService;
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     Sets the new target.
+        /// </summary>
+        /// <param name="newTarget">The new target.</param>
+        /// <param name="thisHasReports">if set to <c>true</c> the character has reports.</param>
+        public void SetNewTarget(ICharacter newTarget, bool thisHasReports)
+        {
+            Target = newTarget;
+            Target.GetAvatar();
+
+            Logging.LogLine("target set to \"{0}\"".FormatWith(Target.Name), "right-click vm");
+
+            hasReports = thisHasReports;
+
+            OnPropertyChanged("Target");
+            OnPropertyChanged("CanIgnore");
+            OnPropertyChanged("CanUnignore");
+
+            OnPropertyChanged("TargetGender");
+            OnPropertyChanged("TargetStatus");
+
+            OnPropertyChanged("HasStatus");
+            OnPropertyChanged("HasReport");
+
+            OnPropertyChanged("CanIgnoreUpdates");
+
+            OnPropertyChanged("IsChannelModerator");
+            OnPropertyChanged("IsGlobalModerator");
+
+            OnPropertyChanged("IsIgnored");
+            OnPropertyChanged("IsBookmarked");
+            OnPropertyChanged("IsFriend");
+
+            OnPropertyChanged("IsOfInterest");
+            OnPropertyChanged("IsUninteresting");
+
+            OnPropertyChanged("IsUpdatesIgnored");
+            OnPropertyChanged("CanRemoveSearchTag");
+
+            OnPropertyChanged("HasIncomingFriendRequest");
+            OnPropertyChanged("HasOutgoingFriendRequest");
+            OnPropertyChanged("IsPendingFriend");
+
+            OnPropertyChanged("Bookmark");
+            OnPropertyChanged("FriendRequest");
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected override void Dispose(bool isManaged)
+        {
+            Target = null;
+            base.Dispose(isManaged);
+        }
+
+        #endregion
+
         #region Fields
 
         private readonly bool isModerator;
@@ -41,17 +111,6 @@ namespace slimCat.ViewModels
         private bool hasReports;
 
         private bool isOpen;
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        public RightClickMenuViewModel(bool isModerator, ICharacterManager manager, IGetPermissions permissionService)
-        {
-            this.isModerator = isModerator;
-            this.manager = manager;
-            this.permissionService = permissionService;
-        }
 
         #endregion
 
@@ -336,67 +395,6 @@ namespace slimCat.ViewModels
 
                 return manager.IsOnList(Target.Name, ListKind.SearchResult);
             }
-        }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        ///     Sets the new target.
-        /// </summary>
-        /// <param name="newTarget">The new target.</param>
-        /// <param name="thisHasReports">if set to <c>true</c> the character has reports.</param>
-        public void SetNewTarget(ICharacter newTarget, bool thisHasReports)
-        {
-            Target = newTarget;
-            Target.GetAvatar();
-
-            Logging.LogLine("target set to \"{0}\"".FormatWith(Target.Name), "right-click vm");
-
-            hasReports = thisHasReports;
-
-            OnPropertyChanged("Target");
-            OnPropertyChanged("CanIgnore");
-            OnPropertyChanged("CanUnignore");
-
-            OnPropertyChanged("TargetGender");
-            OnPropertyChanged("TargetStatus");
-
-            OnPropertyChanged("HasStatus");
-            OnPropertyChanged("HasReport");
-
-            OnPropertyChanged("CanIgnoreUpdates");
-
-            OnPropertyChanged("IsChannelModerator");
-            OnPropertyChanged("IsGlobalModerator");
-
-            OnPropertyChanged("IsIgnored");
-            OnPropertyChanged("IsBookmarked");
-            OnPropertyChanged("IsFriend");
-
-            OnPropertyChanged("IsOfInterest");
-            OnPropertyChanged("IsUninteresting");
-
-            OnPropertyChanged("IsUpdatesIgnored");
-            OnPropertyChanged("CanRemoveSearchTag");
-
-            OnPropertyChanged("HasIncomingFriendRequest");
-            OnPropertyChanged("HasOutgoingFriendRequest");
-            OnPropertyChanged("IsPendingFriend");
-
-            OnPropertyChanged("Bookmark");
-            OnPropertyChanged("FriendRequest");
-        }
-
-        #endregion
-
-        #region Methods
-
-        protected override void Dispose(bool isManaged)
-        {
-            Target = null;
-            base.Dispose(isManaged);
         }
 
         #endregion

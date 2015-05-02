@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CharacterModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -38,6 +36,85 @@ namespace slimCat.Models
     /// </summary>
     public sealed class CharacterModel : SysProp, ICharacter
     {
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     The get avatar.
+        /// </summary>
+        public void GetAvatar()
+        {
+            if (name == null)
+                return;
+
+            var worker = new BackgroundWorker();
+            worker.DoWork += (s, e) =>
+            {
+                var uri = new Uri((string) e.Argument, UriKind.Absolute);
+
+                using (var webClient = new WebClient())
+                {
+                    webClient.Proxy = null; // avoids dynamic proxy discovery delay
+                    webClient.CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate);
+                    try
+                    {
+                        var imageBytes = webClient.DownloadData(uri);
+
+                        if (imageBytes == null)
+                        {
+                            e.Result = null;
+                            return;
+                        }
+
+                        var imageStream = new MemoryStream(imageBytes);
+                        var image = new BitmapImage();
+
+                        image.BeginInit();
+                        image.StreamSource = imageStream;
+                        image.CacheOption = BitmapCacheOption.OnLoad;
+                        image.EndInit();
+
+                        image.Freeze();
+                        imageStream.Close();
+
+                        e.Result = image;
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+            };
+
+            worker.RunWorkerCompleted += (s, e) =>
+            {
+                var bitmapImage = e.Result as BitmapImage;
+                if (bitmapImage != null)
+                    Avatar = bitmapImage;
+
+                worker.Dispose();
+            };
+
+            worker.RunWorkerAsync(Constants.UrlConstants.CharacterAvatar + Name.ToLower() + ".png");
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected override void Dispose(bool isManaged)
+        {
+            if (isManaged)
+            {
+                Name = null;
+                StatusMessage = null;
+                Avatar.StreamSource.Dispose();
+                lastReport.Dispose();
+            }
+
+            base.Dispose(isManaged);
+        }
+
+        #endregion
+
         #region Fields
 
         private BitmapImage avatar;
@@ -174,85 +251,6 @@ namespace slimCat.Models
         }
 
         public string LastAd { get; set; }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        ///     The get avatar.
-        /// </summary>
-        public void GetAvatar()
-        {
-            if (name == null)
-                return;
-
-            var worker = new BackgroundWorker();
-            worker.DoWork += (s, e) =>
-            {
-                var uri = new Uri((string) e.Argument, UriKind.Absolute);
-
-                using (var webClient = new WebClient())
-                {
-                    webClient.Proxy = null; // avoids dynamic proxy discovery delay
-                    webClient.CachePolicy = new RequestCachePolicy(RequestCacheLevel.Revalidate);
-                    try
-                    {
-                        var imageBytes = webClient.DownloadData(uri);
-
-                        if (imageBytes == null)
-                        {
-                            e.Result = null;
-                            return;
-                        }
-
-                        var imageStream = new MemoryStream(imageBytes);
-                        var image = new BitmapImage();
-
-                        image.BeginInit();
-                        image.StreamSource = imageStream;
-                        image.CacheOption = BitmapCacheOption.OnLoad;
-                        image.EndInit();
-
-                        image.Freeze();
-                        imageStream.Close();
-
-                        e.Result = image;
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
-            };
-
-            worker.RunWorkerCompleted += (s, e) =>
-            {
-                var bitmapImage = e.Result as BitmapImage;
-                if (bitmapImage != null)
-                    Avatar = bitmapImage;
-
-                worker.Dispose();
-            };
-
-            worker.RunWorkerAsync(Constants.UrlConstants.CharacterAvatar + Name.ToLower() + ".png");
-        }
-
-        #endregion
-
-        #region Methods
-
-        protected override void Dispose(bool isManaged)
-        {
-            if (isManaged)
-            {
-                Name = null;
-                StatusMessage = null;
-                Avatar.StreamSource.Dispose();
-                lastReport.Dispose();
-            }
-
-            base.Dispose(isManaged);
-        }
 
         #endregion
     }

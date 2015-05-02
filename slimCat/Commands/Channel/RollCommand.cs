@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="RollCommand.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -28,7 +26,6 @@ namespace slimCat.Services
     using Utilities;
 
     #endregion
-
 
     public partial class UserCommandService
     {
@@ -64,10 +61,10 @@ namespace slimCat.Services
             var message = command.Get(Constants.Arguments.Message);
             var poster = command.Get(Constants.Arguments.Character);
 
-            var target = (string)channel 
-                ?? (ChatModel.CurrentCharacter.NameEquals((string) recipient)
-                    ? (string) character
-                    : (string) recipient);
+            var target = (string) channel
+                         ?? (ChatModel.CurrentCharacter.NameEquals((string) recipient)
+                             ? (string) character
+                             : (string) recipient);
 
             if (recipient != null && ChatModel.CurrentPms.FirstByIdOrNull(target) == null)
                 manager.AddChannel(ChannelType.PrivateMessage, target);

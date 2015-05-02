@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="HomeChannelView.xaml.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-//
+// 
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -57,6 +55,12 @@ namespace slimCat.Views
 
         #endregion
 
+        private void OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            sender.TryOpenRightClickMenuCommand<DisposableView>(1);
+        }
+
         #region Methods
 
         protected override void Dispose(bool isManaged)
@@ -74,11 +78,5 @@ namespace slimCat.Views
         }
 
         #endregion
-
-        private void OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-            sender.TryOpenRightClickMenuCommand<DisposableView>(1);
-        }
     }
 }

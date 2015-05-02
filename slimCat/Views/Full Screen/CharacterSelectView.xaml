@@ -43,11 +43,9 @@
                                        Foreground="{StaticResource ForegroundBrush}"
                                        HorizontalAlignment="Center" />
                             <StackPanel.InputBindings>
-                                <MouseBinding MouseAction="LeftDoubleClick" 
+                                <MouseBinding MouseAction="LeftDoubleClick"
                                               Command="{Binding Path=DataContext.SelectCharacterCommand,
-                                                               RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}}">
-                                   
-                                </MouseBinding>
+                                                               RelativeSource={RelativeSource FindAncestor, AncestorType=ListBox}}" />
                             </StackPanel.InputBindings>
                         </StackPanel>
                     </DataTemplate>

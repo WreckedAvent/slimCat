@@ -173,12 +173,12 @@
                         </Expander.Header>
                         <StackPanel>
                             <v:RestartButtonView Command="{Binding Path=ClearSearchResultsCommand}"
-                             ToolTip="Clear all search results"
-                             DockPanel.Dock="Top"
-                             Margin="0,10,0,0" />
+                                                 ToolTip="Clear all search results"
+                                                 DockPanel.Dock="Top"
+                                                 Margin="0,10,0,0" />
                             <ListBox ItemsSource="{Binding Path=SearchResults, Mode=OneWay}" />
                         </StackPanel>
-                      </Expander>
+                    </Expander>
 
                     <Expander>
                         <Expander.Header>

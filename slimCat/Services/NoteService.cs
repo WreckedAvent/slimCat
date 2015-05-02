@@ -2,11 +2,11 @@
 
 // <copyright file="NoteService.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-//
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-//
+// 
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -40,7 +40,8 @@ namespace slimCat.Services
     #endregion
 
     /// <summary>
-    ///     The note service is responsible for sending/receiving notes. It also scrapes the history page to get our note conversations.
+    ///     The note service is responsible for sending/receiving notes. It also scrapes the history page to get our note
+    ///     conversations.
     /// </summary>
     public class NoteService : IManageNotes
     {
@@ -301,8 +302,8 @@ namespace slimCat.Services
 
             foreach (var splitDate in split.Select(date =>
                 Regex.Split(date, @"(\d+)", RegexOptions.Compiled)
-                     .Where(x => !string.IsNullOrEmpty(x))
-                     .ToList()))
+                    .Where(x => !string.IsNullOrEmpty(x))
+                    .ToList()))
             {
                 int numberPart;
                 int.TryParse(splitDate[0], out numberPart);

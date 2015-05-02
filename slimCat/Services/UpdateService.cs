@@ -1,24 +1,24 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="LoginViewModel.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//
+// <copyright file="UpdateService.cs">
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-//
+// 
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
 namespace slimCat.Services
 {
+    #region Usings
+
     using System;
     using System.IO;
     using System.IO.Compression;
@@ -27,11 +27,13 @@ namespace slimCat.Services
     using Models;
     using Utilities;
 
+    #endregion
+
     public class UpdateService : IUpdateMyself
     {
         private readonly IBrowseThings browser;
-        private LatestConfig lastConfig;
         private string downloadLocation;
+        private LatestConfig lastConfig;
         private bool updateSuccessful;
 
         public UpdateService(IBrowseThings browser)
@@ -61,7 +63,7 @@ namespace slimCat.Services
 
         public async Task<bool> TryUpdateAsync()
         {
-            #if DEBUG
+#if DEBUG
             return true;
             #endif
 
@@ -84,24 +86,28 @@ namespace slimCat.Services
                 }
 
                 using (var zip = ZipFile.OpenRead(tempLocation))
-                foreach (var file in zip.Entries)
-                {
-                    var filePath = Path.Combine(basePath, file.FullName);
-                    var fileDir = Path.GetDirectoryName(filePath);
-
-                    // don't update theme or bootstrapper
-                    if (!config.UpdateImpactsTheme && fileDir.EndsWith("theme", StringComparison.OrdinalIgnoreCase)) continue;
-                    if (filePath.EndsWith("bootstrapper.exe", StringComparison.OrdinalIgnoreCase)) continue;
-
-                    if (!Directory.Exists(fileDir)) Directory.CreateDirectory(fileDir);
-
-                    try { file.ExtractToFile(filePath, true); }
-                    catch
+                    foreach (var file in zip.Entries)
                     {
-                        if (fileDir.EndsWith("icons", StringComparison.OrdinalIgnoreCase)) continue;
-                        return false;
+                        var filePath = Path.Combine(basePath, file.FullName);
+                        var fileDir = Path.GetDirectoryName(filePath);
+
+                        // don't update theme or bootstrapper
+                        if (!config.UpdateImpactsTheme && fileDir.EndsWith("theme", StringComparison.OrdinalIgnoreCase))
+                            continue;
+                        if (filePath.EndsWith("bootstrapper.exe", StringComparison.OrdinalIgnoreCase)) continue;
+
+                        if (!Directory.Exists(fileDir)) Directory.CreateDirectory(fileDir);
+
+                        try
+                        {
+                            file.ExtractToFile(filePath, true);
+                        }
+                        catch
+                        {
+                            if (fileDir.EndsWith("icons", StringComparison.OrdinalIgnoreCase)) continue;
+                            return false;
+                        }
                     }
-                }
             }
 
             updateSuccessful = true;
