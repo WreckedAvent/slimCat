@@ -37,6 +37,6 @@ namespace slimCat.Models
         /// <summary>
         ///     Channels that allow ads and chatting.
         /// </summary>
-        Both,
+        Both
     }
 }

@@ -47,7 +47,7 @@ namespace slimCat.ViewModels
     /// </summary>
     public class SearchTabViewModel : ChannelbarViewModelCommon
     {
-        private readonly IBrowser browser;
+        private readonly IBrowseThings browser;
 
         #region Constants
 
@@ -79,7 +79,7 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public SearchTabViewModel(IChatState chatState, IBrowser browser)
+        public SearchTabViewModel(IChatState chatState, IBrowseThings browser)
             : base(chatState)
         {
             this.browser = browser;

@@ -19,10 +19,10 @@
 
 #region Usings
 
-using slimCat.Utilities;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
+using slimCat.Utilities;
 
 #endregion
 
@@ -34,7 +34,7 @@ using System.Windows;
 [assembly: AssemblyDescription(Constants.ClientId + " F-Chat client")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct(Constants.ClientId + Constants.ClientName)]
+[assembly: AssemblyProduct(Constants.ClientId + Constants.ClientNickname)]
 [assembly: AssemblyCopyright("Copyright ©  2012 - 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

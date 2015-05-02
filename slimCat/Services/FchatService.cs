@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="F-ChatConnection.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -36,31 +34,42 @@ namespace slimCat.Services
 
     #endregion
 
-    /// <summary>
-    ///     Maintains the connection to F-Chat's server. Used to send/receive commands.
-    /// </summary>
-    public class FchatService : IChatConnection, IDisposable
+    public class FchatService : IHandleChatConnection, IDisposable
     {
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool isManagedDispose)
+        {
+            socket.Close();
+        }
+
         #region Fields
 
         private const int TimeoutTimeMs = 30*1000; // 30 seconds
+
         private readonly Timer autoPingTimer = new Timer(45*1000); // every 45 seconds
 
         private readonly int[] errsThatDisconnect;
+
         private readonly int[] errsThatPreventReconnect;
 
         // these are types of commands which produce a lot not useful noise in debug logs
 
         private readonly IEventAggregator events;
+
         private readonly string[] noisyTypes;
 
-        private readonly ITicketProvider provider;
+        private readonly IGetTickets service;
 
         private readonly Random random = new Random();
 
         private readonly Queue<KeyValuePair<string, object>> resendQueue = new Queue<KeyValuePair<string, object>>();
 
         private readonly Timer staggerTimer;
+
         private readonly Timer timeoutTimer;
 
         private bool isAuthenticated;
@@ -75,22 +84,10 @@ namespace slimCat.Services
 
         #region Constructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="FchatService" /> class.
-        ///     Chat connection is used to communicate with F-Chat using websockets.
-        /// </summary>
-        /// <param name="user">
-        ///     The user.
-        /// </param>
-        /// <param name="eventagg">
-        ///     The eventagg.
-        /// </param>
-        /// <param name="socket"></param>
-        /// <param name="provider"></param>
-        public FchatService(IAccount user, IEventAggregator eventagg, WebSocket socket, ITicketProvider provider)
+        public FchatService(IAccount user, IEventAggregator eventagg, WebSocket socket, IGetTickets service)
         {
             this.socket = socket;
-            this.provider = provider;
+            this.service = service;
             Account = user.ThrowIfNull("user");
             events = eventagg.ThrowIfNull("eventagg");
 
@@ -194,16 +191,6 @@ namespace slimCat.Services
         }
 
         #endregion
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        protected virtual void Dispose(bool isManagedDispose)
-        {
-            socket.Close();
-        }
 
         #region Connection Management
 
@@ -380,7 +367,7 @@ namespace slimCat.Services
 
                 if (err == Constants.Errors.BadLoginInfo)
                 {
-                    provider.ShouldGetNewTicket = true;
+                    service.ShouldGetNewTicket = true;
                     AttemptReconnect();
                 }
             }
@@ -410,12 +397,12 @@ namespace slimCat.Services
             object authRequest =
                 new
                 {
-                    ticket = provider.Ticket,
+                    ticket = service.Ticket,
                     method = "ticket",
-                    account = provider.Account.AccountName,
+                    account = service.Account.AccountName,
                     character = Character,
                     cname = Constants.ClientId,
-                    cversion = $"{Constants.ClientName} {Constants.ClientVer}"
+                    cversion = $"{Constants.ClientNickname} {Constants.ClientVersion}"
                 };
 
             SendMessage(authRequest, Constants.ClientCommands.SystemAuthenticate);

@@ -24,7 +24,6 @@ namespace slimCat.Models
     using System.Linq;
     using System.Text;
     using Services;
-    using Utilities;
 
     #endregion
 

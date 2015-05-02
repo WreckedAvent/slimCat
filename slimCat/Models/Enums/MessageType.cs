@@ -37,6 +37,6 @@ namespace slimCat.Models
         /// <summary>
         ///     Represents a dice roll
         /// </summary>
-        Roll,
+        Roll
     }
 }

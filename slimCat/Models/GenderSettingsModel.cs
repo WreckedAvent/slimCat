@@ -207,7 +207,7 @@ namespace slimCat.Models
             {Gender.Cuntboy, true},
             {Gender.Shemale, true},
             {Gender.None, true},
-            {Gender.Transgender, true},
+            {Gender.Transgender, true}
         };
 
         #endregion

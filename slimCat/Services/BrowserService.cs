@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="BrowserService.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -35,12 +33,15 @@ namespace slimCat.Services
 
     #endregion
 
-    internal class BrowserService : IBrowser
+    /// <summary>
+    ///     This is a wrapper around a web browser to get pages from the internet. It also handles F-list CSRF.
+    /// </summary>
+    internal class BrowserService : IBrowseThings
     {
-        private readonly CookieContainer loginCookies = new CookieContainer();
-        private string csrfString;
         private const string CsrfTokenSelector = "//meta[@name = 'csrf-token']";
         private const string SiteIsDisabled = "The site has been disabled for maintenance, check back later.";
+        private readonly CookieContainer loginCookies = new CookieContainer();
+        private string csrfString;
 
         public string GetResponse(string host, IDictionary<string, object> arguments,
             bool useCookies = false)

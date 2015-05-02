@@ -3,12 +3,12 @@
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ServerCommandService.cs">
 //     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
@@ -43,28 +43,31 @@ namespace slimCat.Services
         #region Fields
 
         private readonly HashSet<string> autoJoinedChannels = new HashSet<string>();
-        private readonly IAutomationService automation;
+
+        private readonly IAutomateThings automation;
+
         private readonly IFriendRequestService friendRequestService;
 
         private readonly object locker = new object();
 
-        private readonly IChannelService manager;
+        private readonly IManageChannels manager;
 
         private readonly string[] noisyTypes;
-        private readonly INoteService notes;
+
+        private readonly IManageNotes notes;
 
         private readonly Queue<IDictionary<string, object>> que = new Queue<IDictionary<string, object>>();
 
-        private IList<string> rejoinChannelList = new List<string>(); 
+        private IList<string> rejoinChannelList = new List<string>();
 
         #endregion
 
         #region Constructors and Destructors
 
         public ServerCommandService(IChatState chatState,
-            IAutomationService automation,
-            INoteService notes,
-            IChannelService manager,
+            IAutomateThings automation,
+            IManageNotes notes,
+            IManageChannels manager,
             IFriendRequestService friendRequestService)
             : base(chatState)
         {
@@ -329,7 +332,7 @@ namespace slimCat.Services
             if (currentCharacter.Status != StatusType.Online
                 || !string.IsNullOrWhiteSpace(currentCharacter.StatusMessage))
             {
-                Events.SendUserCommand("status", 
+                Events.SendUserCommand("status",
                     new[] { currentCharacter.Status.ToString(), currentCharacter.StatusMessage });
             }
 
@@ -348,7 +351,7 @@ namespace slimCat.Services
             ChatModel.CurrentCharacter.GetAvatar();
 
             Dispatcher.Invoke(() =>
-                Application.Current.MainWindow.Title = $"{Constants.ClientId} {Constants.ClientName} ({character})"
+                Application.Current.MainWindow.Title = $"{Constants.ClientId} {Constants.ClientNickname} ({character})"
             );
         }
 

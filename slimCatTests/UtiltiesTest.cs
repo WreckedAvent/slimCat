@@ -3,12 +3,12 @@
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ListManagerTests.cs">
 //    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
+//
 //    This source is subject to the Simplified BSD License.
 //    Please see the License.txt file for more information.
 //    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //    PARTICULAR PURPOSE.
@@ -17,14 +17,15 @@
 
 #endregion
 
-using System;
-using slimCat.Models;
-using slimCat.Utilities;
-
 namespace slimCatTest
 {
     #region Usings
+
+    using System;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using slimCat.Models;
+    using slimCat.Utilities;
+
     #endregion
 
     [TestClass]
@@ -70,7 +71,7 @@ namespace slimCatTest
         {
             const string character = "character name";
 
-            Func<string, string, string> getPath = (title, id) => StaticFunctions.MakeSafeFolderPath(character, title, id); 
+            Func<string, string, string> getPath = (title, id) => StringExtensions.MakeSafeFolderPath(character, title, id);
 
             Assert.IsTrue(getPath("bar", "bar").Contains("character name\\bar"));
             Assert.IsTrue(getPath("bar", "ADH-2").Contains("character name\\bar (ADH-2)"));

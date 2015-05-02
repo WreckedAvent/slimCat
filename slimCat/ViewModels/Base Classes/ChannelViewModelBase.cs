@@ -26,13 +26,13 @@ namespace slimCat.ViewModels
     using System.ComponentModel;
     using System.Linq;
     using System.Timers;
+    using System.Windows;
     using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
     using Models;
     using Services;
     using Utilities;
-    using System.Windows;
 
     #endregion
 
@@ -412,7 +412,7 @@ namespace slimCat.ViewModels
 
             if (!string.IsNullOrWhiteSpace(character))
                 characters = characters
-                    .SkipWhile(x => !String.Equals(x.Name, character, StringComparison.CurrentCultureIgnoreCase))
+                    .SkipWhile(x => !string.Equals(x.Name, character, StringComparison.CurrentCultureIgnoreCase))
                     .Skip(1);
             else
             {

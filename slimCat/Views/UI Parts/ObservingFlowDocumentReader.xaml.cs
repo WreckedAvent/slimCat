@@ -28,6 +28,7 @@ namespace slimCat.Views
     using System.Linq;
     using System.Windows;
     using System.Windows.Documents;
+    using System.Windows.Input;
     using System.Windows.Threading;
     using Models;
     using Utilities;
@@ -188,7 +189,7 @@ namespace slimCat.Views
             }
         }
 
-        private void OnMouseWheelPreview(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        private void OnMouseWheelPreview(object sender, MouseWheelEventArgs e)
         {
             scroller.Scroll(e.Delta);
             e.Handled = true;

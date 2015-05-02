@@ -22,7 +22,6 @@ namespace slimCat.Models
     #region Usings
 
     using Services;
-    using Utilities;
 
     #endregion
 
@@ -89,7 +88,7 @@ namespace slimCat.Services
             {
                 TargetChannelId = channelId,
                 TargetChannel = title,
-                IsPromote = isPromote,
+                IsPromote = isPromote
             };
 
             Events.NewCharacterUpdate(target, updateArgs);

@@ -49,8 +49,8 @@ namespace slimCat.ViewModels
         #region Fields
 
         private readonly PmChannelModel model;
-        private readonly INoteService noteService;
-        private readonly IProfileService profileService;
+        private readonly IManageNotes noteService;
+        private readonly IGetProfiles profileService;
 
         private Timer checkTick = new Timer(5000);
         private RelayCommand clearCacheCommand;
@@ -91,7 +91,7 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public PmChannelViewModel(string name, IChatState chatState, INoteService notes, IProfileService profile)
+        public PmChannelViewModel(string name, IChatState chatState, IManageNotes notes, IGetProfiles profile)
             : base(chatState)
         {
             try

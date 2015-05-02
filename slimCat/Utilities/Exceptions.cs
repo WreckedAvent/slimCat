@@ -21,8 +21,8 @@ namespace slimCat.Utilities
 {
     #region Usings
 
+    // ReSharper disable once RedundantUsingDirective
     using System;
-// ReSharper disable once RedundantUsingDirective
     using System.IO;
     using System.Windows.Forms;
     using System.Windows.Threading;

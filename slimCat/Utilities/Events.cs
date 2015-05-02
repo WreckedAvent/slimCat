@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Events.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -28,21 +26,21 @@ namespace slimCat
     #endregion
 
     /// <summary>
-    ///     This event is fired when the client should attempt to acquire an API ticket
+    ///     This event is fired when the client should attempt to acquire an API ticket.
     /// </summary>
     public class LoginEvent : CompositePresentationEvent<bool>
     {
     }
 
     /// <summary>
-    ///     This event is fired when the client has finished attempting to get the API ticket
+    ///     This event is fired when the client has finished attempting to get the API ticket.
     /// </summary>
     public class LoginCompleteEvent : CompositePresentationEvent<bool>
     {
     }
 
     /// <summary>
-    ///     This event is fired when the user has selected the character to login with
+    ///     This event is fired when the user has selected the character to login with.
     /// </summary>
     public class CharacterSelectedLoginEvent : CompositePresentationEvent<string>
     {
@@ -56,7 +54,7 @@ namespace slimCat
     }
 
     /// <summary>
-    ///     This event is fired when we are connected and the chat wrapper is displayed
+    ///     This event is fired when we are connected and the chat wrapper is displayed.
     /// </summary>
     public class ChatOnDisplayEvent : CompositePresentationEvent<bool?>
     {
@@ -70,35 +68,35 @@ namespace slimCat
     }
 
     /// <summary>
-    ///     This event is fired when we want to switch our active conversation tab
+    ///     This event is fired when we want to switch our active conversation tab.
     /// </summary>
     public class RequestChangeTabEvent : CompositePresentationEvent<string>
     {
     }
 
     /// <summary>
-    ///     This event is fired when the user enters in a valid command
+    ///     This event is fired when the user enters in a valid command.
     /// </summary>
     public class UserCommandEvent : CompositePresentationEvent<IDictionary<string, object>>
     {
     }
 
     /// <summary>
-    ///     This event is fired when we have a new Pm in a non-focused channel
+    ///     This event is fired when we have a new Pm in a non-focused channel.
     /// </summary>
     public class NewPmEvent : CompositePresentationEvent<IMessage>
     {
     }
 
     /// <summary>
-    ///     This event is fired when we have a new message in a non-focused channel
+    ///     This event is fired when we have a new message in a non-focused channel.
     /// </summary>
     public class NewMessageEvent : CompositePresentationEvent<IDictionary<string, object>>
     {
     }
 
     /// <summary>
-    ///     This event is fired when we need to alert the UI about an update, such as a user's status change
+    ///     This event is fired when we need to alert the UI about an update, such as a user's status change.
     /// </summary>
     public class NewUpdateEvent : CompositePresentationEvent<NotificationModel>
     {
@@ -108,38 +106,41 @@ namespace slimCat
     /// <summary>
     ///     This event is fired when the user has a tab flash or reads the last flashing tab.
     /// </summary>
-    public class UnreadUpdatesEvent: CompositePresentationEvent<bool>
+    public class UnreadUpdatesEvent : CompositePresentationEvent<bool>
     {
     }
 
     /// <summary>
-    ///     This event is used when the server has sent us an error or a module needs to display an error
+    ///     This event is used when the server has sent us an error or a module needs to display an error.
     /// </summary>
     public class ErrorEvent : CompositePresentationEvent<string>
     {
     }
 
     /// <summary>
-    ///     This event is used when our initial connection fails
+    ///     This event is used when our initial connection fails.
     /// </summary>
     public class LoginFailedEvent : CompositePresentationEvent<string>
     {
     }
 
     /// <summary>
-    ///     this event is used when the service layer is attempting a reconnect
+    ///     this event is used when the service layer is attempting a reconnect.
     /// </summary>
     public class ReconnectingEvent : CompositePresentationEvent<int>
     {
     }
 
     /// <summary>
-    ///     this event is fired when our established connection fails
+    ///     This event is fired when our established connection fails.
     /// </summary>
     public class ConnectionClosedEvent : CompositePresentationEvent<bool>
     {
     }
 
+    /// <summary>
+    ///     This event is used when we get new chat search results.
+    /// </summary>
     public class ChatSearchResultEvent : CompositePresentationEvent<bool>
     {
     }

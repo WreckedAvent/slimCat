@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="FriendRequestService.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -36,8 +34,11 @@ namespace slimCat.Services
     internal class FriendRequestService : IFriendRequestService
     {
         private readonly IAccount account;
-        private readonly IBrowser browser;
+
+        private readonly IBrowseThings browser;
+
         private readonly ICharacterManager characterManager;
+
         private readonly IEventAggregator events;
 
         private readonly IDictionary<string, int> requestsReceived =
@@ -46,14 +47,15 @@ namespace slimCat.Services
         private readonly IDictionary<string, int> requestsSent =
             new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
-        private readonly ITicketProvider ticketProvider;
+        private readonly IGetTickets ticketService;
+
         private string selectedCharacter;
 
-        public FriendRequestService(IBrowser browser, ITicketProvider ticketProvider,
+        public FriendRequestService(IBrowseThings browser, IGetTickets ticketService,
             IAccount account, IEventAggregator events, ICharacterManager characterManager)
         {
             this.browser = browser;
-            this.ticketProvider = ticketProvider;
+            this.ticketService = ticketService;
             this.account = account;
             this.events = events;
             this.characterManager = characterManager;
@@ -127,7 +129,7 @@ namespace slimCat.Services
             var command = new Dictionary<string, object>
             {
                 {"account", account.AccountName.ToLower()},
-                {"ticket", ticketProvider.Ticket}
+                {"ticket", ticketService.Ticket}
             };
 
             var buffer = browser.GetResponse(endpoint, command);
@@ -139,7 +141,7 @@ namespace slimCat.Services
 
             if (string.Equals("Ticked expired", result.Error, StringComparison.OrdinalIgnoreCase))
             {
-                ticketProvider.ShouldGetNewTicket = true;
+                ticketService.ShouldGetNewTicket = true;
                 DoApiAction(endpoint);
             }
 

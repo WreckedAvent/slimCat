@@ -3,12 +3,12 @@
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="LoginViewModel.cs">
 //     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
@@ -23,18 +23,18 @@ namespace slimCat.Services
     using System.IO;
     using System.IO.Compression;
     using System.Net;
-    using Utilities;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Models;
+    using Utilities;
 
-    public class UpdateService : IUpdateService
+    public class UpdateService : IUpdateMyself
     {
-        private readonly IBrowser browser;
+        private readonly IBrowseThings browser;
         private LatestConfig lastConfig;
         private string downloadLocation;
         private bool updateSuccessful;
 
-        public UpdateService(IBrowser browser)
+        public UpdateService(IBrowseThings browser)
         {
             this.browser = browser;
         }
@@ -107,38 +107,5 @@ namespace slimCat.Services
             updateSuccessful = true;
             return true;
         }
-    }
-
-    public class LatestConfig
-    {
-        public LatestConfig(IList<string> args)
-        {
-            ClientName = args[0];
-            DownloadLink = args[1];
-            PublishDate = args[2];
-            ChangelogLink = args[3];
-            SlimCatChannelId = args[4];
-            UpdateImpactsTheme = bool.Parse(args[5]);
-
-            #if DEBUG
-            IsNewUpdate = false;
-            #else 
-            IsNewUpdate = StaticFunctions.IsUpdate(ClientName);
-            #endif
-        }
-
-        public string ClientName { get; }
-
-        public string DownloadLink { get; }
-
-        public string PublishDate { get; private set; }
-
-        public string ChangelogLink { get; private set; }
-
-        public string SlimCatChannelId { get; private set; }
-
-        public bool UpdateImpactsTheme { get; }
-
-        public bool IsNewUpdate { get; }
     }
 }

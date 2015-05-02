@@ -26,11 +26,11 @@ namespace slimCat
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
     using System.Windows;
     using Services;
     using Utilities;
-    using System.Linq;
 
     #endregion
 

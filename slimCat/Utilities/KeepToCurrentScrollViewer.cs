@@ -3,12 +3,12 @@
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="KeepToCurrentScrollViewer.cs">
 //     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
@@ -21,10 +21,10 @@ namespace slimCat.Utilities
 {
     #region Usings
 
-    using Models;
     using System;
     using System.Windows;
     using System.Windows.Controls;
+    using Models;
 
     #endregion
 
@@ -77,7 +77,7 @@ namespace slimCat.Utilities
         public void Scroll(int scrollTicks)
         {
             if (CheckScroller())
-                scroller.ScrollToVerticalOffset(scroller.VerticalOffset - StaticFunctions.GetScrollDistance(scrollTicks, ApplicationSettings.FontSize));
+                scroller.ScrollToVerticalOffset(scroller.VerticalOffset - GeneralExtensions.GetScrollDistance(scrollTicks, ApplicationSettings.FontSize));
         }
 
         public void StabilizeNextScroll()
@@ -115,15 +115,15 @@ namespace slimCat.Utilities
             if (scroller != null)
                 return true;
 
-            scroller = StaticFunctions.FindChild<ScrollViewer>(toManage);
+            scroller = toManage.FindChild<ScrollViewer>();
 
             if (scroller != null)
             {
                 scroller.ScrollChanged += OnScrollChanged;
                 return true;
             }
-            else
-                return false;
+
+            return false;
         }
 
         #endregion

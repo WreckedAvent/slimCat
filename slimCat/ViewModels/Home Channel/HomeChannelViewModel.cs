@@ -44,13 +44,13 @@ namespace slimCat.ViewModels
     /// </summary>
     public class HomeChannelViewModel : ChannelViewModelBase, IHasTabs
     {
-        private readonly IUpdateService updateService;
+        private readonly IUpdateMyself updateService;
 
         #region Fields
 
-        private readonly IAutomationService automation;
+        private readonly IAutomateThings automation;
 
-        private readonly IBrowser browser;
+        private readonly IBrowseThings browser;
 
         private readonly StringBuilder connectDotDot;
 
@@ -68,8 +68,8 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public HomeChannelViewModel(string name, IChatState chatState, IAutomationService automation, IBrowser browser,
-            HomeSettingsViewModel settingsVm, HomeHelpViewModel helpVm, IUpdateService updateService)
+        public HomeChannelViewModel(string name, IChatState chatState, IAutomateThings automation, IBrowseThings browser,
+            HomeSettingsViewModel settingsVm, HomeHelpViewModel helpVm, IUpdateMyself updateService)
             : base(chatState)
         {
             try
@@ -132,7 +132,7 @@ namespace slimCat.ViewModels
 
         #region Header
 
-        public static string ClientIdString => $"{Constants.ClientId} {Constants.ClientName} ({Constants.ClientVer})";
+        public static string ClientIdString => $"{Constants.ClientId} {Constants.ClientNickname} ({Constants.ClientVersion})";
 
         public string LastMessageReceived => HelperConverter.DateTimeToRough(ChatModel.LastMessageReceived, true, false);
 

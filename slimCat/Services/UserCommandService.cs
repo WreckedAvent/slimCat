@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="UserCommandService.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
 // 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -38,41 +36,19 @@ namespace slimCat.Services
     /// </summary>
     public partial class UserCommandService : DispatcherObject
     {
-        #region Fields
-
-        private readonly IListConnection api;
-        private readonly IChannelService channelService;
-
-        private readonly ICharacterManager characterManager;
-
-        private readonly IDictionary<string, CommandHandler> commands;
-
-        private readonly IChatConnection connection;
-
-        private readonly IEventAggregator events;
-        private readonly IIconService iconService;
-
-        private readonly ILoggingService logger;
-
-        private readonly IChatModel model;
-
-        private readonly IRegionManager regionManager;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public UserCommandService(
             IEventAggregator events,
             IChatModel model,
-            IChatConnection connection,
-            IListConnection api,
+            IHandleChatConnection connection,
+            IHandleApi api,
             ICharacterManager manager,
-            ILoggingService logger,
-            IChannelService channelService,
+            ILogThings logger,
+            IManageChannels channelService,
             IRegionManager regman,
             IFriendRequestService friendRequestService,
-            IIconService iconService)
+            IHandleIcons iconService)
         {
             try
             {
@@ -145,6 +121,28 @@ namespace slimCat.Services
         #region Delegates
 
         private delegate void CommandHandler(IDictionary<string, object> command);
+
+        #endregion
+
+        #region Fields
+
+        private readonly IHandleApi api;
+        private readonly IManageChannels channelService;
+
+        private readonly ICharacterManager characterManager;
+
+        private readonly IDictionary<string, CommandHandler> commands;
+
+        private readonly IHandleChatConnection connection;
+
+        private readonly IEventAggregator events;
+        private readonly IHandleIcons iconService;
+
+        private readonly ILogThings logger;
+
+        private readonly IChatModel model;
+
+        private readonly IRegionManager regionManager;
 
         #endregion
 

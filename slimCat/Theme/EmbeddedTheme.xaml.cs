@@ -20,22 +20,25 @@
 namespace slimCat.Theme
 {
     #region Usings
+
     using System.Windows.Controls;
-    using slimCat.Utilities;
+    using System.Windows.Input;
+    using Utilities;
+
     #endregion
 
     public partial class EmbeddedTheme
     {
-        private void OnMouseRightButtonUpForIcon(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void OnMouseRightButtonUpForIcon(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
-            StaticFunctions.TryOpenRightClickMenuCommand<Grid>(sender, 1);
+            sender.TryOpenRightClickMenuCommand<Grid>(1);
         }
 
-        private void OnMouseRightButtonUpForName(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void OnMouseRightButtonUpForName(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
-            StaticFunctions.TryOpenRightClickMenuCommand<Grid>(sender, 2);
+            sender.TryOpenRightClickMenuCommand<Grid>(2);
         }
     }
 }

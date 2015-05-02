@@ -3,12 +3,12 @@
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="CharacterUpdateView.xaml.cs">
 //     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
@@ -19,8 +19,9 @@
 
 namespace slimCat.Views
 {
-    using Utilities;
     using System.Windows.Documents;
+    using System.Windows.Input;
+    using Utilities;
 
     /// <summary>
     ///     Interaction logic for CharacterUpdateView.xaml
@@ -39,10 +40,10 @@ namespace slimCat.Views
 
         #endregion
 
-        private void OnMouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
-            StaticFunctions.TryOpenRightClickMenuCommand<FlowDocument>(sender, 1);
+            sender.TryOpenRightClickMenuCommand<FlowDocument>(1);
         }
     }
 }

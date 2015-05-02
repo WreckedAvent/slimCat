@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="LoggingService.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -26,6 +24,7 @@ namespace slimCat.Services
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Web;
     using Microsoft.Practices.Prism.Events;
     using Models;
@@ -34,27 +33,9 @@ namespace slimCat.Services
     #endregion
 
     /// <summary>
-    ///     The special log message kind.
+    ///     The logging service logs to text files.
     /// </summary>
-    public enum SpecialLogMessageKind
-    {
-        /// <summary>
-        ///     The header.
-        /// </summary>
-        Header,
-
-        /// <summary>
-        ///     The section.
-        /// </summary>
-        Section,
-
-        /// <summary>
-        ///     The line break.
-        /// </summary>
-        LineBreak
-    }
-
-    public class LoggingService : ILoggingService
+    public class LoggingService : ILogThings
     {
         #region Constructors and Destructors
 
@@ -72,7 +53,7 @@ namespace slimCat.Services
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "slimCat", CurrentCharacter);
             else
             {
-                var exeFolder = (new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location)).Directory.ToString();
+                var exeFolder = (new FileInfo(Assembly.GetEntryAssembly().Location)).Directory.ToString();
                 FullPath = Path.Combine(exeFolder, "logs", CurrentCharacter);
             }
 
@@ -94,7 +75,7 @@ namespace slimCat.Services
 
         public IEnumerable<string> GetLogs(string title, string id)
         {
-            var loggingPath = StaticFunctions.MakeSafeFolderPath(CurrentCharacter, title, id);
+            var loggingPath = StringExtensions.MakeSafeFolderPath(CurrentCharacter, title, id);
             var toReturn = new List<string>();
 
             if (!Directory.Exists(loggingPath))
@@ -177,7 +158,7 @@ namespace slimCat.Services
                 Process.Start(FullPath);
             else
             {
-                var workingPath = StaticFunctions.MakeSafeFolderPath(CurrentCharacter, title, id);
+                var workingPath = StringExtensions.MakeSafeFolderPath(CurrentCharacter, title, id);
 
                 if (!Directory.Exists(workingPath))
                 {
@@ -210,38 +191,38 @@ namespace slimCat.Services
                         writer.WriteLine();
                         break;
                     case SpecialLogMessageKind.Header:
-                    {
-                        var head = string.Empty;
-                        while (head.Length < specialTitle.Length + 4)
                         {
-                            head += "=";
+                            var head = string.Empty;
+                            while (head.Length < specialTitle.Length + 4)
+                            {
+                                head += "=";
+                            }
+
+                            writer.WriteLine();
+                            writer.WriteLine(head);
+                            writer.WriteLine("= " + specialTitle + " =");
+                            writer.WriteLine(head);
+                            writer.WriteLine();
+
+                            break;
                         }
-
-                        writer.WriteLine();
-                        writer.WriteLine(head);
-                        writer.WriteLine("= " + specialTitle + " =");
-                        writer.WriteLine(head);
-                        writer.WriteLine();
-
-                        break;
-                    }
 
                     case SpecialLogMessageKind.Section:
-                    {
-                        var head = string.Empty;
-                        while (head.Length < specialTitle.Length + 4)
                         {
-                            head += "-";
+                            var head = string.Empty;
+                            while (head.Length < specialTitle.Length + 4)
+                            {
+                                head += "-";
+                            }
+
+                            writer.WriteLine();
+                            writer.WriteLine(head);
+                            writer.WriteLine("- " + specialTitle + " -");
+                            writer.WriteLine(head);
+                            writer.WriteLine();
+
+                            break;
                         }
-
-                        writer.WriteLine();
-                        writer.WriteLine(head);
-                        writer.WriteLine("- " + specialTitle + " -");
-                        writer.WriteLine(head);
-                        writer.WriteLine();
-
-                        break;
-                    }
                 }
             }
         }
@@ -263,7 +244,7 @@ namespace slimCat.Services
 
         private StreamWriter AccessLog(string title, string id)
         {
-            var loggingPath = StaticFunctions.MakeSafeFolderPath(CurrentCharacter, title, id);
+            var loggingPath = StringExtensions.MakeSafeFolderPath(CurrentCharacter, title, id);
 
             var fileName = DateToFileName();
 

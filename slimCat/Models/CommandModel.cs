@@ -115,7 +115,7 @@ namespace slimCat.Models
             /// <summary>
             ///     Commands with two single-word arguments which apply to a channel.
             /// </summary>
-            TwoArgsAndChannel,
+            TwoArgsAndChannel
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace slimCat.Models
             /// <summary>
             ///     Only admins can use the command.
             /// </summary>
-            Admin,
+            Admin
         }
 
         #endregion
@@ -219,7 +219,7 @@ namespace slimCat.Models
         /// </returns>
         public IDictionary<string, object> ToDictionary()
         {
-            var toSend = new Dictionary<string, object> {{"type", commandInformation.ServerName},};
+            var toSend = new Dictionary<string, object> {{"type", commandInformation.ServerName}};
 
             if (arguments?[0] != null)
             {

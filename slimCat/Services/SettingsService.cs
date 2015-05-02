@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="SettingsService.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -26,11 +24,11 @@ namespace slimCat.Services
     using System.IO;
     using System.Linq;
     using System.Text;
+    using System.Threading;
     using System.Xml.Linq;
     using System.Xml.Serialization;
     using Models;
     using Utilities;
-    using System.Threading;
 
     #endregion
 
@@ -69,7 +67,7 @@ namespace slimCat.Services
         {
             Log("Reading settings for " + id);
             MakeSettingsFileIfNotExist(currentCharacter, title, id, chanType);
-            var workingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
+            var workingPath = StringExtensions.MakeSafeFolderPath(currentCharacter, title, id);
             workingPath = Path.Combine(workingPath, SettingsFileName);
 
             try
@@ -90,7 +88,7 @@ namespace slimCat.Services
 
         public static void SaveProfile(string targetCharacter, ProfileData profileData)
         {
-            var workingPath = StaticFunctions.MakeSafeFolderPath(ProfileCacheFolderName, string.Empty, string.Empty);
+            var workingPath = StringExtensions.MakeSafeFolderPath(ProfileCacheFolderName, string.Empty, string.Empty);
 
             var fileName = Path.Combine(workingPath, ProfileCacheFileName.FormatWith(targetCharacter));
             Serialize(fileName, profileData);
@@ -98,7 +96,7 @@ namespace slimCat.Services
 
         public static ProfileData RetrieveProfile(string targetCharacter)
         {
-            var workingPath = StaticFunctions.MakeSafeFolderPath(ProfileCacheFolderName, string.Empty, string.Empty);
+            var workingPath = StringExtensions.MakeSafeFolderPath(ProfileCacheFolderName, string.Empty, string.Empty);
 
             var fileName = Path.Combine(workingPath, ProfileCacheFileName.FormatWith(targetCharacter));
 
@@ -110,7 +108,7 @@ namespace slimCat.Services
 
         public static SearchTermsModel RetrieveTerms(string currentCharacter)
         {
-            var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
+            var path = StringExtensions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
             path = Path.Combine(path, SearchTermsFileName);
 
             return Deserialize<SearchTermsModel>(path);
@@ -118,7 +116,7 @@ namespace slimCat.Services
 
         public static void SaveSearchTerms(string currentCharacter, SearchTermsModel data)
         {
-            var workingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
+            var workingPath = StringExtensions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
 
             var fileName = Path.Combine(workingPath, SearchTermsFileName);
             Serialize(fileName, data);
@@ -134,7 +132,7 @@ namespace slimCat.Services
 
             var type = typeof (ApplicationSettings);
             var propertyList = type.GetProperties();
-            var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
+            var path = StringExtensions.MakeSafeFolderPath(currentCharacter, "Global", "Global");
             path = Path.Combine(path, SettingsFileName);
 
             // this clusterfuck is why you don't have static classes for settings
@@ -228,7 +226,9 @@ namespace slimCat.Services
                             var setter = Convert.ChangeType(element.Value, property.PropertyType);
                             property.SetValue(baseObject, setter, null);
                         }
-                        catch {}
+                        catch
+                        {
+                        }
 
                         break;
                     }
@@ -246,7 +246,8 @@ namespace slimCat.Services
             Log("Saving global settings");
             var root = new XElement("settings");
             var fileName = Path.Combine(
-                StaticFunctions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName), SettingsFileName);
+                StringExtensions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName),
+                SettingsFileName);
 
             foreach (var property in typeof (ApplicationSettings).GetProperties())
             {
@@ -296,7 +297,7 @@ namespace slimCat.Services
 
             if (!ApplicationSettings.TemplateCharacter.Equals(currentCharacter)) return;
 
-            var workingPath = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, GlobalFolderName,
+            var workingPath = StringExtensions.MakeSafeFolderPath(DefaultsFolderName, GlobalFolderName,
                 GlobalFolderName);
             if (!Directory.Exists(workingPath))
                 Directory.CreateDirectory(workingPath);
@@ -312,7 +313,7 @@ namespace slimCat.Services
             {
                 if (preferences != null) return preferences;
 
-                var path = Path.Combine(StaticFunctions.BaseFolderPath, PreferencesFileName);
+                var path = Path.Combine(GeneralExtensions.BaseFolderPath, PreferencesFileName);
                 preferences = Deserialize<UserPreferences>(path) ?? new UserPreferences();
 
                 return preferences;
@@ -320,7 +321,7 @@ namespace slimCat.Services
             set
             {
                 preferences = value;
-                var path = Path.Combine(StaticFunctions.BaseFolderPath, PreferencesFileName);
+                var path = Path.Combine(GeneralExtensions.BaseFolderPath, PreferencesFileName);
                 Serialize(path, value);
             }
         }
@@ -363,7 +364,7 @@ namespace slimCat.Services
         public static void UpdateSettingsFile(object newSettingsModel, string currentCharacter, string title, string id)
         {
             Log("Updating settings for " + id);
-            var workingPath = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
+            var workingPath = StringExtensions.MakeSafeFolderPath(currentCharacter, title, id);
             workingPath = Path.Combine(workingPath, SettingsFileName);
 
             SerializeObjectToXml(newSettingsModel, workingPath);
@@ -371,7 +372,7 @@ namespace slimCat.Services
             if (!ApplicationSettings.TemplateCharacter.Equals(currentCharacter))
                 return;
 
-            workingPath = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, title, id);
+            workingPath = StringExtensions.MakeSafeFolderPath(DefaultsFolderName, title, id);
 
             if (!Directory.Exists(workingPath))
                 Directory.CreateDirectory(workingPath);
@@ -386,7 +387,7 @@ namespace slimCat.Services
 
         private static void MakeGlobalSettingsFileIfNotExist(string currentCharacter)
         {
-            var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName);
+            var path = StringExtensions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName);
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -405,7 +406,7 @@ namespace slimCat.Services
 
         private static ChannelSettingsModel GetDefaultSettings(string title, string id, bool isPm)
         {
-            var path = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, title, id);
+            var path = StringExtensions.MakeSafeFolderPath(DefaultsFolderName, title, id);
             var baseObj = new ChannelSettingsModel(isPm);
 
             if (!Directory.Exists(path))
@@ -420,14 +421,15 @@ namespace slimCat.Services
         }
 
         private static bool CopyDefaultGlobalSettingsIfExist(string currentCharacter)
-        {            
+        {
             var destPath =
-                Path.Combine(StaticFunctions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName),
+                Path.Combine(StringExtensions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName),
                     SettingsFileName);
 
 
             var backup = Path.Combine(
-                StaticFunctions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName), (SettingsFileName + ".old"));
+                StringExtensions.MakeSafeFolderPath(currentCharacter, GlobalFolderName, GlobalFolderName),
+                (SettingsFileName + ".old"));
 
             if (File.Exists(backup))
             {
@@ -436,7 +438,7 @@ namespace slimCat.Services
                 return true;
             }
 
-            var path = StaticFunctions.MakeSafeFolderPath(DefaultsFolderName, GlobalFolderName, GlobalFolderName);
+            var path = StringExtensions.MakeSafeFolderPath(DefaultsFolderName, GlobalFolderName, GlobalFolderName);
 
             if (!Directory.Exists(path))
                 return false;
@@ -455,7 +457,7 @@ namespace slimCat.Services
         private static void MakeSettingsFileIfNotExist(
             string currentCharacter, string title, string id, ChannelType chanType)
         {
-            var path = StaticFunctions.MakeSafeFolderPath(currentCharacter, title, id);
+            var path = StringExtensions.MakeSafeFolderPath(currentCharacter, title, id);
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -470,13 +472,14 @@ namespace slimCat.Services
             Log("Making new settings for " + id);
             SerializeObjectToXml(newSettings, workingPath);
         }
+
         private static void Log(string log)
         {
             Logging.LogLine(log, "setting serv");
         }
 
         private static T Deserialize<T>(string path)
-            where T: class 
+            where T : class
         {
             try
             {
@@ -484,7 +487,7 @@ namespace slimCat.Services
 
                 using (var stream = File.OpenRead(path))
                 {
-                    var serializer = new XmlSerializer(typeof(T));
+                    var serializer = new XmlSerializer(typeof (T));
                     return serializer.Deserialize(stream) as T;
                 }
             }
@@ -495,7 +498,7 @@ namespace slimCat.Services
         }
 
         private static void Serialize<T>(string path, T toSave)
-            where T: class
+            where T : class
         {
             try
             {
@@ -504,7 +507,7 @@ namespace slimCat.Services
 
                 using (var streamWriter = new StreamWriter(path, false, Encoding.UTF8))
                 {
-                    var serializer = new XmlSerializer(typeof(T));
+                    var serializer = new XmlSerializer(typeof (T));
                     serializer.Serialize(streamWriter, toSave);
                 }
             }

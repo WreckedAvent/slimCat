@@ -38,6 +38,6 @@ namespace slimCat.Models
 
         Dnd,
 
-        Crown,
+        Crown
     }
 }

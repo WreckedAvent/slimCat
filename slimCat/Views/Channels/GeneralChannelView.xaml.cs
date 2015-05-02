@@ -23,6 +23,7 @@ namespace slimCat.Views
 
     using System;
     using System.Windows;
+    using System.Windows.Controls.Primitives;
     using System.Windows.Input;
     using Utilities;
     using ViewModels;
@@ -87,12 +88,12 @@ namespace slimCat.Views
             HeaderRowDefinition.Height = new GridLength();
         }
 
-        private void OnHeaderRowDragging(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        private void OnHeaderRowDragging(object sender, DragDeltaEventArgs e)
         {
             ChannelDescriptionExpander.IsExpanded = HeaderRowDefinition.Height.Value != HeaderRowDefinition.MinHeight;
         }
 
-        private void OnHeaderRowDragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        private void OnHeaderRowDragCompleted(object sender, DragCompletedEventArgs e)
         {
             if (HeaderRowDefinition.Height.Value == HeaderRowDefinition.MinHeight)
                 HeaderRowDefinition.Height = new GridLength();

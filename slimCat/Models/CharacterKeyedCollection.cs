@@ -1,7 +1,7 @@
 ﻿#region Copyright
 
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IAutomationService.cs">
+// <copyright file="CharacterKeyedCollection.cs">
 //     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
 //  
 //     This source is subject to the Simplified BSD License.
@@ -17,14 +17,28 @@
 
 #endregion
 
-namespace slimCat.Services
+namespace slimCat.Models
 {
-    using System.Threading.Tasks;
+    #region Usings
 
-    public interface IUpdateService
+    using System.Collections.Generic;
+    using lib;
+
+    #endregion
+
+    public class CharacterKeyedCollection : ObservableKeyedCollection<string, ICharacter>
     {
-        Task<LatestConfig> GetLatestAsync();
+        public CharacterKeyedCollection()
+        {
+        }
 
-        Task<bool> TryUpdateAsync();
+        public CharacterKeyedCollection(IEqualityComparer<string> comparer) : base(comparer)
+        {
+        }
+
+        protected override string GetKeyForItem(ICharacter item)
+        {
+            return item.Name;
+        }
     }
 }

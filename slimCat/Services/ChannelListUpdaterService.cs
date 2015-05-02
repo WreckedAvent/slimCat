@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ChannelListUpdaterService.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -29,14 +27,13 @@ namespace slimCat.Services
 
     #endregion
 
-    public class ChannelListUpdaterService : IChannelListUpdater
+    public class ChannelListUpdaterService : IUpdateChannelLists
     {
         private readonly IChatModel chatModel;
-        private readonly IChatConnection connection;
-
+        private readonly IHandleChatConnection connection;
         private DateTime lastUpdate;
 
-        public ChannelListUpdaterService(IChatConnection connection, IEventAggregator eventAggregator,
+        public ChannelListUpdaterService(IHandleChatConnection connection, IEventAggregator eventAggregator,
             IChatModel chatModel)
         {
             this.connection = connection;
@@ -62,10 +59,7 @@ namespace slimCat.Services
             lastUpdate = DateTime.Now;
         }
 
-        private void OnWipeState(bool o)
-        {
-            lastUpdate = new DateTime();
-        }
+        private void OnWipeState(bool o) => lastUpdate = new DateTime();
 
         private bool ShouldUpdate()
         {
@@ -79,10 +73,5 @@ namespace slimCat.Services
             // update every 2 hours
             return lastUpdate.AddHours(2) <= DateTime.Now;
         }
-    }
-
-    public interface IChannelListUpdater
-    {
-        void UpdateChannels();
     }
 }

@@ -3,12 +3,12 @@
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ChannelUserListView.xaml.cs">
 //     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
@@ -22,6 +22,7 @@ namespace slimCat.Views
     #region Usings
 
     using System.Windows.Controls;
+    using System.Windows.Input;
     using Utilities;
     using ViewModels;
 
@@ -46,10 +47,10 @@ namespace slimCat.Views
             DataContext = vm;
         }
 
-        private void OnMouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
-            StaticFunctions.TryOpenRightClickMenuCommand<Grid>(sender, 2);
+            sender.TryOpenRightClickMenuCommand<Grid>(2);
         }
 
         #endregion

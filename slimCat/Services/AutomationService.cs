@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="AutomationService.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -31,20 +29,11 @@ namespace slimCat.Services
 
     #endregion
 
-    public class AutomationService : IAutomationService
+    /// <summary>
+    ///     This manages automatic actions in slimCat, like ad deduplication and automatic status changing.
+    /// </summary>
+    public class AutomationService : IAutomateThings
     {
-        #region Fields
-
-        private const int OneMinute = 1000*60;
-        private readonly Timer awayTimer;
-        private readonly IChatModel cm;
-        private readonly IEventAggregator events;
-        private readonly Timer fullscreenTimer = new Timer(2*OneMinute);
-        private readonly Timer idleTimer;
-        private readonly ICharacterManager manager;
-
-        #endregion
-
         #region Constructors
 
         public AutomationService(IEventAggregator events, ICharacterManager manager, IChatModel cm)
@@ -62,6 +51,18 @@ namespace slimCat.Services
 
             events.GetEvent<UserCommandEvent>().Subscribe(OnUserCommandSent);
         }
+
+        #endregion
+
+        #region Fields
+
+        private const int OneMinute = 1000*60;
+        private readonly Timer awayTimer;
+        private readonly IChatModel cm;
+        private readonly IEventAggregator events;
+        private readonly Timer fullscreenTimer = new Timer(2*OneMinute);
+        private readonly Timer idleTimer;
+        private readonly ICharacterManager manager;
 
         #endregion
 

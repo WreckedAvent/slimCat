@@ -36,7 +36,7 @@ namespace slimCat.ViewModels
 
         private readonly bool isModerator;
         private readonly ICharacterManager manager;
-        private readonly IPermissionService permissionService;
+        private readonly IGetPermissions permissionService;
 
         private bool hasReports;
 
@@ -46,7 +46,7 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public RightClickMenuViewModel(bool isModerator, ICharacterManager manager, IPermissionService permissionService)
+        public RightClickMenuViewModel(bool isModerator, ICharacterManager manager, IGetPermissions permissionService)
         {
             this.isModerator = isModerator;
             this.manager = manager;

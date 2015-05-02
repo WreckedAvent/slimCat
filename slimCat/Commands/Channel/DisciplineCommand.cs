@@ -53,7 +53,7 @@ namespace slimCat.Services
 
     public partial class ServerCommandService
     {
-        private new void KickCommand(IDictionary<string, object> command)
+        private void KickCommand(IDictionary<string, object> command)
         {
             var kicker = command.Get("operator");
             var channelId = command.Get(Constants.Arguments.Channel);

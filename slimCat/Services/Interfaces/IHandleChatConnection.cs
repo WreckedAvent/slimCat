@@ -3,12 +3,12 @@
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="IChatConnection.cs">
 //     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
@@ -27,9 +27,9 @@ namespace slimCat.Services
     #endregion
 
     /// <summary>
-    ///     Represents a websocket endpoint for F-Chat.
+    ///     Handles our chat connection. It sends/receives messages over websockets and handles reconnection.
     /// </summary>
-    public interface IChatConnection
+    public interface IHandleChatConnection
     {
         #region Public Properties
 
@@ -50,23 +50,17 @@ namespace slimCat.Services
         /// <summary>
         ///     Sends the message to the server.
         /// </summary>
-        /// <param name="command">The command.</param>
-        /// <param name="commandType">Type of the command.</param>
         void SendMessage(object command, string commandType);
 
         /// <summary>
         ///     Sends an argumentless command to the server.
         /// </summary>
-        /// <param name="commandType">Type of the command.</param>
         void SendMessage(string commandType);
-
 
         /// <summary>
         ///     Sends the message to the server.
         /// </summary>
-        /// <param name="command">The command.</param>
         void SendMessage(IDictionary<string, object> command);
-
 
         /// <summary>
         ///     Disconnects the current socket.

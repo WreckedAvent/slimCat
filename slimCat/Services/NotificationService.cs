@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="NotificationService.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -23,6 +21,7 @@ namespace slimCat.Services
 
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Media;
     using System.Web;
@@ -37,14 +36,41 @@ namespace slimCat.Services
     #endregion
 
     /// <summary>
-    ///     This handles pushing and creating all notifications. This means it plays all sounds, creates all toast
-    ///     notifications,
-    ///     and is responsible for managing the little tray icon. Additionally, it manages the singleton instance of the
-    ///     notifications class.
-    ///     It responds to NewMessageEvent, NewPmEvent, NewUpdateEvent
+    ///     The notification service is responsible for piping notification events around to create new toasts and sounds.
     /// </summary>
     public class NotificationService : DispatcherObject, IDisposable
     {
+        #region Constructors and Destructors
+
+        public NotificationService(IChatState chatState, LoggingService loggingService, IHandleIcons iconService)
+        {
+            ChatState = chatState;
+            events = chatState.EventAggregator;
+            cm = chatState.ChatModel;
+            manager = chatState.CharacterManager;
+            icon = iconService;
+            toast = new ToastNotificationsViewModel(chatState);
+            ToastManager = new ToastService
+            {
+                AddNotification = notification =>
+                {
+                    Dispatcher.Invoke(() => cm.Notifications.Backlog(notification, 100));
+                    loggingService.LogMessage("!Notifications", notification);
+                },
+                ShowToast = toast.ShowNotifications,
+                FlashWindow = () => Dispatcher.Invoke(FlashWindow),
+                PlaySound = () => Dispatcher.Invoke(DingTheCrapOutOfTheUser),
+                Toast = toast
+            };
+
+            events.GetEvent<NewMessageEvent>().Subscribe(HandleNewChannelMessage, true);
+            events.GetEvent<NewPmEvent>().Subscribe(HandleNewMessage, true);
+            events.GetEvent<NewUpdateEvent>().Subscribe(HandleNotification, true);
+            events.GetEvent<UnreadUpdatesEvent>().Subscribe(HandleUnreadUpdates, true);
+        }
+
+        #endregion
+
         #region Fields
 
         private readonly IChatModel cm;
@@ -55,50 +81,15 @@ namespace slimCat.Services
 
         private readonly ToastNotificationsViewModel toast;
 
-        private readonly IIconService icon; 
+        private readonly IHandleIcons icon;
 
         private DateTime lastDingLinged;
 
         #endregion
 
-        #region Constructors and Destructors
-
-        public NotificationService(IChatState chatState, LoggingService loggingService, IIconService iconService)
-        {
-            ChatState = chatState;
-            events = chatState.EventAggregator;
-            cm = chatState.ChatModel;
-            manager = chatState.CharacterManager;
-            icon = iconService;
-            toast = new ToastNotificationsViewModel(chatState);
-            ToastManager = new ToastManager
-            {
-                AddNotification =
-                    notification =>
-                    {
-                        Dispatcher.Invoke(() => cm.Notifications.Backlog(notification, 100));
-                        loggingService.LogMessage("!Notifications", notification);
-                    },
-                ShowToast = toast.ShowNotifications,
-                FlashWindow = () => Dispatcher.Invoke(FlashWindow),
-                PlaySound = () => Dispatcher.Invoke(DingTheCrapOutOfTheUser),
-                Toast = toast
-            };
-
-            events.GetEvent<NewMessageEvent>().Subscribe(HandleNewChannelMessage, true);
-            events.GetEvent<NewPmEvent>().Subscribe(HandleNewMessage, true);
-            events.GetEvent<NewUpdateEvent>().Subscribe(HandleNotification, true);
-            events.GetEvent<UnreadUpdatesEvent>().Subscribe(HandleUnreadUpdates, true); 
-        }
-
-        #endregion
-
         #region Properties
 
-        private bool WindowIsFocused
-        {
-            get { return Dispatcher.Invoke(() => Application.Current.MainWindow.IsActive); }
-        }
+        private bool WindowIsFocused => Dispatcher.Invoke(() => Application.Current.MainWindow.IsActive);
 
         private IChatState ChatState { get; }
 
@@ -108,27 +99,20 @@ namespace slimCat.Services
 
         #region Public Methods and Operators
 
-        public void Dispose()
+        void IDisposable.Dispose() => Dispose(true);
+
+        public static void ShowWindow() => Dispatcher.CurrentDispatcher.Invoke(() =>
         {
-            Dispose(true);
-        }
+            var window = Application.Current.MainWindow;
+            window.Show();
+            if (window.WindowState == WindowState.Minimized)
+                window.WindowState = WindowState.Normal;
 
-        public static void ShowWindow()
-        {
-            Dispatcher.CurrentDispatcher.Invoke(() =>
-            {
-                var window = Application.Current.MainWindow;
-                window.Show();
-                if (window.WindowState == WindowState.Minimized)
-                    window.WindowState = WindowState.Normal;
-
-                window.Activate();
-                window.Topmost = true;
-                window.Topmost = false;
-                window.Focus();
-
-            });
-        }
+            window.Activate();
+            window.Topmost = true;
+            window.Topmost = false;
+            window.Focus();
+        });
 
         #endregion
 
@@ -144,12 +128,18 @@ namespace slimCat.Services
 
         private void DingTheCrapOutOfTheUser()
         {
-            if ((DateTime.Now - lastDingLinged) <= TimeSpan.FromSeconds(1) || !ApplicationSettings.AllowSound
+            // if we've played a sound in the last second,
+            // if we allow sound,
+            // or if we disallow notifications when we're DND and we're DND, do not play sounds.
+            if ((DateTime.Now - lastDingLinged) <= TimeSpan.FromSeconds(1)
+                || !ApplicationSettings.AllowSound
                 || (ApplicationSettings.DisallowNotificationsWhenDnd && ChatState.ChatModel.CurrentCharacter.Status == StatusType.Dnd))
-            { return; }
+            {
+                return;
+            }
 
             Log("Playing sound");
-            (new SoundPlayer(Environment.CurrentDirectory + @"\sounds\" + "newmessage.wav")).Play();
+            (new SoundPlayer(Environment.CurrentDirectory + @"\sounds\newmessage.wav")).Play();
             lastDingLinged = DateTime.Now;
         }
 
@@ -277,7 +267,9 @@ namespace slimCat.Services
             }
             if (ApplicationSettings.DisallowNotificationsWhenDnd
                 && ChatState.ChatModel.CurrentCharacter.Status == StatusType.Dnd)
-            { return; }
+            {
+                return;
+            }
 
             Log("Flashing window");
             Application.Current.MainWindow.FlashWindow();
@@ -351,35 +343,12 @@ namespace slimCat.Services
             return cm.CurrentPms.Any(x => x.Id.Equals(name)) || manager.IsOfInterest(name, onlineOnly);
         }
 
+        [Conditional("DEBUG")]
         private void Log(string text)
         {
             Logging.Log(text, "notify serv");
         }
 
         #endregion
-    }
-
-    public class ToastManager : IManageToasts
-    {
-        public Action FlashWindow { get; set; }
-        public Action PlaySound { get; set; }
-        public Action<NotificationModel> AddNotification { get; set; }
-        public ToastNotificationsViewModel Toast { get; set; }
-        public Action ShowToast { get; set; }
-    }
-
-    public class SimpleNavigator : ICanNavigate
-    {
-        public SimpleNavigator(Action<IChatState> navigateAction)
-        {
-            Navigate = navigateAction;
-        }
-
-        public Action<IChatState> Navigate { get; set; }
-
-        void ICanNavigate.Navigate(IChatState chatState)
-        {
-            Navigate(chatState);
-        }
     }
 }

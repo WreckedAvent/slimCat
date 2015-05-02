@@ -17,14 +17,13 @@
 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using slimCat.Models;
-using slimCat.Utilities;
-
 namespace slimCatTest
 {
+    using System;
+    using System.Collections.Generic;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using slimCat.Models;
+    using slimCat.Utilities;
 
     [TestClass]
     public class UserCommandTest

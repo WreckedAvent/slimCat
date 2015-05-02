@@ -53,24 +53,24 @@ namespace slimCat.Utilities
 
                 // create singletons
                 RegisterSingleton<IAccount, AccountModel>();
-                RegisterSingleton<IBrowser, BrowserService>();
-                RegisterSingleton<ITicketProvider, TicketProvider>();
-                RegisterSingleton<IListConnection, FlistService>();
-                RegisterSingleton<IChatConnection, FchatService>();
+                RegisterSingleton<IBrowseThings, BrowserService>();
+                RegisterSingleton<IGetTickets, TicketService>();
+                RegisterSingleton<IHandleApi, FlistService>();
+                RegisterSingleton<IHandleChatConnection, FchatService>();
                 RegisterSingleton<IChatModel, ChatModel>();
-                RegisterSingleton<IChannelService, ChannelService>();
+                RegisterSingleton<IManageChannels, ChannelService>();
                 RegisterSingleton<IThemeLocator, ApplicationThemeLocator>();
                 RegisterSingleton<ICharacterManager, GlobalCharacterManager>();
-                RegisterSingleton<IPermissionService, PermissionService>();
-                RegisterSingleton<IAutomationService, AutomationService>();
-                RegisterSingleton<ILoggingService, LoggingService>();
-                RegisterSingleton<IChannelListUpdater, ChannelListUpdaterService>();
-                RegisterSingleton<IIconService, IconService>();
-                RegisterSingleton<INoteService, NoteService>();
+                RegisterSingleton<IGetPermissions, PermissionService>();
+                RegisterSingleton<IAutomateThings, AutomationService>();
+                RegisterSingleton<ILogThings, LoggingService>();
+                RegisterSingleton<IUpdateChannelLists, ChannelListUpdaterService>();
+                RegisterSingleton<IHandleIcons, IconService>();
+                RegisterSingleton<IManageNotes, NoteService>();
                 RegisterSingleton<IFriendRequestService, FriendRequestService>();
-                RegisterSingleton<IProfileService, ProfileService>();
+                RegisterSingleton<IGetProfiles, ProfileService>();
                 RegisterSingleton<IChatState, ChatState>();
-                RegisterSingleton<IUpdateService, UpdateService>();
+                RegisterSingleton<IUpdateMyself, UpdateService>();
 
                 Register<Application, Application>(Application.Current);
                 var host = Container.Resolve<IAccount>().ServerHost;
@@ -83,7 +83,7 @@ namespace slimCat.Utilities
                 Instantiate<NotificationService>();
                 Instantiate<ServerCommandService>();
                 Instantiate<UserCommandService>();
-                Instantiate<IIconService>();
+                Instantiate<IHandleIcons>();
                 Instantiate<ProfileService>();
 
                 // some resources that are dependent on our singletons

@@ -20,6 +20,7 @@
 namespace slimCat.Views
 {
     #region Usings
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -31,6 +32,7 @@ namespace slimCat.Views
     using Models;
     using Utilities;
     using ViewModels;
+
     #endregion
 
     public class ShortcutManager
@@ -59,7 +61,7 @@ namespace slimCat.Views
             new Dictionary<Key, string>
             {
                 {Key.K, "session"},
-                {Key.O, "user"},
+                {Key.O, "user"}
             };
 
         private readonly TextBox entry;

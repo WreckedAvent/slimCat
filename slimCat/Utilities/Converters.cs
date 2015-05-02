@@ -414,7 +414,7 @@ namespace slimCat.Utilities
                         Content = model,
                         Margin = new Thickness(2, 0, 2, 0)
                     },
-                    BaselineAlignment = BaselineAlignment.TextBottom,
+                    BaselineAlignment = BaselineAlignment.TextBottom
                 };
         }
 
@@ -941,7 +941,7 @@ namespace slimCat.Utilities
                 Foreground = Locator.Find<SolidColorBrush>("ForegroundBrush"),
                 Opacity = 0.8,
                 Margin = new Thickness(50, 5, 0, 5),
-                TextWrapping = TextWrapping.Wrap,
+                TextWrapping = TextWrapping.Wrap
             };
             TextBlockHelper.SetInlineList(text, arg.Children.Select(ToInline).ToList());
 
@@ -1311,12 +1311,12 @@ namespace slimCat.Utilities
     /// </summary>
     public sealed class BbFlowConverter : BbCodeBaseConverter, IValueConverter
     {
-        private readonly IPermissionService permissions;
+        private readonly IGetPermissions permissions;
 
         #region Constructors
 
         public BbFlowConverter(IChatModel chatModel, ICharacterManager characterManager, IThemeLocator locator,
-            IPermissionService permissions)
+            IGetPermissions permissions)
             : base(chatModel, characterManager, locator)
         {
             this.permissions = permissions;
@@ -1356,7 +1356,7 @@ namespace slimCat.Utilities
                     var start = ApplicationSettings.ShowMoreInAdsLength;
                     do
                     {
-                        if (Char.IsPunctuation(text[start]) && Char.IsWhiteSpace(text[start + 1]))
+                        if (char.IsPunctuation(text[start]) && char.IsWhiteSpace(text[start + 1]))
                             break;
                         start--;
                     } while (start != 0);
@@ -1367,7 +1367,7 @@ namespace slimCat.Utilities
                         start = ApplicationSettings.ShowMoreInAdsLength;
                         do
                         {
-                            if (Char.IsWhiteSpace(text[start]))
+                            if (char.IsWhiteSpace(text[start]))
                                 break;
                             start--;
                         } while (start != 0);
@@ -1477,7 +1477,7 @@ namespace slimCat.Utilities
     /// </summary>
     public abstract class GenderColorConverterBase : OneWayConverter
     {
-        internal readonly IPermissionService Permissions;
+        internal readonly IGetPermissions Permissions;
 
         private readonly IDictionary<Gender, Gender> genderFallbacks = new Dictionary<Gender, Gender>
         {
@@ -1505,7 +1505,7 @@ namespace slimCat.Utilities
 
         private readonly ICharacterManager manager;
 
-        protected GenderColorConverterBase(IPermissionService permissions, ICharacterManager manager)
+        protected GenderColorConverterBase(IGetPermissions permissions, ICharacterManager manager)
         {
             Permissions = permissions;
             this.manager = manager;
@@ -1549,7 +1549,7 @@ namespace slimCat.Utilities
             return (Color) Application.Current.FindResource("NotAvailableColor");
         }
 
-        protected static Object TryGet(string name, bool isBrush)
+        protected static object TryGet(string name, bool isBrush)
         {
             var toReturn = Application.Current.TryFindResource(name + (isBrush ? "Brush" : "Color"));
 
@@ -1584,7 +1584,7 @@ namespace slimCat.Utilities
     /// </summary>
     public sealed class GenderColorConverter : GenderColorConverterBase
     {
-        public GenderColorConverter(IPermissionService permissions, ICharacterManager manager)
+        public GenderColorConverter(IGetPermissions permissions, ICharacterManager manager)
             : base(permissions, manager)
         {
         }
@@ -1765,7 +1765,7 @@ namespace slimCat.Utilities
     /// </summary>
     public sealed class NameplateColorConverter : GenderColorConverterBase
     {
-        public NameplateColorConverter(IPermissionService permissions, ICharacterManager manager)
+        public NameplateColorConverter(IGetPermissions permissions, ICharacterManager manager)
             : base(permissions, manager)
         {
         }
@@ -1794,7 +1794,7 @@ namespace slimCat.Utilities
     /// </summary>
     public sealed class NameplateMessageColorConverter : GenderColorConverterBase
     {
-        public NameplateMessageColorConverter(IPermissionService permissions, ICharacterManager manager)
+        public NameplateMessageColorConverter(IGetPermissions permissions, ICharacterManager manager)
             : base(permissions, manager)
         {
         }

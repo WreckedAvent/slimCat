@@ -21,13 +21,12 @@
 namespace slimCatTest
 {
     #region Usings
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-    using slimCat.Utilities;
 
     using System.Windows;
-
     using System.Windows.Data;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using slimCat.Utilities;
+
     #endregion
 
     [TestClass]

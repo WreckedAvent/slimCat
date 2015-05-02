@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ProfileService.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -37,8 +35,103 @@ namespace slimCat.Services
 
     #endregion
 
-    public class ProfileService : IProfileService
+    public class ProfileService : IGetProfiles
     {
+        #region Constructors
+
+        public ProfileService(IUnityContainer contain, IBrowseThings browser, IChatModel cm, IEventAggregator events)
+        {
+            this.browser = browser;
+            this.cm = cm;
+
+            container = contain;
+
+            events.GetEvent<LoginAuthenticatedEvent>().Subscribe(GetProfileDataAsync);
+
+            var worker = new BackgroundWorker();
+            worker.DoWork += GetKinkDataAsync;
+            worker.RunWorkerAsync();
+        }
+
+        #endregion
+
+        public void GetProfileDataAsync(string character)
+        {
+            var worker = new BackgroundWorker();
+            worker.DoWork += GetProfileDataAsyncHandler;
+            worker.RunWorkerAsync(character);
+        }
+
+        public void ClearCache(string character)
+        {
+            invalidCacheList.Add(character);
+            GetProfileDataAsync(character);
+        }
+
+        public void GetProfileDataAsync(bool? success)
+        {
+            var character = cm.CurrentCharacter.Name;
+            var worker = new BackgroundWorker();
+            worker.DoWork += GetProfileDataAsyncHandler;
+            worker.RunWorkerAsync(character);
+        }
+
+        private ProfileKink GetFullKink(ProfileKink kink)
+        {
+            ProfileKink data;
+            if (!kinkData.TryGetValue(kink.Id, out data)) return kink;
+
+            kink.Name = data.Name;
+            kink.Tooltip = data.Tooltip;
+            return kink;
+        }
+
+        private ProfileData CreateModel(string profileText, IEnumerable<ProfileTag> tags,
+            ApiProfileImagesResponse imageResponse, IEnumerable<ProfileKink> kinks, IEnumerable<string> alts)
+        {
+            var allKinks = kinks.Select(GetFullKink);
+
+            var toReturn = new ProfileData
+            {
+                ProfileText = profileText,
+                Kinks = allKinks.ToList(),
+                Alts = alts.ToList()
+            };
+
+            var tagActions = new Dictionary<string, Action<string>>(StringComparer.OrdinalIgnoreCase)
+            {
+                {"age", s => toReturn.Age = s},
+                {"species", s => toReturn.Species = s},
+                {"orientation", s => toReturn.Orientation = s},
+                {"build", s => toReturn.Build = s},
+                {"height/length", s => toReturn.Height = s},
+                {"body type", s => toReturn.BodyType = s},
+                {"position", s => toReturn.Position = s},
+                {"dom/sub role", s => toReturn.DomSubRole = s}
+            };
+
+            var profileTags = tags.ToList();
+            profileTags.Each(x =>
+            {
+                Action<string> action;
+                if (tagActions.TryGetValue(x.Label, out action))
+                    action(DoubleDecode(x.Value));
+            });
+
+            toReturn.AdditionalTags = profileTags
+                .Where(x => !tagActions.ContainsKey(x.Label))
+                .Select(x =>
+                {
+                    x.Value = DoubleDecode(x.Value);
+                    return x;
+                }).ToList();
+
+            toReturn.Images = imageResponse.Images.Select(x => new ProfileImage(x)).ToList();
+
+            toReturn.LastRetrieved = DateTime.Now;
+            return toReturn;
+        }
+
         #region Fields
 
         private const string ProfileBodySelector = "//div[@id = 'tabs-1']/*[1]";
@@ -53,7 +146,7 @@ namespace slimCat.Services
 
         private const string ProfileStatBoxSelector = "//div[@class = 'statbox']";
 
-        private readonly IBrowser browser;
+        private readonly IBrowseThings browser;
 
         private readonly IChatModel cm;
 
@@ -64,25 +157,7 @@ namespace slimCat.Services
         private readonly IDictionary<string, ProfileData> profileCache =
             new Dictionary<string, ProfileData>(StringComparer.OrdinalIgnoreCase);
 
-        private readonly IList<string> invalidCacheList = new List<string>();  
-
-        #endregion
-
-        #region Constructors
-
-        public ProfileService(IUnityContainer contain, IBrowser browser, IChatModel cm, IEventAggregator events)
-        {
-            this.browser = browser;
-            this.cm = cm;
-
-            container = contain;
-
-            events.GetEvent<LoginAuthenticatedEvent>().Subscribe(GetProfileDataAsync);
-
-            var worker = new BackgroundWorker();
-            worker.DoWork += GetKinkDataAsync;
-            worker.RunWorkerAsync();
-        }
+        private readonly IList<string> invalidCacheList = new List<string>();
 
         #endregion
 
@@ -138,7 +213,7 @@ namespace slimCat.Services
                 return;
             try
             {
-                var profileBody = String.Empty;
+                var profileBody = string.Empty;
                 var profileText = htmlDoc.DocumentNode.SelectNodes(ProfileBodySelector);
                 if (profileText != null)
                 {
@@ -181,7 +256,7 @@ namespace slimCat.Services
                             })));
                 }
 
-                IEnumerable<string> allAlts = new List<String>();
+                IEnumerable<string> allAlts = new List<string>();
                 var profileAlts = htmlDoc.DocumentNode.SelectNodes(ProfileAltsSelector);
                 if (profileAlts != null)
                 {
@@ -289,82 +364,5 @@ namespace slimCat.Services
         }
 
         #endregion
-
-        public void GetProfileDataAsync(string character)
-        {
-            var worker = new BackgroundWorker();
-            worker.DoWork += GetProfileDataAsyncHandler;
-            worker.RunWorkerAsync(character);
-        }
-
-        public void GetProfileDataAsync(bool? success)
-        {
-            var character = cm.CurrentCharacter.Name;
-            var worker = new BackgroundWorker();
-            worker.DoWork += GetProfileDataAsyncHandler;
-            worker.RunWorkerAsync(character);
-        }
-
-        public void ClearCache(string character)
-        {
-            invalidCacheList.Add(character);
-            GetProfileDataAsync(character);
-        }
-
-        private ProfileKink GetFullKink(ProfileKink kink)
-        {
-            ProfileKink data;
-            if (!kinkData.TryGetValue(kink.Id, out data)) return kink;
-
-            kink.Name = data.Name;
-            kink.Tooltip = data.Tooltip;
-            return kink;
-        }
-
-        private ProfileData CreateModel(string profileText, IEnumerable<ProfileTag> tags,
-            ApiProfileImagesResponse imageResponse, IEnumerable<ProfileKink> kinks, IEnumerable<String> alts)
-        {
-            var allKinks = kinks.Select(GetFullKink);
-
-            var toReturn = new ProfileData
-            {
-                ProfileText = profileText,
-                Kinks = allKinks.ToList(),
-                Alts = alts.ToList()
-            };
-
-            var tagActions = new Dictionary<string, Action<string>>(StringComparer.OrdinalIgnoreCase)
-            {
-                {"age", s => toReturn.Age = s},
-                {"species", s => toReturn.Species = s},
-                {"orientation", s => toReturn.Orientation = s},
-                {"build", s => toReturn.Build = s},
-                {"height/length", s => toReturn.Height = s},
-                {"body type", s => toReturn.BodyType = s},
-                {"position", s => toReturn.Position = s},
-                {"dom/sub role", s => toReturn.DomSubRole = s}
-            };
-
-            var profileTags = tags.ToList();
-            profileTags.Each(x =>
-            {
-                Action<string> action;
-                if (tagActions.TryGetValue(x.Label, out action))
-                    action(DoubleDecode(x.Value));
-            });
-
-            toReturn.AdditionalTags = profileTags
-                .Where(x => !tagActions.ContainsKey(x.Label))
-                .Select(x =>
-                {
-                    x.Value = DoubleDecode(x.Value);
-                    return x;
-                }).ToList();
-
-            toReturn.Images = imageResponse.Images.Select(x => new ProfileImage(x)).ToList();
-
-            toReturn.LastRetrieved = DateTime.Now;
-            return toReturn;
-        }
     }
 }

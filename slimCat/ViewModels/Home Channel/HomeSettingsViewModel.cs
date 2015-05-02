@@ -34,7 +34,7 @@ namespace slimCat.ViewModels
     {
         #region Fields
 
-        private readonly IAutomationService automation;
+        private readonly IAutomateThings automation;
 
         private readonly ICharacterManager characterManager;
         private readonly IconService iconService;
@@ -45,7 +45,7 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public HomeSettingsViewModel(IChatState chatState, IAutomationService automationService, IconService iconService,
+        public HomeSettingsViewModel(IChatState chatState, IAutomateThings automationService, IconService iconService,
             ICharacterManager characterManager)
             : base(chatState)
         {
@@ -643,7 +643,7 @@ namespace slimCat.ViewModels
 
         private void Save()
         {
-            ApplicationSettings.SettingsVersion = Constants.ClientVer;
+            ApplicationSettings.SettingsVersion = Constants.ClientVersion;
             SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
         }
 

@@ -3,12 +3,12 @@
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ParserTest.cs">
 //    Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//   
+//
 //    This source is subject to the Simplified BSD License.
 //    Please see the License.txt file for more information.
 //    All other rights reserved.
-//    
-//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//    THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //    KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //    IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //    PARTICULAR PURPOSE.
@@ -44,7 +44,7 @@ namespace slimCatTest
             var manager = Mock.Of<ICharacterManager>();
             var chatModel = Mock.Of<IChatModel>();
             var locator = Mock.Of<IThemeLocator>();
-            var permissions = Mock.Of<IPermissionService>();
+            var permissions = Mock.Of<IGetPermissions>();
 
             converter = new BbFlowConverter(chatModel, manager, locator, permissions);
         }
@@ -544,7 +544,7 @@ http://www.foo.bar.com";
             var total = string.Empty;
             var span = element as Span;
 
-            span?.Inlines.Select(GetText).Each(x => total += x);
+            (span?.Inlines.Select(GetText)).Each(x => total += x);
 
             return total;
         }

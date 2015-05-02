@@ -47,6 +47,6 @@ namespace slimCat.Models
         /// <summary>
         ///     Utility channels are special channels which do not send or receive messages.
         /// </summary>
-        Utility,
+        Utility
     }
 }

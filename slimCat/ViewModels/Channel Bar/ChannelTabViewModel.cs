@@ -48,7 +48,7 @@ namespace slimCat.ViewModels
         #region Fields
 
         private readonly DeferredAction updateChannelList;
-        private readonly IChannelListUpdater updater;
+        private readonly IUpdateChannelLists updater;
         public bool ShowOnlyAlphabet;
 
         private RelayCommand createNewChannel;
@@ -69,7 +69,7 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public ChannelsTabViewModel(IChatState chatState, IChannelListUpdater updater)
+        public ChannelsTabViewModel(IChatState chatState, IUpdateChannelLists updater)
             : base(chatState)
         {
             this.updater = updater;

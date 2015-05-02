@@ -3,12 +3,12 @@
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright file="PMChannelView.xaml.cs">
 //     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
@@ -21,12 +21,12 @@ namespace slimCat.Views
 {
     #region Usings
 
-    using Models;
     using System;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Documents;
     using System.Windows.Input;
+    using Models;
     using Utilities;
     using ViewModels;
 
@@ -129,19 +129,18 @@ namespace slimCat.Views
         private void OnMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
-            StaticFunctions.TryOpenRightClickMenuCommand<Grid>(sender, 2);
+            sender.TryOpenRightClickMenuCommand<Grid>(2);
         }
 
         private void OnProfileMouseWheelPreview(object sender, MouseWheelEventArgs e)
         {
             if (scroller == null)
             {
-                scroller = StaticFunctions.FindChild<ScrollViewer>(sender as DependencyObject);
-                if (scroller == null)
-                    return;
+                scroller = (sender as DependencyObject).FindChild<ScrollViewer>();
+                if (scroller == null) return;
             }
 
-            scroller.ScrollToVerticalOffset(scroller.VerticalOffset - StaticFunctions.GetScrollDistance(e.Delta, ApplicationSettings.FontSize-4));
+            scroller.ScrollToVerticalOffset(scroller.VerticalOffset - GeneralExtensions.GetScrollDistance(e.Delta, ApplicationSettings.FontSize-4));
 
             e.Handled = true;
         }

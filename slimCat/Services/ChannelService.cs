@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ChannelService.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -38,36 +36,8 @@ namespace slimCat.Services
 
     #endregion
 
-    /// <summary>
-    ///     The message daemon is the service layer responsible for managing what the user sees and the commands the user
-    ///     sends.
-    /// </summary>
-    public class ChannelService : DispatcherObject, IChannelService
+    public class ChannelService : DispatcherObject, IManageChannels
     {
-        #region Fields
-
-        private const int MaxRecentTabs = 30;
-
-        private readonly IAutomationService automation;
-
-        private readonly ICharacterManager characterManager;
-
-        private readonly IChatConnection connection;
-
-        private readonly IUnityContainer container;
-
-        private readonly IEventAggregator events;
-
-        private readonly ILoggingService logger;
-
-        private readonly IChatModel model;
-
-        private readonly IRegionManager region;
-
-        private ChannelModel lastSelected;
-
-        #endregion
-
         #region Constructors and Destructors
 
         public ChannelService(
@@ -75,10 +45,10 @@ namespace slimCat.Services
             IUnityContainer contain,
             IEventAggregator events,
             IChatModel model,
-            IChatConnection connection,
+            IHandleChatConnection connection,
             ICharacterManager manager,
-            ILoggingService logger,
-            IAutomationService automation)
+            ILogThings logger,
+            IAutomateThings automation)
         {
             try
             {
@@ -103,6 +73,30 @@ namespace slimCat.Services
 
         #endregion
 
+        #region Fields
+
+        private const int MaxRecentTabs = 30;
+
+        private readonly IAutomateThings automation;
+
+        private readonly ICharacterManager characterManager;
+
+        private readonly IHandleChatConnection connection;
+
+        private readonly IUnityContainer container;
+
+        private readonly IEventAggregator events;
+
+        private readonly ILogThings logger;
+
+        private readonly IChatModel model;
+
+        private readonly IRegionManager region;
+
+        private ChannelModel lastSelected;
+
+        #endregion
+
         #region Public Methods and Operators
 
         public void AddChannel(ChannelType type, string id, string name)
@@ -123,7 +117,7 @@ namespace slimCat.Services
                 container.Resolve<PmChannelViewModel>(new ParameterOverride("name", temp.Id));
 
                 Dispatcher.Invoke(() => model.CurrentPms.Add(temp));
-                // then add it to the model's data               
+                // then add it to the model's data
 
                 ApplicationSettings.RecentCharacters.BacklogWithUpdate(id, MaxRecentTabs);
                 SettingsService.SaveApplicationSettingsToXml(model.CurrentCharacter.Name);
@@ -368,7 +362,7 @@ namespace slimCat.Services
                 Dispatcher.Invoke(() =>
                 {
                     var toUpdate = model.CurrentChannels.FirstByIdOrNull(lastSelected.Id)
-                                ?? (ChannelModel) model.CurrentPms.FirstByIdOrNull(lastSelected.Id);
+                                   ?? (ChannelModel) model.CurrentPms.FirstByIdOrNull(lastSelected.Id);
 
                     if (toUpdate == null)
                         lastSelected = null;
@@ -378,7 +372,7 @@ namespace slimCat.Services
             }
 
             var channelModel = model.CurrentChannels.FirstByIdOrNull(channelId)
-                            ?? (ChannelModel) model.CurrentPms.FirstByIdOrNull(channelId);
+                               ?? (ChannelModel) model.CurrentPms.FirstByIdOrNull(channelId);
 
             if (channelModel == null)
                 throw new ArgumentOutOfRangeException(nameof(channelId), "Cannot navigate to unknown channel");
@@ -405,7 +399,7 @@ namespace slimCat.Services
                     Dispatcher.Invoke(() => history
                         .Select(item => new MessageModel(item))
                         .Each(item => channelModel.AddMessage(item)
-                    ));
+                        ));
                 }
             }
 

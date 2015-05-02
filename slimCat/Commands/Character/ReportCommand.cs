@@ -159,7 +159,7 @@ namespace slimCat.Services
                                     Tab = reportData[1],
                                     Complaint = reportData[2],
                                     LogId = logId,
-                                    CallId = callId,
+                                    CallId = callId
                                 }));
 
                     reporter.LastReport = new ReportModel
@@ -182,7 +182,7 @@ namespace slimCat.Services
                                 {
                                     Complaint = report,
                                     CallId = callId,
-                                    LogId = logId,
+                                    LogId = logId
                                 }));
 
                     reporter.LastReport = new ReportModel

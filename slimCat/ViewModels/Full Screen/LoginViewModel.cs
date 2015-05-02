@@ -41,7 +41,7 @@ namespace slimCat.ViewModels
     /// </summary>
     public class LoginViewModel : ViewModelBase
     {
-        private readonly IUpdateService updateService;
+        private readonly IUpdateMyself updateService;
 
         #region Constants
 
@@ -65,7 +65,7 @@ namespace slimCat.ViewModels
 
         #region Constructors and Destructors
 
-        public LoginViewModel(IChatState chatState, IUpdateService updateService)
+        public LoginViewModel(IChatState chatState, IUpdateMyself updateService)
             : base(chatState)
         {
             try

@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="TicketProvider.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+// <copyright file="TicketService.cs">
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -32,31 +30,36 @@ namespace slimCat.Services
 
     #endregion
 
-    internal class TicketProvider : ITicketProvider
+    internal class TicketService : IGetTickets
     {
+        #region Constructors
+
+        public TicketService(IBrowseThings browser)
+        {
+            this.browser = browser;
+        }
+
+        #endregion
+
         #region Fields
 
         private const string CsrfTokenSelector = "//input[@name = 'csrf_token']";
+
         private const string SiteIsDisabled = "The site has been disabled for maintenance, check back later.";
-        private readonly IBrowser browser;
+
+        private readonly IBrowseThings browser;
 
         private IAccount lastAccount;
+
         private DateTime lastInfoRetrieval;
 
         private string lastTicket;
 
         private Dictionary<string, object> loginCredentials;
+
         private bool shouldGetNewTicket;
+
         private Dictionary<string, object> ticketCredentials;
-
-        #endregion
-
-        #region Constructors
-
-        public TicketProvider(IBrowser browser)
-        {
-            this.browser = browser;
-        }
 
         #endregion
 
@@ -104,13 +107,13 @@ namespace slimCat.Services
             ticketCredentials = new Dictionary<string, object>
             {
                 {"account", user.ToLower()},
-                {"password", pass},
+                {"password", pass}
             };
 
             loginCredentials = new Dictionary<string, object>
             {
                 {"username", user.ToLower()},
-                {"password", pass},
+                {"password", pass}
             };
 
             lastAccount = new AccountModel

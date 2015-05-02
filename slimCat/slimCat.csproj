@@ -241,38 +241,52 @@
     <Compile Include="Commands\Channel\AdCommand.cs" />
     <Compile Include="Commands\Channel\DescriptionCommand.cs" />
     <Compile Include="Commands\System\BroadcastCommand.cs" />
+    <Compile Include="Models\Conversation.cs" />
+    <Compile Include="Services\Interfaces\IUpdateChannelLists.cs" />
     <Compile Include="Services\IconService.cs" />
-    <Compile Include="Services\Interfaces\IAutomationService.cs" />
+    <Compile Include="Services\Interfaces\IHandleIcons.cs" />
+    <Compile Include="Models\ChatState.cs" />
+    <Compile Include="Services\Interfaces\IAutomateThings.cs" />
     <Compile Include="Services\Interfaces\IChatState.cs" />
-    <Compile Include="Services\Interfaces\IProfileService.cs" />
-    <Compile Include="Services\Interfaces\INoteService.cs" />
-    <Compile Include="Services\Interfaces\IBrowser.cs" />
-    <Compile Include="Services\Interfaces\IChannelService.cs" />
-    <Compile Include="Services\Interfaces\IChatConnection.cs" />
-    <Compile Include="Services\Interfaces\IListConnection.cs" />
-    <Compile Include="Services\Interfaces\ILoggingService.cs" />
-    <Compile Include="Services\Interfaces\IPermissionService.cs" />
+    <Compile Include="Services\Interfaces\IGetProfiles.cs" />
+    <Compile Include="Services\Interfaces\IManageNotes.cs" />
+    <Compile Include="Services\Interfaces\IBrowseThings.cs" />
+    <Compile Include="Services\Interfaces\IManageChannels.cs" />
+    <Compile Include="Services\Interfaces\IHandleChatConnection.cs" />
+    <Compile Include="Services\Interfaces\IHandleApi.cs" />
+    <Compile Include="Services\Interfaces\ILogThings.cs" />
+    <Compile Include="Services\Interfaces\IGetPermissions.cs" />
     <Compile Include="Services\Interfaces\IFriendRequestService.cs" />
-    <Compile Include="Services\Interfaces\ITicketProvider.cs" />
+    <Compile Include="Services\Interfaces\IGetTickets.cs" />
     <Compile Include="Models\ProfileData.cs" />
     <Compile Include="Models\ProfileImage.cs" />
     <Compile Include="Models\ProfileKink.cs" />
-    <Compile Include="Services\Interfaces\IUpdateService.cs" />
+    <Compile Include="Services\Interfaces\IUpdateMyself.cs" />
+    <Compile Include="Models\LatestConfig.cs" />
     <Compile Include="Services\ProfileService.cs" />
     <Compile Include="Services\NoteService.cs" />
     <Compile Include="Services\PermissionService.cs" />
     <Compile Include="Services\SettingsService.cs" />
     <Compile Include="Services\FriendRequestService.cs" />
-    <Compile Include="Services\TicketProvider.cs" />
+    <Compile Include="Services\SimpleNavigator.cs" />
+    <Compile Include="Services\Enums\SpecialLogMessageKind.cs" />
+    <Compile Include="Services\TicketService.cs" />
+    <Compile Include="Services\ToastService.cs" />
     <Compile Include="Services\UpdateService.cs" />
     <Compile Include="Services\UserPreferences.cs" />
     <Compile Include="Theme\EmbeddedTheme.xaml.cs" />
     <Compile Include="Utilities\CacheCount.cs" />
+    <Compile Include="Utilities\CharacterExtensions.cs" />
+    <Compile Include="Utilities\ChatStateExtensions.cs" />
     <Compile Include="Utilities\Constants.cs" />
+    <Compile Include="Utilities\DictionaryExtensions.cs" />
+    <Compile Include="Utilities\EventExtensions.cs" />
     <Compile Include="Utilities\KeepToCurrentScrollViewer.cs" />
+    <Compile Include="Utilities\ListExtensions.cs" />
     <Compile Include="Utilities\Logging.cs" />
-    <Compile Include="Utilities\StaticFunctions.cs" />
+    <Compile Include="Utilities\ObjectExtensions.cs" />
     <Compile Include="Utilities\FilteredCollection.cs" />
+    <Compile Include="Utilities\StringExtensions.cs" />
     <Compile Include="ViewModels\Channel Bar\GlobalTabViewModel.cs" />
     <Compile Include="ViewModels\Channel Bar\ManageListsViewModel.cs" />
     <Compile Include="ViewModels\Channel Bar\SearchTabViewModel.cs" />
@@ -286,7 +300,7 @@
     <Compile Include="Models\PMChannelModel.cs" />
     <Compile Include="Models\ApplicationSettings.cs" />
     <Compile Include="Services\ServerCommandService.cs" />
-    <Compile Include="Services\F-ChatConnection.cs" />
+    <Compile Include="Services\FchatService.cs" />
     <Compile Include="Services\LoggingService.cs" />
     <Compile Include="Services\UserCommandService.cs" />
     <Compile Include="Services\NotificationService.cs" />
@@ -297,9 +311,9 @@
     <Compile Include="Utilities\Events.cs" />
     <Compile Include="lib\PasswordBoxAssistant.cs" />
     <Compile Include="lib\RelayCommand.cs" />
-    <Compile Include="Services\F-ListConnection.cs" />
+    <Compile Include="Services\FlistService.cs" />
     <Compile Include="Utilities\Exceptions.cs" />
-    <Compile Include="Utilities\ExtensionMethods.cs" />
+    <Compile Include="Utilities\GeneralExtensions.cs" />
     <Compile Include="ViewModels\Base Classes\SysProp.cs" />
     <Compile Include="ViewModels\Channel Bar\ChannelBarViewModel.cs" />
     <Compile Include="ViewModels\Channel Bar\ChannelBarViewModelCommon.cs" />
@@ -785,7 +799,12 @@
     <Resource Include="catIcon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="balloonIcon.ico" />
     <Content Include="icons\auto.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="sounds\newmessage.wav" />
+    <Content Include="icons\balloonIcon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="icons\browser.png">
@@ -893,11 +912,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PostBuildEvent>cmd /x /c mkdir "$(TargetDir)Theme"
+    <PreBuildEvent>cmd /x /c mkdir "$(TargetDir)Theme"
 cmd /x /c mkdir "$(TargetDir)lib"
 cmd /x /c mkdir "$(TargetDir)sounds"
 cmd /x /c mkdir "$(TargetDir)icons"
@@ -906,7 +921,11 @@ xcopy "$(ProjectDir)Theme\Colors.xaml" "$(TargetDir)Theme"  /c /i /d /y
 xcopy "$(ProjectDir)lib\*.dll" "$(TargetDir)lib" /c /i /d /y
 xcopy "$(ProjectDir)Logs.lnk" "$(TargetDir)" /c /i /d /y
 xcopy "$(ProjectDir)catIcon.ico" "$(TargetDir)icons" /c /i /d /y
-xcopy "$(ProjectDir)sounds\*.*" "$(TargetDir)sounds" /c /i /d /y</PostBuildEvent>
+xcopy "$(ProjectDir)sounds\*.*" "$(TargetDir)sounds" /c /i /d /y</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

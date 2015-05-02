@@ -31,12 +31,12 @@ namespace slimCatTest
     using Microsoft.Practices.Unity;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
-    using SimpleJson;
     using slimCat;
     using slimCat.Models;
     using slimCat.Services;
+    using slimCat.Utilities;
+    using SimpleJson;
     using Commands = slimCat.Utilities.Constants.ServerCommands;
-    using Arguments = slimCat.Utilities.Constants.Arguments;
 
     #endregion
 
@@ -45,9 +45,9 @@ namespace slimCatTest
     {
         #region Fields
 
-        private readonly Mock<IChannelService> channelManager;
+        private readonly Mock<IManageChannels> channelManager;
         private readonly Mock<ICharacterManager> characterManager;
-        private readonly Mock<IChatConnection> chatConnection;
+        private readonly Mock<IHandleChatConnection> chatConnection;
         private readonly Mock<IChatModel> chatModel;
         private readonly IEventAggregator eventAggregator;
 
@@ -59,8 +59,8 @@ namespace slimCatTest
         {
             // TODO: maybe create a real container to handle this dependency injection
             chatModel = new Mock<IChatModel>();
-            chatConnection = new Mock<IChatConnection>();
-            channelManager = new Mock<IChannelService>();
+            chatConnection = new Mock<IHandleChatConnection>();
+            channelManager = new Mock<IManageChannels>();
             characterManager = new Mock<ICharacterManager>();
 
             chatModel.SetupGet(x => x.CurrentPms).Returns(new ObservableCollection<PmChannelModel>());
@@ -68,8 +68,8 @@ namespace slimCatTest
 
             var contain = Mock.Of<IUnityContainer>();
             var regman = Mock.Of<IRegionManager>();
-            var auto = Mock.Of<IAutomationService>();
-            var notes = Mock.Of<INoteService>();
+            var auto = Mock.Of<IAutomateThings>();
+            var notes = Mock.Of<IManageNotes>();
             var friendRequest = Mock.Of<IFriendRequestService>();
             var account = Mock.Of<IAccount>();
 
@@ -120,7 +120,7 @@ namespace slimCatTest
 
         internal static IDictionary<string, object> WithIdentity(string id)
         {
-            return new Dictionary<string, object> {{Arguments.Identity, id}};
+            return new Dictionary<string, object> {{Constants.Arguments.Identity, id}};
         }
 
         private static void AllowProcessingTime()
@@ -243,10 +243,10 @@ namespace slimCatTest
                 users.AddRange(usersData);
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelInitialize),
-                    WithArgument(Arguments.MultipleUsers, users),
-                    WithArgument(Arguments.Channel, ChannelName),
-                    WithArgument(Arguments.Mode, ChannelMode.Both.ToString()));
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelInitialize),
+                    WithArgument(Constants.Arguments.MultipleUsers, users),
+                    WithArgument(Constants.Arguments.Channel, ChannelName),
+                    WithArgument(Constants.Arguments.Mode, ChannelMode.Both.ToString()));
 
 
                 Thread.Sleep(250);
@@ -268,8 +268,8 @@ namespace slimCatTest
                 ShouldNotCreateUpdate();
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelDescription),
-                    WithArgument(Arguments.Channel, ChannelName),
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelDescription),
+                    WithArgument(Constants.Arguments.Channel, ChannelName),
                     WithArgument("description", description));
 
                 Assert.IsTrue(channelModel.Description.Equals(description));
@@ -288,8 +288,8 @@ namespace slimCatTest
                     });
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelDescription),
-                    WithArgument(Arguments.Channel, ChannelName),
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelDescription),
+                    WithArgument(Constants.Arguments.Channel, ChannelName),
                     WithArgument("description", description));
 
                 Assert.IsTrue(channelModel.Description.Equals(description));
@@ -307,9 +307,9 @@ namespace slimCatTest
                 var moderators = new JsonArray {First, Second};
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelModerators),
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelModerators),
                     WithArgument("oplist", moderators),
-                    WithArgument(Arguments.Channel, ChannelName));
+                    WithArgument(Constants.Arguments.Channel, ChannelName));
 
                 Thread.Sleep(50);
                 Assert.IsTrue(channelModel.CharacterManager.IsOnList(First, ListKind.Moderator, false));
@@ -331,9 +331,9 @@ namespace slimCatTest
                     });
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelMode),
-                    WithArgument(Arguments.Channel, ChannelName),
-                    WithArgument(Arguments.Mode, ChannelMode.Ads.ToString()));
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelMode),
+                    WithArgument(Constants.Arguments.Channel, ChannelName),
+                    WithArgument(Constants.Arguments.Mode, ChannelMode.Ads.ToString()));
 
                 chatModel.VerifyGet(x => x.CurrentChannels);
                 Assert.IsTrue(channelModel.Mode == ChannelMode.Ads);
@@ -362,10 +362,10 @@ namespace slimCatTest
                 JoinCurrentChannel(kicked);
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelKick),
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelKick),
                     WithArgument("operator", op),
-                    WithArgument(Arguments.Character, kicked),
-                    WithArgument(Arguments.Channel, channelModel.Id));
+                    WithArgument(Constants.Arguments.Character, kicked),
+                    WithArgument(Constants.Arguments.Channel, channelModel.Id));
 
                 chatModel.VerifyGet(x => x.CurrentCharacter);
                 chatModel.Verify(x => x.CurrentChannels, Times.Exactly(1));
@@ -392,10 +392,10 @@ namespace slimCatTest
                 channelManager.Setup(x => x.RemoveChannel(ChannelName, false, false));
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelKick),
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelKick),
                     WithArgument("operator", op),
-                    WithArgument(Arguments.Character, kicked),
-                    WithArgument(Arguments.Channel, channelModel.Id));
+                    WithArgument(Constants.Arguments.Character, kicked),
+                    WithArgument(Constants.Arguments.Channel, channelModel.Id));
 
                 chatModel.VerifyGet(x => x.CurrentCharacter);
                 chatModel.Verify(x => x.CurrentChannels, Times.Exactly(1));
@@ -421,10 +421,10 @@ namespace slimCatTest
                 channelModel.CharacterManager.SignOn(CharacterWithName(kicked));
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelBan),
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelBan),
                     WithArgument("operator", op),
-                    WithArgument(Arguments.Character, kicked),
-                    WithArgument(Arguments.Channel, channelModel.Id));
+                    WithArgument(Constants.Arguments.Character, kicked),
+                    WithArgument(Constants.Arguments.Channel, channelModel.Id));
 
                 chatModel.VerifyGet(x => x.CurrentCharacter);
                 chatModel.VerifyGet(x => x.CurrentChannels, Times.Exactly(1));
@@ -453,9 +453,9 @@ namespace slimCatTest
                 characterManager.Setup(x => x.Find(promotee)).Returns(CharacterWithName(promotee));
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelPromote),
-                    WithArgument(Arguments.Channel, ChannelName),
-                    WithArgument(Arguments.Character, promotee));
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelPromote),
+                    WithArgument(Constants.Arguments.Channel, ChannelName),
+                    WithArgument(Constants.Arguments.Character, promotee));
 
                 Assert.IsTrue(channelModel.CharacterManager.IsOnList(promotee, ListKind.Moderator));
             }
@@ -478,9 +478,9 @@ namespace slimCatTest
                 characterManager.Setup(x => x.Find(promotee)).Returns(CharacterWithName(promotee));
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelDemote),
-                    WithArgument(Arguments.Channel, ChannelName),
-                    WithArgument(Arguments.Character, promotee));
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelDemote),
+                    WithArgument(Constants.Arguments.Channel, ChannelName),
+                    WithArgument(Constants.Arguments.Character, promotee));
 
                 Assert.IsFalse(channelModel.CharacterManager.IsOnList(promotee, ListKind.Moderator));
             }
@@ -508,10 +508,10 @@ namespace slimCatTest
                     });
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelJoin),
-                    WithArgument(Arguments.Character, WithIdentity(joinerName)),
-                    WithArgument(Arguments.Channel, ChannelName),
-                    WithArgument(Arguments.Title, ChannelName));
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelJoin),
+                    WithArgument(Constants.Arguments.Character, WithIdentity(joinerName)),
+                    WithArgument(Constants.Arguments.Channel, ChannelName),
+                    WithArgument(Constants.Arguments.Title, ChannelName));
 
                 characterManager.VerifyAll();
                 Assert.IsTrue(channelModel.CharacterManager.IsOnList(joinerName, ListKind.Online));
@@ -529,10 +529,10 @@ namespace slimCatTest
                 ShouldNotCreateUpdate();
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelJoin),
-                    WithArgument(Arguments.Character, WithIdentity(joinerName)),
-                    WithArgument(Arguments.Channel, ChannelName),
-                    WithArgument(Arguments.Title, ChannelName));
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelJoin),
+                    WithArgument(Constants.Arguments.Character, WithIdentity(joinerName)),
+                    WithArgument(Constants.Arguments.Channel, ChannelName),
+                    WithArgument(Constants.Arguments.Title, ChannelName));
 
                 chatModel.SetupGet(x => x.CurrentChannels);
                 channelManager.VerifyAll();
@@ -561,9 +561,9 @@ namespace slimCatTest
                     });
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelLeave),
-                    WithArgument(Arguments.Channel, ChannelName),
-                    WithArgument(Arguments.Character, leaverName));
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelLeave),
+                    WithArgument(Constants.Arguments.Channel, ChannelName),
+                    WithArgument(Constants.Arguments.Character, leaverName));
 
                 characterManager.VerifyAll();
                 Assert.IsFalse(channelModel.CharacterManager.IsOnList(leaverName, ListKind.Online));
@@ -601,9 +601,9 @@ namespace slimCatTest
                     x => x.AddMessage(Message, Character, Character, MessageType.Normal));
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.UserMessage),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
+                    WithArgument(Constants.Arguments.Command, Commands.UserMessage),
+                    WithArgument(Constants.Arguments.Character, Character),
+                    WithArgument(Constants.Arguments.Message, Message));
 
                 characterManager.VerifyAll();
                 channelManager.VerifyAll();
@@ -627,9 +627,9 @@ namespace slimCatTest
                     .Returns(new ObservableCollection<PmChannelModel> {currentModel});
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.UserMessage),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
+                    WithArgument(Constants.Arguments.Command, Commands.UserMessage),
+                    WithArgument(Constants.Arguments.Character, Character),
+                    WithArgument(Constants.Arguments.Message, Message));
 
                 characterManager.VerifyAll();
                 channelManager.VerifyAll();
@@ -646,15 +646,15 @@ namespace slimCatTest
                 chatConnection.Setup(
                     x => x.SendMessage(new Dictionary<string, object>
                         {
-                            {Arguments.Action, Arguments.ActionNotify},
-                            {Arguments.Character, Character},
-                            {Arguments.Type, Commands.UserIgnore}
+                            {Constants.Arguments.Action, Constants.Arguments.ActionNotify},
+                            {Constants.Arguments.Character, Character},
+                            {Constants.Arguments.Type, Commands.UserIgnore}
                         }));
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.UserMessage),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
+                    WithArgument(Constants.Arguments.Command, Commands.UserMessage),
+                    WithArgument(Constants.Arguments.Character, Character),
+                    WithArgument(Constants.Arguments.Message, Message));
 
                 characterManager.VerifyAll();
                 channelManager.Verify(
@@ -676,10 +676,10 @@ namespace slimCatTest
                     x => x.AddMessage(Message, channel, Character, MessageType.Normal));
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelMessage),
-                    WithArgument(Arguments.Channel, channel),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelMessage),
+                    WithArgument(Constants.Arguments.Channel, channel),
+                    WithArgument(Constants.Arguments.Character, Character),
+                    WithArgument(Constants.Arguments.Message, Message));
 
                 channelManager.VerifyAll();
             }
@@ -692,10 +692,10 @@ namespace slimCatTest
                 IgnoreIncomingCharacter();
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelMessage),
-                    WithArgument(Arguments.Channel, channel),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelMessage),
+                    WithArgument(Constants.Arguments.Channel, channel),
+                    WithArgument(Constants.Arguments.Character, Character),
+                    WithArgument(Constants.Arguments.Message, Message));
 
                 channelManager.Verify(
                     x =>
@@ -716,10 +716,10 @@ namespace slimCatTest
                     x => x.AddMessage(Message, channel, Character, MessageType.Ad));
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelAd),
-                    WithArgument(Arguments.Channel, channel),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelAd),
+                    WithArgument(Constants.Arguments.Channel, channel),
+                    WithArgument(Constants.Arguments.Character, Character),
+                    WithArgument(Constants.Arguments.Message, Message));
 
                 channelManager.VerifyAll();
             }
@@ -732,10 +732,10 @@ namespace slimCatTest
                 IgnoreIncomingCharacter();
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelAd),
-                    WithArgument(Arguments.Channel, channel),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelAd),
+                    WithArgument(Constants.Arguments.Channel, channel),
+                    WithArgument(Constants.Arguments.Character, Character),
+                    WithArgument(Constants.Arguments.Message, Message));
 
                 channelManager.Verify(
                     x =>
@@ -760,9 +760,9 @@ namespace slimCatTest
                     });
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.AdminBroadcast),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
+                    WithArgument(Constants.Arguments.Command, Commands.AdminBroadcast),
+                    WithArgument(Constants.Arguments.Character, Character),
+                    WithArgument(Constants.Arguments.Message, Message));
 
 
                 characterManager.VerifyAll();
@@ -781,10 +781,10 @@ namespace slimCatTest
                     x => x.AddMessage(Message, channel, Character, MessageType.Roll));
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelRoll),
-                    WithArgument(Arguments.Channel, channel),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelRoll),
+                    WithArgument(Constants.Arguments.Channel, channel),
+                    WithArgument(Constants.Arguments.Character, Character),
+                    WithArgument(Constants.Arguments.Message, Message));
 
                 channelManager.VerifyAll();
             }
@@ -797,10 +797,10 @@ namespace slimCatTest
                 IgnoreIncomingCharacter();
 
                 MockCommand(
-                    WithArgument(Arguments.Command, Commands.ChannelRoll),
-                    WithArgument(Arguments.Channel, channel),
-                    WithArgument(Arguments.Character, Character),
-                    WithArgument(Arguments.Message, Message));
+                    WithArgument(Constants.Arguments.Command, Commands.ChannelRoll),
+                    WithArgument(Constants.Arguments.Channel, channel),
+                    WithArgument(Constants.Arguments.Character, Character),
+                    WithArgument(Constants.Arguments.Message, Message));
 
                 channelManager.Verify(
                     x =>

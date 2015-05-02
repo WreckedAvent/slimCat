@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="NoteService.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -41,31 +39,14 @@ namespace slimCat.Services
 
     #endregion
 
-    public class NoteService : INoteService
+    /// <summary>
+    ///     The note service is responsible for sending/receiving notes. It also scrapes the history page to get our note conversations.
+    /// </summary>
+    public class NoteService : IManageNotes
     {
-        #region Fields
-
-        private const string NoteXpath = "//div[contains(@class, 'panel') and contains(@class, 'FormattedBlock')]";
-
-        private const string NoteTitleXpath = "//input[@id='SendNoteTitle']";
-
-        private const string NoteIdXpath = "//select/option[normalize-space(.)='{0}']";
-        private readonly Regex amPmRegex = new Regex("sent,|(AM:)|(PM:)", RegexOptions.Compiled);
-        private readonly IBrowser browser;
-
-        private readonly ICharacterManager characterManager;
-
-        private readonly IChatModel cm;
-
-        private readonly IUnityContainer container;
-        private readonly IEventAggregator events;
-        private readonly IDictionary<string, Conversation> noteCache = new Dictionary<string, Conversation>();
-
-        #endregion
-
         #region Constructors
 
-        public NoteService(IUnityContainer contain, IBrowser browser, ICharacterManager characterMan, IChatModel cm,
+        public NoteService(IUnityContainer contain, IBrowseThings browser, ICharacterManager characterMan, IChatModel cm,
             IEventAggregator eventagg)
         {
             this.browser = browser;
@@ -74,6 +55,30 @@ namespace slimCat.Services
             events = eventagg;
             container = contain;
         }
+
+        #endregion
+
+        #region Fields
+
+        private const string NoteXpath = "//div[contains(@class, 'panel') and contains(@class, 'FormattedBlock')]";
+
+        private const string NoteTitleXpath = "//input[@id='SendNoteTitle']";
+
+        private const string NoteIdXpath = "//select/option[normalize-space(.)='{0}']";
+
+        private readonly Regex amPmRegex = new Regex("sent,|(AM:)|(PM:)", RegexOptions.Compiled);
+
+        private readonly IBrowseThings browser;
+
+        private readonly ICharacterManager characterManager;
+
+        private readonly IChatModel cm;
+
+        private readonly IUnityContainer container;
+
+        private readonly IEventAggregator events;
+
+        private readonly IDictionary<string, Conversation> noteCache = new Dictionary<string, Conversation>();
 
         #endregion
 
@@ -294,13 +299,11 @@ namespace slimCat.Services
 
             var toReturn = DateTime.Now;
 
-            foreach (var date in split)
+            foreach (var splitDate in split.Select(date =>
+                Regex.Split(date, @"(\d+)", RegexOptions.Compiled)
+                     .Where(x => !string.IsNullOrEmpty(x))
+                     .ToList()))
             {
-                var splitDate = Regex
-                    .Split(date, @"(\d+)", RegexOptions.Compiled)
-                    .Where(x => !string.IsNullOrEmpty(x))
-                    .ToList();
-
                 int numberPart;
                 int.TryParse(splitDate[0], out numberPart);
 
@@ -343,12 +346,5 @@ namespace slimCat.Services
         }
 
         #endregion
-    }
-
-    internal class Conversation
-    {
-        public IList<IMessage> Messages { get; set; }
-        public string SourceId { get; set; }
-        public string Subject { get; set; }
     }
 }

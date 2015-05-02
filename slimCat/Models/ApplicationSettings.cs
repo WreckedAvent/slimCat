@@ -78,7 +78,7 @@ namespace slimCat.Models
             TemplateCharacter = string.Empty;
             HideFriendsFromSearchResults = true;
 
-            SettingsVersion = Constants.ClientVer;
+            SettingsVersion = Constants.ClientVersion;
             UseMilitaryTime = true;
 
             OpenOfflineChatsInNoteView = true;

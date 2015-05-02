@@ -11,7 +11,6 @@
     [ExcludeFromCodeCoverage]
     public static class FindAncestor
     {
-
         /// <summary>
         /// Finds a parent of a given item on the visual tree.
         /// </summary>
@@ -23,25 +22,27 @@
         /// <returns>The first parent item that matches the submitted
         /// type parameter. If not matching item can be found, a null
         /// reference is being returned.</returns>
-        public static T TryFindAncestor<T>(this DependencyObject child, int ancestorLevel)
-            where T : DependencyObject
+        public static T TryFindAncestor<T>(this DependencyObject child, int ancestorLevel) where T : DependencyObject
         {
-            //get parent item
-            var parentObject = GetParentObject(child);
+            while (true)
+            {
+                //get parent item
+                var parentObject = GetParentObject(child);
 
-            //we've reached the end of the tree
-            if (parentObject == null) return null;
+                //we've reached the end of the tree
+                if (parentObject == null) return null;
 
-            //check if the parent matches the type we're looking for
-            var parent = parentObject as T;
-            if (parent != null)
-                ancestorLevel--;
+                //check if the parent matches the type we're looking for
+                var parent = parentObject as T;
+                if (parent != null)
+                    ancestorLevel--;
 
-            if (ancestorLevel == 0)
-                return parent;
+                if (ancestorLevel == 0)
+                    return parent;
 
-            //use recursion to proceed with next level
-            return TryFindAncestor<T>(parentObject, ancestorLevel);
+                //use recursion to proceed with next level
+                child = parentObject;
+            }
         }
 
         /// <summary>

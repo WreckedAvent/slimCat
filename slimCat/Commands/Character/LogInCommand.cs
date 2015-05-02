@@ -22,7 +22,6 @@ namespace slimCat.Models
     #region Usings
 
     using Services;
-    using Utilities;
 
     #endregion
 

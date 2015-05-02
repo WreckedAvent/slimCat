@@ -27,10 +27,10 @@ namespace slimCatTest
     using Microsoft.Practices.Prism.Events;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
-    using SimpleJson;
     using slimCat;
     using slimCat.Models;
     using slimCat.Utilities;
+    using SimpleJson;
 
     #endregion
 

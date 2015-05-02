@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="F-ListConnection.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -35,32 +33,15 @@ namespace slimCat.Services
 
     #endregion
 
-    /// <summary>
-    ///     F-list connection is used to authenticate the user's details and then get the API ticket.
-    ///     Responds to LoginEvent, fires off LoginCompleteEvent
-    /// </summary>
-    internal class FlistService : IListConnection
+    internal class FlistService : IHandleApi
     {
-        #region Fields
-
-        private readonly IBrowser browser;
-        private readonly IEventAggregator events;
-
-        private readonly IAccount model;
-
-        private readonly IFriendRequestService requestService;
-        private readonly ITicketProvider ticketProvider;
-        private string selectedCharacter;
-
-        #endregion
-
         #region Constructors and Destructors
 
-        public FlistService(IAccount model, IEventAggregator eventagg, IBrowser browser,
-            ITicketProvider ticketProvider, IFriendRequestService requestService)
+        public FlistService(IAccount model, IEventAggregator eventagg, IBrowseThings browser,
+            IGetTickets ticketService, IFriendRequestService requestService)
         {
             this.browser = browser;
-            this.ticketProvider = ticketProvider;
+            this.ticketService = ticketService;
             this.requestService = requestService;
 
             try
@@ -81,6 +62,22 @@ namespace slimCat.Services
                 Exceptions.HandleException(ex);
             }
         }
+
+        #endregion
+
+        #region Fields
+
+        private readonly IBrowseThings browser;
+
+        private readonly IEventAggregator events;
+
+        private readonly IAccount model;
+
+        private readonly IFriendRequestService requestService;
+
+        private readonly IGetTickets ticketService;
+
+        private string selectedCharacter;
 
         #endregion
 
@@ -109,7 +106,7 @@ namespace slimCat.Services
                 var toUpload = new Dictionary<string, object>
                 {
                     {"account", model.AccountName.ToLower()},
-                    {"ticket", ticketProvider.Ticket},
+                    {"ticket", ticketService.Ticket},
                     {"character", report.Reporter.Name},
                     {"log", sb.ToString()},
                     {"reportText", report.Complaint},
@@ -124,7 +121,7 @@ namespace slimCat.Services
 
                 if (hasError)
                 {
-                    ticketProvider.ShouldGetNewTicket = true;
+                    ticketService.ShouldGetNewTicket = true;
                     UploadLog(report, log);
                 }
 
@@ -149,9 +146,9 @@ namespace slimCat.Services
             try
             {
                 model.Error = string.Empty;
-                ticketProvider.SetCredentials(model.AccountName, model.Password);
+                ticketService.SetCredentials(model.AccountName, model.Password);
 
-                var acc = ticketProvider.Account;
+                var acc = ticketService.Account;
 
                 model.Characters.Clear();
                 model.Characters.AddRange(acc.Characters);
@@ -181,7 +178,7 @@ namespace slimCat.Services
             var host = Constants.UrlConstants.Api + apiName + ".php";
 
             command.Add("account", model.AccountName.ToLower());
-            command.Add("ticket", ticketProvider.Ticket);
+            command.Add("ticket", ticketService.Ticket);
 
             var buffer = browser.GetResponse(host, command);
 
@@ -191,7 +188,7 @@ namespace slimCat.Services
 
             if (string.Equals("Ticked expired", result.error, StringComparison.OrdinalIgnoreCase))
             {
-                ticketProvider.ShouldGetNewTicket = true;
+                ticketService.ShouldGetNewTicket = true;
                 DoApiAction(apiName, command);
             }
 

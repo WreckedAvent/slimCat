@@ -1,19 +1,17 @@
 ﻿#region Copyright
 
-// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="IconService.cs">
-//     Copyright (c) 2013, Justin Kadrovach, All rights reserved.
-//  
+//     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
-//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY 
+//
+//     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 //     PARTICULAR PURPOSE.
 // </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 
 #endregion
 
@@ -33,20 +31,8 @@ namespace slimCat.Services
 
     #endregion
 
-    public class IconService : DispatcherObject, IDisposable, IIconService
+    public class IconService : DispatcherObject, IDisposable, IHandleIcons
     {
-        #region Fields
-
-        private readonly IChatModel cm;
-        private readonly IEventAggregator events;
-
-        private readonly NotifyIcon icon = new NotifyIcon();
-        private readonly Icon catIcon;
-        private readonly Icon balloonIcon;
-        private bool hasNotification; 
-
-        #endregion
-
         #region Constructors
 
         public IconService(IEventAggregator eventagg, IChatModel chatModel)
@@ -59,6 +45,22 @@ namespace slimCat.Services
             catIcon = new Icon(Environment.CurrentDirectory + @"\icons\catIcon.ico");
             balloonIcon = new Icon(Environment.CurrentDirectory + @"\icons\balloonIcon.ico");
         }
+
+        #endregion
+
+        #region Fields
+
+        private readonly IChatModel cm;
+
+        private readonly IEventAggregator events;
+
+        private readonly NotifyIcon icon = new NotifyIcon();
+
+        private readonly Icon catIcon;
+
+        private readonly Icon balloonIcon;
+
+        private bool hasNotification;
 
         #endregion
 
@@ -94,14 +96,13 @@ namespace slimCat.Services
                 icon.Icon = catIcon;
                 hasNotification = false;
             }
-
         }
 
         public void ShutDown()
         {
             icon.Dispose();
             catIcon.Dispose();
-            balloonIcon.Dispose(); 
+            balloonIcon.Dispose();
             Dispatcher.InvokeShutdown();
         }
 
@@ -112,27 +113,21 @@ namespace slimCat.Services
 
             icon.Dispose();
             catIcon.Dispose();
-            balloonIcon.Dispose(); 
+            balloonIcon.Dispose();
         }
 
         #endregion
 
         #region Methods
 
-        public void AllowSoundUpdate()
-        {
-            icon.ContextMenu.MenuItems[2].Checked = ApplicationSettings.AllowSound;
-        }
+        public void AllowSoundUpdate() => icon.ContextMenu.MenuItems[2].Checked = ApplicationSettings.AllowSound;
 
         public void AllowToastUpdate()
-        {
-            icon.ContextMenu.MenuItems[3].Checked = ApplicationSettings.ShowNotificationsGlobal;
-        }
+            => icon.ContextMenu.MenuItems[3].Checked = ApplicationSettings.ShowNotificationsGlobal;
 
         private void BuildIcon(string character)
         {
-
-            icon.Icon = catIcon; 
+            icon.Icon = catIcon;
             icon.DoubleClick += (s, e) => ShowWindow();
 
             icon.BalloonTipClicked += (s, e) =>
@@ -145,7 +140,7 @@ namespace slimCat.Services
 
             iconMenu.MenuItems.Add(
                 new MenuItem(
-                    $"{Constants.ClientId} {Constants.ClientName} ({Constants.ClientVer}) - {character}")
+                    $"{Constants.ClientId} {Constants.ClientNickname} ({Constants.ClientVersion}) - {character}")
                 {
                     Enabled = false
                 });
@@ -191,15 +186,9 @@ namespace slimCat.Services
             AllowToastUpdate();
         }
 
-        private void ToggleSound(object sender, EventArgs e)
-        {
-            ToggleSound();
-        }
+        private void ToggleSound(object sender, EventArgs e) => ToggleSound();
 
-        private void ToggleToasts(object sender, EventArgs e)
-        {
-            ToggleToasts();
-        }
+        private void ToggleToasts(object sender, EventArgs e) => ToggleToasts();
 
         private void HideWindow()
         {
@@ -226,12 +215,5 @@ namespace slimCat.Services
         }
 
         #endregion
-    }
-
-    public interface IIconService
-    {
-        void ToggleSound();
-        void ToggleToasts();
-        void SetIconNotificationLevel(bool newMsg);
     }
 }

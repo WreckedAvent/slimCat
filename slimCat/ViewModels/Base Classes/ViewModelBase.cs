@@ -26,6 +26,7 @@ namespace slimCat.ViewModels
     using System.Diagnostics;
     using System.Linq;
     using System.Web;
+    using System.Windows;
     using System.Windows.Input;
     using Libraries;
     using Microsoft.Practices.Prism.Events;
@@ -35,7 +36,6 @@ namespace slimCat.ViewModels
     using Models;
     using Services;
     using Utilities;
-    using System.Windows;
 
     #endregion
 
@@ -94,7 +94,7 @@ namespace slimCat.ViewModels
                 ChatConnection = chatState.ChatConnection;
 
                 RightClickMenuViewModel = new RightClickMenuViewModel(ChatModel.IsGlobalModerator, CharacterManager,
-                    Container.Resolve<IPermissionService>());
+                    Container.Resolve<IGetPermissions>());
                 CreateReportViewModel = new CreateReportViewModel(Events, ChatModel);
                 ChatModel.SelectedChannelChanged += OnSelectedChannelChanged;
 
@@ -190,7 +190,7 @@ namespace slimCat.ViewModels
         /// </summary>
         protected ICharacterManager CharacterManager { get; set; }
 
-        protected IChatConnection ChatConnection { get; set; }
+        protected IHandleChatConnection ChatConnection { get; set; }
 
         #region ICommands
 
