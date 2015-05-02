@@ -126,7 +126,7 @@ namespace slimCat.Services
         private void GetNewTicket()
         {
             Log("Getting new ticket");
-            if (lastAccount == null || lastAccount.Password == null)
+            if (lastAccount?.Password == null)
                 throw new InvalidOperationException("Set login credentials before logging in!");
 
             var buffer = browser.GetResponse(Constants.UrlConstants.GetTicket, ticketCredentials);

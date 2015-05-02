@@ -24,18 +24,12 @@ namespace slimCat.Models
 
     public class ChannelMentionUpdateEventArgs : CharacterUpdateEventArgs
     {
-        private object[] Args
+        private object[] Args => new object[]
         {
-            get
-            {
-                return new object[]
-                {
-                    ApplicationSettings.ShowNamesInToasts ? Model.TargetCharacter.Name : "A user",
-                    TriggeredWord,
-                    Channel.Title
-                };
-            }
-        }
+            ApplicationSettings.ShowNamesInToasts ? Model.TargetCharacter.Name : "A user",
+            TriggeredWord,
+            Channel.Title
+        };
 
         public string TriggeredWord { get; set; }
 
@@ -50,13 +44,7 @@ namespace slimCat.Models
             return (IsNameMention ? "'s name matches {1} in {2}" : "mentioned {1} in {2}").FormatWith(Args) + ": \"" + Context + "\"";
         }
 
-        public string Title
-        {
-            get
-            {
-                return (IsNameMention ? "{0}'s name matches {1} #{2}" : "{0} mentioned {1} #{2}").FormatWith(Args);
-            }
-        }
+        public string Title => (IsNameMention ? "{0}'s name matches {1} #{2}" : "{0} mentioned {1} #{2}").FormatWith(Args);
 
         public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
         {

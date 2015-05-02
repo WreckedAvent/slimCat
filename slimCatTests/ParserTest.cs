@@ -544,8 +544,7 @@ http://www.foo.bar.com";
             var total = string.Empty;
             var span = element as Span;
 
-            if (span != null)
-                span.Inlines.Select(GetText).Each(x => total += x);
+            span?.Inlines.Select(GetText).Each(x => total += x);
 
             return total;
         }

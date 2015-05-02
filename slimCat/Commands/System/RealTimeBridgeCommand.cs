@@ -53,29 +53,13 @@ namespace slimCat.Models
                 switch (CommentType)
                 {
                     case CommentTypes.Newspost:
-                        return string.Format(
-                            "{0}/newspost/{1}/#Comment{2}",
-                            Constants.UrlConstants.Domain,
-                            TargetId,
-                            CommentId);
+                        return $"{Constants.UrlConstants.Domain}/newspost/{TargetId}/#Comment{CommentId}";
                     case CommentTypes.BugReport:
-                        return string.Format(
-                            "{0}/view_bugreport.php?id={1}#Comment{2}",
-                            Constants.UrlConstants.Domain,
-                            TargetId,
-                            CommentId);
+                        return $"{Constants.UrlConstants.Domain}/view_bugreport.php?id={TargetId}#Comment{CommentId}";
                     case CommentTypes.ChangeLog:
-                        return string.Format(
-                            "{0}/log.php?id={1}#Comment{2}",
-                            Constants.UrlConstants.Domain,
-                            TargetId,
-                            CommentId);
+                        return $"{Constants.UrlConstants.Domain}/log.php?id={TargetId}#Comment{CommentId}";
                     case CommentTypes.Feature:
-                        return string.Format(
-                            "{0}/vote.php?fid={1}#Comment{2}",
-                            Constants.UrlConstants.Domain,
-                            TargetId,
-                            CommentId);
+                        return $"{Constants.UrlConstants.Domain}/vote.php?fid={TargetId}#Comment{CommentId}";
                     default:
                         return string.Empty;
                 }
@@ -96,13 +80,13 @@ namespace slimCat.Models
             if (ParentId == 0)
             {
                 // not a comment, but a suggestion, newspost, etc.
-                return "has replied to your " + CommentTypeToString(CommentType) + ", "
-                       + string.Format("[url={0}]{1}[/url]", Link, Title);
+                return $"has replied to your {CommentTypeToString(CommentType)}, " 
+                       + $"[url={Link}]{Title}[/url]";
             }
 
             // our comment *on* a suggestion, newspost, comment, etc.
-            return "has replied to your comment on the " + CommentTypeToString(CommentType) + ' '
-                   + string.Format("[url={0}]{1}[/url]", Link, Title);
+            return $"has replied to your comment on the {CommentTypeToString(CommentType)} "
+                   + $"[url={Link}]{Title}[/url]";
         }
 
         private static string CommentTypeToString(CommentTypes argument)
@@ -134,7 +118,7 @@ namespace slimCat.Models
 
         public override string ToString()
         {
-            return string.Format(@"has sent you a note: [url={0}]{1}[/url]", Target, Subject);
+            return $"has sent you a note: [url={Target}]{Subject}[/url]";
         }
 
         public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
@@ -172,7 +156,7 @@ namespace slimCat.Services
             if (type == null) return;
 
             var doListAction = new Action<string, ListKind, bool, bool>((name, list, isAdd, giveUpdate) =>
-                Dispatcher.Invoke((Action) delegate
+                Dispatcher.Invoke(() =>
                 {
                     var result = isAdd
                         ? CharacterManager.Add(name, list)

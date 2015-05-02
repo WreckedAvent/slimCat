@@ -57,32 +57,11 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        public bool CanIgnoreUpdates
-        {
-            get
-            {
-                if (Target != null)
-                    return manager.IsOfInterest(Target.Name, false);
+        public bool CanIgnoreUpdates => Target != null && manager.IsOfInterest(Target.Name, false);
 
-                return false;
-            }
-        }
+        public bool HasReport => isModerator && hasReports;
 
-        public bool HasReport
-        {
-            get { return isModerator && hasReports; }
-        }
-
-        public bool HasStatusMessage
-        {
-            get
-            {
-                if (Target != null)
-                    return Target.StatusMessage.Length > 0;
-
-                return false;
-            }
-        }
+        public bool HasStatusMessage => Target?.StatusMessage.Length > 0;
 
         public bool IsOpen
         {
@@ -95,7 +74,7 @@ namespace slimCat.ViewModels
                 Logging.LogLine((value ? "Opening" : "Closing") + " modal", "right-click vm");
 
                 isOpen = value;
-                OnPropertyChanged("IsOpen");
+                OnPropertyChanged();
             }
         }
 

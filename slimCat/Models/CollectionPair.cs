@@ -36,13 +36,13 @@ namespace slimCat.Models
             TemporaryRemove = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
-        public HashSet<string> List { get; private set; }
+        public HashSet<string> List { get; }
 
-        public HashSet<string> OnlineList { get; private set; }
+        public HashSet<string> OnlineList { get; }
 
-        private HashSet<string> TemporaryAdd { get; set; }
+        private HashSet<string> TemporaryAdd { get; }
 
-        private HashSet<string> TemporaryRemove { get; set; }
+        private HashSet<string> TemporaryRemove { get; }
 
         public bool Add(string name, bool isTemporary = false)
         {

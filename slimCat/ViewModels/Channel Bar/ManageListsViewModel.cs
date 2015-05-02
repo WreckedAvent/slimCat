@@ -47,8 +47,6 @@ namespace slimCat.ViewModels
 
         #region Fields
 
-        private readonly GenderSettingsModel genderSettings;
-
         private readonly DeferredAction updateLists;
 
         private readonly IDictionary<ListKind, string> listKinds = new Dictionary<ListKind, string>
@@ -76,7 +74,7 @@ namespace slimCat.ViewModels
         {
             Container.RegisterType<object, ManageListsTabView>(ManageListsTabView);
 
-            genderSettings = new GenderSettingsModel();
+            GenderSettings = new GenderSettingsModel();
             SearchSettings.ShowNotInterested = true;
             SearchSettings.ShowIgnored = true;
 
@@ -187,55 +185,37 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        public IEnumerable<ICharacter> Banned
-        {
-            get { return GetChannelList(ListKind.Banned, false); }
-        }
+        public IEnumerable<ICharacter> Banned => GetChannelList(ListKind.Banned, false);
 
-        public IEnumerable<ICharacter> Bookmarks
-        {
-            get { return GetGlobalList(ListKind.Bookmark); }
-        }
+        public IEnumerable<ICharacter> Bookmarks => GetGlobalList(ListKind.Bookmark);
 
-        public IEnumerable<ICharacter> Friends
-        {
-            get { return GetGlobalList(ListKind.Friend); }
-        }
+        public IEnumerable<ICharacter> Friends => GetGlobalList(ListKind.Friend);
 
         public IEnumerable<ICharacter> SearchResults
         {
             get
             {
                 var searchResults = GetGlobalList(ListKind.SearchResult)
-                    .Where(x => !CharacterManager.IsOnList((string)x.Name, ListKind.NotInterested))
-                    .Where(x => !CharacterManager.IsOnList((string)x.Name, ListKind.Ignored));
+                    .Where(x => !CharacterManager.IsOnList(x.Name, ListKind.NotInterested))
+                    .Where(x => !CharacterManager.IsOnList(x.Name, ListKind.Ignored));
 
                 if (ApplicationSettings.HideFriendsFromSearchResults)
                 {
                     searchResults = searchResults
-                        .Where(x => !CharacterManager.IsOnList((string)x.Name, ListKind.Interested))
-                        .Where(x => !CharacterManager.IsOnList((string)x.Name, ListKind.Friend))
-                        .Where(x => !CharacterManager.IsOnList((string)x.Name, ListKind.Bookmark));
+                        .Where(x => !CharacterManager.IsOnList(x.Name, ListKind.Interested))
+                        .Where(x => !CharacterManager.IsOnList(x.Name, ListKind.Friend))
+                        .Where(x => !CharacterManager.IsOnList(x.Name, ListKind.Bookmark));
                 }
 
                 return searchResults;
             }
         }
 
-        public GenderSettingsModel GenderSettings
-        {
-            get { return genderSettings; }
-        }
+        public GenderSettingsModel GenderSettings { get; }
 
-        public bool HasBanned
-        {
-            get { return Banned.Any(); }
-        }
+        public bool HasBanned => Banned.Any();
 
-        public bool HasSearchResults
-        {
-            get { return SearchResults.Any(); }
-        }
+        public bool HasSearchResults => SearchResults.Any();
 
         public bool HasNewSearchResults
         {
@@ -243,34 +223,19 @@ namespace slimCat.ViewModels
             set
             {
                 hasNewSearchResults = value; 
-                OnPropertyChanged("HasNewSearchResults");
+                OnPropertyChanged();
             }
         }
 
-        public IEnumerable<ICharacter> Ignored
-        {
-            get { return GetGlobalList(ListKind.Ignored); }
-        }
+        public IEnumerable<ICharacter> Ignored => GetGlobalList(ListKind.Ignored);
 
-        public IEnumerable<ICharacter> Interested
-        {
-            get { return GetGlobalList(ListKind.Interested); }
-        }
+        public IEnumerable<ICharacter> Interested => GetGlobalList(ListKind.Interested);
 
-        public IEnumerable<ICharacter> Moderators
-        {
-            get { return GetChannelList(ListKind.Moderator, !showOffline); }
-        }
+        public IEnumerable<ICharacter> Moderators => GetChannelList(ListKind.Moderator, !showOffline);
 
-        public IEnumerable<ICharacter> NotInterested
-        {
-            get { return GetGlobalList(ListKind.NotInterested); }
-        }
+        public IEnumerable<ICharacter> NotInterested => GetGlobalList(ListKind.NotInterested);
 
-        public bool ShowMods
-        {
-            get { return ChatModel.CurrentChannel is GeneralChannelModel; }
-        }
+        public bool ShowMods => ChatModel.CurrentChannel is GeneralChannelModel;
 
         public bool ShowOffline
         {
@@ -284,45 +249,25 @@ namespace slimCat.ViewModels
             }
         }
 
-        public ICommand ClearSearchResultsCommand
+        public ICommand ClearSearchResultsCommand => clearSearch ?? (clearSearch = new RelayCommand(_ =>
         {
-            get
-            {
-                return clearSearch ??
-                       (clearSearch =
-                           new RelayCommand(_ =>
-                           {
-                               CharacterManager.Set(new List<string>(), ListKind.SearchResult);
-                               OnPropertyChanged("SearchResults");
-                               OnPropertyChanged("HasSearchResults");
-                           }));
-            }
-        }
+            CharacterManager.Set(new List<string>(), ListKind.SearchResult);
+            OnPropertyChanged("SearchResults");
+            OnPropertyChanged("HasSearchResults");
+        }));
 
         #endregion
 
         #region Methods
 
-        private bool MeetsFilter(ICharacter character)
-        {
-            if (!character.NameContains(SearchSettings.SearchString))
-                return false;
+        private bool MeetsFilter(ICharacter character) => character.NameContains(SearchSettings.SearchString) && SearchSettings.MeetsStatusFilter(character);
 
-            return SearchSettings.MeetsStatusFilter(character);
-        }
+        private IEnumerable<ICharacter> GetList(ICharacterManager manager, ListKind listKind, bool onlineOnly = true) => 
+            manager.GetCharacters(listKind, onlineOnly)
+                .Where(MeetsFilter)
+                .OrderBy(x => x.Name);
 
-        private IEnumerable<ICharacter> GetList(ICharacterManager manager, ListKind listKind, bool onlineOnly = true)
-        {
-            return
-                manager.GetCharacters(listKind, onlineOnly)
-                    .Where(MeetsFilter)
-                    .OrderBy(x => x.Name);
-        }
-
-        private IEnumerable<ICharacter> GetGlobalList(ListKind listkind)
-        {
-            return GetList(CharacterManager, listkind, !showOffline);
-        }
+        private IEnumerable<ICharacter> GetGlobalList(ListKind listkind) => GetList(CharacterManager, listkind, !showOffline);
 
         private IEnumerable<ICharacter> GetChannelList(ListKind listKind, bool onlineOnly)
         {

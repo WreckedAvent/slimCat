@@ -156,7 +156,7 @@ namespace slimCat.Services
 
         #region Properties
 
-        public IAccount Account { get; private set; }
+        public IAccount Account { get; }
 
         public string Character { get; private set; }
 
@@ -167,7 +167,7 @@ namespace slimCat.Services
         public void SendMessage(object command, string type)
         {
             if (type.Length != 3)
-                throw new ArgumentOutOfRangeException("type", "Command type must be 3 characters long");
+                throw new ArgumentOutOfRangeException(nameof(type), "Command type must be 3 characters long");
 
             var ser = JsonConvert.SerializeObject(command);
 
@@ -188,7 +188,7 @@ namespace slimCat.Services
         public void SendMessage(string commandType)
         {
             if (commandType.Length > 3 || commandType.Length < 3)
-                throw new ArgumentOutOfRangeException("commandType", "Command type must be 3 characters long");
+                throw new ArgumentOutOfRangeException(nameof(commandType), "Command type must be 3 characters long");
 
             TrySend(commandType);
         }
@@ -276,9 +276,10 @@ namespace slimCat.Services
         {
             if (socket.State == WebSocketState.Open)
             {
-                if (args is string)
+                var s = args as string;
+                if (s != null)
                 {
-                    var objArgs = SimpleJson.DeserializeObject(args as string);
+                    var objArgs = SimpleJson.DeserializeObject(s);
                     Log(type, objArgs);
                 }
                 else
@@ -414,7 +415,7 @@ namespace slimCat.Services
                     account = provider.Account.AccountName,
                     character = Character,
                     cname = Constants.ClientId,
-                    cversion = string.Format("{0} {1}", Constants.ClientName, Constants.ClientVer)
+                    cversion = $"{Constants.ClientName} {Constants.ClientVer}"
                 };
 
             SendMessage(authRequest, Constants.ClientCommands.SystemAuthenticate);

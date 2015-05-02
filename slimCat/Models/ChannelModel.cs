@@ -35,12 +35,6 @@ namespace slimCat.Models
     {
         #region Fields
 
-        private readonly ObservableCollection<IMessage> ads = new ObservableCollection<IMessage>();
-
-        private readonly string identity;
-
-        private readonly ObservableCollection<IMessage> messages = new ObservableCollection<IMessage>();
-
         private bool isSelected;
 
         private int lastRead;
@@ -74,7 +68,7 @@ namespace slimCat.Models
         {
             try
             {
-                this.identity = identity.ThrowIfNull("identity");
+                Id = identity.ThrowIfNull("identity");
                 Type = kind;
                 Mode = mode;
                 LastReadCount = 0;
@@ -93,26 +87,17 @@ namespace slimCat.Models
         /// <summary>
         ///     Gets the Ads.
         /// </summary>
-        public ObservableCollection<IMessage> Ads
-        {
-            get { return ads; }
-        }
+        public ObservableCollection<IMessage> Ads { get; } = new ObservableCollection<IMessage>();
 
         /// <summary>
         ///     Gets a value indicating whether can close.
         /// </summary>
-        public virtual bool CanClose
-        {
-            get { return IsSelected; }
-        }
+        public virtual bool CanClose => IsSelected;
 
         /// <summary>
         ///     An ID is used to unambiguously identify the channel or character's name
         /// </summary>
-        public string Id
-        {
-            get { return identity; }
-        }
+        public string Id { get; }
 
         /// <summary>
         ///     If the channel is selected or not
@@ -135,17 +120,14 @@ namespace slimCat.Models
                 UnreadContainsInteresting = false;
 
                 UpdateBindings();
-                OnPropertyChanged("IsSelected");
+                OnPropertyChanged();
             }
         }
 
         /// <summary>
         ///     Gets the messages.
         /// </summary>
-        public ObservableCollection<IMessage> Messages
-        {
-            get { return messages; }
-        }
+        public ObservableCollection<IMessage> Messages { get; } = new ObservableCollection<IMessage>();
 
         /// <summary>
         ///     Gets or sets the mode.
@@ -157,7 +139,7 @@ namespace slimCat.Models
             set
             {
                 mode = value;
-                OnPropertyChanged("Mode");
+                OnPropertyChanged();
             }
         }
 
@@ -205,7 +187,7 @@ namespace slimCat.Models
             set
             {
                 title = value;
-                OnPropertyChanged("Title");
+                OnPropertyChanged();
             }
         }
 
@@ -219,7 +201,7 @@ namespace slimCat.Models
             set
             {
                 type = value;
-                OnPropertyChanged("Type");
+                OnPropertyChanged();
             }
         }
 
@@ -249,10 +231,7 @@ namespace slimCat.Models
         /// <summary>
         ///     Number of messages we haven't read
         /// </summary>
-        protected int Unread
-        {
-            get { return Math.Max(Messages.Count - LastReadCount, 0); }
-        }
+        protected int Unread => Math.Max(Messages.Count - LastReadCount, 0);
 
         protected bool UnreadContainsInteresting { private get; set; }
 
@@ -271,11 +250,11 @@ namespace slimCat.Models
         /// </param>
         public virtual void AddMessage(IMessage message, bool isOfInterest = false)
         {
-            messages.Backlog(message, settings.MaxBackLogItems);
+            Messages.Backlog(message, settings.MaxBackLogItems);
 
             if (isSelected)
-                lastRead = messages.Count;
-            else if (messages.Count >= settings.MaxBackLogItems)
+                lastRead = Messages.Count;
+            else if (Messages.Count >= settings.MaxBackLogItems)
             {
                 UnreadContainsInteresting = UnreadContainsInteresting || isOfInterest;
                 lastRead--;
@@ -301,8 +280,8 @@ namespace slimCat.Models
         {
             if (isManaged)
             {
-                messages.Clear();
-                ads.Clear();
+                Messages.Clear();
+                Ads.Clear();
                 settings = new ChannelSettingsModel();
             }
 

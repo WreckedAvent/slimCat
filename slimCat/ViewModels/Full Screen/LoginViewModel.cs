@@ -96,18 +96,12 @@ namespace slimCat.ViewModels
                     return;
 
                 model.AccountName = value;
-                OnPropertyChanged("AccountName");
+                OnPropertyChanged();
             }
         }
 
-        public ICommand LoginCommand
-        {
-            get
-            {
-                return login
-                       ?? (login = new RelayCommand(param => SendTicketRequest(), param => CanLogin()));
-            }
-        }
+        public ICommand LoginCommand => login
+            ?? (login = new RelayCommand(_ => SendTicketRequest(), _ => CanLogin()));
 
         public string Password
         {
@@ -118,11 +112,11 @@ namespace slimCat.ViewModels
                     return;
 
                 model.Password = value;
-                OnPropertyChanged("Password");
+                OnPropertyChanged();
             }
         }
 
-        public bool ShowCapslockWarning { get { return Console.CapsLock; } }
+        public bool ShowCapslockWarning => Console.CapsLock;
 
         public string ServerHost
         {
@@ -133,7 +127,7 @@ namespace slimCat.ViewModels
                     return;
 
                 model.ServerHost = value;
-                OnPropertyChanged("ServerHost");
+                OnPropertyChanged();
             }
         }
 
@@ -143,7 +137,7 @@ namespace slimCat.ViewModels
             set
             {
                 relayMessage = value;
-                OnPropertyChanged("RelayMessage");
+                OnPropertyChanged();
             }
         }
 
@@ -153,7 +147,7 @@ namespace slimCat.ViewModels
             set
             {
                 requestIsSent = value;
-                OnPropertyChanged("RequestSent");
+                OnPropertyChanged();
             }
         }
 
@@ -214,11 +208,9 @@ namespace slimCat.ViewModels
 
         #region Methods
 
-        private bool CanLogin()
-        {
-            return !string.IsNullOrWhiteSpace(AccountName) && !string.IsNullOrWhiteSpace(Password)
-                   && !RequestSent;
-        }
+        private bool CanLogin() => !string.IsNullOrWhiteSpace(AccountName) 
+                                && !string.IsNullOrWhiteSpace(Password)
+                                && !RequestSent;
 
         private void SendTicketRequest()
         {

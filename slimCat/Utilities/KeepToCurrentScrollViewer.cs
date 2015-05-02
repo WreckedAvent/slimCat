@@ -21,7 +21,7 @@ namespace slimCat.Utilities
 {
     #region Usings
 
-    using slimCat.Models;
+    using Models;
     using System;
     using System.Windows;
     using System.Windows.Controls;
@@ -45,7 +45,7 @@ namespace slimCat.Utilities
 
         private double distanceToBottom;
 
-        private DependencyObject toManage;
+        private readonly DependencyObject toManage;
 
         #endregion
 

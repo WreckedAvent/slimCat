@@ -127,8 +127,9 @@ namespace slimCat.Services
             #endif
         }
 
-        public string ClientName { get; private set; }
-        public string DownloadLink { get; private set; }
+        public string ClientName { get; }
+
+        public string DownloadLink { get; }
 
         public string PublishDate { get; private set; }
 
@@ -136,8 +137,8 @@ namespace slimCat.Services
 
         public string SlimCatChannelId { get; private set; }
 
-        public bool UpdateImpactsTheme { get; private set; }
+        public bool UpdateImpactsTheme { get; }
 
-        public bool IsNewUpdate { get; private set; }
+        public bool IsNewUpdate { get; }
     }
 }

@@ -36,12 +36,6 @@ namespace slimCat.Models
     {
         #region Fields
 
-        private readonly IList<string> bookmarks = new List<string>();
-
-        private readonly ObservableCollection<string> characters = new ObservableCollection<string>();
-
-        private readonly IDictionary<string, IList<string>> friends = new Dictionary<string, IList<string>>();
-
         #endregion
 
         #region Constructors and Destructors
@@ -80,26 +74,17 @@ namespace slimCat.Models
         /// <summary>
         ///     Gets the all friends.
         /// </summary>
-        public IDictionary<string, IList<string>> AllFriends
-        {
-            get { return friends; }
-        }
+        public IDictionary<string, IList<string>> AllFriends { get; } = new Dictionary<string, IList<string>>();
 
         /// <summary>
         ///     Gets the bookmarks.
         /// </summary>
-        public IList<string> Bookmarks
-        {
-            get { return bookmarks; }
-        }
+        public IList<string> Bookmarks { get; } = new List<string>();
 
         /// <summary>
         ///     Gets the characters.
         /// </summary>
-        public ObservableCollection<string> Characters
-        {
-            get { return characters; }
-        }
+        public ObservableCollection<string> Characters { get; } = new ObservableCollection<string>();
 
         /// <summary>
         ///     Gets or sets the error.

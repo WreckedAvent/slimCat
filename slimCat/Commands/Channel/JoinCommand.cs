@@ -32,7 +32,7 @@ namespace slimCat.Models
 
         public override string ToString()
         {
-            return "has " + (Joined ? "joined" : "left") + string.Format(" {0}.", TargetChannel);
+            return "has " + (Joined ? "joined" : "left") + $" {TargetChannel}.";
         }
 
         public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)

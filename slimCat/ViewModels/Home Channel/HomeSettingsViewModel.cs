@@ -60,20 +60,14 @@ namespace slimCat.ViewModels
 
         #region General
 
-        public static IEnumerable<KeyValuePair<string, string>> LanguageNames
+        public static IEnumerable<KeyValuePair<string, string>> LanguageNames { get; } = new Dictionary<string, string>
         {
-            get
-            {
-                return new Dictionary<string, string>
-                {
-                    {"American English", "en-US"},
-                    {"British English", "en-GB"},
-                    {"French", "fr"},
-                    {"German", "de"},
-                    {"Spanish", "es"}
-                };
-            }
-        }
+            {"American English", "en-US"},
+            {"British English", "en-GB"},
+            {"French", "fr"},
+            {"German", "de"},
+            {"Spanish", "es"}
+        };
 
         public bool IsTemplateCharacter
         {
@@ -172,19 +166,13 @@ namespace slimCat.ViewModels
 
         #region Appearance
 
-        public static IEnumerable<KeyValuePair<string, GenderColorSettings>> GenderSettings
+        public static IEnumerable<KeyValuePair<string, GenderColorSettings>> GenderSettings { get; } = new Dictionary<string, GenderColorSettings>
         {
-            get
-            {
-                return new Dictionary<string, GenderColorSettings>
-                {
-                    {"No Coloring", GenderColorSettings.None},
-                    {"Minimal Coloring", GenderColorSettings.GenderOnly},
-                    {"Moderate Coloring", GenderColorSettings.GenderAndHerm},
-                    {"Full Coloring", GenderColorSettings.Full}
-                };
-            }
-        }
+            {"No Coloring", GenderColorSettings.None},
+            {"Minimal Coloring", GenderColorSettings.GenderOnly},
+            {"Moderate Coloring", GenderColorSettings.GenderAndHerm},
+            {"Full Coloring", GenderColorSettings.Full}
+        };
 
         public bool AllowIcons
         {
@@ -256,7 +244,7 @@ namespace slimCat.ViewModels
                 if (value >= 8 && value <= 20)
                     ApplicationSettings.FontSize = value;
 
-                OnPropertyChanged("FontSize");
+                OnPropertyChanged();
                 Save();
             }
         }
@@ -269,7 +257,7 @@ namespace slimCat.ViewModels
                 if (value >= 8 && value <= 20)
                     ApplicationSettings.EntryFontSize = value;
 
-                OnPropertyChanged("EntryFontSize");
+                OnPropertyChanged();
                 Save();
             }
         }
@@ -311,7 +299,7 @@ namespace slimCat.ViewModels
             {
                 ApplicationSettings.PreloadMessageAmount = value;
                 Save();
-                OnPropertyChanged("PreloadMessageAmount");
+                OnPropertyChanged();
             }
         }
 
@@ -322,7 +310,7 @@ namespace slimCat.ViewModels
             {
                 ApplicationSettings.UseCustomTimeStamp = value;
                 Save();
-                OnPropertyChanged("UseCustomTimeStamp");
+                OnPropertyChanged();
             }
         }
 
@@ -333,7 +321,7 @@ namespace slimCat.ViewModels
             {
                 ApplicationSettings.CustomTimeStamp = value;
                 Save();
-                OnPropertyChanged("CustomTimeStamp");
+                OnPropertyChanged();
             }
         }
 
@@ -367,7 +355,7 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.AllowAutoIdle = value;
-                OnPropertyChanged("AllowAutoIdle");
+                OnPropertyChanged();
                 automation.ResetStatusTimers();
                 Save();
             }
@@ -389,7 +377,7 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.AutoIdleTime = value;
-                OnPropertyChanged("AutoIdleTime");
+                OnPropertyChanged();
                 automation.ResetStatusTimers();
                 Save();
             }
@@ -401,7 +389,7 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.AllowAutoAway = value;
-                OnPropertyChanged("AllowAutoAway");
+                OnPropertyChanged();
                 automation.ResetStatusTimers();
                 Save();
             }
@@ -413,7 +401,7 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.AutoAwayTime = value;
-                OnPropertyChanged("AutoAwayTime");
+                OnPropertyChanged();
                 automation.ResetStatusTimers();
                 Save();
             }
@@ -445,7 +433,7 @@ namespace slimCat.ViewModels
                 }
 
                 Save();
-                OnPropertyChanged("AllowAdDedpulication");
+                OnPropertyChanged();
             }
         }
 
@@ -465,7 +453,7 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.ShowMoreInAdsLength = value ? 400 : 50000;
-                OnPropertyChanged("AllowAdTruncating");
+                OnPropertyChanged();
                 OnPropertyChanged("AdTruncateLength");
                 Save();
             }
@@ -477,7 +465,7 @@ namespace slimCat.ViewModels
             set
             {
                 ApplicationSettings.ShowMoreInAdsLength = value;
-                OnPropertyChanged("AdTruncateLength");
+                OnPropertyChanged();
                 Save();
             }
         }
@@ -557,7 +545,7 @@ namespace slimCat.ViewModels
                 ApplicationSettings.ShowNotificationsGlobal = value;
                 iconService.AllowToastUpdate();
                 Save();
-                OnPropertyChanged("ShowNotifications");
+                OnPropertyChanged();
             }
         }
 
@@ -640,7 +628,7 @@ namespace slimCat.ViewModels
             set
             {
                 selectedTab = value;
-                OnPropertyChanged("SelectedTab");
+                OnPropertyChanged();
             }
         }
 

@@ -34,15 +34,7 @@ namespace slimCat.Models
     {
         #region Fields
 
-        private readonly IList<string> argumentNames;
-
         private readonly string familiarName;
-
-        private readonly PermissionLevel permissions;
-
-        private readonly string serverName;
-
-        private readonly CommandTypes type;
 
         #endregion
 
@@ -74,11 +66,11 @@ namespace slimCat.Models
             PermissionLevel permissionLevel = PermissionLevel.User)
         {
             this.familiarName = familiarName;
-            this.serverName = serverName;
-            type = typeOfCommand;
-            permissions = permissionLevel;
+            ServerName = serverName;
+            CommandType = typeOfCommand;
+            PermissionsLevel = permissionLevel;
 
-            argumentNames = paramaterNames;
+            ArgumentNames = paramaterNames;
         }
 
         #endregion
@@ -159,34 +151,22 @@ namespace slimCat.Models
         /// <summary>
         ///     The names of the arguments it has
         /// </summary>
-        public IList<string> ArgumentNames
-        {
-            get { return argumentNames; }
-        }
+        public IList<string> ArgumentNames { get; }
 
         /// <summary>
         ///     What kind of command it is
         /// </summary>
-        public CommandTypes CommandType
-        {
-            get { return type; }
-        }
+        public CommandTypes CommandType { get; }
 
         /// <summary>
         ///     The permissions required to use this command
         /// </summary>
-        public PermissionLevel PermissionsLevel
-        {
-            get { return permissions; }
-        }
+        public PermissionLevel PermissionsLevel { get; }
 
         /// <summary>
         ///     What the server or our service layer will recognize
         /// </summary>
-        public string ServerName
-        {
-            get { return serverName; }
-        }
+        public string ServerName { get; }
 
         #endregion
     }
@@ -241,7 +221,7 @@ namespace slimCat.Models
         {
             var toSend = new Dictionary<string, object> {{"type", commandInformation.ServerName},};
 
-            if (arguments != null && arguments[0] != null)
+            if (arguments?[0] != null)
             {
                 var count = 0;
                 foreach (var argumentName in commandInformation.ArgumentNames.Take(arguments.Count))

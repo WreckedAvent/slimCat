@@ -73,12 +73,12 @@ namespace slimCat.Services
                 AddNotification =
                     notification =>
                     {
-                        Dispatcher.Invoke((Action) (() => cm.Notifications.Backlog(notification, 100)));
+                        Dispatcher.Invoke(() => cm.Notifications.Backlog(notification, 100));
                         loggingService.LogMessage("!Notifications", notification);
                     },
                 ShowToast = toast.ShowNotifications,
-                FlashWindow = () => Dispatcher.Invoke((Action) FlashWindow),
-                PlaySound = () => Dispatcher.Invoke((Action) DingTheCrapOutOfTheUser),
+                FlashWindow = () => Dispatcher.Invoke(FlashWindow),
+                PlaySound = () => Dispatcher.Invoke(DingTheCrapOutOfTheUser),
                 Toast = toast
             };
 
@@ -93,12 +93,12 @@ namespace slimCat.Services
 
         private bool WindowIsFocused
         {
-            get { return (bool) Dispatcher.Invoke(new Func<bool>(() => Application.Current.MainWindow.IsActive)); }
+            get { return Dispatcher.Invoke(() => Application.Current.MainWindow.IsActive); }
         }
 
-        private IChatState ChatState { get; set; }
+        private IChatState ChatState { get; }
 
-        private IManageToasts ToastManager { get; set; }
+        private IManageToasts ToastManager { get; }
 
         #endregion
 
@@ -111,7 +111,7 @@ namespace slimCat.Services
 
         public static void ShowWindow()
         {
-            Dispatcher.CurrentDispatcher.Invoke((Action) (() =>
+            Dispatcher.CurrentDispatcher.Invoke(() =>
             {
                 var window = Application.Current.MainWindow;
                 window.Show();
@@ -123,7 +123,7 @@ namespace slimCat.Services
                 window.Topmost = false;
                 window.Focus();
 
-            }));
+            });
         }
 
         #endregion

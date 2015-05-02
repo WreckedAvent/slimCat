@@ -65,7 +65,7 @@
                 if (parent != null) return parent;
 
                 var fce = contentElement as FrameworkContentElement;
-                return fce != null ? fce.Parent : null;
+                return fce?.Parent;
             }
 
             //also try searching for parent in framework elements (such as DockPanel, etc)

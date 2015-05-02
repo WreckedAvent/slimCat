@@ -58,7 +58,7 @@ namespace slimCat.Libraries
         public RelayCommand(Action<object> execute, Predicate<object> canExecute = null)
         {
             if (execute == null)
-                throw new ArgumentNullException("execute");
+                throw new ArgumentNullException(nameof(execute));
 
             this.execute = execute;
             this.canExecute = canExecute;

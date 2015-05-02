@@ -46,8 +46,6 @@ namespace slimCat.ViewModels
 
         #region Fields
 
-        private readonly GenderSettingsModel genderSettings;
-
         private GeneralChannelModel currentChan;
 
         private readonly DeferredAction updateUserList;
@@ -60,7 +58,7 @@ namespace slimCat.ViewModels
             : base(chatState)
         {
             Container.RegisterType<object, UsersTabView>(UsersTabView);
-            genderSettings = new GenderSettingsModel();
+            GenderSettings = new GenderSettingsModel();
 
             SearchSettings.Updated += OnSearchSettingsUpdated;
 
@@ -96,20 +94,11 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        public GenderSettingsModel GenderSettings
-        {
-            get { return genderSettings; }
-        }
+        public GenderSettingsModel GenderSettings { get; }
 
-        public GeneralChannelModel SelectedChan
-        {
-            get { return currentChan ?? ChatModel.CurrentChannel as GeneralChannelModel; }
-        }
+        public GeneralChannelModel SelectedChan => currentChan ?? ChatModel.CurrentChannel as GeneralChannelModel;
 
-        public string SortContentString
-        {
-            get { return HasUsers ? SelectedChan.Title : null; }
-        }
+        public string SortContentString => HasUsers ? SelectedChan.Title : null;
 
         public IEnumerable<ICharacter> SortedUsers
         {

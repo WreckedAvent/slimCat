@@ -69,7 +69,6 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using System;
     using System.Collections.Generic;
     using Models;
     using SimpleJson;
@@ -84,7 +83,7 @@ namespace slimCat.Services
             CharacterManager.Set(command.Get<JsonArray>(Constants.Arguments.MultipleModerators), ListKind.Moderator);
 
             if (CharacterManager.IsOnList(ChatModel.CurrentCharacter.Name, ListKind.Moderator, false))
-                Dispatcher.Invoke((Action) delegate { ChatModel.IsGlobalModerator = true; });
+                Dispatcher.Invoke(() => ChatModel.IsGlobalModerator = true);
         }
 
         private void ChannelOperatorListCommand(IDictionary<string, object> command)

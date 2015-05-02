@@ -21,7 +21,6 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using System;
     using System.Collections.Generic;
     using Models;
     using Utilities;
@@ -58,7 +57,7 @@ namespace slimCat.Services
 
         private void DoListAction(string name, ListKind list, bool isAdd, bool generateUpdate = true)
         {
-            Dispatcher.Invoke((Action) delegate
+            Dispatcher.Invoke(() =>
             {
                 var result = isAdd
                     ? characterManager.Add(name, list)

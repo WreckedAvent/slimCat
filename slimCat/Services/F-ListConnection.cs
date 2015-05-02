@@ -103,10 +103,7 @@ namespace slimCat.Services
                 sb.Append("==================================\n");
 
                 log.Where(x => !x.IsHistoryMessage)
-                    .Select(
-                        m =>
-                            string.Format("{0} {1}: {2} \n", m.PostedTime.ToUniversalTime().ToTimeStamp(), m.Poster.Name,
-                                m.Message))
+                    .Select(m => $"{m.PostedTime.ToUniversalTime().ToTimeStamp()} {m.Poster.Name}: {m.Message} \n")
                     .Each(m => sb.Append(m));
 
                 var toUpload = new Dictionary<string, object>

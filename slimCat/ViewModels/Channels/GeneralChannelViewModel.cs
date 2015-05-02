@@ -52,11 +52,7 @@ namespace slimCat.ViewModels
 
         #region Fields
 
-        private readonly GenderSettingsModel genderSettings;
-
         private readonly FilteredMessageCollection messageManager;
-
-        private readonly GenericSearchSettingsModel searchSettings;
 
         private Timer adFloodTimer = new Timer(602000);
 
@@ -113,15 +109,15 @@ namespace slimCat.ViewModels
 
                 isDisplayingChat = ShouldDisplayChat;
 
-                ChannelManagementViewModel = new ChannelManagementViewModel(Events, Model as GeneralChannelModel);
+                ChannelManagementViewModel = new ChannelManagementViewModel(Events, (GeneralChannelModel) Model);
 
                 // instance our management vm
                 Model.Messages.CollectionChanged += OnMessagesChanged;
                 Model.Ads.CollectionChanged += OnAdsChanged;
                 Model.PropertyChanged += OnModelPropertyChanged;
 
-                searchSettings = new GenericSearchSettingsModel();
-                genderSettings = new GenderSettingsModel();
+                SearchSettings = new GenericSearchSettingsModel();
+                GenderSettings = new GenderSettingsModel();
 
                 messageManager =
                     new FilteredMessageCollection(
@@ -132,7 +128,7 @@ namespace slimCat.ViewModels
                         ConstantFilter,
                         IsDisplayingAds);
 
-                genderSettings.Updated += (s, e) => OnPropertyChanged("GenderSettings");
+                GenderSettings.Updated += (s, e) => OnPropertyChanged("GenderSettings");
 
                 SearchSettings.Updated += (s, e) => OnPropertyChanged("SearchSettings");
 
@@ -202,10 +198,9 @@ namespace slimCat.ViewModels
                     Message = ChannelSettings.LastMessage;
                     ChannelSettings.LastMessage = null;
                 }
-                searchSettings.ShowOffline = true;
+                SearchSettings.ShowOffline = true;
 
-                Application.Current.Dispatcher.Invoke(
-                    (Action) delegate { Application.Current.MainWindow.Deactivated += SetLastMessageMark; });
+                Application.Current.Dispatcher.Invoke(() => Application.Current.MainWindow.Deactivated += SetLastMessageMark);
             }
             catch (Exception ex)
             {
@@ -231,7 +226,7 @@ namespace slimCat.ViewModels
                 if (!isInCoolDownAd)
                     adFloodTimer.Interval = Model.Settings.AutopostTime*60*1000 + 2000;
 
-                OnPropertyChanged("AutoPost");
+                OnPropertyChanged();
                 OnPropertyChanged("CanShowAutoTimeLeft");
             }
         }
@@ -248,10 +243,7 @@ namespace slimCat.ViewModels
             }
         }
 
-        public bool CanShowAutoTimeLeft
-        {
-            get { return IsDisplayingAds && CannotPost && AutoPost; }
-        }
+        public bool CanShowAutoTimeLeft => IsDisplayingAds && CannotPost && AutoPost;
 
         public bool CanSwitch
         {
@@ -264,44 +256,21 @@ namespace slimCat.ViewModels
             }
         }
 
-        public bool CannotPost
-        {
-            get { return !CanPost; }
-        }
+        public bool CannotPost => !CanPost;
 
-        public ChannelManagementViewModel ChannelManagementViewModel { get; private set; }
+        public ChannelManagementViewModel ChannelManagementViewModel { get; }
 
+        public string ChatContentString => IsDisplayingChat ? "Chat" : "Ads";
 
-        public string ChatContentString
-        {
-            get { return IsDisplayingChat ? "Chat" : "Ads"; }
-        }
+        public ObservableCollection<IViewableObject> CurrentMessages => messageManager.Collection;
 
-        public ObservableCollection<IViewableObject> CurrentMessages
-        {
-            get { return messageManager.Collection; }
-        }
+        public GenderSettingsModel GenderSettings { get; }
 
-        public GenderSettingsModel GenderSettings
-        {
-            get { return genderSettings; }
-        }
+        public bool HasNotifyTerms => !string.IsNullOrEmpty(ChannelSettings.NotifyTerms);
 
-        public bool HasNotifyTerms
-        {
-            get { return !string.IsNullOrEmpty(ChannelSettings.NotifyTerms); }
-        }
+        public bool IsChatting => !IsSearching;
 
-
-        public bool IsChatting
-        {
-            get { return !IsSearching; }
-        }
-
-        public bool IsDisplayingAds
-        {
-            get { return !IsDisplayingChat; }
-        }
+        public bool IsDisplayingAds => !IsDisplayingChat;
 
         public bool IsDisplayingChat
         {
@@ -322,7 +291,7 @@ namespace slimCat.ViewModels
 
                 messageManager.OriginalCollection = value ? Model.Messages : Model.Ads;
 
-                OnPropertyChanged("IsDisplayingChat");
+                OnPropertyChanged();
                 OnPropertyChanged("IsDisplayingAds");
                 OnPropertyChanged("ChatContentString");
                 OnPropertyChanged("MessageMax");
@@ -336,24 +305,12 @@ namespace slimCat.ViewModels
             }
         }
 
-        public bool CanDisplayAds
-        {
-            get
-            {
-                return (Model.Mode == ChannelMode.Both || Model.Mode == ChannelMode.Ads) &&
-                       Model.Type != ChannelType.PrivateMessage;
-            }
-        }
+        public bool CanDisplayAds 
+            => (Model.Mode == ChannelMode.Both || Model.Mode == ChannelMode.Ads) && Model.Type != ChannelType.PrivateMessage;
 
-        public bool CanDisplayChat
-        {
-            get { return Model.Mode == ChannelMode.Both || Model.Mode == ChannelMode.Chat; }
-        }
+        public bool CanDisplayChat => Model.Mode == ChannelMode.Both || Model.Mode == ChannelMode.Chat;
 
-        public bool IsNotSearching
-        {
-            get { return !IsSearching; }
-        }
+        public bool IsNotSearching => !IsSearching;
 
         public bool IsSearching
         {
@@ -367,17 +324,14 @@ namespace slimCat.ViewModels
                 Log("now " + (isSearching ? "searching" : "chatting"));
 
                 isSearching = value;
-                OnPropertyChanged("IsSearching");
+                OnPropertyChanged();
                 OnPropertyChanged("SearchSwitchMessageString");
                 OnPropertyChanged("IsChatting");
                 OnPropertyChanged("IsNotSearching");
             }
         }
 
-        public string Description
-        {
-            get { return ((GeneralChannelModel) Model).Description; }
-        }
+        public string Description => ((GeneralChannelModel) Model).Description;
 
         /// <summary>
         ///     if we're displaying the channel's messages, if there's a new ad (or vice-versa)
@@ -393,25 +347,16 @@ namespace slimCat.ViewModels
                 else if (!IsDisplayingAds && CanDisplayAds)
                     hasNewAds = value;
 
-                OnPropertyChanged("OtherTabHasMessages");
+                OnPropertyChanged();
                 OnPropertyChanged("StatusString");
             }
         }
 
-        public GenericSearchSettingsModel SearchSettings
-        {
-            get { return searchSettings; }
-        }
+        public GenericSearchSettingsModel SearchSettings { get; }
 
-        public bool ShouldDisplayAds
-        {
-            get { return (Model.Mode == ChannelMode.Both) || (Model.Mode == ChannelMode.Ads); }
-        }
+        public bool ShouldDisplayAds => (Model.Mode == ChannelMode.Both) || (Model.Mode == ChannelMode.Ads);
 
-        public bool ShouldDisplayChat
-        {
-            get { return (Model.Mode == ChannelMode.Both) || (Model.Mode == ChannelMode.Chat); }
-        }
+        public bool ShouldDisplayChat => (Model.Mode == ChannelMode.Both) || (Model.Mode == ChannelMode.Chat);
 
         public bool ShouldShowAutoPost
         {
@@ -424,10 +369,7 @@ namespace slimCat.ViewModels
             }
         }
 
-        public bool ShowAllSettings
-        {
-            get { return true; }
-        }
+        public bool ShowAllSettings => true;
 
         public string StatusString
         {
@@ -438,8 +380,7 @@ namespace slimCat.ViewModels
 
                 if (!string.IsNullOrEmpty(Message))
                 {
-                    return string.Format(
-                        "{0} / {1} characters", Message.Length, IsDisplayingChat ? "4,096" : "50,000");
+                    return $"{Message.Length} / {(IsDisplayingChat ? "4,096" : "50,000")} characters";
                 }
 
                 if (OtherTabHasMessages && IsDisplayingChat)
@@ -452,56 +393,24 @@ namespace slimCat.ViewModels
             }
         }
 
-        public ICommand SwitchCommand
-        {
-            get
-            {
-                return @switch
-                       ?? (@switch = new RelayCommand(param => IsDisplayingChat = !IsDisplayingChat));
-            }
-        }
+        public ICommand SwitchCommand => @switch ?? (@switch = new RelayCommand(_ => IsDisplayingChat = !IsDisplayingChat));
 
-        public ICommand SwitchSearchCommand
-        {
-            get
-            {
-                return switchSearch ?? (switchSearch = new RelayCommand(
-                    delegate { IsSearching = !IsSearching; }));
-            }
-        }
+        public ICommand SwitchSearchCommand => switchSearch ?? (switchSearch = new RelayCommand(_ => IsSearching = !IsSearching));
 
         /// <summary>
         ///     Gets the time left before the next ad can be posted.
         /// </summary>
-        public string TimeLeft
-        {
-            get { return HelperConverter.DateTimeInFutureToRough(timeLeftAd) + "until next"; }
-        }
+        public string TimeLeft => HelperConverter.DateTimeInFutureToRough(timeLeftAd) + "until next";
 
-        public string AutoTimeLeft
-        {
-            get { return HelperConverter.DateTimeInFutureToRough(autoTimeLeft) + "until disabled"; }
-        }
+        public string AutoTimeLeft => HelperConverter.DateTimeInFutureToRough(autoTimeLeft) + "until disabled";
 
-        public override string EntryTextBoxIcon
-        {
-            get
-            {
-                return isDisplayingChat
-                    ? "pack://application:,,,/icons/send_chat.png"
-                    : "pack://application:,,,/icons/send_ad.png";
-            }
-        }
+        public override string EntryTextBoxIcon => isDisplayingChat
+            ? "pack://application:,,,/icons/send_chat.png"
+            : "pack://application:,,,/icons/send_ad.png";
 
-        public override string EntryTextBoxLabel
-        {
-            get
-            {
-                return isDisplayingChat
-                    ? "Chat here ..."
-                    : "Write a pretty ad here ...";
-            }
-        }
+        public override string EntryTextBoxLabel => isDisplayingChat
+            ? "Chat here ..."
+            : "Write a pretty ad here ...";
 
         #endregion
 
@@ -513,7 +422,7 @@ namespace slimCat.ViewModels
             set
             {
                 showChannelDescription = value;
-                OnPropertyChanged("ShowChannelDescription");
+                OnPropertyChanged();
             }
         }
 
@@ -537,13 +446,13 @@ namespace slimCat.ViewModels
             {
                 if (!last.Poster.NameEquals(ChatModel.CurrentCharacter.Name))
                 {
-                    Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new[] {messageToSend}, Model.Id);
+                    Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new[] { messageToSend }, Model.Id);
                     Log("sending auto-ad");
                 }
             }
             else
             {
-                Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new[] {messageToSend}, Model.Id);
+                Events.SendUserCommand(CommandDefinitions.ClientSendChannelAd, new[] { messageToSend }, Model.Id);
                 Log("sending auto-ad");
             }
 
@@ -633,8 +542,7 @@ namespace slimCat.ViewModels
                 var model = (GeneralChannelModel) Model;
                 model.Description = null;
                 model.CharacterManager.Dispose();
-                Application.Current.Dispatcher.Invoke(
-                    (Action) delegate { Application.Current.MainWindow.Deactivated -= SetLastMessageMark; });
+                Application.Current.Dispatcher.Invoke(() => Application.Current.MainWindow.Deactivated -= SetLastMessageMark);
             }
 
             base.Dispose(isManaged);
@@ -823,10 +731,8 @@ namespace slimCat.ViewModels
         private void UpdateChat(NotificationModel newUpdate)
         {
             var updateModel = newUpdate as CharacterUpdateModel;
-            if (updateModel == null)
-                return;
 
-            var args = updateModel.Arguments as CharacterListChangedEventArgs;
+            var args = updateModel?.Arguments as CharacterListChangedEventArgs;
             if (args == null)
                 return;
 

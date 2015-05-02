@@ -65,10 +65,7 @@ namespace slimCat.Models
         /// </summary>
         public ICharacter TargetCharacter { get; private set; }
 
-        public override Block View
-        {
-            get { return new CharacterUpdateView {DataContext = this}; }
-        }
+        public override Block View => new CharacterUpdateView { DataContext = this };
 
         public override void Navigate(IChatState chatState)
         {

@@ -62,7 +62,7 @@ namespace slimCat.Models
                 toReturn = "has reported" + Reported;
 
             if (LogId != null)
-                toReturn += string.Format(" [url={0}]view log[/url]", LogLink);
+                toReturn += $" [url={LogLink}]view log[/url]";
 
             return toReturn;
         }
@@ -219,11 +219,8 @@ namespace slimCat.Services
             var logId = -1; // no log
 
             // report format: "Current Tab/Channel: <channel> | Reporting User: <reported user> | <report body>
-            var reportText = string.Format(
-                "Current Tab/Channel: {0} | Reporting User: {1} | {2}",
-                command.Get(Constants.Arguments.Channel),
-                command.Get(Constants.Arguments.Name),
-                command.Get(Constants.Arguments.Report));
+            var reportText =
+                $"Current Tab/Channel: {command.Get(Constants.Arguments.Channel)} | Reporting User: {command.Get(Constants.Arguments.Name)} | {command.Get(Constants.Arguments.Report)}";
 
             // upload on a worker thread to avoid blocking
             new Thread(() =>
@@ -271,8 +268,7 @@ namespace slimCat.Services
             command.Clear();
             var latest = (from n in model.Notifications
                 let update = n as CharacterUpdateModel
-                where update != null
-                      && update.Arguments is ReportFiledEventArgs
+                where update?.Arguments is ReportFiledEventArgs
                 select update).FirstOrDefault();
 
             if (latest == null)

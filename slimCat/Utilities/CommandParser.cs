@@ -39,8 +39,6 @@ namespace slimCat.Utilities
 
         private readonly string currentChannel;
 
-        private readonly bool hasCommand = true;
-
         private readonly string type;
         private IList<string> arguments;
 
@@ -63,7 +61,7 @@ namespace slimCat.Utilities
 
             if (rawInput.Length <= 1 || !rawInput[0].Equals('/'))
             {
-                hasCommand = false;
+                HasCommand = false;
                 return;
             }
 
@@ -105,18 +103,12 @@ namespace slimCat.Utilities
         /// <summary>
         ///     Gets a value indicating whether the current input has a command.
         /// </summary>
-        public bool HasCommand
-        {
-            get { return hasCommand; }
-        }
+        public bool HasCommand { get; } = true;
 
         /// <summary>
         ///     Gets the type.
         /// </summary>
-        public string Type
-        {
-            get { return HasCommand ? type.ToLower() : "none"; }
-        }
+        public string Type => HasCommand ? type.ToLower() : "none";
 
         #endregion
 

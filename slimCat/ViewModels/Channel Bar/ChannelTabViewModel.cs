@@ -181,23 +181,14 @@ namespace slimCat.ViewModels
             set
             {
                 isCreatingNewChannel = value;
-                OnPropertyChanged("IsCreatingNewChannel");
+                OnPropertyChanged();
             }
         }
 
-        public ICommand ToggleIsCreatingNewChannelCommand
-        {
-            get
-            {
-                return toggleIsCreatingNewChannel ??
-                       (toggleIsCreatingNewChannel = new RelayCommand(_ => IsCreatingNewChannel = !IsCreatingNewChannel));
-            }
-        }
+        public ICommand ToggleIsCreatingNewChannelCommand => toggleIsCreatingNewChannel ??
+                                                             (toggleIsCreatingNewChannel = new RelayCommand(_ => IsCreatingNewChannel = !IsCreatingNewChannel));
 
-        public ICommand CreateNewChannelCommand
-        {
-            get { return createNewChannel ?? (createNewChannel = new RelayCommand(CreateNewChannelEvent)); }
-        }
+        public ICommand CreateNewChannelCommand => createNewChannel ?? (createNewChannel = new RelayCommand(CreateNewChannelEvent));
 
         public string NewChannelName
         {
@@ -205,7 +196,7 @@ namespace slimCat.ViewModels
             set
             {
                 newChannelName = value;
-                OnPropertyChanged("NewChannelName");
+                OnPropertyChanged();
             }
         }
 

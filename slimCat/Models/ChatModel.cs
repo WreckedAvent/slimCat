@@ -35,17 +35,6 @@ namespace slimCat.Models
     {
         #region Fields
 
-        private readonly ObservableCollection<GeneralChannelModel> channels =
-            new ObservableCollection<GeneralChannelModel>();
-
-        private readonly ObservableCollection<NotificationModel> notifications =
-            new ObservableCollection<NotificationModel>();
-
-        private readonly ObservableCollection<GeneralChannelModel> ourChannels =
-            new ObservableCollection<GeneralChannelModel>();
-
-        private readonly ObservableCollection<PmChannelModel> pms = new ObservableCollection<PmChannelModel>();
-
         private IAccount account;
         private ChannelModel currentChannel;
 
@@ -70,10 +59,7 @@ namespace slimCat.Models
         /// <summary>
         ///     Gets the all channels.
         /// </summary>
-        public ObservableCollection<GeneralChannelModel> AllChannels
-        {
-            get { return channels; }
-        }
+        public ObservableCollection<GeneralChannelModel> AllChannels { get; } = new ObservableCollection<GeneralChannelModel>();
 
         /// <summary>
         ///     Gets or sets the client uptime.
@@ -83,18 +69,12 @@ namespace slimCat.Models
         /// <summary>
         ///     Gets the current channels.
         /// </summary>
-        public ObservableCollection<GeneralChannelModel> CurrentChannels
-        {
-            get { return ourChannels; }
-        }
+        public ObservableCollection<GeneralChannelModel> CurrentChannels { get; } = new ObservableCollection<GeneralChannelModel>();
 
         /// <summary>
         ///     Gets the current private messages.
         /// </summary>
-        public ObservableCollection<PmChannelModel> CurrentPms
-        {
-            get { return pms; }
-        }
+        public ObservableCollection<PmChannelModel> CurrentPms { get; } = new ObservableCollection<PmChannelModel>();
 
         /// <summary>
         ///     Gets or sets a value indicating whether is authenticated.
@@ -106,7 +86,7 @@ namespace slimCat.Models
             set
             {
                 isAuthenticated = value;
-                OnPropertyChanged("IsAuthenticated");
+                OnPropertyChanged();
             }
         }
 
@@ -123,10 +103,7 @@ namespace slimCat.Models
         /// <summary>
         ///     Gets the notifications.
         /// </summary>
-        public ObservableCollection<NotificationModel> Notifications
-        {
-            get { return notifications; }
-        }
+        public ObservableCollection<NotificationModel> Notifications { get; } = new ObservableCollection<NotificationModel>();
 
         /// <summary>
         ///     Gets or sets the our account.
@@ -138,7 +115,7 @@ namespace slimCat.Models
             set
             {
                 account = value;
-                OnPropertyChanged("OurAccount");
+                OnPropertyChanged();
             }
         }
 
@@ -156,10 +133,9 @@ namespace slimCat.Models
 
                 currentChannel = value;
 
-                if (SelectedChannelChanged != null)
-                    SelectedChannelChanged(this, new EventArgs());
+                SelectedChannelChanged?.Invoke(this, new EventArgs());
 
-                OnPropertyChanged("CurrentChannel");
+                OnPropertyChanged();
             }
         }
 
@@ -173,7 +149,7 @@ namespace slimCat.Models
             set
             {
                 currentCharacter = value;
-                OnPropertyChanged("CurrentCharacter");
+                OnPropertyChanged();
             }
         }
 
@@ -183,7 +159,7 @@ namespace slimCat.Models
             set
             {
                 currentCharacterData = value;
-                OnPropertyChanged("CurrentCharacterData");
+                OnPropertyChanged();
             }
         }
 

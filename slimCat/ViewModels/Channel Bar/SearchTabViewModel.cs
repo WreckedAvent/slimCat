@@ -108,34 +108,19 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        public ICommand AddSearchTermCommand
-        {
-            get { return addSearch ?? (addSearch = new RelayCommand(AddSearchTermEvent)); }
-        }
+        public ICommand AddSearchTermCommand => addSearch ?? (addSearch = new RelayCommand(AddSearchTermEvent));
 
-        public ICommand RemoveSearchTermCommand
-        {
-            get { return removeSearch ?? (removeSearch = new RelayCommand(RemoveSearchTermEvent)); }
-        }
+        public ICommand RemoveSearchTermCommand => removeSearch ?? (removeSearch = new RelayCommand(RemoveSearchTermEvent));
 
-        public ICommand ClearSearchTermsCommand
-        {
-            get { return clearSearch ?? (clearSearch = new RelayCommand(ClearSearchTermEvent)); }
-        }
+        public ICommand ClearSearchTermsCommand => clearSearch ?? (clearSearch = new RelayCommand(ClearSearchTermEvent));
 
         public ICollectionView AvailableSearchTerms { get; private set; }
 
         public ICollectionView SelectedSearchTerms { get; private set; }
 
-        public ICommand OpenSearchSettingsCommand
-        {
-            get { return null; }
-        }
+        public ICommand OpenSearchSettingsCommand => null;
 
-        public ICommand SendSearchCommand
-        {
-            get { return sendSearch ?? (sendSearch = new RelayCommand(SendSearchEvent, param => CanStartSearch)); }
-        }
+        public ICommand SendSearchCommand => sendSearch ?? (sendSearch = new RelayCommand(SendSearchEvent, param => CanStartSearch));
 
         public string SearchString
         {
@@ -143,7 +128,7 @@ namespace slimCat.ViewModels
             set
             {
                 searchString = value;
-                OnPropertyChanged("SearchString");
+                OnPropertyChanged();
 
                 UpdateAvailableViews();
             }
@@ -247,8 +232,7 @@ namespace slimCat.ViewModels
 
         private void SendSearchEvent(object obj)
         {
-            var toSend = new Dictionary<string, IList<string>>();
-            toSend["kinks"] = new List<string>();
+            var toSend = new Dictionary<string, IList<string>> { ["kinks"] = new List<string>() };
 
             selectedSearchTerms.Each(term =>
             {

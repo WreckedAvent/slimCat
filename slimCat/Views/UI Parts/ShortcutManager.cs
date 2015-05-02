@@ -154,7 +154,7 @@ namespace slimCat.Views
             }
             else if (e.Key == Key.Return)
                 e.Handled = true; // don't do the funny business with inserting a new line
-            else if (e.Key == Key.Up && String.IsNullOrEmpty(vm.Message) && !String.IsNullOrWhiteSpace(vm.LastMessage) &&
+            else if (e.Key == Key.Up && string.IsNullOrEmpty(vm.Message) && !string.IsNullOrWhiteSpace(vm.LastMessage) &&
                      e.KeyboardDevice.Modifiers == ModifierKeys.None)
             {
                 vm.Message = vm.LastMessage;
@@ -170,7 +170,7 @@ namespace slimCat.Views
                 var bbtag = tupleData.Item1;
                 var useArgs = tupleData.Item2;
 
-                if (!String.IsNullOrWhiteSpace(entry.SelectedText))
+                if (!string.IsNullOrWhiteSpace(entry.SelectedText))
                 {
                     var selected = entry.SelectedText;
 
@@ -207,14 +207,14 @@ namespace slimCat.Views
                                 "[/{0}]".FormatWith(TogglingKeys[e.Key]));
                         }
 
-                        entry.SelectedText = String.Format("[{0}]{1}[/{0}]", bbtag, selected);
+                        entry.SelectedText = $"[{bbtag}]{selected}[/{bbtag}]";
                     }
                     else
                     {
-                        var toEnter = String.Format("[{0}={1}]", bbtag, selected);
+                        var toEnter = $"[{bbtag}={selected}]";
                         var caretIndex = entry.CaretIndex;
 
-                        entry.SelectedText = String.Format("{0}[/{1}]", toEnter, bbtag);
+                        entry.SelectedText = $"{toEnter}[/{bbtag}]";
                         entry.CaretIndex = caretIndex + toEnter.Length;
                     }
                 }
@@ -298,7 +298,7 @@ namespace slimCat.Views
                 if (element is ListBoxItem) return;
             }
 
-            if (!String.IsNullOrEmpty(vm.Message)) entry.CaretIndex = vm.Message.Length;
+            if (!string.IsNullOrEmpty(vm.Message)) entry.CaretIndex = vm.Message.Length;
         }
 
         private void Focus()

@@ -110,7 +110,7 @@ namespace slimCat.Models
         /// </summary>
         public string SearchString
         {
-            get { return search == null ? search : search.ToLower(); }
+            get { return search?.ToLower() ?? search; }
 
             set
             {
@@ -332,8 +332,7 @@ namespace slimCat.Models
 
         private void CallUpdate()
         {
-            if (Updated != null)
-                Updated(this, new EventArgs());
+            Updated?.Invoke(this, new EventArgs());
         }
 
         private void Log(string text)

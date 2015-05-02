@@ -118,7 +118,7 @@ namespace slimCat.ViewModels
             {
                 ApplicationSettings.SpellCheckEnabled = value;
                 SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
-                OnPropertyChanged("SpellCheckEnabled");
+                OnPropertyChanged();
             }
         }
 
@@ -129,16 +129,13 @@ namespace slimCat.ViewModels
             {
                 ApplicationSettings.Langauge = value;
                 SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
-                OnPropertyChanged("Language");
+                OnPropertyChanged();
             }
         }
 
-        public static IEnumerable<string> Languages
-        {
-            get { return ApplicationSettings.LanguageList; }
-        }
+        public static IEnumerable<string> Languages => ApplicationSettings.LanguageList;
 
-        public CreateReportViewModel CreateReportViewModel { get; private set; }
+        public CreateReportViewModel CreateReportViewModel { get; }
 
 
         /// <summary>
@@ -164,18 +161,9 @@ namespace slimCat.ViewModels
 
         public RightClickMenuViewModel RightClickMenuViewModel { get; private set; }
 
-        public ICommand NavigateTo
-        {
-            get { return link ?? (link = new RelayCommand(StartLinkInDefaultBrowser)); }
-        }
+        public ICommand NavigateTo => link ?? (link = new RelayCommand(StartLinkInDefaultBrowser));
 
-        public ICommand CopyLink
-        {
-            get
-            {
-                return linkCopy ?? (linkCopy = new RelayCommand(CopyLinkToClipboard));
-            }
-        }
+        public ICommand CopyLink => linkCopy ?? (linkCopy = new RelayCommand(CopyLinkToClipboard));
 
         /// <summary>
         ///     Gets or sets the chat model. The chat model is used to contain chat-related data unrelated to characters.
@@ -206,108 +194,48 @@ namespace slimCat.ViewModels
 
         #region ICommands
 
-        public ICommand BanCommand
-        {
-            get { return ban ?? (ban = new RelayCommand(BanEvent, param => HasPermissions)); }
-        }
+        public ICommand BanCommand => ban ?? (ban = new RelayCommand(BanEvent, param => HasPermissions));
 
-        public ICommand FindLogCommand
-        {
-            get { return getLogs ?? (getLogs = new RelayCommand(FindLogEvent)); }
-        }
+        public ICommand FindLogCommand => getLogs ?? (getLogs = new RelayCommand(FindLogEvent));
 
-        public ICommand HandleReportCommand
-        {
-            get { return handleReport ?? (handleReport = new RelayCommand(HandleReportEvent)); }
-        }
+        public ICommand HandleReportCommand => handleReport ?? (handleReport = new RelayCommand(HandleReportEvent));
 
-        public ICommand IgnoreCommand
-        {
-            get { return ignore ?? (ignore = new RelayCommand(AddIgnoreEvent, CanIgnore)); }
-        }
+        public ICommand IgnoreCommand => ignore ?? (ignore = new RelayCommand(AddIgnoreEvent, CanIgnore));
 
-        public ICommand InterestedCommand
-        {
-            get { return isInterested ?? (isInterested = new RelayCommand(IsInterestedEvent)); }
-        }
+        public ICommand InterestedCommand => isInterested ?? (isInterested = new RelayCommand(IsInterestedEvent));
 
-        public ICommand InvertCommand
-        {
-            get { return invert ?? (invert = new RelayCommand(InvertButton)); }
-        }
+        public ICommand InvertCommand => invert ?? (invert = new RelayCommand(InvertButton));
 
-        public ICommand JoinChannelCommand
-        {
-            get { return @join ?? (@join = new RelayCommand(RequestChannelJoinEvent, CanJoinChannel)); }
-        }
+        public ICommand JoinChannelCommand => @join ?? (@join = new RelayCommand(RequestChannelJoinEvent, CanJoinChannel));
 
-        public ICommand KickCommand
-        {
-            get { return kick ?? (kick = new RelayCommand(KickEvent, param => HasPermissions)); }
-        }
+        public ICommand KickCommand => kick ?? (kick = new RelayCommand(KickEvent, param => HasPermissions));
 
-        public ICommand NotInterestedCommand
-        {
-            get { return isNotInterested ?? (isNotInterested = new RelayCommand(IsUninterestedEvent)); }
-        }
+        public ICommand NotInterestedCommand => isNotInterested ?? (isNotInterested = new RelayCommand(IsUninterestedEvent));
 
-        public ICommand SearchTagCommand
-        {
-            get { return searchTag ?? (searchTag = new RelayCommand(SearchTagEvent)); }
-        }
+        public ICommand SearchTagCommand => searchTag ?? (searchTag = new RelayCommand(SearchTagEvent));
 
-        public ICommand LogoutCommand
-        {
-            get { return logout ?? (logout = new RelayCommand(LogoutEvent)); }
-        }
+        public ICommand LogoutCommand => logout ?? (logout = new RelayCommand(LogoutEvent));
 
-        public ICommand OpenRightClickMenuCommand
-        {
-            get
+        public ICommand OpenRightClickMenuCommand => openMenu 
+            ?? (openMenu = new RelayCommand(args =>
             {
-                return openMenu ?? (openMenu = new RelayCommand(
-                    args =>
-                    {
-                        var newTarget = CharacterManager.Find(args as string);
-                        OnRightClickMenuUpdated(newTarget);
-                    }));
-            }
-        }
+                var newTarget = CharacterManager.Find(args as string);
+                OnRightClickMenuUpdated(newTarget);
+            }));
 
-        public ICommand ReportCommand
-        {
-            get { return report ?? (report = new RelayCommand(FileReportEvent)); }
-        }
+        public ICommand ReportCommand => report ?? (report = new RelayCommand(FileReportEvent));
 
-        public ICommand RequestPmCommand
-        {
-            get { return openPm ?? (openPm = new RelayCommand(RequestPmEvent, CanRequestPm)); }
-        }
+        public ICommand RequestPmCommand => openPm ?? (openPm = new RelayCommand(RequestPmEvent, CanRequestPm));
 
-        public ICommand UnignoreCommand
-        {
-            get { return unignore ?? (unignore = new RelayCommand(RemoveIgnoreEvent, CanUnIgnore)); }
-        }
+        public ICommand UnignoreCommand => unignore ?? (unignore = new RelayCommand(RemoveIgnoreEvent, CanUnIgnore));
 
-        public ICommand IgnoreUpdateCommand
-        {
-            get { return ignoreUpdate ?? (ignoreUpdate = new RelayCommand(IgnoreUpdatesEvent, CanIgnoreUpdate)); }
-        }
+        public ICommand IgnoreUpdateCommand => ignoreUpdate ?? (ignoreUpdate = new RelayCommand(IgnoreUpdatesEvent, CanIgnoreUpdate));
 
-        public ICommand AdvanceFriendCommand
-        {
-            get { return advanceFriend ?? (advanceFriend = new RelayCommand(AdvanceFriendEvent)); }
-        }
+        public ICommand AdvanceFriendCommand => advanceFriend ?? (advanceFriend = new RelayCommand(AdvanceFriendEvent));
 
-        public ICommand BookmarkCommand
-        {
-            get { return bookmark ?? (bookmark = new RelayCommand(BookmarkEvent)); }
-        }
+        public ICommand BookmarkCommand => bookmark ?? (bookmark = new RelayCommand(BookmarkEvent));
 
-        public ICommand RegressFriendCommand
-        {
-            get { return regressFriend ?? (regressFriend = new RelayCommand(RegressFriendEvent)); }
-        }
+        public ICommand RegressFriendCommand => regressFriend ?? (regressFriend = new RelayCommand(RegressFriendEvent));
 
         #endregion
 

@@ -92,8 +92,7 @@ namespace slimCat.ViewModels
                     if (currentSelected != "ManageLists")
                         NavigateToTabEvent("ManageLists");
 
-                    if (OnJumpToSearch != null)
-                        OnJumpToSearch(this, null);
+                    OnJumpToSearch?.Invoke(this, null);
                 }, ThreadOption.UIThread);
 
                 LoggingSection = "channel bar vm";
@@ -117,10 +116,7 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        public ICommand ChangeTabCommand
-        {
-            get { return @select ?? (@select = new RelayCommand(NavigateToTabEvent)); }
-        }
+        public ICommand ChangeTabCommand => @select ?? (@select = new RelayCommand(NavigateToTabEvent));
 
         public string ExpandString
         {
@@ -141,7 +137,7 @@ namespace slimCat.ViewModels
             {
                 if (value) Log("displaying update");
                 needsAttention = value;
-                OnPropertyChanged("NeedsAttention");
+                OnPropertyChanged();
                 OnPropertyChanged("ExpandString");
             }
         }
@@ -155,7 +151,7 @@ namespace slimCat.ViewModels
 
                 NeedsAttention = value && !IsExpanded;
                 hasUpdate = value;
-                OnPropertyChanged("HasUpdate");
+                OnPropertyChanged();
             }
         }
 
@@ -169,55 +165,40 @@ namespace slimCat.ViewModels
 
                 Log(value ? "Expanding" : "Hiding");
                 isExpanded = value;
-                OnPropertyChanged("IsExpanded");
+                OnPropertyChanged();
                 OnPropertyChanged("ExpandString");
             }
         }
 
-        public ICommand ToggleBarCommand
+        public ICommand ToggleBarCommand => toggle ?? (toggle = new RelayCommand(_ =>
         {
-            get
+            IsExpanded = !IsExpanded;
+
+            if (IsExpanded)
             {
-                return toggle ?? (toggle = new RelayCommand(
-                    delegate
-                    {
-                        IsExpanded = !IsExpanded;
+                // this shoots us to the notifications tab if we have something to see there
+                if (HasUpdate)
+                {
+                    NavigateToTabEvent("Notifications");
 
-                        if (IsExpanded)
-                        {
-                            // this shoots us to the notifications tab if we have something to see there
-                            if (HasUpdate)
-                            {
-                                NavigateToTabEvent("Notifications");
+                    // used to check if we weren't already here; now that isn't possible
+                    OnJumpToNotifications?.Invoke(this, new EventArgs());
 
-                                // used to check if we weren't already here; now that isn't possible
-                                if (OnJumpToNotifications != null)
-                                {
-                                    OnJumpToNotifications(
-                                        this, new EventArgs());
-
-                                    // this lets the view sync our jump
-                                }
-
-                                HasUpdate = false;
-                            }
-                            else if (
-                                !string.IsNullOrWhiteSpace(
-                                    currentSelected))
-                            {
-                                // this fixes a very subtle bug where a list won't load or won't load properly after switching tabs
-                                NavigateToTabEvent(
-                                    currentSelected);
-                            }
-                        }
-                        else
-                        {
-                            // when we close it, unload the tab, but _currentSelected remains what it was so we remember user input
-                            NavigateToTabEvent("NoTab");
-                        }
-                    }));
+                    // this lets the view sync our jump
+                    HasUpdate = false;
+                }
+                else if (!string.IsNullOrWhiteSpace(currentSelected))
+                {
+                    // this fixes a very subtle bug where a list won't load or won't load properly after switching tabs
+                    NavigateToTabEvent(currentSelected);
+                }
             }
-        }
+            else
+            {
+                // when we close it, unload the tab, but _currentSelected remains what it was so we remember user input
+                NavigateToTabEvent("NoTab");
+            }
+        }));
 
         #endregion
 

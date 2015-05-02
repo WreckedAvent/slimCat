@@ -59,10 +59,7 @@ namespace slimCat.Models
 
         public ChannelModel TargetChannel { get; set; }
 
-        public override Block View
-        {
-            get { return new ChannelUpdateView {DataContext = this}; }
-        }
+        public override Block View => new ChannelUpdateView {DataContext = this};
 
         public override void Navigate(IChatState chatState)
         {

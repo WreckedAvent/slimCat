@@ -46,7 +46,6 @@ namespace slimCat.ViewModels
 
         #region Fields
 
-        private readonly GenderSettingsModel genderSettings;
         private readonly DeferredAction updateUserList;
 
         #endregion
@@ -57,7 +56,7 @@ namespace slimCat.ViewModels
             : base(chatState)
         {
             Container.RegisterType<object, GlobalTabView>(GlobalTabView);
-            genderSettings = new GenderSettingsModel();
+            GenderSettings = new GenderSettingsModel();
 
             SearchSettings.Updated += OnSearchSettingsUpdated;
             GenderSettings.Updated += OnSearchSettingsUpdated;
@@ -82,39 +81,19 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        public GenderSettingsModel GenderSettings
-        {
-            get { return genderSettings; }
-        }
+        public GenderSettingsModel GenderSettings { get; }
 
-        public string SortContentString
-        {
-            get { return "Global"; }
-        }
+        public string SortContentString => "Global";
 
-        public IEnumerable<ICharacter> SortedUsers
-        {
-            get
-            {
-                return
-                    CharacterManager.SortedCharacters.Where(MeetsFilter).OrderBy(RelationshipToUser).ThenBy(x => x.Name);
-            }
-        }
+        public IEnumerable<ICharacter> SortedUsers => CharacterManager.SortedCharacters.Where(MeetsFilter).OrderBy(RelationshipToUser).ThenBy(x => x.Name);
 
         #endregion
 
         #region Methods
 
-        private bool MeetsFilter(ICharacter character)
-        {
-            return character.MeetsFilters(GenderSettings, SearchSettings, CharacterManager, null);
-        }
+        private bool MeetsFilter(ICharacter character) => character.MeetsFilters(GenderSettings, SearchSettings, CharacterManager, null);
 
-        private string RelationshipToUser(ICharacter character)
-        {
-            return character.RelationshipToUser(CharacterManager, null);
-        }
-
+        private string RelationshipToUser(ICharacter character) => character.RelationshipToUser(CharacterManager, null);
 
         private void OnSearchSettingsUpdated(object sender, EventArgs e)
         {

@@ -32,15 +32,9 @@ namespace slimCat.Models
     {
         public class StatusChangedEventArgs : CharacterUpdateEventArgs
         {
-            public bool IsStatusMessageChanged
-            {
-                get { return NewStatusMessage != null; }
-            }
+            public bool IsStatusMessageChanged => NewStatusMessage != null;
 
-            public bool IsStatusTypeChanged
-            {
-                get { return NewStatusType != StatusType.Offline; }
-            }
+            public bool IsStatusTypeChanged => NewStatusType != StatusType.Offline;
 
             public string NewStatusMessage { get; set; }
 

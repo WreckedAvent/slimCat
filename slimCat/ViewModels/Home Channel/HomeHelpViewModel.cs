@@ -141,8 +141,7 @@ namespace slimCat.ViewModels
             {
                 Name = x.Key,
                 Example = x.Value
-            })
-                .ToList();
+            }).ToList();
         }
 
         #endregion
@@ -155,21 +154,11 @@ namespace slimCat.ViewModels
 
         public IList<ExampleReference> ShortcutReferences { get; set; }
 
-        public ICharacter slimCat
-        {
-            get { return CharacterManager.Find("slimCat"); }
-        }
+        public ICharacter slimCat => CharacterManager.Find("slimCat");
 
-        public ChannelModel slimCatChannel
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(ApplicationSettings.SlimCatChannelId))
-                    return null;
-
-                return new GeneralChannelModel(ApplicationSettings.SlimCatChannelId, "slimCat", ChannelType.Private);
-            }
-        }
+        public ChannelModel slimCatChannel => string.IsNullOrWhiteSpace(ApplicationSettings.SlimCatChannelId) 
+            ? null 
+            : new GeneralChannelModel(ApplicationSettings.SlimCatChannelId, "slimCat", ChannelType.Private);
 
         public string SelectedTab
         {
@@ -177,7 +166,7 @@ namespace slimCat.ViewModels
             set
             {
                 selectedTab = value;
-                OnPropertyChanged("SelectedTab");
+                OnPropertyChanged();
             }
         }
 

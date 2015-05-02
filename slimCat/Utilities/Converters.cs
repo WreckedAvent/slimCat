@@ -546,8 +546,8 @@ namespace slimCat.Utilities
             }
 
             var span = toReturn as Span;
-            if (chunk.Children != null && chunk.Children.Any() && span != null)
-                span.Inlines.AddRange(chunk.Children.Select(ToInline));
+            if (chunk.Children?.Any() ?? false)
+                span?.Inlines.AddRange(chunk.Children.Select(ToInline));
 
             return toReturn;
         }
@@ -696,7 +696,7 @@ namespace slimCat.Utilities
 
         internal static ParsedChunk FromTag(BbTag tag, string context)
         {
-            var last = tag.ClosingTag != null ? tag.ClosingTag.End : tag.End;
+            var last = tag.ClosingTag?.End ?? tag.End;
             var toReturn = new ParsedChunk
             {
                 Start = tag.Start,
@@ -829,8 +829,7 @@ namespace slimCat.Utilities
                 url = arg.Children.First().InnerText;
             }
 
-            if (arg.Children != null)
-                arg.Children.Clear();
+            arg.Children?.Clear();
 
             var contextMenu = new ContextMenu();
             var menuItemCopyLink = new MenuItem
@@ -1067,7 +1066,7 @@ namespace slimCat.Utilities
                     End = end - 1
                 };
 
-                var rewindTo = Last != null ? Last.End : 0;
+                var rewindTo = Last?.End ?? 0;
                 currentPosition = rewindTo;
                 Last = toReturn;
                 return toReturn;
@@ -1088,7 +1087,7 @@ namespace slimCat.Utilities
                 {
                     HasReachedEnd = true;
 
-                    var start = Last != null ? Last.End : 0;
+                    var start = Last?.End ?? 0;
                     var end = input.Length;
 
                     if (end - start > 0)
@@ -1212,7 +1211,6 @@ namespace slimCat.Utilities
         }
 
         public BbCodePostConverter()
-            : base()
         {
         }
 
@@ -1325,7 +1323,6 @@ namespace slimCat.Utilities
         }
 
         public BbFlowConverter()
-            : base()
         { 
         }
 
@@ -1445,7 +1442,6 @@ namespace slimCat.Utilities
         }
 
         public BbCodeConverter()
-            : base()
         { 
         }
 
@@ -1561,9 +1557,7 @@ namespace slimCat.Utilities
                 return toReturn as SolidColorBrush ?? Application.Current.FindResource("HighlightBrush");
 
             var color = toReturn as Color?;
-            return color.HasValue
-                ? color.Value
-                : Application.Current.FindResource("HighlightColor");
+            return color ?? Application.Current.FindResource("HighlightColor");
         }
 
         protected string GetGenderName(Gender? gender)
@@ -1914,7 +1908,6 @@ namespace slimCat.Utilities
         }
 
         public ForegroundBrushConverter()
-            : base()
         { 
         }
 
@@ -1960,10 +1953,7 @@ namespace slimCat.Utilities
     {
         private ValueConverterCollection converters;
 
-        public ValueConverterCollection Converters
-        {
-            get { return converters ?? (converters = new ValueConverterCollection()); }
-        }
+        public ValueConverterCollection Converters => converters ?? (converters = new ValueConverterCollection());
 
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

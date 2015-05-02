@@ -128,16 +128,16 @@ namespace slimCat.Utilities
             if (Math.Abs(Average() - 0) > 0.01)
             {
                 toReturn.Append(" μ=");
-                toReturn.Append(string.Format("{0:0}", Average()));
+                toReturn.Append($"{Average():0}");
             }
 
             if (Math.Abs(StdDev() - 0) > 0.01)
             {
                 toReturn.Append(" σ=");
-                toReturn.Append(string.Format("{0:0.##}", StdDev()));
+                toReturn.Append($"{StdDev():0.##}");
             }
 
-            toReturn.Append(string.Format(" Stability: {0:0.##}%", StabilityIndex()));
+            toReturn.Append($" Stability: {StabilityIndex():0.##}%");
 
             return toReturn.ToString().Trim();
         }

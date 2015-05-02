@@ -48,26 +48,63 @@ namespace slimCat.ViewModels
 
         #endregion
 
-        #region Fields
+        #region Constructors and Destructors
 
-        private readonly IDictionary<string, StatusType> statusKinds = new Dictionary<string, StatusType>
+        public UserbarViewModel(IChatState chatState)
+            : base(chatState)
         {
+            try
             {
-                "Online", StatusType.Online
-            },
-            {
-                "Busy", StatusType.Busy
-            },
-            {
-                "Do not Disturb", StatusType.Dnd
-            },
-            {
-                "Looking For Play", StatusType.Looking
-            },
-            {
-                "Away", StatusType.Away
+                ChatModel.CurrentPms.CollectionChanged += (s, e) => OnPropertyChanged("HasPms");
+
+                // this checks if we need to hide/show the Pm tab
+                Events.GetEvent<ChatOnDisplayEvent>().Subscribe(RequestNavigate, ThreadOption.UIThread, true);
+
+                Events.GetEvent<NewPmEvent>()
+                    .Subscribe(param => UpdateFlashingTabs(), ThreadOption.UIThread, true);
+
+                Events.GetEvent<NewMessageEvent>()
+                    .Subscribe(param => UpdateFlashingTabs(), ThreadOption.UIThread, true);
+
+                Events.GetEvent<ConnectionClosedEvent>()
+                    .Subscribe(param => UpdateFlashingTabs(), ThreadOption.UIThread, true);
+
+                ChatModel.SelectedChannelChanged += (s, e) => UpdateFlashingTabs();
+
+                updateTick.Enabled = true;
+                updateTick.Elapsed += UpdateConnectionBars;
+
+                LoggingSection = "userbar vm";
+                IsDisconnected = true;
+                OnPropertyChanged("IsDisconnected");
             }
-        };
+            catch (Exception ex)
+            {
+                ex.Source = "Userbar vm, init";
+                Exceptions.HandleException(ex);
+            }
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        public override void Initialize()
+        {
+            try
+            {
+                Container.RegisterType<object, UserbarView>(UserbarView);
+            }
+            catch (Exception ex)
+            {
+                ex.Source = "Userbar ViewCM, init";
+                Exceptions.HandleException(ex);
+            }
+        }
+
+        #endregion
+
+        #region Fields
 
         private readonly Timer updateTick = new Timer(2500);
 
@@ -109,45 +146,6 @@ namespace slimCat.ViewModels
 
         #endregion
 
-        #region Constructors and Destructors
-
-        public UserbarViewModel(IChatState chatState)
-            : base(chatState)
-        {
-            try
-            {
-                ChatModel.CurrentPms.CollectionChanged += (s, e) => OnPropertyChanged("HasPms");
-
-                // this checks if we need to hide/show the Pm tab
-                Events.GetEvent<ChatOnDisplayEvent>().Subscribe(RequestNavigate, ThreadOption.UIThread, true);
-
-                Events.GetEvent<NewPmEvent>()
-                    .Subscribe(param => UpdateFlashingTabs(), ThreadOption.UIThread, true);
-
-                Events.GetEvent<NewMessageEvent>()
-                    .Subscribe(param => UpdateFlashingTabs(), ThreadOption.UIThread, true);
-
-                Events.GetEvent<ConnectionClosedEvent>()
-                    .Subscribe(param => UpdateFlashingTabs(), ThreadOption.UIThread, true);
-
-                ChatModel.SelectedChannelChanged += (s, e) => UpdateFlashingTabs();
-
-                updateTick.Enabled = true;
-                updateTick.Elapsed += UpdateConnectionBars;
-
-                LoggingSection = "userbar vm";
-                IsDisconnected = true;
-                OnPropertyChanged("IsDisconnected");
-            }
-            catch (Exception ex)
-            {
-                ex.Source = "Userbar vm, init";
-                Exceptions.HandleException(ex);
-            }
-        }
-
-        #endregion
-
         #region Public Properties
 
         public int ChannelSelected
@@ -160,7 +158,7 @@ namespace slimCat.ViewModels
                     return;
 
                 selChannelIndex = value;
-                OnPropertyChanged("ChannelSelected");
+                OnPropertyChanged();
 
                 if (value != -1 && ChatModel.CurrentChannel != ChatModel.CurrentChannels[value])
                     Events.GetEvent<RequestChangeTabEvent>().Publish(ChatModel.CurrentChannels[value].Id);
@@ -177,14 +175,11 @@ namespace slimCat.ViewModels
             set
             {
                 channelsExpanded = value;
-                OnPropertyChanged("ChannelsAreExpanded");
+                OnPropertyChanged();
             }
         }
 
-        public ICommand CloseCommand
-        {
-            get { return close ?? (close = new RelayCommand(TabCloseEvent)); }
-        }
+        public ICommand CloseCommand => close ?? (close = new RelayCommand(TabCloseEvent));
 
         public bool ConnectionIsConnected { get; set; }
 
@@ -207,10 +202,7 @@ namespace slimCat.ViewModels
             }
         }
 
-        public string CloseOrSave
-        {
-            get { return HasChanges ? "Save" : "Close"; }
-        }
+        public string CloseOrSave => HasChanges ? "Save" : "Close";
 
         public bool HasChanges { get; set; }
 
@@ -220,7 +212,7 @@ namespace slimCat.ViewModels
             set
             {
                 newStatusString = value;
-                OnPropertyChanged("NewStatusString");
+                OnPropertyChanged();
 
                 HasChanges = newStatusString != ChatModel.CurrentCharacter.StatusMessage;
 
@@ -237,7 +229,7 @@ namespace slimCat.ViewModels
             set
             {
                 newStatusType = value;
-                OnPropertyChanged("NewStatusType");
+                OnPropertyChanged();
 
                 HasChanges = newStatusType != ChatModel.CurrentCharacter.Status;
 
@@ -254,7 +246,7 @@ namespace slimCat.ViewModels
             set
             {
                 newAutoReplyString = value;
-                OnPropertyChanged("NewAutoReplyString");
+                OnPropertyChanged();
 
                 HasChanges = newAutoReplyString != ChatModel.AutoReplyMessage;
                 OnPropertyChanged("CloseOrSave");
@@ -271,7 +263,7 @@ namespace slimCat.ViewModels
 
                 if (value) Log("Displaying new channel message");
                 hasNewChanMessage = value;
-                OnPropertyChanged("HasNewMessage");
+                OnPropertyChanged();
                 OnPropertyChanged("HasUpdate");
                 OnPropertyChanged("ExpandString");
             }
@@ -287,21 +279,15 @@ namespace slimCat.ViewModels
 
                 if (value) Log("Displaying new pm");
                 hasNewPm = value;
-                OnPropertyChanged("HasNewPm");
+                OnPropertyChanged();
                 OnPropertyChanged("HasUpdate");
                 OnPropertyChanged("ExpandString");
             }
         }
 
-        public bool HasPms
-        {
-            get { return ChatModel.CurrentPms.Count > 0; }
-        }
+        public bool HasPms => ChatModel.CurrentPms.Count > 0;
 
-        public bool HasUpdate
-        {
-            get { return hasNewChanMessage || hasNewPm; }
-        }
+        public bool HasUpdate => hasNewChanMessage || hasNewPm;
 
         public bool IsChangingStatus
         {
@@ -313,7 +299,7 @@ namespace slimCat.ViewModels
                     return;
 
                 isChangingStatus = value;
-                OnPropertyChanged("IsChangingStatus");
+                OnPropertyChanged();
 
                 if (value
                     || (newStatusString == ChatModel.CurrentCharacter.StatusMessage
@@ -336,7 +322,7 @@ namespace slimCat.ViewModels
             set
             {
                 isExpanded = value;
-                OnPropertyChanged("IsExpanded");
+                OnPropertyChanged();
                 OnPropertyChanged("ExpandString");
             }
         }
@@ -351,7 +337,7 @@ namespace slimCat.ViewModels
                     return;
 
                 selPmIndex = value;
-                OnPropertyChanged("PmSelected");
+                OnPropertyChanged();
 
                 if (value != -1 && ChatModel.CurrentChannel != ChatModel.CurrentPms[value])
                     Events.GetEvent<RequestChangeTabEvent>().Publish(ChatModel.CurrentPms[value].Id);
@@ -368,7 +354,7 @@ namespace slimCat.ViewModels
             set
             {
                 pmsExpanded = value;
-                OnPropertyChanged("PmsAreExpanded");
+                OnPropertyChanged();
             }
         }
 
@@ -376,49 +362,49 @@ namespace slimCat.ViewModels
         {
             get
             {
-                return saveChannels ?? (saveChannels = new RelayCommand(
-                    args =>
-                    {
-                        Log("Saving channels");
-                        ApplicationSettings.SavedChannels.Clear();
+                return saveChannels ?? (saveChannels = new RelayCommand(_ =>
+                {
+                    Log("Saving channels");
+                    ApplicationSettings.SavedChannels.Clear();
 
-                        foreach (
-                            var channel in
-                                ChatModel.CurrentChannels.Where(
-                                    channel => !channel.Id.Equals("Home", StringComparison.OrdinalIgnoreCase)))
-                            ApplicationSettings.SavedChannels.Add(channel.Id);
+                    foreach (
+                        var channel in
+                            ChatModel.CurrentChannels.Where(
+                                channel => !channel.Id.Equals("Home", StringComparison.OrdinalIgnoreCase)))
+                        ApplicationSettings.SavedChannels.Add(channel.Id);
 
-                        SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
-                        Events.GetEvent<ErrorEvent>()
-                            .Publish("Channels saved.");
-                    }));
+                    SettingsService.SaveApplicationSettingsToXml(ChatModel.CurrentCharacter.Name);
+                    Events.GetEvent<ErrorEvent>().Publish("Channels saved.");
+                }));
             }
         }
 
-        public IDictionary<string, StatusType> StatusTypes
+        public IDictionary<string, StatusType> StatusTypes { get; } = new Dictionary<string, StatusType>
         {
-            get { return statusKinds; }
-        }
+            {
+                "Online", StatusType.Online
+            },
+            {
+                "Busy", StatusType.Busy
+            },
+            {
+                "Do not Disturb", StatusType.Dnd
+            },
+            {
+                "Looking For Play", StatusType.Looking
+            },
+            {
+                "Away", StatusType.Away
+            }
+        };
 
-        public ICommand ToggleBarCommand
-        {
-            get { return toggle ?? (toggle = new RelayCommand(OnExpanded)); }
-        }
+        public ICommand ToggleBarCommand => toggle ?? (toggle = new RelayCommand(OnExpanded));
 
         public ICommand ToggleStatusWindowCommand
-        {
-            get
-            {
-                return toggleStatus
-                       ?? (toggleStatus = new RelayCommand(args => IsChangingStatus = !IsChangingStatus));
-            }
-        }
+            => toggleStatus ?? (toggleStatus = new RelayCommand(args => IsChangingStatus = !IsChangingStatus));
 
         public ICommand ToggleAutoReplyWindowCommand
-        {
-            get { return toggleAuto ?? (toggleAuto = new RelayCommand(ToggleAutoReplyEvent)); }
-        }
-
+            => toggleAuto ?? (toggleAuto = new RelayCommand(ToggleAutoReplyEvent));
 
         public bool IsChangingAuto
         {
@@ -426,7 +412,7 @@ namespace slimCat.ViewModels
             set
             {
                 isChangingAuto = value;
-                OnPropertyChanged("IsChangingAuto");
+                OnPropertyChanged();
 
                 if (value) return;
 
@@ -444,7 +430,7 @@ namespace slimCat.ViewModels
             {
                 autoReplyEnabled = value;
                 ChatModel.AutoReplyEnabled = value;
-                OnPropertyChanged("AutoReplyEnabled");
+                OnPropertyChanged();
             }
         }
 
@@ -452,23 +438,6 @@ namespace slimCat.ViewModels
         {
             IsChangingAuto = !IsChangingAuto;
             if (isChangingAuto) AutoReplyEnabled = !AutoReplyEnabled;
-        }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public override void Initialize()
-        {
-            try
-            {
-                Container.RegisterType<object, UserbarView>(UserbarView);
-            }
-            catch (Exception ex)
-            {
-                ex.Source = "Userbar ViewCM, init";
-                Exceptions.HandleException(ex);
-            }
         }
 
         #endregion

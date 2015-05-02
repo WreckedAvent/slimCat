@@ -21,7 +21,6 @@ namespace slimCat.Services
 {
     #region Usings
 
-    using System;
     using System.Collections.Generic;
     using System.Web;
     using Models;
@@ -58,7 +57,7 @@ namespace slimCat.Services
                         Title = isPublic ? name : title
                     };
 
-                    Dispatcher.Invoke((Action) (() =>
+                    Dispatcher.Invoke(() =>
                     {
                         var current = ChatModel.AllChannels.FirstByIdOrNull(name);
                         if (current == null)
@@ -69,7 +68,7 @@ namespace slimCat.Services
 
                         current.Mode = mode;
                         current.UserCount = (int) number;
-                    }));
+                    });
                 }
             }
         }

@@ -67,7 +67,7 @@ namespace slimCat.Utilities
 
         #region Public Properties
 
-        public ObservableCollection<TR> Collection { get; private set; }
+        public ObservableCollection<TR> Collection { get; }
 
         public bool IsFiltering
         {
@@ -76,7 +76,7 @@ namespace slimCat.Utilities
             set
             {
                 isFiltering = value;
-                OnPropertyChanged("IsFiltering");
+                OnPropertyChanged();
                 RebuildItems();
             }
         }

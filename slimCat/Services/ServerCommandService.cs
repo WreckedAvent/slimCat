@@ -194,8 +194,7 @@ namespace slimCat.Services
         private void Invoke(IDictionary<string, object> command)
         {
             var toInvoke = InterpretCommand(command);
-            if (toInvoke != null)
-                toInvoke.Invoke(command);
+            toInvoke?.Invoke(command);
         }
 
         private CommandHandlerDelegate InterpretCommand(IDictionary<string, object> command)
@@ -288,7 +287,7 @@ namespace slimCat.Services
             ChatModel.ClientUptime = DateTimeOffset.Now;
             ChatConnection.SendMessage(Constants.ClientCommands.SystemUptime);
 
-            Dispatcher.Invoke((Action) delegate { ChatModel.IsAuthenticated = true; });
+            Dispatcher.Invoke(() => ChatModel.IsAuthenticated = true);
 
             const string nojoinName = "nojoin";
             if ((!File.Exists(nojoinName) || ApplicationSettings.SavedChannels.Count == 0) &&
@@ -348,13 +347,9 @@ namespace slimCat.Services
             ChatModel.CurrentCharacter = new CharacterModel {Name = character, Status = StatusType.Online};
             ChatModel.CurrentCharacter.GetAvatar();
 
-            Dispatcher.Invoke(
-                (Action)
-                    delegate
-                    {
-                        Application.Current.MainWindow.Title = string.Format(
-                            "{0} {1} ({2})", Constants.ClientId, Constants.ClientName, character);
-                    });
+            Dispatcher.Invoke(() =>
+                Application.Current.MainWindow.Title = $"{Constants.ClientId} {Constants.ClientName} ({character})"
+            );
         }
 
         private void WipeState(bool intentionalDisconnect)
@@ -371,7 +366,7 @@ namespace slimCat.Services
                 RequestChannelJoinEvent(ChatModel.CurrentChannels.FirstByIdOrNull("Home").Id);
             }
 
-            Dispatcher.Invoke((Action) (() =>
+            Dispatcher.Invoke(() =>
             {
                 ChatModel.CurrentPms.Each(pm => pm.TypingStatus = TypingStatus.Clear);
                 rejoinChannelList.Clear();
@@ -403,7 +398,7 @@ namespace slimCat.Services
                 }
 
                 ChatModel.IsAuthenticated = false;
-            }));
+            });
         }
 
         private void RequeueCommand(IDictionary<string, object> command)

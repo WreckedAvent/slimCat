@@ -98,19 +98,13 @@ namespace slimCat.ViewModels
                     content = brevity;
                 }
 
-                OnPropertyChanged("Content");
+                OnPropertyChanged();
             }
         }
 
-        public ICommand HideCommand
-        {
-            get { return hide ?? (hide = new RelayCommand(args => HideNotifications())); }
-        }
+        public ICommand HideCommand => hide ?? (hide = new RelayCommand(args => HideNotifications()));
 
-        public ICommand SnapToLatestCommand
-        {
-            get { return snap ?? (snap = new RelayCommand(OnSnapToLatestEvent)); }
-        }
+        public ICommand SnapToLatestCommand => snap ?? (snap = new RelayCommand(OnSnapToLatestEvent));
 
         public ICharacter TargetCharacter
         {
@@ -118,17 +112,14 @@ namespace slimCat.ViewModels
             set
             {
                 targetCharacter = value;
-                OnPropertyChanged("TargetCharacter");
+                OnPropertyChanged();
                 OnPropertyChanged("ShouldShowAvatar");
             }
         }
 
         public ICanNavigate Navigator { get; set; }
 
-        public bool ShouldShowAvatar
-        {
-            get { return targetCharacter != null && ApplicationSettings.ShowAvatarsInToasts; }
-        }
+        public bool ShouldShowAvatar => targetCharacter != null && ApplicationSettings.ShowAvatarsInToasts;
 
         public string Title
         {
@@ -136,7 +127,7 @@ namespace slimCat.ViewModels
             set
             {
                 title = value;
-                OnPropertyChanged("Title");
+                OnPropertyChanged();
             }
         }
 
@@ -144,19 +135,15 @@ namespace slimCat.ViewModels
 
         #region Public Methods and Operators
 
-        public ICommand NavigateTo
-        {
-            get { return link ?? (link = new RelayCommand(StartLinkInDefaultBrowser)); }
-        }
+        public ICommand NavigateTo => link ?? (link = new RelayCommand(StartLinkInDefaultBrowser));
 
         public void HideNotifications()
         {
-            Dispatcher.Invoke(
-                (Action) delegate
-                {
-                    view.OnHideCommand();
-                    hideDelay.Stop();
-                });
+            Dispatcher.Invoke(() =>
+            {
+                view.OnHideCommand();
+                hideDelay.Stop();
+            });
         }
 
         public void OnSnapToLatestEvent(object args)
@@ -177,7 +164,7 @@ namespace slimCat.ViewModels
             if (view == null)
                 Dispatcher.Invoke((Action) (() => view = new NotificationsView(this)));
 
-            Dispatcher.Invoke((Action) (() => view.OnShowCommand()));
+            Dispatcher.Invoke(() => view.OnShowCommand());
             hideDelay.Start();
             view.OnContentChanged();
         }

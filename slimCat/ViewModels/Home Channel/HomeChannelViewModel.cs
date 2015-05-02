@@ -96,21 +96,17 @@ namespace slimCat.ViewModels
                 updateTimer.Elapsed += UpdateConnectText;
                 SettingsVm = settingsVm;
 
-                Events.GetEvent<NewUpdateEvent>().Subscribe(
-                    param =>
-                    {
-                        if (!(param is CharacterUpdateModel))
-                            return;
+                Events.GetEvent<NewUpdateEvent>().Subscribe(param =>
+                {
+                    var temp = param as CharacterUpdateModel;
+                    if (!(temp?.Arguments is LoginStateChangedEventArgs))
+                        return;
 
-                        var temp = param as CharacterUpdateModel;
-                        if (!(temp.Arguments is LoginStateChangedEventArgs))
-                            return;
-
-                        OnPropertyChanged("OnlineCount");
-                        OnPropertyChanged("OnlineFriendsCount");
-                        OnPropertyChanged("OnlineBookmarksCount");
-                        OnPropertyChanged("OnlineCountChange");
-                    });
+                    OnPropertyChanged("OnlineCount");
+                    OnPropertyChanged("OnlineFriendsCount");
+                    OnPropertyChanged("OnlineBookmarksCount");
+                    OnPropertyChanged("OnlineCountChange");
+                });
 
                 Events.GetEvent<LoginAuthenticatedEvent>().Subscribe(LoggedInEvent);
                 Events.GetEvent<LoginFailedEvent>().Subscribe(LoginFailedEvent);
@@ -136,53 +132,23 @@ namespace slimCat.ViewModels
 
         #region Header
 
-        public static string ClientIdString
-        {
-            get
-            {
-                return string.Format("{0} {1} ({2})", Constants.ClientId, Constants.ClientName, Constants.ClientVer);
-            }
-        }
+        public static string ClientIdString => $"{Constants.ClientId} {Constants.ClientName} ({Constants.ClientVer})";
 
-        public string LastMessageReceived
-        {
-            get { return HelperConverter.DateTimeToRough(ChatModel.LastMessageReceived, true, false); }
-        }
+        public string LastMessageReceived => HelperConverter.DateTimeToRough(ChatModel.LastMessageReceived, true, false);
 
-        public int OnlineBookmarksCount
-        {
-            get { return CharacterManager.GetNames(ListKind.Bookmark).Count; }
-        }
+        public int OnlineBookmarksCount => CharacterManager.GetNames(ListKind.Bookmark).Count;
 
-        public int OnlineCount
-        {
-            get { return CharacterManager.CharacterCount; }
-        }
+        public int OnlineCount => CharacterManager.CharacterCount;
 
-        public string OnlineCountChange
-        {
-            get { return minuteOnlineCount.GetDisplayString(); }
-        }
+        public string OnlineCountChange => minuteOnlineCount.GetDisplayString();
 
-        public int OnlineFriendsCount
-        {
-            get { return CharacterManager.GetNames(ListKind.Friend).Count; }
-        }
+        public int OnlineFriendsCount => CharacterManager.GetNames(ListKind.Friend).Count;
 
-        public string RoughClientUpTime
-        {
-            get { return HelperConverter.DateTimeToRough(ChatModel.ClientUptime, true, false); }
-        }
+        public string RoughClientUpTime => HelperConverter.DateTimeToRough(ChatModel.ClientUptime, true, false);
 
-        public string RoughServerUpTime
-        {
-            get { return HelperConverter.DateTimeToRough(ChatModel.ServerUpTime, true, false); }
-        }
+        public string RoughServerUpTime => HelperConverter.DateTimeToRough(ChatModel.ServerUpTime, true, false);
 
-        public int OnlineCountPrime()
-        {
-            return OnlineCount;
-        }
+        public int OnlineCountPrime() => OnlineCount;
 
         #endregion
 
@@ -272,25 +238,17 @@ namespace slimCat.ViewModels
 
         #region Textbox
 
-        public override string EntryTextBoxIcon
-        {
-            get { return "pack://application:,,,/icons/send_console.png"; }
-        }
+        public override string EntryTextBoxIcon => "pack://application:,,,/icons/send_console.png";
 
-        public override string EntryTextBoxLabel
-        {
-            get { return "Enter commands here ..."; }
-        }
+        public override string EntryTextBoxLabel => "Enter commands here ...";
 
         #endregion
 
         public HomeSettingsViewModel SettingsVm { get; set; }
 
         public HomeHelpViewModel HelpVm { get; set; }
-        public ICharacter slimCat
-        {
-            get { return CharacterManager.Find("slimCat"); }
-        }
+        public ICharacter slimCat => CharacterManager.Find("slimCat");
+
         public ChannelModel slimCatChannel
         {
             get
@@ -307,7 +265,7 @@ namespace slimCat.ViewModels
             set
             {
                 selectedTab = value;
-                OnPropertyChanged("SelectedTab");
+                OnPropertyChanged();
             }
         }
 
@@ -481,7 +439,7 @@ namespace slimCat.ViewModels
             }
         }
 
-        private Color GetColor(string hex)
+        private static Color GetColor(string hex)
         {
             return (Color) ColorConverter.ConvertFromString(hex);
         }

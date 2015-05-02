@@ -36,10 +36,7 @@ namespace slimCat.Services
             this.manager = manager;
         }
 
-        private GeneralChannelModel CurrentChannel
-        {
-            get { return cm.CurrentChannel as GeneralChannelModel; }
-        }
+        private GeneralChannelModel CurrentChannel => cm.CurrentChannel as GeneralChannelModel;
 
         public bool IsModerator(string name)
         {

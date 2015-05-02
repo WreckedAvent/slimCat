@@ -101,12 +101,11 @@ namespace slimCat.ViewModels
                 return;
 
             errorRemoveTimer = new Timer(5000);
-            errorRemoveTimer.Elapsed += (s, e) => { Error = null; };
+            errorRemoveTimer.Elapsed += (s, e) => Error = null;
 
             errorRemoveTimer.AutoReset = false;
 
-            saveMessageTimer = new Timer(10000);
-            saveMessageTimer.AutoReset = false;
+            saveMessageTimer = new Timer(10000) { AutoReset = false };
 
             entryBoxRowHeight = new GridLength(1, GridUnitType.Auto);
             headerRowHeight = new GridLength(1, GridUnitType.Auto);
@@ -119,10 +118,7 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        public ChannelSettingsModel ChannelSettings
-        {
-            get { return model.Settings; }
-        }
+        public ChannelSettingsModel ChannelSettings => model.Settings;
 
         public GridLength HeaderRowHeight
         {
@@ -130,27 +126,15 @@ namespace slimCat.ViewModels
             set
             {
                 headerRowHeight = value;
-                OnPropertyChanged("HeaderRowHeight");
+                OnPropertyChanged();
             }
         }
 
-        public ICommand ClearErrorCommand
-        {
-            get { return clear ?? (clear = new RelayCommand(delegate { Error = null; })); }
-        }
+        public ICommand ClearErrorCommand => clear ?? (clear = new RelayCommand(_ => Error = null));
 
-        public ICommand ClearLogCommand
-        {
-            get
-            {
-                return clearLog
-                       ?? (clearLog =
-                           new RelayCommand(
-                               args =>
-                                   Events.GetEvent<UserCommandEvent>()
-                                       .Publish(CommandDefinitions.CreateCommand("clear", null, Model.Id).ToDictionary())));
-            }
-        }
+        public ICommand ClearLogCommand => clearLog
+            ?? (clearLog = new RelayCommand(args => Events.GetEvent<UserCommandEvent>()
+                                                          .Publish(CommandDefinitions.CreateCommand("clear", null, Model.Id).ToDictionary())));
 
         public ICommand TogglePreviewCommand
         {
@@ -163,7 +147,7 @@ namespace slimCat.ViewModels
             set
             {
                 entryBoxRowHeight = value;
-                OnPropertyChanged("EntryBoxRowHeight");
+                OnPropertyChanged();
             }
         }
 
@@ -174,7 +158,7 @@ namespace slimCat.ViewModels
             set
             {
                 error = value;
-                OnPropertyChanged("Error");
+                OnPropertyChanged();
             }
         }
 
@@ -190,7 +174,7 @@ namespace slimCat.ViewModels
             set
             {
                 message = value;
-                OnPropertyChanged("Message");
+                OnPropertyChanged();
 
                 if (string.IsNullOrEmpty(message))
                     ChannelSettings.LastMessage = null;
@@ -211,7 +195,7 @@ namespace slimCat.ViewModels
             set
             {
                 showPreview = value;
-                OnPropertyChanged("ShowPreview");
+                OnPropertyChanged();
             }
         }
 
@@ -222,48 +206,24 @@ namespace slimCat.ViewModels
             set
             {
                 model = value;
-                OnPropertyChanged("Model");
+                OnPropertyChanged();
             }
         }
 
-        public ICommand NavigateDownCommand
-        {
-            get
-            {
-                return navDown
-                       ?? (navDown = new RelayCommand(_ => RequestNavigateDirectionalEvent(false)));
-            }
-        }
+        public ICommand NavigateDownCommand => navDown
+            ?? (navDown = new RelayCommand(_ => RequestNavigateDirectionalEvent(false)));
 
-        public ICommand NavigateUpCommand
-        {
-            get { return navUp ?? (navUp = new RelayCommand(_ => RequestNavigateDirectionalEvent(true))); }
-        }
+        public ICommand NavigateUpCommand => navUp ?? (navUp = new RelayCommand(_ => RequestNavigateDirectionalEvent(true)));
 
-        public ICommand OpenLogCommand
-        {
-            get { return openLog ?? (openLog = new RelayCommand(OnOpenLogEvent)); }
-        }
+        public ICommand OpenLogCommand => openLog ?? (openLog = new RelayCommand(OnOpenLogEvent));
 
-        public ICommand OpenLogFolderCommand
-        {
-            get { return openLogFolder ?? (openLogFolder = new RelayCommand(OnOpenLogFolderEvent)); }
-        }
+        public ICommand OpenLogFolderCommand => openLogFolder ?? (openLogFolder = new RelayCommand(OnOpenLogFolderEvent));
 
-        public ICommand SendMessageCommand
-        {
-            get { return sendText ?? (sendText = new RelayCommand(_ => ParseAndSend())); }
-        }
+        public ICommand SendMessageCommand => sendText ?? (sendText = new RelayCommand(_ => ParseAndSend()));
 
-        public virtual string EntryTextBoxIcon
-        {
-            get { return "pack://application:,,,/icons/send_chat.png"; }
-        }
+        public virtual string EntryTextBoxIcon => "pack://application:,,,/icons/send_chat.png";
 
-        public virtual string EntryTextBoxLabel
-        {
-            get { return "Chat here ..."; }
-        }
+        public virtual string EntryTextBoxLabel => "Chat here ...";
 
         #endregion
 

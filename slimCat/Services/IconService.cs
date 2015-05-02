@@ -119,12 +119,7 @@ namespace slimCat.Services
 
             iconMenu.MenuItems.Add(
                 new MenuItem(
-                    string.Format(
-                        "{0} {1} ({2}) - {3}",
-                        Constants.ClientId,
-                        Constants.ClientName,
-                        Constants.ClientVer,
-                        character))
+                    $"{Constants.ClientId} {Constants.ClientName} ({Constants.ClientVer}) - {character}")
                 {
                     Enabled = false
                 });
@@ -144,7 +139,7 @@ namespace slimCat.Services
             iconMenu.MenuItems.Add("Show", (s, e) => ShowWindow());
             iconMenu.MenuItems.Add("Exit", (s, e) => ShutDown());
 
-            icon.Text = string.Format("{0} - {1}", Constants.ClientId, character);
+            icon.Text = $"{Constants.ClientId} - {character}";
             icon.ContextMenu = iconMenu;
             icon.Visible = true;
         }

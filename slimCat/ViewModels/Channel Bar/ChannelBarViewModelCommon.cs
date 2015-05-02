@@ -33,8 +33,6 @@ namespace slimCat.ViewModels
     {
         #region Fields
 
-        private readonly GenericSearchSettingsModel searchSettings = new GenericSearchSettingsModel();
-
         #endregion
 
         #region Constructors and Destructors
@@ -61,10 +59,7 @@ namespace slimCat.ViewModels
             }
         }
 
-        public GenericSearchSettingsModel SearchSettings
-        {
-            get { return searchSettings; }
-        }
+        public GenericSearchSettingsModel SearchSettings { get; } = new GenericSearchSettingsModel();
 
         #endregion
 

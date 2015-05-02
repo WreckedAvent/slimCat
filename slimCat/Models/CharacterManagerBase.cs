@@ -36,9 +36,6 @@ namespace slimCat.Models
 
         protected readonly object Locker = new object();
 
-        private readonly ConcurrentDictionary<string, ICharacter> characters =
-            new ConcurrentDictionary<string, ICharacter>(StringComparer.OrdinalIgnoreCase);
-
         protected Dictionary<ListKind, CollectionPair> CollectionDictionary = new Dictionary<ListKind, CollectionPair>();
         protected HashSet<CollectionPair> Collections = new HashSet<CollectionPair>();
         protected HashSet<CollectionPair> OfInterestCollections = new HashSet<CollectionPair>();
@@ -47,25 +44,13 @@ namespace slimCat.Models
 
         #region Properties
 
-        public ConcurrentDictionary<string, ICharacter> CharacterDictionary
-        {
-            get { return characters; }
-        }
+        public ConcurrentDictionary<string, ICharacter> CharacterDictionary { get; } = new ConcurrentDictionary<string, ICharacter>(StringComparer.OrdinalIgnoreCase);
 
-        public int CharacterCount
-        {
-            get { return characters.Count; }
-        }
+        public int CharacterCount => CharacterDictionary.Count;
 
-        public ICollection<ICharacter> Characters
-        {
-            get { return characters.Values; }
-        }
+        public ICollection<ICharacter> Characters => CharacterDictionary.Values;
 
-        public virtual ICollection<ICharacter> SortedCharacters
-        {
-            get { return characters.Values; }
-        }
+        public virtual ICollection<ICharacter> SortedCharacters => CharacterDictionary.Values;
 
         #endregion
 
@@ -74,7 +59,7 @@ namespace slimCat.Models
         public ICharacter Find(string name)
         {
             ICharacter character;
-            return characters.TryGetValue(name, out character)
+            return CharacterDictionary.TryGetValue(name, out character)
                 ? character
                 : new CharacterModel {Name = name, Status = StatusType.Offline};
         }
@@ -114,7 +99,7 @@ namespace slimCat.Models
             lock (Locker)
             {
                 var name = character.Name;
-                if (!characters.TryAdd(name, character)) return false;
+                if (!CharacterDictionary.TryAdd(name, character)) return false;
 
                 Collections.Each(x => x.SignOn(name));
                 return true;
@@ -126,7 +111,7 @@ namespace slimCat.Models
             lock (Locker)
             {
                 ICharacter character;
-                var toReturn = characters.TryRemove(name, out character);
+                var toReturn = CharacterDictionary.TryRemove(name, out character);
 
                 Collections.Each(x => toReturn = toReturn | x.SignOff(name));
                 return toReturn;
@@ -171,7 +156,7 @@ namespace slimCat.Models
             lock (Locker)
             {
                 if (listKind == ListKind.Online)
-                    return characters.ContainsKey(name);
+                    return CharacterDictionary.ContainsKey(name);
 
                 CollectionPair list;
                 return CollectionDictionary.TryGetValue(listKind, out list) && list.IsOnList(name, onlineOnly);
@@ -191,7 +176,7 @@ namespace slimCat.Models
 
         public virtual void Clear()
         {
-            characters.Clear();
+            CharacterDictionary.Clear();
         }
 
         public void Dispose()
@@ -201,7 +186,7 @@ namespace slimCat.Models
 
         protected virtual void Dispose(bool isManaged)
         {
-            characters.Clear();
+            CharacterDictionary.Clear();
         }
 
         #endregion

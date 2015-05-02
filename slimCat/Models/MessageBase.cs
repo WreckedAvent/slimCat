@@ -34,8 +34,6 @@ namespace slimCat.Models
     {
         #region Fields
 
-        private readonly DateTimeOffset posted;
-
         #endregion
 
         #region Constructors and Destructors
@@ -45,12 +43,12 @@ namespace slimCat.Models
         /// </summary>
         protected MessageBase()
         {
-            posted = DateTimeOffset.Now;
+            PostedTime = DateTimeOffset.Now;
         }
 
         protected MessageBase(DateTimeOffset posted)
         {
-            this.posted = posted;
+            PostedTime = posted;
         }
 
         #endregion
@@ -60,23 +58,14 @@ namespace slimCat.Models
         /// <summary>
         ///     Gets the posted time.
         /// </summary>
-        public DateTimeOffset PostedTime
-        {
-            get { return posted; }
-        }
+        public DateTimeOffset PostedTime { get; }
 
         /// <summary>
         ///     Gets the time stamp.
         /// </summary>
-        public string TimeStamp
-        {
-            get 
-            {
-                return !ApplicationSettings.UseCustomTimeStamp
-                    ? posted.ToTimeStamp()
-                    : posted.ToString(ApplicationSettings.CustomTimeStamp);
-            }
-        }
+        public string TimeStamp => !ApplicationSettings.UseCustomTimeStamp
+            ? PostedTime.ToTimeStamp()
+            : PostedTime.ToString(ApplicationSettings.CustomTimeStamp);
 
         #endregion
 

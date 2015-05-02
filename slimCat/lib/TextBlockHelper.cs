@@ -47,16 +47,12 @@ namespace slimCat.Libraries
 
         public static List<Inline> GetInlineList(TextBlock element)
         {
-            if (element != null)
-                return element.GetValue(ArticleContentProperty) as List<Inline>;
-
-            return null;
+            return element?.GetValue(ArticleContentProperty) as List<Inline>;
         }
 
         public static void SetInlineList(TextBlock element, List<Inline> value)
         {
-            if (element != null)
-                element.SetValue(ArticleContentProperty, value);
+            element?.SetValue(ArticleContentProperty, value);
         }
 
         #endregion
@@ -73,8 +69,7 @@ namespace slimCat.Libraries
 
             // add new inlines
             var inlines = e.NewValue as List<Inline>;
-            if (inlines != null)
-                inlines.ForEach(inl => tb.Inlines.Add(inl));
+            inlines?.ForEach(inl => tb.Inlines.Add(inl));
         }
 
         #endregion

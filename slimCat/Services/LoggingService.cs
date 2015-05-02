@@ -196,7 +196,7 @@ namespace slimCat.Services
                     .OrderByDescending(x => x.LastWriteTime)
                     .FirstOrDefault();
 
-                Process.Start(latest != null ? latest.FullName : workingPath);
+                Process.Start(latest?.FullName ?? workingPath);
             }
         }
 

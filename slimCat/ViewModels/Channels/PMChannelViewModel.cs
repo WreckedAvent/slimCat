@@ -146,7 +146,7 @@ namespace slimCat.ViewModels
                     }
 
                     if (IsTyping)
-                        typingLengthCache = Message != null ? Message.Length : 0;
+                        typingLengthCache = Message?.Length ?? 0;
                 };
 
                 Model.Settings = SettingsService.GetChannelSettings(
@@ -206,35 +206,17 @@ namespace slimCat.ViewModels
             }
         }
 
-        public bool CanDisplayChat
-        {
-            get { return true; }
-        }
+        public bool CanDisplayChat => true;
 
-        public bool CanDisplayAds
-        {
-            get { return false; }
-        }
+        public bool CanDisplayAds => false;
 
-        public ICharacter ConversationWith
-        {
-            get { return CharacterManager.Find(Model.Id); }
-        }
+        public ICharacter ConversationWith => CharacterManager.Find(Model.Id);
 
-        public ObservableCollection<IViewableObject> CurrentMessages
-        {
-            get { return messageManager.Collection; }
-        }
+        public ObservableCollection<IViewableObject> CurrentMessages => messageManager.Collection;
 
-        public bool HasNotifyTerms
-        {
-            get { return !string.IsNullOrEmpty(ChannelSettings.NotifyTerms); }
-        }
+        public bool HasNotifyTerms => !string.IsNullOrEmpty(ChannelSettings.NotifyTerms);
 
-        public string Title
-        {
-            get { return IsViewingProfile ? "Profile" : isViewingChat ? "Chat" : "Notes"; }
-        }
+        public string Title => IsViewingProfile ? "Profile" : isViewingChat ? "Chat" : "Notes";
 
         public string NoteSubject
         {
@@ -242,10 +224,7 @@ namespace slimCat.ViewModels
             set { model.NoteSubject = value; }
         }
 
-        public bool HasStatus
-        {
-            get { return ConversationWith.StatusMessage.Length > 0; }
-        }
+        public bool HasStatus => ConversationWith.StatusMessage.Length > 0;
 
         public bool IsCharacterStatusExpanded
         {
@@ -254,7 +233,7 @@ namespace slimCat.ViewModels
             set
             {
                 isCharacterStatusExpanded = value;
-                OnPropertyChanged("IsCharacterStatusExpanded");
+                OnPropertyChanged();
             }
         }
 
@@ -275,14 +254,11 @@ namespace slimCat.ViewModels
             set
             {
                 showSubject = value;
-                OnPropertyChanged("CanShowSubject");
+                OnPropertyChanged();
             }
         }
 
-        public string MaxMessageLength
-        {
-            get { return isViewingChat ? "50,000" : "200,000"; }
-        }
+        public string MaxMessageLength => isViewingChat ? "50,000" : "200,000";
 
         public bool IsViewingChat
         {
@@ -307,7 +283,7 @@ namespace slimCat.ViewModels
 
                 messageManager.OriginalCollection = value ? model.Messages : model.Notes;
 
-                OnPropertyChanged("IsViewingChat");
+                OnPropertyChanged();
                 OnPropertyChanged("Title");
                 OnPropertyChanged("CurrentMessages");
                 OnPropertyChanged("MaxMessageLength");
@@ -327,32 +303,20 @@ namespace slimCat.ViewModels
                 isViewingProfile = value;
                 IsViewingChat = true;
 
-                OnPropertyChanged("IsViewingProfile");
+                OnPropertyChanged();
             }
         }
 
-        public bool CanShowNoteTimeLeft
-        {
-            get { return !IsViewingChat && isInNoteCoolDown; }
-        }
+        public bool CanShowNoteTimeLeft => !IsViewingChat && isInNoteCoolDown;
 
-        public string NoteTimeLeft
-        {
-            get { return HelperConverter.DateTimeInFutureToRough(noteTimeLeft) + "remaining"; }
-        }
+        public string NoteTimeLeft => HelperConverter.DateTimeInFutureToRough(noteTimeLeft) + "remaining";
 
-        public bool ShouldShowPostLength
-        {
-            get { return !string.IsNullOrEmpty(Message) && isTyping; }
-        }
+        public bool ShouldShowPostLength => !string.IsNullOrEmpty(Message) && isTyping;
 
         /// <summary>
         ///     This is used for the channel settings, if it should show settings like 'notify when this character is mentioned'
         /// </summary>
-        public bool ShowAllSettings
-        {
-            get { return false; }
-        }
+        public bool ShowAllSettings => false;
 
         public string StatusString
         {
@@ -364,17 +328,15 @@ namespace slimCat.ViewModels
                     case StatusType.Away:
                     case StatusType.Busy:
                     case StatusType.Idle:
-                        return string.Format("Warning: {0} is currently {1}.", Model.Id,
-                            ConversationWith.Status.ToString().ToLower());
+                        return $"Warning: {Model.Id} is currently {ConversationWith.Status.ToString().ToLower()}.";
                     case StatusType.Looking:
-                        return string.Format("{0} is looking for roleplay.", Model.Id);
+                        return $"{Model.Id} is looking for roleplay.";
                     case StatusType.Dnd:
-                        return string.Format("Warning: {0} does not wish to be disturbed.", Model.Id);
+                        return $"Warning: {Model.Id} does not wish to be disturbed.";
                     case StatusType.Online:
-                        return string.Format("{0} is online.", Model.Id);
+                        return $"{Model.Id} is online.";
                     case StatusType.Crown:
-                        return string.Format(
-                            "{0} has been a good person and has been rewarded with a crown!", Model.Id);
+                        return $"{Model.Id} has been a good person and has been rewarded with a crown!";
                 }
 
                 return ConversationWith.Status.ToString();
@@ -390,15 +352,15 @@ namespace slimCat.ViewModels
                 if (ConversationWith.Status == StatusType.Offline)
                 {
                     // visual indicator to help the user know when the other has gone offline
-                    return string.Format("{0} is not online!", pm.Id);
+                    return $"{pm.Id} is not online!";
                 }
 
                 switch (pm.TypingStatus)
                 {
                     case TypingStatus.Typing:
-                        return string.Format("{0} is typing " + pm.TypingString, pm.Id);
+                        return $"{pm.Id} is typing {pm.TypingString}";
                     case TypingStatus.Paused:
-                        return string.Format("{0} has entered text.", pm.Id);
+                        return $"{pm.Id} has entered text.";
                     default:
                         return string.Empty;
                 }
@@ -411,14 +373,11 @@ namespace slimCat.ViewModels
             set
             {
                 isViewingFullImage = value;
-                OnPropertyChanged("IsViewingFullImage");
+                OnPropertyChanged();
             }
         }
 
-        public bool IsConversationWithSelf
-        {
-            get { return ConversationWith != null && ConversationWith.NameEquals(ChatModel.CurrentCharacter.Name); }
-        }
+        public bool IsConversationWithSelf => ConversationWith != null && ConversationWith.NameEquals(ChatModel.CurrentCharacter.Name);
 
         public ICommand SwitchCommand
         {
@@ -429,25 +388,13 @@ namespace slimCat.ViewModels
             }
         }
 
-        public override string EntryTextBoxIcon
-        {
-            get
-            {
-                return isViewingChat
-                    ? "pack://application:,,,/icons/send_chat.png"
-                    : "pack://application:,,,/icons/send_note.png";
-            }
-        }
+        public override string EntryTextBoxIcon => isViewingChat
+            ? "pack://application:,,,/icons/send_chat.png"
+            : "pack://application:,,,/icons/send_note.png";
 
-        public override string EntryTextBoxLabel
-        {
-            get
-            {
-                return isViewingChat
-                    ? "Chat here ..."
-                    : "Write a pretty note here ...";
-            }
-        }
+        public override string EntryTextBoxLabel => isViewingChat
+            ? "Chat here ..."
+            : "Write a pretty note here ...";
 
         public ProfileImage CurrentImage
         {
@@ -455,7 +402,7 @@ namespace slimCat.ViewModels
             set
             {
                 currentImage = value;
-                OnPropertyChanged("CurrentImage");
+                OnPropertyChanged();
             }
         }
 
@@ -518,7 +465,7 @@ namespace slimCat.ViewModels
         {
             get
             {
-                if (model.ProfileData == null || model.ProfileData.Kinks == null)
+                if (model.ProfileData?.Kinks == null)
                     return new ProfileKink[0];
 
                 return (from otherKinks in model.ProfileData.Kinks
@@ -534,7 +481,7 @@ namespace slimCat.ViewModels
         {
             get
             {
-                if (model.ProfileData == null || model.ProfileData.Kinks == null)
+                if (model.ProfileData?.Kinks == null)
                     return new ProfileKink[0];
 
                 return (from otherKinks in model.ProfileData.Kinks
@@ -550,7 +497,7 @@ namespace slimCat.ViewModels
         {
             get
             {
-                if (model.ProfileData == null || model.ProfileData.Kinks == null)
+                if (model.ProfileData?.Kinks == null)
                     return new ProfileKink[0];
 
                 return (from otherKinks in model.ProfileData.Kinks
@@ -568,7 +515,7 @@ namespace slimCat.ViewModels
         {
             get
             {
-                if (model.ProfileData == null || model.ProfileData.Kinks == null)
+                if (model.ProfileData?.Kinks == null)
                     return 0;
 
                 var numberOfOurInterests = ChatModel.CurrentCharacterData.Kinks
@@ -631,7 +578,7 @@ namespace slimCat.ViewModels
         {
             get
             {
-                if (model.ProfileData == null || model.ProfileData.Kinks == null)
+                if (model.ProfileData?.Kinks == null)
                     return false;
 
                 var ours = ChatModel.CurrentCharacterData;
@@ -661,7 +608,7 @@ namespace slimCat.ViewModels
         {
             get
             {
-                if (model.ProfileData == null || model.ProfileData.Kinks == null)
+                if (model.ProfileData?.Kinks == null)
                     return false;
 
                 var ours = ChatModel.CurrentCharacterData;
@@ -886,8 +833,7 @@ namespace slimCat.ViewModels
 
         private void OnStatusChanged()
         {
-            if (StatusChanged != null)
-                StatusChanged(this, new EventArgs());
+            StatusChanged?.Invoke(this, new EventArgs());
         }
 
         protected override void StartLinkInDefaultBrowser(object linkToOpen)

@@ -23,7 +23,7 @@ namespace slimCat.ViewModels
 
     using System;
     using System.ComponentModel;
-    using System.Diagnostics;
+    using System.Runtime.CompilerServices;
     using System.Windows.Threading;
 
     #endregion
@@ -46,35 +46,14 @@ namespace slimCat.ViewModels
             Dispose(true);
         }
 
-        /// <summary>
-        ///     Verifies the name of the property.
-        /// </summary>
-        /// <param name="propertyName">Name of the property.</param>
-        /// <exception cref="System.Exception">Thrown if the name is not valid for the class.</exception>
-        [Conditional("DEBUG")]
-        public void VerifyPropertyName(string propertyName)
-        {
-            if (TypeDescriptor.GetProperties(this)[propertyName] != null)
-                return;
-
-            var msg = "Invalid property name: " + propertyName;
-
-            throw new Exception(msg);
-        }
-
         #endregion
 
         #region Methods
 
-        protected void OnPropertyChanged(string propertyName)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
-            // this.VerifyPropertyName(propertyName);
-            var handler = PropertyChanged;
-            if (handler == null)
-                return;
-
             var e = new PropertyChangedEventArgs(propertyName);
-            handler(this, e);
+            PropertyChanged?.Invoke(this, e);
         }
 
 

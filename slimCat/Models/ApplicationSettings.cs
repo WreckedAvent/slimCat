@@ -21,7 +21,6 @@ namespace slimCat.Models
 {
     #region Usings
 
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -272,10 +271,7 @@ namespace slimCat.Models
         /// </summary>
         public static string Langauge { get; set; }
 
-        public static IEnumerable<string> LanguageList
-        {
-            get { return new[] {"en-US", "en-GB", "de", "es", "fr"}; }
-        }
+        public static IEnumerable<string> LanguageList => new[] {"en-US", "en-GB", "de", "es", "fr"};
 
         /// <summary>
         ///     Gets or sets the gender color settings.

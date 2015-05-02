@@ -34,8 +34,8 @@ namespace slimCat.Models
     {
         #region Fields
 
-        private readonly ObservableCollection<IMessage> notes = new ObservableCollection<IMessage>();
         private StringBuilder isTypingString;
+
         private string noteSubject;
 
         private ProfileData profileData;
@@ -88,15 +88,9 @@ namespace slimCat.Models
         /// <summary>
         ///     Gets the display number.
         /// </summary>
-        public int DisplayNumber
-        {
-            get { return Unread; }
-        }
+        public int DisplayNumber => Unread;
 
-        public int CompositeUnreadCount
-        {
-            get { return Unread; }
-        }
+        public int CompositeUnreadCount => Unread;
 
         /// <summary>
         ///     Gets or sets the PrivateMessage character.
@@ -108,7 +102,7 @@ namespace slimCat.Models
             set
             {
                 targetCharacter = value;
-                OnPropertyChanged("TargetCharacter");
+                OnPropertyChanged();
             }
         }
 
@@ -137,7 +131,7 @@ namespace slimCat.Models
             set
             {
                 typing = value;
-                OnPropertyChanged("TypingStatus");
+                OnPropertyChanged();
                 OnPropertyChanged("TypingString");
 
                 updateTick.Enabled = value == TypingStatus.Typing;
@@ -175,7 +169,7 @@ namespace slimCat.Models
             set
             {
                 noteSubject = value;
-                OnPropertyChanged("NoteSubject");
+                OnPropertyChanged();
             }
         }
 
@@ -185,7 +179,7 @@ namespace slimCat.Models
             set
             {
                 profileData = value;
-                OnPropertyChanged("ProfileData");
+                OnPropertyChanged();
             }
         }
 
@@ -193,10 +187,7 @@ namespace slimCat.Models
 
         public bool ShouldViewProfile { get; set; }
 
-        public ObservableCollection<IMessage> Notes
-        {
-            get { return notes; }
-        }
+        public ObservableCollection<IMessage> Notes { get; } = new ObservableCollection<IMessage>();
 
         #endregion
 

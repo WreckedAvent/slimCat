@@ -474,8 +474,7 @@
                                 Visibility="{Binding IsViewingFullImage, Converter={StaticResource BoolConverter}}">
                             <Button.Template>
                                 <ControlTemplate>
-                                    <Image Grid.Row="0"
-                                           Source="{Binding CurrentImage.FullImageUri,
+                                    <Image Source="{Binding CurrentImage.FullImageUri,
                                                     Converter={StaticResource CacheUriForeverConverter}, IsAsync=True}"
                                            RenderOptions.BitmapScalingMode="Fant" 
                                            Stretch="Uniform"

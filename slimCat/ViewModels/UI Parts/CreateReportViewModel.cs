@@ -34,6 +34,16 @@ namespace slimCat.ViewModels
     /// </summary>
     public sealed class CreateReportViewModel : SysProp
     {
+        #region Constructors and Destructors
+
+        public CreateReportViewModel(IEventAggregator eventagg, IChatModel cm)
+        {
+            events = eventagg;
+            this.cm = cm;
+        }
+
+        #endregion
+
         #region Fields
 
         private RelayCommand cancel;
@@ -54,16 +64,6 @@ namespace slimCat.ViewModels
 
         #endregion
 
-        #region Constructors and Destructors
-
-        public CreateReportViewModel(IEventAggregator eventagg, IChatModel cm)
-        {
-            events = eventagg;
-            this.cm = cm;
-        }
-
-        #endregion
-
         #region Public Properties
 
         public ICommand CloseCommand
@@ -78,14 +78,11 @@ namespace slimCat.ViewModels
             set
             {
                 complaint = value;
-                OnPropertyChanged("Complaint");
+                OnPropertyChanged();
             }
         }
 
-        public string CurrentTab
-        {
-            get { return cm.CurrentChannel.Id == "Home" ? "None" : cm.CurrentChannel.Id; }
-        }
+        public string CurrentTab => cm.CurrentChannel.Id == "Home" ? "None" : cm.CurrentChannel.Id;
 
         public bool IsOpen
         {
@@ -101,14 +98,11 @@ namespace slimCat.ViewModels
                 if (!value)
                     Complaint = null;
 
-                OnPropertyChanged("IsOpen");
+                OnPropertyChanged();
             }
         }
 
-        public ICommand SendReportCommand
-        {
-            get { return send ?? (send = new RelayCommand(OnSendReport)); }
-        }
+        public ICommand SendReportCommand => send ?? (send = new RelayCommand(OnSendReport));
 
         public bool ShouldUploadLogs
         {
@@ -117,7 +111,7 @@ namespace slimCat.ViewModels
             set
             {
                 shouldUploadLogs = value;
-                OnPropertyChanged("ShouldUploadLogs");
+                OnPropertyChanged();
             }
         }
 
@@ -128,7 +122,7 @@ namespace slimCat.ViewModels
             set
             {
                 target = value;
-                OnPropertyChanged("Target");
+                OnPropertyChanged();
             }
         }
 

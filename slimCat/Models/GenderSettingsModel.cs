@@ -34,18 +34,6 @@ namespace slimCat.Models
     {
         #region Fields
 
-        private readonly IDictionary<Gender, bool> genderFilter = new Dictionary<Gender, bool>
-        {
-            {Gender.Male, true},
-            {Gender.Female, true},
-            {Gender.HermF, true},
-            {Gender.HermM, true},
-            {Gender.Cuntboy, true},
-            {Gender.Shemale, true},
-            {Gender.None, true},
-            {Gender.Transgender, true},
-        };
-
         #endregion
 
         #region Public Events
@@ -72,14 +60,14 @@ namespace slimCat.Models
         /// </summary>
         public bool ShowCuntboys
         {
-            get { return genderFilter[Gender.Cuntboy]; }
+            get { return GenderFilter[Gender.Cuntboy]; }
 
             set
             {
-                if (genderFilter[Gender.Cuntboy] == value)
+                if (GenderFilter[Gender.Cuntboy] == value)
                     return;
 
-                genderFilter[Gender.Cuntboy] = value;
+                GenderFilter[Gender.Cuntboy] = value;
                 CallUpdate();
             }
         }
@@ -89,14 +77,14 @@ namespace slimCat.Models
         /// </summary>
         public bool ShowFemaleHerms
         {
-            get { return genderFilter[Gender.HermF]; }
+            get { return GenderFilter[Gender.HermF]; }
 
             set
             {
-                if (genderFilter[Gender.HermF] == value)
+                if (GenderFilter[Gender.HermF] == value)
                     return;
 
-                genderFilter[Gender.HermF] = value;
+                GenderFilter[Gender.HermF] = value;
                 CallUpdate();
             }
         }
@@ -106,14 +94,14 @@ namespace slimCat.Models
         /// </summary>
         public bool ShowFemales
         {
-            get { return genderFilter[Gender.Female]; }
+            get { return GenderFilter[Gender.Female]; }
 
             set
             {
-                if (genderFilter[Gender.Female] == value)
+                if (GenderFilter[Gender.Female] == value)
                     return;
 
-                genderFilter[Gender.Female] = value;
+                GenderFilter[Gender.Female] = value;
                 CallUpdate();
             }
         }
@@ -123,14 +111,14 @@ namespace slimCat.Models
         /// </summary>
         public bool ShowMaleHerms
         {
-            get { return genderFilter[Gender.HermM]; }
+            get { return GenderFilter[Gender.HermM]; }
 
             set
             {
-                if (genderFilter[Gender.HermM] == value)
+                if (GenderFilter[Gender.HermM] == value)
                     return;
 
-                genderFilter[Gender.HermM] = value;
+                GenderFilter[Gender.HermM] = value;
                 CallUpdate();
             }
         }
@@ -140,14 +128,14 @@ namespace slimCat.Models
         /// </summary>
         public bool ShowMales
         {
-            get { return genderFilter[Gender.Male]; }
+            get { return GenderFilter[Gender.Male]; }
 
             set
             {
-                if (genderFilter[Gender.Male] == value)
+                if (GenderFilter[Gender.Male] == value)
                     return;
 
-                genderFilter[Gender.Male] = value;
+                GenderFilter[Gender.Male] = value;
                 CallUpdate();
             }
         }
@@ -157,14 +145,14 @@ namespace slimCat.Models
         /// </summary>
         public bool ShowNoGenders
         {
-            get { return genderFilter[Gender.None]; }
+            get { return GenderFilter[Gender.None]; }
 
             set
             {
-                if (genderFilter[Gender.None] == value)
+                if (GenderFilter[Gender.None] == value)
                     return;
 
-                genderFilter[Gender.None] = value;
+                GenderFilter[Gender.None] = value;
                 CallUpdate();
             }
         }
@@ -174,14 +162,14 @@ namespace slimCat.Models
         /// </summary>
         public bool ShowShemales
         {
-            get { return genderFilter[Gender.Shemale]; }
+            get { return GenderFilter[Gender.Shemale]; }
 
             set
             {
-                if (genderFilter[Gender.Shemale] == value)
+                if (GenderFilter[Gender.Shemale] == value)
                     return;
 
-                genderFilter[Gender.Shemale] = value;
+                GenderFilter[Gender.Shemale] = value;
                 CallUpdate();
             }
         }
@@ -191,15 +179,15 @@ namespace slimCat.Models
         /// </summary>
         public bool ShowTransgenders
         {
-            get { return genderFilter[Gender.Transgender]; }
+            get { return GenderFilter[Gender.Transgender]; }
 
             set
             {
-                if (genderFilter[Gender.Transgender] == value)
+                if (GenderFilter[Gender.Transgender] == value)
                     return;
 
-                genderFilter[Gender.Transgender] = value;
-                Updated(this, new EventArgs());
+                GenderFilter[Gender.Transgender] = value;
+                Updated?.Invoke(this, new EventArgs());
             }
         }
 
@@ -210,10 +198,17 @@ namespace slimCat.Models
         /// <summary>
         ///     Gets the gender filter.
         /// </summary>
-        private IDictionary<Gender, bool> GenderFilter
+        private IDictionary<Gender, bool> GenderFilter { get; } = new Dictionary<Gender, bool>
         {
-            get { return genderFilter; }
-        }
+            {Gender.Male, true},
+            {Gender.Female, true},
+            {Gender.HermF, true},
+            {Gender.HermM, true},
+            {Gender.Cuntboy, true},
+            {Gender.Shemale, true},
+            {Gender.None, true},
+            {Gender.Transgender, true},
+        };
 
         #endregion
 
@@ -230,7 +225,7 @@ namespace slimCat.Models
         /// </returns>
         public bool MeetsGenderFilter(ICharacter character)
         {
-            return genderFilter[character.Gender];
+            return GenderFilter[character.Gender];
         }
 
         #endregion
@@ -239,8 +234,7 @@ namespace slimCat.Models
 
         private void CallUpdate()
         {
-            if (Updated != null)
-                Updated(this, new EventArgs());
+            Updated?.Invoke(this, new EventArgs());
         }
 
         #endregion

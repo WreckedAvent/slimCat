@@ -21,7 +21,7 @@ namespace slimCat.Views
 {
     #region Usings
 
-    using slimCat.Models;
+    using Models;
     using System;
     using System.Windows;
     using System.Windows.Controls;
@@ -88,12 +88,11 @@ namespace slimCat.Views
 
         private void OnStatusChanged(object sender, EventArgs e)
         {
-            Dispatcher.Invoke(
-                (Action) delegate
-                {
-                    if (!CharacterStatusDisplayer.IsExpanded)
-                        CharacterStatusDisplayer.IsExpanded = true;
-                });
+            Dispatcher.Invoke(() =>
+            {
+                if (!CharacterStatusDisplayer.IsExpanded)
+                    CharacterStatusDisplayer.IsExpanded = true;
+            });
         }
 
         #endregion

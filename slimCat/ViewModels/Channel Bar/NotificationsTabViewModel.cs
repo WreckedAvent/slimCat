@@ -79,19 +79,10 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        public ICommand ClearNotificationsCommand
-        {
-            get
-            {
-                return clearNoti
-                       ?? (clearNoti = new RelayCommand(args => ChatModel.Notifications.Clear()));
-            }
-        }
+        public ICommand ClearNotificationsCommand 
+            => clearNoti ?? (clearNoti = new RelayCommand(_ => ChatModel.Notifications.Clear()));
 
-        public bool HasNoNotifications
-        {
-            get { return notificationManager.Collection.Count == 0; }
-        }
+        public bool HasNoNotifications => notificationManager.Collection.Count == 0;
 
         public bool IsSelected
         {
@@ -107,10 +98,7 @@ namespace slimCat.ViewModels
             }
         }
 
-        public ICommand RemoveNotificationCommand
-        {
-            get { return killNoti ?? (killNoti = new RelayCommand(RemoveNotification)); }
-        }
+        public ICommand RemoveNotificationCommand => killNoti ?? (killNoti = new RelayCommand(RemoveNotification));
 
         public string SearchString
         {
@@ -119,20 +107,14 @@ namespace slimCat.ViewModels
             set
             {
                 search = value;
-                OnPropertyChanged("SearchString");
+                OnPropertyChanged();
                 notificationManager.RebuildItems();
             }
         }
 
-        public ObservableCollection<IViewableObject> CurrentNotifications
-        {
-            get { return notificationManager.Collection; }
-        }
+        public ObservableCollection<IViewableObject> CurrentNotifications => notificationManager.Collection;
 
-        public ICommand OpenSearchSettingsCommand
-        {
-            get { return null; }
-        }
+        public ICommand OpenSearchSettingsCommand => null;
 
         #endregion
 

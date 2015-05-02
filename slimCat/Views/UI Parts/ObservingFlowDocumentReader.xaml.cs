@@ -138,7 +138,7 @@ namespace slimCat.Views
                             if (messages.MoveNext())
                             {
                                 count++;
-                                if (scroller != null) scroller.StabilizeNextScroll();
+                                scroller?.StabilizeNextScroll();
                                 AddInReverseAsync(messages.Current, DispatcherPriority.DataBind);
                             }
                             else
@@ -177,7 +177,7 @@ namespace slimCat.Views
                     break;
 
                 case NotifyCollectionChangedAction.Reset:
-                    Dispatcher.Invoke((Action) (() => Messages.Blocks.Clear()));
+                    Dispatcher.Invoke(() => Messages.Blocks.Clear());
                     break;
 
                 case NotifyCollectionChangedAction.Remove:

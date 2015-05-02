@@ -44,7 +44,7 @@ namespace slimCat.ViewModels
         /// </summary>
         private readonly string[] modeTypes;
 
-        private string description = string.Empty;
+        private string description;
 
         private IEventAggregator events;
 
@@ -85,7 +85,7 @@ namespace slimCat.ViewModels
                 Logging.LogLine((value ? "Opening" : "Closing") + " modal", "channel manage vm");
 
                 isOpen = value;
-                OnPropertyChanged("IsManaging");
+                OnPropertyChanged();
 
                 if (!value && Description != model.Description)
                     UpdateDescription();
@@ -99,19 +99,13 @@ namespace slimCat.ViewModels
             set
             {
                 description = value;
-                OnPropertyChanged("Description");
+                OnPropertyChanged();
             }
         }
 
-        public IEnumerable<string> ModeTypes
-        {
-            get { return modeTypes; }
-        }
+        public IEnumerable<string> ModeTypes => modeTypes;
 
-        public ICommand OpenChannelManagementCommand
-        {
-            get { return open ?? (open = new RelayCommand(args => IsManaging = !IsManaging)); }
-        }
+        public ICommand OpenChannelManagementCommand => open ?? (open = new RelayCommand(args => IsManaging = !IsManaging));
 
         public string RoomModeString
         {
@@ -165,14 +159,8 @@ namespace slimCat.ViewModels
             }
         }
 
-        public ICommand ToggleRoomTypeCommand
-        {
-            get
-            {
-                return toggleType
-                       ?? (toggleType = new RelayCommand(OnToggleRoomType, CanToggleRoomType));
-            }
-        }
+        public ICommand ToggleRoomTypeCommand => toggleType
+            ?? (toggleType = new RelayCommand(OnToggleRoomType, CanToggleRoomType));
 
         public string ToggleRoomTypeString
         {
@@ -189,10 +177,7 @@ namespace slimCat.ViewModels
 
         #region Explicit Interface Methods
 
-        void IDisposable.Dispose()
-        {
-            Dispose(true);
-        }
+        void IDisposable.Dispose() => Dispose(true);
 
         #endregion
 
@@ -210,26 +195,20 @@ namespace slimCat.ViewModels
             base.Dispose(isManaged);
         }
 
-        private bool CanToggleRoomType(object args)
-        {
-            return model.Type != ChannelType.Public;
-        }
+        private bool CanToggleRoomType(object args) => model.Type != ChannelType.Public;
 
         private void OnRoomModeChanged(object args)
         {
             events.GetEvent<UserCommandEvent>()
-                .Publish(
-                    CommandDefinitions.CreateCommand("setmode", new[] {model.Mode.ToString()}, model.Id)
-                        .ToDictionary());
+                .Publish(CommandDefinitions.CreateCommand("setmode", new[] {model.Mode.ToString()}, model.Id).ToDictionary());
         }
 
         private void OnToggleRoomType(object args)
         {
             events.GetEvent<UserCommandEvent>()
-                .Publish(
-                    model.Type == ChannelType.InviteOnly
-                        ? CommandDefinitions.CreateCommand("openroom", new List<string>(), model.Id).ToDictionary()
-                        : CommandDefinitions.CreateCommand("closeroom", null, model.Id).ToDictionary());
+                .Publish(model.Type == ChannelType.InviteOnly
+                    ? CommandDefinitions.CreateCommand("openroom", new List<string>(), model.Id).ToDictionary()
+                    : CommandDefinitions.CreateCommand("closeroom", null, model.Id).ToDictionary());
         }
 
         private void UpdateDescription(object sender = null, PropertyChangedEventArgs e = null)
@@ -257,9 +236,7 @@ namespace slimCat.ViewModels
             {
                 // if its us updating it
                 events.GetEvent<UserCommandEvent>()
-                    .Publish(
-                        CommandDefinitions.CreateCommand("setdescription", new[] {description}, model.Id)
-                            .ToDictionary());
+                    .Publish(CommandDefinitions.CreateCommand("setdescription", new[] {description}, model.Id).ToDictionary());
             }
         }
 

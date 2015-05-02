@@ -81,7 +81,7 @@ namespace slimCat.Services
 
         public void GetNotesAsync(string characterName)
         {
-            Log(string.Format("getting notes for {0}", characterName));
+            Log($"getting notes for {characterName}");
 
             if (characterName.Equals(cm.CurrentCharacter.Name))
                 return;
@@ -89,7 +89,7 @@ namespace slimCat.Services
             Conversation cache;
             if (noteCache.TryGetValue(characterName, out cache))
             {
-                Log(string.Format("notes for {0} in cache already", characterName));
+                Log($"notes for {characterName} in cache already");
                 var model = container.Resolve<PmChannelModel>(characterName);
                 if (model == null) return;
 
@@ -269,7 +269,7 @@ namespace slimCat.Services
                 try
                 {
                     var model = container.Resolve<PmChannelModel>(characterName);
-                    Application.Current.Dispatcher.Invoke((Action) delegate
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
                         model.Notes.Clear();
                         model.Notes.AddRange(notes);

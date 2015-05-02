@@ -57,15 +57,9 @@ namespace slimCat.Models
 
         #region Public Properties
 
-        public Uri AvatarUri
-        {
-            get
-            {
-                return new Uri(
-                    Constants.UrlConstants.CharacterAvatar + HttpUtility.HtmlEncode(name).ToLower() + ".png",
-                    UriKind.Absolute);
-            }
-        }
+        public Uri AvatarUri => new Uri(
+            Constants.UrlConstants.CharacterAvatar + HttpUtility.HtmlEncode(name).ToLower() + ".png",
+            UriKind.Absolute);
 
         /// <summary>
         ///     Gets or sets the avatar.
@@ -77,7 +71,7 @@ namespace slimCat.Models
             set
             {
                 avatar = value;
-                OnPropertyChanged("Avatar");
+                OnPropertyChanged();
             }
         }
 
@@ -91,17 +85,14 @@ namespace slimCat.Models
             set
             {
                 gender = value;
-                OnPropertyChanged("Gender");
+                OnPropertyChanged();
             }
         }
 
         /// <summary>
         ///     Gets a value indicating whether has report.
         /// </summary>
-        public bool HasReport
-        {
-            get { return lastReport != null; }
-        }
+        public bool HasReport => lastReport != null;
 
         /// <summary>
         ///     Gets or sets the last report.
@@ -113,7 +104,7 @@ namespace slimCat.Models
             set
             {
                 lastReport = value;
-                OnPropertyChanged("LastReport");
+                OnPropertyChanged();
                 OnPropertyChanged("HasReport");
             }
         }
@@ -128,7 +119,7 @@ namespace slimCat.Models
             set
             {
                 name = value;
-                OnPropertyChanged("Name");
+                OnPropertyChanged();
                 OnPropertyChanged("Uri");
             }
         }
@@ -143,7 +134,7 @@ namespace slimCat.Models
             set
             {
                 status = value;
-                OnPropertyChanged("Status");
+                OnPropertyChanged();
             }
         }
 
@@ -157,7 +148,7 @@ namespace slimCat.Models
             set
             {
                 statusMessage = value;
-                OnPropertyChanged("StatusMessage");
+                OnPropertyChanged();
             }
         }
 
@@ -168,7 +159,7 @@ namespace slimCat.Models
             set
             {
                 isInteresting = value;
-                OnPropertyChanged("IsInteresting");
+                OnPropertyChanged();
             }
         }
 
@@ -178,7 +169,7 @@ namespace slimCat.Models
             set
             {
                 ignoreUpdates = value;
-                OnPropertyChanged("IgnoreUpdates");
+                OnPropertyChanged();
             }
         }
 

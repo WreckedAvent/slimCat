@@ -264,8 +264,8 @@ namespace slimCat.Models
             // with no arguments we needn't do any validation
             if (args == null && model.ArgumentNames == null) return toReturn;
 
-            var argsCount = (args != null ? args.Count : 0);
-            var modelArgsCount = (model.ArgumentNames != null ? model.ArgumentNames.Count : 0);
+            var argsCount = args?.Count ?? 0;
+            var modelArgsCount = model.ArgumentNames?.Count ?? 0;
 
             var difference = argsCount - modelArgsCount;
 
@@ -296,7 +296,7 @@ namespace slimCat.Models
         public static CommandModel GetCommandModelFromName(string familiarName)
         {
             if (!IsValidCommand(familiarName))
-                throw new ArgumentException("Unknown command", "familiarName");
+                throw new ArgumentException("Unknown command", nameof(familiarName));
 
             if (CommandAliases.ContainsKey(familiarName))
                 familiarName = CommandAliases[familiarName];

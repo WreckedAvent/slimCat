@@ -23,7 +23,6 @@ namespace slimCat.ViewModels
 
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Windows.Input;
     using Libraries;
@@ -111,7 +110,7 @@ namespace slimCat.ViewModels
             set
             {
                 isConnecting = value;
-                OnPropertyChanged("IsConnecting");
+                OnPropertyChanged();
             }
         }
 
@@ -122,33 +121,15 @@ namespace slimCat.ViewModels
             set
             {
                 relayMessage = value;
-                OnPropertyChanged("RelayMessage");
+                OnPropertyChanged();
             }
         }
 
-        public ICommand SelectCharacterCommand
-        {
-            get
-            {
-                return @select
-                       ?? (@select =
-                           new RelayCommand(
-                               param => SendCharacterSelectEvent(), param => CanSendCharacterSelectEvent()));
-            }
-        }
+        public ICommand SelectCharacterCommand => @select
+            ?? (@select = new RelayCommand(_ => SendCharacterSelectEvent(), _ => CanSendCharacterSelectEvent()));
 
-        public ICommand SwitchAccountCommand
-        {
-            get
-            {
-                return switchAccount ??
-                       (switchAccount =
-                           new RelayCommand(
-                               _ =>
-                                   RegionManager.RequestNavigate(Shell.MainRegion,
-                                       new Uri(LoginViewModel.LoginViewName, UriKind.Relative))));
-            }
-        }
+        public ICommand SwitchAccountCommand => switchAccount 
+            ?? (switchAccount = new RelayCommand(_ => RegionManager.RequestNavigate(Shell.MainRegion, new Uri(LoginViewModel.LoginViewName, UriKind.Relative))));
 
         public ICharacter CurrentCharacter
         {
@@ -157,7 +138,7 @@ namespace slimCat.ViewModels
             set
             {
                 selectedCharacter = value;
-                OnPropertyChanged("CurrentCharacter");
+                OnPropertyChanged();
             }
         }
 
@@ -182,10 +163,7 @@ namespace slimCat.ViewModels
 
         #region Methods
 
-        private bool CanSendCharacterSelectEvent()
-        {
-            return CurrentCharacter != null && !string.IsNullOrWhiteSpace(CurrentCharacter.Name);
-        }
+        private bool CanSendCharacterSelectEvent() => !string.IsNullOrWhiteSpace(CurrentCharacter?.Name);
 
         private void SendCharacterSelectEvent()
         {

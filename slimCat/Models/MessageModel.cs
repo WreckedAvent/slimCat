@@ -68,13 +68,13 @@ namespace slimCat.Models
 
         #region Public Properties
 
-        public string Message { get; private set; }
+        public string Message { get; }
 
-        public ICharacter Poster { get; private set; }
+        public ICharacter Poster { get; set; }
 
-        public MessageType Type { get; private set; }
+        public MessageType Type { get; }
 
-        public bool IsHistoryMessage { get; private set; }
+        public bool IsHistoryMessage { get; }
 
         public bool IsOfInterest
         {
@@ -96,7 +96,7 @@ namespace slimCat.Models
             }
         }
 
-        public MessageModel This { get { return this; } }
+        public MessageModel This => this;
 
         public Block View
         {

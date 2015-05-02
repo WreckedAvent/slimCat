@@ -79,8 +79,7 @@ namespace slimCat.Views
                         }
 
                         var presentationSource = PresentationSource.FromVisual(this);
-                        if (presentationSource == null
-                            || presentationSource.CompositionTarget == null)
+                        if (presentationSource?.CompositionTarget == null)
                             return;
 
                         var transform = presentationSource.CompositionTarget.TransformFromDevice;
@@ -119,8 +118,7 @@ namespace slimCat.Views
             Show();
             var fadeIn = FindResource("FadeInAnimation") as Storyboard;
 
-            if (fadeIn != null)
-                fadeIn.Begin(this);
+            fadeIn?.Begin(this);
         }
 
         #endregion

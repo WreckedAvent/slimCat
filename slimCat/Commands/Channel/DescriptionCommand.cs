@@ -86,10 +86,10 @@ namespace slimCat.Services
                 return;
             }
 
-            if (model.CurrentChannel is GeneralChannelModel)
+            var channel = model.CurrentChannel as GeneralChannelModel;
+            if (channel != null)
             {
-                Clipboard.SetData(
-                    DataFormats.Text, (model.CurrentChannel as GeneralChannelModel).Description);
+                Clipboard.SetData(DataFormats.Text, channel.Description);
                 events.GetEvent<ErrorEvent>()
                     .Publish("Channel's description copied to clipboard.");
             }

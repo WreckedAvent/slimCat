@@ -185,7 +185,7 @@ namespace slimCat.Utilities
                 if (safeTitle[0].Equals('.'))
                     safeTitle = safeTitle.Remove(0, 1);
 
-                folderName = string.Format("{0} ({1})", safeTitle, id);
+                folderName = $"{safeTitle} ({id})";
             }
             else
                 folderName = id;
@@ -312,13 +312,7 @@ namespace slimCat.Utilities
             {StatusType.Offline, "z"}
         };
 
-        public static Dictionary<StatusType, string> SortDictionary
-        {
-            get
-            {
-                return ApplicationSettings.SortUsersAlphabetically ? AlphabeticalSortDictionary : DefaultSortDictionary;
-            }
-        }
+        public static Dictionary<StatusType, string> SortDictionary => ApplicationSettings.SortUsersAlphabetically ? AlphabeticalSortDictionary : DefaultSortDictionary;
 
         public static string RelationshipToUser(this ICharacter character, ICharacterManager cm,
             GeneralChannelModel channel)
@@ -439,7 +433,7 @@ namespace slimCat.Utilities
         {
             var channel = chatState.GetChannelById(id);
 
-            return channel == null ? null : channel.Settings;
+            return channel?.Settings;
         }
 
         public static bool IsInteresting(this IChatState chatState, string character, bool onlineOnly = false)

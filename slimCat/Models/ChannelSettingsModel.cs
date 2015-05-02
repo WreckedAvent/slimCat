@@ -403,8 +403,7 @@ namespace slimCat.Models
 
         private void CallUpdate()
         {
-            if (Updated != null)
-                Updated(this, new EventArgs());
+            Updated?.Invoke(this, new EventArgs());
         }
 
         #endregion

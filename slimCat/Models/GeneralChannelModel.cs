@@ -53,7 +53,7 @@ namespace slimCat.Models
             try
             {
                 if (users < 0)
-                    throw new ArgumentOutOfRangeException("users", "Users cannot be a negative number");
+                    throw new ArgumentOutOfRangeException(nameof(users), "Users cannot be a negative number");
 
                 UserCount = users;
 
@@ -127,23 +127,17 @@ namespace slimCat.Models
 
         #region Public Properties
 
-        public ICharacterManager CharacterManager { get; private set; }
+        public ICharacterManager CharacterManager { get; }
 
         /// <summary>
         ///     Gets a value indicating whether can close.
         /// </summary>
-        public override bool CanClose
-        {
-            get { return (Id != "Home") && IsSelected; }
-        }
+        public override bool CanClose => (Id != "Home") && IsSelected;
 
         /// <summary>
         ///     Gets the composite unread count.
         /// </summary>
-        public int CompositeUnreadCount
-        {
-            get { return Math.Max(Unread + UnreadAds, 0); }
-        }
+        public int CompositeUnreadCount => Math.Max(Unread + UnreadAds, 0);
 
         /// <summary>
         ///     Gets or sets the motd.
@@ -158,7 +152,7 @@ namespace slimCat.Models
                                        && !string.IsNullOrWhiteSpace(value)
                                        && description != value;
                 description = value;
-                OnPropertyChanged("Description");
+                OnPropertyChanged();
             }
         }
 
@@ -179,10 +173,7 @@ namespace slimCat.Models
         /// <summary>
         ///     Gets the display number.
         /// </summary>
-        public string DisplayNumber
-        {
-            get { return UserCount > 0 ? UserCount.ToString(CultureInfo.InvariantCulture) : string.Empty; }
-        }
+        public string DisplayNumber => UserCount > 0 ? UserCount.ToString(CultureInfo.InvariantCulture) : string.Empty;
 
         /// <summary>
         ///     Gets or sets a value indicating whether is selected.
@@ -257,10 +248,7 @@ namespace slimCat.Models
         /// <summary>
         ///     Gets the unread Ads.
         /// </summary>
-        public int UnreadAds
-        {
-            get { return Ads.Count - lastAdCount; }
-        }
+        public int UnreadAds => Ads.Count - lastAdCount;
 
         /// <summary>
         ///     Gets or sets the user count.
