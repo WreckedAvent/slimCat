@@ -19,3 +19,6 @@ slimCat is the most feature complete f-chat client that exists. No really, here'
 
 Contact slimCat in f-chat, or go to the slimCat channel in f-chat. Some one there will be able to help you!
 
+## Want to contribute?
+
+See [contributing!](CONTRIBUTING.md)
