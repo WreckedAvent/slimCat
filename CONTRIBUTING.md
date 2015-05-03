@@ -15,15 +15,15 @@ Because this might take a few days, it is recommended that you issue the PR on a
 If you're completely new to the code base, it might be difficult to find things. Here's some things to be aware of:
 
  * The code base is written with the unity container using dependency injection. This means *client code rarely `new`s up an object*, and instead has it 'injected' into its constructor.
- ** This also means all services/injectables must work against an interface.
- ** And then registered in `bootstrapper.cs`.
+   * This also means all services/injectables must work against an interface.
+   * And then registered in `bootstrapper.cs`.
  * The code base follows MVVM architecture (mostly). This means that:
- ** Models are mostly plain old C# objects (`POCO`s) which do not have much logic them, only the "shapes" of data
- ** Views are XAML/.cs and handle user interaction. All of the styling and most of the interaction logic is done with XAML, with some more "code behind" code to handle some other cases (such as keybinds).
- ** Viewmodels consume models and are consumed by views. This is where most of the business logic lays, such as what model changes occur when a user clicks a button. This is also where you'll find the source of bindings. The Viewmodel is responsible for translating the model into something which is bindable and suitable for display on the UI.
- ** Services are where business logic that is not strictly related to bindings is concerned. This is where you'll find the glue that handles server commands or translates user commands.
- ** Specifically to WPF, common view-specific logic is often put into a *converter*.
- ** The `Utilities` is mostly just a grabbing of otherwise common code. All extension methods are here, as well as constants.
+   * Models are mostly plain old C# objects (`POCO`s) which do not have much logic them, only the "shapes" of data
+   * Views are XAML/.cs and handle user interaction. All of the styling and most of the interaction logic is done with XAML, with some more "code behind" code to handle some other cases (such as keybinds).
+   * Viewmodels consume models and are consumed by views. This is where most of the business logic lays, such as what model changes occur when a user clicks a button. This is also where you'll find the source of bindings. The Viewmodel is responsible for translating the model into something which is bindable and suitable for display on the UI.
+   * Services are where business logic that is not strictly related to bindings is concerned. This is where you'll find the glue that handles server commands or translates user commands.
+   * Specifically to WPF, common view-specific logic is often put into a *converter*.
+   * The `Utilities` is mostly just a grabbing of otherwise common code. All extension methods are here, as well as constants.
  * slimCat does *not* use a behavior library
  * silmCat does *not* use Telrik or any other vendor-provided controls. All are hand-written XAML (I don't even like blend). 
 
@@ -71,4 +71,4 @@ Compile, run, and now you'll get stuff going to console! Later on, if you make t
 
 ## Compiling, Making a Release
 
-You should not need to do anything special to get slimCat to build. Should you need to make a release to a user, make a `release` build and run `build.ps1`. This will create a `build` folder organized as you'd need to be consumed by a user. Because I don't pay any monies to have the code signed, and you probably won't either, be aware that users will see a warning from windows saying the code was downloaded from the internet and probably not safe. They will have to know to dismiss that.
+You should not need to do anything special to get slimCat to build. However, you will need to be able to compile C#6, which means using Visual Studio 2015. Should you need to make a release to a user, make a `release` build and run `build.ps1`. This will create a `build` folder organized as you'd need to be consumed by a user. Because I don't pay any monies to have the code signed, and you probably won't either, be aware that users will see a warning from windows saying the code was downloaded from the internet and probably not safe. They will have to know to dismiss that.
