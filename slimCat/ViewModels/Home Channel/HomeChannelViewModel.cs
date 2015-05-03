@@ -133,7 +133,7 @@ namespace slimCat.ViewModels
         public static string ClientIdString
             => $"{Constants.ClientId} {Constants.ClientNickname} ({Constants.ClientVersion})";
 
-        public string LastMessageReceived => HelperConverter.DateTimeToRough(ChatModel.LastMessageReceived, true, false)
+        public string LastMessageReceived => ChatModel.LastMessageReceived.DateTimeToRough(true, false)
             ;
 
         public int OnlineBookmarksCount => CharacterManager.GetNames(ListKind.Bookmark).Count;
@@ -144,9 +144,9 @@ namespace slimCat.ViewModels
 
         public int OnlineFriendsCount => CharacterManager.GetNames(ListKind.Friend).Count;
 
-        public string RoughClientUpTime => HelperConverter.DateTimeToRough(ChatModel.ClientUptime, true, false);
+        public string RoughClientUpTime => ChatModel.ClientUptime.DateTimeToRough(true, false);
 
-        public string RoughServerUpTime => HelperConverter.DateTimeToRough(ChatModel.ServerUpTime, true, false);
+        public string RoughServerUpTime => ChatModel.ServerUpTime.DateTimeToRough(true, false);
 
         public int OnlineCountPrime() => OnlineCount;
 
@@ -376,7 +376,7 @@ namespace slimCat.ViewModels
 
             if (!updated) message = "Automatic update failed, please install update manually.";
 
-            Events.GetEvent<ErrorEvent>().Publish(message);
+            Events.NewError(message);
         }
 
         private void CheckForThemes()

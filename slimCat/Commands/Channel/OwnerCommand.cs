@@ -61,7 +61,7 @@ namespace slimCat.Services
             channel.CharacterManager.Set(mods, ListKind.Moderator);
 
             var update = new ChannelUpdateModel(channel, new ChannelOwnerChangedEventArgs {NewOwner = character});
-            Events.GetEvent<NewUpdateEvent>().Publish(update);
+            Events.NewUpdate(update);
         }
     }
 }

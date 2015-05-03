@@ -31,17 +31,16 @@ namespace slimCat.Services
     {
         private void OnWhoInformationRequested(IDictionary<string, object> command)
         {
-            events.GetEvent<ErrorEvent>()
-                .Publish(
-                    "Server, server, across the sea,\nWho is connected, most to thee?\nWhy, "
-                    + model.CurrentCharacter.Name + " be!");
+            events.NewMessage(
+                "Server, server, across the sea,\nWho is connected, most to thee?\nWhy, "
+                + cm.CurrentCharacter.Name + " be!");
         }
 
         private void OnWhoIsRequested(IDictionary<string, object> command)
         {
             var character = command.Get(Constants.Arguments.Character);
 
-            var names = model.CurrentChannels
+            var names = cm.CurrentChannels
                 .Where(channel => channel.CharacterManager.IsOnList(character, ListKind.Online))
                 .Select(x => x.Title)
                 .JoinStrings(", ");
@@ -49,7 +48,7 @@ namespace slimCat.Services
             if (string.IsNullOrEmpty(names))
                 names = "no shared channels";
 
-            events.GetEvent<ErrorEvent>().Publish("User '{0}' present in {1}".FormatWith(character, names));
+            events.NewMessage("User '{0}' present in {1}".FormatWith(character, names));
         }
     }
 }

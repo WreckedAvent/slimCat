@@ -41,28 +41,23 @@ namespace slimCat.Services
         #region Constructors and Destructors
 
         public ChannelService(
-            IRegionManager regman,
-            IUnityContainer contain,
-            IEventAggregator events,
-            IChatModel model,
-            IHandleChatConnection connection,
-            ICharacterManager manager,
+            IChatState chatState,
             ILogThings logger,
             IAutomateThings automation)
         {
             try
             {
-                region = regman.ThrowIfNull("regman");
-                container = contain.ThrowIfNull("contain");
-                this.events = events.ThrowIfNull("events");
-                this.model = model.ThrowIfNull("model");
-                this.connection = connection.ThrowIfNull("connection");
+                region = chatState.RegionManager;
+                container = chatState.Container;
+                events = chatState.EventAggregator;
+                cm = chatState.ChatModel;
+                connection = chatState.Connection;
+                characters = chatState.CharacterManager;
                 this.logger = logger.ThrowIfNull("logger");
                 this.automation = automation.ThrowIfNull("automation");
-                characterManager = manager.ThrowIfNull("characterManager");
 
-                this.events.GetEvent<ChatOnDisplayEvent>().Subscribe(BuildHomeChannel, ThreadOption.UIThread, true);
-                this.events.GetEvent<RequestChangeTabEvent>().Subscribe(RequestNavigate, ThreadOption.UIThread, true);
+                events.GetEvent<ChatOnDisplayEvent>().Subscribe(BuildHomeChannel, ThreadOption.UIThread, true);
+                events.GetEvent<RequestChangeTabEvent>().Subscribe(RequestNavigate, ThreadOption.UIThread, true);
             }
             catch (Exception ex)
             {
@@ -79,7 +74,7 @@ namespace slimCat.Services
 
         private readonly IAutomateThings automation;
 
-        private readonly ICharacterManager characterManager;
+        private readonly ICharacterManager characters;
 
         private readonly IHandleChatConnection connection;
 
@@ -89,7 +84,7 @@ namespace slimCat.Services
 
         private readonly ILogThings logger;
 
-        private readonly IChatModel model;
+        private readonly IChatModel cm;
 
         private readonly IRegionManager region;
 
@@ -107,7 +102,7 @@ namespace slimCat.Services
 
             if (type == ChannelType.PrivateMessage)
             {
-                var character = characterManager.Find(id);
+                var character = characters.Find(id);
 
                 character.GetAvatar(); // make sure we have their picture
 
@@ -116,11 +111,11 @@ namespace slimCat.Services
                 container.RegisterInstance(temp.Id, temp);
                 container.Resolve<PmChannelViewModel>(new ParameterOverride("name", temp.Id));
 
-                Dispatcher.Invoke(() => model.CurrentPms.Add(temp));
+                Dispatcher.Invoke(() => cm.CurrentPms.Add(temp));
                 // then add it to the model's data
 
                 ApplicationSettings.RecentCharacters.BacklogWithUpdate(id, MaxRecentTabs);
-                SettingsService.SaveApplicationSettingsToXml(model.CurrentCharacter.Name);
+                SettingsService.SaveApplicationSettingsToXml(cm.CurrentCharacter.Name);
             }
             else
             {
@@ -135,24 +130,24 @@ namespace slimCat.Services
                 else
                 {
                     // our model should have a reference to other channels though
-                    temp = model.AllChannels.FirstOrDefault(param => param.Id == id);
+                    temp = cm.AllChannels.FirstOrDefault(param => param.Id == id);
 
                     if (temp == null)
                     {
                         temp = new GeneralChannelModel(id, name, id == name ? ChannelType.Public : ChannelType.Private);
-                        Dispatcher.Invoke(() => model.AllChannels.Add(temp));
+                        Dispatcher.Invoke(() => cm.AllChannels.Add(temp));
                     }
 
-                    Dispatcher.Invoke(() => model.CurrentChannels.Add(temp));
+                    Dispatcher.Invoke(() => cm.CurrentChannels.Add(temp));
 
                     container.Resolve<GeneralChannelViewModel>(new ParameterOverride("name", id));
 
                     ApplicationSettings.RecentChannels.BacklogWithUpdate(id, MaxRecentTabs);
-                    SettingsService.SaveApplicationSettingsToXml(model.CurrentCharacter.Name);
+                    SettingsService.SaveApplicationSettingsToXml(cm.CurrentCharacter.Name);
                 }
 
-                if (!model.CurrentChannels.Contains(temp))
-                    Dispatcher.Invoke(() => model.CurrentChannels.Add(temp));
+                if (!cm.CurrentChannels.Contains(temp))
+                    Dispatcher.Invoke(() => cm.CurrentChannels.Add(temp));
             }
         }
 
@@ -160,22 +155,22 @@ namespace slimCat.Services
             string message, string channelName, string poster, MessageType messageType = MessageType.Normal)
         {
             var sender =
-                characterManager.Find(poster == Constants.Arguments.ThisCharacter ? model.CurrentCharacter.Name : poster);
+                characters.Find(poster == Constants.Arguments.ThisCharacter ? cm.CurrentCharacter.Name : poster);
 
-            var channel = model.CurrentChannels.FirstByIdOrNull(channelName)
-                          ?? (ChannelModel) model.CurrentPms.FirstByIdOrNull(channelName);
+            var channel = cm.CurrentChannels.FirstByIdOrNull(channelName)
+                          ?? (ChannelModel) cm.CurrentPms.FirstByIdOrNull(channelName);
 
             if (channel == null)
                 return; // exception circumstance, swallow message
 
-            if (messageType == MessageType.Ad && characterManager.IsOnList(poster, ListKind.NotInterested, false))
+            if (messageType == MessageType.Ad && characters.IsOnList(poster, ListKind.NotInterested, false))
                 return; // don't want these clogging up our filter or.. anything really
 
             Dispatcher.Invoke(() =>
             {
                 var thisMessage = new MessageModel(sender, message, messageType);
 
-                channel.AddMessage(thisMessage, characterManager.IsOfInterest(poster));
+                channel.AddMessage(thisMessage, characters.IsOfInterest(poster));
 
                 if (channel.Settings.LoggingEnabled && ApplicationSettings.AllowLogging)
                 {
@@ -215,7 +210,7 @@ namespace slimCat.Services
                 id = id.Substring(0, id.Length - "/profile".Length);
             }
 
-            if (model.CurrentChannel != null && model.CurrentChannel.Id.Equals(id))
+            if (cm.CurrentChannel != null && cm.CurrentChannel.Id.Equals(id))
                 return;
 
             name = HttpUtility.HtmlDecode(name);
@@ -228,15 +223,15 @@ namespace slimCat.Services
             if (!id.Equals("Home"))
                 history = logger.GetLogs(string.IsNullOrWhiteSpace(name) ? id : name, id);
 
-            var toJoin = model.CurrentPms.FirstByIdOrNull(id)
-                         ?? (ChannelModel) model.CurrentChannels.FirstByIdOrNull(id);
+            var toJoin = cm.CurrentPms.FirstByIdOrNull(id)
+                         ?? (ChannelModel) cm.CurrentChannels.FirstByIdOrNull(id);
 
             if (toJoin == null)
             {
                 AddChannel(type, id, name);
 
-                toJoin = model.CurrentPms.FirstByIdOrNull(id)
-                         ?? (ChannelModel) model.CurrentChannels.FirstByIdOrNull(id);
+                toJoin = cm.CurrentPms.FirstByIdOrNull(id)
+                         ?? (ChannelModel) cm.CurrentChannels.FirstByIdOrNull(id);
             }
 
             if (history.Any()
@@ -262,29 +257,29 @@ namespace slimCat.Services
         {
             Log("Removing Channel " + name);
 
-            if (model.CurrentChannels.Any(param => param.Id == name))
+            if (cm.CurrentChannels.Any(param => param.Id == name))
             {
-                var temp = model.CurrentChannels.FirstByIdOrNull(name);
+                var temp = cm.CurrentChannels.FirstByIdOrNull(name);
                 temp.Description = null;
 
-                var index = model.CurrentChannels.IndexOf(temp);
-                RequestNavigate(model.CurrentChannels[index - 1].Id);
+                var index = cm.CurrentChannels.IndexOf(temp);
+                RequestNavigate(cm.CurrentChannels[index - 1].Id);
 
                 Dispatcher.Invoke(
-                    (Action) (() => model.CurrentChannels.Remove(temp)));
+                    (Action) (() => cm.CurrentChannels.Remove(temp)));
 
                 if (isServer) return;
 
                 object toSend = new {channel = name};
                 connection.SendMessage(toSend, Commands.ChannelLeave);
             }
-            else if (model.CurrentPms.Any(param => param.Id == name))
+            else if (cm.CurrentPms.Any(param => param.Id == name))
             {
-                var temp = model.CurrentPms.FirstByIdOrNull(name);
-                var index = model.CurrentPms.IndexOf(temp);
-                RequestNavigate(index != 0 ? model.CurrentPms[index - 1].Id : "Home");
+                var temp = cm.CurrentPms.FirstByIdOrNull(name);
+                var index = cm.CurrentPms.IndexOf(temp);
+                RequestNavigate(index != 0 ? cm.CurrentPms[index - 1].Id : "Home");
 
-                model.CurrentPms.Remove(temp);
+                cm.CurrentPms.Remove(temp);
             }
             else if (force)
             {
@@ -301,7 +296,7 @@ namespace slimCat.Services
 
             var type = (id == name) ? ChannelType.Public : ChannelType.Private;
 
-            if (model.CurrentChannels.FirstByIdOrNull(id) != null)
+            if (cm.CurrentChannels.FirstByIdOrNull(id) != null)
                 return;
 
             Log((id != name && !string.IsNullOrEmpty(name))
@@ -311,8 +306,8 @@ namespace slimCat.Services
             var temp = new GeneralChannelModel(id, name, type);
             Dispatcher.Invoke(() =>
             {
-                model.AllChannels.Add(temp);
-                model.CurrentChannels.Add(temp);
+                cm.AllChannels.Add(temp);
+                cm.CurrentChannels.Add(temp);
             });
 
             container.Resolve<GeneralChannelViewModel>(new ParameterOverride("name", id));
@@ -361,8 +356,8 @@ namespace slimCat.Services
 
                 Dispatcher.Invoke(() =>
                 {
-                    var toUpdate = model.CurrentChannels.FirstByIdOrNull(lastSelected.Id)
-                                   ?? (ChannelModel) model.CurrentPms.FirstByIdOrNull(lastSelected.Id);
+                    var toUpdate = cm.CurrentChannels.FirstByIdOrNull(lastSelected.Id)
+                                   ?? (ChannelModel) cm.CurrentPms.FirstByIdOrNull(lastSelected.Id);
 
                     if (toUpdate == null)
                         lastSelected = null;
@@ -371,8 +366,8 @@ namespace slimCat.Services
                 });
             }
 
-            var channelModel = model.CurrentChannels.FirstByIdOrNull(channelId)
-                               ?? (ChannelModel) model.CurrentPms.FirstByIdOrNull(channelId);
+            var channelModel = cm.CurrentChannels.FirstByIdOrNull(channelId)
+                               ?? (ChannelModel) cm.CurrentPms.FirstByIdOrNull(channelId);
 
             if (channelModel == null)
                 throw new ArgumentOutOfRangeException(nameof(channelId), "Cannot navigate to unknown channel");
@@ -385,7 +380,7 @@ namespace slimCat.Services
             }
 
             channelModel.IsSelected = true;
-            model.CurrentChannel = channelModel;
+            cm.CurrentChannel = channelModel;
 
             if (!channelModel.Messages.Any() && !channelModel.Ads.Any())
             {
@@ -420,7 +415,7 @@ namespace slimCat.Services
                 }
 
                 region.Regions[ChatWrapperView.ConversationRegion].RequestNavigate(
-                    HelperConverter.EscapeSpaces(channelModel.Id));
+                    StringExtensions.EscapeSpaces(channelModel.Id));
             });
 
             lastSelected = channelModel;

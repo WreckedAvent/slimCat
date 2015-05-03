@@ -28,7 +28,7 @@ namespace slimCat.Services
     {
         private void OnOpenLogRequested(IDictionary<string, object> command)
         {
-            logger.OpenLog(false, model.CurrentChannel.Title, model.CurrentChannel.Id);
+            logger.OpenLog(false, cm.CurrentChannel.Title, cm.CurrentChannel.Id);
         }
 
         private void OnOpenLogFolderRequested(IDictionary<string, object> command)
@@ -38,7 +38,7 @@ namespace slimCat.Services
                 var toOpen = command.Get(Constants.Arguments.Channel);
                 if (string.IsNullOrWhiteSpace(toOpen)) return;
 
-                var match = model.AllChannels.FirstByIdOrNull(toOpen);
+                var match = cm.AllChannels.FirstByIdOrNull(toOpen);
 
                 if (match != null)
                     logger.OpenLog(true, match.Title, match.Id);
@@ -46,7 +46,7 @@ namespace slimCat.Services
                     logger.OpenLog(true, toOpen, toOpen);
             }
             else
-                logger.OpenLog(true, model.CurrentChannel.Title, model.CurrentChannel.Id);
+                logger.OpenLog(true, cm.CurrentChannel.Title, cm.CurrentChannel.Id);
         }
     }
 }

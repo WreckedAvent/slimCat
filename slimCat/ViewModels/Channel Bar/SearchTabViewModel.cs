@@ -23,7 +23,6 @@ namespace slimCat.ViewModels
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
-    using System.Globalization;
     using System.Linq;
     using System.Net;
     using System.Timers;
@@ -343,15 +342,5 @@ namespace slimCat.ViewModels
         }
 
         #endregion
-    }
-
-    internal class CategoryConverter : OneWayConverter
-    {
-        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            var toReturn = CultureInfo.CurrentCulture.TextInfo.ToTitleCase((string) value);
-
-            return toReturn.Equals("Furryprefs") ? "Furry Preference" : toReturn;
-        }
     }
 }

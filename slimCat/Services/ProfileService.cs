@@ -26,7 +26,6 @@ namespace slimCat.Services
     using System.Linq;
     using System.Net;
     using HtmlAgilityPack;
-    using Microsoft.Practices.Prism.Events;
     using Microsoft.Practices.Unity;
     using Models;
     using Models.Api;
@@ -39,14 +38,13 @@ namespace slimCat.Services
     {
         #region Constructors
 
-        public ProfileService(IUnityContainer contain, IBrowseThings browser, IChatModel cm, IEventAggregator events)
+        public ProfileService(IChatState chatState, IBrowseThings browser)
         {
             this.browser = browser;
-            this.cm = cm;
+            cm = chatState.ChatModel;
+            state = chatState;
 
-            container = contain;
-
-            events.GetEvent<LoginAuthenticatedEvent>().Subscribe(GetProfileDataAsync);
+            chatState.EventAggregator.GetEvent<LoginAuthenticatedEvent>().Subscribe(GetProfileDataAsync);
 
             var worker = new BackgroundWorker();
             worker.DoWork += GetKinkDataAsync;
@@ -115,14 +113,14 @@ namespace slimCat.Services
             {
                 Action<string> action;
                 if (tagActions.TryGetValue(x.Label, out action))
-                    action(DoubleDecode(x.Value));
+                    action(x.Value.DoubleDecode());
             });
 
             toReturn.AdditionalTags = profileTags
                 .Where(x => !tagActions.ContainsKey(x.Label))
                 .Select(x =>
                 {
-                    x.Value = DoubleDecode(x.Value);
+                    x.Value = x.Value.DoubleDecode();
                     return x;
                 }).ToList();
 
@@ -150,14 +148,14 @@ namespace slimCat.Services
 
         private readonly IChatModel cm;
 
-        private readonly IUnityContainer container;
-
         private readonly IDictionary<int, ProfileKink> kinkData = new Dictionary<int, ProfileKink>();
 
         private readonly IDictionary<string, ProfileData> profileCache =
             new Dictionary<string, ProfileData>(StringComparer.OrdinalIgnoreCase);
 
         private readonly IList<string> invalidCacheList = new List<string>();
+
+        private readonly IChatState state;
 
         #endregion
 
@@ -169,7 +167,7 @@ namespace slimCat.Services
             PmChannelModel model = null;
             try
             {
-                model = container.Resolve<PmChannelModel>(characterName);
+                model = state.Resolve<PmChannelModel>(characterName);
             }
             catch (ResolutionFailedException)
             {
@@ -227,7 +225,7 @@ namespace slimCat.Services
                 {
                     profileTags = statboxTags[0].ChildNodes
                         .Where(x => x.Name == "span" || x.Name == "#text")
-                        .Select(x => DoubleDecode(x.InnerText.Trim()))
+                        .Select(x => x.InnerText.Trim().DoubleDecode())
                         .Where(x => !string.IsNullOrWhiteSpace(x))
                         .ToList()
                         .Chunk(2)
@@ -245,7 +243,7 @@ namespace slimCat.Services
                     profileTags = profileTags.Union(otherTags.SelectMany(selection =>
                         selection.ChildNodes
                             .Where(x => x.Name == "span" || x.Name == "#text")
-                            .Select(x => DoubleDecode(x.InnerText.Trim()))
+                            .Select(x => x.InnerText.Trim().DoubleDecode())
                             .ToList()
                             .Chunk(2)
                             .Select(x => x.ToList())
@@ -262,7 +260,7 @@ namespace slimCat.Services
                 {
                     allAlts = profileAlts[0].ChildNodes
                         .Where(x => x.Name == "a")
-                        .Select(x => DoubleDecode(x.InnerText.Trim()))
+                        .Select(x => x.InnerText.Trim().DoubleDecode())
                         .Where(x => !string.IsNullOrWhiteSpace(x))
                         .ToList();
                 }
@@ -290,10 +288,10 @@ namespace slimCat.Services
                                 {
                                     Id = tagId,
                                     IsCustomKink = isCustomKink,
-                                    Name = isCustomKink ? DoubleDecode(name) : string.Empty,
+                                    Name = isCustomKink ? name.DoubleDecode() : string.Empty,
                                     KinkListKind = kind,
                                     Tooltip =
-                                        tooltip != null && isCustomKink ? DoubleDecode(tooltip.Value) : string.Empty
+                                        tooltip != null && isCustomKink ? tooltip.Value.DoubleDecode() : string.Empty
                                 };
                             });
                     }).ToList();
@@ -321,11 +319,6 @@ namespace slimCat.Services
             }
         }
 
-        private string DoubleDecode(string s)
-        {
-            return WebUtility.HtmlDecode(WebUtility.HtmlDecode(s));
-        }
-
         private void GetKinkDataAsync(object s, DoWorkEventArgs e)
         {
             var kinkDataCache = SettingsService.RetrieveProfile("!kinkdata");
@@ -341,8 +334,8 @@ namespace slimCat.Services
                     {
                         Id = x.Id,
                         IsCustomKink = false,
-                        Name = DoubleDecode(x.Name),
-                        Tooltip = DoubleDecode(x.Description),
+                        Name = x.Name.DoubleDecode(),
+                        Tooltip = x.Description.DoubleDecode(),
                         KinkListKind = KinkListKind.MasterList
                     }).ToList();
 

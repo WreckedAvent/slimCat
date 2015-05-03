@@ -30,18 +30,18 @@ namespace slimCat.Services
     {
         private void OnChannelCodeRequested(IDictionary<string, object> command)
         {
-            if (model.CurrentChannel.Id.Equals("Home", StringComparison.OrdinalIgnoreCase))
+            if (cm.CurrentChannel.Id.Equals("Home", StringComparison.OrdinalIgnoreCase))
             {
-                events.GetEvent<ErrorEvent>().Publish("Home channel does not have a code.");
+                events.NewError("Home channel does not have a code.");
                 return;
             }
 
             var toCopy = "[session={0}]{1}[/session]".FormatWith(
-                model.CurrentChannel.Title,
-                model.CurrentChannel.Id);
+                cm.CurrentChannel.Title,
+                cm.CurrentChannel.Id);
 
             Clipboard.SetData(DataFormats.Text, toCopy);
-            events.GetEvent<ErrorEvent>().Publish("Channel's code copied to clipboard.");
+            events.NewMessage("Channel's code copied to clipboard.");
         }
     }
 }

@@ -315,7 +315,7 @@ namespace slimCat.ViewModels
 
             LastMessage = Message;
             Message = null;
-            Events.GetEvent<UserCommandEvent>().Publish(command);
+            Events.SendUserCommand(command);
         }
 
         protected abstract void SendMessage();

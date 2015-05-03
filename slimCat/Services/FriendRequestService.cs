@@ -141,8 +141,7 @@ namespace slimCat.Services
                 DoApiAction(endpoint);
             }
 
-            if (hasError)
-                events.GetEvent<ErrorEvent>().Publish(result.Error);
+            if (hasError) events.NewError(result.Error);
 
             return result.Requests;
         }

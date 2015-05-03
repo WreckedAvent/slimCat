@@ -34,7 +34,7 @@ namespace slimCat.Services
         private void OnLogoutRequested(IDictionary<string, object> command)
         {
             connection.Disconnect();
-            model.IsAuthenticated = false;
+            cm.IsAuthenticated = false;
             regionManager.RequestNavigate(Shell.MainRegion,
                 new Uri(CharacterSelectViewModel.CharacterSelectViewName, UriKind.Relative));
         }

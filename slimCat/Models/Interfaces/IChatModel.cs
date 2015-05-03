@@ -28,7 +28,6 @@ namespace slimCat.Models
     /// <summary>
     ///     Represents data relating to chat that isn't specific to characters.
     /// </summary>
-    [Obsolete("Use chat state instead")]
     public interface IChatModel
     {
         #region Public Methods and Operators

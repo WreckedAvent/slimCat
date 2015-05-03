@@ -101,7 +101,7 @@ namespace slimCat.Services
 
                 temp.Name = (string) character[0]; // Character's name
 
-                temp.Gender = ParseGender((string) character[1]); // character's gender
+                temp.Gender = ((string) character[1]).ParseGender(); // character's gender
 
                 temp.Status = character[2].ToEnum<StatusType>();
 

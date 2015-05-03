@@ -28,13 +28,13 @@ namespace slimCat.Services
     /// </summary>
     public class PermissionService : IGetPermissions
     {
+        private readonly ICharacterManager characters;
         private readonly IChatModel cm;
-        private readonly ICharacterManager manager;
 
-        public PermissionService(IChatModel cm, ICharacterManager manager)
+        public PermissionService(IChatState chatState)
         {
-            this.cm = cm;
-            this.manager = manager;
+            cm = chatState.ChatModel;
+            characters = chatState.CharacterManager;
         }
 
         private GeneralChannelModel CurrentChannel => cm.CurrentChannel as GeneralChannelModel;
@@ -47,11 +47,9 @@ namespace slimCat.Services
                    && CurrentChannel.CharacterManager.IsOnList(name, ListKind.Moderator, false);
         }
 
-        public bool IsChannelModerator(string name) => CurrentChannel != null
-                                                       &&
-                                                       CurrentChannel.CharacterManager.IsOnList(name, ListKind.Moderator,
-                                                           false);
+        public bool IsChannelModerator(string name)
+            => CurrentChannel != null && CurrentChannel.CharacterManager.IsOnList(name, ListKind.Moderator, false);
 
-        public bool IsAdmin(string name) => manager.IsOnList(name, ListKind.Moderator, false);
+        public bool IsAdmin(string name) => characters.IsOnList(name, ListKind.Moderator, false);
     }
 }

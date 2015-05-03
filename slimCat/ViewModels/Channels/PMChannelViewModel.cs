@@ -63,7 +63,7 @@ namespace slimCat.ViewModels
                 Model.PropertyChanged += OnModelPropertyChanged;
 
                 Container.RegisterType<object, PmChannelView>(
-                    HelperConverter.EscapeSpaces(Model.Id), new InjectionConstructor(this));
+                    StringExtensions.EscapeSpaces(Model.Id), new InjectionConstructor(this));
                 Events.GetEvent<NewUpdateEvent>()
                     .Subscribe(OnNewUpdateEvent, ThreadOption.PublisherThread, true, UpdateIsOurCharacter);
 
@@ -307,7 +307,7 @@ namespace slimCat.ViewModels
 
         public bool CanShowNoteTimeLeft => !IsViewingChat && isInNoteCoolDown;
 
-        public string NoteTimeLeft => HelperConverter.DateTimeInFutureToRough(noteTimeLeft) + "remaining";
+        public string NoteTimeLeft => noteTimeLeft.DateTimeInFutureToRough() + "remaining";
 
         public bool ShouldShowPostLength => !string.IsNullOrEmpty(Message) && isTyping;
 

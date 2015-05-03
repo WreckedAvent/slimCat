@@ -2,11 +2,11 @@
 
 // <copyright file="ManageListsViewModel.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -261,8 +261,8 @@ namespace slimCat.ViewModels
         private bool MeetsFilter(ICharacter character)
             => character.NameContains(SearchSettings.SearchString) && SearchSettings.MeetsStatusFilter(character);
 
-        private IEnumerable<ICharacter> GetList(ICharacterManager manager, ListKind listKind, bool onlineOnly = true) =>
-            manager.GetCharacters(listKind, onlineOnly)
+        private IEnumerable<ICharacter> GetList(ICharacterManager characters, ListKind listKind, bool onlineOnly = true) =>
+            characters.GetCharacters(listKind, onlineOnly)
                 .Where(MeetsFilter)
                 .OrderBy(x => x.Name);
 

@@ -199,17 +199,14 @@ namespace slimCat.ViewModels
 
         private void OnRoomModeChanged(object args)
         {
-            events.GetEvent<UserCommandEvent>()
-                .Publish(
-                    CommandDefinitions.CreateCommand("setmode", new[] {model.Mode.ToString()}, model.Id).ToDictionary());
+            events.SendUserCommand("setmode", new[] {model.Mode.ToString()}, model.Id);
         }
 
         private void OnToggleRoomType(object args)
         {
-            events.GetEvent<UserCommandEvent>()
-                .Publish(model.Type == ChannelType.InviteOnly
-                    ? CommandDefinitions.CreateCommand("openroom", new List<string>(), model.Id).ToDictionary()
-                    : CommandDefinitions.CreateCommand("closeroom", null, model.Id).ToDictionary());
+            events.SendUserCommand(model.Type == ChannelType.InviteOnly
+                ? CommandDefinitions.CreateCommand("openroom", new List<string>(), model.Id).ToDictionary()
+                : CommandDefinitions.CreateCommand("closeroom", null, model.Id).ToDictionary());
         }
 
         private void UpdateDescription(object sender = null, PropertyChangedEventArgs e = null)
@@ -235,10 +232,8 @@ namespace slimCat.ViewModels
             }
             else
             {
-                // if its us updating it
-                events.GetEvent<UserCommandEvent>()
-                    .Publish(
-                        CommandDefinitions.CreateCommand("setdescription", new[] {description}, model.Id).ToDictionary());
+                // if it's us updating it
+                events.SendUserCommand("setdescription", new[] {description}, model.Id);
             }
         }
 

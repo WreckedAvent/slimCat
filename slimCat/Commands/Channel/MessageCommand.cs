@@ -100,7 +100,7 @@ namespace slimCat.Services
                 return;
 
             if (!CharacterManager.IsOnList(character, ListKind.Ignored))
-                manager.AddMessage(message, channel, character, isAd ? MessageType.Ad : MessageType.Normal);
+                channels.AddMessage(message, channel, character, isAd ? MessageType.Ad : MessageType.Normal);
         }
     }
 
@@ -108,7 +108,7 @@ namespace slimCat.Services
     {
         private void OnMsgRequested(IDictionary<string, object> command)
         {
-            channelService.AddMessage(
+            channels.AddMessage(
                 command.Get(Constants.Arguments.Message),
                 command.Get(Constants.Arguments.Channel),
                 Constants.Arguments.ThisCharacter);

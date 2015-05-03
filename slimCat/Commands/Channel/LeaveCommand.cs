@@ -36,7 +36,7 @@ namespace slimCat.Services
             if (ChatModel.CurrentCharacter.NameEquals(characterName))
             {
                 if (channel != null)
-                    manager.RemoveChannel(channelId, false, true);
+                    channels.RemoveChannel(channelId, false, true);
 
                 return;
             }
@@ -66,13 +66,13 @@ namespace slimCat.Services
     {
         private void OnCloseRequested(IDictionary<string, object> command)
         {
-            channelService.RemoveChannel(command.Get(Constants.Arguments.Channel));
+            channels.RemoveChannel(command.Get(Constants.Arguments.Channel));
         }
 
         private void OnForceChannelCloseRequested(IDictionary<string, object> command)
         {
             var channelName = command.Get(Constants.Arguments.Channel);
-            channelService.RemoveChannel(channelName, true);
+            channels.RemoveChannel(channelName, true);
         }
     }
 }

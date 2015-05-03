@@ -40,10 +40,9 @@ namespace slimCat.Services
             }
 
             Events.GetEvent<ChatSearchResultEvent>().Publish(resultsList.Any());
-            Events.GetEvent<ErrorEvent>()
-                .Publish(resultsList.Any()
-                    ? "Got search results successfully."
-                    : "Got search results, but with no relevant characters.");
+            Events.NewError(resultsList.Any()
+                ? "Got search results successfully."
+                : "Got search results, but with no relevant characters.");
         }
     }
 

@@ -29,7 +29,8 @@ namespace slimCat.Services
     using Models;
     using Utilities;
     using ViewModels;
-    using Commands = Utilities.Constants.ServerCommands;
+    using static Utilities.Constants.ServerCommands;
+    using static Utilities.Constants.Arguments;
 
     #endregion
 
@@ -43,11 +44,11 @@ namespace slimCat.Services
         public ServerCommandService(IChatState chatState,
             IAutomateThings automation,
             IManageNotes notes,
-            IManageChannels manager,
+            IManageChannels channels,
             IFriendRequestService friendRequestService)
             : base(chatState)
         {
-            this.manager = manager;
+            this.channels = channels;
             this.automation = automation;
             this.notes = notes;
             this.friendRequestService = friendRequestService;
@@ -61,14 +62,14 @@ namespace slimCat.Services
 
             noisyTypes = new[]
             {
-                Commands.UserJoin,
-                Commands.UserLeave,
-                Commands.UserStatus,
-                Commands.PublicChannelList,
-                Commands.PrivateChannelList,
-                Commands.UserList,
-                Commands.ChannelAd,
-                Commands.ChannelMessage
+                UserJoin,
+                UserLeave,
+                UserStatus,
+                PublicChannelList,
+                PrivateChannelList,
+                UserList,
+                ChannelAd,
+                ChannelMessage
             };
 
             LoggingSection = "cmnd serv";
@@ -95,7 +96,7 @@ namespace slimCat.Services
 
         private readonly object locker = new object();
 
-        private readonly IManageChannels manager;
+        private readonly IManageChannels channels;
 
         private readonly string[] noisyTypes;
 
@@ -109,25 +110,6 @@ namespace slimCat.Services
 
         #region Methods
 
-        private static Gender ParseGender(string input)
-        {
-            switch (input)
-            {
-                // manually determine some really annoyingly-named genders
-                case "Male-Herm":
-                    return Gender.HermM;
-
-                case "Herm":
-                    return Gender.HermF;
-
-                case "Cunt-boy":
-                    return Gender.Cuntboy;
-
-                default: // every other gender is parsed normally
-                    return input.ToEnum<Gender>();
-            }
-        }
-
         private GeneralChannelModel FindChannel(string id)
         {
             return ChatModel.CurrentChannels.FirstByIdOrNull(id)
@@ -136,7 +118,7 @@ namespace slimCat.Services
 
         private GeneralChannelModel FindChannel(IDictionary<string, object> command)
         {
-            var channelId = command.Get(Constants.Arguments.Channel);
+            var channelId = command.Get(Channel);
             return FindChannel(channelId);
         }
 
@@ -158,7 +140,7 @@ namespace slimCat.Services
         {
             if (data == null) return;
 
-            var isChannelJoin = data.Get(Constants.Arguments.Command) == Commands.ChannelJoin;
+            var isChannelJoin = data.Get(Command) == ChannelJoin;
             if (autoJoinedChannels.Count != 0 && isChannelJoin)
             {
                 AutoJoinChannelCommand(data);
@@ -167,8 +149,8 @@ namespace slimCat.Services
 
             if (isChannelJoin)
             {
-                var characterDict = data.Get<IDictionary<string, object>>(Constants.Arguments.Character);
-                var character = characterDict.Get(Constants.Arguments.Identity);
+                var characterDict = data.Get<IDictionary<string, object>>(Character);
+                var character = characterDict.Get(Identity);
 
                 if (character == ChatModel.CurrentCharacter.Name)
                 {
@@ -196,79 +178,79 @@ namespace slimCat.Services
 
             if (command == null) return null;
 
-            var commandType = command.Get(Constants.Arguments.Command);
+            var commandType = command.Get(Command);
 
             Log(commandType + " " + command.GetHashCode(), noisyTypes.Contains(commandType));
 
             switch (commandType)
             {
-                case Commands.SystemAuthenticate:
+                case SystemAuthenticate:
                     return LoginCommand;
-                case Commands.SystemUptime:
+                case SystemUptime:
                     return UptimeCommand;
-                case Commands.AdminList:
+                case AdminList:
                     return AdminsListCommand;
-                case Commands.UserIgnore:
+                case UserIgnore:
                     return IgnoreUserCommand;
-                case Commands.UserList:
+                case UserList:
                     return InitialCharacterListCommand;
-                case Commands.PublicChannelList:
+                case PublicChannelList:
                     return PublicChannelListCommand;
-                case Commands.PrivateChannelList:
+                case PrivateChannelList:
                     return PrivateChannelListCommand;
-                case Commands.UserStatus:
+                case UserStatus:
                     return StatusChangedCommand;
-                case Commands.ChannelAd:
+                case ChannelAd:
                     return AdMessageCommand;
-                case Commands.ChannelMessage:
+                case ChannelMessage:
                     return ChannelMessageCommand;
-                case Commands.UserMessage:
+                case UserMessage:
                     return PrivateMessageCommand;
-                case Commands.UserTyping:
+                case UserTyping:
                     return TypingStatusCommand;
-                case Commands.ChannelJoin:
+                case ChannelJoin:
                     return JoinChannelCommand;
-                case Commands.ChannelLeave:
+                case ChannelLeave:
                     return LeaveChannelCommand;
-                case Commands.ChannelModerators:
+                case ChannelModerators:
                     return ChannelOperatorListCommand;
-                case Commands.ChannelInitialize:
+                case ChannelInitialize:
                     return ChannelInitializedCommand;
-                case Commands.ChannelDescription:
+                case ChannelDescription:
                     return ChannelDescriptionCommand;
-                case Commands.SystemMessage:
-                case Commands.SystemError:
+                case SystemMessage:
+                case SystemError:
                     return ErrorCommand;
-                case Commands.UserInvite:
+                case UserInvite:
                     return InviteCommand;
-                case Commands.ChannelKick:
-                case Commands.ChannelBan:
+                case ChannelKick:
+                case ChannelBan:
                     return KickCommand;
-                case Commands.UserJoin:
+                case UserJoin:
                     return UserLoggedInCommand;
-                case Commands.UserLeave:
+                case UserLeave:
                     return CharacterDisconnectCommand;
-                case Commands.ChannelRoll:
+                case ChannelRoll:
                     return RollCommand;
-                case Commands.AdminDemote:
+                case AdminDemote:
                     return OperatorDemoteCommand;
-                case Commands.AdminPromote:
+                case AdminPromote:
                     return OperatorPromoteCommand;
-                case Commands.ChannelDemote:
+                case ChannelDemote:
                     return OperatorDemoteCommand;
-                case Commands.ChannelPromote:
+                case ChannelPromote:
                     return OperatorPromoteCommand;
-                case Commands.ChannelMode:
+                case Constants.ServerCommands.ChannelMode:
                     return RoomModeChangedCommand;
-                case Commands.AdminBroadcast:
+                case AdminBroadcast:
                     return BroadcastCommand;
-                case Commands.SystemBridge:
+                case SystemBridge:
                     return RealTimeBridgeCommand;
-                case Commands.AdminReport:
+                case AdminReport:
                     return NewReportCommand;
-                case Commands.SearchResult:
+                case SearchResult:
                     return SearchResultCommand;
-                case Commands.ChannelSetOwner:
+                case ChannelSetOwner:
                     return SetNewOwnerCommand;
                 default:
                     return null;
@@ -332,7 +314,7 @@ namespace slimCat.Services
         private void UptimeCommand(IDictionary<string, object> command)
         {
             var time = (long) command["starttime"];
-            ChatModel.ServerUpTime = HelperConverter.UnixTimeToDateTime(time);
+            ChatModel.ServerUpTime = time.UnixTimeToDateTime();
         }
 
         private void GetCharacter(string character)
@@ -401,7 +383,7 @@ namespace slimCat.Services
                 value = 0;
 
             var retryAttempts = (int) value;
-            Logging.LogLine(command.Get(Constants.Arguments.Command)
+            Logging.LogLine(command.Get(Command)
                             + " " + command.GetHashCode()
                             + " fail #" + (retryAttempts + 1), "cmnd serv");
 

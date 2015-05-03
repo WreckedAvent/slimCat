@@ -17,6 +17,7 @@
 
 #region Usings
 
+using Microsoft.Practices.Unity;
 using slimCat.Models;
 using slimCat.Services;
 using slimCat.Utilities;
@@ -33,10 +34,16 @@ internal static class ChatStateExtensions
     }
 
     public static GeneralChannelModel GetChannelById(this IChatState chatState, string id)
-        => chatState.ChatModel.AllChannels.FirstByIdOrNull(id);
+        => chatState.ChatModel.CurrentChannels.FirstByIdOrNull(id)
+           ?? chatState.ChatModel.AllChannels.FirstByIdOrNull(id);
 
     public static bool IsInteresting(this IChatState chatState, string character, bool onlineOnly = false)
-        =>
-            chatState.CharacterManager.IsOfInterest(character, onlineOnly) ||
-            chatState.ChatModel.CurrentPms.FirstByIdOrNull(character) != null;
+        => chatState.CharacterManager.IsOfInterest(character, onlineOnly)
+           || chatState.ChatModel.CurrentPms.FirstByIdOrNull(character) != null;
+
+    public static void CreateError(this IChatState cs, string error) => cs.EventAggregator.NewError(error);
+    public static void CreateMessage(this IChatState cs, string message) => cs.EventAggregator.NewMessage(message);
+    public static void CreateUpdate(this IChatState cs, NotificationModel model) => cs.EventAggregator.NewUpdate(model);
+    public static T Resolve<T>(this IChatState cs) => cs.Container.Resolve<T>();
+    public static T Resolve<T>(this IChatState cs, string args) => cs.Container.Resolve<T>(args);
 }

@@ -25,11 +25,17 @@ namespace slimCat.Utilities
 
     internal static class DictionaryExtensions
     {
+        /// <summary>
+        ///     Gets a string value out of the dictionary.
+        /// </summary>
         public static string Get(this IDictionary<string, object> command, string key)
         {
             return command.Get<string>(key);
         }
 
+        /// <summary>
+        ///     Gets a kind of value out of the dictionary with a cast.
+        /// </summary>
         public static T Get<T>(this IDictionary<string, object> command, string key) where T : class
         {
             return command[key] as T;

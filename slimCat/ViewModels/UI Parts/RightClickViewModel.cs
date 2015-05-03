@@ -32,10 +32,10 @@ namespace slimCat.ViewModels
     {
         #region Constructors and Destructors
 
-        public RightClickMenuViewModel(bool isModerator, ICharacterManager manager, IGetPermissions permissionService)
+        public RightClickMenuViewModel(bool isModerator, ICharacterManager characters, IGetPermissions permissionService)
         {
             this.isModerator = isModerator;
-            this.manager = manager;
+            this.characters = characters;
             this.permissionService = permissionService;
         }
 
@@ -105,7 +105,7 @@ namespace slimCat.ViewModels
         #region Fields
 
         private readonly bool isModerator;
-        private readonly ICharacterManager manager;
+        private readonly ICharacterManager characters;
         private readonly IGetPermissions permissionService;
 
         private bool hasReports;
@@ -116,7 +116,7 @@ namespace slimCat.ViewModels
 
         #region Public Properties
 
-        public bool CanIgnoreUpdates => Target != null && manager.IsOfInterest(Target.Name, false);
+        public bool CanIgnoreUpdates => Target != null && characters.IsOfInterest(Target.Name, false);
 
         public bool HasReport => isModerator && hasReports;
 
@@ -143,7 +143,7 @@ namespace slimCat.ViewModels
             {
                 if (Target != null)
                 {
-                    return manager.IsOnList(Target.Name, ListKind.Interested, false)
+                    return characters.IsOnList(Target.Name, ListKind.Interested, false)
                         ? "Remove interested mark"
                         : "Add interested mark";
                 }
@@ -158,7 +158,7 @@ namespace slimCat.ViewModels
             {
                 if (Target != null)
                 {
-                    return manager.IsOnList(Target.Name, ListKind.NotInterested, false)
+                    return characters.IsOnList(Target.Name, ListKind.NotInterested, false)
                         ? "Remove not interested mark"
                         : "Add not interested mark";
                 }
@@ -173,7 +173,7 @@ namespace slimCat.ViewModels
             {
                 if (Target != null)
                 {
-                    return manager.IsOnList(Target.Name, ListKind.IgnoreUpdates)
+                    return characters.IsOnList(Target.Name, ListKind.IgnoreUpdates)
                         ? "Unignore updates"
                         : "Ignore updates";
                 }
@@ -188,7 +188,7 @@ namespace slimCat.ViewModels
             {
                 if (Target == null) return string.Empty;
 
-                return manager.IsOnList(Target.Name, ListKind.Bookmark, false)
+                return characters.IsOnList(Target.Name, ListKind.Bookmark, false)
                     ? "Remove bookmark"
                     : "Add bookmark";
             }
@@ -200,13 +200,13 @@ namespace slimCat.ViewModels
             {
                 if (Target == null) return string.Empty;
 
-                if (manager.IsOnList(Target.Name, ListKind.Friend, false))
+                if (characters.IsOnList(Target.Name, ListKind.Friend, false))
                     return "Remove friend";
 
-                if (manager.IsOnList(Target.Name, ListKind.FriendRequestSent, false))
+                if (characters.IsOnList(Target.Name, ListKind.FriendRequestSent, false))
                     return "Retract friend request";
 
-                if (manager.IsOnList(Target.Name, ListKind.FriendRequestReceived, false))
+                if (characters.IsOnList(Target.Name, ListKind.FriendRequestReceived, false))
                     return "Reject friend request";
 
                 return string.Empty;
@@ -219,13 +219,13 @@ namespace slimCat.ViewModels
             {
                 if (Target == null) return string.Empty;
 
-                if (manager.IsOnList(Target.Name, ListKind.FriendRequestReceived, false))
+                if (characters.IsOnList(Target.Name, ListKind.FriendRequestReceived, false))
                     return "Accept Friend Request";
 
-                if (manager.IsOnList(Target.Name, ListKind.FriendRequestSent, false))
+                if (characters.IsOnList(Target.Name, ListKind.FriendRequestSent, false))
                     return string.Empty;
 
-                if (!manager.IsOnList(Target.Name, ListKind.Friend, false))
+                if (!characters.IsOnList(Target.Name, ListKind.Friend, false))
                     return "Send friend request";
 
                 return string.Empty;
@@ -238,8 +238,8 @@ namespace slimCat.ViewModels
             {
                 if (Target == null) return false;
 
-                return manager.IsOnList(Target.Name, ListKind.FriendRequestReceived, false)
-                       || manager.IsOnList(Target.Name, ListKind.FriendRequestSent, false);
+                return characters.IsOnList(Target.Name, ListKind.FriendRequestReceived, false)
+                       || characters.IsOnList(Target.Name, ListKind.FriendRequestSent, false);
             }
         }
 
@@ -288,7 +288,7 @@ namespace slimCat.ViewModels
             get
             {
                 if (Target != null)
-                    return manager.IsOnList(Target.Name, ListKind.Ignored, false);
+                    return characters.IsOnList(Target.Name, ListKind.Ignored, false);
 
                 return false;
             }
@@ -299,7 +299,7 @@ namespace slimCat.ViewModels
             get
             {
                 if (Target != null)
-                    return manager.IsOnList(Target.Name, ListKind.Bookmark, false);
+                    return characters.IsOnList(Target.Name, ListKind.Bookmark, false);
 
                 return false;
             }
@@ -310,7 +310,7 @@ namespace slimCat.ViewModels
             get
             {
                 if (Target != null)
-                    return manager.IsOnList(Target.Name, ListKind.Friend, false);
+                    return characters.IsOnList(Target.Name, ListKind.Friend, false);
 
                 return false;
             }
@@ -321,7 +321,7 @@ namespace slimCat.ViewModels
             get
             {
                 if (Target != null)
-                    return manager.IsOnList(Target.Name, ListKind.Interested, false);
+                    return characters.IsOnList(Target.Name, ListKind.Interested, false);
 
                 return false;
             }
@@ -332,7 +332,7 @@ namespace slimCat.ViewModels
             get
             {
                 if (Target != null)
-                    return manager.IsOnList(Target.Name, ListKind.NotInterested, false);
+                    return characters.IsOnList(Target.Name, ListKind.NotInterested, false);
 
                 return false;
             }
@@ -344,7 +344,7 @@ namespace slimCat.ViewModels
             {
                 if (Target == null) return false;
 
-                return manager.IsOnList(Target.Name, ListKind.IgnoreUpdates, false);
+                return characters.IsOnList(Target.Name, ListKind.IgnoreUpdates, false);
             }
         }
 
@@ -354,7 +354,7 @@ namespace slimCat.ViewModels
             {
                 if (Target == null) return false;
 
-                return manager.IsOnList(Target.Name, ListKind.FriendRequestSent, false);
+                return characters.IsOnList(Target.Name, ListKind.FriendRequestSent, false);
             }
         }
 
@@ -364,7 +364,7 @@ namespace slimCat.ViewModels
             {
                 if (Target == null) return false;
 
-                return manager.IsOnList(Target.Name, ListKind.FriendRequestReceived, false);
+                return characters.IsOnList(Target.Name, ListKind.FriendRequestReceived, false);
             }
         }
 
@@ -393,7 +393,7 @@ namespace slimCat.ViewModels
             {
                 if (Target == null) return false;
 
-                return manager.IsOnList(Target.Name, ListKind.SearchResult);
+                return characters.IsOnList(Target.Name, ListKind.SearchResult);
             }
         }
 

@@ -189,7 +189,7 @@ namespace slimCat.Services
                     });
 
                 notes.UpdateNotesAsync(senderName);
-                Events.GetEvent<NewUpdateEvent>().Publish(update);
+                Events.NewUpdate(update);
             }
             else if (type.Equals("comment"))
             {
@@ -217,7 +217,7 @@ namespace slimCat.Services
                         Title = title
                     });
 
-                Events.GetEvent<NewUpdateEvent>().Publish(update);
+                Events.NewUpdate(update);
             }
             else if (type.Equals("trackadd"))
             {

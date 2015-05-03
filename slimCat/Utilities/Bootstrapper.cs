@@ -2,11 +2,11 @@
 
 // <copyright file="Bootstrapper.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-//
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-//
+// 
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -21,7 +21,6 @@ namespace slimCat.Utilities
 
     using System;
     using System.Windows;
-    using Microsoft.Practices.Prism.Modularity;
     using Microsoft.Practices.Prism.Regions;
     using Microsoft.Practices.Prism.UnityExtensions;
     using Microsoft.Practices.ServiceLocation;
@@ -30,7 +29,6 @@ namespace slimCat.Utilities
     using Services;
     using ViewModels;
     using WebSocket4Net;
-    using slimCat;
 
     #endregion
 
@@ -162,7 +160,8 @@ namespace slimCat.Utilities
         {
             Application.Current.MainWindow = (Window) Shell;
             Application.Current.MainWindow.Show();
-            (Container.Resolve<IRegionManager>()).RequestNavigate(slimCat.Shell.MainRegion, new Uri(LoginViewModel.LoginViewName, UriKind.Relative));
+            (Container.Resolve<IRegionManager>()).RequestNavigate(slimCat.Shell.MainRegion,
+                new Uri(LoginViewModel.LoginViewName, UriKind.Relative));
         }
 
         #endregion

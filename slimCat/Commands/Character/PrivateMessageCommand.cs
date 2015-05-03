@@ -31,9 +31,9 @@ namespace slimCat.Services
         private void OnPrivRequested(IDictionary<string, object> command)
         {
             var characterName = command.Get(Constants.Arguments.Character);
-            if (model.CurrentCharacter.NameEquals(characterName))
+            if (cm.CurrentCharacter.NameEquals(characterName))
             {
-                events.GetEvent<ErrorEvent>().Publish("Hmmm... talking to yourself?");
+                events.NewError("Hmmm... talking to yourself?");
                 return;
             }
 
@@ -47,16 +47,16 @@ namespace slimCat.Services
             else
             {
                 guess = characterManager.SortedCharacters.OrderBy(x => x.Name)
-                    .Where(x => !x.NameEquals(model.CurrentCharacter.Name))
+                    .Where(x => !x.NameEquals(cm.CurrentCharacter.Name))
                     .FirstOrDefault(c => c.Name.StartsWith(characterName, true, null));
             }
 
-            channelService.JoinChannel(ChannelType.PrivateMessage, guess == null ? characterName : guess.Name);
+            channels.JoinChannel(ChannelType.PrivateMessage, guess == null ? characterName : guess.Name);
         }
 
         private void OnPivateMessageSendRequested(IDictionary<string, object> command)
         {
-            channelService.AddMessage(
+            channels.AddMessage(
                 command.Get(Constants.Arguments.Message),
                 command.Get("recipient"),
                 Constants.Arguments.ThisCharacter);
@@ -72,9 +72,9 @@ namespace slimCat.Services
             if (!CharacterManager.IsOnList(sender, ListKind.Ignored))
             {
                 if (ChatModel.CurrentPms.FirstByIdOrNull(sender) == null)
-                    manager.AddChannel(ChannelType.PrivateMessage, sender);
+                    channels.AddChannel(ChannelType.PrivateMessage, sender);
 
-                manager.AddMessage(command.Get(Constants.Arguments.Message), sender, sender);
+                channels.AddMessage(command.Get(Constants.Arguments.Message), sender, sender);
 
                 var temp = ChatModel.CurrentPms.FirstByIdOrNull(sender);
                 if (temp == null)

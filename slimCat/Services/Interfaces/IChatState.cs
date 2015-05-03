@@ -26,9 +26,12 @@ namespace slimCat.Services
 
     #endregion
 
+    /// <summary>
+    ///     Represents all useful chat state, such as our account and current channels.
+    /// </summary>
     public interface IChatState
     {
-        IHandleChatConnection ChatConnection { get; set; }
+        IHandleChatConnection Connection { get; set; }
         IUnityContainer Container { get; set; }
         IRegionManager RegionManager { get; set; }
         IEventAggregator EventAggregator { get; set; }

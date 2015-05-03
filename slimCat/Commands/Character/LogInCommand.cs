@@ -68,16 +68,13 @@ namespace slimCat.Services
             var temp = new CharacterModel
             {
                 Name = character,
-                Gender = ParseGender(command.Get(Constants.Arguments.Gender)),
+                Gender = command.Get(Constants.Arguments.Gender).ParseGender(),
                 Status = command.Get(Constants.Arguments.Status).ToEnum<StatusType>()
             };
 
             CharacterManager.SignOn(temp);
 
-            Events.GetEvent<NewUpdateEvent>()
-                .Publish(
-                    new CharacterUpdateModel(
-                        temp, new LoginStateChangedEventArgs {IsLogIn = true}));
+            Events.NewUpdate(new CharacterUpdateModel(temp, new LoginStateChangedEventArgs {IsLogIn = true}));
         }
     }
 }

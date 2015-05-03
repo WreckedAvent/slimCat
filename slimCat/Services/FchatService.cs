@@ -31,6 +31,8 @@ namespace slimCat.Services
     using SuperSocket.ClientEngine;
     using Utilities;
     using WebSocket4Net;
+    using static Utilities.Constants.Errors;
+    using static Utilities.Constants.ServerCommands;
 
     #endregion
 
@@ -96,37 +98,37 @@ namespace slimCat.Services
 
             errsThatDisconnect = new[]
             {
-                Constants.Errors.NoLoginSlots,
-                Constants.Errors.NoServerSlots,
-                Constants.Errors.KickedFromServer,
-                Constants.Errors.SimultaneousLoginKick,
-                Constants.Errors.BannedFromServer,
-                Constants.Errors.BadLoginInfo,
-                Constants.Errors.TooManyConnections,
-                Constants.Errors.UnknownLoginMethod,
-                Constants.Errors.TimedOutFromServer
+                NoLoginSlots,
+                NoServerSlots,
+                KickedFromServer,
+                SimultaneousLoginKick,
+                BannedFromServer,
+                BadLoginInfo,
+                TooManyConnections,
+                UnknownLoginMethod,
+                TimedOutFromServer
             };
 
             errsThatPreventReconnect = new[]
             {
-                Constants.Errors.BannedFromServer,
-                Constants.Errors.TooManyConnections,
-                Constants.Errors.KickedFromServer,
-                Constants.Errors.UnknownLoginMethod,
-                Constants.Errors.SimultaneousLoginKick,
-                Constants.Errors.TimedOutFromServer
+                BannedFromServer,
+                TooManyConnections,
+                KickedFromServer,
+                UnknownLoginMethod,
+                SimultaneousLoginKick,
+                TimedOutFromServer
             };
 
             noisyTypes = new[]
             {
-                Constants.ServerCommands.UserJoin,
-                Constants.ServerCommands.UserLeave,
-                Constants.ServerCommands.UserStatus,
-                Constants.ServerCommands.PublicChannelList,
-                Constants.ServerCommands.PrivateChannelList,
-                Constants.ServerCommands.UserList,
-                Constants.ServerCommands.ChannelMessage,
-                Constants.ServerCommands.ChannelAd
+                UserJoin,
+                UserLeave,
+                UserStatus,
+                PublicChannelList,
+                PrivateChannelList,
+                UserList,
+                ChannelMessage,
+                ChannelAd
             };
 
             autoPingTimer.Elapsed += (s, e) => TrySend(Constants.ClientCommands.SystemPing);
@@ -345,7 +347,7 @@ namespace slimCat.Services
             json.Add(Constants.Arguments.Command, commandType);
 
             // add back in the command type so our models can listen for them
-            if (json.Get(Constants.Arguments.Command) == Constants.ServerCommands.SystemError
+            if (json.Get(Constants.Arguments.Command) == SystemError
                 && json.ContainsKey("number"))
             {
                 var err = Convert.ToInt32((long) json["number"]);
@@ -365,7 +367,7 @@ namespace slimCat.Services
                     Environment.Exit(-1);
                 }
 
-                if (err == Constants.Errors.BadLoginInfo)
+                if (err == BadLoginInfo)
                 {
                     service.ShouldGetNewTicket = true;
                     AttemptReconnect();

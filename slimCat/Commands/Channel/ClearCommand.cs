@@ -37,18 +37,18 @@ namespace slimCat.Services
 
         private void OnClearAllRequested(IDictionary<string, object> command)
         {
-            model.CurrentChannels
+            cm.CurrentChannels
                 .Cast<ChannelModel>()
-                .Union(model.CurrentPms)
+                .Union(cm.CurrentPms)
                 .Each(ClearChannel);
         }
 
         private void OnClearRequested(IDictionary<string, object> command)
         {
             var targetName = command.Get(Constants.Arguments.Channel);
-            var target = model.CurrentChannels
+            var target = cm.CurrentChannels
                 .Cast<ChannelModel>()
-                .Union(model.CurrentPms)
+                .Union(cm.CurrentPms)
                 .FirstOrDefault(x => x.Id.Equals(targetName, StringComparison.OrdinalIgnoreCase));
 
             ClearChannel(target);

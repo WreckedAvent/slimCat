@@ -31,14 +31,14 @@ namespace slimCat.Services
             if (ApplicationSettings.AllowSound) return;
 
             iconService.ToggleSound();
-            SettingsService.SaveApplicationSettingsToXml(model.CurrentCharacter.Name);
+            SettingsService.SaveApplicationSettingsToXml(cm.CurrentCharacter.Name);
         }
 
         private void OnSoundOffRequested(IDictionary<string, object> command)
         {
             if (!ApplicationSettings.AllowSound) return;
             iconService.ToggleSound();
-            SettingsService.SaveApplicationSettingsToXml(model.CurrentCharacter.Name);
+            SettingsService.SaveApplicationSettingsToXml(cm.CurrentCharacter.Name);
         }
     }
 }

@@ -2,11 +2,11 @@
 
 // <copyright file="ListManagerTests.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -41,7 +41,7 @@ namespace slimCatTest
         private readonly IEventAggregator eventAggregator;
         private readonly ICharacter friendCharacter;
         private readonly ICharacter interestedCharacter;
-        private readonly ICharacterManager manager;
+        private readonly ICharacterManager characters;
         private readonly ICharacter otherCharacter;
 
         public ListManagerTests()
@@ -60,7 +60,7 @@ namespace slimCatTest
                 && acc.Characters == new ObservableCollection<string> {CurrentCharacter});
 
             eventAggregator = new EventAggregator();
-            manager = new GlobalCharacterManager(account, eventAggregator);
+            characters = new GlobalCharacterManager(account, eventAggregator);
         }
 
         private void SignOnAllTestCharacters()
@@ -72,18 +72,18 @@ namespace slimCatTest
             interestedCharacter.Status = StatusType.Looking;
             interestedCharacter.StatusMessage = "Looking for you!";
 
-            manager.SignOn(bookmarkCharacter);
-            manager.SignOn(friendCharacter);
-            manager.SignOn(otherCharacter);
-            manager.SignOn(interestedCharacter);
+            characters.SignOn(bookmarkCharacter);
+            characters.SignOn(friendCharacter);
+            characters.SignOn(otherCharacter);
+            characters.SignOn(interestedCharacter);
         }
 
         private void SignOffAllTestCharacters()
         {
-            manager.SignOff(bookmarkCharacter.Name);
-            manager.SignOff(friendCharacter.Name);
-            manager.SignOff(otherCharacter.Name);
-            manager.SignOff(interestedCharacter.Name);
+            characters.SignOff(bookmarkCharacter.Name);
+            characters.SignOff(friendCharacter.Name);
+            characters.SignOff(otherCharacter.Name);
+            characters.SignOff(interestedCharacter.Name);
         }
 
         [TestInitialize]
@@ -132,30 +132,30 @@ namespace slimCatTest
         [TestMethod]
         public void IsOfInterestWorksCorrectly()
         {
-            Assert.IsTrue(manager.IsOfInterest(bookmarkCharacter.Name, false));
-            Assert.IsTrue(manager.IsOfInterest(friendCharacter.Name, false));
-            Assert.IsFalse(manager.IsOfInterest(otherCharacter.Name, false));
+            Assert.IsTrue(characters.IsOfInterest(bookmarkCharacter.Name, false));
+            Assert.IsTrue(characters.IsOfInterest(friendCharacter.Name, false));
+            Assert.IsFalse(characters.IsOfInterest(otherCharacter.Name, false));
 
-            Assert.IsFalse(manager.IsOfInterest(bookmarkCharacter.Name));
-            Assert.IsFalse(manager.IsOfInterest(friendCharacter.Name));
-            Assert.IsFalse(manager.IsOfInterest(otherCharacter.Name));
+            Assert.IsFalse(characters.IsOfInterest(bookmarkCharacter.Name));
+            Assert.IsFalse(characters.IsOfInterest(friendCharacter.Name));
+            Assert.IsFalse(characters.IsOfInterest(otherCharacter.Name));
 
             SignOnAllTestCharacters();
 
-            Assert.IsTrue(manager.IsOfInterest(bookmarkCharacter.Name));
-            Assert.IsTrue(manager.IsOfInterest(friendCharacter.Name));
-            Assert.IsFalse(manager.IsOfInterest(otherCharacter.Name));
+            Assert.IsTrue(characters.IsOfInterest(bookmarkCharacter.Name));
+            Assert.IsTrue(characters.IsOfInterest(friendCharacter.Name));
+            Assert.IsFalse(characters.IsOfInterest(otherCharacter.Name));
 
-            Assert.IsTrue(manager.IsOfInterest(bookmarkCharacter.Name, false));
-            Assert.IsTrue(manager.IsOfInterest(friendCharacter.Name, false));
-            Assert.IsFalse(manager.IsOfInterest(otherCharacter.Name));
+            Assert.IsTrue(characters.IsOfInterest(bookmarkCharacter.Name, false));
+            Assert.IsTrue(characters.IsOfInterest(friendCharacter.Name, false));
+            Assert.IsFalse(characters.IsOfInterest(otherCharacter.Name));
         }
 
         [TestMethod]
         public void CanAddInterestedMark()
         {
             SignOnAllTestCharacters();
-            manager.Add(interestedCharacter.Name, ListKind.Interested, true);
+            characters.Add(interestedCharacter.Name, ListKind.Interested, true);
             ShouldBeOnList(ListKind.Interested, interestedCharacter);
         }
 
@@ -163,14 +163,14 @@ namespace slimCatTest
         public void CanAddNotInterestedMark()
         {
             SignOnAllTestCharacters();
-            manager.Add(interestedCharacter.Name, ListKind.NotInterested, true);
+            characters.Add(interestedCharacter.Name, ListKind.NotInterested, true);
             ShouldBeOnList(ListKind.NotInterested, interestedCharacter);
         }
 
         [TestMethod]
         public void CanSetList()
         {
-            manager.Set(new[] {interestedCharacter.Name}, ListKind.Interested);
+            characters.Set(new[] {interestedCharacter.Name}, ListKind.Interested);
             ShouldBeOnOfflineListOf(ListKind.Interested, interestedCharacter);
 
             SignOnAllTestCharacters();
@@ -182,7 +182,7 @@ namespace slimCatTest
         {
             CanSetList();
 
-            manager.Set(new JsonArray(), ListKind.Interested);
+            characters.Set(new JsonArray(), ListKind.Interested);
 
             ShouldNotBeOnList(ListKind.Interested, interestedCharacter);
             ShouldNotBeOnOfflineListOf(ListKind.Interested, interestedCharacter);
@@ -193,14 +193,14 @@ namespace slimCatTest
         {
             CanAddInterestedMark();
 
-            manager.Remove(interestedCharacter.Name, ListKind.Interested, true);
+            characters.Remove(interestedCharacter.Name, ListKind.Interested, true);
 
             ShouldNotBeOnList(ListKind.Interested, interestedCharacter);
             ShouldNotBeOnOfflineListOf(ListKind.Interested, interestedCharacter);
 
             CanAddNotInterestedMark();
 
-            manager.Remove(interestedCharacter.Name, ListKind.NotInterested, true);
+            characters.Remove(interestedCharacter.Name, ListKind.NotInterested, true);
 
             ShouldNotBeOnList(ListKind.NotInterested, interestedCharacter);
             ShouldNotBeOnOfflineListOf(ListKind.NotInterested, interestedCharacter);
@@ -211,12 +211,12 @@ namespace slimCatTest
         {
             SignOnAllTestCharacters();
 
-            var result = manager.Find(interestedCharacter.Name);
+            var result = characters.Find(interestedCharacter.Name);
             Assert.IsTrue(result.NameEquals(interestedCharacter.Name));
             Assert.IsTrue(result.Status == StatusType.Looking);
             Assert.IsTrue(result.StatusMessage.Equals("Looking for you!"));
 
-            result = manager.Find("Someone not online");
+            result = characters.Find("Someone not online");
             Assert.IsTrue(result.NameEquals("Someone not online"));
             Assert.IsFalse(result.Status == StatusType.Online);
             Assert.IsFalse(result.StatusMessage.Any());
@@ -227,21 +227,21 @@ namespace slimCatTest
         {
             SignOnAllTestCharacters();
             var correctCount = 4;
-            Assert.IsTrue(manager.CharacterCount == correctCount);
+            Assert.IsTrue(characters.CharacterCount == correctCount);
 
-            manager.SignOff(interestedCharacter.Name);
+            characters.SignOff(interestedCharacter.Name);
             correctCount--;
-            Assert.IsTrue(manager.CharacterCount == correctCount);
+            Assert.IsTrue(characters.CharacterCount == correctCount);
 
-            manager.SignOn(otherCharacter);
-            Assert.IsTrue(manager.CharacterCount == correctCount);
+            characters.SignOn(otherCharacter);
+            Assert.IsTrue(characters.CharacterCount == correctCount);
 
-            manager.SignOff(interestedCharacter.Name);
-            Assert.IsTrue(manager.CharacterCount == correctCount);
+            characters.SignOff(interestedCharacter.Name);
+            Assert.IsTrue(characters.CharacterCount == correctCount);
 
-            manager.SignOn(interestedCharacter);
+            characters.SignOn(interestedCharacter);
             correctCount++;
-            Assert.IsTrue(manager.CharacterCount == correctCount);
+            Assert.IsTrue(characters.CharacterCount == correctCount);
         }
 
         [TestMethod]
@@ -249,7 +249,7 @@ namespace slimCatTest
         {
             SignOnAllTestCharacters();
 
-            var result = manager.GetNames(ListKind.Bookmark);
+            var result = characters.GetNames(ListKind.Bookmark);
 
             Assert.IsTrue(result.Count == 1);
             Assert.IsTrue(result.Contains(bookmarkCharacter.Name));
@@ -260,7 +260,7 @@ namespace slimCatTest
         {
             CanSetList();
 
-            var result = manager.GetCharacters(ListKind.Interested);
+            var result = characters.GetCharacters(ListKind.Interested);
 
             Assert.IsTrue(result.Count == 1);
             Assert.IsTrue(result.Contains(interestedCharacter));
@@ -275,7 +275,7 @@ namespace slimCatTest
 
             ShouldNotBeOnList(ListKind.Interested, interestedCharacter);
 
-            manager.Add(interestedCharacter.Name, ListKind.Interested, true);
+            characters.Add(interestedCharacter.Name, ListKind.Interested, true);
 
             ShouldNotBeOnList(ListKind.NotInterested, interestedCharacter);
             ShouldBeOnList(ListKind.Interested, interestedCharacter);
@@ -284,14 +284,14 @@ namespace slimCatTest
         [TestMethod]
         public void InappropriateListReturnsNull()
         {
-            var result = manager.GetNames(ListKind.Banned, false);
+            var result = characters.GetNames(ListKind.Banned, false);
             Assert.IsNull(result);
         }
 
         [TestMethod]
         public void InappropriateListDoesNotCrash()
         {
-            var result = manager.IsOnList("", ListKind.Banned, false);
+            var result = characters.IsOnList("", ListKind.Banned, false);
             Assert.IsFalse(result);
         }
 
@@ -300,13 +300,13 @@ namespace slimCatTest
         private void ShouldBeOffline(params ICharacter[] characters)
         {
             ShouldBe(ListKind.Online, false, true, characters);
-            Assert.IsFalse(manager.Characters.Intersect(characters).Any());
+            Assert.IsFalse(this.characters.Characters.Intersect(characters).Any());
         }
 
         private void ShouldBeOnline(params ICharacter[] characters)
         {
             ShouldBe(ListKind.Online, true, true, characters);
-            Assert.IsTrue(manager.Characters.Intersect(characters).Count() == characters.Count());
+            Assert.IsTrue(this.characters.Characters.Intersect(characters).Count() == characters.Count());
         }
 
         private void ShouldBeOnList(ListKind list, params ICharacter[] characters)
@@ -333,11 +333,11 @@ namespace slimCatTest
         {
             if (on)
             {
-                characters.Each(x => Assert.IsTrue(manager.IsOnList(x.Name, listKind, offlineOnly)));
+                characters.Each(x => Assert.IsTrue(this.characters.IsOnList(x.Name, listKind, offlineOnly)));
                 return;
             }
 
-            characters.Each(x => Assert.IsFalse(manager.IsOnList(x.Name, listKind, offlineOnly)));
+            characters.Each(x => Assert.IsFalse(this.characters.IsOnList(x.Name, listKind, offlineOnly)));
         }
 
         #endregion

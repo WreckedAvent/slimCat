@@ -77,22 +77,20 @@ namespace slimCat.Services
     {
         private void OnChannelDescriptionRequested(IDictionary<string, object> command)
         {
-            if (model.CurrentChannel.Id.Equals("Home", StringComparison.OrdinalIgnoreCase))
+            if (cm.CurrentChannel.Id.Equals("Home", StringComparison.OrdinalIgnoreCase))
             {
-                events.GetEvent<ErrorEvent>()
-                    .Publish("Poor home channel, with no description to speak of...");
+                events.NewError("Poor home channel, with no description to speak of...");
                 return;
             }
 
-            var channel = model.CurrentChannel as GeneralChannelModel;
+            var channel = cm.CurrentChannel as GeneralChannelModel;
             if (channel != null)
             {
                 Clipboard.SetData(DataFormats.Text, channel.Description);
-                events.GetEvent<ErrorEvent>()
-                    .Publish("Channel's description copied to clipboard.");
+                events.NewError("Channel's description copied to clipboard.");
             }
             else
-                events.GetEvent<ErrorEvent>().Publish("Hey! That's not a channel.");
+                events.NewError("Hey! That's not a channel.");
         }
     }
 }

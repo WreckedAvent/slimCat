@@ -145,15 +145,14 @@ namespace slimCat.Services
             }
             catch (ArgumentException)
             {
-                events.GetEvent<ErrorEvent>()
-                    .Publish("'{0}' is not a valid status type!".FormatWith(command.Get(Constants.Arguments.Status)));
+                events.NewError("'{0}' is not a valid status type!".FormatWith(command.Get(Constants.Arguments.Status)));
                 return;
             }
 
             command.TryGetValue(Constants.Arguments.StatusMessage, out statusmsg);
 
-            model.CurrentCharacter.Status = status;
-            model.CurrentCharacter.StatusMessage = statusmsg as string ?? string.Empty;
+            cm.CurrentCharacter.Status = status;
+            cm.CurrentCharacter.StatusMessage = statusmsg as string ?? string.Empty;
             connection.SendMessage(command);
         }
     }

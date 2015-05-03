@@ -47,14 +47,13 @@ namespace slimCat.Services
     {
         #region Constructors
 
-        public NoteService(IUnityContainer contain, IBrowseThings browser, ICharacterManager characterMan, IChatModel cm,
-            IEventAggregator eventagg)
+        public NoteService(IChatState chatstate, IBrowseThings browser)
         {
             this.browser = browser;
-            characterManager = characterMan;
-            this.cm = cm;
-            events = eventagg;
-            container = contain;
+            characters = chatstate.CharacterManager;
+            cm = chatstate.ChatModel;
+            events = chatstate.EventAggregator;
+            container = chatstate.Container;
         }
 
         #endregion
@@ -71,7 +70,7 @@ namespace slimCat.Services
 
         private readonly IBrowseThings browser;
 
-        private readonly ICharacterManager characterManager;
+        private readonly ICharacterManager characters;
 
         private readonly IChatModel cm;
 
@@ -155,7 +154,7 @@ namespace slimCat.Services
             if (json.TryGetValue("error", out errorMessage))
             {
                 error = errorMessage.ToString();
-                events.GetEvent<ErrorEvent>().Publish(error);
+                events.NewError(error);
             }
 
             if (!string.IsNullOrEmpty(error)) return;
@@ -257,7 +256,7 @@ namespace slimCat.Services
                         }
 
                         return new MessageModel(
-                            characterManager.Find(split[0].Trim()),
+                            characters.Find(split[0].Trim()),
                             HttpUtility.HtmlDecode(split[2]),
                             isFuzzyTime ? FromFuzzyString(split[1].Trim()) : FromExactString(split[1].Trim()));
                     })

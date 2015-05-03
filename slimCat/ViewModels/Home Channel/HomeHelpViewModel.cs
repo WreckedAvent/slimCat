@@ -2,11 +2,11 @@
 
 // <copyright file="HomeHelpViewModel.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-//
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-//
+// 
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -19,10 +19,8 @@ namespace slimCat.ViewModels
 {
     #region Usings
 
-    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Globalization;
     using System.Linq;
     using System.Windows.Data;
     using Models;
@@ -143,6 +141,7 @@ namespace slimCat.ViewModels
         }
 
         #endregion
+
         private static string Aggregate(IEnumerable<string> list)
         {
             return list != null && list.Any()
@@ -184,20 +183,6 @@ namespace slimCat.ViewModels
         public string Aliases { get; set; }
         public string Examples { get; set; }
         public CommandModel.PermissionLevel Permissions { get; set; }
-    }
-
-    public class PermissionToTextConverter : OneWayConverter
-    {
-        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            var level = (CommandModel.PermissionLevel) value;
-
-            if (level == CommandModel.PermissionLevel.User) return "User commands";
-            if (level == CommandModel.PermissionLevel.Moderator) return "Moderator commands";
-            if (level == CommandModel.PermissionLevel.GlobalMod) return "Global moderator commands";
-            if (level == CommandModel.PermissionLevel.Admin) return "Admin commands";
-            return string.Empty;
-        }
     }
 
     public class ExampleReference

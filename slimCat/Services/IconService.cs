@@ -35,13 +35,13 @@ namespace slimCat.Services
     {
         #region Constructors
 
-        public IconService(IEventAggregator eventagg, IChatModel chatModel)
+        public IconService(IChatState chatState)
         {
-            events = eventagg;
-            cm = chatModel;
+            events = chatState.EventAggregator;
+            cm = chatState.ChatModel;
 
-            eventagg.GetEvent<CharacterSelectedLoginEvent>().Subscribe(OnCharacterSelected);
-            eventagg.GetEvent<LoginAuthenticatedEvent>().Subscribe(OnLoginAuthenticated);
+            events.GetEvent<CharacterSelectedLoginEvent>().Subscribe(OnCharacterSelected);
+            events.GetEvent<LoginAuthenticatedEvent>().Subscribe(OnLoginAuthenticated);
             catIcon = new Icon(Environment.CurrentDirectory + @"\icons\catIcon.ico");
             balloonIcon = new Icon(Environment.CurrentDirectory + @"\icons\balloonIcon.ico");
         }
@@ -175,7 +175,7 @@ namespace slimCat.Services
                 HideWindow();
             };
 
-            cm.SelectedChannelChanged += (s, e) => events.GetEvent<ErrorEvent>().Publish(null);
+            cm.SelectedChannelChanged += (s, e) => events.NewError(null);
 
             BuildIcon(character);
         }

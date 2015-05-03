@@ -275,23 +275,65 @@
     <Compile Include="Services\UpdateService.cs" />
     <Compile Include="Services\UserPreferences.cs" />
     <Compile Include="Theme\EmbeddedTheme.xaml.cs" />
+    <Compile Include="Utilities\Converters\AutoOrStarConverter.cs" />
+    <Compile Include="Utilities\Converters\BbCodeBaseConverter.cs" />
+    <Compile Include="Utilities\Converters\BbCodeConverter.cs" />
+    <Compile Include="Utilities\Converters\BbCodePostConverter.cs" />
+    <Compile Include="Utilities\Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Utilities\Enums\BbCodeType.cs" />
+    <Compile Include="Utilities\Converters\BbFlowConverter.cs" />
+    <Compile Include="Utilities\Converters\BoolColorConverter.cs" />
     <Compile Include="Utilities\CacheCount.cs" />
+    <Compile Include="Utilities\Converters\CacheUriForeverConverter.cs" />
+    <Compile Include="Utilities\Converters\ChannelTypeToImageConverter.cs" />
+    <Compile Include="Utilities\Converters\CharacterAvatarConverter.cs" />
+    <Compile Include="Utilities\Converters\CharacterStatusOpacityConverter.cs" />
+    <Compile Include="Utilities\Converters\CommaConverter.cs" />
+    <Compile Include="Utilities\Converters\ConverterChain.cs" />
+    <Compile Include="Utilities\Converters\EmptyConverter.cs" />
+    <Compile Include="Utilities\Converters\EqualsConverter.cs" />
     <Compile Include="Utilities\Extensions\CharacterExtensions.cs" />
     <Compile Include="Utilities\Extensions\ChatStateExtensions.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\Extensions\DictionaryExtensions.cs" />
     <Compile Include="Utilities\Extensions\EventExtensions.cs" />
+    <Compile Include="Utilities\Converters\ForegroundBrushConverter.cs" />
+    <Compile Include="Utilities\Converters\GenderColorConverter.cs" />
+    <Compile Include="Utilities\Converters\GenderColorConverterBase.cs" />
+    <Compile Include="Utilities\Converters\GenderImageConverter.cs" />
+    <Compile Include="Utilities\Converters\GreaterThanZeroConverter.cs" />
+    <Compile Include="Utilities\Converters\ImagePathConverter.cs" />
+    <Compile Include="Utilities\Converters\ImageWidthConverter.cs" />
+    <Compile Include="Utilities\Converters\InterestedOnlyBoolConverter.cs" />
     <Compile Include="Utilities\KeepToCurrentScrollViewer.cs" />
-    <Compile Include="Utilities\ListExtensions.cs" />
+    <Compile Include="Utilities\Extensions\ListExtensions.cs" />
     <Compile Include="Utilities\Logging.cs" />
     <Compile Include="Utilities\Extensions\ObjectExtensions.cs" />
     <Compile Include="Utilities\FilteredCollection.cs" />
     <Compile Include="Utilities\Extensions\StringExtensions.cs" />
+    <Compile Include="Utilities\Converters\MessageDelimiterColorConverter.cs" />
+    <Compile Include="Utilities\Converters\MessageInterestedColorConverter.cs" />
+    <Compile Include="Utilities\Converters\MessageThicknessConverter.cs" />
+    <Compile Include="Utilities\Converters\NameplateColorConverter.cs" />
+    <Compile Include="Utilities\Converters\NameplateMessageColorConverter.cs" />
+    <Compile Include="Utilities\Converters\NotEmptyBoolConverter.cs" />
+    <Compile Include="Utilities\Converters\NotEmptyConverter.cs" />
+    <Compile Include="Utilities\Converters\NotifyLevelConverter.cs" />
+    <Compile Include="Utilities\Converters\NotNullConverter.cs" />
+    <Compile Include="Utilities\Converters\NullConverter.cs" />
+    <Compile Include="Utilities\Converters\OneWayMultiConverter.cs" />
+    <Compile Include="Utilities\Converters\OppositeBoolConverter.cs" />
+    <Compile Include="Utilities\Converters\PmOrChannelTemplateSelector.cs" />
+    <Compile Include="Utilities\Converters\ReduceRowConverter.cs" />
+    <Compile Include="Utilities\Converters\RemoveSomeConverter.cs" />
+    <Compile Include="Utilities\Converters\ValueConverterCollection.cs" />
+    <Compile Include="Utilities\Converters\CategoryConverter.cs" />
     <Compile Include="ViewModels\Channel Bar\GlobalTabViewModel.cs" />
     <Compile Include="ViewModels\Channel Bar\ManageListsViewModel.cs" />
     <Compile Include="ViewModels\Channel Bar\SearchTabViewModel.cs" />
     <Compile Include="ViewModels\Home Channel\HomeHelpViewModel.cs" />
     <Compile Include="ViewModels\Home Channel\HomeSettingsViewModel.cs" />
+    <Compile Include="Utilities\Converters\PermissionToTextConverter.cs" />
     <Compile Include="ViewModels\UI Parts\ChannelManagementViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\CreateReportViewModel.cs" />
     <Compile Include="ViewModels\UI Parts\IHasTabs.cs" />
@@ -307,7 +349,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="Utilities\Bootstrapper.cs" />
     <Compile Include="Utilities\CommandParser.cs" />
-    <Compile Include="Utilities\Converters.cs" />
+    <Compile Include="Utilities\Converters\OneWayConverter.cs" />
     <Compile Include="Utilities\Events.cs" />
     <Compile Include="lib\PasswordBoxAssistant.cs" />
     <Compile Include="lib\RelayCommand.cs" />
@@ -910,6 +952,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>cmd /x /c mkdir "$(TargetDir)Theme"

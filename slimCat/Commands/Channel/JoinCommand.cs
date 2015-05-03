@@ -72,7 +72,7 @@ namespace slimCat.Services
                 return;
             }
 
-            manager.QuickJoinChannel(id, title);
+            channels.QuickJoinChannel(id, title);
 
             autoJoinedChannels.Remove(id);
         }
@@ -95,7 +95,7 @@ namespace slimCat.Services
             if (id.Contains("ADH-"))
                 kind = ChannelType.Private;
 
-            manager.JoinChannel(kind, id, title);
+            channels.JoinChannel(kind, id, title);
         }
 
         private void JoinChannelCommand(IDictionary<string, object> command)
@@ -116,7 +116,7 @@ namespace slimCat.Services
                 if (id.Contains("ADH-"))
                     kind = ChannelType.Private;
 
-                manager.JoinChannel(kind, id, title);
+                channels.JoinChannel(kind, id, title);
             }
             else
             {
@@ -132,7 +132,7 @@ namespace slimCat.Services
                         TargetChannelId = channel.Id
                     });
 
-                Events.GetEvent<NewUpdateEvent>().Publish(update);
+                Events.NewUpdate(update);
             }
         }
     }
@@ -143,7 +143,7 @@ namespace slimCat.Services
         {
             var channelName = command.Get(Constants.Arguments.Channel);
 
-            if (model.CurrentChannels.FirstByIdOrNull(channelName) != null)
+            if (cm.CurrentChannels.FirstByIdOrNull(channelName) != null)
             {
                 events.GetEvent<RequestChangeTabEvent>().Publish(channelName);
                 return;
@@ -159,7 +159,7 @@ namespace slimCat.Services
             else
             {
                 guess =
-                    model.AllChannels.OrderBy(channel => channel.Title)
+                    cm.AllChannels.OrderBy(channel => channel.Title)
                         .FirstOrDefault(channel => channel.Title.StartsWith(channelName, true, null));
             }
 
@@ -172,7 +172,7 @@ namespace slimCat.Services
         private void OnChannelRejoinRequested(IDictionary<string, object> command)
         {
             var channelName = command.Get(Constants.Arguments.Channel);
-            channelService.RemoveChannel(channelName, true);
+            channels.RemoveChannel(channelName, true);
 
             var toSend = new {channel = channelName};
             connection.SendMessage(toSend, Constants.ClientCommands.ChannelJoin);

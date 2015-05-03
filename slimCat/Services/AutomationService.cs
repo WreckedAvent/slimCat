@@ -2,11 +2,11 @@
 
 // <copyright file="AutomationService.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -36,11 +36,11 @@ namespace slimCat.Services
     {
         #region Constructors
 
-        public AutomationService(IEventAggregator events, ICharacterManager manager, IChatModel cm)
+        public AutomationService(IChatState chatState)
         {
-            this.events = events;
-            this.manager = manager;
-            this.cm = cm;
+            events = chatState.EventAggregator;
+            characters = chatState.CharacterManager;
+            cm = chatState.ChatModel;
 
             idleTimer = new Timer(ApplicationSettings.AutoIdleTime*OneMinute);
             awayTimer = new Timer(ApplicationSettings.AutoAwayTime*OneMinute);
@@ -62,7 +62,7 @@ namespace slimCat.Services
         private readonly IEventAggregator events;
         private readonly Timer fullscreenTimer = new Timer(2*OneMinute);
         private readonly Timer idleTimer;
-        private readonly ICharacterManager manager;
+        private readonly ICharacterManager characters;
 
         #endregion
 
@@ -86,7 +86,7 @@ namespace slimCat.Services
         {
             if (!ApplicationSettings.AllowAdDedup) return false;
 
-            var character = manager.Find(name);
+            var character = characters.Find(name);
             if (character.LastAd != null && (ApplicationSettings.AllowAggressiveAdDedup || character.LastAd == message))
             {
                 Logging.Log("Duplicate ad from " + name);

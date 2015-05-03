@@ -46,7 +46,7 @@ namespace slimCat.Services
 
             // checks to ensure it's not a mod promote message
             if (!thisMessage.ContainsOrdinal("has been promoted") && !thisMessage.ContainsOrdinal("Invalid ticket"))
-                Events.GetEvent<ErrorEvent>().Publish(thisMessage);
+                Events.NewMessage(thisMessage);
         }
     }
 }

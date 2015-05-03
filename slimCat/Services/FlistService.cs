@@ -192,8 +192,7 @@ namespace slimCat.Services
                 DoApiAction(apiName, command);
             }
 
-            if (hasError)
-                events.GetEvent<ErrorEvent>().Publish((string) result.error);
+            if (hasError) events.NewError((string) result.error);
         }
 
         private void HandleCommand(IDictionary<string, object> command)
@@ -240,8 +239,7 @@ namespace slimCat.Services
                     var id = requestService.GetRequestForCharacter(character);
                     if (id == null)
                     {
-                        events.GetEvent<ErrorEvent>()
-                            .Publish("Could not find any friend requests for/from {0}".FormatWith(character));
+                        events.NewError("Could not find any friend requests for/from {0}".FormatWith(character));
                         return;
                     }
 

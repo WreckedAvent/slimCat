@@ -65,7 +65,7 @@ namespace slimCat.Services
         {
 #if DEBUG
             return true;
-            #endif
+#endif
 
             var config = await GetLatestAsync();
 

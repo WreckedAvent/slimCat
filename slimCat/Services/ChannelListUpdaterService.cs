@@ -21,7 +21,6 @@ namespace slimCat.Services
 
     using System;
     using System.Timers;
-    using Microsoft.Practices.Prism.Events;
     using Models;
     using Utilities;
 
@@ -33,13 +32,12 @@ namespace slimCat.Services
         private readonly IHandleChatConnection connection;
         private DateTime lastUpdate;
 
-        public ChannelListUpdaterService(IHandleChatConnection connection, IEventAggregator eventAggregator,
-            IChatModel chatModel)
+        public ChannelListUpdaterService(IChatState chatState)
         {
-            this.connection = connection;
-            this.chatModel = chatModel;
+            connection = chatState.Connection;
+            chatModel = chatState.ChatModel;
 
-            eventAggregator.GetEvent<ConnectionClosedEvent>().Subscribe(OnWipeState);
+            chatState.EventAggregator.GetEvent<ConnectionClosedEvent>().Subscribe(OnWipeState);
 
             var timer = new Timer(60*1000*1);
             timer.Elapsed += (s, e) =>

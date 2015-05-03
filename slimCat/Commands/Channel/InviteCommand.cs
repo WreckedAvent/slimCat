@@ -49,9 +49,9 @@ namespace slimCat.Services
         private void OnInviteToChannelRequested(IDictionary<string, object> command)
         {
             if (command.ContainsKey(Constants.Arguments.Character) &&
-                model.CurrentCharacter.NameEquals(command.Get(Constants.Arguments.Character)))
+                cm.CurrentCharacter.NameEquals(command.Get(Constants.Arguments.Character)))
             {
-                events.GetEvent<ErrorEvent>().Publish("You don't need my help to talk to yourself.");
+                events.NewError("You don't need my help to talk to yourself.");
                 return;
             }
 

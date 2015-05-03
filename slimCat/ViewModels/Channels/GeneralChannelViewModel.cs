@@ -59,7 +59,7 @@ namespace slimCat.ViewModels
                         ?? ChatModel.AllChannels.First(chan => chan.Id == name);
                 Model.ThrowIfNull("this.Model");
 
-                var safeName = HelperConverter.EscapeSpaces(name);
+                var safeName = StringExtensions.EscapeSpaces(name);
 
                 Container.RegisterType<object, GeneralChannelView>(safeName, new InjectionConstructor(this));
 
@@ -466,9 +466,9 @@ namespace slimCat.ViewModels
         /// <summary>
         ///     Gets the time left before the next ad can be posted.
         /// </summary>
-        public string TimeLeft => HelperConverter.DateTimeInFutureToRough(timeLeftAd) + "until next";
+        public string TimeLeft => timeLeftAd.DateTimeInFutureToRough() + "until next";
 
-        public string AutoTimeLeft => HelperConverter.DateTimeInFutureToRough(autoTimeLeft) + "until disabled";
+        public string AutoTimeLeft => autoTimeLeft.DateTimeInFutureToRough() + "until disabled";
 
         public override string EntryTextBoxIcon => isDisplayingChat
             ? "pack://application:,,,/icons/send_chat.png"

@@ -45,15 +45,15 @@ namespace slimCat.Utilities
         #region Public Methods and Operators
 
 #if DEBUG
-    /// <summary>
-    ///     Writes the given exception to a log file in a uniform way.
-    /// </summary>
-    /// <param name="ex">
-    ///     Exception to be traced
-    /// </param>
-    /// <param name="message">
-    ///     The message.
-    /// </param>
+        /// <summary>
+        ///     Writes the given exception to a log file in a uniform way.
+        /// </summary>
+        /// <param name="ex">
+        ///     Exception to be traced
+        /// </param>
+        /// <param name="message">
+        ///     The message.
+        /// </param>
         public static void HandleException(Exception ex, string message = DefaultDebugMessage)
         {
             Logging.LogHeader("Exception at " + DateTime.UtcNow);
@@ -68,15 +68,15 @@ namespace slimCat.Utilities
 #endif
 
 #if !DEBUG
-        /// <summary>
-        ///     Writes the given exception to a log file in a uniform way.
-        /// </summary>
-        /// <param name="ex">
-        ///     Exception to be traced
-        /// </param>
-        /// <param name="message">
-        ///     The message.
-        /// </param>
+    /// <summary>
+    ///     Writes the given exception to a log file in a uniform way.
+    /// </summary>
+    /// <param name="ex">
+    ///     Exception to be traced
+    /// </param>
+    /// <param name="message">
+    ///     The message.
+    /// </param>
         public static void HandleException(Exception ex, string message = DefaultMessage)
         {
             try

@@ -38,8 +38,6 @@ namespace slimCat.Utilities
     /// </summary>
     public static class GeneralExtensions
     {
-        private static bool isPortableMode;
-
         public static HashSet<KeyValuePair<ListKind, string>> ListKindSet = new HashSet<KeyValuePair<ListKind, string>>
         {
             new KeyValuePair<ListKind, string>(ListKind.Friend, "a"),
@@ -72,21 +70,13 @@ namespace slimCat.Utilities
             {StatusType.Offline, "z"}
         };
 
-        public static string BaseFolderPath
-        {
-            get
-            {
-                // this check has to be done here, as it is used to determine where to get the class
-                // that normally has this property on it
-                var isPortable = Environment
-                    .GetCommandLineArgs()
-                    .Any(x => x.Equals("portable", StringComparison.OrdinalIgnoreCase));
+        private static bool isPortableMode { get; } = Environment
+            .GetCommandLineArgs()
+            .Any(x => x.Equals("portable", StringComparison.OrdinalIgnoreCase));
 
-                return isPortable
-                    ? Path.Combine("logs", "")
-                    : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "slimCat");
-            }
-        }
+        public static string BaseFolderPath => isPortableMode
+            ? Path.Combine("logs", "")
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "slimCat");
 
         public static Dictionary<StatusType, string> SortDictionary
             => ApplicationSettings.SortUsersAlphabetically ? AlphabeticalSortDictionary : DefaultSortDictionary;
@@ -164,6 +154,16 @@ namespace slimCat.Utilities
 
         public static void FireAndForget(this Task task)
         {
+        }
+
+        /// <summary>
+        ///     Converts a POSIX/UNIX timecode to a <see cref="System.DateTimeOffset" />.
+        /// </summary>
+        public static DateTimeOffset UnixTimeToDateTime(this long time)
+        {
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+
+            return new DateTimeOffset(epoch.AddSeconds(time));
         }
 
         #region Public Methods and Operators

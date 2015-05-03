@@ -144,18 +144,16 @@ namespace slimCat.Services
 
                 if (reportIsClean)
                 {
-                    Events.GetEvent<NewUpdateEvent>()
-                        .Publish(
-                            new CharacterUpdateModel(
-                                reporter,
-                                new ReportFiledEventArgs
-                                {
-                                    Reported = reportData[0],
-                                    Tab = reportData[1],
-                                    Complaint = reportData[2],
-                                    LogId = logId,
-                                    CallId = callId
-                                }));
+                    Events.NewUpdate(new CharacterUpdateModel(
+                        reporter,
+                        new ReportFiledEventArgs
+                        {
+                            Reported = reportData[0],
+                            Tab = reportData[1],
+                            Complaint = reportData[2],
+                            LogId = logId,
+                            CallId = callId
+                        }));
 
                     reporter.LastReport = new ReportModel
                     {
@@ -169,16 +167,14 @@ namespace slimCat.Services
                 }
                 else
                 {
-                    Events.GetEvent<NewUpdateEvent>()
-                        .Publish(
-                            new CharacterUpdateModel(
-                                reporter,
-                                new ReportFiledEventArgs
-                                {
-                                    Complaint = report,
-                                    CallId = callId,
-                                    LogId = logId
-                                }));
+                    Events.NewUpdate(new CharacterUpdateModel(
+                        reporter,
+                        new ReportFiledEventArgs
+                        {
+                            Complaint = report,
+                            CallId = callId,
+                            LogId = logId
+                        }));
 
                     reporter.LastReport = new ReportModel
                     {
@@ -196,10 +192,9 @@ namespace slimCat.Services
                 var handled = command.Get(Constants.Arguments.Character);
                 var handler = CharacterManager.Find(handlerName);
 
-                Events.GetEvent<NewUpdateEvent>()
-                    .Publish(
-                        new CharacterUpdateModel(
-                            handler, new ReportHandledEventArgs {Handled = handled}));
+                Events.NewUpdate(
+                    new CharacterUpdateModel(
+                        handler, new ReportHandledEventArgs {Handled = handled}));
             }
         }
     }
@@ -228,15 +223,15 @@ namespace slimCat.Services
                     // we could just use _model.SelectedChannel, but the user might change tabs immediately after reporting, creating a race condition
                     ChannelModel channel;
                     if (channelText == command.Get(Constants.Arguments.Name))
-                        channel = model.CurrentPms.FirstByIdOrNull(channelText);
+                        channel = cm.CurrentPms.FirstByIdOrNull(channelText);
                     else
-                        channel = model.CurrentChannels.FirstByIdOrNull(channelText);
+                        channel = cm.CurrentChannels.FirstByIdOrNull(channelText);
 
                     if (channel != null)
                     {
                         var report = new ReportModel
                         {
-                            Reporter = model.CurrentCharacter,
+                            Reporter = cm.CurrentCharacter,
                             Reported = command.Get(Constants.Arguments.Name),
                             Complaint = command.Get(Constants.Arguments.Report),
                             Tab = channelText
@@ -261,7 +256,7 @@ namespace slimCat.Services
         private void OnHandleLatestReportRequested(IDictionary<string, object> command)
         {
             command.Clear();
-            var latest = (from n in model.Notifications
+            var latest = (from n in cm.Notifications
                 let update = n as CharacterUpdateModel
                 where update?.Arguments is ReportFiledEventArgs
                 select update).FirstOrDefault();
@@ -275,7 +270,7 @@ namespace slimCat.Services
             if (args != null) command.Add(Constants.Arguments.CallId, args.CallId);
             command.Add(Constants.Arguments.Action, Constants.Arguments.ActionConfirm);
 
-            channelService.JoinChannel(ChannelType.PrivateMessage, latest.TargetCharacter.Name);
+            channels.JoinChannel(ChannelType.PrivateMessage, latest.TargetCharacter.Name);
 
             var logId = -1;
             if (command.ContainsKey(Constants.Arguments.LogId))
@@ -295,8 +290,7 @@ namespace slimCat.Services
 
                 if (!target.HasReport)
                 {
-                    events.GetEvent<ErrorEvent>()
-                        .Publish("Cannot find report for specified character!");
+                    events.NewError("Cannot find report for specified character!");
                     return;
                 }
 
@@ -305,7 +299,7 @@ namespace slimCat.Services
                 if (!command.ContainsKey(Constants.Arguments.Action))
                     command[Constants.Arguments.Action] = Constants.Arguments.ActionConfirm;
 
-                channelService.JoinChannel(ChannelType.PrivateMessage, target.Name);
+                channels.JoinChannel(ChannelType.PrivateMessage, target.Name);
 
                 var logId = -1;
                 if (command.ContainsKey(Constants.Arguments.LogId))

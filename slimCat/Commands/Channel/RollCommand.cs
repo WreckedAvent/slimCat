@@ -32,9 +32,9 @@ namespace slimCat.Services
         private void OnRollRequested(IDictionary<string, object> command)
         {
             var targetName = command.Get(Constants.Arguments.Channel);
-            var target = model.CurrentChannels
+            var target = cm.CurrentChannels
                 .Cast<ChannelModel>()
-                .Union(model.CurrentPms)
+                .Union(cm.CurrentPms)
                 .FirstOrDefault(x => x.Id.Equals(targetName, StringComparison.OrdinalIgnoreCase));
 
             var targetType = target.Type;
@@ -67,10 +67,10 @@ namespace slimCat.Services
                              : (string) recipient);
 
             if (recipient != null && ChatModel.CurrentPms.FirstByIdOrNull(target) == null)
-                manager.AddChannel(ChannelType.PrivateMessage, target);
+                channels.AddChannel(ChannelType.PrivateMessage, target);
 
             if (!CharacterManager.IsOnList(poster, ListKind.Ignored))
-                manager.AddMessage(message, target, poster, MessageType.Roll);
+                channels.AddMessage(message, target, poster, MessageType.Roll);
         }
     }
 }

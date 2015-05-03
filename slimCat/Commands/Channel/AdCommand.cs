@@ -37,7 +37,7 @@ namespace slimCat.Services
     {
         private void OnLrpRequested(IDictionary<string, object> command)
         {
-            channelService.AddMessage(
+            channels.AddMessage(
                 command.Get(Constants.Arguments.Message),
                 command.Get(Constants.Arguments.Channel),
                 Constants.Arguments.ThisCharacter,

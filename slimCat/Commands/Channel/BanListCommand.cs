@@ -70,12 +70,12 @@ namespace slimCat.Services
                 {
                     var character = banlist[0];
                     channel.CharacterManager.Remove(character, ListKind.Banned);
-                    Events.GetEvent<NewUpdateEvent>().Publish(@event);
+                    Events.NewUpdate(@event);
                     return;
                 }
 
                 channel.CharacterManager.Set(banlist.Skip(1).Where(x => !string.IsNullOrWhiteSpace(x)), ListKind.Banned);
-                Events.GetEvent<NewUpdateEvent>().Publish(@event);
+                Events.NewUpdate(@event);
                 return;
             }
 
@@ -87,7 +87,7 @@ namespace slimCat.Services
             else
                 channel.CharacterManager.Set(banned.Split(','), ListKind.Banned);
 
-            Events.GetEvent<NewUpdateEvent>().Publish(@event);
+            Events.NewUpdate(@event);
         }
     }
 }

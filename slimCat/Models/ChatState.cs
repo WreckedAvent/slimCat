@@ -34,10 +34,10 @@ namespace slimCat.Services
             IEventAggregator eventAggregator,
             IChatModel chatModel,
             ICharacterManager characterManager,
-            IHandleChatConnection chatConnection,
+            IHandleChatConnection connection,
             IAccount account)
         {
-            ChatConnection = chatConnection;
+            Connection = connection;
             Container = container;
             RegionManager = regionManager;
             EventAggregator = eventAggregator;
@@ -46,7 +46,7 @@ namespace slimCat.Services
             Account = account;
         }
 
-        public IHandleChatConnection ChatConnection { get; set; }
+        public IHandleChatConnection Connection { get; set; }
         public IUnityContainer Container { get; set; }
         public IRegionManager RegionManager { get; set; }
         public IEventAggregator EventAggregator { get; set; }

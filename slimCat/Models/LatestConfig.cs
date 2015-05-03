@@ -20,7 +20,6 @@ namespace slimCat.Models
     #region Usings
 
     using System.Collections.Generic;
-    using Utilities;
 
     #endregion
 

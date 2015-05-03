@@ -47,7 +47,7 @@ namespace slimCat.Services
             ChatState = chatState;
             events = chatState.EventAggregator;
             cm = chatState.ChatModel;
-            manager = chatState.CharacterManager;
+            characters = chatState.CharacterManager;
             icon = iconService;
             toast = new ToastNotificationsViewModel(chatState);
             ToastManager = new ToastService
@@ -77,7 +77,7 @@ namespace slimCat.Services
 
         private readonly IEventAggregator events;
 
-        private readonly ICharacterManager manager;
+        private readonly ICharacterManager characters;
 
         private readonly ToastNotificationsViewModel toast;
 
@@ -167,7 +167,7 @@ namespace slimCat.Services
             var checkAgainst = temp.Distinct(StringComparer.OrdinalIgnoreCase).Select(x => x.Trim());
 
             // if any of these conditions hold true we have no reason to evaluate further
-            if (manager.IsOnList(message.Poster.Name, ListKind.NotInterested) && message.Type == MessageType.Ad)
+            if (characters.IsOnList(message.Poster.Name, ListKind.NotInterested) && message.Type == MessageType.Ad)
                 return;
 
             var notifyLevel = message.Type == MessageType.Ad
@@ -226,7 +226,7 @@ namespace slimCat.Services
                         TriggeredWord = match.Item1,
                         IsNameMention = true
                     });
-                    events.GetEvent<NewUpdateEvent>().Publish(newUpdate);
+                    events.NewUpdate(newUpdate);
 
                     if (!isFocusedAndSelected)
                         channel.FlashTab();
@@ -249,7 +249,7 @@ namespace slimCat.Services
                     TriggeredWord = match.Item1,
                     IsNameMention = false
                 });
-                events.GetEvent<NewUpdateEvent>().Publish(newUpdate);
+                events.NewUpdate(newUpdate);
 
                 if (!isFocusedAndSelected)
                     channel.FlashTab();
@@ -342,7 +342,7 @@ namespace slimCat.Services
 
         private bool IsOfInterest(string name, bool onlineOnly = true)
         {
-            return cm.CurrentPms.Any(x => x.Id.Equals(name)) || manager.IsOfInterest(name, onlineOnly);
+            return cm.CurrentPms.Any(x => x.Id.Equals(name)) || characters.IsOfInterest(name, onlineOnly);
         }
 
         [Conditional("DEBUG")]

@@ -24,6 +24,8 @@ namespace slimCat.Utilities
     using System.Globalization;
     using System.IO;
     using System.Linq;
+    using System.Net;
+    using Models;
     using Newtonsoft.Json;
 
     #endregion
@@ -206,6 +208,35 @@ namespace slimCat.Utilities
                 toReturn = Constants.ClientVersion.Contains("dev");
 
             return toReturn;
+        }
+
+        public static Gender ParseGender(this string input)
+        {
+            switch (input)
+            {
+                // manually determine some really annoyingly-named genders
+                case "Male-Herm":
+                    return Gender.HermM;
+
+                case "Herm":
+                    return Gender.HermF;
+
+                case "Cunt-boy":
+                    return Gender.Cuntboy;
+
+                default: // every other gender is parsed normally
+                    return input.ToEnum<Gender>();
+            }
+        }
+
+        public static string DoubleDecode(this string s) => WebUtility.HtmlDecode(WebUtility.HtmlDecode(s));
+
+        /// <summary>
+        ///     Used to replace channel names with spaces to something more unique.
+        /// </summary>
+        public static string EscapeSpaces(string text)
+        {
+            return text.Replace(" ", "___");
         }
     }
 }

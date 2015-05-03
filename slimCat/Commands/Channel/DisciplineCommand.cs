@@ -72,7 +72,7 @@ namespace slimCat.Services
             var update = new ChannelUpdateModel(channel, args);
 
             if (kicked == "you")
-                manager.RemoveChannel(channelId);
+                channels.RemoveChannel(channelId);
             else
                 channel.CharacterManager.SignOff(kicked);
 
@@ -81,7 +81,7 @@ namespace slimCat.Services
                 channel.CharacterManager.Add(kicked, ListKind.Banned);
             }
 
-            Events.GetEvent<NewUpdateEvent>().Publish(update);
+            Events.NewUpdate(update);
         }
     }
 }
