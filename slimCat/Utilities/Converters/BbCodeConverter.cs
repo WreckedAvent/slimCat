@@ -26,6 +26,7 @@ namespace slimCat.Utilities
     using System.Windows.Data;
     using System.Windows.Documents;
     using Models;
+    using Services;
 
     #endregion
 
@@ -36,8 +37,8 @@ namespace slimCat.Utilities
     {
         #region Constructors
 
-        public BbCodeConverter(IChatModel chatModel, ICharacterManager characterManager, IThemeLocator locator)
-            : base(chatModel, characterManager, locator)
+        public BbCodeConverter(IChatState chatState, IThemeLocator locator)
+            : base(chatState, locator)
         {
         }
 

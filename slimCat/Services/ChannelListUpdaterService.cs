@@ -28,14 +28,14 @@ namespace slimCat.Services
 
     public class ChannelListUpdaterService : IUpdateChannelLists
     {
-        private readonly IChatModel chatModel;
+        private readonly IChatModel cm;
         private readonly IHandleChatConnection connection;
         private DateTime lastUpdate;
 
         public ChannelListUpdaterService(IChatState chatState)
         {
             connection = chatState.Connection;
-            chatModel = chatState.ChatModel;
+            cm = chatState.ChatModel;
 
             chatState.EventAggregator.GetEvent<ConnectionClosedEvent>().Subscribe(OnWipeState);
 
@@ -64,7 +64,7 @@ namespace slimCat.Services
             // if we didn't get our channel list by a minute in, try updating again
             if (lastUpdate.AddMinutes(1) < DateTime.Now)
             {
-                if (chatModel.AllChannels.Count.Equals(ApplicationSettings.SavedChannels.Count))
+                if (cm.AllChannels.Count.Equals(ApplicationSettings.SavedChannels.Count))
                     return true;
             }
 

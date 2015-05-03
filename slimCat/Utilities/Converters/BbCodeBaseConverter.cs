@@ -2,11 +2,11 @@
 
 // <copyright file="BbCodeBaseConverter.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -29,6 +29,7 @@ namespace slimCat.Utilities
     using System.Windows.Shapes;
     using Libraries;
     using Models;
+    using Services;
 
     #endregion
 
@@ -37,7 +38,7 @@ namespace slimCat.Utilities
     /// </summary>
     public abstract class BbCodeBaseConverter
     {
-        private readonly ICharacterManager characterManager;
+        private readonly ICharacterManager characters;
         internal readonly IThemeLocator Locator;
 
         #region Properties
@@ -82,11 +83,11 @@ namespace slimCat.Utilities
 
         #region Constructors
 
-        protected BbCodeBaseConverter(IChatModel chatModel, ICharacterManager characterManager, IThemeLocator locator)
+        protected BbCodeBaseConverter(IChatState chatState, IThemeLocator locator)
         {
-            this.characterManager = characterManager;
+            characters = chatState.CharacterManager;
             Locator = locator;
-            ChatModel = chatModel;
+            ChatModel = chatState.ChatModel;
         }
 
         protected BbCodeBaseConverter()
@@ -428,13 +429,13 @@ namespace slimCat.Utilities
         {
             if (arg.Children != null && arg.Children.Any())
             {
-                var user = MakeUsernameLink(characterManager.Find(arg.Children.First().InnerText));
+                var user = MakeUsernameLink(characters.Find(arg.Children.First().InnerText));
                 arg.Children.Clear();
                 return user;
             }
 
             return !string.IsNullOrEmpty(arg.Arguments)
-                ? MakeUsernameLink(characterManager.Find(arg.Arguments))
+                ? MakeUsernameLink(characters.Find(arg.Arguments))
                 : MakeNormalText(arg);
         }
 
@@ -446,7 +447,7 @@ namespace slimCat.Utilities
             {
                 var characterName = arg.Children.First().InnerText;
 
-                var character = characterManager.Find(characterName);
+                var character = characters.Find(characterName);
                 var icon = MakeIcon(character);
 
                 arg.Children.Clear();
@@ -454,7 +455,7 @@ namespace slimCat.Utilities
             }
 
             return !string.IsNullOrEmpty(arg.Arguments)
-                ? MakeIcon(characterManager.Find(arg.Arguments))
+                ? MakeIcon(characters.Find(arg.Arguments))
                 : MakeNormalText(arg);
         }
 
