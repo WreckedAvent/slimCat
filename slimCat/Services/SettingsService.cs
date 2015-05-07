@@ -21,6 +21,7 @@ namespace slimCat.Services
 
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -79,7 +80,7 @@ namespace slimCat.Services
             }
             catch
             {
-                Log("Settings for {0} could not be read".FormatWith(id));
+                Log($"Settings for {id} could not be read");
                 return new ChannelSettingsModel(chanType == ChannelType.PrivateMessage);
 
                 // return a default if it's not legible
@@ -90,7 +91,7 @@ namespace slimCat.Services
         {
             var workingPath = StringExtensions.MakeSafeFolderPath(ProfileCacheFolderName, string.Empty, string.Empty);
 
-            var fileName = Path.Combine(workingPath, ProfileCacheFileName.FormatWith(targetCharacter));
+            var fileName = Path.Combine(workingPath, string.Format(ProfileCacheFileName, targetCharacter));
             Serialize(fileName, profileData);
         }
 
@@ -98,7 +99,7 @@ namespace slimCat.Services
         {
             var workingPath = StringExtensions.MakeSafeFolderPath(ProfileCacheFolderName, string.Empty, string.Empty);
 
-            var fileName = Path.Combine(workingPath, ProfileCacheFileName.FormatWith(targetCharacter));
+            var fileName = Path.Combine(workingPath, string.Format(ProfileCacheFileName, targetCharacter));
 
             var toReturn = Deserialize<ProfileData>(fileName);
             if (toReturn == null) return null;
@@ -473,10 +474,8 @@ namespace slimCat.Services
             SerializeObjectToXml(newSettings, workingPath);
         }
 
-        private static void Log(string log)
-        {
-            Logging.LogLine(log, "setting serv");
-        }
+        [Conditional("DEBUG")]
+        private static void Log(string log) => Logging.LogLine(log, "setting serv");
 
         private static T Deserialize<T>(string path)
             where T : class

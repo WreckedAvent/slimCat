@@ -53,7 +53,7 @@ namespace slimCat.ViewModels
             Target = newTarget;
             Target.GetAvatar();
 
-            Logging.LogLine("target set to \"{0}\"".FormatWith(Target.Name), "right-click vm");
+            Logging.LogLine($"target set to \"{Target.Name}\"", "right-click vm");
 
             hasReports = thisHasReports;
 

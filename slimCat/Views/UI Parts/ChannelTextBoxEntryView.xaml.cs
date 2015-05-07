@@ -25,7 +25,6 @@ namespace slimCat.Views
     using System.Windows.Input;
     using System.Windows.Markup;
     using Models;
-    using Utilities;
     using ViewModels;
 
     #endregion
@@ -91,7 +90,7 @@ namespace slimCat.Views
 
             if (string.IsNullOrWhiteSpace(Entry.SelectedText))
             {
-                var formattedPaste = "[url={0}][/url]".FormatWith(pasteText);
+                var formattedPaste = $"[url={pasteText}][/url]";
                 var caretPasteIndex = Entry.CaretIndex;
                 Entry.Text = Entry.Text.Insert(Entry.CaretIndex, formattedPaste);
                 Entry.CaretIndex = caretPasteIndex + formattedPaste.IndexOf("[/url]", StringComparison.Ordinal);
@@ -99,14 +98,14 @@ namespace slimCat.Views
             else
             {
                 var oldText = Entry.SelectedText;
-                var newPasteText = "[url={0}]{1}[/url]".FormatWith(pasteText, oldText);
+                var newPasteText = $"[url={pasteText}]{oldText}[/url]";
                 Entry.SelectedText = newPasteText;
 
                 // why invoke? Entry.Text doesn't update immediately, it's updated on a scheduler or something
                 // this just schedules it after that
                 Dispatcher.BeginInvoke((Action) (() =>
                 {
-                    var startIndex = Entry.Text.IndexOf("{0}[/url]".FormatWith(oldText), StringComparison.Ordinal);
+                    var startIndex = Entry.Text.IndexOf($"{oldText}[/url]", StringComparison.Ordinal);
                     if (startIndex == -1) return; // don't want to crash if something weird happens
                     Entry.Select(startIndex, oldText.Length);
                 }));

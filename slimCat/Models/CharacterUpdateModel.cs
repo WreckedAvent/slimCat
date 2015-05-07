@@ -148,7 +148,7 @@ namespace slimCat.Models
         internal override void SetToastData(ToastNotificationsViewModel toast)
         {
             base.SetToastData(toast);
-            toast.Title = "{0} #{1}".FormatWith(Model.TargetCharacter.Name, TargetChannel);
+            toast.Title = $"{Model.TargetCharacter.Name} #{TargetChannel}";
         }
 
         public override void NavigateTo(IChatState chatState)

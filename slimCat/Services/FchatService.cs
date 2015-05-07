@@ -227,7 +227,7 @@ namespace slimCat.Services
         private void Log(string type, object payload = null, bool isSent = true)
         {
             Logging.Log(type + (payload != null ? " " + payload.GetHashCode() : ""),
-                "chat {0}".FormatWith(isSent ? "OUT" : "IN"));
+                $"chat {(isSent ? "OUT" : "IN")}");
 
             if (!(noisyTypes.Contains(type) || (type == "IDN" && isSent)))
             {
@@ -361,7 +361,7 @@ namespace slimCat.Services
                 if (errsThatPreventReconnect.Contains(err))
                 {
                     Exceptions.ShowErrorBox(
-                        "slimCat will now exit. \nReason: {0}".FormatWith(json.Get("message")),
+                        $"slimCat will now exit. \nReason: {json.Get("message")}",
                         "slimCat Fatal Error");
 
                     Environment.Exit(-1);

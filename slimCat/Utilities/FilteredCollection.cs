@@ -75,6 +75,7 @@ namespace slimCat.Utilities
         protected readonly Func<T, bool> ActiveFilter;
 
         protected readonly object Locker = new object();
+
         private bool isFiltering;
 
         private ObservableCollection<T> originalCollection;

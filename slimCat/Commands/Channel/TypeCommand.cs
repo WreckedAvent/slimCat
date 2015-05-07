@@ -17,19 +17,14 @@
 
 namespace slimCat.Models
 {
-    #region Usings
-
-    using Utilities;
-
-    #endregion
-
     public class ChannelTypeChangedEventArgs : ChannelUpdateEventArgs
     {
         public bool IsOpen { get; set; }
 
         public override string ToString()
         {
-            return "{0} is now {1}".FormatWith(GetChannelBbCode(), IsOpen ? "open" : "invite only");
+            var openInviteOnly = IsOpen ? "open" : "invite only";
+            return $"{GetChannelBbCode()} is now {openInviteOnly}";
         }
     }
 }

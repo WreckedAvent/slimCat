@@ -2,11 +2,11 @@
 
 // <copyright file="GenericSearchSettingsModel.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -20,6 +20,7 @@ namespace slimCat.Models
     #region Usings
 
     using System;
+    using System.Diagnostics;
     using System.Windows.Input;
     using Libraries;
     using Utilities;
@@ -328,15 +329,10 @@ namespace slimCat.Models
 
         #region Methods
 
-        private void CallUpdate()
-        {
-            Updated?.Invoke(this, new EventArgs());
-        }
+        private void CallUpdate() => Updated?.Invoke(this, new EventArgs());
 
-        private void Log(string text)
-        {
-            Logging.Log(text, "channel setting");
-        }
+        [Conditional("DEBUG")]
+        private static void Log(string text) => Logging.Log(text, "channel setting");
 
         #endregion
     }

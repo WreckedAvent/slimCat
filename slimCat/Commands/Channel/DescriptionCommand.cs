@@ -17,18 +17,9 @@
 
 namespace slimCat.Models
 {
-    #region Usings
-
-    using Utilities;
-
-    #endregion
-
     public class ChannelDescriptionChangedEventArgs : ChannelUpdateEventArgs
     {
-        public override string ToString()
-        {
-            return "{0} has a new description.".FormatWith(GetChannelBbCode());
-        }
+        public override string ToString() => $"{GetChannelBbCode()} has a new description.";
     }
 }
 

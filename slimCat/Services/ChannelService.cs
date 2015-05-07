@@ -2,11 +2,11 @@
 
 // <copyright file="ChannelService.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -97,8 +97,8 @@ namespace slimCat.Services
         public void AddChannel(ChannelType type, string id, string name)
         {
             Log((id != name && !string.IsNullOrEmpty(name))
-                ? "Making {0} Channel {1} \"{2}\"".FormatWith(type, id, name)
-                : "Making {0} Channel {1}".FormatWith(type, id));
+                ? $"Making {type} Channel {id} \"{name}\""
+                : $"Making {type} Channel {id}");
 
             if (type == ChannelType.PrivateMessage)
             {
@@ -217,8 +217,8 @@ namespace slimCat.Services
             IEnumerable<string> history = new List<string>();
 
             Log((id != name && !string.IsNullOrEmpty(name))
-                ? "Joining {0} Channel {1} \"{2}\"".FormatWith(type, id, name)
-                : "Joining {0} Channel {1}".FormatWith(type, id));
+                ? $"Joining {type} Channel {id} \"{name}\""
+                : $"Joining {type} Channel {id}");
 
             if (!id.Equals("Home"))
                 history = logger.GetLogs(string.IsNullOrWhiteSpace(name) ? id : name, id);
@@ -300,8 +300,8 @@ namespace slimCat.Services
                 return;
 
             Log((id != name && !string.IsNullOrEmpty(name))
-                ? "Quick Joining {0} Channel {1} \"{2}\"".FormatWith(type, id, name)
-                : "Quick Joining {0} Channel {1}".FormatWith(type, id));
+                ? $"Quick Joining {type} Channel {id} \"{name}\""
+                : $"Quick Joining {type} Channel {id}");
 
             var temp = new GeneralChannelModel(id, name, type);
             Dispatcher.Invoke(() =>
@@ -422,10 +422,7 @@ namespace slimCat.Services
         }
 
         [Conditional("DEBUG")]
-        private void Log(string text)
-        {
-            Logging.LogLine(text, "chan serv");
-        }
+        private static void Log(string text) => Logging.LogLine(text, "chan serv");
 
         #endregion
     }

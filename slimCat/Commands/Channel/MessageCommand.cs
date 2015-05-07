@@ -2,11 +2,11 @@
 
 // <copyright file="MessageCommand.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -20,7 +20,6 @@ namespace slimCat.Models
     #region Usings
 
     using Services;
-    using Utilities;
 
     #endregion
 
@@ -39,13 +38,11 @@ namespace slimCat.Models
         public ChannelModel Channel { get; set; }
 
         public string Title
-            => (IsNameMention ? "{0}'s name matches {1} #{2}" : "{0} mentioned {1} #{2}").FormatWith(Args);
+            => string.Format(IsNameMention ? "{0}'s name matches {1} #{2}" : "{0} mentioned {1} #{2}", Args);
 
         public override string ToString()
-        {
-            return (IsNameMention ? "'s name matches {1} in {2}" : "mentioned {1} in {2}").FormatWith(Args) + ": \"" +
-                   Context + "\"";
-        }
+            => string.Format(IsNameMention ? "'s name matches {1} in {2}" : "mentioned {1} in {2}", Args) + ": \"" +
+               Context + "\"";
 
         public override void DisplayNewToast(IChatState chatState, IManageToasts toastsManager)
         {

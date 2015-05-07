@@ -21,6 +21,7 @@ namespace slimCat.Services
 
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Net;
     using System.Text;
@@ -92,11 +93,10 @@ namespace slimCat.Services
                 // log upload format doesn't allow much HTML or anything other than line breaks.
                 var sb = new StringBuilder();
                 sb.Append("==================================\n");
-                sb.Append("{0} log upload \n{1} in {2}\nreported user: {3}\ntime stamps in 24hr UTC\n"
-                    .FormatWith(Constants.FriendlyName,
-                        DateTime.UtcNow.ToShortDateString(),
-                        report.Tab,
-                        report.Reported));
+                sb.Append($"{Constants.FriendlyName} log upload " +
+                          $"\n{DateTime.UtcNow.ToShortDateString()} in {report.Tab}" +
+                          $"\nreported user: {report.Reported}" +
+                          "\ntime stamps in 24hr UTC\n");
                 sb.Append("==================================\n");
 
                 log.Where(x => !x.IsHistoryMessage)
@@ -130,13 +130,13 @@ namespace slimCat.Services
                     int.TryParse(result.LogId, out logId);
                 }
 
-                Log("Uploaded report log in tab {0} with id of {1}".FormatWith(report.Tab, logId));
+                Log($"Uploaded report log in tab {report.Tab} with id of {logId}");
                 return logId;
             }
             catch (Exception)
             {
                 // when dealing with the web it's always possible something could mess up
-                Log("Failed to get id for report log in tab {0}".FormatWith(report.Tab));
+                Log($"Failed to get id for report log in tab {report.Tab}");
                 return -1;
             }
         }
@@ -163,7 +163,7 @@ namespace slimCat.Services
             }
             catch (Exception ex)
             {
-                Log("Could not get ticket: {0}".FormatWith(ex.Message));
+                Log($"Could not get ticket: {ex.Message}");
                 model.Error = "Can't connect to F-List! \nError: " + ex.Message;
                 events.GetEvent<LoginCompleteEvent>().Publish(false);
             }
@@ -239,7 +239,7 @@ namespace slimCat.Services
                     var id = requestService.GetRequestForCharacter(character);
                     if (id == null)
                     {
-                        events.NewError("Could not find any friend requests for/from {0}".FormatWith(character));
+                        events.NewError($"Could not find any friend requests for/from {character}");
                         return;
                     }
 
@@ -258,10 +258,8 @@ namespace slimCat.Services
             }
         }
 
-        private void Log(string text)
-        {
-            Logging.Log(text, "site");
-        }
+        [Conditional("DEBUG")]
+        private static void Log(string text) => Logging.Log(text, "site");
 
         #endregion
     }

@@ -36,8 +36,8 @@ namespace slimCat.Models
 
         public ProfileImage(ApiProfileImage image)
         {
-            ThumbnailUri = new Uri(ThumbUrl.FormatWith(image.ImageId, image.Extension));
-            FullImageUri = new Uri(FullImageUrl.FormatWith(image.ImageId, image.Extension));
+            ThumbnailUri = new Uri(string.Format(ThumbUrl, image.ImageId, image.Extension));
+            FullImageUri = new Uri(string.Format(FullImageUrl, image.ImageId, image.Extension));
             Description = WebUtility.HtmlDecode(WebUtility.HtmlDecode(image.Description));
             Width = image.Width;
             Height = image.Height;

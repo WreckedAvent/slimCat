@@ -86,7 +86,7 @@ namespace slimCat.ViewModels
             var examples = new Dictionary<string, string>
             {
                 {"url", "[url=https://google.com]google![/url]"},
-                {"session", "[session=slimCat]{0}[/session]".FormatWith(ApplicationSettings.SlimCatChannelId)},
+                {"session", $"[session=slimCat]{ApplicationSettings.SlimCatChannelId}[/session]"},
                 {"channel", "[channel]Frontpage[/channel]"},
                 {"color", "[color=red]red text![/color]"},
                 {"collapse", "[collapse=header]collapsed text![/collapse]"},
@@ -101,7 +101,7 @@ namespace slimCat.ViewModels
                 string example;
 
                 examples.TryGetValue(x.Key, out example);
-                example = example ?? "[{0}]inner text[/{0}]".FormatWith(x.Key);
+                example = example ?? string.Format("[{0}]inner text[/{0}]", x.Key);
 
                 return new ExampleReference
                 {
@@ -145,7 +145,7 @@ namespace slimCat.ViewModels
         private static string Aggregate(IEnumerable<string> list)
         {
             return list != null && list.Any()
-                ? list.Aggregate((current, next) => current + ", {0}".FormatWith(next))
+                ? list.Aggregate((current, next) => current + $", {next}")
                 : null;
         }
 

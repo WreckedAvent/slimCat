@@ -125,14 +125,7 @@ namespace slimCat.Models
             toast.TargetCharacter = null;
         }
 
-        internal string GetChannelBbCode()
-        {
-            return "[session={1}]{0}[/session]".FormatWith(Model.TargetChannel.Id, Model.TargetChannel.Title);
-        }
-
-        internal string WrapInUser(string user)
-        {
-            return "[user]{0}[/user]".FormatWith(user);
-        }
+        internal string GetChannelBbCode() => $"[session={Model.TargetChannel.Id}]{Model.TargetChannel.Title}[/session]";
+        internal string WrapInUser(string user) => $"[user]{user}[/user]";
     }
 }

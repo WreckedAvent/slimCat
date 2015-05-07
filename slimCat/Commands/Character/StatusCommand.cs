@@ -145,7 +145,7 @@ namespace slimCat.Services
             }
             catch (ArgumentException)
             {
-                events.NewError("'{0}' is not a valid status type!".FormatWith(command.Get(Constants.Arguments.Status)));
+                events.NewError($"'{command.Get(Constants.Arguments.Status)}' is not a valid status type!");
                 return;
             }
 

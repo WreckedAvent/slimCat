@@ -36,9 +36,7 @@ namespace slimCat.Services
                 return;
             }
 
-            var toCopy = "[session={0}]{1}[/session]".FormatWith(
-                cm.CurrentChannel.Title,
-                cm.CurrentChannel.Id);
+            var toCopy = $"[session={cm.CurrentChannel.Title}]{cm.CurrentChannel.Id}[/session]";
 
             Clipboard.SetData(DataFormats.Text, toCopy);
             events.NewMessage("Channel's code copied to clipboard.");

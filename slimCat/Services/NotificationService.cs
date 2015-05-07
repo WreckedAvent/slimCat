@@ -2,11 +2,11 @@
 
 // <copyright file="NotificationService.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -187,8 +187,7 @@ namespace slimCat.Services
 
                     toast.TargetCharacter = message.Poster;
                     toast.Title =
-                        "{0} #{1}".FormatWith(ApplicationSettings.ShowNamesInToasts ? message.Poster.Name : "A user",
-                            channel.Title);
+                        $"{(ApplicationSettings.ShowNamesInToasts ? message.Poster.Name : "A user")} #{channel.Title}";
                     toast.Content = ApplicationSettings.ShowMessagesInToasts ? cleanMessageText : "Has a new message";
                     toast.ShowNotifications();
                     toast.Navigator = new SimpleNavigator(chatState =>
@@ -286,12 +285,12 @@ namespace slimCat.Services
 
             if (!channel.HasAutoRepliedTo && cm.AutoReplyEnabled && !string.IsNullOrWhiteSpace(cm.AutoReplyMessage))
             {
-                var respondWith = "[b]Auto Reply[/b]: {0}".FormatWith(cm.AutoReplyMessage);
+                var respondWith = $"[b]Auto Reply[/b]: {cm.AutoReplyMessage}";
 
                 events.SendUserCommand(CommandDefinitions.ClientSendPm, new[] {respondWith, channel.Id});
 
                 channel.HasAutoRepliedTo = true;
-                Log("Auto replied to {0}".FormatWith(channel.Id));
+                Log($"Auto replied to {channel.Id}");
             }
             else if (channel.HasAutoRepliedTo && !cm.AutoReplyEnabled)
                 channel.HasAutoRepliedTo = false;
@@ -346,10 +345,7 @@ namespace slimCat.Services
         }
 
         [Conditional("DEBUG")]
-        private void Log(string text)
-        {
-            Logging.Log(text, "notify serv");
-        }
+        private static void Log(string text) => Logging.Log(text, "notify serv");
 
         #endregion
     }

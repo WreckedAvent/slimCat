@@ -52,7 +52,7 @@ namespace slimCat.Views
                 {Key.O, new Tuple<string, bool>("icon", false)},
                 {Key.K, new Tuple<string, bool>("channel", false)},
                 {Key.J, new Tuple<string, bool>("color", false)}
-                // format: 
+                // format:
                 // target key, matching bbtag, if the bbtag takes arguments
             };
 
@@ -187,10 +187,10 @@ namespace slimCat.Views
                         {
                             var altbbtag = TogglingKeys[e.Key];
 
-                            var openingBb = "[{0}]".FormatWith(bbtag);
-                            var openingAltBb = "[{0}]".FormatWith(altbbtag);
-                            var closingBb = "[/{0}]".FormatWith(bbtag);
-                            var closingAltBb = "[/{0}]".FormatWith(altbbtag);
+                            var openingBb = $"[{bbtag}]";
+                            var openingAltBb = $"[{altbbtag}]";
+                            var closingBb = $"[/{bbtag}]";
+                            var closingAltBb = $"[/{altbbtag}]";
 
                             if (selected.Contains(openingBb))
                             {
@@ -205,13 +205,11 @@ namespace slimCat.Views
                                 return;
                             }
                         }
-                        if (entry.SelectedText.Contains("[{0}]".FormatWith(bbtag)) &&
-                            TogglingKeys.ContainsKey(e.Key))
+                        if (entry.SelectedText.Contains($"[{bbtag}]") && TogglingKeys.ContainsKey(e.Key))
                         {
-                            entry.SelectedText = entry.SelectedText.Replace("[{0}]".FormatWith(bbtag),
-                                "[{0}]".FormatWith(TogglingKeys[e.Key]));
-                            entry.SelectedText = entry.SelectedText.Replace("[/{0}]".FormatWith(bbtag),
-                                "[/{0}]".FormatWith(TogglingKeys[e.Key]));
+                            entry.SelectedText = entry.SelectedText.Replace($"[{bbtag}]", $"[{TogglingKeys[e.Key]}]");
+                            entry.SelectedText = entry.SelectedText.Replace($"[/{bbtag}]",
+                                $"[/{TogglingKeys[e.Key]}]");
                         }
 
                         entry.SelectedText = $"[{bbtag}]{selected}[/{bbtag}]";
@@ -228,12 +226,12 @@ namespace slimCat.Views
                 else
                 {
                     var caretIndex = entry.CaretIndex;
-                    var bbfragment = "[{0}][/{0}]".FormatWith(bbtag);
+                    var bbfragment = string.Format("[{0}][/{0}]", bbtag);
                     if (TogglingKeys.ContainsKey(e.Key) && caretIndex > 0)
                     {
                         var altbbtag = TogglingKeys[e.Key];
 
-                        var altbbfragment = "[{0}][/{0}]".FormatWith(altbbtag);
+                        var altbbfragment = string.Format("[{0}][/{0}]", altbbtag);
 
                         if (entry.Text.Contains(bbfragment))
                         {

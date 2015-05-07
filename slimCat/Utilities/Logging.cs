@@ -2,11 +2,11 @@
 
 // <copyright file="Logging.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -112,7 +112,7 @@ namespace slimCat.Utilities
 
                     if (dict.Keys.Count(x => x != Constants.Arguments.Command) == 1 && dict.Values.First() is string)
                     {
-                        var temp = "{" + (" {0}: \"{1}\" ".FormatWith(dict.Keys.First(), dict.Values.First())) + "}";
+                        var temp = "{" + $" {dict.Keys.First()}: \"{dict.Values.First()}\" " + "}";
                         Trace.WriteLine(temp + (useComma ? "," : ""));
                         return;
                     }
@@ -122,7 +122,7 @@ namespace slimCat.Utilities
 
                     foreach (var pair in dict.Where(pair => pair.Key != Constants.Arguments.Command).Take(10))
                     {
-                        Trace.Write("{0}: ".FormatWith(pair.Key));
+                        Trace.Write($"{pair.Key}: ");
                         LogObject(pair.Value, true);
                     }
 
@@ -147,7 +147,7 @@ namespace slimCat.Utilities
 
                     if (arr.Count == 1)
                     {
-                        Trace.WriteLine("[ {0} ]".FormatWith(arr[0]) + (useComma ? "," : ""));
+                        Trace.WriteLine($"[ {arr[0]} ]" + (useComma ? "," : ""));
                         return;
                     }
 
@@ -173,10 +173,7 @@ namespace slimCat.Utilities
             }
         }
 
-        public static string GetTimestamp()
-        {
-            return "[{0}]".FormatWith(DateTime.Now.ToString("mm:ss.ffff"));
-        }
+        public static string GetTimestamp() => $"[{DateTime.Now.ToString("mm:ss.ffff")}]";
 
         #endregion
     }

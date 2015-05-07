@@ -283,10 +283,10 @@ namespace slimCat.Models
             string familiarName, IList<string> args = null, string channel = null)
         {
             if (WarningList.Contains(familiarName))
-                throw new ArgumentException("Command '{0}' must be sent with text.".FormatWith(familiarName));
+                throw new ArgumentException($"Command '{familiarName}' must be sent with text.");
 
             if (!IsValidCommand(familiarName))
-                throw new ArgumentException("Unknown command: {0}.".FormatWith(familiarName));
+                throw new ArgumentException($"Unknown command: {familiarName}.");
 
             var model = GetCommandModelFromName(familiarName);
 
@@ -326,8 +326,7 @@ namespace slimCat.Models
             // error out if we have more arguments than we should
             if (difference > 0 || model.ArgumentNames == null)
             {
-                throw new ArgumentException("{0} takes {1} arguments, not {2}.".FormatWith(familiarName, modelArgsCount,
-                    argsCount));
+                throw new ArgumentException($"{familiarName} takes {modelArgsCount} arguments, not {argsCount}.");
             }
 
             var missingArgument = model.ArgumentNames[difference + model.ArgumentNames.Count];
@@ -341,7 +340,7 @@ namespace slimCat.Models
                     return toReturn;
             }
 
-            throw new ArgumentException("{0} is missing the '{1}' argument".FormatWith(familiarName, missingArgument));
+            throw new ArgumentException($"{familiarName} is missing the '{missingArgument}' argument");
         }
 
         public static CommandModel GetCommandModelFromName(string familiarName)

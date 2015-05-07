@@ -161,7 +161,7 @@ namespace slimCat.ViewModels
         {
             IsConnecting = true;
             Events.GetEvent<CharacterSelectedLoginEvent>().Publish(CurrentCharacter.Name);
-            Log("Character {0} selected".FormatWith(CurrentCharacter.Name));
+            Log($"Character {CurrentCharacter.Name} selected");
         }
 
         private void HandleLoginComplete(bool should)

@@ -17,20 +17,10 @@
 
 namespace slimCat.Models
 {
-    #region Usings
-
-    using Utilities;
-
-    #endregion
-
     public class ChannelOwnerChangedEventArgs : ChannelUpdateEventArgs
     {
         public string NewOwner { get; set; }
-
-        public override string ToString()
-        {
-            return "{0} is now owned by {1}".FormatWith(GetChannelBbCode(), WrapInUser(NewOwner));
-        }
+        public override string ToString() => $"{GetChannelBbCode()} is now owned by {WrapInUser(NewOwner)}";
     }
 }
 

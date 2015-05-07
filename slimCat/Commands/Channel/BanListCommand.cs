@@ -19,16 +19,13 @@ namespace slimCat.Models
 {
     #region Usings
 
-    using Utilities;
+    
 
     #endregion
 
     public class ChannelTypeBannedListEventArgs : ChannelUpdateEventArgs
     {
-        public override string ToString()
-        {
-            return "{0}'s ban list has been updated".FormatWith(GetChannelBbCode());
-        }
+        public override string ToString() => $"{GetChannelBbCode()}'s ban list has been updated";
     }
 }
 

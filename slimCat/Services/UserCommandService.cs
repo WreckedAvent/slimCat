@@ -176,10 +176,7 @@ namespace slimCat.Services
 
 
         [Conditional("DEBUG")]
-        private void Log(string text)
-        {
-            Logging.LogLine(text, "msg serv");
-        }
+        private void Log(string text) => Logging.LogLine(text, "msg serv");
 
         #endregion
     }

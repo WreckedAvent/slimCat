@@ -148,10 +148,7 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The create shell.
         /// </summary>
-        protected override DependencyObject CreateShell()
-        {
-            return ServiceLocator.Current.GetInstance<Shell>();
-        }
+        protected override DependencyObject CreateShell() => ServiceLocator.Current.GetInstance<Shell>();
 
         /// <summary>
         ///     The initialize shell.

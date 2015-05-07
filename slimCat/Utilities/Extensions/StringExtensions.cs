@@ -2,11 +2,11 @@
 
 // <copyright file="StringExtensions.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-//
+// 
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-//
+// 
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -130,9 +130,7 @@ namespace slimCat.Utilities
         }
 
         public static bool HasDingTermMatch(this string checkAgainst, IEnumerable<string> dingTerms)
-        {
-            return dingTerms.Any(term => term.FirstMatch(checkAgainst).Item1 != string.Empty);
-        }
+            => dingTerms.Any(term => term.FirstMatch(checkAgainst).Item1 != string.Empty);
 
         public static string MakeSafeFolderPath(string character, string title, string id)
         {
@@ -164,18 +162,7 @@ namespace slimCat.Utilities
             return Path.Combine(GeneralExtensions.BaseFolderPath, character, folderName);
         }
 
-        /// <summary>
-        ///     Uses a string as a format provider with the given arguments.
-        /// </summary>
-        public static string FormatWith(this string toFormat, params object[] args)
-        {
-            return string.Format(toFormat, args);
-        }
-
-        public static T ToEnum<T>(this string str)
-        {
-            return (T) Enum.Parse(typeof (T), str, true);
-        }
+        public static T ToEnum<T>(this string str) => (T) Enum.Parse(typeof (T), str, true);
 
         public static string StripPunctuationAtEnd(this string fullString)
         {
@@ -192,10 +179,7 @@ namespace slimCat.Utilities
             return index == 0 ? string.Empty : fullString.Substring(0, index + 1);
         }
 
-        public static T DeserializeTo<T>(this string objectString)
-        {
-            return JsonConvert.DeserializeObject<T>(objectString);
-        }
+        public static T DeserializeTo<T>(this string objectString) => JsonConvert.DeserializeObject<T>(objectString);
 
         public static bool IsUpdate(this string arg)
         {
@@ -234,9 +218,6 @@ namespace slimCat.Utilities
         /// <summary>
         ///     Used to replace channel names with spaces to something more unique.
         /// </summary>
-        public static string EscapeSpaces(string text)
-        {
-            return text.Replace(" ", "___");
-        }
+        public static string EscapeSpaces(string text) => text.Replace(" ", "___");
     }
 }

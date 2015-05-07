@@ -137,17 +137,13 @@ namespace slimCat.Utilities
         ///     The input.
         /// </param>
         public static bool HasNonCommand(string input)
-        {
-            return CommandDefinitions.NonCommandCommands.Keys.Any(input.StartsWith);
-        }
+            => CommandDefinitions.NonCommandCommands.Keys.Any(input.StartsWith);
 
         /// <summary>
         ///     Turns a user command to a send-able dictionary.
         /// </summary>
         public IDictionary<string, object> ToDictionary()
-        {
-            return CommandDefinitions.CreateCommand(Type, arguments, currentChannel).ToDictionary();
-        }
+            => CommandDefinitions.CreateCommand(Type, arguments, currentChannel).ToDictionary();
 
         #endregion
     }

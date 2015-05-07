@@ -126,8 +126,7 @@ namespace slimCat
             foreach (var file in requiredFiles.Where(file => !File.Exists(file)))
             {
                 Exceptions.ShowErrorBox(
-                    "slimCat will now exit. \nReason: Required theme file \"{0}\" is missing. This is likely due to a bad theme install.\n"
-                        .FormatWith(file) +
+                    $"slimCat will now exit. \nReason: Required theme file \"{file}\" is missing. This is likely due to a bad theme install.\n" +
                     "Please install themes by extracting a theme over the default theme, overwriting when prompted to.",
                     "slimCat Fatal Error");
 

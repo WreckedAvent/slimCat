@@ -212,14 +212,14 @@ namespace slimCat.Services
                         hasEscaped = escaped != title;
                         title = escaped;
                     } while (hasEscaped);
-                    Log("note subject to {0} is {1}".FormatWith(characterName, title));
+                    Log($"note subject to {characterName} is {title}");
                 }
             }
 
             var sourceId = string.Empty;
             {
                 var sourceIdInput =
-                    htmlDoc.DocumentNode.SelectSingleNode(NoteIdXpath.FormatWith(cm.CurrentCharacter.Name));
+                    htmlDoc.DocumentNode.SelectSingleNode(string.Format(NoteIdXpath, cm.CurrentCharacter.Name));
 
                 if (sourceIdInput != null)
                 {
@@ -229,7 +229,7 @@ namespace slimCat.Services
                         .FirstOrDefault();
 
                     sourceId = value ?? sourceId;
-                    Log("ID for sending notes to {0} is {1}".FormatWith(characterName, sourceId));
+                    Log($"ID for sending notes to {characterName} is {sourceId}");
                 }
             }
 
@@ -238,7 +238,7 @@ namespace slimCat.Services
             {
                 if (result != null && result.Count > 0)
                 {
-                    Log("parsing note history for {0}, {1} items".FormatWith(characterName, result.Count));
+                    Log($"parsing note history for {characterName}, {result.Count} items");
                     result.Select(x =>
                     {
                         Log(x.InnerText);
@@ -340,10 +340,7 @@ namespace slimCat.Services
         }
 
         [Conditional("DEBUG")]
-        private static void Log(string text)
-        {
-            Logging.LogLine(text, "note serv");
-        }
+        private static void Log(string text) => Logging.LogLine(text, "note serv");
 
         #endregion
     }

@@ -97,7 +97,7 @@ namespace slimCat.Services
                 var toSkip = Math.Max(enumerable.Count() - 10, 0);
 
                 toReturn = enumerable.Skip(toSkip).ToList();
-                toReturn.Insert(0, "[b]Log from {0}[/b]".FormatWith(file.LastWriteTime.ToShortDateString()));
+                toReturn.Insert(0, $"[b]Log from {file.LastWriteTime.ToShortDateString()}[/b]");
             }
             catch
             {

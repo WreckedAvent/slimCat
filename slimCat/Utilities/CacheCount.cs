@@ -95,10 +95,7 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The dispose.
         /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-        }
+        public void Dispose() => Dispose(true);
 
         /// <summary>
         ///     The get display string.
@@ -209,10 +206,7 @@ namespace slimCat.Utilities
         /// <returns>
         ///     The <see cref="double" />.
         /// </returns>
-        private double Average()
-        {
-            return oldCounts.Average();
-        }
+        private double Average() => oldCounts.Average();
 
         /// <summary>
         ///     The dispose.

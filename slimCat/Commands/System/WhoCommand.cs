@@ -48,7 +48,7 @@ namespace slimCat.Services
             if (string.IsNullOrEmpty(names))
                 names = "no shared channels";
 
-            events.NewMessage("User '{0}' present in {1}".FormatWith(character, names));
+            events.NewMessage($"User '{character}' present in {names}");
         }
     }
 }

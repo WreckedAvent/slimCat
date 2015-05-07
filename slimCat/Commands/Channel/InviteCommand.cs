@@ -17,20 +17,10 @@
 
 namespace slimCat.Models
 {
-    #region Usings
-
-    using Utilities;
-
-    #endregion
-
     public class ChannelInviteEventArgs : ChannelUpdateEventArgs
     {
         public string Inviter { get; set; }
-
-        public override string ToString()
-        {
-            return "{0} has invited you to join {1}".FormatWith(WrapInUser(Inviter), GetChannelBbCode());
-        }
+        public override string ToString() => $"{WrapInUser(Inviter)} has invited you to join {GetChannelBbCode()}";
     }
 }
 

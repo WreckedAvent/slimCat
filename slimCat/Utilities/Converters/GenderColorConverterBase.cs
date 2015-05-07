@@ -32,6 +32,8 @@ namespace slimCat.Utilities
     /// </summary>
     public abstract class GenderColorConverterBase : OneWayConverter
     {
+        private readonly ICharacterManager characters;
+
         private readonly IDictionary<Gender, Gender> genderFallbacks = new Dictionary<Gender, Gender>
         {
             {Gender.Male, Gender.Male},
@@ -56,7 +58,6 @@ namespace slimCat.Utilities
             {Gender.None, "Highlight"}
         };
 
-        private readonly ICharacterManager characters;
         internal readonly IGetPermissions Permissions;
 
         protected GenderColorConverterBase(IGetPermissions permissions, ICharacterManager characters)
