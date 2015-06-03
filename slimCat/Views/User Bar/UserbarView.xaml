@@ -113,13 +113,13 @@
                                     </Style>
                                 </WrapPanel.Resources>
                                 <Rectangle Height="3"
-                                           Visibility="{Binding Path=ConnectionIsConnected, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
+                                           Visibility="{Binding Path=ConnectionIsConnected, Mode=OneWay, Converter={StaticResource HiddenBoolConverter}}" />
                                 <Rectangle Height="6"
-                                           Visibility="{Binding Path=ConnectionIsModerate, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
+                                           Visibility="{Binding Path=ConnectionIsModerate, Mode=OneWay, Converter={StaticResource HiddenBoolConverter}}" />
                                 <Rectangle Height="10"
-                                           Visibility="{Binding Path=ConnectionIsGood, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
+                                           Visibility="{Binding Path=ConnectionIsGood, Mode=OneWay, Converter={StaticResource HiddenBoolConverter}}" />
                                 <Rectangle Height="15"
-                                           Visibility="{Binding Path=ConnectionIsPerfect, Mode=OneWay, Converter={StaticResource BoolConverter}}" />
+                                           Visibility="{Binding Path=ConnectionIsPerfect, Mode=OneWay, Converter={StaticResource HiddenBoolConverter}}" />
                                 <TextBlock
                                     Visibility="{Binding Path=IsDisconnected, Mode=OneWay, Converter={StaticResource BoolConverter}}"
                                     Foreground="{StaticResource ContrastBrush}"
