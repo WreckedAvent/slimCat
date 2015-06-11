@@ -2,11 +2,11 @@
 
 // <copyright file="GenderColorConverter.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -49,15 +49,9 @@ namespace slimCat.Utilities
 
             var character = (ICharacter) value;
             var gender = character.Gender;
-            var isInteresting = character.IsInteresting;
 
-            Color baseColor;
             var brightColor = (Color) TryGet("Foreground", false);
-
-            if (isInteresting && ApplicationSettings.AllowOfInterestColoring)
-                baseColor = (Color) TryGet("Contrast", false);
-            else
-                baseColor = GetColor(character);
+            var baseColor = GetColor(character);
 
             var stops = new List<GradientStop>
             {

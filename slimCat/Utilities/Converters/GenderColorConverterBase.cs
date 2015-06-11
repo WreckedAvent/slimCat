@@ -2,11 +2,11 @@
 
 // <copyright file="GenderColorConverterBase.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -74,13 +74,17 @@ namespace slimCat.Utilities
             if (characters != null && characters.IsOnList(character.Name, ListKind.NotInterested))
                 return (SolidColorBrush) Application.Current.FindResource("NotAvailableBrush");
 
+            var normalColorName = character.IsInteresting && ApplicationSettings.AllowOfInterestColoring
+                ? "Contrast"
+                : GetGenderName(character.Gender);
+
             if (!ApplicationSettings.AllowStatusDiscolor)
-                return (SolidColorBrush) TryGet(GetGenderName(character.Gender), true);
+                return (SolidColorBrush) TryGet(normalColorName, true);
 
             if (character.Status == StatusType.Crown
                 || character.Status == StatusType.Online
                 || character.Status == StatusType.Looking)
-                return (SolidColorBrush) TryGet(GetGenderName(character.Gender), true);
+                return (SolidColorBrush) TryGet(normalColorName, true);
 
             return (SolidColorBrush) Application.Current.FindResource("NotAvailableBrush");
         }
@@ -93,13 +97,17 @@ namespace slimCat.Utilities
             if (characters != null && characters.IsOnList(character.Name, ListKind.NotInterested))
                 return (Color) Application.Current.FindResource("NotAvailableColor");
 
+            var normalColorName = character.IsInteresting && ApplicationSettings.AllowOfInterestColoring
+                ? "Contrast"
+                : GetGenderName(character.Gender);
+
             if (!ApplicationSettings.AllowStatusDiscolor)
-                return (Color) TryGet(GetGenderName(character.Gender), false);
+                return (Color) TryGet(normalColorName, false);
 
             if (character.Status == StatusType.Crown
                 || character.Status == StatusType.Online
                 || character.Status == StatusType.Looking)
-                return (Color) TryGet(GetGenderName(character.Gender), false);
+                return (Color) TryGet(normalColorName, false);
 
             return (Color) Application.Current.FindResource("NotAvailableColor");
         }
