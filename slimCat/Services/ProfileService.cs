@@ -299,9 +299,20 @@ namespace slimCat.Services
 
                 var id = htmlDoc.DocumentNode.SelectSingleNode(ProfileIdSelector).Attributes["value"].Value;
 
-                var imageResp = browser.GetResponse(Constants.UrlConstants.ProfileImages,
-                    new Dictionary<string, object> {{"character_id", id}}, true);
-                var images = JsonConvert.DeserializeObject<ApiProfileImagesResponse>(imageResp);
+                ApiProfileImagesResponse images;
+                try
+                {
+                    var imageResp = browser.GetResponse(Constants.UrlConstants.ProfileImages,
+                        new Dictionary<string, object> { { "character_id", id } }, true);
+                    images = JsonConvert.DeserializeObject<ApiProfileImagesResponse>(imageResp);
+                }
+                catch
+                {
+                    images = new ApiProfileImagesResponse
+                    {
+                        Images = new List<ApiProfileImage>()
+                    };
+                }
 
                 var profileData = CreateModel(profileBody, profileTags, images, allKinks, allAlts);
                 SettingsService.SaveProfile(characterName, profileData);
