@@ -25,7 +25,7 @@ namespace slimCat.Utilities
 
     #endregion
 
-    public class CharacterAvatarConverter : OneWayConverter
+    public class EIconConverter : OneWayConverter
     {
         public override object Convert(object value, object parameter)
         {
@@ -33,7 +33,7 @@ namespace slimCat.Utilities
 
             var character = (string) value;
             return new BitmapImage(
-                new Uri(Constants.UrlConstants.CharacterAvatar + character.ToLower() + ".png",
+                new Uri(Constants.UrlConstants.EIcon + character.ToLower() + ".png",
                     UriKind.Absolute), new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable));
         }
     }

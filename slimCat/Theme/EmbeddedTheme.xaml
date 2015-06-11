@@ -34,6 +34,7 @@
     <utilities:RemoveSomeConverter x:Key="RemoveSomeConverter" />
     <utilities:ReduceRowConverter x:Key="ReduceRowConverter" />
     <utilities:EqualsConverter x:Key="EqualsConverter" />
+    <utilities:EIconConverter x:Key="EIconConverter" />
 
     <utilities:ConverterChain x:Key="EqualsVisibilityConverterChain">
         <utilities:EqualsConverter />
@@ -156,6 +157,12 @@
                        Height="50" Width="50" Margin="0" />
             </Hyperlink>
         </TextBlock>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EIconTemplate"
+                  DataType="models:CharacterModel">
+        <Image Source="{Binding Converter={StaticResource EIconConverter}, IsAsync=True}"
+               Height="50" Width="50" Margin="0" />
     </DataTemplate>
 
     <Style TargetType="Hyperlink" x:Key="Hyperlink">
@@ -432,8 +439,8 @@
 
     <!-- Theme for Flowdocument reader
          Warning: This was reflected out of an assembly
-         So it's very ugly and long and makes visual studio unhappy. 
-    
+         So it's very ugly and long and makes visual studio unhappy.
+
     But works. -->
 
     <Style TargetType="{x:Type FlowDocumentReader}">

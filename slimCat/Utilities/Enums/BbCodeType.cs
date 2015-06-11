@@ -47,6 +47,7 @@ namespace slimCat.Utilities
         Heading,
         Left,
         Right,
-        Center
+        Center,
+        EIcon
     }
 }

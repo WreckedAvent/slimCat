@@ -279,6 +279,7 @@
     <Compile Include="Utilities\Converters\BbCodeBaseConverter.cs" />
     <Compile Include="Utilities\Converters\BbCodeConverter.cs" />
     <Compile Include="Utilities\Converters\BbCodePostConverter.cs" />
+    <Compile Include="Utilities\Converters\EIconConverter.cs" />
     <Compile Include="Utilities\Extensions\DateTimeExtensions.cs" />
     <Compile Include="Utilities\Enums\BbCodeType.cs" />
     <Compile Include="Utilities\Converters\BbFlowConverter.cs" />

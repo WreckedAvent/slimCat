@@ -2,11 +2,11 @@
 
 // <copyright file="BbCodeBaseConverter.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -60,6 +60,7 @@ namespace slimCat.Utilities
             {"url", BbCodeType.Url},
             {"u", BbCodeType.Underline},
             {"icon", BbCodeType.Icon},
+            {"eicon", BbCodeType.EIcon},
             {"sup", BbCodeType.Superscript},
             {"sub", BbCodeType.Subscript},
             {"small", BbCodeType.Small},
@@ -106,6 +107,11 @@ namespace slimCat.Utilities
         internal Inline MakeIcon(ICharacter target)
         {
             return MakeInlineContainer(target, "UserIconTemplate");
+        }
+
+        internal Inline MakeEIcon(string target)
+        {
+            return MakeInlineContainer(target, "EIconTemplate");
         }
 
         internal Inline MakeChannelLink(ChannelModel channel)
@@ -233,6 +239,7 @@ namespace slimCat.Utilities
                 {BbCodeType.User, MakeUser},
                 {BbCodeType.NoParse, MakeNormalText},
                 {BbCodeType.Icon, MakeIcon},
+                {BbCodeType.EIcon, MakeEIcon},
                 {BbCodeType.Collapse, MakeCollapse},
                 {BbCodeType.Quote, MakeQuote},
                 {BbCodeType.HorizontalRule, MakeHorizontalRule},
@@ -449,6 +456,24 @@ namespace slimCat.Utilities
 
                 var character = characters.Find(characterName);
                 var icon = MakeIcon(character);
+
+                arg.Children.Clear();
+                return icon;
+            }
+
+            return !string.IsNullOrEmpty(arg.Arguments)
+                ? MakeIcon(characters.Find(arg.Arguments))
+                : MakeNormalText(arg);
+        }
+
+        private Inline MakeEIcon(ParsedChunk arg)
+        {
+            if (!ApplicationSettings.AllowIcons) return MakeUser(arg);
+
+            if (arg.Children != null && arg.Children.Any())
+            {
+                var target = arg.Children.First().InnerText;
+                var icon = MakeEIcon(target);
 
                 arg.Children.Clear();
                 return icon;
