@@ -377,7 +377,7 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The client's name. Must be a type of cat.
         /// </summary>
-        public const string ClientNickname = "Puma";
+        public const string ClientNickname = "Slow Cheetah";
 
         /// <summary>
         ///     The version of the client.
