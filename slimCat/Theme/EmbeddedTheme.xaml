@@ -12,6 +12,7 @@
 
     <BooleanToVisibilityConverter x:Key="BoolConverter" />
     <utilities:OppositeBoolConverter x:Key="OppositeBoolConverter" />
+    <utilities:HiddenBoolConverter x:Key="HiddenBoolConverter" />
     <utilities:BoolColorConverter x:Key="ColorConverter" />
     <utilities:GenderImageConverter x:Key="GenderImageConverter" />
     <utilities:ChannelTypeToImageConverter x:Key="ChannelTypeToImageConverter" />
