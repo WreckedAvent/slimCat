@@ -487,7 +487,7 @@ namespace slimCat.Utilities
         private Inline MakeSuperscript(ParsedChunk arg)
         {
             var small = MakeSmall(arg);
-            small.BaselineAlignment = BaselineAlignment.Superscript;
+            small.BaselineAlignment = BaselineAlignment.TextTop;
             return small;
         }
 
@@ -501,14 +501,14 @@ namespace slimCat.Utilities
         private Inline MakeSmall(ParsedChunk arg)
         {
             var toReturn = new Span(WrapInRun(arg.InnerText));
-            toReturn.FontSize *= 0.75;
+            toReturn.FontSize = ApplicationSettings.FontSize * 0.75;
             return toReturn;
         }
 
         private Inline MakeBig(ParsedChunk arg)
         {
             var toReturn = new Span(WrapInRun(arg.InnerText));
-            toReturn.FontSize *= 1.5;
+            toReturn.FontSize = ApplicationSettings.FontSize * 1.5;
             return toReturn;
         }
 
