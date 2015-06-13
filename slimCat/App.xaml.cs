@@ -166,6 +166,10 @@ namespace slimCat
                 addResourceDictionary("Client/Theme/Theme.xaml");
             }
 
+            // this depends on our external themes, so it has to be loaded last
+            var embeddedTheme = new ResourceDictionary { Source = new Uri("Theme/EmbeddedTheme.xaml", UriKind.Relative) };
+            Current.Resources.MergedDictionaries.Add(embeddedTheme);
+
             new Bootstrapper().Run();
         }
 
