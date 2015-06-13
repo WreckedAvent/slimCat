@@ -353,7 +353,7 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The client's version.
         /// </summary>
-        public static readonly string ClientVersion = Version.ToString("##.00", CultureInfo.InvariantCulture);
+        public static readonly string ClientVersion = Version.ToString("##.00", CultureInfo.InvariantCulture) + " dev";
 
         /// <summary>
         ///     The usual time we debounce all searches.
