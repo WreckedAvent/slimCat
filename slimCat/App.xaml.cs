@@ -159,7 +159,7 @@ namespace slimCat
                 addResourceDictionary("Theme/Colors.xaml");
                 addResourceDictionary("Theme/Theme.xaml");
             }
-            catch
+            catch (DirectoryNotFoundException)
             {
                 // if that doesn't work, look for theme in client/theme
                 addResourceDictionary("Client/Theme/Colors.xaml");
