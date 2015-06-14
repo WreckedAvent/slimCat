@@ -17,3 +17,12 @@ Upgrading from 4.xx
 
 This means you should probably just delete your old slimCat install and reinstall the theme on top of the 5.xx client folder, if you do not like the default theme.
 
+slimCat doesn't start!
+======================
+
+If after extracting and double-left clicking slimCat.exe the program does not start, or starts and immediately closes, you should make sure windows smartscreen didn't block the program. To unblock slimCat, go into the client folder, right-click on client.exe, go to properties, and click the unblock button near the bottom. You may have to do this with slimCat.exe in the root folder as well. After doing such, the client still doesn't run, you may have to update your .NET. AT least 4.5.2.
+
+Minimum Requirements
+====================
+
+Windows 7 and .NET 4.5.2
