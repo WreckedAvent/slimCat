@@ -2,11 +2,11 @@
 
 // <copyright file="ShortcutManager.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -51,7 +51,8 @@ namespace slimCat.Views
                 {Key.Down, new Tuple<string, bool>("sub", false)},
                 {Key.O, new Tuple<string, bool>("icon", false)},
                 {Key.K, new Tuple<string, bool>("channel", false)},
-                {Key.J, new Tuple<string, bool>("color", false)}
+                {Key.J, new Tuple<string, bool>("color", false)},
+                {Key.E, new Tuple<string, bool>("eicon", false)}
                 // format:
                 // target key, matching bbtag, if the bbtag takes arguments
             };
