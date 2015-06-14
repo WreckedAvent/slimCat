@@ -241,7 +241,7 @@
                                  ItemTemplate="{x:Null}"
                                  ItemTemplateSelector="{StaticResource PmOrChannelTemplateSelector}">
                             <ListBox.ItemContainerStyle>
-                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                <Style TargetType="ListBoxItem">
                                     <Setter Property="ListBoxItem.AllowDrop" Value="True" />
                                     <EventSetter Event="ListBoxItem.PreviewMouseLeftButtonDown"
                                                  Handler="OnPreviewMouseClick" />

@@ -2,11 +2,11 @@
 
 // <copyright file="LoggingService.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -73,14 +73,13 @@ namespace slimCat.Services
 
         #region Public Methods and Operators
 
-        public IEnumerable<string> GetLogs(string title, string id)
+        public RawChannelLogModel GetLogs(string title, string id)
         {
             var loggingPath = StringExtensions.MakeSafeFolderPath(CurrentCharacter, title, id);
-            var toReturn = new List<string>();
+            var toReturn = new RawChannelLogModel();
 
             if (!Directory.Exists(loggingPath))
-                return new List<string>();
-
+                return toReturn;
 
             var file =
                 new DirectoryInfo(loggingPath)
@@ -94,15 +93,15 @@ namespace slimCat.Services
                 var lines = File.ReadLines(file.FullName);
                 var enumerable = lines as IList<string> ?? lines.ToList();
 
-                var toSkip = Math.Max(enumerable.Count() - 10, 0);
+                var toSkip = Math.Max(enumerable.Count() - 25, 0);
 
-                toReturn = enumerable.Skip(toSkip).ToList();
-                toReturn.Insert(0, $"[b]Log from {file.LastWriteTime.ToShortDateString()}[/b]");
+                toReturn.RawLogs = enumerable.Skip(toSkip).ToList();
+                toReturn.DateOfLog = file.LastWriteTime;
             }
             catch
             {
                 // file operations run the risk of exceptions
-                return new List<string>();
+                return toReturn;
             }
 
             return toReturn;
@@ -255,5 +254,16 @@ namespace slimCat.Services
         }
 
         #endregion
+    }
+
+    public class RawChannelLogModel
+    {
+        public RawChannelLogModel()
+        {
+            RawLogs = new List<string>();
+        }
+
+        public IList<string> RawLogs { get; set; }
+        public DateTime DateOfLog { get; set; }
     }
 }

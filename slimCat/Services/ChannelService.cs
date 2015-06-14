@@ -214,14 +214,10 @@ namespace slimCat.Services
                 return;
 
             name = HttpUtility.HtmlDecode(name);
-            IEnumerable<string> history = new List<string>();
 
             Log((id != name && !string.IsNullOrEmpty(name))
                 ? $"Joining {type} Channel {id} \"{name}\""
                 : $"Joining {type} Channel {id}");
-
-            if (!id.Equals("Home"))
-                history = logger.GetLogs(string.IsNullOrWhiteSpace(name) ? id : name, id);
 
             var toJoin = cm.CurrentPms.FirstByIdOrNull(id)
                          ?? (ChannelModel) cm.CurrentChannels.FirstByIdOrNull(id);
@@ -232,22 +228,6 @@ namespace slimCat.Services
 
                 toJoin = cm.CurrentPms.FirstByIdOrNull(id)
                          ?? (ChannelModel) cm.CurrentChannels.FirstByIdOrNull(id);
-            }
-
-            if (history.Any()
-                && history.Count() > 1
-                && toJoin.Messages.Count == 0
-                && toJoin.Ads.Count == 0)
-            {
-                Dispatcher.BeginInvoke(
-                    (Action) (() => history.Select(item => new MessageModel(item)).Each(
-                        item =>
-                        {
-                            if (item.Type != MessageType.Normal)
-                                toJoin.Ads.Add(item);
-                            else
-                                toJoin.Messages.Add(item);
-                        })));
             }
 
             RequestNavigate(originalId);
@@ -384,15 +364,15 @@ namespace slimCat.Services
 
             if (!channelModel.Messages.Any() && !channelModel.Ads.Any())
             {
-                IEnumerable<string> history = new List<string>();
+                var history = new RawChannelLogModel();
 
                 if (!channelId.Equals("Home"))
                     history = logger.GetLogs(channelModel.Title, channelModel.Id);
 
-                if (history.Any() && history.Count() > 1)
+                if (history.RawLogs.Any())
                 {
-                    Dispatcher.Invoke(() => history
-                        .Select(item => new MessageModel(item))
+                    Dispatcher.Invoke(() => history.RawLogs
+                        .Select(item => new MessageModel(item, characters.Find, history.DateOfLog))
                         .Each(item => channelModel.AddMessage(item)
                         ));
                 }

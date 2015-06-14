@@ -2,11 +2,11 @@
 
 // <copyright file="DateTimeExtensions.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -92,15 +92,31 @@ namespace slimCat.Utilities
         /// <summary>
         ///     Turns a <see cref="System.DateTimeOffset" /> to a timestamp.
         /// </summary>
-        /// <returns>A string in the format [hours:minutes]</returns>
+        /// <returns>A string in the format specified by the user</returns>
         public static string ToTimeStamp(this DateTimeOffset time)
         {
-            if (time.AddDays(1) < DateTime.Now)
+            var today = DateTime.Today;
+            var timestamp = time.ToString(GetTimestampFormat());
+
+            if (time.Year != today.Year)
             {
-                return "[" + time.ToString("d") + "]";
+                return time.ToString("d") + " " + timestamp;
             }
 
-            return time.ToString(ApplicationSettings.UseMilitaryTime ? "[HH:mm]" : "[hh:mm tt]");
+            if (time.Day != today.Day)
+            {
+                return time.ToString("M") + " " + timestamp;
+            }
+
+            return time.ToString(GetTimestampFormat());
+        }
+
+        public static string GetTimestampFormat()
+        {
+            if (ApplicationSettings.UseCustomTimeStamp)
+                return ApplicationSettings.CustomTimeStamp;
+
+            return ApplicationSettings.UseMilitaryTime ? "[HH:mm]" : "[hh:mm tt]";
         }
     }
 }

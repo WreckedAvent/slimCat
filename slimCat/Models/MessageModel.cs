@@ -2,11 +2,11 @@
 
 // <copyright file="MessageModel.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -20,8 +20,11 @@ namespace slimCat.Models
     #region Usings
 
     using System;
+    using System.Globalization;
+    using System.Linq;
     using System.Windows.Documents;
     using Views;
+    using Utilities;
 
     #endregion
 
@@ -55,15 +58,46 @@ namespace slimCat.Models
         }
 
 
-        public MessageModel(string message)
+        public MessageModel(string fullText, Func<string, ICharacter> getCharacter, DateTime dateOfLogs)
         {
             Poster = new CharacterModel {Name = string.Empty};
-            IsHistoryMessage = true;
-            Type = message.StartsWith("[")
-                ? MessageType.Normal
-                : MessageType.Ad;
+            Type = fullText.StartsWith("Ad at")
+                ? MessageType.Ad
+                : MessageType.Normal;
 
-            Message = message;
+            IsHistoryMessage = true;
+            Message = fullText;
+
+            var parts = fullText.Split(new[] { ": " }, 2, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 2)
+            {
+                try
+                {
+                    var nameBadge = parts[0];
+                    var message = parts[1];
+
+                    var format = DateTimeExtensions.GetTimestampFormat();
+                    var nameIdx = nameBadge.IndexOf(format.Trim().Last()) + 1;
+
+                    var name = nameBadge.Substring(nameIdx).Trim();
+                    var timeStamp = nameBadge.Substring(0, nameIdx).Trim();
+
+                    if (timeStamp.StartsWith("Ad at")) timeStamp = timeStamp.Substring("Ad at".Length);
+
+                    // parse our date, and set the date component based on the last write time of the log
+                    DateTime parsedDate;
+                    if (!DateTime.TryParseExact(timeStamp, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate)) return;
+                    parsedDate = new DateTime(dateOfLogs.Year, dateOfLogs.Month, dateOfLogs.Day, parsedDate.Hour, parsedDate.Minute, parsedDate.Second);
+
+                    PostedTime = parsedDate;
+                    Poster = getCharacter(name);
+                    Message = message;
+                    IsHistoryMessage = false;
+                }
+                catch
+                {
+                }
+            }
         }
 
         public MessageModel(ICharacter poster, string message, DateTimeOffset posted)

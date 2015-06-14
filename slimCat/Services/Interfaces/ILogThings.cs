@@ -2,11 +2,11 @@
 
 // <copyright file="ILogThings.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -34,7 +34,7 @@ namespace slimCat.Services
         /// <summary>
         ///     Returns the last few messages from a given channel
         /// </summary>
-        IEnumerable<string> GetLogs(string title, string id);
+        RawChannelLogModel GetLogs(string title, string id);
 
         /// <summary>
         ///     Logs a given message in a given channel

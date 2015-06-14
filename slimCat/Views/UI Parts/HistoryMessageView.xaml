@@ -2,11 +2,12 @@
            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
            xmlns:lib="clr-namespace:slimCat.Libraries"
+           xmlns:models="clr-namespace:slimCat.Models"
            Margin="0,2"
            Padding="0"
            Foreground="{StaticResource HistoryBrush}"
            FontFamily="Segoe UI, Verdanda"
-           FontSize="13">
+           FontSize="{Binding Source={x:Static models:ApplicationSettings.FontSize}}">
     <Span
         lib:SpanHelper.InlineSource="{Binding Mode=OneTime, Converter={StaticResource BbCodeConverter}, IsAsync=True}" />
 </Paragraph>
