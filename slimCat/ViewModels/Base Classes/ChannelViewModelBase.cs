@@ -2,11 +2,11 @@
 
 // <copyright file="ChannelViewModelBase.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -31,6 +31,7 @@ namespace slimCat.ViewModels
     using Models;
     using Services;
     using Utilities;
+    using Views;
 
     #endregion
 
@@ -141,6 +142,8 @@ namespace slimCat.ViewModels
         private int tabCompleteIdx;
 
         private string tabCompleteStartString;
+
+        private RelayCommand getSource;
 
         #endregion
 
@@ -254,6 +257,14 @@ namespace slimCat.ViewModels
             => openLogFolder ?? (openLogFolder = new RelayCommand(OnOpenLogFolderEvent));
 
         public ICommand SendMessageCommand => sendText ?? (sendText = new RelayCommand(_ => ParseAndSend()));
+
+        public ICommand CopySourceCommand => getSource ?? (getSource = new RelayCommand(args =>
+        {
+            var source = args as ObservingFlowDocumentReader;
+            var targetMessage = source.Selection.Start.Paragraph.DataContext as IMessage;
+
+            Clipboard.SetData(DataFormats.Text, targetMessage.Message);
+        }));
 
         public virtual string EntryTextBoxIcon => "pack://application:,,,/icons/send_chat.png";
 

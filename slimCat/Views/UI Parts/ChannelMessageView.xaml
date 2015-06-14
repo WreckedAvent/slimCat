@@ -20,6 +20,16 @@
 
            d:DataContext="{d:DesignInstance models:MessageModel}">
 
+    <Paragraph.ContextMenu>
+        <ContextMenu>
+            <MenuItem Command="Copy" />
+            <MenuItem Name="Copy_BBcode"
+                      Header="Copy with BBCode"
+                      Command="{Binding PlacementTarget.DataContext.CopySourceCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                      CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
+        </ContextMenu>
+    </Paragraph.ContextMenu>
+
     <Run Text="{Binding TimeStamp, Mode=OneTime}"
          FontSize="12"
          Foreground="{Binding Converter={StaticResource NameplateMessageColorConverter}, Mode=OneWay}" />
