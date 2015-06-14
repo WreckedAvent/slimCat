@@ -468,7 +468,7 @@ namespace slimCat.Utilities
 
         private Inline MakeEIcon(ParsedChunk arg)
         {
-            if (!ApplicationSettings.AllowIcons) return MakeUser(arg);
+            if (!ApplicationSettings.AllowIcons) return new Span();
 
             if (arg.Children != null && arg.Children.Any())
             {
