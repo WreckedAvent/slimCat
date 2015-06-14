@@ -2,11 +2,11 @@
 
 // <copyright file="UpdateService.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -78,6 +78,9 @@ namespace slimCat.Services
                 var tempLocation = downloadLocation;
                 var basePath = SettingsService.Preferences.BasePath;
 
+                if (basePath.EndsWith("/client") || basePath.EndsWith("\\client"))
+                    basePath = basePath.Substring(0, basePath.Length - "/client".Length);
+
                 if (string.IsNullOrWhiteSpace(tempLocation))
                 {
                     tempLocation = Path.GetTempFileName().Replace(".tmp", ".zip");
@@ -90,17 +93,19 @@ namespace slimCat.Services
                     {
                         var filePath = Path.Combine(basePath, file.FullName);
                         var fileDir = Path.GetDirectoryName(filePath);
+                        var isFolder = filePath.EndsWith("/") || filePath.EndsWith("\\");
 
                         // don't update theme or bootstrapper
                         if (!config.UpdateImpactsTheme && fileDir.EndsWith("theme", StringComparison.OrdinalIgnoreCase))
                             continue;
-                        if (filePath.EndsWith("bootstrapper.exe", StringComparison.OrdinalIgnoreCase)) continue;
+                        if (filePath.EndsWith("slimCat.exe", StringComparison.OrdinalIgnoreCase)) continue;
 
-                        if (!Directory.Exists(fileDir)) Directory.CreateDirectory(fileDir);
+                        var toCheck = isFolder ? filePath : fileDir;
+                        if (!Directory.Exists(toCheck)) Directory.CreateDirectory(toCheck);
 
                         try
                         {
-                            file.ExtractToFile(filePath, true);
+                            if (!isFolder) file.ExtractToFile(filePath, true);
                         }
                         catch
                         {
