@@ -845,6 +845,7 @@
     <Content Include="icons\auto.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="readme.txt" />
     <Content Include="sounds\newmessage.wav" />
     <Content Include="icons\balloonIcon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
