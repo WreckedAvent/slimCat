@@ -31,11 +31,10 @@
     </Paragraph.ContextMenu>
 
     <Run Text="{Binding TimeStamp, Mode=OneTime}"
-         FontSize="12"
          Foreground="{Binding Converter={StaticResource NameplateMessageColorConverter}, Mode=OneWay}" />
 
     <InlineUIContainer BaselineAlignment="Bottom">
-        <Rectangle Height="15" Width="15"
+        <Rectangle Height="{Binding Source={x:Static models:ApplicationSettings.FontSize}}" Width="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
                    Fill="{Binding Path=Poster, Converter={StaticResource GenderColorConverter}, Mode=OneWay}">
             <Rectangle.OpacityMask>
                 <ImageBrush
