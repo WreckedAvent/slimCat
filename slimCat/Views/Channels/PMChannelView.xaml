@@ -275,8 +275,7 @@
                                         Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="1*" />
-                                            <ColumnDefinition Width="8*"
-                                                              MaxWidth="{Binding CurrentImage.Width, Converter={StaticResource ImageWidthConverter}}" />
+                                            <ColumnDefinition Width="8*" />
                                             <ColumnDefinition Width="1*" />
                                         </Grid.ColumnDefinitions>
 

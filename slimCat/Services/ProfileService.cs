@@ -305,6 +305,7 @@ namespace slimCat.Services
                     var imageResp = browser.GetResponse(Constants.UrlConstants.ProfileImages,
                         new Dictionary<string, object> { { "character_id", id } }, true);
                     images = JsonConvert.DeserializeObject<ApiProfileImagesResponse>(imageResp);
+                    images.Images = images.Images.OrderBy(x => x.SortOrder).ToList();
                 }
                 catch
                 {

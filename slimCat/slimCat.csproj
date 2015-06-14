@@ -305,7 +305,6 @@
     <Compile Include="Utilities\Converters\GenderImageConverter.cs" />
     <Compile Include="Utilities\Converters\GreaterThanZeroConverter.cs" />
     <Compile Include="Utilities\Converters\ImagePathConverter.cs" />
-    <Compile Include="Utilities\Converters\ImageWidthConverter.cs" />
     <Compile Include="Utilities\Converters\InterestedOnlyBoolConverter.cs" />
     <Compile Include="Utilities\KeepToCurrentScrollViewer.cs" />
     <Compile Include="Utilities\Extensions\ListExtensions.cs" />

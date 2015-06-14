@@ -43,13 +43,10 @@ namespace slimCat.Models.Api
         [DataMember(Name = "extension")]
         public string Extension { get; set; }
 
-        [DataMember(Name = "width")]
-        public string Width { get; set; }
-
-        [DataMember(Name = "height")]
-        public string Height { get; set; }
-
         [DataMember(Name = "description")]
         public string Description { get; set; }
+        
+        [DataMember(Name = "sort_order")]
+        public string SortOrder { get; set; }
     }
 }
