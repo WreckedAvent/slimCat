@@ -241,7 +241,7 @@
                                  ItemTemplate="{x:Null}"
                                  ItemTemplateSelector="{StaticResource PmOrChannelTemplateSelector}">
                             <ListBox.ItemContainerStyle>
-                                <Style>
+                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                                     <Setter Property="ListBoxItem.AllowDrop" Value="True" />
                                     <EventSetter Event="ListBoxItem.PreviewMouseLeftButtonDown"
                                                  Handler="OnPreviewMouseClick" />
@@ -260,7 +260,7 @@
                                  SelectedIndex="{Binding Path=ChannelSelected, Mode=TwoWay}"
                                  ItemTemplate="{StaticResource GeneralChannelTemplate}">
                             <ListBox.ItemContainerStyle>
-                                <Style>
+                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                                     <Setter Property="ListBoxItem.AllowDrop" Value="True" />
                                     <EventSetter Event="ListBoxItem.PreviewMouseLeftButtonDown"
                                                  Handler="OnPreviewMouseClick" />
