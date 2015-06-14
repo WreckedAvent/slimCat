@@ -29,6 +29,9 @@
         <Setter Property="FontSize" Value="18" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Background" Value="{StaticResource ForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource DepressedBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
         <Setter Property="Template" Value="{StaticResource EntryBox}" />
     </Style>
 

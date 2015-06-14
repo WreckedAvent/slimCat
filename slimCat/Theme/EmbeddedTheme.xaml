@@ -264,9 +264,6 @@
     <Style x:Key="{x:Type v:ImageTextBox}"
            TargetType="{x:Type v:ImageTextBox}"
            BasedOn="{StaticResource {x:Type TextBox}}">
-        <Setter Property="Background" Value="{StaticResource ForegroundBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource DepressedBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource DepressedBrush}" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="LabelTextColor" Value="{StaticResource DepressedBrush}" />
         <Setter Property="Template">
