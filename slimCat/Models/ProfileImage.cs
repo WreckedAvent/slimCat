@@ -39,8 +39,7 @@ namespace slimCat.Models
             ThumbnailUri = new Uri(string.Format(ThumbUrl, image.ImageId, image.Extension));
             FullImageUri = new Uri(string.Format(FullImageUrl, image.ImageId, image.Extension));
             Description = WebUtility.HtmlDecode(WebUtility.HtmlDecode(image.Description));
-            Width = image.Width;
-            Height = image.Height;
+            SortOrder = image.SortOrder;
         }
 
         public ProfileImage()
@@ -71,9 +70,6 @@ namespace slimCat.Models
         public string Description { get; set; }
 
         [XmlAttribute]
-        public string Width { get; set; }
-
-        [XmlAttribute]
-        public string Height { get; set; }
+        public string SortOrder { get; set; }
     }
 }
