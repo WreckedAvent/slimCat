@@ -41,7 +41,6 @@
                MouseRightButtonUp="OnMouseRightButtonUp">
         <Run Text="{Binding Path=Poster.Name, Mode=OneTime}" />
         <!--Below line is written like this to prevent XML from automatically adding a space here-->
-    </Hyperlink>
-    <Span
+    </Hyperlink><Span
         lib:SpanHelper.InlineSource="{Binding Mode=OneTime, Converter={StaticResource BbFlowConverter}, IsAsync=True}" />
 </Paragraph>

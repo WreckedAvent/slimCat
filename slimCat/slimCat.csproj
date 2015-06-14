@@ -542,11 +542,10 @@
     <Compile Include="Views\Home Channel\HomeChannelView.xaml.cs">
       <DependentUpon>HomeChannelView.xaml</DependentUpon>
     </Compile>
-    <Page Include="Theme\Colors.xaml">
+    <None Include="Theme\Colors.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Page>
+    </None>
     <Page Include="Theme\EmbeddedTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -767,11 +766,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Theme\Theme.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <None Include="Theme\Theme.xaml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Page>
+    </None>
     <Page Include="Views\Full Screen\CharacterSelectView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

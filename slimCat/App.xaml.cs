@@ -2,11 +2,11 @@
 
 // <copyright file="App.xaml.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -132,6 +132,43 @@ namespace slimCat
 
                 Environment.Exit(-1);
             }
+
+
+            /*
+                Here we load in the theme.
+                You may notice that this is somewhat involved for just loading in some files, but there are two reasons for this:
+
+                1) slimCat can be ran with the loader in such a way that the starting assembly location is different from running
+                   locally. This complicates loading in statically, to say the least.
+
+                2) We might want to load a different theme based on settings. This is not a feature yet, but we load settings literally
+                   just a few lines ago, so it is a certain possibility.
+
+                Some other notes here: colors needs to be loaded in first due to themes.xaml using it. I've tried NOT using siteoforigin
+                in the pack and it did not work well at all, since it required the theme file to be built into the assembly (defeating the point).
+            */
+            Action<string> addResourceDictionary = partialUri =>
+            {
+                var dict = new ResourceDictionary { Source = new Uri("pack://siteoforigin:,,,/" + partialUri) };
+                Current.Resources.MergedDictionaries.Add(dict);
+            };
+
+            try
+            {
+                // we will attempt to add them by first looking for a /theme near our executing assembly
+                addResourceDictionary("Theme/Colors.xaml");
+                addResourceDictionary("Theme/Theme.xaml");
+            }
+            catch (IOException ex) when (ex is FileNotFoundException || ex is DirectoryNotFoundException)
+            {
+                // if that doesn't work, look for theme in client/theme
+                addResourceDictionary("Client/Theme/Colors.xaml");
+                addResourceDictionary("Client/Theme/Theme.xaml");
+            }
+
+            // this depends on our external themes, so it has to be loaded last
+            var embeddedTheme = new ResourceDictionary { Source = new Uri("Theme/EmbeddedTheme.xaml", UriKind.Relative) };
+            Current.Resources.MergedDictionaries.Add(embeddedTheme);
 
             new Bootstrapper().Run();
         }

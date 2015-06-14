@@ -353,7 +353,7 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The client's version.
         /// </summary>
-        public static readonly string ClientVersion = Version.ToString("##.00", CultureInfo.InvariantCulture) + " dev";
+        public static readonly string ClientVersion = Version.ToString("##.00#", CultureInfo.InvariantCulture) + " dev";
 
         /// <summary>
         ///     The usual time we debounce all searches.
@@ -382,7 +382,7 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The version of the client.
         /// </summary>
-        public const double Version = 5.00;
+        public const double Version = 5.001;
 
         /// <summary>
         ///     The endpoint for F-chat websocket communication.

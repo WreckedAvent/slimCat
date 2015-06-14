@@ -2,11 +2,11 @@
 
 // <copyright file="StringExtensions.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -183,13 +183,20 @@ namespace slimCat.Utilities
 
         public static bool IsUpdate(this string arg)
         {
+            var updateIsDev = false;
+            if (arg.EndsWith("dev"))
+            {
+                updateIsDev = true;
+                arg = arg.Replace(" dev", "");
+            }
+
             var versionString = arg.Substring(arg.LastIndexOf(' '));
             var version = Convert.ToDouble(versionString, CultureInfo.InvariantCulture);
 
             var toReturn = version > Constants.Version;
 
             if (!toReturn && Math.Abs(version - Constants.Version) < 0.001)
-                toReturn = Constants.ClientVersion.Contains("dev");
+                toReturn = !updateIsDev && Constants.ClientVersion.Contains("dev");
 
             return toReturn;
         }
