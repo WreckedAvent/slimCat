@@ -95,16 +95,18 @@ namespace slimCat.Utilities
         /// <returns>A string in the format specified by the user</returns>
         public static string ToTimeStamp(this DateTimeOffset time)
         {
-            var today = DateTime.Today;
+            var now = DateTime.Now;
             var timestamp = time.ToString(GetTimestampFormat());
 
-            if (time.Year != today.Year)
+            if (time.Year != now.Year)
             {
+                if (time.Hour == now.Hour && time.Minute == now.Minute) return time.ToString("d");
                 return time.ToString("d") + " " + timestamp;
             }
 
-            if (time.Day != today.Day)
+            if (time.Day != now.Day)
             {
+                if (time.Hour == now.Hour && time.Minute == now.Minute) return time.ToString("M");
                 return time.ToString("M") + " " + timestamp;
             }
 
