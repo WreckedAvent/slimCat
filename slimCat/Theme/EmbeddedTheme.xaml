@@ -283,7 +283,7 @@
                             <ScrollViewer x:Name="PART_ContentHost" Grid.Column="0" />
                             <Label x:Name="LabelText"
                                    Grid.Column="0"
-                                   Foreground="{StaticResource DepressedBrush}"
+                                   Foreground="{TemplateBinding Foreground}"
                                    Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=LabelText}"
                                    Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=HasText, Converter={StaticResource OppositeBoolConverter}}"
                                    Padding="2,0,0,0"
@@ -296,7 +296,7 @@
                                     HorizontalAlignment="Stretch"
                                     BorderBrush="Transparent"
                                     Background="Transparent">
-                                <Rectangle Fill="{StaticResource DepressedBrush}"
+                                <Rectangle Fill="{TemplateBinding Foreground}"
                                            Height="15"
                                            Width="18"
                                            OpacityMask="{TemplateBinding IconSource, Converter={StaticResource ImagePathConverter}}" />

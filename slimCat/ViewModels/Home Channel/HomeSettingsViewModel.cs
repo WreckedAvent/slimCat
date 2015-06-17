@@ -224,6 +224,18 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool ShowGenderIcons
+        {
+            get { return ApplicationSettings.ShowGenderIcons;  }
+
+            set
+            {
+                ApplicationSettings.ShowGenderIcons = value;
+                OnPropertyChanged();
+                Save();
+            }
+        }
+
         public bool AllowStatusDiscolor
         {
             get { return ApplicationSettings.AllowStatusDiscolor; }
