@@ -47,10 +47,12 @@ namespace slimCat.Models
             IgnoreUpdates = new List<string>();
             RecentChannels = new List<string>(10);
             RecentCharacters = new List<string>(20);
+            
 
             FontSize = 13;
             EntryFontSize = 13;
             GenderColorSettings = GenderColorSettings.GenderOnly;
+            ShowGenderIcons = true;
 
             Langauge = Thread.CurrentThread.CurrentCulture.Name;
             if (!LanguageList.Contains(Langauge))
@@ -275,6 +277,11 @@ namespace slimCat.Models
         ///     Gets or sets the gender color settings.
         /// </summary>
         public static GenderColorSettings GenderColorSettings { get; set; }
+
+        /// <summary>
+        ///     Determines whether the gender icons are visible in the chat. 
+        /// </summary>
+        public static bool ShowGenderIcons { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether play sound even when the current tab is focused.
