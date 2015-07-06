@@ -504,6 +504,17 @@ namespace slimCat.ViewModels
             }
         }
 
+        public string GlobalPruningTerms
+        {
+            get { return ApplicationSettings.GlobalPruningTerms; }
+
+            set
+            {
+                ApplicationSettings.GlobalPruningTerms = value;
+                Save();
+            }
+        }
+
         public bool AllowSound
         {
             get { return ApplicationSettings.AllowSound; }

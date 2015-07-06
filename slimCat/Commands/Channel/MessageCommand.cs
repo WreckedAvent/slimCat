@@ -95,6 +95,12 @@ namespace slimCat.Services
             // dedupe logic
             if (isAd && automation.IsDuplicateAd(character, message))
                 return;
+            
+            foreach (var term in ApplicationSettings.GlobalPruningTermsList)
+            {
+                if (message.Contains(term))
+                    return;
+            }
 
             if (!CharacterManager.IsOnList(character, ListKind.Ignored))
                 channels.AddMessage(message, channel, character, isAd ? MessageType.Ad : MessageType.Normal);

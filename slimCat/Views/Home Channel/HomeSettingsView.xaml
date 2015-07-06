@@ -416,6 +416,19 @@
                         Margin="5,0,0,0" />
             </StackPanel>
 
+            <StackPanel Margin="0,15,0,0"
+                        ToolTip="In channels, SlimCat will automatically remove messages containing any of these words. Try a website.com to remove links, too.">
+                <TextBlock Text="Global Pruning Words (comma separated)" />
+                <TextBox
+                    Text="{Binding Path=GlobalPruningTerms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    TextWrapping="Wrap"
+                    AcceptsReturn="True"
+                    MinWidth="400"
+                    MaxLines="5"
+                    HorizontalAlignment="Left"
+                    FontSize="12" />
+            </StackPanel>
+
         </StackPanel>
     </StackPanel>
 </UserControl>
