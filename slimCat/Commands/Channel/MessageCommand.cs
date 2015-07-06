@@ -76,6 +76,7 @@ namespace slimCat.Services
     using System.Collections.Generic;
     using Models;
     using Utilities;
+    using System;
 
     #endregion
 
@@ -98,7 +99,7 @@ namespace slimCat.Services
             
             foreach (var term in ApplicationSettings.GlobalPruningTermsList)
             {
-                if (message.Contains(term))
+                if (message.IndexOf(term, StringComparison.CurrentCultureIgnoreCase) >= 0)
                     return;
             }
 
