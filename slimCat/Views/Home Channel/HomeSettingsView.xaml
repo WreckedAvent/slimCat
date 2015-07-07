@@ -281,6 +281,11 @@
                         Margin="5,0,0,0" />
             </StackPanel>
 
+            <CheckBox IsChecked="{Binding ShowGenderIcons}"
+                      ToolTip="Hide or show the gender icon next to the user's name with each post.">
+                Display gender icons in chat
+            </CheckBox>
+
             <CheckBox IsChecked="{Binding AllowStatusDiscolor}"
                       ToolTip="Allows slimCat to discolor users who have a status of busy, idle, away, or do not disturb.">
                 Discolor names of unavailable users

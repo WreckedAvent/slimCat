@@ -4,6 +4,7 @@
            xmlns:lib="clr-namespace:slimCat.Libraries" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
            xmlns:models="clr-namespace:slimCat.Models"
+           xmlns:utils="clr-namespace:slimCat.Utilities"
            mc:Ignorable="d"
 
            Margin="0,2"
@@ -35,7 +36,8 @@
 
     <InlineUIContainer BaselineAlignment="Bottom">
         <Rectangle Height="{Binding Source={x:Static models:ApplicationSettings.FontSize}}" Width="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
-                   Fill="{Binding Path=Poster, Converter={StaticResource GenderColorConverter}, Mode=OneWay}">
+                   Fill="{Binding Path=Poster, Converter={StaticResource GenderColorConverter}, Mode=OneWay}"
+                   Visibility="{Binding Source={x:Static models:ApplicationSettings.ShowGenderIcons}, Converter={StaticResource BoolConverter}}">
             <Rectangle.OpacityMask>
                 <ImageBrush
                     ImageSource="{Binding Path=Poster.Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
