@@ -37,7 +37,7 @@
     <InlineUIContainer BaselineAlignment="Bottom">
         <Rectangle Height="{Binding Source={x:Static models:ApplicationSettings.FontSize}}" Width="{Binding Source={x:Static models:ApplicationSettings.FontSize}}"
                    Fill="{Binding Path=Poster, Converter={StaticResource GenderColorConverter}, Mode=OneWay}"
-                   Visibility="{Binding Source={x:Static models:ApplicationSettings.ShowGenderIcons}, Converter={StaticResource GreaterThanZeroConverter}}">
+                   Visibility="{Binding Source={x:Static models:ApplicationSettings.ShowGenderIcons}, Converter={StaticResource BoolConverter}}">
             <Rectangle.OpacityMask>
                 <ImageBrush
                     ImageSource="{Binding Path=Poster.Gender, Mode=OneTime, Converter={StaticResource GenderImageConverter}}" />
