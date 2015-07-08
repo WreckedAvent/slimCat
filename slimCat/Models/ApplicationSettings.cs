@@ -223,9 +223,7 @@ namespace slimCat.Models
         ///     Gets the global pruning terms list.
         /// </summary>
         public static IEnumerable<string> GlobalPruningTermsList
-        {
-            get { return GlobalPruningTerms.Split(',').Select(word => word.Trim().ToLower()); }
-        }
+            => GlobalPruningTerms.Split(',').Select(word => word.Trim().ToLower());
 
         public static bool FriendsAreAccountWide { get; set; }
 
