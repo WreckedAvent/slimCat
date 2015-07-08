@@ -41,6 +41,7 @@ namespace slimCat.Models
             AllowAdDedup = true;
 
             GlobalNotifyTerms = string.Empty;
+            GlobalPruningTerms = string.Empty;
             SavedChannels = new List<string>();
             Interested = new List<string>();
             NotInterested = new List<string>();
@@ -203,6 +204,11 @@ namespace slimCat.Models
         /// </summary>
         public static string GlobalNotifyTerms { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the global pruning terms.
+        /// </summary>
+        public static string GlobalPruningTerms { get; set; }
+
         public static bool AllowIndent { get; set; }
 
         public static bool OpenProfilesInClient { get; set; }
@@ -214,6 +220,12 @@ namespace slimCat.Models
         {
             get { return GlobalNotifyTerms.Split(',').Select(word => word.Trim().ToLower()); }
         }
+
+        /// <summary>
+        ///     Gets the global pruning terms list.
+        /// </summary>
+        public static IEnumerable<string> GlobalPruningTermsList
+            => GlobalPruningTerms.Split(',').Select(word => word.Trim().ToLower());
 
         public static bool FriendsAreAccountWide { get; set; }
 
