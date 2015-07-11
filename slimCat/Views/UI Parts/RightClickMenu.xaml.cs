@@ -15,6 +15,9 @@
 
 #endregion
 
+using System.Windows;
+using System.Windows.Controls;
+
 namespace slimCat.Views
 {
     /// <summary>
@@ -33,5 +36,14 @@ namespace slimCat.Views
         }
 
         #endregion
+
+        private void VisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            var scrollViewer = sender as ScrollViewer;
+            if (scrollViewer != null)
+            {
+                scrollViewer.ScrollToTop();
+            }
+        }
     }
 }
