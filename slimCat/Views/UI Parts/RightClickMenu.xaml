@@ -95,7 +95,7 @@
                     Padding="5"
                     Visibility="{Binding Path=RightClickMenuViewModel.HasStatusMessage, Converter={StaticResource BoolConverter}}">
                 <ScrollViewer MaxHeight="94"
-                              IsVisibleChanged="VisibleChanged">
+                              IsVisibleChanged="OnIsVisibleChanged">
                     <TextBlock Foreground="{StaticResource ForegroundBrush}"
                                    TextAlignment="Left"
                                    TextWrapping="Wrap"

@@ -37,13 +37,10 @@ namespace slimCat.Views
 
         #endregion
 
-        private void VisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             var scrollViewer = sender as ScrollViewer;
-            if (scrollViewer != null)
-            {
-                scrollViewer.ScrollToTop();
-            }
+            scrollViewer.ScrollToTop();
         }
     }
 }
