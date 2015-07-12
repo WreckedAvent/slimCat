@@ -94,19 +94,19 @@
                     BorderThickness="0,0,0,1"
                     Padding="5"
                     Visibility="{Binding Path=RightClickMenuViewModel.HasStatusMessage, Converter={StaticResource BoolConverter}}">
-                <Expander Header="Status Message"
-                          HorizontalContentAlignment="Left">
+                <ScrollViewer MaxHeight="94"
+                              IsVisibleChanged="OnIsVisibleChanged">
                     <TextBlock Foreground="{StaticResource ForegroundBrush}"
-                               TextAlignment="Left"
-                               TextWrapping="Wrap"
-                               MaxWidth="200"
-                               Margin="5,0">
-                        <lib:TextBlockHelper.InlineList>
-                            <Binding Converter="{StaticResource BbCodeConverter}"
-                                     Path="RightClickMenuViewModel.Target.StatusMessage" />
-                        </lib:TextBlockHelper.InlineList>
+                                   TextAlignment="Left"
+                                   TextWrapping="Wrap"
+                                   MaxWidth="200"
+                                   Margin="5,0">
+                            <lib:TextBlockHelper.InlineList>
+                                <Binding Converter="{StaticResource BbCodeConverter}"
+                                         Path="RightClickMenuViewModel.Target.StatusMessage" />
+                            </lib:TextBlockHelper.InlineList>
                     </TextBlock>
-                </Expander>
+                </ScrollViewer>
             </Border>
             <StackPanel>
                 <StackPanel.Resources>
