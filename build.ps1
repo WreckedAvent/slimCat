@@ -9,3 +9,4 @@ rename-item .\build\client\slimCat.exe.config client.exe.config
 move-item .\build\client\lib\ .\build\
 rename-item .\build\Bootstrapper.exe slimCat.exe
 copy-item .\Shortcuts\* .\build\ -Force
+copy-item .\slimCat\readme.txt .\build -Force
