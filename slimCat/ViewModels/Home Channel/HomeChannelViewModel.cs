@@ -353,6 +353,7 @@ namespace slimCat.ViewModels
         private async void CheckForUpdates()
         {
             var latest = await updateService.GetLatestAsync();
+            if (latest == null) return;
 
             await Dispatcher.BeginInvoke((Action) delegate
             {
