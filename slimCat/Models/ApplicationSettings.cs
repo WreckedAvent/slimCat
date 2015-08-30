@@ -41,16 +41,19 @@ namespace slimCat.Models
             AllowAdDedup = true;
 
             GlobalNotifyTerms = string.Empty;
+            GlobalPruningTerms = string.Empty;
             SavedChannels = new List<string>();
             Interested = new List<string>();
             NotInterested = new List<string>();
             IgnoreUpdates = new List<string>();
             RecentChannels = new List<string>(10);
             RecentCharacters = new List<string>(20);
+            
 
             FontSize = 13;
             EntryFontSize = 13;
             GenderColorSettings = GenderColorSettings.GenderOnly;
+            ShowGenderIcons = true;
 
             Langauge = Thread.CurrentThread.CurrentCulture.Name;
             if (!LanguageList.Contains(Langauge))
@@ -201,6 +204,11 @@ namespace slimCat.Models
         /// </summary>
         public static string GlobalNotifyTerms { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the global pruning terms.
+        /// </summary>
+        public static string GlobalPruningTerms { get; set; }
+
         public static bool AllowIndent { get; set; }
 
         public static bool OpenProfilesInClient { get; set; }
@@ -212,6 +220,12 @@ namespace slimCat.Models
         {
             get { return GlobalNotifyTerms.Split(',').Select(word => word.Trim().ToLower()); }
         }
+
+        /// <summary>
+        ///     Gets the global pruning terms list.
+        /// </summary>
+        public static IEnumerable<string> GlobalPruningTermsList
+            => GlobalPruningTerms.Split(',').Select(word => word.Trim().ToLower());
 
         public static bool FriendsAreAccountWide { get; set; }
 
@@ -275,6 +289,11 @@ namespace slimCat.Models
         ///     Gets or sets the gender color settings.
         /// </summary>
         public static GenderColorSettings GenderColorSettings { get; set; }
+
+        /// <summary>
+        ///     Determines whether the gender icons are visible in the chat. 
+        /// </summary>
+        public static bool ShowGenderIcons { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether play sound even when the current tab is focused.

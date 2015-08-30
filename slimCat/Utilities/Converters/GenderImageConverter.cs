@@ -56,8 +56,7 @@ namespace slimCat.Utilities
                         uri = new Uri("pack://application:,,,/icons/none.png");
                         break;
                 }
-
-                return new BitmapImage(uri);
+                return new BitmapImage(uri);                    
             }
             catch
             {

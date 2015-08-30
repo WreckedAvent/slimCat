@@ -76,6 +76,7 @@ namespace slimCat.Services
     using System.Collections.Generic;
     using Models;
     using Utilities;
+    using System.Linq;
 
     #endregion
 
@@ -94,6 +95,9 @@ namespace slimCat.Services
 
             // dedupe logic
             if (isAd && automation.IsDuplicateAd(character, message))
+                return;
+
+            if (ApplicationSettings.GlobalPruningTermsList.Any(x => message.ContainsOrdinal(x)))
                 return;
 
             if (!CharacterManager.IsOnList(character, ListKind.Ignored))
