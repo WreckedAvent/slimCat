@@ -111,30 +111,18 @@ namespace slimCat.Services
         {
             using (var writer = AccessLog(title, id))
             {
-                var thisMessage = HttpUtility.HtmlDecode(message.Message);
+                var safeMessage = HttpUtility.HtmlDecode(message.Message);
                 var timestamp = message.TimeStamp;
+                var timestampUsernameStub = timestamp + ' ' + message.Poster.Name;
 
                 switch (message.Type)
                 {
-                    case MessageType.Normal:
-                        var logMessage = timestamp + ' ' + message.Poster.Name;
-                        var check = thisMessage.Substring(0, thisMessage.IndexOf(' ') + 1);
-                        Func<string, string> nonCommandCommand;
-
-                        if (CommandDefinitions.NonCommandCommands.TryGetValue(check, out nonCommandCommand))
-                            writer.WriteLine(logMessage + nonCommandCommand(thisMessage));
-                        else
-                            writer.WriteLine(logMessage + ": " + thisMessage);
-                        break;
                     case MessageType.Roll:
-                        writer.WriteLine(timestamp + ' ' + thisMessage);
+                    case MessageType.Normal:
+                        writer.WriteLine(timestampUsernameStub + ": " + safeMessage);
                         break;
                     default:
-                        if (!message.Message.StartsWith("/me "))
-                            writer.WriteLine("Ad at " + timestamp + ": " + thisMessage + " ~By " + message.Poster.Name);
-                        else
-                            writer.WriteLine(
-                                "Ad at " + timestamp + ": " + message.Poster.Name + thisMessage.Substring(3));
+                        writer.WriteLine($"[Ad] {timestampUsernameStub}: {safeMessage}");
                         break;
                 }
             }

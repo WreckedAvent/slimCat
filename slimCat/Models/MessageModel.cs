@@ -60,13 +60,15 @@ namespace slimCat.Models
 
         public MessageModel(string fullText, Func<string, ICharacter> getCharacter, DateTime dateOfLogs)
         {
+            var adSignifier = "[Ad]";
             Poster = new CharacterModel {Name = string.Empty};
-            Type = fullText.StartsWith("Ad at")
+            Type = fullText.StartsWith(adSignifier)
                 ? MessageType.Ad
                 : MessageType.Normal;
 
             IsHistoryMessage = true;
             Message = fullText;
+
 
             var parts = fullText.Split(new[] { ": " }, 2, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length == 2)
@@ -76,13 +78,14 @@ namespace slimCat.Models
                     var nameBadge = parts[0];
                     var message = parts[1];
 
+                    if (nameBadge.StartsWith(adSignifier)) nameBadge = nameBadge.Substring(adSignifier.Length);
+
                     var format = DateTimeExtensions.GetTimestampFormat();
                     var nameIdx = nameBadge.IndexOf(format.Trim().Last()) + 1;
 
                     var name = nameBadge.Substring(nameIdx).Trim();
                     var timeStamp = nameBadge.Substring(0, nameIdx).Trim();
 
-                    if (timeStamp.StartsWith("Ad at")) timeStamp = timeStamp.Substring("Ad at".Length);
 
                     // parse our date, and set the date component based on the last write time of the log
                     DateTime parsedDate;
