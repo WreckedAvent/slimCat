@@ -55,7 +55,7 @@ namespace slimCat.Utilities
             {Gender.Female, "Female"},
             {Gender.Shemale, "Shemale"},
             {Gender.Transgender, "Transgender"},
-            {Gender.None, "Highlight"}
+            {Gender.None, "None"}
         };
 
         internal readonly IGetPermissions Permissions;

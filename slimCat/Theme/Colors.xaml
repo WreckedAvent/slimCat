@@ -31,6 +31,7 @@
     <Color x:Key="NotAvailableColor">Silver</Color>
     <Color x:Key="ShemaleColor">#D80040</Color>
     <Color x:Key="HermColor">#BB53D9</Color>
+    <Color x:Key="NoneColor">#E6E5E5</Color>
 
     <SolidColorBrush x:Key="SelfBrush" Color="{StaticResource ForegroundColor}" Opacity="0.70" />
 
@@ -50,6 +51,7 @@
     <SolidColorBrush x:Key="TransgenderBrush" Color="{StaticResource TransgenderColor}" />
     <SolidColorBrush x:Key="CuntBrush" Color="{StaticResource CuntColor}" />
     <SolidColorBrush x:Key="ShemaleBrush" Color="{StaticResource ShemaleColor}" />
+    <SolidColorBrush x:Key="NoneBrush" Color="{StaticResource NoneColor}" />
     <SolidColorBrush x:Key="ModeratorBrush" Color="{StaticResource ModeratorColor}" />
     <SolidColorBrush x:Key="NotAvailableBrush" Color="{StaticResource NotAvailableColor}" />
 </ResourceDictionary>
