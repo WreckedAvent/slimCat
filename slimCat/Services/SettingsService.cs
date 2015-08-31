@@ -67,23 +67,24 @@ namespace slimCat.Services
             string currentCharacter, string title, string id, ChannelType chanType)
         {
             Log("Reading settings for " + id);
-            MakeSettingsFileIfNotExist(currentCharacter, title, id, chanType);
             var workingPath = StringExtensions.MakeSafeFolderPath(currentCharacter, title, id);
             workingPath = Path.Combine(workingPath, SettingsFileName);
 
+            // if we don't have a settings file, assume we're using defaults
+            if (!File.Exists(workingPath))
+                return new ChannelSettingsModel(chanType == ChannelType.PrivateMessage);
+
             try
             {
+                // try and parse the XML file
                 return ReadObjectFromXml(
                     workingPath, new ChannelSettingsModel(chanType == ChannelType.PrivateMessage));
-
-                // try and parse the XML file
             }
             catch
             {
+                // return a default if it's not legible
                 Log($"Settings for {id} could not be read");
                 return new ChannelSettingsModel(chanType == ChannelType.PrivateMessage);
-
-                // return a default if it's not legible
             }
         }
 
@@ -342,7 +343,8 @@ namespace slimCat.Services
                     !checkTerms.Any(term => property.Name.ToLower().Contains(term))))
                 root.Add(new XElement(property.Name, property.GetValue(toSerialize, null)));
 
-            File.Delete(fileName);
+            if (File.Exists(fileName)) File.Delete(fileName);
+
             try
             {
                 using (var fs = File.OpenWrite(fileName))
@@ -366,6 +368,10 @@ namespace slimCat.Services
         {
             Log("Updating settings for " + id);
             var workingPath = StringExtensions.MakeSafeFolderPath(currentCharacter, title, id);
+
+            if (!Directory.Exists(workingPath))
+                Directory.CreateDirectory(workingPath);
+
             workingPath = Path.Combine(workingPath, SettingsFileName);
 
             SerializeObjectToXml(newSettingsModel, workingPath);
@@ -453,25 +459,6 @@ namespace slimCat.Services
             File.Copy(sourcePath, destPath);
 
             return true;
-        }
-
-        private static void MakeSettingsFileIfNotExist(
-            string currentCharacter, string title, string id, ChannelType chanType)
-        {
-            var path = StringExtensions.MakeSafeFolderPath(currentCharacter, title, id);
-
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            var workingPath = Path.Combine(path, SettingsFileName);
-
-            if (File.Exists(workingPath))
-                return;
-
-            // make a new XML settings document
-            var newSettings = GetDefaultSettings(title, id, chanType == ChannelType.PrivateMessage);
-            Log("Making new settings for " + id);
-            SerializeObjectToXml(newSettings, workingPath);
         }
 
         [Conditional("DEBUG")]
