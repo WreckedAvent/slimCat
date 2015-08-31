@@ -216,16 +216,20 @@ namespace slimCat.Models
         /// <summary>
         ///     Gets the global notify terms list.
         /// </summary>
-        public static IEnumerable<string> GlobalNotifyTermsList
-        {
-            get { return GlobalNotifyTerms.Split(',').Select(word => word.Trim().ToLower()); }
-        }
+        public static IEnumerable<string> GlobalNotifyTermsList 
+            => GlobalNotifyTerms
+                .Split(',')
+                .Select(word => word.Trim().ToLower())
+                .Where(x => !string.IsNullOrWhiteSpace(x));
 
         /// <summary>
         ///     Gets the global pruning terms list.
         /// </summary>
         public static IEnumerable<string> GlobalPruningTermsList
-            => GlobalPruningTerms.Split(',').Select(word => word.Trim().ToLower());
+            => GlobalPruningTerms
+                .Split(',')
+                .Select(word => word.Trim().ToLower())
+                .Where(x => !string.IsNullOrWhiteSpace(x));
 
         public static bool FriendsAreAccountWide { get; set; }
 
