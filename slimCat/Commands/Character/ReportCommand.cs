@@ -217,15 +217,15 @@ namespace slimCat.Services
             {
                 Thread.CurrentThread.IsBackground = true;
 
-                var channelText = command.Get(Constants.Arguments.Channel);
-                if (!string.IsNullOrWhiteSpace(channelText) && !channelText.Equals("None"))
+                var channelName = command.Get(Constants.Arguments.Channel);
+                if (!string.IsNullOrWhiteSpace(channelName) && !channelName.Equals("None"))
                 {
                     // we could just use _model.SelectedChannel, but the user might change tabs immediately after reporting, creating a race condition
                     ChannelModel channel;
-                    if (channelText == command.Get(Constants.Arguments.Name))
-                        channel = cm.CurrentPms.FirstByIdOrNull(channelText);
+                    if (channelName == command.Get(Constants.Arguments.Name))
+                        channel = cm.CurrentPms.FirstByIdOrNull(channelName);
                     else
-                        channel = cm.CurrentChannels.FirstByIdOrNull(channelText);
+                        channel = cm.CurrentChannels.FirstByIdOrNull(channelName);
 
                     if (channel != null)
                     {
@@ -234,7 +234,7 @@ namespace slimCat.Services
                             Reporter = cm.CurrentCharacter,
                             Reported = command.Get(Constants.Arguments.Name),
                             Complaint = command.Get(Constants.Arguments.Report),
-                            Tab = channelText
+                            Tab = channelName
                         };
 
 
@@ -245,6 +245,7 @@ namespace slimCat.Services
                 command.Remove(Constants.Arguments.Name);
                 command[Constants.Arguments.Report] = reportText;
                 command[Constants.Arguments.LogId] = logId;
+                command[Constants.Arguments.Tab] = channelName;
 
                 if (!command.ContainsKey(Constants.Arguments.Action))
                     command[Constants.Arguments.Action] = Constants.Arguments.ActionReport;

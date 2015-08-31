@@ -63,6 +63,7 @@ namespace slimCat.Utilities
             public const string ActionConfirm = "confirm";
             public const string ActionAdd = "add";
             public const string ActionNotify = "notify";
+            public const string Tab = "tab";
         }
 
         /// <summary>
