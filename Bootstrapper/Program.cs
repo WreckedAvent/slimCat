@@ -66,8 +66,10 @@ namespace Bootstrapper
 
                 var domain = AppDomain.CreateDomain("slimCat", AppDomain.CurrentDomain.Evidence, setup);
 
+                FileUnblocker.Unblock(assembly);
                 domain.SetData("path", clientPath);
                 domain.ExecuteAssembly(assembly, args);
+
 
                 // we can do slimCat clean up here if necessary
                 AppDomain.Unload(domain);
