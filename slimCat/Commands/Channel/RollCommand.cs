@@ -70,7 +70,7 @@ namespace slimCat.Services
                 channels.AddChannel(ChannelType.PrivateMessage, target);
 
             if (!CharacterManager.IsOnList(poster, ListKind.Ignored))
-                channels.AddMessage(message, target, poster, MessageType.Roll);
+                channels.AddMessage(message, target, "!System", MessageType.Roll);
         }
     }
 }
