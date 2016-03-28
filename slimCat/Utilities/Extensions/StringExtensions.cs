@@ -216,7 +216,14 @@ namespace slimCat.Utilities
                     return Gender.Cuntboy;
 
                 default: // every other gender is parsed normally
-                    return input.ToEnum<Gender>();
+                    try
+                    {
+                        return input.ToEnum<Gender>();
+                    }
+                    catch (ArgumentException e)
+                    {
+                        return Gender.None;
+                    }
             }
         }
 
