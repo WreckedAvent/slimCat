@@ -166,9 +166,9 @@ namespace slimCat.Utilities
         {
             try
             {
-                return (T) Enum.Parse(typeof(T), str);
+                return (T) Enum.Parse(typeof(T), str, true);
             }
-            catch(ArgumentException)
+            catch (ArgumentException)
             {
                 return default(T);
             }
