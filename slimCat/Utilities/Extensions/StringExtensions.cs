@@ -162,7 +162,17 @@ namespace slimCat.Utilities
             return Path.Combine(GeneralExtensions.BaseFolderPath, character, folderName);
         }
 
-        public static T ToEnum<T>(this string str) => (T) Enum.Parse(typeof (T), str, true);
+        public static T ToEnum<T>(this string str)
+        {
+            try
+            {
+                return (T) Enum.Parse(typeof(T), str);
+            }
+            catch(ArgumentException)
+            {
+                return default(T);
+            }
+        }
 
         public static string StripPunctuationAtEnd(this string fullString)
         {
@@ -216,14 +226,7 @@ namespace slimCat.Utilities
                     return Gender.Cuntboy;
 
                 default: // every other gender is parsed normally
-                    try
-                    {
-                        return input.ToEnum<Gender>();
-                    }
-                    catch (ArgumentException e)
-                    {
-                        return Gender.None;
-                    }
+                    return input.ToEnum<Gender>();
             }
         }
 
