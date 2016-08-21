@@ -2,11 +2,11 @@
 
 // <copyright file="LeaveCommand.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -35,21 +35,27 @@ namespace slimCat.Services
             var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelId);
             if (ChatModel.CurrentCharacter.NameEquals(characterName))
             {
-                if (channel != null)
+                if (channel == null) return;
+
+                lock (chatStateLocker)
+                {
                     channels.RemoveChannel(channelId, false, true);
+                }
 
                 return;
             }
 
-            if (channel == null)
-                return;
+            if (channel == null) return;
 
             var ignoreUpdate = false;
 
             if (command.ContainsKey("ignoreUpdate"))
                 ignoreUpdate = (bool) command["ignoreUpdate"];
 
-            if (!channel.CharacterManager.SignOff(characterName) || ignoreUpdate) return;
+            lock (chatStateLocker)
+            {
+                if (!channel.CharacterManager.SignOff(characterName) || ignoreUpdate) return;
+            }
 
             var updateArgs = new JoinLeaveEventArgs
             {

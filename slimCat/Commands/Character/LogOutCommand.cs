@@ -46,40 +46,42 @@ namespace slimCat.Services
         {
             var characterName = command.Get(Constants.Arguments.Character);
 
-            var character = CharacterManager.Find(characterName);
-            var ofInterest = CharacterManager.IsOfInterest(characterName);
 
-            character.LastAd = null;
-            character.LastReport = null;
+            lock (chatStateLocker)
+            {
+                var character = CharacterManager.Find(characterName);
+                var ofInterest = CharacterManager.IsOfInterest(characterName);
 
-            CharacterManager.SignOff(characterName);
+                character.LastAd = null;
+                character.LastReport = null;
 
-            var leaveChannelCommands =
-                from channel in ChatModel.CurrentChannels.ToList()
-                where channel.CharacterManager.SignOff(characterName)
-                select new Dictionary<string, object>
+                CharacterManager.SignOff(characterName);
+
+                var leaveChannelCommands =
+                    from channel in ChatModel.CurrentChannels
+                    where channel.CharacterManager.SignOff(characterName)
+                    select new Dictionary<string, object>
+                    {
+                        {Constants.Arguments.Character, character.Name},
+                        {Constants.Arguments.Channel, channel.Id},
+                        {"ignoreUpdate", ofInterest}
+                        // ignore updates from characters we'll already get a sign-out notice for
+                    };
+
+                leaveChannelCommands.Each(LeaveChannelCommand);
+
+                var characterChannel = ChatModel.CurrentPms.FirstByIdOrNull(characterName);
+
+                if (characterChannel != null)
+                    characterChannel.TypingStatus = TypingStatus.Clear;
+
+                var updateArgs = new LoginStateChangedEventArgs
                 {
-                    {Constants.Arguments.Character, character.Name},
-                    {Constants.Arguments.Channel, channel.Id},
-                    {"ignoreUpdate", ofInterest}
-                    // ignore updates from characters we'll already get a sign-out notice for
+                    IsLogIn = false
                 };
 
-            leaveChannelCommands.Each(LeaveChannelCommand);
-
-            var characterChannel = ChatModel.CurrentPms
-                .ToList()
-                .FirstByIdOrNull(characterName);
-
-            if (characterChannel != null)
-                characterChannel.TypingStatus = TypingStatus.Clear;
-
-            var updateArgs = new LoginStateChangedEventArgs
-            {
-                IsLogIn = false
-            };
-
-            Events.NewCharacterUpdate(character, updateArgs);
+                Events.NewCharacterUpdate(character, updateArgs);
+            }
         }
     }
 }

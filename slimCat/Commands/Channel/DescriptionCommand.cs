@@ -2,11 +2,11 @@
 
 // <copyright file="DescriptionCommand.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -40,27 +40,30 @@ namespace slimCat.Services
     {
         private void ChannelDescriptionCommand(IDictionary<string, object> command)
         {
-            var channel = FindChannel(command);
-            var description = command.Get("description");
-
-            if (channel == null)
+            lock (chatStateLocker)
             {
-                RequeueCommand(command);
-                return;
+                var channel = FindChannel(command);
+                var description = command.Get("description");
+
+                if (channel == null)
+                {
+                    RequeueCommand(command);
+                    return;
+                }
+
+                var isInitializer = string.IsNullOrWhiteSpace(channel.Description);
+
+                if (string.Equals(channel.Description, description, StringComparison.Ordinal))
+                    return;
+
+                channel.Description = WebUtility.HtmlDecode(WebUtility.HtmlDecode(description));
+
+                if (isInitializer)
+                    return;
+
+                var args = new ChannelDescriptionChangedEventArgs();
+                Events.NewChannelUpdate(channel, args);
             }
-
-            var isInitializer = string.IsNullOrWhiteSpace(channel.Description);
-
-            if (string.Equals(channel.Description, description, StringComparison.Ordinal))
-                return;
-
-            channel.Description = WebUtility.HtmlDecode(WebUtility.HtmlDecode(description));
-
-            if (isInitializer)
-                return;
-
-            var args = new ChannelDescriptionChangedEventArgs();
-            Events.NewChannelUpdate(channel, args);
         }
     }
 

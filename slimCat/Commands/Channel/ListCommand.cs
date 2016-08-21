@@ -2,11 +2,11 @@
 
 // <copyright file="ListCommand.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -32,7 +32,7 @@ namespace slimCat.Services
         private void ChannelListCommand(IDictionary<string, object> command, bool isPublic)
         {
             var arr = (JsonArray) command[Constants.Arguments.MultipleChannels];
-            lock (ChatModel.AllChannels)
+            lock (chatStateLocker)
             {
                 foreach (IDictionary<string, object> channel in arr)
                 {

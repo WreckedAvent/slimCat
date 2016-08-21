@@ -2,11 +2,11 @@
 
 // <copyright file="ModeratorCommand.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -63,12 +63,18 @@ namespace slimCat.Services
     {
         private void PromoteOrDemote(string character, bool isPromote, string channelId = null)
         {
-            var target = CharacterManager.Find(character);
+            ICharacter target;
+            lock (chatStateLocker)
+                target = CharacterManager.Find(character);
 
             string title = null;
             if (channelId != null)
             {
-                var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelId);
+                GeneralChannelModel channel;
+
+                lock (chatStateLocker)
+                    channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelId);
+
                 if (channel != null)
                 {
                     title = channel.Title;

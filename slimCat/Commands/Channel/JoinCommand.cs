@@ -2,11 +2,11 @@
 
 // <copyright file="JoinCommand.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -72,9 +72,12 @@ namespace slimCat.Services
                 return;
             }
 
-            channels.QuickJoinChannel(id, title);
+            lock (chatStateLocker)
+            {
+                channels.QuickJoinChannel(id, title);
 
-            autoJoinedChannels.Remove(id);
+                autoJoinedChannels.Remove(id);
+            }
         }
 
         private void QuickJoinChannelCommand(IDictionary<string, object> command)
@@ -95,7 +98,10 @@ namespace slimCat.Services
             if (id.Contains("ADH-"))
                 kind = ChannelType.Private;
 
-            channels.JoinChannel(kind, id, title);
+            lock (chatStateLocker)
+            {
+                channels.JoinChannel(kind, id, title);
+            }
         }
 
         private void JoinChannelCommand(IDictionary<string, object> command)
@@ -109,30 +115,33 @@ namespace slimCat.Services
             // JCH is used in a few situations. It is used when others join a channel and when we join a channel
 
             // if this is a situation where we are joining a channel...
-            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(id);
-            if (channel == null)
+            lock (chatStateLocker)
             {
-                var kind = ChannelType.Public;
-                if (id.Contains("ADH-"))
-                    kind = ChannelType.Private;
+                var channel = ChatModel.CurrentChannels.FirstByIdOrNull(id);
+                if (channel == null)
+                {
+                    var kind = ChannelType.Public;
+                    if (id.Contains("ADH-"))
+                        kind = ChannelType.Private;
 
-                channels.JoinChannel(kind, id, title);
-            }
-            else
-            {
-                var toAdd = CharacterManager.Find(character);
-                if (!channel.CharacterManager.SignOn(toAdd)) return;
+                    channels.JoinChannel(kind, id, title);
+                }
+                else
+                {
+                    var toAdd = CharacterManager.Find(character);
+                    if (!channel.CharacterManager.SignOn(toAdd)) return;
 
-                var update = new CharacterUpdateModel(
-                    toAdd,
-                    new JoinLeaveEventArgs
-                    {
-                        Joined = true,
-                        TargetChannel = channel.Title,
-                        TargetChannelId = channel.Id
-                    });
+                    var update = new CharacterUpdateModel(
+                        toAdd,
+                        new JoinLeaveEventArgs
+                        {
+                            Joined = true,
+                            TargetChannel = channel.Title,
+                            TargetChannelId = channel.Id
+                        });
 
-                Events.NewUpdate(update);
+                    Events.NewUpdate(update);
+                }
             }
         }
     }

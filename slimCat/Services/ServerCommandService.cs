@@ -94,7 +94,9 @@ namespace slimCat.Services
 
         private readonly IFriendRequestService friendRequestService;
 
-        private readonly object locker = new object();
+        private readonly object queueLocker = new object();
+
+        private readonly object chatStateLocker = new object();
 
         private readonly IManageChannels channels;
 
@@ -112,8 +114,8 @@ namespace slimCat.Services
 
         private GeneralChannelModel FindChannel(string id)
         {
-            return ChatModel.CurrentChannels.ToList().FirstByIdOrNull(id)
-                   ?? ChatModel.AllChannels.ToList().FirstByIdOrNull(id);
+            return ChatModel.CurrentChannels.FirstByIdOrNull(id)
+                   ?? ChatModel.AllChannels.FirstByIdOrNull(id);
         }
 
         private GeneralChannelModel FindChannel(IDictionary<string, object> command)
@@ -124,7 +126,7 @@ namespace slimCat.Services
 
         private void DoAction()
         {
-            lock (locker)
+            lock (queueLocker)
             {
                 if (que.Count <= 0)
                     return;
@@ -159,7 +161,7 @@ namespace slimCat.Services
                 }
             }
 
-            lock (locker)
+            lock (queueLocker)
             {
                 que.Enqueue(data);
             }

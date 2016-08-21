@@ -2,11 +2,11 @@
 
 // <copyright file="OwnerCommand.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -41,8 +41,10 @@ namespace slimCat.Services
         {
             var character = command.Get(Constants.Arguments.Character);
             var channelId = command.Get(Constants.Arguments.Channel);
+            GeneralChannelModel channel;
 
-            var channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelId);
+            lock (chatStateLocker)
+                channel = ChatModel.CurrentChannels.FirstByIdOrNull(channelId);
 
             if (channel == null) return;
 
