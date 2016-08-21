@@ -92,7 +92,8 @@ namespace slimCat
         /// </summary>
         public App()
         {
-            Dispatcher.UnhandledException += Exceptions.HandleException;
+            Dispatcher.UnhandledException += (s, e) => Exceptions.HandleException(e.Exception);
+            AppDomain.CurrentDomain.UnhandledException += (s, e) => Exceptions.HandleException(e.ExceptionObject);
             InitLog();
         }
 

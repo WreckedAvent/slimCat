@@ -2,11 +2,11 @@
 
 // <copyright file="Exceptions.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -45,17 +45,20 @@ namespace slimCat.Utilities
         #region Public Methods and Operators
 
 #if DEBUG
-    /// <summary>
-    ///     Writes the given exception to a log file in a uniform way.
-    /// </summary>
-    /// <param name="ex">
-    ///     Exception to be traced
-    /// </param>
-    /// <param name="message">
-    ///     The message.
-    /// </param>
-        public static void HandleException(Exception ex, string message = DefaultDebugMessage)
+        /// <summary>
+        /// Writes the given exception to a log file in a uniform way.
+        /// </summary>
+        /// <param name="obj">
+        /// Exception to be traced. Should inherit from <see cref="Exception"/>.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+            public static void HandleException(object obj, string message = DefaultDebugMessage)
         {
+            var ex = obj as Exception;
+            if (ex == null) return;
+
             Logging.LogHeader("Exception at " + DateTime.UtcNow);
 
             Logging.LogLine("Version: " + Constants.FriendlyName);
@@ -69,18 +72,21 @@ namespace slimCat.Utilities
 
 #if !DEBUG
         /// <summary>
-        ///     Writes the given exception to a log file in a uniform way.
+        /// Writes the given exception to a log file in a uniform way.
         /// </summary>
-        /// <param name="ex">
-        ///     Exception to be traced
+        /// <param name="obj">
+        /// Exception to be traced. Should inherit from <see cref="Exception"/>.
         /// </param>
         /// <param name="message">
-        ///     The message.
+        /// The message.
         /// </param>
-        public static void HandleException(Exception ex, string message = DefaultMessage)
+        public static void HandleException(object obj, string message = DefaultMessage)
         {
             try
             {
+                var ex = obj as Exception;
+                if (ex == null) return;
+
                 using (var file = new StreamWriter(@"Stacktrace.log", true))
                 {
                     file.WriteLine();
@@ -129,13 +135,6 @@ namespace slimCat.Utilities
                 MessageBoxDefaultButton.Button1,
                 options);
         }
-
-        /// <summary>
-        ///     Handles an exception by logging it entirely and displaying an error modal.
-        /// </summary>
-        public static void HandleException(object sender, DispatcherUnhandledExceptionEventArgs e)
-            => HandleException(e.Exception);
-
-        #endregion
     }
+    #endregion
 }
