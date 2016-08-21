@@ -2,11 +2,11 @@
 
 // <copyright file="ServerCommandService.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -112,8 +112,8 @@ namespace slimCat.Services
 
         private GeneralChannelModel FindChannel(string id)
         {
-            return ChatModel.CurrentChannels.FirstByIdOrNull(id)
-                   ?? ChatModel.AllChannels.FirstByIdOrNull(id);
+            return ChatModel.CurrentChannels.ToList().FirstByIdOrNull(id)
+                   ?? ChatModel.AllChannels.ToList().FirstByIdOrNull(id);
         }
 
         private GeneralChannelModel FindChannel(IDictionary<string, object> command)
