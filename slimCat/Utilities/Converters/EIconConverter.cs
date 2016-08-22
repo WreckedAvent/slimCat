@@ -32,9 +32,8 @@ namespace slimCat.Utilities
             if (value == null) return null;
 
             var character = (string) value;
-            return new BitmapImage(
-                new Uri(Constants.UrlConstants.EIcon + character.ToLower() + ".png",
-                    UriKind.Absolute), new RequestCachePolicy(RequestCacheLevel.CacheIfAvailable));
+            return new Uri(Constants.UrlConstants.EIcon + character.ToLower() + ".gif",
+                    UriKind.Absolute);
         }
     }
 }
