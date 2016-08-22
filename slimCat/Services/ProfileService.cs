@@ -163,26 +163,9 @@ namespace slimCat.Services
 
                 var data = JsonConvert.DeserializeObject<ApiMappingResponse>(response);
 
-                //var apiKinks = data.Kinks
-                //    .SelectMany(x => x.Value.Kinks)
-                //    .Select(x => new ProfileKink
-                //    {
-                //        Id = x.Id,
-                //        IsCustomKink = false,
-                //        Name = x.Name.DoubleDecode(),
-                //        Tooltip = x.Description.DoubleDecode(),
-                //        KinkListKind = KinkListKind.MasterList
-                //    }).ToList();
-
-                //kinkDataCache = new ProfileData
-                //{
-                //    Kinks = apiKinks
-                //};
-                //SettingsService.SaveProfile("!kinkdata", kinkDataCache);
             }
 
             kinkData.Clear();
-            kinkDataCache.Kinks.Each(x => kinkData.Add(x.Id, x));
         }
 
         [Conditional("DEBUG")]

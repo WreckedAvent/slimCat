@@ -23,7 +23,7 @@
         public IList<ApiGroup> InfoTagGroups { get; set; }
 
         [DataMember(Name = "list_items")]
-        public IList<object> ListItems { get; set; }
+        public IList<ApiListItem> ListItems { get; set; }
     }
 
     [DataContract]
