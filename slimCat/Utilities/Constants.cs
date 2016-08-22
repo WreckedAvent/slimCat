@@ -314,9 +314,9 @@ namespace slimCat.Utilities
             public const string ProfileImages = Domain + @"/json/profile-images.json";
 
             /// <summary>
-            ///     The url used to retrieve the available kinks.
+            /// The url used to retrieve the various profile ID => Entity mappings.
             /// </summary>
-            public const string KinkList = Domain + @"/json/api/kink-list.php";
+            public const string MappingList = Domain + @"/json/api/mapping-list.php";
 
             /// <summary>
             ///     The url used for getting incoming friend requests.

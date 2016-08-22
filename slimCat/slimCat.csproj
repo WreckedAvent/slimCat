@@ -114,11 +114,9 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-      <HintPath>lib\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SimpleJson">
       <HintPath>lib\SimpleJson.dll</HintPath>
@@ -195,9 +193,13 @@
     <Compile Include="lib\FullScreenHelper.cs" />
     <Compile Include="lib\NonTopmostPopup.cs" />
     <Compile Include="lib\TextBlockHelper.cs" />
+    <Compile Include="Models\Api\ApiCustomKink.cs" />
+    <Compile Include="Models\Api\ApiGenericResponse.cs" />
     <Compile Include="Models\Api\ApiIFriendRequestResponse.cs" />
     <Compile Include="Models\Api\ApiAuthResponse.cs" />
-    <Compile Include="Models\Api\KinkDataResponse.cs" />
+    <Compile Include="Models\Api\ApiMappingResponse.cs" />
+    <Compile Include="Models\Api\ApiProfileInlineImage.cs" />
+    <Compile Include="Models\Api\ApiProfileResponse.cs" />
     <Compile Include="Models\Api\ApiUploadLogResponse.cs" />
     <Compile Include="Models\Api\ApiProfileImagesResponse.cs" />
     <Compile Include="Models\ApplicationThemeLocator.cs" />
@@ -246,6 +248,7 @@
     <Compile Include="Commands\Channel\DescriptionCommand.cs" />
     <Compile Include="Commands\System\BroadcastCommand.cs" />
     <Compile Include="Models\Conversation.cs" />
+    <Compile Include="Services\Interfaces\IHaveAnErrorMaybe.cs" />
     <Compile Include="Services\Interfaces\IUpdateChannelLists.cs" />
     <Compile Include="Services\IconService.cs" />
     <Compile Include="Services\Interfaces\IHandleIcons.cs" />

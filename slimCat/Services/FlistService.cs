@@ -2,11 +2,11 @@
 
 // <copyright file="FlistService.cs">
 //     Copyright (c) 2013-2015, Justin Kadrovach, All rights reserved.
-// 
+//
 //     This source is subject to the Simplified BSD License.
 //     Please see the License.txt file for more information.
 //     All other rights reserved.
-// 
+//
 //     THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 //     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 //     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -173,7 +173,8 @@ namespace slimCat.Services
 
         #region Methods
 
-        private void DoApiAction(string apiName, IDictionary<string, object> command)
+        public T DoApiAction<T>(string apiName, IDictionary<string, object> command)
+            where T : IHaveAnErrorMaybe
         {
             var host = Constants.UrlConstants.Api + apiName + ".php";
 
@@ -182,18 +183,27 @@ namespace slimCat.Services
 
             var buffer = browser.GetResponse(host, command);
 
-            dynamic result = SimpleJson.DeserializeObject(buffer);
+            var result = (T)SimpleJson.DeserializeObject(buffer, typeof(T));
 
-            var hasError = !string.IsNullOrWhiteSpace((string) result.error);
+            var hasError = !string.IsNullOrWhiteSpace(result.Error);
 
-            if (string.Equals("Ticked expired", result.error, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals("Ticked expired", result.Error, StringComparison.OrdinalIgnoreCase))
             {
                 ticketService.ShouldGetNewTicket = true;
-                DoApiAction(apiName, command);
+                DoApiAction<T>(apiName, command);
             }
 
-            if (hasError) events.NewError((string) result.error);
+            if (hasError)
+            {
+                events.NewError(result.Error);
+                return default(T);
+            }
+
+            return result;
         }
+
+        public ApiGenericResponse DoApiAction(string apiName, IDictionary<string, object> command)
+            => DoApiAction<ApiGenericResponse>(apiName, command);
 
         private void HandleCommand(IDictionary<string, object> command)
         {
