@@ -378,12 +378,12 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The client's name. Must be a type of cat.
         /// </summary>
-        public const string ClientNickname = "Slow Cheetah";
+        public const string ClientNickname = "Cheetah";
 
         /// <summary>
         ///     The version of the client.
         /// </summary>
-        public const double Version = 5.010;
+        public const double Version = 5.011;
 
         /// <summary>
         ///     The endpoint for F-chat websocket communication.
