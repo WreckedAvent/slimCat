@@ -295,7 +295,7 @@ namespace slimCat.ViewModels
 
         protected void RequestChannelJoinEvent(object args)
         {
-            Events.SendUserCommand("join", new[] {$"\"{args as string}\""});
+            Events.SendUserCommand("join", new[] {args as string});
         }
 
         protected void RequestPmEvent(object args)
