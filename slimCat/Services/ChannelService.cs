@@ -30,6 +30,7 @@ namespace slimCat.Services
     using Microsoft.Practices.Unity;
     using Models;
     using Utilities;
+    using Utilities.Extensions;
     using ViewModels;
     using Views;
     using Commands = Utilities.Constants.ClientCommands;
@@ -134,7 +135,8 @@ namespace slimCat.Services
 
                     if (temp == null)
                     {
-                        temp = new GeneralChannelModel(id, name, id == name ? ChannelType.Public : ChannelType.Private);
+                        temp = new GeneralChannelModel(id, name,
+                            id == name ? ChannelType.Public : ChannelType.Private);
                         Dispatcher.Invoke(() => cm.AllChannels.Add(temp));
                     }
 
@@ -166,7 +168,7 @@ namespace slimCat.Services
             if (messageType == MessageType.Ad && characters.IsOnList(poster, ListKind.NotInterested, false))
                 return; // don't want these clogging up our filter or.. anything really
 
-            Dispatcher.Invoke(() =>
+            Dispatcher.InvokeWithRetry(() =>
             {
                 var thisMessage = new MessageModel(sender, message, messageType);
 
@@ -185,16 +187,16 @@ namespace slimCat.Services
                 if (channel is GeneralChannelModel)
                 {
                     events.GetEvent<NewMessageEvent>()
-                        .Publish(
-                            new Dictionary<string, object>
-                            {
-                                {Constants.Arguments.Message, thisMessage},
-                                {Constants.Arguments.Channel, channel}
-                            });
+                            .Publish(
+                                new Dictionary<string, object>
+                                {
+                                    {Constants.Arguments.Message, thisMessage},
+                                    {Constants.Arguments.Channel, channel}
+                                });
                 }
                 else
                     events.GetEvent<NewPmEvent>().Publish(thisMessage);
-            });
+                });
         }
 
         public void JoinChannel(ChannelType type, string id, string name = "")

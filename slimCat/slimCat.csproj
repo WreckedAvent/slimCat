@@ -302,6 +302,7 @@
     <Compile Include="Utilities\Extensions\ChatStateExtensions.cs" />
     <Compile Include="Utilities\Constants.cs" />
     <Compile Include="Utilities\Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Utilities\Extensions\DispatcherExtensions.cs" />
     <Compile Include="Utilities\Extensions\EventExtensions.cs" />
     <Compile Include="Utilities\Converters\ForegroundBrushConverter.cs" />
     <Compile Include="Utilities\Converters\GenderColorConverter.cs" />
@@ -546,7 +547,6 @@
     <Compile Include="Views\Home Channel\HomeChannelView.xaml.cs">
       <DependentUpon>HomeChannelView.xaml</DependentUpon>
     </Compile>
-    <None Include="packages.config" />
     <None Include="Theme\Colors.xaml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
