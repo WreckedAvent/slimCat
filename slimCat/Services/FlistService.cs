@@ -219,9 +219,10 @@ namespace slimCat.Services
                 {
                     command.Add("source_name", selectedCharacter);
                     command["dest_name"] = command[Constants.Arguments.Character];
-                    command.Remove(Constants.Arguments.Character);
+                    var toSend = new Dictionary<string, object>(command);
+                    toSend.Remove(Constants.Arguments.Character);
 
-                    DoApiAction(commandType, command);
+                    DoApiAction(commandType, toSend);
                     if (commandType == "request-send")
                         requestService.UpdateOutgoingRequests();
                     break;
@@ -232,7 +233,8 @@ namespace slimCat.Services
                 case "request-deny":
                 {
                     var character = command.Get(Constants.Arguments.Character);
-                    command.Remove(Constants.Arguments.Character);
+                    var toSend = new Dictionary<string, object>(command);
+                    toSend.Remove(Constants.Arguments.Character);
 
                     var id = requestService.GetRequestForCharacter(character);
                     if (id == null)
@@ -241,8 +243,8 @@ namespace slimCat.Services
                         return;
                     }
 
-                    command.Add("request_id", id.ToString());
-                    DoApiAction(commandType, command);
+                    toSend.Add("request_id", id.ToString());
+                    DoApiAction(commandType, toSend);
 
                     if (commandType == "request-deny" || commandType == "request-accept")
                         requestService.UpdatePendingRequests();
