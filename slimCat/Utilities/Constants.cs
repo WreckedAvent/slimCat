@@ -383,7 +383,7 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The version of the client.
         /// </summary>
-        public const double Version = 5.012;
+        public const double Version = 5.013;
 
         /// <summary>
         ///     The endpoint for F-chat websocket communication.

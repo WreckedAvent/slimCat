@@ -1,3 +1,7 @@
+## 5 013
+
+Version bump as an attempt to make windows defender happy.
+
 ## 5 012
 
 Fixes issues introduced in 011:
