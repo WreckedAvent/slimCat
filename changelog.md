@@ -11,10 +11,9 @@ Fixes issues introduced in 011:
 
 ## 5 011
 
-Fixes a few rare crashes:
-
 * Fixes a random crash due to a bug in the friend-request handling logic
 * Fixes a random crash when receiving a message (mostly when the client was closed/minimized)
+* Fixes an incorrect profile being opened when clicking on a profiles name (particularly if the profile was offline)
 
 ## 5 010
 
