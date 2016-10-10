@@ -267,7 +267,7 @@ namespace slimCat.Services
             Dispatcher.Invoke(() => ChatModel.IsAuthenticated = true);
 
             const string nojoinName = "nojoin";
-            if ((!File.Exists(nojoinName) || ApplicationSettings.SavedChannels.Count == 0) &&
+            if ((!File.Exists(nojoinName) && ApplicationSettings.SavedChannels.Count == 0) &&
                 ApplicationSettings.SlimCatChannelId != null)
             {
                 ApplicationSettings.SavedChannels.Add(ApplicationSettings.SlimCatChannelId);
