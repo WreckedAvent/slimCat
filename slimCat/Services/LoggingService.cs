@@ -226,7 +226,7 @@ namespace slimCat.Services
             var year = time.Year;
             var day = time.Day;
 
-            return month + "-" + day + "-" + year + ".txt";
+            return year + "-" + month + "-" + day + ".txt";
         }
 
         private StreamWriter AccessLog(string title, string id)
