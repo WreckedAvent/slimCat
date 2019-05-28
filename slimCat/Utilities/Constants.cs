@@ -388,7 +388,7 @@ namespace slimCat.Utilities
         /// <summary>
         ///     The endpoint for F-chat websocket communication.
         /// </summary>
-        public const string ServerHost = "wss://chat.f-list.net:9799/";
+        public const string ServerHost = "wss://chat.f-list.net/chat2";
 
         /// <summary>
         ///     The base url used to find updates and themes.
