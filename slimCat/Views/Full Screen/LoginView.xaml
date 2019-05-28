@@ -62,7 +62,7 @@
         <WrapPanel Orientation="Horizontal"
                    HorizontalAlignment="Center">
             <TextBlock>
-                <Hyperlink CommandParameter="http://chat.f-list.net:9002/stats/">Chat Stats</Hyperlink>
+                <Hyperlink CommandParameter="https://chat.f-list.net/stats/">Chat Stats</Hyperlink>
             </TextBlock>
             <TextBlock Visibility="{Binding Path=HasNewUpdate, Converter={StaticResource BoolConverter}}"
                        Margin="15,0,0,0">
