@@ -366,6 +366,8 @@ namespace slimCat.Services
         /// </summary>
         public static void UpdateSettingsFile(object newSettingsModel, string currentCharacter, string title, string id)
         {
+            title = title.TrimEnd(' ');
+            id = id.TrimEnd(' ');
             Log("Updating settings for " + id);
             var workingPath = StringExtensions.MakeSafeFolderPath(currentCharacter, title, id);
 
