@@ -49,7 +49,8 @@ namespace slimCat.Utilities
         #endregion
 
         #region Explicit Interface Methods
-
+        IList<Inline> toReturn = new List<Inline>();  //reusing the same variable instead of making new ones each call,
+                                                      //because it risks crashing from using too much memory otherwise
         object IValueConverter.Convert(object value, Type type, object parameter, CultureInfo cultureInfo)
         {
             if (value == null)
@@ -59,7 +60,7 @@ namespace slimCat.Utilities
 
             text = HttpUtility.HtmlDecode(text);
 
-            IList<Inline> toReturn = new List<Inline>();
+            toReturn.Clear();
             toReturn.Add(Parse(text));
 
             return toReturn;

@@ -190,7 +190,12 @@
                 Display bbcode icons
             </CheckBox>
 
-            <CheckBox IsChecked="{Binding AllowIndent}"
+			<CheckBox IsChecked="{Binding AnimateIcons}"
+                      ToolTip="Allows slimCat use gif for eicons. When off, uses png instead, stopping animation but avoiding crashes from seeing too many eicons.">
+				Animate bbcode eicons (turn off for lower memory use and less crashing)
+			</CheckBox>
+
+			<CheckBox IsChecked="{Binding AllowIndent}"
                       ToolTip="Allows slimCat to parse [indent] tags and present the bbcode-indented text.">
                 Display bbcode indent
             </CheckBox>

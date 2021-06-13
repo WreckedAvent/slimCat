@@ -195,6 +195,11 @@ namespace slimCat.Models
         public static bool AllowIcons { get; set; }
 
         /// <summary>
+        ///     Gets or sets a value indicating whether to use original animated gif eicons, or png to avoid excessive memory use and work around crashing.
+        /// </summary>
+        public static bool AnimateIcons { get; set; }
+
+        /// <summary>
         ///     Gets or sets a value indicating whether all messages should be checked for the current character's name.
         /// </summary>
         public static bool CheckForOwnName { get; set; }
