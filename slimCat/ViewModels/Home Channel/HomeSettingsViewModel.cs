@@ -183,6 +183,16 @@ namespace slimCat.ViewModels
             }
         }
 
+        public bool AnimateIcons
+        {
+            get { return ApplicationSettings.AnimateIcons; }
+            set
+            {
+                ApplicationSettings.AnimateIcons = value;
+                Save();
+            }
+        }
+
         public bool AllowIndent
         {
             get { return ApplicationSettings.AllowIndent; }

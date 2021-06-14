@@ -22,6 +22,7 @@ namespace slimCat.Utilities
     using System;
     using System.Net.Cache;
     using System.Windows.Media.Imaging;
+    using slimCat.Models;
 
     #endregion
 
@@ -31,9 +32,10 @@ namespace slimCat.Utilities
         {
             if (value == null) return null;
 
-            var character = (string) value;
-            return new Uri(Constants.UrlConstants.EIcon + character.ToLower() + ".gif",
-                    UriKind.Absolute);
+            var character = (string)value;
+            return ApplicationSettings.AnimateIcons
+                ? new Uri(Constants.UrlConstants.EIcon + character.ToLower() + ".gif", UriKind.Absolute)
+                : new Uri(Constants.UrlConstants.EIcon + character.ToLower() + ".png", UriKind.Absolute);
         }
     }
 }

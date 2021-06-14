@@ -1,7 +1,22 @@
-slimCat 5.00 dev build
+slimCat 5.00 dev build (with update to be able to connect)
 ======================
 
-This is an early build of the 5.xx branch. It will exploring how successful the automatic updater built-in is for keeping users up-to-date, and how it may or may not impact development cycles.
+This is a short update to fix slimCat being unable to connect. It also adds the option to stop eicons from animating to avoid crashes from excessive memory use. (You can turn it on/off in Settings -> Appearance)
+
+You can use this as a fresh install, or copy it over your previous one to update it. You may want to make a copy of the original first as a safety precaution, particularly if you're using portable mode (as your settings are in there).
+
+Settings and logs should normally be located in: %AppData%\slimCat
+
+Portable mode settings can be in two different locations:
+	Release builds (like this one): slimCat\client\logs\
+	Debug builds: slimCat\logs\
+
+If you have trouble with settings vanishing, you may want to try both locations. Specifically, channels, NotInterested and so on are in:
+	slimCat\client\logs\<NAME>\Global\!settings.xml
+
+(These things have not been changed, this is just a clarification.)
+
+
 
 slimCat is a 3rd party desktop application for the f-chat protocol. It connects to the same server as webclients, but does so much more, such as saving your logs for you, and automatically reposting your ads.
 
@@ -20,9 +35,9 @@ This means you should probably just delete your old slimCat install and reinstal
 slimCat doesn't start!
 ======================
 
-If after extracting and double-left clicking slimCat.exe the program does not start, or starts and immediately closes, you should make sure windows smartscreen didn't block the program. To unblock slimCat, go into the client folder, right-click on client.exe, go to properties, and click the unblock button near the bottom. You may have to do this with slimCat.exe in the root folder as well. After doing such, the client still doesn't run, you may have to update your .NET. AT least 4.5.2.
+If after extracting and double-left clicking slimCat.exe the program does not start, or starts and immediately closes, you should make sure windows smartscreen didn't block the program. To unblock slimCat, go into the client folder, right-click on client.exe, go to properties, and click the unblock button near the bottom. You may have to do this with slimCat.exe in the root folder as well. After doing such, the client still doesn't run, you may have to update your .NET to at least 4.6.1.
 
 Minimum Requirements
 ====================
 
-Windows 7 and .NET 4.5.2
+Windows 7 and .NET 4.6.1

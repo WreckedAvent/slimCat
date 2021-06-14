@@ -49,7 +49,6 @@ namespace slimCat.Utilities
         #endregion
 
         #region Explicit Interface Methods
-
         object IValueConverter.Convert(object value, Type type, object parameter, CultureInfo cultureInfo)
         {
             if (value == null)
