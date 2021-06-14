@@ -1,3 +1,9 @@
+## 5 0 14 -fix
+
+* Updated to target .NET 4.6.1 to allow connecting again, on both Windows 7 and 10.
+* Added option to turn animation of eicons on/off (to prevent them from using excessive memory and causing a crash). (from https://github.com/Axaia/slimCat)
+* A fix for creating folders and logs for channels ending in trailing spaces. (from https://github.com/Hunter4242/slimCat)
+
 ## 5 0 14
 
 Updated chat url to connect correctly.
