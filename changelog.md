@@ -1,4 +1,4 @@
-## 5 0 14 -fix
+## 5 0 15
 
 * Updated to target .NET 4.6.1 to allow connecting again, on both Windows 7 and 10.
 * Added option to turn animation of eicons on/off (to prevent them from using excessive memory and causing a crash). (from https://github.com/Axaia/slimCat)
