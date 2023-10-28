@@ -66,6 +66,7 @@ namespace slimCat.Models
         private bool showNormal = true;
 
         private bool showNotInterested;
+        private bool showClientIgnored;
 
         #endregion
 
@@ -202,6 +203,23 @@ namespace slimCat.Models
                     return;
 
                 showIgnored = value;
+                CallUpdate();
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether show ignored.
+        /// </summary>
+        public bool ShowClientIgnored
+        {
+            get { return showClientIgnored; }
+
+            set
+            {
+                if (showClientIgnored == value)
+                    return;
+
+                showClientIgnored = value;
                 CallUpdate();
             }
         }

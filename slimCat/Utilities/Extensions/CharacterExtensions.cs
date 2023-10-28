@@ -58,6 +58,7 @@ namespace slimCat.Utilities
             {
                 new KeyValuePair<ListKind, bool>(ListKind.Ignored, search.ShowIgnored),
                 new KeyValuePair<ListKind, bool>(ListKind.NotInterested, search.ShowNotInterested),
+                new KeyValuePair<ListKind, bool>(ListKind.ClientIgnored, search.ShowClientIgnored),
                 new KeyValuePair<ListKind, bool>(ListKind.Moderator, search.ShowMods),
                 new KeyValuePair<ListKind, bool>(ListKind.Friend, search.ShowFriends),
                 new KeyValuePair<ListKind, bool>(ListKind.Bookmark, search.ShowBookmarks)

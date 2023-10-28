@@ -37,6 +37,7 @@ namespace slimCat.Models
         protected Dictionary<ListKind, CollectionPair> CollectionDictionary = new Dictionary<ListKind, CollectionPair>();
         protected HashSet<CollectionPair> Collections = new HashSet<CollectionPair>();
         protected HashSet<CollectionPair> OfInterestCollections = new HashSet<CollectionPair>();
+        protected HashSet<CollectionPair> OfIgnoredCollections = new HashSet<CollectionPair>();
 
         #endregion
 
@@ -163,6 +164,7 @@ namespace slimCat.Models
         }
 
         public abstract bool IsOfInterest(string name, bool onlineOnly = true);
+        public abstract bool IsIgnored(string name, bool onlineOnly = true);
 
         public virtual ICollection<ICharacter> GetCharacters(ListKind listKind, bool isOnlineOnly = true)
         {

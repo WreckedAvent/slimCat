@@ -28,6 +28,7 @@ namespace slimCat.Models
         Ignored,
         Banned,
         IgnoreUpdates,
+        ClientIgnored,
         SearchResult,
         FriendRequestSent,
         FriendRequestReceived

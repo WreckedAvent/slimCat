@@ -45,6 +45,7 @@ namespace slimCat.Models
                 notInterested,
                 ignored,
                 ignoreUpdates,
+                clientIgnored,
                 searchResults,
                 friendRequestsSent
             };
@@ -58,6 +59,7 @@ namespace slimCat.Models
                 {ListKind.NotInterested, notInterested},
                 {ListKind.Ignored, ignored},
                 {ListKind.IgnoreUpdates, ignoreUpdates},
+                {ListKind.ClientIgnored, clientIgnored},
                 {ListKind.SearchResult, searchResults},
                 {ListKind.FriendRequestSent, friendRequestsSent},
                 {ListKind.FriendRequestReceived, friendRequestsReceived}
@@ -67,7 +69,8 @@ namespace slimCat.Models
             {
                 {ListKind.Interested, ApplicationSettings.Interested},
                 {ListKind.NotInterested, ApplicationSettings.NotInterested},
-                {ListKind.IgnoreUpdates, ApplicationSettings.IgnoreUpdates}
+                {ListKind.IgnoreUpdates, ApplicationSettings.IgnoreUpdates},
+                {ListKind.ClientIgnored, ApplicationSettings.ClientIgnored}
             };
 
             OfInterestCollections = new HashSet<CollectionPair>
@@ -92,6 +95,7 @@ namespace slimCat.Models
         private readonly CollectionPair friends = new CollectionPair();
         private readonly CollectionPair ignoreUpdates = new CollectionPair();
         private readonly CollectionPair ignored = new CollectionPair();
+        private readonly CollectionPair clientIgnored = new CollectionPair();
         private readonly CollectionPair interested = new CollectionPair();
         private readonly CollectionPair localFriends = new CollectionPair();
         private readonly CollectionPair moderators = new CollectionPair();
@@ -123,6 +127,25 @@ namespace slimCat.Models
                     isOfInterest = localFriends.List.Contains(name);
 
                 return isOfInterest;
+            }
+        }
+
+        public override bool IsIgnored (string name, bool onlineOnly = true)
+        {
+            if (name == null) return false;
+
+            lock (Locker)
+            {
+                var isIgnored = false;
+                foreach (var list in OfIgnoredCollections)
+                {
+                    isIgnored = onlineOnly
+                        ? list.OnlineList.Contains(name)
+                        : list.List.Contains(name);
+                    if (isIgnored) break;
+                }
+
+                return isIgnored;
             }
         }
 
@@ -164,6 +187,8 @@ namespace slimCat.Models
 
             if (listKind == ListKind.IgnoreUpdates)
                 UpdateIgnoreUpdatesMark(name, true);
+            if (listKind == ListKind.ClientIgnored)
+                SyncClientIgnoredMarks(name, listKind, true, isTemporary);
 
             if (isTemporary) return toReturn;
 
@@ -185,6 +210,8 @@ namespace slimCat.Models
 
             if (listKind == ListKind.IgnoreUpdates)
                 UpdateIgnoreUpdatesMark(name, false);
+            if (listKind == ListKind.ClientIgnored)
+                SyncClientIgnoredMarks(name, listKind, false, isTemporary);
 
             if (!isTemporary)
                 TrySyncSavedLists(listKind);
@@ -261,6 +288,27 @@ namespace slimCat.Models
                 if (CharacterDictionary.TryGetValue(name, out toModify))
                 {
                     toModify.IsInteresting = (isInteresting && isAdd) || IsOfInterest(name, false);
+                }
+            }
+        }
+
+        private void SyncClientIgnoredMarks(string name, ListKind listKind, bool isAdd, bool isTemporary)
+        {
+            lock (Locker)
+            {
+                Action<CollectionPair> addRemove = c =>
+                {
+                    if (isAdd)
+                        c.Add(name, isTemporary);
+                    else
+                        c.Remove(name, isTemporary);
+                };
+                addRemove(clientIgnored);
+
+                ICharacter toModify;
+                if (CharacterDictionary.TryGetValue(name, out toModify))
+                {
+                    toModify.IsClientIgnored = isAdd || IsIgnored(name, false);
                 }
             }
         }

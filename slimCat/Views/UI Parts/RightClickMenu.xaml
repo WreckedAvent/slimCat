@@ -83,6 +83,10 @@
                         <TextBlock Text="Not Interesting"
                                    Foreground="{StaticResource NotAvailableBrush}"
                                    Visibility="{Binding Path=IsUninteresting, Converter={StaticResource BoolConverter}, Mode=OneWay}" />
+                        
+                        <TextBlock Text="Client-side Ignore"
+                                   Foreground="{StaticResource NotAvailableBrush}"
+                                   Visibility="{Binding Path=IsClientIgnored, Converter={StaticResource BoolConverter}, Mode=OneWay}" />
 
                         <TextBlock Text="Ignored"
                                    Foreground="{StaticResource NotAvailableBrush}"
@@ -137,6 +141,8 @@
                         Content="{Binding Path=RightClickMenuViewModel.MarkInterested}" />
                 <Button Command="{Binding NotInterestedCommand}"
                         Content="{Binding Path=RightClickMenuViewModel.MarkUninterested}" />
+                <Button Command="{Binding ClientIgnoredCommand}"
+                        Content="{Binding Path=RightClickMenuViewModel.MarkClientIgnored}" />
 
                 <Button Command="{Binding IgnoreUpdateCommand}"
                         Content="{Binding Path=RightClickMenuViewModel.IgnoreUpdate}"

@@ -167,6 +167,21 @@ namespace slimCat.ViewModels
             }
         }
 
+        public string MarkClientIgnored
+        {
+            get
+            {
+                if (Target != null)
+                {
+                    return characters.IsOnList(Target.Name, ListKind.ClientIgnored, false)
+                        ? "Remove client ignored mark"
+                        : "Add client ignored mark";
+                }
+
+                return string.Empty;
+            }
+        }
+
         public string IgnoreUpdate
         {
             get
@@ -333,6 +348,17 @@ namespace slimCat.ViewModels
             {
                 if (Target != null)
                     return characters.IsOnList(Target.Name, ListKind.NotInterested, false);
+
+                return false;
+            }
+        }
+
+        public bool IsClientIgnored
+        {
+            get
+            {
+                if (Target != null)
+                    return characters.IsOnList(Target.Name, ListKind.ClientIgnored, false);
 
                 return false;
             }

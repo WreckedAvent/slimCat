@@ -99,6 +99,7 @@ namespace slimCat.ViewModels
         private RelayCommand isInterested;
 
         private RelayCommand isNotInterested;
+        private RelayCommand isClientIgnored;
 
         private RelayCommand @join;
         private RelayCommand kick;
@@ -222,6 +223,9 @@ namespace slimCat.ViewModels
 
         public ICommand NotInterestedCommand
             => isNotInterested ?? (isNotInterested = new RelayCommand(IsUninterestedEvent));
+
+        public ICommand ClientIgnoredCommand
+            => isClientIgnored ?? (isClientIgnored = new RelayCommand(IsClientIgnoredEvent));
 
         public ICommand SearchTagCommand => searchTag ?? (searchTag = new RelayCommand(SearchTagEvent));
 
@@ -454,6 +458,14 @@ namespace slimCat.ViewModels
             OnRightClickMenuUpdated(RightClickMenuViewModel.Target);
         }
 
+        private void ClientIgnoredEvent(object args, bool clientIgnored = false)
+        {
+            Events.SendUserCommand(
+                clientIgnored ? "clientignored" : "clientunignored",
+                new[] {args as string});
+            OnRightClickMenuUpdated(RightClickMenuViewModel.Target);
+        }
+
         private void IgnoreUpdatesEvent(object args)
         {
             Events.SendUserCommand("ignoreUpdates", new[] {args as string});
@@ -468,6 +480,11 @@ namespace slimCat.ViewModels
         private void IsUninterestedEvent(object args)
         {
             InterestedEvent(args, false);
+        }
+
+        private void IsClientIgnoredEvent(object args)
+        {
+            ClientIgnoredEvent(args, false);
         }
 
         protected virtual void LogoutEvent(object o)

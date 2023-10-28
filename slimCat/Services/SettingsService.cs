@@ -180,6 +180,8 @@ namespace slimCat.Services
                                 cm.Set(element.Elements().Select(x => x.Value), ListKind.Interested);
                             else if (property.Name.Equals("notinterested", StringComparison.OrdinalIgnoreCase))
                                 cm.Set(element.Elements().Select(x => x.Value), ListKind.NotInterested);
+                            else if (property.Name.Equals("clientignored", StringComparison.OrdinalIgnoreCase))
+                                cm.Set(element.Elements().Select(x => x.Value), ListKind.ClientIgnored);
                             else if (property.Name.Equals("ignoreupdates", StringComparison.OrdinalIgnoreCase))
                                 cm.Set(element.Elements().Select(x => x.Value), ListKind.IgnoreUpdates);
                             else

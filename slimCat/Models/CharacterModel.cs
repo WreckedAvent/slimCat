@@ -122,6 +122,7 @@ namespace slimCat.Models
         private Gender gender;
         private bool ignoreUpdates;
         private bool isInteresting;
+        private bool isClientIgnored;
 
         private ReportModel lastReport;
         private string name = string.Empty;
@@ -236,6 +237,16 @@ namespace slimCat.Models
             set
             {
                 isInteresting = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsClientIgnored
+        {
+            get { return isClientIgnored; }
+            set
+            {
+                isClientIgnored = value;
                 OnPropertyChanged();
             }
         }

@@ -61,6 +61,8 @@ namespace slimCat.Models
                 Define("logout").AsArgumentless(),
                 Define("makeroom").As(ChannelCreate).AsForChannels(),
                 Define("notinteresting").AsForCharacters(),
+                Define("clientignored").AsForCharacters(),
+                Define("clientunignored").AsForCharacters(),
                 Define("openlog").As("_logger_open_log").AsForChannels(),
                 Define("openlogfolder", "openfolder").As("_logger_open_folder").AsForChannels(),
                 Define("priv", "pm", "tell").AsForCharacters(),

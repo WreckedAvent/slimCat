@@ -86,6 +86,8 @@ namespace slimCat.Services
                     {"getdescription", OnChannelDescriptionRequested},
                     {"interesting", OnMarkInterestedRequested},
                     {"notinteresting", OnMarkNotInterestedRequested},
+                    {"clientignored", OnMarkClientIgnoredRequested},
+                    {"clientunignored", OnMarkClientUnignoredRequested},
                     {"ignoreUpdates", OnIgnoreUpdatesRequested},
                     {AdminAlert, OnReportRequested},
                     {"tempignore", OnTemporaryIgnoreRequested},

@@ -80,6 +80,11 @@ namespace slimCat.Models
         bool IsInteresting { get; set; }
 
         /// <summary>
+        ///     Gets or sets a value indicating whether the character is client-side ignored to the current user.
+        /// </summary>
+        bool IsClientIgnored { get; set; }
+
+        /// <summary>
         ///     Gets or sets a value indicating whether to ignore updates for this character.
         /// </summary>
         bool IgnoreUpdates { get; set; }

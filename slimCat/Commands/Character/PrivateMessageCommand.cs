@@ -71,6 +71,12 @@ namespace slimCat.Services
             var sender = command.Get(Constants.Arguments.Character);
             if (!CharacterManager.IsOnList(sender, ListKind.Ignored))
             {
+                if (CharacterManager.IsOnList(sender, ListKind.ClientIgnored))
+                {
+                    // client ignored, so swallow PM
+                    return;
+                }
+
                 if (ChatModel.CurrentPms.FirstByIdOrNull(sender) == null)
                     channels.AddChannel(ChannelType.PrivateMessage, sender);
 

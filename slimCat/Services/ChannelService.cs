@@ -164,6 +164,11 @@ namespace slimCat.Services
 
             if (channel == null)
                 return; // exception circumstance, swallow message
+            if (characters.IsOnList(poster, ListKind.ClientIgnored, false))
+            {
+                // this poster is client-ignored, swallow message
+                return;
+            }
 
             if (messageType == MessageType.Ad && characters.IsOnList(poster, ListKind.NotInterested, false))
                 return; // don't want these clogging up our filter or.. anything really

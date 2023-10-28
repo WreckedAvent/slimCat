@@ -49,6 +49,11 @@ namespace slimCat.Models
             return false;
         }
 
+        public override bool IsIgnored(string name, bool onlineOnly = true)
+        {
+            return false;
+        }
+
         public override void Clear()
         {
             Collections.Each(x => x.Set(new List<string>()));

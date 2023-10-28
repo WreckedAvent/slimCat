@@ -45,6 +45,7 @@ namespace slimCat.Models
             SavedChannels = new List<string>();
             Interested = new List<string>();
             NotInterested = new List<string>();
+            ClientIgnored = new List<string>();
             IgnoreUpdates = new List<string>();
             RecentChannels = new List<string>(10);
             RecentCharacters = new List<string>(20);
@@ -310,6 +311,8 @@ namespace slimCat.Models
         public static bool PlaySoundEvenWhenTabIsFocused { get; set; }
 
         public static IList<string> IgnoreUpdates { get; set; }
+
+        public static IList<string> ClientIgnored { get; set; }
 
         public static bool UseMilitaryTime { get; set; }
 

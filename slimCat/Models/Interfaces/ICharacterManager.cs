@@ -113,6 +113,14 @@ namespace slimCat.Models
         bool IsOfInterest(string name, bool onlineOnly = true);
 
         /// <summary>
+        ///     Evaluates if a given name is ignored by the user. Thread-safe.
+        /// </summary>
+        /// <param name="name">The character name to check</param>
+        /// <param name="onlineOnly">If only the online list should be checked</param>
+        /// <returns>Whether or not the character is ignored.</returns>
+        bool IsIgnored(string name, bool onlineOnly = true);
+
+        /// <summary>
         ///     Evaluates if a given name is on a given list. Thread-safe.
         /// </summary>
         /// <param name="name">The character name to check</param>
