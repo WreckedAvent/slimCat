@@ -223,6 +223,7 @@
             <CheckBox IsChecked="{Binding ShowBusyAway}">Busy or Away</CheckBox>
             <CheckBox IsChecked="{Binding ShowNotInterested}">Not Interesting</CheckBox>
             <CheckBox IsChecked="{Binding ShowDnd}">DND</CheckBox>
+            <CheckBox IsChecked="{Binding ShowClientIgnored}">Client Ignored</CheckBox>
             <CheckBox IsChecked="{Binding ShowIgnored}">Ignored</CheckBox>
         </StackPanel>
     </ControlTemplate>
